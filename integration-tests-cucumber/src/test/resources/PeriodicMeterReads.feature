@@ -2,7 +2,7 @@ Feature:
   As a grid operator
   I want to be able to get periodic meter reads from a device
   So that I can see the periodic meter reads on the device
-@pmre @400
+@SLIM-400
   Scenario: Get the periodic meter reads from a device
     Given a device with DeviceID "E9998000014123414" 
     And an organisation with OrganisationID "LianderNetManagement"

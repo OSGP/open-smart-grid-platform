@@ -8,12 +8,14 @@
  */
 package com.alliander.osgp.platform.cucumber.smartmeteringmonitoring;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,8 +45,7 @@ public class ActualMeterReadsGas {
     private static final String PATH_RESULT_CAPTURETIME = "/Envelope/Body/ActualMeterReadsGasResponse/CaptureTime/text()";
 
     private static final String XPATH_MATCHER_RESULT_LOGTIME = "\\d{4}\\-\\d{2}\\-\\d{2}T\\d{2}\\:\\d{2}\\:\\d{2}\\.\\d{3}Z";
-    private static final String XPATH_MATCHER_RESULT_CONSUMPTION = "\\d+\\.\\d+";
-    private static final String XPATH_MATCHER_RESULT_CAPTURETIME = "\\d+\\.\\d+";
+    private static final String XPATH_MATCHER_RESULT = "\\d+\\.\\d+";
 
     private static final String SOAP_PROJECT_XML = "../cucumber/soap-ui-project/FLEX-OVL-V3---SmartMetering-soapui-project.xml";
     private static final String TEST_SUITE_XML = "SmartmeterMonitoring";
@@ -87,7 +88,7 @@ public class ActualMeterReadsGas {
 
         final TestStepResult runTestStepByNameResult = runTestStepByName.getRunTestStepByName();
         final WsdlTestCaseRunner wsdlTestCaseRunner = runTestStepByName.getResults();
-        Assert.assertEquals(TestStepStatus.OK, runTestStepByNameResult.getStatus());
+        assertEquals(TestStepStatus.OK, runTestStepByNameResult.getStatus());
 
         for (final TestStepResult tcr : wsdlTestCaseRunner.getResults()) {
             this.response = ((MessageExchange) tcr).getResponseContent();
@@ -105,18 +106,15 @@ public class ActualMeterReadsGas {
                 TEST_CASE_NAME_RESPONSE);
         final TestStepResult runTestStepByNameResult = runTestStepByName.getRunTestStepByName();
         final WsdlTestCaseRunner wsdlTestCaseRunner = runTestStepByName.getResults();
-        Assert.assertEquals(TestStepStatus.OK, runTestStepByNameResult.getStatus());
+        assertEquals(TestStepStatus.OK, runTestStepByNameResult.getStatus());
 
         for (final TestStepResult tcr : wsdlTestCaseRunner.getResults()) {
             LOGGER.info(TEST_CASE_NAME_RESPONSE + " response {}",
                     this.response = ((MessageExchange) tcr).getResponseContent());
         }
 
-        Assert.assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_LOGTIME,
-                XPATH_MATCHER_RESULT_LOGTIME));
-        Assert.assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_CONSUMPTION,
-                XPATH_MATCHER_RESULT_CONSUMPTION));
-        Assert.assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_CAPTURETIME,
-                XPATH_MATCHER_RESULT_CAPTURETIME));
+        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_LOGTIME, XPATH_MATCHER_RESULT_LOGTIME));
+        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_CONSUMPTION, XPATH_MATCHER_RESULT));
+        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_CAPTURETIME, XPATH_MATCHER_RESULT));
     }
 }
