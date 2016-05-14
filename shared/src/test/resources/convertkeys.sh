@@ -1,12 +1,14 @@
 #!/bin/sh
 #
 
-[ -f $1 ] || { echo "You need to provide the path to the rsa private key as first argument, $1 does not exist!!"; exit 1; }
-[ -f $2 ] || { echo "You need to provide the path to the aes secretas second argument, $2 does not exist!! (see readme.txt how to generate)!!"; exit 1; }
+[ $1 ] || { echo "You need to provide the path to the rsa private key as first argument!!"; exit 1; }
+[ $2 ] || { echo "You need to provide the path to the aes secretas second argument"; exit 1; }
+[ -f $1 ] || { echo "$1 does not exist!!"; exit 1; }
+[ -f $2 ] || { echo "$2 does not exist!! (see readme.txt how to generate)!!"; exit 1; }
 
-echo "output and errors go to converion.log!!!"
-
-exec > conversion.log
+datum=$(date +%F_%R)
+echo "output and errors go to conversion_${datum}.log!!!"
+exec > conversion_${datum}.log
 exec 2>&1
 
 echo "re-encrypting keys using rsa private key $1 and aes secret $2"
