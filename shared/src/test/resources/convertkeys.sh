@@ -1,13 +1,17 @@
 #!/bin/sh
 #
 
-[ -f secrethex ] || { echo "geneate (AND KEEP IT SAFE!) or provide file secrethex (see readme.txt how to generate)!!"; exit 1; }
+[ -f secret.aes ] || { echo "geneate (AND KEEP IT SAFE!) or provide file secret.aes (see readme.txt how to generate)!!"; exit 1; }
 [ -f devicekey_priv.der ] || { echo "You need the original rsa private key: devicekey_priv.der!!"; exit 1; }
 
 echo "output and errors go to converion.log!!!"
 
 exec > conversion.log
 exec 2>&1
+
+xxd -p secret.aes secrethex
+
+[ $? -eq 0 ] || { echo "hex conversion aes key failed"; exit 1; }
 
 echo searching keys to convert
 
