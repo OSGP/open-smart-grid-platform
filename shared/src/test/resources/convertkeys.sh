@@ -1,17 +1,15 @@
 #!/bin/sh
 #
 
-[ -f secret.aes ] || { echo "geneate (AND KEEP IT SAFE!) or provide file secret.aes (see readme.txt how to generate)!!"; exit 1; }
-[ -f devicekey_priv.der ] || { echo "You need the original rsa private key: devicekey_priv.der!!"; exit 1; }
+[ -f $1 ] || { echo "You need to provide the path to the rsa private key as first argument, $1 does not exist!!"; exit 1; }
+[ -f $2 ] || { echo "You need to provide the path to the aes secretas second argument, $2 does not exist!! (see readme.txt how to generate)!!"; exit 1; }
 
 echo "output and errors go to converion.log!!!"
 
 exec > conversion.log
 exec 2>&1
 
-xxd -p secret.aes secrethex
-
-[ $? -eq 0 ] || { echo "hex conversion aes key failed"; exit 1; }
+echo "re-encrypting keys using rsa private key $1 and aes secret $2"
 
 echo searching keys to convert
 
@@ -33,18 +31,17 @@ do
 
   echo -n $line|cut -d"|" -f9|sed -e 's/^[[:space:]]*//'|sed -e 's/[[:space:]]*$//' > hexkey
   xxd -p -r hexkey binkey
-  openssl rsautl -decrypt -in binkey -out deckey -inkey devicekey_priv.der -keyform DER -raw
+  openssl rsautl -decrypt -in binkey -out deckey -inkey $1 -keyform DER -raw
 
   [ $? -eq 0 ] || { echo "decrypting rsa key failed (already converted to aes?)"; continue; }
 
   echo -n "encrypt.."
 
-  openssl enc -e -aes-128-cbc -in deckey -out enckey -iv 000102030405060708090a0b0c0d0e0f -K $(cat secrethex)
+  openssl enc -e -aes-128-cbc -in deckey -out enckey -iv 000102030405060708090a0b0c0d0e0f -K $(xxd -p $2|tr -d \\n)
 
   [ $? -eq 0 ] || { echo "aes encryption of key failed"; continue; }
 
-  xxd -p enckey newhexkey
-  newhexkey=$(cat newhexkey|tr -d \\n)
+  newhexkey=$(xxd -p enckey|tr -d \\n)
 
   echo -n "invalidate.."
 
