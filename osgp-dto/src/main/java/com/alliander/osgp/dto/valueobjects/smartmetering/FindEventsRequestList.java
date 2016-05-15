@@ -10,20 +10,20 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 import java.io.Serializable;
 import java.util.List;
 
-public class FindEventsQueryMessageDataContainerDto implements Serializable {
+public class FindEventsRequestList implements Serializable {
 
     /**
      * Serial Version UID.
      */
     private static final long serialVersionUID = 1917863566442592894L;
 
-    private List<FindEventsQueryDto> findEventsQueryList;
+    private List<FindEventsRequestDto> findEventsQueryList;
 
-    public FindEventsQueryMessageDataContainerDto(final List<FindEventsQueryDto> findEventsQueryList) {
+    public FindEventsRequestList(final List<FindEventsRequestDto> findEventsQueryList) {
         this.findEventsQueryList = findEventsQueryList;
     }
 
-    public List<FindEventsQueryDto> getFindEventsQueryList() {
+    public List<FindEventsRequestDto> getFindEventsQueryList() {
         return this.findEventsQueryList;
     }
 }
