@@ -21,9 +21,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataContainerDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryMessageDataContainerDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequestList;
 
 @Service(value = "dlmsManagementService")
 public class ManagementService {
@@ -41,15 +41,15 @@ public class ManagementService {
 
     // === FIND EVENTS ===
 
-    public EventMessageDataContainerDto findEvents(final ClientConnection conn, final DlmsDevice device,
-            final FindEventsQueryMessageDataContainerDto findEventsQueryMessageDataContainer)
+    public EventMessageDataResponseDto findEvents(final ClientConnection conn, final DlmsDevice device,
+            final FindEventsRequestList findEventsQueryMessageDataContainer)
             throws ProtocolAdapterException {
 
         final List<EventDto> events = new ArrayList<>();
 
         LOGGER.info("findEvents setting up connection with meter {}", device.getDeviceIdentification());
 
-        for (final FindEventsQueryDto findEventsQuery : findEventsQueryMessageDataContainer.getFindEventsQueryList()) {
+        for (final FindEventsRequestDto findEventsQuery : findEventsQueryMessageDataContainer.getFindEventsQueryList()) {
             LOGGER.info("findEventsQuery.eventLogCategory: {}, findEventsQuery.from: {}, findEventsQuery.until: {}",
                     findEventsQuery.getEventLogCategory().toString(), findEventsQuery.getFrom(),
                     findEventsQuery.getUntil());
@@ -57,7 +57,7 @@ public class ManagementService {
             events.addAll(this.retrieveEventsCommandExecutor.execute(conn, device, findEventsQuery));
         }
 
-        return new EventMessageDataContainerDto(events);
+        return new EventMessageDataResponseDto(events);
     }
 
 }

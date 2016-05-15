@@ -26,8 +26,8 @@ import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionDtoBuilder;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessageDataContainerDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequestDto;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BundleServiceTest {
@@ -49,8 +49,8 @@ public class BundleServiceTest {
     @Test
     public void testHappyFlow() throws ProtocolAdapterException {
         final List<ActionDto> actionDtoList = this.makeActions();
-        final BundleMessageDataContainerDto dto = new BundleMessageDataContainerDto(actionDtoList);
-        final BundleMessageDataContainerDto result = this.callExecutors(dto);
+        final BundleMessagesRequestDto dto = new BundleMessagesRequestDto(actionDtoList);
+        final BundleMessagesRequestDto result = this.callExecutors(dto);
         Assert.assertTrue(result != null);
         this.assertResult(result);
     }
@@ -58,9 +58,9 @@ public class BundleServiceTest {
     @Test
     public void testException() {
         final List<ActionDto> actionDtoList = this.makeActions();
-        final BundleMessageDataContainerDto dto = new BundleMessageDataContainerDto(actionDtoList);
-        this.getStub(FindEventsQueryDto.class).failWith(new ProtocolAdapterException("simulate error"));
-        final BundleMessageDataContainerDto result = this.callExecutors(dto);
+        final BundleMessagesRequestDto dto = new BundleMessagesRequestDto(actionDtoList);
+        this.getStub(FindEventsRequestDto.class).failWith(new ProtocolAdapterException("simulate error"));
+        final BundleMessagesRequestDto result = this.callExecutors(dto);
         this.assertResult(result);
     }
 
@@ -76,10 +76,10 @@ public class BundleServiceTest {
     @Test
     public void testConnectionException() throws ProtocolAdapterException {
         final List<ActionDto> actionDtoList = this.makeActions();
-        final BundleMessageDataContainerDto dto = new BundleMessageDataContainerDto(actionDtoList);
+        final BundleMessagesRequestDto dto = new BundleMessagesRequestDto(actionDtoList);
 
         // Set the point where to throw the ConnectionException
-        this.getStub(FindEventsQueryDto.class).failWithRuntimeException(
+        this.getStub(FindEventsRequestDto.class).failWithRuntimeException(
                 new ConnectionException("Connection Exception thrown!"));
 
         try {
@@ -94,7 +94,7 @@ public class BundleServiceTest {
         }
 
         // Reset the point where the exception was thrown.
-        this.getStub(FindEventsQueryDto.class).failWithRuntimeException(null);
+        this.getStub(FindEventsRequestDto.class).failWithRuntimeException(null);
 
         try {
             // Execute the remaining actions
@@ -106,7 +106,7 @@ public class BundleServiceTest {
 
     }
 
-    private void assertResult(final BundleMessageDataContainerDto result) {
+    private void assertResult(final BundleMessagesRequestDto result) {
         Assert.assertTrue(result != null);
         Assert.assertNotNull(result != null);
         Assert.assertNotNull(result != null);
@@ -115,13 +115,13 @@ public class BundleServiceTest {
             Assert.assertNotNull(actionDto.getRequest());
             Assert.assertNotNull(actionDto.getResponse());
         }
-    }
-
-    private BundleMessageDataContainerDto callExecutors(final BundleMessageDataContainerDto dto) {
+    } 
+    
+    private BundleMessagesRequestDto callExecutors(final BundleMessagesRequestDto dto) {
         final DlmsDevice device = new DlmsDevice();
         return this.bundleService.callExecutors(null, device, dto);
     }
-
+    
     // ---- private helper methods
 
     private AbstractCommandExecutorStub getStub(final Class<? extends ActionRequestDto> actionRequestDto) {

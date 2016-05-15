@@ -13,14 +13,14 @@ import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGasRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGasRequestDto;
 
 public class GetPeriodicMeterReadsGasBundleCommandExecutorStub extends AbstractCommandExecutorStub implements
         GetPeriodicMeterReadsGasBundleCommandExecutor {
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final PeriodicMeterReadsGasRequestDataDto object) throws ProtocolAdapterException {
+            final PeriodicMeterReadsGasRequestDto object) throws ProtocolAdapterException {
         return this.doExecute(conn, device, object);
     }
 

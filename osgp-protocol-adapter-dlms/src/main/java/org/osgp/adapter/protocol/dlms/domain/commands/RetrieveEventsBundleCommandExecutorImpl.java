@@ -19,12 +19,12 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataContainerDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequestDto;
 
 @Component()
 public class RetrieveEventsBundleCommandExecutorImpl extends
-BundleCommandExecutor<FindEventsQueryDto, ActionResponseDto> implements RetrieveEventsBundleCommandExecutor {
+BundleCommandExecutor<FindEventsRequestDto, ActionResponseDto> implements RetrieveEventsBundleCommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RetrieveEventsBundleCommandExecutorImpl.class);
 
@@ -35,12 +35,12 @@ BundleCommandExecutor<FindEventsQueryDto, ActionResponseDto> implements Retrieve
     private DlmsHelperService dlmsHelperService;
 
     public RetrieveEventsBundleCommandExecutorImpl() {
-        super(FindEventsQueryDto.class);
+        super(FindEventsRequestDto.class);
     }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final FindEventsQueryDto findEventsQuery) {
+            final FindEventsRequestDto findEventsQuery) {
 
         List<EventDto> eventDtoList;
         try {
@@ -51,7 +51,7 @@ BundleCommandExecutor<FindEventsQueryDto, ActionResponseDto> implements Retrieve
             return new ActionResponseDto(e, "Error while retrieving " + findEventsQuery.getEventLogCategory()
                     + "events from device: " + device.getDeviceIdentification());
         }
-        return new EventMessageDataContainerDto(eventDtoList);
+        return new EventMessageDataResponseDto(eventDtoList);
     }
 
     public void setRetrieveEventsCommandExecutor(final RetrieveEventsCommandExecutor retrieveEventsCommandExecutor) {
