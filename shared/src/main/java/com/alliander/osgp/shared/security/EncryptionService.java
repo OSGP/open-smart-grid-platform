@@ -56,7 +56,7 @@ public class EncryptionService {
      */
     public static final String PROVIDER = "BC";
 
-    @Value("${device.security.key.path.decrypt}")
+    @Value("${encryption.key.path}")
     private String keyPath;
     private SecretKey key;
 
