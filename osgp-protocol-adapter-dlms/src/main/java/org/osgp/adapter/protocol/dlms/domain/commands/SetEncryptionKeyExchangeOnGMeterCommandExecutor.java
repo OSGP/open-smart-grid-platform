@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
@@ -34,7 +33,7 @@ import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.shared.exceptionhandling.EncrypterException;
@@ -42,7 +41,7 @@ import com.alliander.osgp.shared.security.EncryptionService;
 
 @Component()
 public class SetEncryptionKeyExchangeOnGMeterCommandExecutor implements
-CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
+        CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetEncryptionKeyExchangeOnGMeterCommandExecutor.class);
 
@@ -60,15 +59,8 @@ CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
         OBIS_HASHMAP.put(4, OBIS_CODE_INTERVAL_MBUS_4);
     }
 
-    @Value("${device.security.key.path.decrypt}")
-    private String keyPath;
-
+    @Autowired
     private EncryptionService encryptionService;
-
-    @PostConstruct
-    private void initEncryption() {
-        this.encryptionService = new EncryptionService(this.keyPath);
-    }
 
     @Override
     public MethodResultCode execute(final ClientConnection conn, final DlmsDevice device,

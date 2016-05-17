@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * configuration requires Spring Framework 3.0
  */
 @Configuration
-@ComponentScan(basePackages = { "org.osgp.adapter.protocol.dlms" })
+@ComponentScan(basePackages = { "org.osgp.adapter.protocol.dlms", "com.alliander.osgp.shared.security" })
 @EnableTransactionManagement()
 @Import({ MessagingConfig.class, DlmsPersistenceConfig.class, JasperWirelessConfig.class })
 @PropertySource("file:${osp/osgpAdapterProtocolDlms/config}")

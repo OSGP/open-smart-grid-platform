@@ -11,8 +11,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.bouncycastle.util.Arrays;
@@ -26,6 +24,7 @@ import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.EncrypterException;
@@ -48,24 +47,17 @@ public class Hls5Connector {
 
     private DlmsDevice device;
 
-    private final String keyPath;
-
+    @Autowired
     private EncryptionService encryptionService;
-
-    @PostConstruct
-    private void initEncryption() {
-        this.encryptionService = new EncryptionService(this.keyPath);
-    }
 
     public Hls5Connector(final RecoverKeyProcessInitiator recoverKeyProcessInitiator,
             final DlmsDeviceRepository dlmsDeviceRepository, final int responseTimeout, final int logicalDeviceAddress,
-            final int clientAccessPoint, final String keyPath) {
+            final int clientAccessPoint) {
         this.recoverKeyProcessInitiator = recoverKeyProcessInitiator;
         this.dlmsDeviceRepository = dlmsDeviceRepository;
         this.responseTimeout = responseTimeout;
         this.logicalDeviceAddress = logicalDeviceAddress;
         this.clientAccessPoint = clientAccessPoint;
-        this.keyPath = keyPath;
     }
 
     public void setDevice(final DlmsDevice device) {
