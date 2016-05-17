@@ -13,7 +13,9 @@ import java.net.UnknownHostException;
 
 import javax.annotation.PostConstruct;
 
-import org.bouncycastle.util.encoders.Hex;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
+import org.bouncycastle.util.Arrays;
 import org.openmuc.jdlms.ClientConnection;
 import org.openmuc.jdlms.TcpConnectionBuilder;
 import org.osgp.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
@@ -94,10 +96,10 @@ public class Hls5Connector {
             }
             throw new ConnectionException(e);
         } catch (final EncrypterException e) {
-            LOGGER.error("RSA decryption on security keys went wrong for device: {}",
+            LOGGER.error("decryption on security keys went wrong for device: {}",
                     this.device.getDeviceIdentification(), e);
             throw new TechnicalException(ComponentType.PROTOCOL_DLMS,
-                    "RSA decryption on security keys went wrong for device: " + this.device.getDeviceIdentification());
+                    "decryption on security keys went wrong for device: " + this.device.getDeviceIdentification());
         }
     }
 
@@ -120,19 +122,27 @@ public class Hls5Connector {
      *             authorisation keys.
      * @throws EncrypterException
      *             When there are problems decrypting the encrypted security and
-     *             authorisation keys.RSAEncrypterService
+     *             authorisation keys.
      */
     private ClientConnection createConnection() throws IOException, TechnicalException, EncrypterException {
         final SecurityKey validAuthenticationKey = this.getSecurityKey(SecurityKeyType.E_METER_AUTHENTICATION);
         final SecurityKey validEncryptionKey = this.getSecurityKey(SecurityKeyType.E_METER_ENCRYPTION);
 
         // Decode the key from Hexstring to bytes
-        final byte[] authenticationKey = Hex.decode(validAuthenticationKey.getKey());
-        final byte[] encryptionKey = Hex.decode(validEncryptionKey.getKey());
+        byte[] authenticationKey = null;
+        byte[] encryptionKey = null;
+        try {
+            authenticationKey = Hex.decodeHex(validAuthenticationKey.getKey().toCharArray());
+            encryptionKey = Hex.decodeHex(validEncryptionKey.getKey().toCharArray());
+        } catch (final DecoderException e) {
+            throw new EncrypterException(e);
+        }
 
-        // Decrypt the key
-        final byte[] decryptedAuthentication = this.encryptionService.decrypt(authenticationKey);
-        final byte[] decryptedEncryption = this.encryptionService.decrypt(encryptionKey);
+        // Decrypt the key, discard ivBytes
+        byte[] decryptedAuthentication = this.encryptionService.decrypt(authenticationKey);
+        byte[] decryptedEncryption = this.encryptionService.decrypt(encryptionKey);
+        decryptedAuthentication = Arrays.copyOfRange(decryptedAuthentication, 16, decryptedAuthentication.length);
+        decryptedEncryption = Arrays.copyOfRange(decryptedEncryption, 16, decryptedEncryption.length);
 
         // Setup connection to device
         final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(InetAddress.getByName(this.device
