@@ -432,6 +432,15 @@
       <xsd:enumeration value="MONITOR_EVENTS_LOCAL_MODE" />
       <xsd:enumeration value="MONITOR_EVENTS_REMOTE_MODE" />
       <xsd:enumeration value="FIRMWARE_EVENTS_CONFIGURATION_CHANGED" />
+      <xsd:enumeration value="FIRMWARE_EVENTS_DOWNLOAD_SUCCESS" />
+      <xsd:enumeration value="CA_FILE_EVENTS_ACTIVATING" />
+      <xsd:enumeration value="CA_FILE_FIRMWARE_EVENTS_DOWNLOAD_NOT_FOUND" />
+      <xsd:enumeration value="CA_FILE_EVENTS_DOWNLOAD_FAILED" />
+      <xsd:enumeration value="CA_FILE_EVENTS_DOWNLOAD_SUCCESS" />
+      <xsd:enumeration value="NTP_SERVER_NOT_REACH" />
+      <xsd:enumeration value="NTP_SYNC_ALARM_OFFSET" />
+      <xsd:enumeration value="NTP_SYNC_MAX_OFFSET" />
+      <xsd:enumeration value="AUTHENTICATION_FAIL" />
     </xsd:restriction>
   </xsd:simpleType>
 
