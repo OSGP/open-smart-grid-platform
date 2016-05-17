@@ -10,8 +10,6 @@ package com.alliander.osgp.adapter.ws.smartmetering.infra.ws;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
-import ma.glasnost.orika.MapperFacade;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.Notification;
@@ -20,13 +18,10 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.SendNotif
 public class SendNotificationServiceClient {
 
     private final WebServiceTemplateFactory webServiceTemplateFactory;
-    private final MapperFacade mapper;
 
     @Autowired
-    public SendNotificationServiceClient(final WebServiceTemplateFactory webServiceTemplateFactory,
-            final MapperFacade mapper) {
+    public SendNotificationServiceClient(final WebServiceTemplateFactory webServiceTemplateFactory) {
         this.webServiceTemplateFactory = webServiceTemplateFactory;
-        this.mapper = mapper;
     }
 
     /**
@@ -34,7 +29,8 @@ public class SendNotificationServiceClient {
      *
      * @param model
      *            The device to add.
-     * @throws Exception
+     * @throws GeneralSecurityException
+     * @throws IOException
      */
     public void sendNotification(final String organisationIdentification, final Notification notification,
             final String notificationURL) throws GeneralSecurityException, IOException {
@@ -44,11 +40,9 @@ public class SendNotificationServiceClient {
         sendNotificationRequest.setNotification(notification);
 
         // TODO send username
+        
         this.webServiceTemplateFactory.getTemplate(organisationIdentification, "LianderNetManagement", notificationURL)
                 .marshalSendAndReceive(sendNotificationRequest);
-
-        // TODO return something
-        // return new SaveDeviceResponse(OsgpResultType.OK, null);
 
     }
 }

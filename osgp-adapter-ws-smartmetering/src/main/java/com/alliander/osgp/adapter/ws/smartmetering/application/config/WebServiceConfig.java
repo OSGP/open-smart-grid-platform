@@ -39,7 +39,6 @@ import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderScheduleTime
 import com.alliander.osgp.adapter.ws.endpointinterceptors.X509CertificateRdnAttributeValueEndpointInterceptor;
 import com.alliander.osgp.adapter.ws.smartmetering.application.exceptionhandling.DetailSoapFaultMappingExceptionResolver;
 import com.alliander.osgp.adapter.ws.smartmetering.application.exceptionhandling.SoapFaultMapper;
-import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.NotificationMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.SendNotificationServiceClient;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.WebServiceTemplateFactory;
 
@@ -111,7 +110,7 @@ public class WebServiceConfig {
     @Bean
     public SendNotificationServiceClient sendNotificationServiceClient() throws java.security.GeneralSecurityException {
         return new SendNotificationServiceClient(this.createWebServiceTemplateFactory(this
-                .notificationSenderMarshaller()), this.notificationMapper());
+                .notificationSenderMarshaller()));
     }
 
     private WebServiceTemplateFactory createWebServiceTemplateFactory(final Jaxb2Marshaller marshaller) {
@@ -121,11 +120,6 @@ public class WebServiceConfig {
                 this.environment.getProperty(PROPERTY_NAME_WEBSERVICE_KEYSTORE_PASSWORD),
                 this.webServiceTrustStoreFactory(),
                 this.environment.getRequiredProperty(PROPERTY_NAME_APPLICATION_NAME));
-    }
-
-    @Bean
-    public NotificationMapper notificationMapper() {
-        return new NotificationMapper();
     }
 
     @Bean
