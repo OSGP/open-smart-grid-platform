@@ -34,13 +34,16 @@ import com.alliander.osgp.shared.exceptionhandling.EncrypterException;
 
 /**
  * Encryption service class that offers encrypt and decrypt methods to encrypt
- * or decrypt data. When encrypting always use {@link #getIvbytes()}.
+ * or decrypt data. You can use this service as a bean, for example by including
+ * its package in component scan. This service uses a property
+ * encryption.key.path that should point to a File containing the secret key.
+ * When encrypting apart from this service always use {@link #getIvbytes()}.
  *
  */
 @Component
 public class EncryptionService {
     /**
-     * the spec
+     * the algorithm used to load the secret key
      */
     public static final String SECRET_KEY_SPEC = "AES";
     private static final String UNEXPECTED_EXCEPTION_DURING_ENCRYPTION = "Unexpected exception during encryption";
@@ -71,6 +74,9 @@ public class EncryptionService {
         super();
         this.keyPath = keyPath;
         this.initEncryption();
+    }
+
+    public EncryptionService() {
     }
 
     /*
