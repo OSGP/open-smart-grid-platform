@@ -18,7 +18,7 @@ import org.junit.Test;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQueryDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
 
 public class PeriodicMeterReadsQueryMappingTest {
 
@@ -61,8 +61,8 @@ public class PeriodicMeterReadsQueryMappingTest {
         final PeriodicMeterReadsQuery periodicMeterReadsQuery = new PeriodicMeterReadsQuery(periodType, beginDate,
                 endDate, mbusDevice);
         // actual mapping
-        final PeriodicMeterReadsQueryDto periodicMeterReadsQueryDto = this.monitoringMapper.map(
-                periodicMeterReadsQuery, PeriodicMeterReadsQueryDto.class);
+        final PeriodicMeterReadsRequestDto periodicMeterReadsQueryDto = this.monitoringMapper.map(
+                periodicMeterReadsQuery, PeriodicMeterReadsRequestDto.class);
         // test mapping
         assertNotNull(periodicMeterReadsQueryDto);
         assertEquals(periodicMeterReadsQuery.getPeriodType().name(), periodicMeterReadsQueryDto.getPeriodType().name());

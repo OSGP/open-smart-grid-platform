@@ -22,7 +22,6 @@ import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentifica
 import com.alliander.osgp.adapter.ws.endpointinterceptors.ScheduleTime;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendarDataType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusAsyncResponse;
@@ -35,6 +34,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceK
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarRequestData;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAdministrativeStatusAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAdministrativeStatusAsyncResponse;
@@ -445,7 +445,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         try {
             response = new SetActivityCalendarAsyncResponse();
             final String deviceIdentification = request.getDeviceIdentification();
-            final ActivityCalendarDataType requestData = request.getActivityCalendarData();
+            final SetActivityCalendarRequestData requestData = request.getActivityCalendarData();
 
             final ActivityCalendar activityCalendar = this.configurationMapper.map(requestData.getActivityCalendar(),
                     ActivityCalendar.class);
@@ -556,8 +556,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         ReplaceKeysAsyncResponse asyncResponse = null;
         try {
-            final com.alliander.osgp.domain.core.valueobjects.smartmetering.KeySet keySet = this.configurationMapper
-                    .map(request.getKeySet(), com.alliander.osgp.domain.core.valueobjects.smartmetering.KeySet.class);
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.SetKeysRequestData keySet = this.configurationMapper
+                    .map(request.getSetKeysRequestData(), com.alliander.osgp.domain.core.valueobjects.smartmetering.SetKeysRequestData.class);
 
             final String correlationUid = this.configurationService.enqueueReplaceKeysRequest(
                     organisationIdentification, request.getDeviceIdentification(), keySet,

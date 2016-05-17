@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.BundleService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleMessageDataContainer;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleMessageRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
@@ -33,7 +33,7 @@ public class BundleMessageProcessor extends WebServiceRequestMessageProcessor {
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
             throws FunctionalException {
 
-        final BundleMessageDataContainer data = (BundleMessageDataContainer) dataObject;
+        final BundleMessageRequest data = (BundleMessageRequest) dataObject;
         this.bundleService.handleBundle(deviceMessageMetadata, data);
     }
 }

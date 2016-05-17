@@ -30,8 +30,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCodeFla
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValueDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnitDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodTypeDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGasDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGasDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadGasResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGasResponseItemDto;
 
 public class PeriodicMeterReadsContainerGasMappingTest {
 
@@ -42,20 +42,20 @@ public class PeriodicMeterReadsContainerGasMappingTest {
     @Test(expected = NullPointerException.class)
     public void testWithNullList() {
 
-        final List<PeriodicMeterReadsGasDto> meterReads = null;
+        final List<PeriodicMeterReadsGasResponseItemDto> meterReads = null;
         final PeriodTypeDto periodType = PeriodTypeDto.DAILY;
 
-        new PeriodicMeterReadsContainerGasDto(periodType, meterReads);
+        new PeriodicMeterReadGasResponseDto(periodType, meterReads);
     }
 
     // Test if mapping with an empty List succeeds
     @Test
     public void testWithEmptyList() {
 
-        final List<PeriodicMeterReadsGasDto> meterReads = new ArrayList<>();
+        final List<PeriodicMeterReadsGasResponseItemDto> meterReads = new ArrayList<>();
         final PeriodTypeDto periodType = PeriodTypeDto.DAILY;
 
-        final PeriodicMeterReadsContainerGasDto periodicMeterReadsContainerGasDto = new PeriodicMeterReadsContainerGasDto(
+        final PeriodicMeterReadGasResponseDto periodicMeterReadsContainerGasDto = new PeriodicMeterReadGasResponseDto(
                 periodType, meterReads);
 
         final PeriodicMeterReadsContainerGas periodicMeterReadContainerGas = this.monitoringMapper.map(
@@ -78,14 +78,14 @@ public class PeriodicMeterReadsContainerGasMappingTest {
         amrProfileStatusCodeFlagSet.add(AmrProfileStatusCodeFlagDto.CRITICAL_ERROR);
         final AmrProfileStatusCodeDto amrProfileStatusCodeDto = new AmrProfileStatusCodeDto(amrProfileStatusCodeFlagSet);
 
-        final PeriodicMeterReadsGasDto periodicMeterReadsGasDto = new PeriodicMeterReadsGasDto(new Date(), consumption,
+        final PeriodicMeterReadsGasResponseItemDto periodicMeterReadsGasDto = new PeriodicMeterReadsGasResponseItemDto(new Date(), consumption,
                 new Date(), amrProfileStatusCodeDto);
-        final List<PeriodicMeterReadsGasDto> meterReads = new ArrayList<>();
+        final List<PeriodicMeterReadsGasResponseItemDto> meterReads = new ArrayList<>();
         meterReads.add(periodicMeterReadsGasDto);
 
         final PeriodTypeDto periodType = PeriodTypeDto.DAILY;
 
-        final PeriodicMeterReadsContainerGasDto periodicMeterReadsContainerDto = new PeriodicMeterReadsContainerGasDto(
+        final PeriodicMeterReadGasResponseDto periodicMeterReadsContainerDto = new PeriodicMeterReadGasResponseDto(
                 periodType, meterReads);
         // actual mapping
         final PeriodicMeterReadsContainerGas periodicMeterReadsContainerGas = this.monitoringMapper.map(

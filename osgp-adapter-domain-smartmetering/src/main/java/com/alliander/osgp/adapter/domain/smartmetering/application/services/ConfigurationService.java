@@ -24,12 +24,12 @@ import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.KeySet;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetKeysRequestData;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotificationsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfoDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.KeySetDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetKeysRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarmDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDto;
@@ -423,7 +423,7 @@ public class ConfigurationService {
                 result, exception, deviceMessageMetadata.getMessagePriority()), deviceMessageMetadata.getMessageType());
     }
 
-    public void replaceKeys(final DeviceMessageMetadata deviceMessageMetadata, final KeySet keySet)
+    public void replaceKeys(final DeviceMessageMetadata deviceMessageMetadata, final SetKeysRequestData keySet)
             throws FunctionalException {
 
         LOGGER.info("replaceKeys for organisationIdentification: {} for deviceIdentification: {}",
@@ -432,7 +432,7 @@ public class ConfigurationService {
         final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceMessageMetadata
                 .getDeviceIdentification());
 
-        final KeySetDto keySetDto = this.configurationMapper.map(keySet, KeySetDto.class);
+        final SetKeysRequestDto keySetDto = this.configurationMapper.map(keySet, SetKeysRequestDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),

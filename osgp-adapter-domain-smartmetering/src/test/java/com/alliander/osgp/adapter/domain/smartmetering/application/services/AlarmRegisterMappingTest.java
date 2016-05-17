@@ -20,7 +20,7 @@ import org.junit.Test;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmType;
-import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmTypeDto;
 
 public class AlarmRegisterMappingTest {
@@ -32,7 +32,7 @@ public class AlarmRegisterMappingTest {
     public void testWithNullSet() {
 
         final Set<AlarmTypeDto> alarmTypes = null;
-        new AlarmRegisterDto(alarmTypes);
+        new AlarmRegisterResponseDto(alarmTypes);
 
     }
 
@@ -41,7 +41,7 @@ public class AlarmRegisterMappingTest {
     public void testWithEmptySet() {
         // build test data
         final Set<AlarmTypeDto> alarmTypes = new TreeSet<>();
-        final AlarmRegisterDto alarmRegisterDto = new AlarmRegisterDto(alarmTypes);
+        final AlarmRegisterResponseDto alarmRegisterDto = new AlarmRegisterResponseDto(alarmTypes);
         // actual mapping
         final AlarmRegister alarmRegister = this.monitoringMapper.map(alarmRegisterDto, AlarmRegister.class);
         // test mapping
@@ -56,7 +56,7 @@ public class AlarmRegisterMappingTest {
         // build test data
         final Set<AlarmTypeDto> alarmTypes = new TreeSet<>();
         alarmTypes.add(AlarmTypeDto.CLOCK_INVALID);
-        final AlarmRegisterDto alarmRegisterDto = new AlarmRegisterDto(alarmTypes);
+        final AlarmRegisterResponseDto alarmRegisterDto = new AlarmRegisterResponseDto(alarmTypes);
         // actual mapping
         final AlarmRegister alarmRegister = this.monitoringMapper.map(alarmRegisterDto, AlarmRegister.class);
         // test mapping

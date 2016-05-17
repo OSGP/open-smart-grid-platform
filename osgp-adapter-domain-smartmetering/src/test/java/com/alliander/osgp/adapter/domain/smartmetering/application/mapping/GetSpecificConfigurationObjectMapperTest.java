@@ -13,7 +13,7 @@ import org.junit.Test;
 
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ObisCodeValues;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecificConfigurationObjectRequestData;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SpecificConfigurationObjectRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SpecificConfigurationObjectRequestDto;
 
 public class GetSpecificConfigurationObjectMapperTest {
 
@@ -22,8 +22,8 @@ public class GetSpecificConfigurationObjectMapperTest {
     @Test
     public void test() {
         SpecificConfigurationObjectRequestData reqData1 = makeRequestData();
-        Object obj = commonMapper.map(reqData1, SpecificConfigurationObjectRequestDataDto.class);
-        assertTrue(obj != null && obj instanceof SpecificConfigurationObjectRequestDataDto);
+        Object obj = commonMapper.map(reqData1, SpecificConfigurationObjectRequestDto.class);
+        assertTrue(obj != null && obj instanceof SpecificConfigurationObjectRequestDto);
         Object reqData2 = commonMapper.map(obj, SpecificConfigurationObjectRequestData.class);
         assertTrue(reqData2 != null && reqData2 instanceof SpecificConfigurationObjectRequestData);
         assertTrue(reqData1.equals(reqData2));

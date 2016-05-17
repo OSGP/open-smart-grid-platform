@@ -11,25 +11,25 @@ import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventLogCategory;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQuery;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsRequestData;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventLogCategoryDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequestDto;
 
-public class FindEventsQueryConverter extends BidirectionalConverter<FindEventsQueryDto, FindEventsQuery> {
+public class FindEventsRequestDataConverter extends BidirectionalConverter<FindEventsRequestDto, FindEventsRequestData> {
 
     @Override
-    public FindEventsQuery convertTo(final FindEventsQueryDto source, final Type<FindEventsQuery> destinationType) {
+    public FindEventsRequestData convertTo(final FindEventsRequestDto source, final Type<FindEventsRequestData> destinationType) {
         if (source == null) {
             return null;
         }
 
         final EventLogCategory eventLogCategory = EventLogCategory.valueOf(source.getEventLogCategory().toString());
 
-        return new FindEventsQuery(eventLogCategory, source.getFrom(), source.getUntil());
+        return new FindEventsRequestData(eventLogCategory, source.getFrom(), source.getUntil());
     }
 
     @Override
-    public FindEventsQueryDto convertFrom(final FindEventsQuery source, final Type<FindEventsQueryDto> destinationType) {
+    public FindEventsRequestDto convertFrom(final FindEventsRequestData source, final Type<FindEventsRequestDto> destinationType) {
         if (source == null) {
             return null;
         }
@@ -37,7 +37,7 @@ public class FindEventsQueryConverter extends BidirectionalConverter<FindEventsQ
         final EventLogCategoryDto eventLogCategory = EventLogCategoryDto.valueOf(source.getEventLogCategory()
                 .toString());
 
-        return new FindEventsQueryDto(eventLogCategory, source.getFrom(), source.getUntil());
+        return new FindEventsRequestDto(eventLogCategory, source.getFrom(), source.getUntil());
     }
 
 }

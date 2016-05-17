@@ -46,10 +46,11 @@ public class SetConfigurationObjectRequestMappingTest {
 
         // build test data
         final String deviceIdentification = "nr1";
-        final SetConfigurationObjectRequestData setConfigurationObjectRequestData = null;
+        final SetConfigurationObjectRequestDataDto setConfigurationObjectRequestData = null;
 
         // actual mapping
-        final SetConfigurationObjectRequest setConfigurationObjectRequest = new SetConfigurationObjectRequest(
+        final SetConfigurationObjectRequestDto setConfigurationObjectRequest = 
+                new SetConfigurationObjectRequestDto(
                 deviceIdentification, setConfigurationObjectRequestData);
         final SetConfigurationObjectRequestDto setConfigurationObjectRequestDto = this.configurationMapper.map(
                 setConfigurationObjectRequest, SetConfigurationObjectRequestDto.class);
@@ -67,12 +68,13 @@ public class SetConfigurationObjectRequestMappingTest {
         // build test data
         final String deviceIdentification = "nr1";
 
-        final ConfigurationObject configurationObject = null;
-        final SetConfigurationObjectRequestData setConfigurationObjectRequestData = new SetConfigurationObjectRequestData(
+        final ConfigurationObjectDto configurationObject = null;
+        final SetConfigurationObjectRequestDataDto setConfigurationObjectRequestData = new SetConfigurationObjectRequestDataDto(
                 configurationObject);
 
         // actual mapping
-        final SetConfigurationObjectRequest setConfigurationObjectRequest = new SetConfigurationObjectRequest(
+        final SetConfigurationObjectRequestDto setConfigurationObjectRequest = 
+                new SetConfigurationObjectRequestDto(
                 deviceIdentification, setConfigurationObjectRequestData);
         final SetConfigurationObjectRequestDto setConfigurationObjectRequestDto = this.configurationMapper.map(
                 setConfigurationObjectRequest, SetConfigurationObjectRequestDto.class);
@@ -98,7 +100,8 @@ public class SetConfigurationObjectRequestMappingTest {
                 configurationObject);
 
         // actual mapping
-        final SetConfigurationObjectRequest setConfigurationObjectRequest = new SetConfigurationObjectRequest(
+        final SetConfigurationObjectRequest setConfigurationObjectRequest = 
+                new SetConfigurationObjectRequest(
                 deviceIdentification, setConfigurationObjectRequestData);
         final SetConfigurationObjectRequestDto setConfigurationObjectRequestDto = this.configurationMapper.map(
                 setConfigurationObjectRequest, SetConfigurationObjectRequestDto.class);
@@ -134,7 +137,8 @@ public class SetConfigurationObjectRequestMappingTest {
                 configurationObject);
 
         // actual mapping
-        final SetConfigurationObjectRequest setConfigurationObjectRequest = new SetConfigurationObjectRequest(
+        final SetConfigurationObjectRequest setConfigurationObjectRequest = 
+                new SetConfigurationObjectRequest(
                 deviceIdentification, setConfigurationObjectRequestData);
         final SetConfigurationObjectRequestDto setConfigurationObjectRequestDto = this.configurationMapper.map(
                 setConfigurationObjectRequest, SetConfigurationObjectRequestDto.class);

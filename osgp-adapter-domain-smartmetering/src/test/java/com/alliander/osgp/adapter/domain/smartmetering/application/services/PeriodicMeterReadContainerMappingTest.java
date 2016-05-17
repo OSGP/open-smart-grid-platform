@@ -30,8 +30,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCodeFla
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValueDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnitDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodTypeDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseItemDto;
 
 public class PeriodicMeterReadContainerMappingTest {
 
@@ -42,20 +42,20 @@ public class PeriodicMeterReadContainerMappingTest {
     @Test(expected = NullPointerException.class)
     public void testWithNullList() {
 
-        final List<PeriodicMeterReadsDto> meterReads = null;
+        final List<PeriodicMeterReadsResponseItemDto> meterReads = null;
         final PeriodTypeDto periodType = PeriodTypeDto.DAILY;
 
-        new PeriodicMeterReadsContainerDto(periodType, meterReads);
+        new PeriodicMeterReadsResponseDto(periodType, meterReads);
     }
 
     // Test if mapping with an empty List succeeds
     @Test
     public void testWithEmptyList() {
 
-        final List<PeriodicMeterReadsDto> meterReads = new ArrayList<>();
+        final List<PeriodicMeterReadsResponseItemDto> meterReads = new ArrayList<>();
         final PeriodTypeDto periodType = PeriodTypeDto.DAILY;
 
-        final PeriodicMeterReadsContainerDto periodicMeterReadsContainerDto = new PeriodicMeterReadsContainerDto(
+        final PeriodicMeterReadsResponseDto periodicMeterReadsContainerDto = new PeriodicMeterReadsResponseDto(
                 periodType, meterReads);
 
         final PeriodicMeterReadsContainer periodicMeterReadContainer = this.monitoringMapper.map(
@@ -79,14 +79,14 @@ public class PeriodicMeterReadContainerMappingTest {
         amrProfileStatusCodeFlagSet.add(AmrProfileStatusCodeFlagDto.CRITICAL_ERROR);
         final AmrProfileStatusCodeDto amrProfileStatusCodeDto = new AmrProfileStatusCodeDto(amrProfileStatusCodeFlagSet);
 
-        final PeriodicMeterReadsDto periodicMeterReadsDto = new PeriodicMeterReadsDto(new Date(), activeEnergyImport,
+        final PeriodicMeterReadsResponseItemDto periodicMeterReadsDto = new PeriodicMeterReadsResponseItemDto(new Date(), activeEnergyImport,
                 activeEnergyExport, amrProfileStatusCodeDto);
-        final List<PeriodicMeterReadsDto> meterReads = new ArrayList<PeriodicMeterReadsDto>();
+        final List<PeriodicMeterReadsResponseItemDto> meterReads = new ArrayList<PeriodicMeterReadsResponseItemDto>();
         meterReads.add(periodicMeterReadsDto);
 
         final PeriodTypeDto periodType = PeriodTypeDto.DAILY;
 
-        final PeriodicMeterReadsContainerDto periodicMeterReadsContainerDto = new PeriodicMeterReadsContainerDto(
+        final PeriodicMeterReadsResponseDto periodicMeterReadsContainerDto = new PeriodicMeterReadsResponseDto(
                 periodType, meterReads);
         // actual mapping
         final PeriodicMeterReadsContainer periodicMeterReadsContainer = this.monitoringMapper.map(

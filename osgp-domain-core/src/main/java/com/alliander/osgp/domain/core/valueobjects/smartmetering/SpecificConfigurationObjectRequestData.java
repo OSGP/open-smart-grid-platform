@@ -45,6 +45,7 @@ public class SpecificConfigurationObjectRequestData implements Serializable, Act
     
     @Override
     public void validate() throws FunctionalException {
+        // not needed here
     }
 
 

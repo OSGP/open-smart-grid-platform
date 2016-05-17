@@ -15,7 +15,7 @@ import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 
-public class FindEventsQuery implements Serializable, ActionRequest {
+public class FindEventsRequestData implements Serializable, ActionRequest {
 
     /**
      * Serial Version UID.
@@ -26,7 +26,7 @@ public class FindEventsQuery implements Serializable, ActionRequest {
     private final DateTime from;
     private final DateTime until;
 
-    public FindEventsQuery(final EventLogCategory eventLogCategory, final DateTime from, final DateTime until) {
+    public FindEventsRequestData(final EventLogCategory eventLogCategory, final DateTime from, final DateTime until) {
         this.eventLogCategory = eventLogCategory;
         this.from = from;
         this.until = until;

@@ -10,20 +10,19 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 import java.io.Serializable;
 import java.util.List;
 
-public class BundleResponseMessageDataContainer implements Serializable {
-
+public class BundleMessageRequest implements Serializable {
     /**
      * Serial Version UID.
      */
-    private static final long serialVersionUID = -3617762659993165221L;
+    private static final long serialVersionUID = -1865461707073500L;
 
-    private List<ActionResponse> actionResponseList;
+    private List<ActionRequest> actionList;
 
-    public BundleResponseMessageDataContainer(final List<ActionResponse> actionResponseList) {
-        this.actionResponseList = actionResponseList;
+    public BundleMessageRequest(final List<ActionRequest> actionList) {
+        this.actionList = actionList;
     }
 
-    public List<ActionResponse> getBundleList() {
-        return this.actionResponseList;
+    public List<ActionRequest> getBundleList() {
+        return this.actionList;
     }
 }

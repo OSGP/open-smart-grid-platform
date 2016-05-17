@@ -15,10 +15,10 @@ import static org.junit.Assert.assertNull;
 import org.junit.Test;
 
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.KeySet;
-import com.alliander.osgp.dto.valueobjects.smartmetering.KeySetDto;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetKeysRequestData;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetKeysRequestDto;
 
-public class KeySetMappingTest {
+public class SetKeysRequestMappingTest {
 
     private ConfigurationMapper configurationMapper = new ConfigurationMapper();
 
@@ -29,10 +29,10 @@ public class KeySetMappingTest {
         // build test data
         final byte[] authenthicationKey = null;
         final byte[] encryptionKey = null;
-        final KeySet keySet = new KeySet(authenthicationKey, encryptionKey);
+        final SetKeysRequestData keySet = new SetKeysRequestData(authenthicationKey, encryptionKey);
 
         // actual mapping
-        final KeySetDto keySetDto = this.configurationMapper.map(keySet, KeySetDto.class);
+        final SetKeysRequestDto keySetDto = this.configurationMapper.map(keySet, SetKeysRequestDto.class);
 
         // check if mapping succeeded
         assertNotNull(keySetDto);
@@ -46,10 +46,10 @@ public class KeySetMappingTest {
         // build test data
         final byte[] authenthicationKey = new byte[1];
         final byte[] encryptionKey = new byte[1];
-        final KeySet keySet = new KeySet(authenthicationKey, encryptionKey);
+        final SetKeysRequestData keySet = new SetKeysRequestData(authenthicationKey, encryptionKey);
 
         // actual mapping
-        final KeySetDto keySetDto = this.configurationMapper.map(keySet, KeySetDto.class);
+        final SetKeysRequestDto keySetDto = this.configurationMapper.map(keySet, SetKeysRequestDto.class);
 
         // check if mapping succeeded
         assertNotNull(keySetDto);
@@ -65,10 +65,10 @@ public class KeySetMappingTest {
         // build test data
         final byte[] authenthicationKey = { 1 };
         final byte[] encryptionKey = { 1 };
-        final KeySet keySet = new KeySet(authenthicationKey, encryptionKey);
+        final SetKeysRequestData keySet = new SetKeysRequestData(authenthicationKey, encryptionKey);
 
         // actual mapping
-        final KeySetDto keySetDto = this.configurationMapper.map(keySet, KeySetDto.class);
+        final SetKeysRequestDto keySetDto = this.configurationMapper.map(keySet, SetKeysRequestDto.class);
 
         // check if mapping succeeded
         assertNotNull(keySetDto);
