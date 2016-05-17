@@ -9,7 +9,7 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import java.util.Date;
 
-public class PeriodicMeterReadsDto extends MeterReadsDto {
+public class PeriodicMeterReadsResponseItemDto extends MeterReadsResponseDto {
 
     private static final long serialVersionUID = 2123390296585369208L;
 
@@ -28,7 +28,7 @@ public class PeriodicMeterReadsDto extends MeterReadsDto {
      * @param activeEnergyExportTariffTwo
      * @param amrProfileStatusCode
      */
-    public PeriodicMeterReadsDto(final Date logTime, final DlmsMeterValueDto activeEnergyImport,
+    public PeriodicMeterReadsResponseItemDto(final Date logTime, final DlmsMeterValueDto activeEnergyImport,
             final DlmsMeterValueDto activeEnergyExport, final DlmsMeterValueDto activeEnergyImportTariffOne,
             final DlmsMeterValueDto activeEnergyImportTariffTwo, final DlmsMeterValueDto activeEnergyExportTariffOne,
             final DlmsMeterValueDto activeEnergyExportTariffTwo, final AmrProfileStatusCodeDto amrProfileStatusCode) {
@@ -47,7 +47,7 @@ public class PeriodicMeterReadsDto extends MeterReadsDto {
      * @param activeEnergyExportTariffOne
      * @param activeEnergyExportTariffTwo
      */
-    public PeriodicMeterReadsDto(final Date logTime, final DlmsMeterValueDto activeEnergyImportTariffOne,
+    public PeriodicMeterReadsResponseItemDto(final Date logTime, final DlmsMeterValueDto activeEnergyImportTariffOne,
             final DlmsMeterValueDto activeEnergyImportTariffTwo, final DlmsMeterValueDto activeEnergyExportTariffOne,
             final DlmsMeterValueDto activeEnergyExportTariffTwo) {
 
@@ -65,7 +65,7 @@ public class PeriodicMeterReadsDto extends MeterReadsDto {
      * @param activeEnergyExportTariffTwo
      * @param amrProfileStatusCode
      */
-    public PeriodicMeterReadsDto(final Date logTime, final DlmsMeterValueDto activeEnergyImportTariffOne,
+    public PeriodicMeterReadsResponseItemDto(final Date logTime, final DlmsMeterValueDto activeEnergyImportTariffOne,
             final DlmsMeterValueDto activeEnergyImportTariffTwo, final DlmsMeterValueDto activeEnergyExportTariffOne,
             final DlmsMeterValueDto activeEnergyExportTariffTwo, final AmrProfileStatusCodeDto amrProfileStatusCode) {
         this(logTime, null, null, activeEnergyImportTariffOne, activeEnergyImportTariffTwo,
@@ -80,7 +80,7 @@ public class PeriodicMeterReadsDto extends MeterReadsDto {
      * @param activeEnergyExport
      * @param amrProfileStatusCode
      */
-    public PeriodicMeterReadsDto(final Date logTime, final DlmsMeterValueDto activeEnergyImport,
+    public PeriodicMeterReadsResponseItemDto(final Date logTime, final DlmsMeterValueDto activeEnergyImport,
             final DlmsMeterValueDto activeEnergyExport, final AmrProfileStatusCodeDto amrProfileStatusCode) {
         super(logTime, activeEnergyImport, activeEnergyExport, null, null, null, null);
 

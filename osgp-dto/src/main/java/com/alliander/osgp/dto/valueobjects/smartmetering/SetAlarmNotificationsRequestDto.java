@@ -11,13 +11,13 @@
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 
-public class SetAlarmNotificationsRequestDataDto implements ActionRequestDto {
+public class SetAlarmNotificationsRequestDto implements ActionRequestDto {
 
     private static final long serialVersionUID = -1833812559523610412L;
 
     private final AlarmNotificationsDto alarmNotifications;
 
-    public SetAlarmNotificationsRequestDataDto(final AlarmNotificationsDto alarmNotifications) {
+    public SetAlarmNotificationsRequestDto(final AlarmNotificationsDto alarmNotifications) {
         super();
         this.alarmNotifications = alarmNotifications;
     }

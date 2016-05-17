@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -14,7 +14,7 @@ import java.util.Date;
  *
  * @author dev
  */
-public class PeriodicMeterReadsQueryDto implements ActionRequestDto {
+public class PeriodicMeterReadsGasRequestDto implements ActionRequestDto {
 
     private static final long serialVersionUID = -2483665562035897062L;
 
@@ -23,16 +23,12 @@ public class PeriodicMeterReadsQueryDto implements ActionRequestDto {
     private final Date endDate;
     private final ChannelDto channel;
 
-    public PeriodicMeterReadsQueryDto(final PeriodTypeDto periodType, final Date beginDate, final Date endDate,
-            final ChannelDto channel) {
+    public PeriodicMeterReadsGasRequestDto(final PeriodTypeDto periodType, final Date beginDate,
+            final Date endDate, final ChannelDto channel) {
         this.periodType = periodType;
         this.beginDate = new Date(beginDate.getTime());
         this.endDate = new Date(endDate.getTime());
         this.channel = channel;
-    }
-
-    public PeriodicMeterReadsQueryDto(final PeriodTypeDto periodType, final Date beginDate, final Date endDate) {
-        this(periodType, beginDate, endDate, null);
     }
 
     public PeriodTypeDto getPeriodType() {

@@ -10,13 +10,13 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class AlarmRegisterDto extends ActionResponseDto {
+public class AlarmRegisterResponseDto extends ActionResponseDto {
 
     private static final long serialVersionUID = 2319359505656305783L;
 
     private final Set<AlarmTypeDto> alarmTypes;
 
-    public AlarmRegisterDto(final Set<AlarmTypeDto> alarmTypes) {
+    public AlarmRegisterResponseDto(final Set<AlarmTypeDto> alarmTypes) {
         this.alarmTypes = new TreeSet<AlarmTypeDto>(alarmTypes);
     }
 

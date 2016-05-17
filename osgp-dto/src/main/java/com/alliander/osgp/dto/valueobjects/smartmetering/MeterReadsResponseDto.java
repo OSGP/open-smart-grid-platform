@@ -9,7 +9,7 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import java.util.Date;
 
-public class MeterReadsDto extends ActionResponseDto {
+public class MeterReadsResponseDto extends ActionResponseDto {
     private static final long serialVersionUID = -297320204916085999L;
 
     private final Date logTime;
@@ -23,7 +23,7 @@ public class MeterReadsDto extends ActionResponseDto {
     // may be null
     private final DlmsMeterValueDto activeEnergyExportTariffTwo;
 
-    public MeterReadsDto(final Date logTime, final DlmsMeterValueDto activeEnergyImport,
+    public MeterReadsResponseDto(final Date logTime, final DlmsMeterValueDto activeEnergyImport,
             final DlmsMeterValueDto activeEnergyExport, final DlmsMeterValueDto activeEnergyImportTariffOne,
             final DlmsMeterValueDto activeEnergyImportTariffTwo, final DlmsMeterValueDto activeEnergyExportTariffOne,
             final DlmsMeterValueDto activeEnergyExportTariffTwo) {
