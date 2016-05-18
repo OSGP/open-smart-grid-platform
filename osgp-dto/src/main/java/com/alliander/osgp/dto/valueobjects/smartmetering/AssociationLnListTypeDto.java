@@ -16,8 +16,8 @@ public class AssociationLnListTypeDto extends ActionResponseDto {
 
     private List<AssociationLnListElementDto> associationLnListElement;
 
-    public AssociationLnListTypeDto(final List<AssociationLnListElementDto> objectListElement) {
-        this.associationLnListElement = Collections.unmodifiableList(objectListElement);
+    public AssociationLnListTypeDto(final List<AssociationLnListElementDto> associationLnListElement) {
+        this.associationLnListElement = Collections.unmodifiableList(associationLnListElement);
     }
 
     public List<AssociationLnListElementDto> getAssociationLnListElement() {
