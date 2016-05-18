@@ -90,6 +90,7 @@ import com.alliander.osgp.dto.valueobjects.TimePeriodDto;
 import com.alliander.osgp.dto.valueobjects.TransitionMessageDataContainerDto;
 import com.alliander.osgp.dto.valueobjects.TransitionTypeDto;
 import com.alliander.osgp.dto.valueobjects.WeekDayTypeDto;
+import com.alliander.osgp.dto.valueobjects.WindowTypeDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -516,13 +517,7 @@ public class Iec61850DeviceService implements DeviceService {
 
             final Ssld ssld = this.ssldDataService.findDevice(deviceRequest.getDeviceIdentification());
 
-            // TODO make this method more generic once the light schedules are
-            // implemented
-            if (RelayTypeDto.LIGHT == deviceRequest.getRelayType()) {
-                throw new UnsupportedOperationException(
-                        "Setting light schedules is not yet supported for Kaifa devices.");
-            }
-            this.setTariffScheduleOnDevice(serverModel, clientAssociation, deviceRequest
+            this.setScheduleOnDevice(serverModel, clientAssociation, deviceRequest.getRelayType(), deviceRequest
                     .getScheduleMessageDataContainer().getScheduleList(), ssld);
 
         } catch (final ConnectionFailureException se) {
@@ -1284,12 +1279,15 @@ public class Iec61850DeviceService implements DeviceService {
         this.iec61850Client.sendCommandWithRetry(function);
     }
 
-    private void setTariffScheduleOnDevice(final ServerModel serverModel, final ClientAssociation clientAssociation,
-            final List<ScheduleDto> scheduleList, final Ssld ssld) throws ProtocolAdapterException, FunctionalException {
+    private void setScheduleOnDevice(final ServerModel serverModel, final ClientAssociation clientAssociation,
+            final RelayTypeDto relayType, final List<ScheduleDto> scheduleList, final Ssld ssld)
+                    throws ProtocolAdapterException, FunctionalException {
+
+        final String tariffOrLight = relayType.equals(RelayType.LIGHT) ? "light" : "tariff";
 
         // Creating a list of all Schedule entries, grouped by relay index
         final Map<Integer, List<ScheduleEntry>> relaySchedulesEntries = this.createScheduleEntries(scheduleList, ssld,
-                RelayType.TARIFF);
+                relayType);
 
         for (final Integer relayIndex : relaySchedulesEntries.keySet()) {
 
@@ -1302,8 +1300,8 @@ public class Iec61850DeviceService implements DeviceService {
                     final int numberOfScheduleEntries = scheduleEntries.size();
 
                     if (numberOfScheduleEntries > MAX_NUMBER_OF_SCHEDULE_ENTRIES) {
-                        throw new ProtocolAdapterException("Received " + numberOfScheduleEntries
-                                + " tariff schedule entries for relay " + relayIndex + " for device "
+                        throw new ProtocolAdapterException("Received " + numberOfScheduleEntries + " " + tariffOrLight
+                                + " schedule entries for relay " + relayIndex + " for device "
                                 + ssld.getDeviceIdentification() + ". Setting more than "
                                 + MAX_NUMBER_OF_SCHEDULE_ENTRIES + " is not possible.");
                     }
@@ -1318,9 +1316,8 @@ public class Iec61850DeviceService implements DeviceService {
                     // Clear existing schedule by disabling schedule entries.
                     for (int i = 0; i < MAX_NUMBER_OF_SCHEDULE_ENTRIES; i++) {
 
-                        LOGGER.info(
-                                "Disabling schedule entry {} of {} for relay {} before setting new tariff schedule",
-                                i + 1, MAX_NUMBER_OF_SCHEDULE_ENTRIES, relayIndex);
+                        LOGGER.info("Disabling schedule entry {} of {} for relay {} before setting new {} schedule",
+                                i + 1, MAX_NUMBER_OF_SCHEDULE_ENTRIES, relayIndex, tariffOrLight);
 
                         final ConstructedDataAttribute scheduleNode = (ConstructedDataAttribute) Iec61850DeviceService.this
                                 .getChildOfNodeWithConstraint(scheduleConfiguration,
@@ -1337,7 +1334,7 @@ public class Iec61850DeviceService implements DeviceService {
 
                     for (int i = 0; i < numberOfScheduleEntries; i++) {
 
-                        LOGGER.info("Writing schedule entry {} for relay {}", i + 1, relayIndex);
+                        LOGGER.info("Writing {} schedule entry {} for relay {}", tariffOrLight, i + 1, relayIndex);
 
                         final ScheduleEntry scheduleEntry = scheduleEntries.get(i);
 
@@ -1348,13 +1345,17 @@ public class Iec61850DeviceService implements DeviceService {
 
                         final BdaBoolean enabled = (BdaBoolean) Iec61850DeviceService.this.getChildOfNode(scheduleNode,
                                 LogicalNodeAttributeDefinitons.PROPERTY_SCHEDULE_ENABLE);
-                        enabled.setValue(scheduleEntry.isEnabled());
-                        clientAssociation.setDataValues(enabled);
+                        if (enabled.getValue() != scheduleEntry.isEnabled()) {
+                            enabled.setValue(scheduleEntry.isEnabled());
+                            clientAssociation.setDataValues(enabled);
+                        }
 
                         final BdaInt32 day = (BdaInt32) Iec61850DeviceService.this.getChildOfNode(scheduleNode,
                                 LogicalNodeAttributeDefinitons.PROPERTY_SCHEDULE_DAY);
-                        day.setValue(scheduleEntry.getDay());
-                        clientAssociation.setDataValues(day);
+                        if (day.getValue() != scheduleEntry.getDay()) {
+                            day.setValue(scheduleEntry.getDay());
+                            clientAssociation.setDataValues(day);
+                        }
 
                         /*
                          * A schedule entry on the platform is about switching
@@ -1382,40 +1383,52 @@ public class Iec61850DeviceService implements DeviceService {
 
                         final BdaInt32 timeOn = (BdaInt32) Iec61850DeviceService.this.getChildOfNode(scheduleNode,
                                 LogicalNodeAttributeDefinitons.PROPERTY_SCHEDULE_TIME_ON);
-                        timeOn.setValue(timeOnValue);
-                        clientAssociation.setDataValues(timeOn);
+                        if (timeOn.getValue() != timeOnValue) {
+                            timeOn.setValue(timeOnValue);
+                            clientAssociation.setDataValues(timeOn);
+                        }
 
                         final BdaInt8 timeOnActionTime = (BdaInt8) Iec61850DeviceService.this.getChildOfNode(
                                 scheduleNode, LogicalNodeAttributeDefinitons.PROPERTY_SCHEDULE_TIME_ON_TYPE);
-                        timeOnActionTime.setValue(timeOnTypeValue);
-                        clientAssociation.setDataValues(timeOnActionTime);
+                        if (timeOnActionTime.getValue() != timeOnTypeValue) {
+                            timeOnActionTime.setValue(timeOnTypeValue);
+                            clientAssociation.setDataValues(timeOnActionTime);
+                        }
 
                         final BdaInt32 timeOff = (BdaInt32) Iec61850DeviceService.this.getChildOfNode(scheduleNode,
                                 LogicalNodeAttributeDefinitons.PROPERTY_SCHEDULE_TIME_OFF);
-                        timeOff.setValue(timeOffValue);
-                        clientAssociation.setDataValues(timeOff);
+                        if (timeOff.getValue() != timeOffValue) {
+                            timeOff.setValue(timeOffValue);
+                            clientAssociation.setDataValues(timeOff);
+                        }
 
                         final BdaInt8 timeOffActionTime = (BdaInt8) Iec61850DeviceService.this.getChildOfNode(
                                 scheduleNode, LogicalNodeAttributeDefinitons.PROPERTY_SCHEDULE_TIME_OFF_TYPE);
-                        timeOffActionTime.setValue(timeOffTypeValue);
-                        clientAssociation.setDataValues(timeOffActionTime);
-
-                        // 0-valued for tariff schedules:
+                        if (timeOffActionTime.getValue() != timeOffTypeValue) {
+                            timeOffActionTime.setValue(timeOffTypeValue);
+                            clientAssociation.setDataValues(timeOffActionTime);
+                        }
 
                         final BdaInt16U minimumTimeOn = (BdaInt16U) Iec61850DeviceService.this.getChildOfNode(
                                 scheduleNode, LogicalNodeAttributeDefinitons.PROPERTY_SCHEDULE_MINIMUM_TIME_ON);
-                        minimumTimeOn.setValue(0);
-                        clientAssociation.setDataValues(minimumTimeOn);
+                        if (minimumTimeOn.getValue() != scheduleEntry.getMinimumLightsOn()) {
+                            minimumTimeOn.setValue(scheduleEntry.getMinimumLightsOn());
+                            clientAssociation.setDataValues(minimumTimeOn);
+                        }
 
                         final BdaInt16U triggerMinutesBefore = (BdaInt16U) Iec61850DeviceService.this.getChildOfNode(
                                 scheduleNode, LogicalNodeAttributeDefinitons.PROPERTY_SCHEDULE_TRIGGER_MINUTES_BEFORE);
-                        triggerMinutesBefore.setValue(0);
-                        clientAssociation.setDataValues(triggerMinutesBefore);
+                        if (triggerMinutesBefore.getValue() != scheduleEntry.getTriggerWindowMinutesBefore()) {
+                            triggerMinutesBefore.setValue(scheduleEntry.getTriggerWindowMinutesBefore());
+                            clientAssociation.setDataValues(triggerMinutesBefore);
+                        }
 
                         final BdaInt16U triggerMinutesAfter = (BdaInt16U) Iec61850DeviceService.this.getChildOfNode(
                                 scheduleNode, LogicalNodeAttributeDefinitons.PROPERTY_SCHEDULE_TRIGGER_MINUTES_AFTER);
-                        triggerMinutesAfter.setValue(0);
-                        clientAssociation.setDataValues(triggerMinutesAfter);
+                        if (triggerMinutesAfter.getValue() != scheduleEntry.getTriggerWindowMinutesAfter()) {
+                            triggerMinutesAfter.setValue(scheduleEntry.getTriggerWindowMinutesAfter());
+                            clientAssociation.setDataValues(triggerMinutesAfter);
+                        }
                     }
 
                     return null;
@@ -1722,18 +1735,45 @@ public class Iec61850DeviceService implements DeviceService {
     private ScheduleEntry convertToScheduleEntry(final ScheduleDto schedule, final LightValueDto lightValue)
             throws ProtocolAdapterException {
 
-        final short time = this.convertTime(schedule.getTime());
-        final TriggerType triggerType = this.extractTriggerType(schedule);
-        final boolean enabled = schedule.getIsEnabled() == null ? true : schedule.getIsEnabled();
-        final WeekDayTypeDto weekDay = schedule.getWeekDay();
-        if (WeekDayTypeDto.ABSOLUTEDAY.equals(weekDay)) {
-            if (schedule.getStartDay() == null) {
-                throw new ProtocolAdapterException("Schedule startDay must not be null when weekDay equals ABSOLUTEDAY");
+        final ScheduleEntry.Builder builder = new ScheduleEntry.Builder();
+        try {
+            if (schedule.getTime() != null) {
+                builder.time(this.convertTime(schedule.getTime()));
             }
-            return new ScheduleEntry(enabled, triggerType, schedule.getStartDay(), time, lightValue.isOn());
-        } else {
-            return new ScheduleEntry(enabled, triggerType, ScheduleWeekday.valueOf(schedule.getWeekDay().name()), time,
-                    lightValue.isOn());
+            final WindowTypeDto triggerWindow = schedule.getTriggerWindow();
+            if (triggerWindow != null) {
+                if (triggerWindow.getMinutesBefore() > Integer.MAX_VALUE) {
+                    throw new IllegalArgumentException("Schedule TriggerWindow minutesBefore must not be greater than "
+                            + Integer.MAX_VALUE);
+                }
+                if (triggerWindow.getMinutesAfter() > Integer.MAX_VALUE) {
+                    throw new IllegalArgumentException("Schedule TriggerWindow minutesAfter must not be greater than "
+                            + Integer.MAX_VALUE);
+                }
+                builder.triggerWindowMinutesBefore((int) triggerWindow.getMinutesBefore());
+                builder.triggerWindowMinutesAfter((int) triggerWindow.getMinutesAfter());
+            }
+            builder.triggerType(this.extractTriggerType(schedule));
+            builder.enabled(schedule.getIsEnabled() == null ? true : schedule.getIsEnabled());
+            final WeekDayTypeDto weekDay = schedule.getWeekDay();
+            if (WeekDayTypeDto.ABSOLUTEDAY.equals(weekDay)) {
+                final DateTime specialDay = schedule.getStartDay();
+                if (specialDay == null) {
+                    throw new IllegalArgumentException(
+                            "Schedule startDay must not be null when weekDay equals ABSOLUTEDAY");
+                }
+                builder.specialDay(specialDay);
+            } else {
+                builder.weekday(ScheduleWeekday.valueOf(schedule.getWeekDay().name()));
+            }
+            builder.on(lightValue.isOn());
+            if (schedule.getMinimumLightsOn() != null) {
+                builder.minimumLightsOn(schedule.getMinimumLightsOn());
+            }
+            return builder.build();
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            throw new ProtocolAdapterException("Error converting ScheduleDto and LightValueDto into a ScheduleEntry: "
+                    + e.getMessage(), e);
         }
     }
 
@@ -1770,9 +1810,11 @@ public class Iec61850DeviceService implements DeviceService {
      * returns a map of schedule entries, grouped by the internal index
      */
     private Map<Integer, List<ScheduleEntry>> createScheduleEntries(final List<ScheduleDto> scheduleList,
-            final Ssld ssld, final RelayType relayType) throws FunctionalException {
+            final Ssld ssld, final RelayTypeDto relayTypeDto) throws FunctionalException {
 
         final Map<Integer, List<ScheduleEntry>> relaySchedulesEntries = new HashMap<>();
+
+        final RelayType relayType = RelayType.valueOf(relayTypeDto.name());
 
         for (final ScheduleDto schedule : scheduleList) {
             for (final LightValueDto lightValue : schedule.getLightValue()) {
