@@ -67,8 +67,10 @@ public class OslpGetConfigurationResponseToConfigurationConverter extends
         // Set the optional values using the set() functions.
         configuration.setTimeSyncFrequency(source.getTimeSyncFrequency());
         if (source.getDeviceFixIpValue() != null && !source.getDeviceFixIpValue().isEmpty()) {
-            DeviceFixedIpDto deviceFixedIp = new DeviceFixedIpDto(this.convertIpAddress(source.getDeviceFixIpValue()), "0.0.0.0", "0.0.0.0");
-            configuration.setDeviceFixedIp(deviceFixedIp);
+            String ipAddress = this.convertIpAddress(source.getDeviceFixIpValue());
+            String netMask = this.convertIpAddress(source.getNetMask());
+            String gateWay = this.convertIpAddress(source.getGateWay());
+            configuration.setDeviceFixedIp(new DeviceFixedIpDto(ipAddress, netMask, gateWay));
         }
         configuration.setDhcpEnabled(source.getIsDhcpEnabled());
         configuration.setCommunicationTimeout(source.getCommunicationTimeout());
@@ -99,6 +101,9 @@ public class OslpGetConfigurationResponseToConfigurationConverter extends
     }
 
     private String convertIpAddress(final ByteString byteString) {
+        if (byteString == null || byteString.isEmpty()){
+            return "";
+        }
         LOGGER.debug("byteString.toByteArray().length(): {}", byteString.toByteArray().length);
 
         final StringBuilder stringBuilder = new StringBuilder();
