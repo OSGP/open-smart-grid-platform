@@ -7,19 +7,19 @@
  */
 package com.alliander.osgp.shared.exceptionhandling;
 
-public class RsaEncrypterException extends RuntimeException {
+public class EncrypterException extends RuntimeException {
 
     private static final long serialVersionUID = 215662983108393459L;
 
-    public RsaEncrypterException(final String message) {
+    public EncrypterException(final String message) {
         super(message);
     }
 
-    public RsaEncrypterException(final Throwable cause) {
+    public EncrypterException(final Throwable cause) {
         super(cause);
     }
 
-    public RsaEncrypterException(final String message, final Throwable cause) {
+    public EncrypterException(final String message, final Throwable cause) {
         super(message, cause);
     }
 }

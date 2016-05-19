@@ -14,7 +14,8 @@
 
   <artifactId>shared</artifactId>
   <name>shared</name>
-    <!-- Description element is needed for the maven-jxr-plugin to generate a maven site -->
+  <!-- Description element is needed for the maven-jxr-plugin to generate 
+    a maven site -->
   <description>Shared module.</description>
 
   <parent>
@@ -62,7 +63,7 @@
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
     </dependency>
-        <!-- Apache CXF RESTfull WS WebClient -->
+    <!-- Apache CXF RESTfull WS WebClient -->
     <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-rs-client</artifactId>
@@ -71,7 +72,7 @@
     <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-transports-http-hc</artifactId>
-            <!-- 2.7.8 or 3.2.0-SNAPSHOT-milestone1 -->
+      <!-- 2.7.8 or 3.2.0-SNAPSHOT-milestone1 -->
       <version>${cxf.version}</version>
     </dependency>
     <dependency>
@@ -90,9 +91,9 @@
       <groupId>com.fasterxml.jackson.jaxrs</groupId>
       <artifactId>jackson-jaxrs-json-provider</artifactId>
       <version>${jackson.version}</version>
-    </dependency> 
+    </dependency>
 
-        <!-- Spring Security -->
+    <!-- Spring Security -->
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-web</artifactId>
@@ -102,10 +103,22 @@
       <artifactId>spring-security-config</artifactId>
     </dependency>
 
-        <!--  Apache ActiveMQ -->
+    <!-- Apache ActiveMQ -->
     <dependency>
       <groupId>org.apache.activemq</groupId>
       <artifactId>activemq-client</artifactId>
+    </dependency>
+    <!-- test deps -->
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk15on</artifactId>
+      <version>1.54</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>
