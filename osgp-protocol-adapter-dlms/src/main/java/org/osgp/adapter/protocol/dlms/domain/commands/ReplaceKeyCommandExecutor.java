@@ -26,19 +26,21 @@ import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.shared.exceptionhandling.RsaEncrypterException;
-import com.alliander.osgp.shared.security.RsaEncrypterService;
+import com.alliander.osgp.shared.exceptionhandling.EncrypterException;
+import com.alliander.osgp.shared.security.EncryptionService;
 
 @Component
 public class ReplaceKeyCommandExecutor implements CommandExecutor<ReplaceKeyCommandExecutor.KeyWrapper, DlmsDevice> {
 
-    @Value("${device.security.key.path.priv}")
-    private String privateKeyPath;
-
     private static final Logger LOGGER = LoggerFactory.getLogger(ReplaceKeyCommandExecutor.class);
+
+    @Autowired
+    private EncryptionService encryptionService;
+
+    @Autowired
+    private DlmsDeviceRepository dlmsDeviceRepository;
 
     static class KeyWrapper {
         private final byte[] bytes;
@@ -63,9 +65,6 @@ public class ReplaceKeyCommandExecutor implements CommandExecutor<ReplaceKeyComm
             return this.securityKeyType;
         }
     }
-
-    @Autowired
-    private DlmsDeviceRepository dlmsDeviceRepository;
 
     public static KeyWrapper wrap(final byte[] bytes, final KeyId keyId, final SecurityKeyType securityKeyType) {
         return new KeyWrapper(bytes, keyId, securityKeyType);
@@ -103,8 +102,8 @@ public class ReplaceKeyCommandExecutor implements CommandExecutor<ReplaceKeyComm
             final ReplaceKeyCommandExecutor.KeyWrapper keyWrapper) throws ProtocolAdapterException {
         try {
             // Decrypt the cipher text using the private key.
-            final byte[] decryptedKey = RsaEncrypterService.decrypt(keyWrapper.getBytes(), this.privateKeyPath);
-            final byte[] decryptedMasterKey = RsaEncrypterService.decrypt(this.getMasterKey(device), this.privateKeyPath);
+            final byte[] decryptedKey = this.encryptionService.decrypt(keyWrapper.getBytes());
+            final byte[] decryptedMasterKey = this.encryptionService.decrypt(this.getMasterKey(device));
 
             final MethodParameter methodParameterAuth = SecurityUtils.globalKeyTransfer(decryptedMasterKey,
                     decryptedKey, keyWrapper.getKeyId());
@@ -116,7 +115,7 @@ public class ReplaceKeyCommandExecutor implements CommandExecutor<ReplaceKeyComm
             }
         } catch (final IOException e) {
             throw new ConnectionException(e);
-        } catch (final RsaEncrypterException e) {
+        } catch (final EncrypterException e) {
             LOGGER.error("Unexpected exception during decryption of security keys", e);
             throw new ProtocolAdapterException("Unexpected exception during decryption of security keys, reason = "
                     + e.getMessage());

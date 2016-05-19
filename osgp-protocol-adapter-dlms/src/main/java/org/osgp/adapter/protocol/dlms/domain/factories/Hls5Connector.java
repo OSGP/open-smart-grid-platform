@@ -11,7 +11,9 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.bouncycastle.util.encoders.Hex;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
+import org.bouncycastle.util.Arrays;
 import org.openmuc.jdlms.ClientConnection;
 import org.openmuc.jdlms.TcpConnectionBuilder;
 import org.osgp.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
@@ -22,11 +24,12 @@ import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
-import com.alliander.osgp.shared.exceptionhandling.RsaEncrypterException;
+import com.alliander.osgp.shared.exceptionhandling.EncrypterException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
-import com.alliander.osgp.shared.security.RsaEncrypterService;
+import com.alliander.osgp.shared.security.EncryptionService;
 
 public class Hls5Connector {
 
@@ -44,17 +47,17 @@ public class Hls5Connector {
 
     private DlmsDevice device;
 
-    private final String devicePrivateKeyPath;
+    @Autowired
+    private EncryptionService encryptionService;
 
     public Hls5Connector(final RecoverKeyProcessInitiator recoverKeyProcessInitiator,
             final DlmsDeviceRepository dlmsDeviceRepository, final int responseTimeout, final int logicalDeviceAddress,
-            final int clientAccessPoint, final String devicePrivateKeyPath) {
+            final int clientAccessPoint) {
         this.recoverKeyProcessInitiator = recoverKeyProcessInitiator;
         this.dlmsDeviceRepository = dlmsDeviceRepository;
         this.responseTimeout = responseTimeout;
         this.logicalDeviceAddress = logicalDeviceAddress;
         this.clientAccessPoint = clientAccessPoint;
-        this.devicePrivateKeyPath = devicePrivateKeyPath;
     }
 
     public void setDevice(final DlmsDevice device) {
@@ -84,11 +87,11 @@ public class Hls5Connector {
                         this.device.getIpAddress());
             }
             throw new ConnectionException(e);
-        } catch (final RsaEncrypterException e) {
-            LOGGER.error("RSA decryption on security keys went wrong for device: {}",
+        } catch (final EncrypterException e) {
+            LOGGER.error("decryption on security keys went wrong for device: {}",
                     this.device.getDeviceIdentification(), e);
             throw new TechnicalException(ComponentType.PROTOCOL_DLMS,
-                    "RSA decryption on security keys went wrong for device: " + this.device.getDeviceIdentification());
+                    "decryption on security keys went wrong for device: " + this.device.getDeviceIdentification());
         }
     }
 
@@ -109,22 +112,29 @@ public class Hls5Connector {
      * @throws TechnicalException
      *             When there are problems reading the security and
      *             authorisation keys.
-     * @throws RsaEncrypterException
+     * @throws EncrypterException
      *             When there are problems decrypting the encrypted security and
-     *             authorisation keys.RSAEncrypterService
+     *             authorisation keys.
      */
-    private ClientConnection createConnection() throws IOException, TechnicalException, RsaEncrypterException {
+    private ClientConnection createConnection() throws IOException, TechnicalException, EncrypterException {
         final SecurityKey validAuthenticationKey = this.getSecurityKey(SecurityKeyType.E_METER_AUTHENTICATION);
         final SecurityKey validEncryptionKey = this.getSecurityKey(SecurityKeyType.E_METER_ENCRYPTION);
 
         // Decode the key from Hexstring to bytes
-        final byte[] authenticationKey = Hex.decode(validAuthenticationKey.getKey());
-        final byte[] encryptionKey = Hex.decode(validEncryptionKey.getKey());
+        byte[] authenticationKey = null;
+        byte[] encryptionKey = null;
+        try {
+            authenticationKey = Hex.decodeHex(validAuthenticationKey.getKey().toCharArray());
+            encryptionKey = Hex.decodeHex(validEncryptionKey.getKey().toCharArray());
+        } catch (final DecoderException e) {
+            throw new EncrypterException(e);
+        }
 
-        // Decrypt the key
-        final byte[] decryptedAuthentication = RsaEncrypterService
-                .decrypt(authenticationKey, this.devicePrivateKeyPath);
-        final byte[] decryptedEncryption = RsaEncrypterService.decrypt(encryptionKey, this.devicePrivateKeyPath);
+        // Decrypt the key, discard ivBytes
+        byte[] decryptedAuthentication = this.encryptionService.decrypt(authenticationKey);
+        byte[] decryptedEncryption = this.encryptionService.decrypt(encryptionKey);
+        decryptedAuthentication = Arrays.copyOfRange(decryptedAuthentication, 16, decryptedAuthentication.length);
+        decryptedEncryption = Arrays.copyOfRange(decryptedEncryption, 16, decryptedEncryption.length);
 
         // Setup connection to device
         final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(InetAddress.getByName(this.device
