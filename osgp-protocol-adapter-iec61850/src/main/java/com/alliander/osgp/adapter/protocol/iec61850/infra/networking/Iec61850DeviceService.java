@@ -1283,7 +1283,7 @@ public class Iec61850DeviceService implements DeviceService {
             final RelayTypeDto relayType, final List<ScheduleDto> scheduleList, final Ssld ssld)
                     throws ProtocolAdapterException, FunctionalException {
 
-        final String tariffOrLight = relayType.equals(RelayType.LIGHT) ? "light" : "tariff";
+        final String tariffOrLight = relayType.equals(RelayTypeDto.LIGHT) ? "light" : "tariff";
 
         // Creating a list of all Schedule entries, grouped by relay index
         final Map<Integer, List<ScheduleEntry>> relaySchedulesEntries = this.createScheduleEntries(scheduleList, ssld,
@@ -1780,7 +1780,7 @@ public class Iec61850DeviceService implements DeviceService {
     /**
      *
      * @param time
-     *            a time String in the format hh:mm:ss or hh:mm.
+     *            a time String in the format hh:mm:ss.SSS, hh:mm:ss or hh:mm.
      * @return the short value formed by parsing the digits of hhmm from the
      *         given time.
      * @throws ProtocolAdapterException
@@ -1788,8 +1788,9 @@ public class Iec61850DeviceService implements DeviceService {
      */
     private short convertTime(final String time) throws ProtocolAdapterException {
 
-        if (time == null || !time.matches("\\d\\d:\\d\\d(:\\d\\d)?")) {
-            throw new ProtocolAdapterException("Schedule time (" + time + ") is not formatted as hh:mm or hh:mm:dd");
+        if (time == null || !time.matches("\\d\\d:\\d\\d(:\\d\\d)?\\.?\\d*")) {
+            throw new ProtocolAdapterException("Schedule time (" + time
+                    + ") is not formatted as hh:mm, hh:mm:ss or hh:mm:ss.SSS");
         }
         return Short.parseShort(time.replace(":", "").substring(0, 4));
     }
