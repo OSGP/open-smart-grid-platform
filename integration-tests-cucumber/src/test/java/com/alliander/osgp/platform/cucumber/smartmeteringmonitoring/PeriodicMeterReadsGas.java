@@ -56,7 +56,7 @@ public class PeriodicMeterReadsGas {
     private static final String TEST_CASE_NAME_REQUEST = "GetPeriodicMeterReadsGas - Request 1";
     private static final String TEST_CASE_NAME_RESPONSE = "GetPeriodicMeterReadsGasResponse - Request 1";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ActualMeterReads.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PeriodicMeterReadsGas.class);
     private static final Map<String, String> PROPERTIES_MAP = new HashMap<>();
 
     private Pattern correlationUidPattern;

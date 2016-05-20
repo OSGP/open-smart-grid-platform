@@ -1,12 +1,4 @@
-/**
- * Copyright 2016 Smart Society Services B.V. *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
-package com.alliander.osgp.platform.cucumber.smartmeteringmonitoring;
+package com.alliander.osgp.platform.cucumber.smartmeteringadhoc;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -35,29 +27,22 @@ import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class PeriodicMeterReads {
+public class SpecificConfigurationObject {
     private TestCase testCase;
     private String response;
     private String correlationUid;
 
-    private static final String PATH_RESULT_PERIODTYPE = "/Envelope/Body/PeriodicMeterReadsResponse/PeriodType/text()";
-    private static final String PATH_RESULT_LOGTIME = "/Envelope/Body/PeriodicMeterReadsResponse/PeriodicMeterReads/LogTime/text()";
-    private static final String PATH_RESULT_ACTIVE_ENERGY_IMPORT_TARIFF_ONE = "/Envelope/Body/PeriodicMeterReadsResponse/PeriodicMeterReads/ActiveEnergyImportTariffOne/text()";
-    private static final String PATH_RESULT_ACTIVE_ENERGY_IMPORT_TARIFF_TWO = "/Envelope/Body/PeriodicMeterReadsResponse/PeriodicMeterReads/ActiveEnergyImportTariffTwo/text()";
-    private static final String PATH_RESULT_ACTIVE_ENERGY_EXPORT_TARIFF_ONE = "/Envelope/Body/PeriodicMeterReadsResponse/PeriodicMeterReads/ActiveEnergyExportTariffOne/text()";
-    private static final String PATH_RESULT_ACTIVE_ENERGY_EXPORT_TARIFF_TWO = "/Envelope/Body/PeriodicMeterReadsResponse/PeriodicMeterReads/ActiveEnergyExportTariffTwo/text()";
+    private static final String PATH_RESULT_CONFIGURATION_DATA = "/Envelope/Body/SpecificConfigurationObjectResponse/ConfigurationData/text()";
 
-    private static final String XPATH_MATCHER_RESULT_PERIODTYPE = "\\w[A-Z]+";
-    private static final String XPATH_MATCHER_RESULT_LOGTIME = "\\d{4}\\-\\d{2}\\-\\d{2}T\\d{2}\\:\\d{2}\\:\\d{2}\\.\\d{3}Z";
-    private static final String XPATH_MATCHER_RESULT_ACTIVE_ENERGY = "\\d+\\.\\d+";
+    private static final String XPATH_MATCHER_RESULT_CONFIGURATION_DATA = "DataObject: Choice=\\w[A-Z]+\\(\\d+\\), ResultData \\w+, value=";
 
     private static final String SOAP_PROJECT_XML = "../cucumber/soap-ui-project/FLEX-OVL-V3---SmartMetering-soapui-project.xml";
-    private static final String TEST_SUITE_XML = "SmartmeterMonitoring";
-    private static final String TEST_CASE_XML = "400 Retrieve periodic meter reads E";
-    private static final String TEST_CASE_NAME_REQUEST = "GetPeriodicMeterReads - Request 1";
-    private static final String TEST_CASE_NAME_RESPONSE = "GetPeriodicMeterReadsResponse - Request 1";
+    private static final String TEST_SUITE_XML = "SmartmeterAdhoc";
+    private static final String TEST_CASE_XML = "534 Retrieve specific configuration object";
+    private static final String TEST_CASE_NAME_REQUEST = "GetSpecificConfigurationObject - Request 1";
+    private static final String TEST_CASE_NAME_RESPONSE = "GetSpecificConfigurationObjectResponse - Request 1";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PeriodicMeterReads.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SpecificConfigurationObject.class);
     private static final Map<String, String> PROPERTIES_MAP = new HashMap<>();
 
     private Pattern correlationUidPattern;
@@ -78,8 +63,8 @@ public class PeriodicMeterReads {
     @Autowired
     private OrganisationId organisationId;
 
-    @When("^the get periodic meter reads request is received$")
-    public void theGetPeriodicMeterReadsRequestIsReceived() throws Throwable {
+    @When("^the retrieve specific configuration request is received$")
+    public void theGetRetrieveSpecificConfigurationRequestIsReceived() throws Throwable {
         this.correlationUidPattern = Pattern.compile(this.organisationId.getOrganisationId()
                 + "\\|\\|\\|\\S{17}\\|\\|\\|\\S{17}");
         this.testCase = this.wsdlProjectFactory.createWsdlTestCase(SOAP_PROJECT_XML, TEST_SUITE_XML, TEST_CASE_XML);
@@ -102,8 +87,8 @@ public class PeriodicMeterReads {
         this.correlationUid = this.correlationUidMatcher.group();
     }
 
-    @Then("^the periodic meter reads result should be returned$")
-    public void thePeriodicMeterReadsResultShouldBeReturned() throws Throwable {
+    @Then("^the specific configuration item should be returned$")
+    public void theSpecificConfigurationItemShouldBeReturned() throws Throwable {
         PROPERTIES_MAP.put("CorrelationUid", this.correlationUid);
 
         final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase, PROPERTIES_MAP,
@@ -117,16 +102,7 @@ public class PeriodicMeterReads {
                     this.response = ((MessageExchange) tcr).getResponseContent());
         }
 
-        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_PERIODTYPE,
-                XPATH_MATCHER_RESULT_PERIODTYPE));
-        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_LOGTIME, XPATH_MATCHER_RESULT_LOGTIME));
-        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_ACTIVE_ENERGY_IMPORT_TARIFF_ONE,
-                XPATH_MATCHER_RESULT_ACTIVE_ENERGY));
-        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_ACTIVE_ENERGY_IMPORT_TARIFF_TWO,
-                XPATH_MATCHER_RESULT_ACTIVE_ENERGY));
-        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_ACTIVE_ENERGY_EXPORT_TARIFF_ONE,
-                XPATH_MATCHER_RESULT_ACTIVE_ENERGY));
-        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_ACTIVE_ENERGY_EXPORT_TARIFF_TWO,
-                XPATH_MATCHER_RESULT_ACTIVE_ENERGY));
+        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_CONFIGURATION_DATA,
+                XPATH_MATCHER_RESULT_CONFIGURATION_DATA));
     }
 }
