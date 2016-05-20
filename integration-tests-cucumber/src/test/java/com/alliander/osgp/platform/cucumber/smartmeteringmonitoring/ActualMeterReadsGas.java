@@ -53,7 +53,7 @@ public class ActualMeterReadsGas {
     private static final String TEST_CASE_NAME_REQUEST = "GetActualMeterReadsGas - Request 1";
     private static final String TEST_CASE_NAME_RESPONSE = "GetActualMeterReadsGasResponse - Request 1";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ActualMeterReads.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ActualMeterReadsGas.class);
     private static final Map<String, String> PROPERTIES_MAP = new HashMap<>();
 
     private Pattern correlationUidPattern;
@@ -94,7 +94,7 @@ public class ActualMeterReadsGas {
             this.response = ((MessageExchange) tcr).getResponseContent();
             this.correlationUidMatcher = this.correlationUidPattern.matcher(this.response);
         }
-        this.correlationUidMatcher.find();
+        assertTrue(this.correlationUidMatcher.find());
         this.correlationUid = this.correlationUidMatcher.group();
     }
 

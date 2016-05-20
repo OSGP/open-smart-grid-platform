@@ -50,7 +50,7 @@ public class ReadAlarmRegister {
     private static final String TEST_CASE_NAME_REQUEST = "ReadAlarmRegister - Request 1";
     private static final String TEST_CASE_NAME_RESPONSE = "GetReadAlarmRegisterResponse - Request 1";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ActualMeterReads.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReadAlarmRegister.class);
     private static final Map<String, String> PROPERTIES_MAP = new HashMap<>();
 
     private Pattern correlationUidPattern;
@@ -91,7 +91,7 @@ public class ReadAlarmRegister {
             this.response = ((MessageExchange) tcr).getResponseContent();
             this.correlationUidMatcher = this.correlationUidPattern.matcher(this.response);
         }
-        this.correlationUidMatcher.find();
+        assertTrue(this.correlationUidMatcher.find());
         this.correlationUid = this.correlationUidMatcher.group();
     }
 
