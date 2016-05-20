@@ -1222,14 +1222,14 @@ public class Iec61850DeviceService implements DeviceService {
                     deviceFixedIpAddress.setValue(deviceFixedIp.getIpAddress());
                     clientAssociation.setDataValues(deviceFixedIpAddress);
 
-                    LOGGER.info("Updating deviceFixedIpNetmask to {}", configuration.getDeviceFixedIp().getGateWay());
+                    LOGGER.info("Updating deviceFixedIpNetmask to {}", configuration.getDeviceFixedIp().getNetMask());
                     // Set the value and send the value to the device.
-                    deviceFixedIpNetmask.setValue(deviceFixedIp.getGateWay());
+                    deviceFixedIpNetmask.setValue(deviceFixedIp.getNetMask());
                     clientAssociation.setDataValues(deviceFixedIpNetmask);
 
-                    LOGGER.info("Updating deviceFixIpGateway to {}", configuration.getDeviceFixedIp().getNetMask());
+                    LOGGER.info("Updating deviceFixIpGateway to {}", configuration.getDeviceFixedIp().getGateWay());
                     // Set the value and send the value to the device.
-                    deviceFixedIpGateway.setValue(deviceFixedIp.getNetMask());
+                    deviceFixedIpGateway.setValue(deviceFixedIp.getGateWay());
                     clientAssociation.setDataValues(deviceFixedIpGateway);
                 }
 
@@ -1321,8 +1321,7 @@ public class Iec61850DeviceService implements DeviceService {
 
                         final ConstructedDataAttribute scheduleNode = (ConstructedDataAttribute) Iec61850DeviceService.this
                                 .getChildOfNodeWithConstraint(scheduleConfiguration,
-                                        LogicalNodeAttributeDefinitons.getSchedulePropertyNameForIndex(i + 1),
-                                        Fc.CF);
+                                        LogicalNodeAttributeDefinitons.getSchedulePropertyNameForIndex(i + 1), Fc.CF);
 
                         final BdaBoolean enabled = (BdaBoolean) Iec61850DeviceService.this.getChildOfNode(scheduleNode,
                                 LogicalNodeAttributeDefinitons.PROPERTY_SCHEDULE_ENABLE);
@@ -1340,8 +1339,7 @@ public class Iec61850DeviceService implements DeviceService {
 
                         final ConstructedDataAttribute scheduleNode = (ConstructedDataAttribute) Iec61850DeviceService.this
                                 .getChildOfNodeWithConstraint(scheduleConfiguration,
-                                        LogicalNodeAttributeDefinitons.getSchedulePropertyNameForIndex(i + 1),
-                                        Fc.CF);
+                                        LogicalNodeAttributeDefinitons.getSchedulePropertyNameForIndex(i + 1), Fc.CF);
 
                         final BdaBoolean enabled = (BdaBoolean) Iec61850DeviceService.this.getChildOfNode(scheduleNode,
                                 LogicalNodeAttributeDefinitons.PROPERTY_SCHEDULE_ENABLE);
