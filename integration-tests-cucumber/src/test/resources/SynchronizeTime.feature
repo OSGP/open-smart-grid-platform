@@ -8,3 +8,4 @@ Feature:
     And an organisation with OrganisationID "LianderNetManagement"
     When the get synchronize time request is received
     Then the date and time is synchronized on the device
+    

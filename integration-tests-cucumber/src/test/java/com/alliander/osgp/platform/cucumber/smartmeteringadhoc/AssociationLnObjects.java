@@ -91,7 +91,7 @@ public class AssociationLnObjects {
             this.response = ((MessageExchange) tcr).getResponseContent();
             this.correlationUidMatcher = this.correlationUidPattern.matcher(this.response);
         }
-        this.correlationUidMatcher.find();
+        assertTrue(this.correlationUidMatcher.find());
         this.correlationUid = this.correlationUidMatcher.group();
     }
 

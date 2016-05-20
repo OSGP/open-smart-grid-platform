@@ -9,3 +9,4 @@ Feature:
     When the retrieve association LN objectlist request is received
     Then the objectlist should be returned
     And the objeclist should be stored in the integration layer database
+    

@@ -8,3 +8,4 @@ Feature:
     And an organisation with OrganisationID "LianderNetManagement"
     When the retrieve configuration request is received
     Then all the configuration items should be returned
+    
