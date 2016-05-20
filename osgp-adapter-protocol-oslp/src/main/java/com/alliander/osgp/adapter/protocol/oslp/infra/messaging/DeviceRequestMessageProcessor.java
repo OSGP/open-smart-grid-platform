@@ -55,7 +55,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
 
     protected final DeviceRequestMessageType deviceRequestMessageType;
 
-    protected final static String UNEXPECTED_EXCEPTION = "Unexpected exception while retrieving response message";
+    protected final static String UNEXPECTED_EXCEPTION = "An unknown error occurred";
 
     /**
      * Each MessageProcessor should register it's MessageType at construction.
