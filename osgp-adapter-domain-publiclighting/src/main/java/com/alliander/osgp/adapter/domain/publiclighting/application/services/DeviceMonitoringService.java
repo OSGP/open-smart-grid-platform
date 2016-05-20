@@ -91,7 +91,7 @@ public class DeviceMonitoringService extends AbstractService {
                 osgpException = (OsgpException) e;
             } else {
                 osgpException = new TechnicalException(ComponentType.UNKNOWN,
-                        "Unexpected exception while retrieving response message", e);
+                        "Exception occurred while getting device actual power usage", e);
             }
         }
 
@@ -149,7 +149,7 @@ public class DeviceMonitoringService extends AbstractService {
             LOGGER.error("Unexpected Exception", e);
             result = ResponseMessageResultType.NOT_OK;
             osgpException = new TechnicalException(ComponentType.UNKNOWN,
-                    "Unexpected exception while retrieving response message", e);
+                    "Exception occurred while getting device power usage history", e);
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,

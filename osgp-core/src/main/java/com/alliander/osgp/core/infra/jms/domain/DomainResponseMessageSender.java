@@ -100,7 +100,6 @@ public class DomainResponseMessageSender implements DomainResponseService {
             return (OsgpException) e;
         }
 
-        return new TechnicalException(ComponentType.OSGP_CORE,
-                "Unexpected exception while retrieving response message", e);
+        return new TechnicalException(ComponentType.OSGP_CORE, "An unknown error occurred", e);
     }
 }

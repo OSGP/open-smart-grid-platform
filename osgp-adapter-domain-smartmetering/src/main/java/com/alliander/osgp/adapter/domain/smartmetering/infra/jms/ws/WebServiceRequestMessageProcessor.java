@@ -140,7 +140,6 @@ public abstract class WebServiceRequestMessageProcessor implements MessageProces
             return (OsgpException) e;
         }
 
-        return new TechnicalException(ComponentType.DOMAIN_SMART_METERING,
-                "Unexpected exception while retrieving response message", e);
+        return new TechnicalException(ComponentType.DOMAIN_SMART_METERING, "An unknown error occurred", e);
     }
 }
