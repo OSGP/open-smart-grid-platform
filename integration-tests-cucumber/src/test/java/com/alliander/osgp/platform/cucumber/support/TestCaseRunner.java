@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCase;
@@ -29,7 +30,8 @@ public class TestCaseRunner implements CucumberConstants {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TestCaseRunner.class);
 
-    private ResponseNotifier responseNotifier = new ResponseNotifierImpl();
+    @Autowired
+    private ResponseNotifier responseNotifier;
     
     public TestCaseResult runWsdlTestCase(final TestCase testCase, final Map<String, String> propertiesMap,
             final String testCaseNameRequest) throws XmlException, IOException, SoapUIException {
@@ -63,7 +65,7 @@ public class TestCaseRunner implements CucumberConstants {
         if (propertiesMap.containsKey(LAP_TIME)) {
             return new Integer(propertiesMap.get(LAP_TIME));
         } else {
-            return 2500;
+            return 5000;
         }
     }
     
