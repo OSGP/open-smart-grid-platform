@@ -346,7 +346,7 @@ public class DeviceManagementService {
 
     public Page<DeviceLogItem> findOslpMessages(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Min(value = 0) final int pageNumber)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.debug("findOslpMessage called with organisation {}, device {} and pagenumber {}", new Object[] {
                 organisationIdentification, deviceIdentification, pageNumber });
@@ -465,7 +465,7 @@ public class DeviceManagementService {
      */
     public void setOwner(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Identification final String newOwner)
-            throws FunctionalException {
+                    throws FunctionalException {
         Organisation organisation = this.findOrganisation(organisationIdentification);
         final Device device = this.findDevice(deviceIdentification);
         this.isAllowed(organisation, PlatformFunction.SET_OWNER);
@@ -590,7 +590,7 @@ public class DeviceManagementService {
 
     public void updateDeviceProtocol(final String organisationIdentification,
             @Identification final String deviceIdentification, final String protocol, final String protocolVersion)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.debug("Updating protocol for device [{}] on behalf of organisation [{}] to protocol: {}, version: {}",
                 deviceIdentification, organisationIdentification, protocol, protocolVersion);
@@ -643,7 +643,7 @@ public class DeviceManagementService {
         this.isAllowed(organisation, PlatformFunction.DEACTIVATE_DEVICE);
 
         if (this.deviceRepository.findByDeviceIdentification(deviceIdentification) == null) {
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.DOMAIN_SMART_METERING);
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.WS_ADMIN);
         }
 
         this.enqueueDeactivateDeviceRequest(organisationIdentification, deviceIdentification);
