@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.platform.cucumber.support.CucumberConstants;
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
 import com.alliander.osgp.platform.cucumber.support.OrganisationId;
 import com.alliander.osgp.platform.cucumber.support.RunXpathResult;
@@ -28,7 +29,7 @@ import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class AssociationLnObjects {
+public class AssociationLnObjects implements CucumberConstants {
     private TestCase testCase;
     private String response;
     private String correlationUid;
@@ -77,8 +78,8 @@ public class AssociationLnObjects {
                 + "\\|\\|\\|\\S{17}\\|\\|\\|\\S{17}");
         this.testCase = this.wsdlProjectFactory.createWsdlTestCase(SOAP_PROJECT_XML, TEST_SUITE_XML, TEST_CASE_XML);
 
-        PROPERTIES_MAP.put("DeviceIdentificationE", this.deviceId.getDeviceId());
-        PROPERTIES_MAP.put("OrganisationIdentification", this.organisationId.getOrganisationId());
+        PROPERTIES_MAP.put(DEVICE_ID, this.deviceId.getDeviceId());
+        PROPERTIES_MAP.put(ORGANISATION_ID, this.organisationId.getOrganisationId());
 
         final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase, PROPERTIES_MAP,
                 TEST_CASE_NAME_REQUEST);
@@ -97,7 +98,7 @@ public class AssociationLnObjects {
 
     @Then("^the objectlist should be returned$")
     public void theObjectlistShouldBeReturned() throws Throwable {
-        PROPERTIES_MAP.put("CorrelationUid", this.correlationUid);
+        PROPERTIES_MAP.put(CORRELATION_UID, this.correlationUid);
 
         final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase, PROPERTIES_MAP,
                 TEST_CASE_NAME_RESPONSE);

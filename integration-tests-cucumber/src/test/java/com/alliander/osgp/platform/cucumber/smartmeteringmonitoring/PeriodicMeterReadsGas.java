@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.platform.cucumber.support.CucumberConstants;
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
 import com.alliander.osgp.platform.cucumber.support.OrganisationId;
 import com.alliander.osgp.platform.cucumber.support.RunXpathResult;
@@ -35,7 +36,7 @@ import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class PeriodicMeterReadsGas {
+public class PeriodicMeterReadsGas implements CucumberConstants {
     private TestCase testCase;
     private String response;
     private String correlationUid;
@@ -83,8 +84,8 @@ public class PeriodicMeterReadsGas {
                 + "\\|\\|\\|\\S{17}\\|\\|\\|\\S{17}");
         this.testCase = this.wsdlProjectFactory.createWsdlTestCase(SOAP_PROJECT_XML, TEST_SUITE_XML, TEST_CASE_XML_225);
 
-        PROPERTIES_MAP.put("DeviceIdentificationE", this.deviceId.getDeviceId());
-        PROPERTIES_MAP.put("OrganisationIdentification", this.organisationId.getOrganisationId());
+        PROPERTIES_MAP.put(DEVICE_ID, this.deviceId.getDeviceId());
+        PROPERTIES_MAP.put(ORGANISATION_ID, this.organisationId.getOrganisationId());
 
         final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase, PROPERTIES_MAP,
                 TEST_CASE_NAME_REQUEST);
@@ -102,7 +103,7 @@ public class PeriodicMeterReadsGas {
 
     @Then("^the periodic meter reads gas result should be returned$")
     public void thePeriodicMeterReadsResultShouldBeReturned() throws Throwable {
-        PROPERTIES_MAP.put("CorrelationUid", this.correlationUid);
+        PROPERTIES_MAP.put(CORRELATION_UID, this.correlationUid);
 
         final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase, PROPERTIES_MAP,
                 TEST_CASE_NAME_RESPONSE);
@@ -129,8 +130,8 @@ public class PeriodicMeterReadsGas {
                 + "\\|\\|\\|\\S{17}\\|\\|\\|\\S{17}");
         this.testCase = this.wsdlProjectFactory.createWsdlTestCase(SOAP_PROJECT_XML, TEST_SUITE_XML, TEST_CASE_XML_228);
 
-        PROPERTIES_MAP.put("DeviceIdentificationE", this.deviceId.getDeviceId());
-        PROPERTIES_MAP.put("OrganisationIdentification", this.organisationId.getOrganisationId());
+        PROPERTIES_MAP.put(DEVICE_ID, this.deviceId.getDeviceId());
+        PROPERTIES_MAP.put(ORGANISATION_ID, this.organisationId.getOrganisationId());
 
         final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase, PROPERTIES_MAP,
                 TEST_CASE_NAME_REQUEST);
@@ -148,7 +149,7 @@ public class PeriodicMeterReadsGas {
 
     @Then("^the interval meter reads gas result should be returned$")
     public void theIntervalMeterReadsResultShouldBeReturned() throws Throwable {
-        PROPERTIES_MAP.put("CorrelationUid", this.correlationUid);
+        PROPERTIES_MAP.put(CORRELATION_UID, this.correlationUid);
 
         final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase, PROPERTIES_MAP,
                 TEST_CASE_NAME_RESPONSE);

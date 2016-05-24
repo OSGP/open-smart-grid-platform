@@ -6,60 +6,122 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ResponseNotifierImpl implements ResponseNotifier {
 
+    private final Logger LOGGER = LoggerFactory.getLogger(ResponseNotifierImpl.class);
+
     private Connection connection;
 
-    @Override
-    public boolean isResponseAvailable(String correlid) {
-        boolean result = false;
+    private final String CONN_STR = "jdbc:postgresql://%s:5432/%s";
+
+    public String correlationUid = null;
+    
+    public boolean waitForResponse(final String correlid, final int laptime, final int maxlaps) {
+        Statement statement = null;
         try {
-            Statement st = conn().createStatement();
-            ResultSet rs = st.executeQuery("SELECT count(*) FROM meter_response_data WHERE correlation_uid = '" + correlid + "'");
-            while (rs.next()) {
-                result = rs.getInt(1) > 0;
+            statement = conn().createStatement();
+            int pollcount = 0;
+
+            while (true) {
+                Thread.sleep(laptime);
+                if (pollcount++ < maxlaps) {
+                    PollResult pollres = pollDatabase(statement, correlid);
+                    if (pollres.equals(PollResult.OK)) {
+                        return true;
+                    } else if (pollres.equals(PollResult.ERROR)) {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
             }
-            rs.close();
-            st.close();
-            return result;
         } catch (SQLException se) {
-            System.err.println(se.getMessage());
+            LOGGER.error(se.getMessage());
             return false;
+        } catch(InterruptedException intex) {
+            LOGGER.error(intex.getMessage());
+            return false;
+        } finally {
+            closeStatement(statement);
         }
     }
 
-    private Connection conn() {
-        if (this.connection == null) {
-            this.connection = connectToDatabaseOrDie();
+    private PollResult pollDatabase(final Statement statement, final String correlid) {
+        ResultSet rs =  null;
+        PollResult result = PollResult.NOT_OK;
+        try {
+            rs = statement.executeQuery("SELECT count(*) FROM meter_response_data WHERE correlation_uid = '" + correlid + "'");
+            while (rs.next()) {
+                if (rs.getInt(1) > 0) {
+                    result = PollResult.OK;
+                }
+            }
+            rs.close();
+            return result;
+        } catch (SQLException se) {
+            LOGGER.error(se.getMessage());
+            return PollResult.ERROR;
+        } finally {
+            closeResultSet(rs);
         }
-        return this.connection;
+    }
+    
+    private void closeStatement(Statement statement) {
+        if (statement != null) {
+            try {
+                statement.close();
+            } catch (SQLException e) {
+                LOGGER.error(e.getMessage());
+            }
+        }
+    }
+
+
+    private void closeResultSet(ResultSet rs) {
+        try {
+            rs.close();
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        }
+    }
+    
+    private Connection conn() {
+        if (connection == null) {
+            connection = connectToDatabaseOrDie();
+        }
+        return connection;
     }
 
     private Connection connectToDatabaseOrDie() {
         try {
             Class.forName("org.postgresql.Driver");
-            String url = "jdbc:postgresql://" + host() + "/" + database();
-//            connection = DriverManager.getConnection(url, username(), password());
-            connection = DriverManager.getConnection("jdbc:postgresql://127.0.0.1:5432/osgp_adapter_ws_smartmetering", "osp_admin", "osp_admin");
+            String connstr = String.format(CONN_STR, host(), database());
+            connection = DriverManager.getConnection(connstr, username(), password());
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage());;
             System.exit(1);
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage());;
             System.exit(2);
         }
         return connection;
     }
 
+    //
+    // We may have to put these values in a properties file!
+    //
+    
     private String host() {
         return "localhost";
     }
     
     private String database() {
-        return "OSGP";
+        return "osgp_adapter_ws_smartmetering";
     }
     
     private String username() {
@@ -68,5 +130,12 @@ public class ResponseNotifierImpl implements ResponseNotifier {
     
     private String password() {
         return "osp_admin";
+    }
+    
+    //-------------
+    private enum PollResult {
+        OK,
+        NOT_OK,
+        ERROR;
     }
 }

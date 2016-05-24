@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.xmlbeans.XmlException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCase;
@@ -23,8 +25,12 @@ import com.eviware.soapui.model.testsuite.TestCase;
 import com.eviware.soapui.support.SoapUIException;
 
 @Component
-public class TestCaseRunner {
+public class TestCaseRunner implements CucumberConstants {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestCaseRunner.class);
+
+    private ResponseNotifier responseNotifier = new ResponseNotifierImpl();
+    
     public TestCaseResult runWsdlTestCase(final TestCase testCase, final Map<String, String> propertiesMap,
             final String testCaseNameRequest) throws XmlException, IOException, SoapUIException {
         final WsdlTestCase wsdlTestCase = (WsdlTestCase) testCase;
@@ -34,13 +40,39 @@ public class TestCaseRunner {
         }
 
         final WsdlTestCaseRunner wsdlTestCaseRunner = new WsdlTestCaseRunner(wsdlTestCase, new PropertiesMap());
-
-        try {
-            Thread.sleep(25000);
-        } catch (final InterruptedException ex) {
-            Thread.currentThread().interrupt();
+       
+        String correlId = getCorrelId(propertiesMap);
+        if (correlId != null) {
+            if (!responseNotifier.waitForResponse(correlId, getLaptime(propertiesMap), getMaxLaps(propertiesMap))) {
+                LOGGER.warn("no response retrieved with maximum time");
+            } 
         }
-
+        
         return new TestCaseResult(wsdlTestCaseRunner.runTestStepByName(testCaseNameRequest), wsdlTestCaseRunner);
     }
+    
+    private String getCorrelId(final Map<String, String> propertiesMap) {
+        if (propertiesMap.containsKey(CORRELATION_UID)) {
+            return propertiesMap.get(CORRELATION_UID);
+        } else {
+            return null;
+        }
+    }
+    
+    private int getLaptime(final Map<String, String> propertiesMap) {
+        if (propertiesMap.containsKey(LAP_TIME)) {
+            return new Integer(propertiesMap.get(LAP_TIME));
+        } else {
+            return 2500;
+        }
+    }
+    
+    private int getMaxLaps(final Map<String, String> propertiesMap) {
+        if (propertiesMap.containsKey(MAX_LAPCOUNT)) {
+            return new Integer(propertiesMap.get(MAX_LAPCOUNT));
+        } else {
+            return 25;
+        }
+    }
+
 }
