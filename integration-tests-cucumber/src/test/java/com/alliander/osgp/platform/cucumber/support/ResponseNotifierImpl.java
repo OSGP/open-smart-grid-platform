@@ -8,19 +8,31 @@ import java.sql.Statement;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.stereotype.Component;
 
 @Component
+@Configuration
+@PropertySource("file:/etc/osp/osgp-cucumber-response-data-smart-metering.properties")
 public class ResponseNotifierImpl implements ResponseNotifier {
 
     private final Logger LOGGER = LoggerFactory.getLogger(ResponseNotifierImpl.class);
 
     private Connection connection;
 
-    private final String CONN_STR = "jdbc:postgresql://%s:5432/%s";
+    @Value("${cucumber.polldbs.url}")
+    private String jdbcUrl;
 
-    public String correlationUid = null;
-    
+    @Value("${cucumber.polldbs.username}")
+    private String username;
+
+    @Value("${cucumber.polldbs.password}")
+    private String password;
+
     public boolean waitForResponse(final String correlid, final int laptime, final int maxlaps) {
         Statement statement = null;
         try {
@@ -100,8 +112,7 @@ public class ResponseNotifierImpl implements ResponseNotifier {
     private Connection connectToDatabaseOrDie() {
         try {
             Class.forName("org.postgresql.Driver");
-            String connstr = String.format(CONN_STR, host(), database());
-            connection = DriverManager.getConnection(connstr, username(), password());
+            connection = DriverManager.getConnection(jdbcUrl, username, password);
         } catch (ClassNotFoundException e) {
             LOGGER.error(e.getMessage());;
             System.exit(1);
@@ -116,23 +127,30 @@ public class ResponseNotifierImpl implements ResponseNotifier {
     // We may have to put these values in a properties file!
     //
     
-    private String host() {
-        return "localhost";
-    }
-    
-    private String database() {
-        return "osgp_adapter_ws_smartmetering";
-    }
-    
-    private String username() {
-        return "osp_admin";
-    }
-    
-    private String password() {
-        return "osp_admin";
-    }
+//    private String host() {
+//        return "localhost";
+//    }
+//    
+//    private String database() {
+//        return "osgp_adapter_ws_smartmetering";
+//    }
+//    
+//    private String username() {
+//        return "osp_admin";
+//    }
+//    
+//    private String password() {
+//        return "osp_admin";
+//    }
     
     //-------------
+    
+  //To resolve ${} in @Value
+    @Bean
+    public static PropertySourcesPlaceholderConfigurer propertyConfigInDev() {
+        return new PropertySourcesPlaceholderConfigurer();
+    }
+    
     private enum PollResult {
         OK,
         NOT_OK,
