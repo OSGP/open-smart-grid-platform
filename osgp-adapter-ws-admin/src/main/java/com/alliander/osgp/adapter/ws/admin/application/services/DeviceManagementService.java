@@ -642,6 +642,10 @@ public class DeviceManagementService {
         final Organisation organisation = this.findOrganisation(organisationIdentification);
         this.isAllowed(organisation, PlatformFunction.DEACTIVATE_DEVICE);
 
+        if (this.deviceRepository.findByDeviceIdentification(deviceIdentification) == null) {
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.WS_ADMIN);
+        }
+
         this.enqueueDeactivateDeviceRequest(organisationIdentification, deviceIdentification);
     }
 
