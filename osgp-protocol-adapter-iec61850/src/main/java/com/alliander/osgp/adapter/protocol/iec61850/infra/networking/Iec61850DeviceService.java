@@ -55,6 +55,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetConfigur
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetFirmwareVersionDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetPowerUsageHistoryDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetStatusDeviceResponse;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DaylightSavingTimeTransition;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.ScheduleEntry;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.ScheduleWeekday;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.TriggerType;
@@ -99,6 +100,8 @@ import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 @Component
 public class Iec61850DeviceService implements DeviceService {
 
+    private static final DateTimeZone TIME_ZONE_AMSTERDAM = DateTimeZone.forID("Europe/Amsterdam");
+
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850DeviceService.class);
 
     @Autowired
@@ -127,6 +130,9 @@ public class Iec61850DeviceService implements DeviceService {
     // of getFirmwareVersion
     private static final String FUNCTIONAL_FIRMWARE_TYPE_DESCRIPTION = "Functional firmware version";
     private static final String SECURITY_FIRMWARE_TYPE_DESCRIPTION = "Security firmware version";
+
+    private static final int SWITCH_TYPE_TARIFF = 0;
+    private static final int SWITCH_TYPE_LIGHT = 1;
 
     @Override
     public void getStatus(final DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler) {
@@ -896,13 +902,7 @@ public class Iec61850DeviceService implements DeviceService {
         final List<RelayMapDto> relayMaps = new ArrayList<>();
 
         for (final DeviceOutputSetting deviceOutputSetting : ssld.getOutputSettings()) {
-
-            // TODO uncomment this code when XSWC1.SwType.stVal
-            // functions properly. Exception handling hasn't been worked
-            // out for this flow yet!
-            // Iec61850DeviceService.this.checkRelayTypes(deviceOutputSetting,
-            // serverModel);
-
+            this.checkRelayType(deviceOutputSetting, serverModel);
             relayMaps.add(Iec61850DeviceService.this.mapper.map(deviceOutputSetting, RelayMapDto.class));
         }
 
@@ -925,12 +925,8 @@ public class Iec61850DeviceService implements DeviceService {
                 .getChild(LogicalNodeAttributeDefinitons.PROPERTY_SOFTWARE_CONFIG_LIGHT_TYPE);
         final LightTypeDto lightType = LightTypeDto.valueOf(lightTypeValue.getStringValue());
 
-        // TODO re-add this code when firmware 01.01.33 is replaced
-        // These will be used later on
-        // final BdaInt16 astroGateSunRiseOffset = (BdaInt16)
-        // softwareConfiguration.getChild("osRise");
-        // final BdaInt16 astroGateSunSetOffset = (BdaInt16)
-        // softwareConfiguration.getChild("osSet");
+        final BdaInt16 astroGateSunRiseOffset = (BdaInt16) softwareConfiguration.getChild("adRiseOft");
+        final BdaInt16 astroGateSunSetOffset = (BdaInt16) softwareConfiguration.getChild("adSetOft");
 
         final ConfigurationDto configuration = new ConfigurationDto(lightType, daliConfiguration, relayConfiguration,
                 shortTermHistoryIntervalMinutes, preferredLinkType, meterType, longTermHistoryInterval,
@@ -983,11 +979,8 @@ public class Iec61850DeviceService implements DeviceService {
 
         // setting the software configuration values
 
-        // TODO re-add this code when firmware 01.01.33 is replaced
-        // configuration.setAstroGateSunRiseOffset((int)
-        // astroGateSunRiseOffset.getValue());
-        // configuration.setAstroGateSunSetOffset((int)
-        // astroGateSunSetOffset.getValue());
+        configuration.setAstroGateSunRiseOffset((int) astroGateSunRiseOffset.getValue());
+        configuration.setAstroGateSunSetOffset((int) astroGateSunSetOffset.getValue());
 
         // getting the clock configuration values
 
@@ -1006,15 +999,56 @@ public class Iec61850DeviceService implements DeviceService {
         final BdaVisibleString summerTimeDetails = (BdaVisibleString) clockConfiguration.getChild("dstBegT");
         final BdaVisibleString winterTimeDetails = (BdaVisibleString) clockConfiguration.getChild("dstEndT");
 
+
         configuration.setTimeSyncFrequency(timeSyncFrequency.getValue());
         configuration.setAutomaticSummerTimingEnabled(automaticSummerTimingEnabled.getValue());
-        // TODO hardcoded current time for now
-        configuration.setSummerTimeDetails(new DateTime());
-        // TODO hardcoded current time for now
-        configuration.setWinterTimeDetails(new DateTime());
+        configuration.setSummerTimeDetails(new DaylightSavingTimeTransition(TIME_ZONE_AMSTERDAM, summerTimeDetails
+                .getStringValue()).getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
+        configuration.setWinterTimeDetails(new DaylightSavingTimeTransition(TIME_ZONE_AMSTERDAM, winterTimeDetails
+                .getStringValue()).getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
 
         return configuration;
 
+    }
+
+    private void checkRelayType(final DeviceOutputSetting deviceOutputSetting, final ServerModel serverModel) throws ProtocolAdapterException {
+
+        final RelayType registeredRelayType = deviceOutputSetting.getRelayType();
+
+        final int expectedSwType;
+        if (RelayType.LIGHT.equals(registeredRelayType)) {
+            expectedSwType = SWITCH_TYPE_LIGHT;
+        } else if (RelayType.TARIFF.equals(registeredRelayType)
+                || RelayType.TARIFF_REVERSED.equals(registeredRelayType)) {
+            expectedSwType = SWITCH_TYPE_TARIFF;
+        } else {
+            throw new ProtocolAdapterException("DeviceOutputSetting (internal index = "
+                    + deviceOutputSetting.getInternalId() + ", external index = " + deviceOutputSetting.getExternalId()
+                    + ") does not have a known RelayType: " + registeredRelayType);
+        }
+
+        final String switchTypeObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                + LogicalNodeAttributeDefinitons.getNodeNameForRelayIndex(deviceOutputSetting.getInternalId())
+                + LogicalNodeAttributeDefinitons.PROPERTY_SWITCH_TYPE;
+
+        final FcModelNode switchTypeStatus = this.getNode(serverModel, switchTypeObjectReference, Fc.ST);
+
+        final BdaInt8 swTypeValue = (BdaInt8) switchTypeStatus
+                .getChild(LogicalNodeAttributeDefinitons.PROPERTY_SW_TYPE_ATTRIBUTE_VALUE);
+
+        final int actualSwType = swTypeValue.getValue();
+        if (expectedSwType != actualSwType) {
+            throw new ProtocolAdapterException("DeviceOutputSetting (internal index = "
+                    + deviceOutputSetting.getInternalId()
+                    + ", external index = "
+                    + deviceOutputSetting.getExternalId()
+                    + ") has a RelayType ("
+                    + registeredRelayType
+                    + ") that does not match the SwType on the device: "
+                    + (actualSwType == SWITCH_TYPE_TARIFF ? "Tariff switch (0)"
+                            : (actualSwType == SWITCH_TYPE_LIGHT ? "Light switch (1)" : "Unknown value: "
+                                    + actualSwType)));
+        }
     }
 
     private void setConfigurationOnDevice(final ServerModel serverModel, final ClientAssociation clientAssociation,

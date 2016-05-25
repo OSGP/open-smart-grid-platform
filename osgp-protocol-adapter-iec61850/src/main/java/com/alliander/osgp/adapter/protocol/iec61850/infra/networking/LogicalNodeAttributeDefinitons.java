@@ -256,6 +256,12 @@ public final class LogicalNodeAttributeDefinitons {
     // SWCf
 
     /**
+     * Attribute of Property SwType, used to read the type (tariff=0/light=1) of
+     * the switch.
+     */
+    public static final String PROPERTY_SW_TYPE_ATTRIBUTE_VALUE = "stVal";
+
+    /**
      * Attribute of Property Pos, used to read the status of the relay.
      */
     public static final String PROPERTY_POSITION_ATTRIBUTE_STATE = "stVal";
