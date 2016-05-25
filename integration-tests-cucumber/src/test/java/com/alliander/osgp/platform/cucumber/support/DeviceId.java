@@ -4,13 +4,22 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DeviceId {
-    private String deviceId;
+    private String deviceIdE;
+    private String deviceIdG;
 
-    public void setDeviceId(final String deviceId) {
-        this.deviceId = deviceId;
+    public void setDeviceIdE(final String deviceIdE) {
+        this.deviceIdE = deviceIdE;
     }
 
-    public String getDeviceId() {
-        return this.deviceId;
+    public String getDeviceIdE() {
+        return this.deviceIdE;
+    }
+
+    public void setDeviceIdG(final String deviceIdG) {
+        this.deviceIdG = deviceIdG;
+    }
+
+    public String getDeviceIdG() {
+        return this.deviceIdG;
     }
 }

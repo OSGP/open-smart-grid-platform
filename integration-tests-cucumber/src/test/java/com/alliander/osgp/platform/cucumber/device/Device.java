@@ -12,6 +12,11 @@ public class Device {
 
     @Given("^a device with DeviceID \"([^\"]*)\"$")
     public void aDeviceWithDeviceID(final String deviceId) throws Throwable {
-        this.deviceId.setDeviceId(deviceId);
+        this.deviceId.setDeviceIdE(deviceId);
+    }
+
+    @Given("^a gas device with DeviceID \"([^\"]*)\"$")
+    public void aGasDeviceWithDeviceID(final String deviceId) throws Throwable {
+        this.deviceId.setDeviceIdG(deviceId);
     }
 }
