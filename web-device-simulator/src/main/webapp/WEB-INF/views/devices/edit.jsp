@@ -219,7 +219,11 @@ body {
 									<div class="controls">
 										<select id="event">
 											<option value="0">DIAG_EVENTS_GENERAL</option>
+											<option value="1">DIAG_EVENTS_UNKNOWN_MESSAGE_TYPE</option>
 											<option value="1000">HARDWARE_FAILURE_RELAY</option>
+											<option value="1001">HARDWARE_FAILURE_FLASH_WRITE_ERROR</option>
+											<option value="1002">HARDWARE_FAILURE_FLASH_MEMORY_CORRUPT</option>
+											<option value="1003">HARDWARE_FAILURE_RTC_NOT_SET</option>
 											<option value="2000">LIGHT_EVENTS_LIGHT_ON</option>
 											<option value="2001">LIGHT_EVENTS_LIGHT_OFF</option>
 											<option value="2500">LIGHT_FAILURE_DALI_COMMUNICATION</option>
@@ -228,16 +232,16 @@ body {
 											<option value="3000">TARIFF_EVENTS_TARIFF_ON</option>
 											<option value="3001">TARIFF_EVENTS_TARIFF_OFF</option>
 											<option value="4000">MONITOR_EVENTS_LONG_BUFFER_FULL</option>
-											<option value="4702">MONITOR_EVENTS_TEST_RELAY_ON</option>
-											<option value="4703">MONITOR_EVENTS_TEST_RELAY_OFF</option>
-											<option value="4800">MONITOR_EVENTS_LOSS_OF_POWER</option>
-											<option value="4900">MONITOR_EVENTS_LOCAL_MODE</option>
-											<option value="4901">MONITOR_EVENTS_REMOTE_MODE</option>
 											<option value="4500">MONITOR_FAILURE_P1_COMMUNICATION</option>
 											<option value="4600">MONITOR_SHORT_DETECTED</option>
 											<option value="4601">MONITOR_SHORT_RESOLVED</option>
 											<option value="4700">MONITOR_DOOR_OPENED</option>
 											<option value="4701">MONITOR_DOOR_CLOSED</option>
+											<option value="4702">MONITOR_EVENTS_TEST_RELAY_ON</option>
+											<option value="4703">MONITOR_EVENTS_TEST_RELAY_OFF</option>
+											<option value="4800">MONITOR_EVENTS_LOSS_OF_POWER</option>
+											<option value="4900">MONITOR_EVENTS_LOCAL_MODE</option>
+											<option value="4901">MONITOR_EVENTS_REMOTE_MODE</option>
 											<option value="5000">FIRMWARE_EVENTS_ACTIVATING</option>
 											<option value="5501">FIRMWARE_EVENTS_DOWNLOAD_NOTFOUND</option>
 											<option value="5502">FIRMWARE_EVENTS_DOWNLOAD_FAILED</option>
@@ -245,6 +249,8 @@ body {
 											<option value="6000">COMM_EVENTS_ALTERNATIVE_CHANNEL</option>
 											<option value="6001">COMM_EVENTS_RECOVERED_CHANNEL</option>
 											<option value="7000">SECURITY_EVENTS_OUT_OF_SEQUENCE</option>
+											<option value="7001">SECURITY_EVENTS_OSLP_VERIFICATION_FAILED</option>
+											<option value="7002">SECURITY_EVENTS_INVALID_CERTIFICATE</option>
 										</select>
 									</div>
 									<div class="control-label">
