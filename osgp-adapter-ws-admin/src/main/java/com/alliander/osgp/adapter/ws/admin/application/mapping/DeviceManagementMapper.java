@@ -12,7 +12,6 @@ import ma.glasnost.orika.impl.ConfigurableMapper;
 
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.adapter.ws.admin.application.mapping.ws.EventTypeConverter;
 import com.alliander.osgp.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
 
 @Component(value = "adminDeviceManagementMapper")
@@ -23,29 +22,22 @@ public class DeviceManagementMapper extends ConfigurableMapper {
         mapperFactory.registerClassMap(mapperFactory
                 .classMap(com.alliander.osgp.logging.domain.entities.DeviceLogItem.class,
                         com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.MessageLog.class)
-                        .field("modificationTime", "timestamp").byDefault().toClassMap());
+                .field("modificationTime", "timestamp").byDefault().toClassMap());
 
         mapperFactory.registerClassMap(mapperFactory
                 .classMap(com.alliander.osgp.domain.core.entities.DeviceAuthorization.class,
                         com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.DeviceAuthorisation.class)
-                        .field("device.deviceIdentification", "deviceIdentification")
-                        .field("organisation.organisationIdentification", "organisationIdentification").byDefault()
-                        .toClassMap());
-
-        mapperFactory.registerClassMap(mapperFactory
-                .classMap(com.alliander.osgp.domain.core.entities.Event.class,
-                        com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.Event.class)
-                        .field("device.deviceIdentification", "deviceIdentification").field("creationTime", "timestamp")
-                        .byDefault().toClassMap());
+                .field("device.deviceIdentification", "deviceIdentification")
+                .field("organisation.organisationIdentification", "organisationIdentification").byDefault()
+                .toClassMap());
 
         mapperFactory.registerClassMap(mapperFactory
                 .classMap(com.alliander.osgp.domain.core.entities.ProtocolInfo.class,
                         com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ProtocolInfo.class)
-                .exclude("outgoingProtocolRequestsQueue").exclude("incomingProtocolResponsesQueue")
-                .exclude("incomingProtocolRequestsQueue").exclude("outgoingProtocolResponsesQueue").byDefault()
-                .toClassMap());
+                        .exclude("outgoingProtocolRequestsQueue").exclude("incomingProtocolResponsesQueue")
+                        .exclude("incomingProtocolRequestsQueue").exclude("outgoingProtocolResponsesQueue").byDefault()
+                        .toClassMap());
 
         mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
-        mapperFactory.getConverterFactory().registerConverter(new EventTypeConverter());
     }
 }
