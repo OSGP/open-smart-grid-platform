@@ -295,7 +295,7 @@
 	<xsd:complexType name="AlarmRegister">
 		<xsd:complexContent>
 			<xsd:extension base="common:Response">
-				<xsd:sequence maxOccurs="unbounded">
+				<xsd:sequence maxOccurs="unbounded" minOccurs="0">
 					<xsd:element name="AlarmTypes" type="common:AlarmType" />
 				</xsd:sequence>
 			</xsd:extension>

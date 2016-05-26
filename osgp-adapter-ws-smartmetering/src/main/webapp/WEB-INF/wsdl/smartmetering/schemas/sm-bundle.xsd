@@ -83,17 +83,17 @@
 	<xsd:complexType name="AllResponses">
 		<xsd:sequence>
 			<xsd:choice maxOccurs="unbounded">
-					<xsd:element name="FindEventsResponseData" type="smman:FindEventsResponseData" maxOccurs="unbounded" />
-					<xsd:element name="ActionResponseData" type="common:ActionResponseData" maxOccurs="unbounded" />
-					<xsd:element name="AlarmRegister" type="smmon:AlarmRegister" maxOccurs="unbounded" />
-					<xsd:element name="ActualMeterReadsResponseData" type="smmon:ActualMeterReadsResponseData" maxOccurs="unbounded" />
-					<xsd:element name="ActualMeterReadsGasResponseData" type="smmon:ActualMeterReadsGasResponseData" maxOccurs="unbounded" />
-					<xsd:element name="AdministrativeStatusResponseData" type="smconf:AdministrativeStatusResponseData" maxOccurs="unbounded" />
-					<xsd:element name="PeriodicMeterReadsResponseData" type="smmon:PeriodicMeterReadsResponseData" maxOccurs="unbounded" />
-					<xsd:element name="PeriodicMeterReadsGasResponseData" type="smmon:PeriodicMeterReadsGasResponseData" maxOccurs="unbounded" />
-					<xsd:element name="GetConfigurationResponseData" type="adhoc:GetConfigurationResponseData" maxOccurs="unbounded" />
-					<xsd:element name="GetFirmwareVersionResponseData" type="smconf:GetFirmwareVersionResponseData" maxOccurs="unbounded" />
-                    <xsd:element name="AssociationLnObjectsResponseData" type="adhoc:AssociationLnObjectsResponseData" maxOccurs="unbounded" />
+					<xsd:element name="FindEventsResponseData" type="smman:FindEventsResponseData" />
+					<xsd:element name="ActionResponseData" type="common:ActionResponseData" />
+					<xsd:element name="AlarmRegister" type="smmon:AlarmRegister" />
+					<xsd:element name="ActualMeterReadsResponseData" type="smmon:ActualMeterReadsResponseData" />
+					<xsd:element name="ActualMeterReadsGasResponseData" type="smmon:ActualMeterReadsGasResponseData" />
+					<xsd:element name="AdministrativeStatusResponseData" type="smconf:AdministrativeStatusResponseData" />
+					<xsd:element name="PeriodicMeterReadsResponseData" type="smmon:PeriodicMeterReadsResponseData" />
+					<xsd:element name="PeriodicMeterReadsGasResponseData" type="smmon:PeriodicMeterReadsGasResponseData" />
+					<xsd:element name="GetConfigurationResponseData" type="adhoc:GetConfigurationResponseData" />
+					<xsd:element name="GetFirmwareVersionResponseData" type="smconf:GetFirmwareVersionResponseData" />
+                    <xsd:element name="AssociationLnObjectsResponseData" type="adhoc:AssociationLnObjectsResponseData" />
 			</xsd:choice>
 		</xsd:sequence>
 	</xsd:complexType>
