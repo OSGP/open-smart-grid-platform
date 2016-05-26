@@ -10,7 +10,6 @@ package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 import java.io.Serializable;
 
 import org.openmuc.jdlms.ClientConnection;
-import org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders.exceptions.SessionProviderException;
 import org.osgp.adapter.protocol.dlms.application.services.MonitoringService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -23,20 +22,23 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQueryDt
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Component
-public class ActualMeterReadsRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class ActualMeterReadsRequestMessageProcessor extends
+		DeviceRequestMessageProcessor {
 
-    @Autowired
-    private MonitoringService monitoringService;
+	@Autowired
+	private MonitoringService monitoringService;
 
-    protected ActualMeterReadsRequestMessageProcessor() {
-        super(DeviceRequestMessageType.REQUEST_ACTUAL_METER_DATA);
-    }
+	protected ActualMeterReadsRequestMessageProcessor() {
+		super(DeviceRequestMessageType.REQUEST_ACTUAL_METER_DATA);
+	}
 
-    @Override
-    protected Serializable handleMessage(final ClientConnection conn, final DlmsDevice device,
-            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
+	@Override
+	protected Serializable handleMessage(final ClientConnection conn,
+			final DlmsDevice device, final Serializable requestObject)
+			throws OsgpException, ProtocolAdapterException {
 
-        final ActualMeterReadsQueryDto actualMeterReadsRequest = (ActualMeterReadsQueryDto) requestObject;
-        return this.monitoringService.requestActualMeterReads(conn, device, actualMeterReadsRequest);
-    }
+		final ActualMeterReadsQueryDto actualMeterReadsRequest = (ActualMeterReadsQueryDto) requestObject;
+		return this.monitoringService.requestActualMeterReads(conn, device,
+				actualMeterReadsRequest);
+	}
 }

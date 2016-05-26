@@ -10,7 +10,6 @@ package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 import java.io.Serializable;
 
 import org.openmuc.jdlms.ClientConnection;
-import org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders.exceptions.SessionProviderException;
 import org.osgp.adapter.protocol.dlms.application.services.MonitoringService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -23,20 +22,23 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterReques
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Component
-public class ReadAlarmRegisterRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class ReadAlarmRegisterRequestMessageProcessor extends
+		DeviceRequestMessageProcessor {
 
-    @Autowired
-    private MonitoringService monitoringService;
+	@Autowired
+	private MonitoringService monitoringService;
 
-    protected ReadAlarmRegisterRequestMessageProcessor() {
-        super(DeviceRequestMessageType.READ_ALARM_REGISTER);
-    }
+	protected ReadAlarmRegisterRequestMessageProcessor() {
+		super(DeviceRequestMessageType.READ_ALARM_REGISTER);
+	}
 
-    @Override
-    protected Serializable handleMessage(final ClientConnection conn, final DlmsDevice device,
-            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
+	@Override
+	protected Serializable handleMessage(final ClientConnection conn,
+			final DlmsDevice device, final Serializable requestObject)
+			throws OsgpException, ProtocolAdapterException {
 
-        final ReadAlarmRegisterRequestDto readAlarmRegisterRequest = (ReadAlarmRegisterRequestDto) requestObject;
-        return this.monitoringService.requestReadAlarmRegister(conn, device, readAlarmRegisterRequest);
-    }
+		final ReadAlarmRegisterRequestDto readAlarmRegisterRequest = (ReadAlarmRegisterRequestDto) requestObject;
+		return this.monitoringService.requestReadAlarmRegister(conn, device,
+				readAlarmRegisterRequest);
+	}
 }

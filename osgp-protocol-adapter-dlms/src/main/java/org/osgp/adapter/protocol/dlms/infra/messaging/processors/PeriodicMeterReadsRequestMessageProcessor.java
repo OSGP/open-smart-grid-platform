@@ -10,7 +10,6 @@ package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 import java.io.Serializable;
 
 import org.openmuc.jdlms.ClientConnection;
-import org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders.exceptions.SessionProviderException;
 import org.osgp.adapter.protocol.dlms.application.services.MonitoringService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -26,20 +25,23 @@ import com.alliander.osgp.shared.exceptionhandling.OsgpException;
  * Class for processing Periodic Meter Request messages
  */
 @Component
-public class PeriodicMeterReadsRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class PeriodicMeterReadsRequestMessageProcessor extends
+		DeviceRequestMessageProcessor {
 
-    @Autowired
-    private MonitoringService monitoringService;
+	@Autowired
+	private MonitoringService monitoringService;
 
-    public PeriodicMeterReadsRequestMessageProcessor() {
-        super(DeviceRequestMessageType.REQUEST_PERIODIC_METER_DATA);
-    }
+	public PeriodicMeterReadsRequestMessageProcessor() {
+		super(DeviceRequestMessageType.REQUEST_PERIODIC_METER_DATA);
+	}
 
-    @Override
-    protected Serializable handleMessage(final ClientConnection conn, final DlmsDevice device,
-            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
-        final PeriodicMeterReadsRequestDto periodicMeterReadsQuery = (PeriodicMeterReadsRequestDto) requestObject;
+	@Override
+	protected Serializable handleMessage(final ClientConnection conn,
+			final DlmsDevice device, final Serializable requestObject)
+			throws OsgpException, ProtocolAdapterException {
+		final PeriodicMeterReadsRequestDto periodicMeterReadsQuery = (PeriodicMeterReadsRequestDto) requestObject;
 
-        return this.monitoringService.requestPeriodicMeterReads(conn, device, periodicMeterReadsQuery);
-    }
+		return this.monitoringService.requestPeriodicMeterReads(conn, device,
+				periodicMeterReadsQuery);
+	}
 }

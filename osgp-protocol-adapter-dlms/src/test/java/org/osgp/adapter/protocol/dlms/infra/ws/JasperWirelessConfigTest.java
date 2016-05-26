@@ -11,7 +11,9 @@ import javax.annotation.Resource;
 
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.jboss.netty.logging.Slf4JLoggerFactory;
-import org.osgp.adapter.protocol.dlms.application.config.JasperWirelessAccess;
+import org.osgp.adapter.protocol.jasper.config.JasperWirelessAccess;
+import org.osgp.adapter.protocol.jasper.infra.ws.CorrelationIdProviderService;
+import org.osgp.adapter.protocol.jasper.infra.ws.JasperWirelessSmsClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -33,67 +35,75 @@ import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 @Configuration
 public class JasperWirelessConfigTest {
 
-    // JMS Settings
-    private static final String PROPERTY_NAME_CONTROLCENTER_SMS_URI = "jwcc.uri.sms";
-    private static final String PROPERTY_NAME_CONTROLCENTER_LICENSEKEY = "jwcc.licensekey";
-    private static final String PROPERTY_NAME_CONTROLCENTER_USERNAME = "jwcc.username";
-    private static final String PROPERTY_NAME_CONTROLCENTER_PASSWORD = "jwcc.password";
-    private static final String PROPERTY_NAME_CONTROLCENTER_API_VERSION = "jwcc.api_version";
+	// JMS Settings
+	private static final String PROPERTY_NAME_CONTROLCENTER_SMS_URI = "jwcc.uri.sms";
+	private static final String PROPERTY_NAME_CONTROLCENTER_LICENSEKEY = "jwcc.licensekey";
+	private static final String PROPERTY_NAME_CONTROLCENTER_USERNAME = "jwcc.username";
+	private static final String PROPERTY_NAME_CONTROLCENTER_PASSWORD = "jwcc.password";
+	private static final String PROPERTY_NAME_CONTROLCENTER_API_VERSION = "jwcc.api_version";
 
-    @Resource
-    private Environment environment;
+	@Resource
+	private Environment environment;
 
-    public JasperWirelessConfigTest() {
-        InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
-    }
+	public JasperWirelessConfigTest() {
+		InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
+	}
 
-    @Bean
-    public Jaxb2Marshaller jasperWirelessMarshaller() {
-        final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-        marshaller.setContextPath("com.jasperwireless.api.ws.service");
-        return marshaller;
-    }
+	@Bean
+	public Jaxb2Marshaller jasperWirelessMarshaller() {
+		final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+		marshaller.setContextPath("com.jasperwireless.api.ws.service");
+		return marshaller;
+	}
 
-    @Bean
-    public HttpComponentsMessageSender xwsSecurityMessageSender() {
-        return new HttpComponentsMessageSender();
-    }
+	@Bean
+	public HttpComponentsMessageSender xwsSecurityMessageSender() {
+		return new HttpComponentsMessageSender();
+	}
 
-    @Bean
-    public Wss4jSecurityInterceptor xwsSecurityInterceptor() {
-        final Wss4jSecurityInterceptor interceptor = new Wss4jSecurityInterceptor();
-        interceptor.setSecurementActions("UsernameToken");
-        return interceptor;
-    }
+	@Bean
+	public Wss4jSecurityInterceptor xwsSecurityInterceptor() {
+		final Wss4jSecurityInterceptor interceptor = new Wss4jSecurityInterceptor();
+		interceptor.setSecurementActions("UsernameToken");
+		return interceptor;
+	}
 
-    @Bean
-    public WebServiceTemplate webServiceTemplate() {
-        final WebServiceTemplate webServiceTemplate = new WebServiceTemplate();
-        webServiceTemplate.setMarshaller(this.jasperWirelessMarshaller());
-        webServiceTemplate.setUnmarshaller(this.jasperWirelessMarshaller());
-        webServiceTemplate.setDefaultUri("https://api.jasperwireless.com/ws/service/Sms");
-        webServiceTemplate.setMessageSender(this.xwsSecurityMessageSender());
-        final ClientInterceptor[] clientInterceptors = new ClientInterceptor[] { this.xwsSecurityInterceptor() };
-        webServiceTemplate.setInterceptors(clientInterceptors);
-        return webServiceTemplate;
-    }
+	@Bean
+	public WebServiceTemplate webServiceTemplate() {
+		final WebServiceTemplate webServiceTemplate = new WebServiceTemplate();
+		webServiceTemplate.setMarshaller(this.jasperWirelessMarshaller());
+		webServiceTemplate.setUnmarshaller(this.jasperWirelessMarshaller());
+		webServiceTemplate
+				.setDefaultUri("https://api.jasperwireless.com/ws/service/Sms");
+		webServiceTemplate.setMessageSender(this.xwsSecurityMessageSender());
+		final ClientInterceptor[] clientInterceptors = new ClientInterceptor[] { this
+				.xwsSecurityInterceptor() };
+		webServiceTemplate.setInterceptors(clientInterceptors);
+		return webServiceTemplate;
+	}
 
-    @Bean
-    public JasperWirelessAccess jwccWSConfig() {
-        return new JasperWirelessAccess(this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_SMS_URI),
-                this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_LICENSEKEY),
-                this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_USERNAME),
-                this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_PASSWORD),
-                this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_API_VERSION));
-    }
+	@Bean
+	public JasperWirelessAccess jwccWSConfig() {
+		return new JasperWirelessAccess(
+				this.environment
+						.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_SMS_URI),
+				this.environment
+						.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_LICENSEKEY),
+				this.environment
+						.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_USERNAME),
+				this.environment
+						.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_PASSWORD),
+				this.environment
+						.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_API_VERSION));
+	}
 
-    @Bean
-    public JasperWirelessSmsClient jasperWirelessSMSClient() {
-        return new JasperWirelessSmsClient();
-    }
+	@Bean
+	public JasperWirelessSmsClient jasperWirelessSMSClient() {
+		return new JasperWirelessSmsClient();
+	}
 
-    @Bean
-    public CorrelationIdProviderService correlationIdProviderService() {
-        return new CorrelationIdProviderService();
-    }
+	@Bean
+	public CorrelationIdProviderService correlationIdProviderService() {
+		return new CorrelationIdProviderService();
+	}
 }

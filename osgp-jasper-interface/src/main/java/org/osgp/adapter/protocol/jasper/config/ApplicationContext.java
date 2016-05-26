@@ -1,11 +1,11 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.osgp.adapter.protocol.dlms.application.config;
+package org.osgp.adapter.protocol.jasper.config;
 
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.jboss.netty.logging.Slf4JLoggerFactory;
@@ -25,11 +25,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * configuration requires Spring Framework 3.0
  */
 @Configuration
-@ComponentScan(basePackages = { "org.osgp.adapter.protocol.dlms",
-		"org.osgp.adapter.protocol.jasper",
-		"com.alliander.osgp.shared.security" })
+@ComponentScan(basePackages = { "org.osgp.adapter.protocol.jasper",
+"com.alliander.osgp.shared.security" })
 @EnableTransactionManagement()
-@Import({ MessagingConfig.class, DlmsPersistenceConfig.class })
+@Import({ JasperWirelessConfig.class })
 @PropertySource("file:${osp/osgpAdapterProtocolDlms/config}")
 public class ApplicationContext {
 

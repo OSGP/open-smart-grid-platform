@@ -10,7 +10,6 @@ package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 import java.io.Serializable;
 
 import org.openmuc.jdlms.ClientConnection;
-import org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders.exceptions.SessionProviderException;
 import org.osgp.adapter.protocol.dlms.application.services.ConfigurationService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -26,20 +25,23 @@ import com.alliander.osgp.shared.exceptionhandling.OsgpException;
  * Class for processing set push setup alarm request messages
  */
 @Component
-public class SetPushSetupAlarmRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class SetPushSetupAlarmRequestMessageProcessor extends
+		DeviceRequestMessageProcessor {
 
-    @Autowired
-    private ConfigurationService configurationService;
+	@Autowired
+	private ConfigurationService configurationService;
 
-    public SetPushSetupAlarmRequestMessageProcessor() {
-        super(DeviceRequestMessageType.SET_PUSH_SETUP_ALARM);
-    }
+	public SetPushSetupAlarmRequestMessageProcessor() {
+		super(DeviceRequestMessageType.SET_PUSH_SETUP_ALARM);
+	}
 
-    @Override
-    protected Serializable handleMessage(final ClientConnection conn, final DlmsDevice device,
-            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
-        final PushSetupAlarmDto pushSetupAlarm = (PushSetupAlarmDto) requestObject;
-        this.configurationService.setPushSetupAlarm(conn, device, pushSetupAlarm);
-        return null;
-    }
+	@Override
+	protected Serializable handleMessage(final ClientConnection conn,
+			final DlmsDevice device, final Serializable requestObject)
+			throws OsgpException, ProtocolAdapterException {
+		final PushSetupAlarmDto pushSetupAlarm = (PushSetupAlarmDto) requestObject;
+		this.configurationService.setPushSetupAlarm(conn, device,
+				pushSetupAlarm);
+		return null;
+	}
 }

@@ -10,7 +10,6 @@ package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 import java.io.Serializable;
 
 import org.openmuc.jdlms.ClientConnection;
-import org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders.exceptions.SessionProviderException;
 import org.osgp.adapter.protocol.dlms.application.services.ManagementService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -26,19 +25,22 @@ import com.alliander.osgp.shared.exceptionhandling.OsgpException;
  * Class for processing find events request messages
  */
 @Component
-public class FindEventsRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class FindEventsRequestMessageProcessor extends
+		DeviceRequestMessageProcessor {
 
-    @Autowired
-    private ManagementService managementService;
+	@Autowired
+	private ManagementService managementService;
 
-    public FindEventsRequestMessageProcessor() {
-        super(DeviceRequestMessageType.FIND_EVENTS);
-    }
+	public FindEventsRequestMessageProcessor() {
+		super(DeviceRequestMessageType.FIND_EVENTS);
+	}
 
-    @Override
-    protected Serializable handleMessage(final ClientConnection conn, final DlmsDevice device,
-            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
+	@Override
+	protected Serializable handleMessage(final ClientConnection conn,
+			final DlmsDevice device, final Serializable requestObject)
+			throws OsgpException, ProtocolAdapterException {
 
-        return this.managementService.findEvents(conn, device, (FindEventsRequestList) requestObject);
-    }
+		return this.managementService.findEvents(conn, device,
+				(FindEventsRequestList) requestObject);
+	}
 }

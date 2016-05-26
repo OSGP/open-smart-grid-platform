@@ -10,7 +10,6 @@ package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 import java.io.Serializable;
 
 import org.openmuc.jdlms.ClientConnection;
-import org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders.exceptions.SessionProviderException;
 import org.osgp.adapter.protocol.dlms.application.services.ConfigurationService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -26,21 +25,24 @@ import com.alliander.osgp.shared.exceptionhandling.OsgpException;
  * Class for processing Special Days Request messages
  */
 @Component
-public class SpecialDaysRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class SpecialDaysRequestMessageProcessor extends
+		DeviceRequestMessageProcessor {
 
-    @Autowired
-    private ConfigurationService configurationService;
+	@Autowired
+	private ConfigurationService configurationService;
 
-    public SpecialDaysRequestMessageProcessor() {
-        super(DeviceRequestMessageType.REQUEST_SPECIAL_DAYS);
-    }
+	public SpecialDaysRequestMessageProcessor() {
+		super(DeviceRequestMessageType.REQUEST_SPECIAL_DAYS);
+	}
 
-    @Override
-    protected Serializable handleMessage(final ClientConnection conn, final DlmsDevice device,
-            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
-        final SpecialDaysRequestDto specialDaysRequest = (SpecialDaysRequestDto) requestObject;
+	@Override
+	protected Serializable handleMessage(final ClientConnection conn,
+			final DlmsDevice device, final Serializable requestObject)
+			throws OsgpException, ProtocolAdapterException {
+		final SpecialDaysRequestDto specialDaysRequest = (SpecialDaysRequestDto) requestObject;
 
-        this.configurationService.requestSpecialDays(conn, device, specialDaysRequest);
-        return null;
-    }
+		this.configurationService.requestSpecialDays(conn, device,
+				specialDaysRequest);
+		return null;
+	}
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright 2015 Smart Society Services B.V.
+    Copyright 2016 Smart Society Services B.V.
 
     Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
 
@@ -12,28 +12,48 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>osgp-protocol-adapter-dlms</artifactId>
-  <name>osgp-protocol-adapter-dlms</name>
-  <packaging>war</packaging>
-    <!-- Description element is needed for the maven-jxr-plugin to generate 
-        a maven site -->
-  <description>Protocol Adapter for Device Message Language Specification.</description>
+  <artifactId>jasper-interface</artifactId>
+  <packaging>jar</packaging>
 
-  <parent>
+  <name>jasper-interface</name>
+  <url>http://maven.apache.org</url>
+  
+   <parent>
     <groupId>org.osgp</groupId>
     <artifactId>parent-pa-dlms</artifactId>
     <version>3.4.0-SNAPSHOT</version>
     <relativePath>../parent-pa-dlms/pom.xml</relativePath>
   </parent>
-
+  
 
   <properties>
-    <display.version>${project.version}-${BUILD_TAG}</display.version>
-    <skipITs>true</skipITs>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jaxb2-maven-plugin</artifactId>
+        <version>1.5</version>
+        <executions>
+          <execution>
+            <id>jasper-wireless</id>
+            <goals>
+              <goal>xjc</goal>
+            </goals>
+            <configuration>
+              <schemaDirectory>src/main/webapp/wsdl/jasperwireless</schemaDirectory>
+              <packageName>com.jasperwireless.api.ws.service</packageName>
+              <wsdl>true</wsdl>
+              <xmlschema>false</xmlschema>
+              <staleFile>${project.build.directory}/jaxb2/.schema-smart-metering-configuration-stale-flag</staleFile>
+                            <!-- USE THIS ONLY FOR THE FIRST EXECUTION -->
+              <clearOutputDir>false</clearOutputDir>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
@@ -79,33 +99,8 @@
   </build>
 
   <dependencies>
-        <!-- OpenMUC Dependencies -->
-    <dependency>
-      <groupId>org.openmuc</groupId>
-      <artifactId>jdlms</artifactId>
-    </dependency>
 
-        <!-- Alliander -->
-    <dependency>
-      <groupId>com.alliander.osgp</groupId>
-      <artifactId>osgp-dto</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.alliander.osgp</groupId>
-      <artifactId>shared</artifactId>
-    </dependency>
-    
-    <dependency>
-		<groupId>org.osgp</groupId>
-		<artifactId>jasper-interface</artifactId>
-	</dependency>
-
-    <dependency>
-      <groupId>org.osgp</groupId>
-      <artifactId>osgp-dlms</artifactId>
-    </dependency>
-
-        <!-- Spring Framework -->
+    <!-- Spring Framework -->
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-beans</artifactId>
@@ -192,23 +187,8 @@
       <artifactId>joda-time</artifactId>
     </dependency>
 
-        <!-- Hibernate -->
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-entitymanager</artifactId>
-    </dependency>
 
-        <!-- Flyway (DB Migration) -->
-    <dependency>
-      <groupId>com.googlecode.flyway</groupId>
-      <artifactId>flyway-core</artifactId>
-    </dependency>
-
-        <!-- Logging -->
+    <!-- Logging -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
@@ -241,27 +221,8 @@
       <artifactId>commons-lang3</artifactId>
     </dependency>
 
-        <!-- Orika (mapping framework) -->
-    <dependency>
-      <groupId>ma.glasnost.orika</groupId>
-      <artifactId>orika-core</artifactId>
-    </dependency>
 
-        <!-- Apache ActiveMQ -->
-    <dependency>
-      <groupId>org.apache.activemq</groupId>
-      <artifactId>activemq-client</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.activemq</groupId>
-      <artifactId>activemq-spring</artifactId>
-    </dependency>
 
-        <!-- Spring JMS -->
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-jms</artifactId>
-    </dependency>
 
         <!-- Testing dependencies -->
     <dependency>
@@ -271,12 +232,6 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-      <version>9.4.1207.jre7</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

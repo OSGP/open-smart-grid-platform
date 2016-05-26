@@ -10,7 +10,6 @@ package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 import java.io.Serializable;
 
 import org.openmuc.jdlms.ClientConnection;
-import org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders.exceptions.SessionProviderException;
 import org.osgp.adapter.protocol.dlms.application.services.ConfigurationService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -26,22 +25,25 @@ import com.alliander.osgp.shared.exceptionhandling.OsgpException;
  * Class for processing set alarm notifications request messages
  */
 @Component
-public class SetAlarmNotificationsRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class SetAlarmNotificationsRequestMessageProcessor extends
+		DeviceRequestMessageProcessor {
 
-    @Autowired
-    private ConfigurationService configurationService;
+	@Autowired
+	private ConfigurationService configurationService;
 
-    public SetAlarmNotificationsRequestMessageProcessor() {
-        super(DeviceRequestMessageType.SET_ALARM_NOTIFICATIONS);
-    }
+	public SetAlarmNotificationsRequestMessageProcessor() {
+		super(DeviceRequestMessageType.SET_ALARM_NOTIFICATIONS);
+	}
 
-    @Override
-    protected Serializable handleMessage(final ClientConnection conn, final DlmsDevice device,
-            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
-        final AlarmNotificationsDto alarmNotifications = (AlarmNotificationsDto) requestObject;
+	@Override
+	protected Serializable handleMessage(final ClientConnection conn,
+			final DlmsDevice device, final Serializable requestObject)
+			throws OsgpException, ProtocolAdapterException {
+		final AlarmNotificationsDto alarmNotifications = (AlarmNotificationsDto) requestObject;
 
-        this.configurationService.setAlarmNotifications(conn, device, alarmNotifications);
+		this.configurationService.setAlarmNotifications(conn, device,
+				alarmNotifications);
 
-        return null;
-    }
+		return null;
+	}
 }

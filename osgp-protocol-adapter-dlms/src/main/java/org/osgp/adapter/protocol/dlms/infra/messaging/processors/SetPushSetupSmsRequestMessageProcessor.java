@@ -10,7 +10,6 @@ package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 import java.io.Serializable;
 
 import org.openmuc.jdlms.ClientConnection;
-import org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders.exceptions.SessionProviderException;
 import org.osgp.adapter.protocol.dlms.application.services.ConfigurationService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -26,21 +25,23 @@ import com.alliander.osgp.shared.exceptionhandling.OsgpException;
  * Class for processing set push setup sms request messages
  */
 @Component
-public class SetPushSetupSmsRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class SetPushSetupSmsRequestMessageProcessor extends
+		DeviceRequestMessageProcessor {
 
-    @Autowired
-    private ConfigurationService configurationService;
+	@Autowired
+	private ConfigurationService configurationService;
 
-    public SetPushSetupSmsRequestMessageProcessor() {
-        super(DeviceRequestMessageType.SET_PUSH_SETUP_SMS);
-    }
+	public SetPushSetupSmsRequestMessageProcessor() {
+		super(DeviceRequestMessageType.SET_PUSH_SETUP_SMS);
+	}
 
-    @Override
-    protected Serializable handleMessage(final ClientConnection conn, final DlmsDevice device,
-            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
+	@Override
+	protected Serializable handleMessage(final ClientConnection conn,
+			final DlmsDevice device, final Serializable requestObject)
+			throws OsgpException, ProtocolAdapterException {
 
-        final PushSetupSmsDto pushSetupSms = (PushSetupSmsDto) requestObject;
-        this.configurationService.setPushSetupSms(conn, device, pushSetupSms);
-        return null;
-    }
+		final PushSetupSmsDto pushSetupSms = (PushSetupSmsDto) requestObject;
+		this.configurationService.setPushSetupSms(conn, device, pushSetupSms);
+		return null;
+	}
 }
