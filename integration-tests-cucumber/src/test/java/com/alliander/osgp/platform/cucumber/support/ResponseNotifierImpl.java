@@ -1,3 +1,10 @@
+/**
+ * Copyright 2016 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.platform.cucumber.support;
 
 import java.sql.Connection;
@@ -123,26 +130,7 @@ public class ResponseNotifierImpl implements ResponseNotifier {
         return connection;
     }
 
-    //
-    // We may have to put these values in a properties file!
-    //
-    
-//    private String host() {
-//        return "localhost";
-//    }
-//    
-//    private String database() {
-//        return "osgp_adapter_ws_smartmetering";
-//    }
-//    
-//    private String username() {
-//        return "osp_admin";
-//    }
-//    
-//    private String password() {
-//        return "osp_admin";
-//    }
-    
+   
     //-------------
     
   //To resolve ${} in @Value
