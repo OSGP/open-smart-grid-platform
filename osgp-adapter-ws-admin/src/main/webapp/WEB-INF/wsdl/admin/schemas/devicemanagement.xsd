@@ -33,7 +33,7 @@
 	<xsd:element name="RemoveOrganisationRequest">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element name="OrganisationIdentification" type="common:Identification" />
+				<xsd:element name="OrganisationIdentification" type="common:DeviceIdentification" />
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
