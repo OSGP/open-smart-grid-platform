@@ -245,6 +245,7 @@
       <xsd:enumeration value="PENDING" />
       <xsd:enumeration value="COMPLETE" />
       <xsd:enumeration value="FAILED" />
+      <xsd:enumeration value="RETRY" />
     </xsd:restriction>
   </xsd:simpleType>
 

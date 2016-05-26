@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.ws.core.application.mapping.ws.EventTypeConverter;
+import com.alliander.osgp.adapter.ws.core.application.mapping.ws.ScheduledTaskConverter;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.RelayStatus;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.RelayType;
 import com.alliander.osgp.domain.core.entities.Device;
@@ -58,26 +59,27 @@ public class DeviceManagementMapper extends ConfigurableMapper {
         mapperFactory.registerClassMap(mapperFactory
                 .classMap(com.alliander.osgp.domain.core.entities.Device.class,
                         com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device.class)
-                .field("ipAddress", "networkAddress").byDefault().toClassMap());
+                        .field("ipAddress", "networkAddress").byDefault().toClassMap());
 
         mapperFactory.registerClassMap(mapperFactory
                 .classMap(com.alliander.osgp.domain.core.entities.Event.class,
                         com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Event.class)
-                .field("device.deviceIdentification", "deviceIdentification").field("dateTime", "timestamp")
-                .byDefault().toClassMap());
+                        .field("device.deviceIdentification", "deviceIdentification").field("dateTime", "timestamp")
+                        .byDefault().toClassMap());
 
         mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
         mapperFactory.getConverterFactory().registerConverter(new EventTypeConverter());
         mapperFactory.getConverterFactory().registerConverter(new DeviceConverter(this.ssldRepository));
         mapperFactory.getConverterFactory().registerConverter(new SsldConverter());
+        mapperFactory.getConverterFactory().registerConverter(new ScheduledTaskConverter());
     }
 
     private static class SsldConverter extends
-    BidirectionalConverter<Ssld, com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device> {
+            BidirectionalConverter<Ssld, com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device> {
 
         /*
          * (non-Javadoc)
-         *
+         * 
          * @see
          * ma.glasnost.orika.converter.BidirectionalConverter#convertTo(java
          * .lang.Object, ma.glasnost.orika.metadata.Type)
@@ -90,7 +92,7 @@ public class DeviceManagementMapper extends ConfigurableMapper {
 
         /*
          * (non-Javadoc)
-         *
+         * 
          * @see
          * ma.glasnost.orika.converter.BidirectionalConverter#convertFrom(java
          * .lang.Object, ma.glasnost.orika.metadata.Type)
@@ -150,7 +152,7 @@ public class DeviceManagementMapper extends ConfigurableMapper {
     }
 
     private static class DeviceConverter extends
-            BidirectionalConverter<Device, com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device> {
+    BidirectionalConverter<Device, com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device> {
 
         private SsldRepository ssldRepository;
 
