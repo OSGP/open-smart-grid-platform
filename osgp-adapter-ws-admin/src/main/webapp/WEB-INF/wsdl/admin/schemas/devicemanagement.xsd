@@ -15,6 +15,7 @@
 
   <xsd:import namespace="http://www.alliander.com/schemas/osgp/common/2014/10"
     schemaLocation="common.xsd" />
+
   <xsd:element name="CreateOrganisationRequest">
     <xsd:complexType>
       <xsd:sequence>
