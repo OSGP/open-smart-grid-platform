@@ -39,15 +39,29 @@ import org.springframework.ws.soap.security.wss4j.Wss4jSecurityInterceptor;
 @ComponentScan(basePackages = { "org.osgp.adapter.protocol.jasper" })
 public class JasperWirelessConfig {
 
-	// JMS Settings
-	private static final String PROPERTY_NAME_CONTROLCENTER_TERMINAL_URI = "jwcc.uri.terminal";
-	private static final String PROPERTY_NAME_CONTROLCENTER_SMS_URI = "jwcc.uri.sms";
-	private static final String PROPERTY_NAME_CONTROLCENTER_LICENSEKEY = "jwcc.licensekey";
-	private static final String PROPERTY_NAME_CONTROLCENTER_USERNAME = "jwcc.username";
-	private static final String PROPERTY_NAME_CONTROLCENTER_PASSWORD = "jwcc.password";
-	private static final String PROPERTY_NAME_CONTROLCENTER_API_VERSION = "jwcc.api_version";
-	private static final String GETSESSION_RETRIES = "jwcc.getsession.retries";
-	private static final String GETSESSION_SLEEP_BETWEEN_RETRIES = "jwcc.getsession.sleep.between.retries";
+	@Value("${jwcc.uri.terminal}")
+	private String terminal;
+
+	@Value("${jwcc.getsession.retries}")
+	private String retries;
+
+	@Value("${jwcc.getsession.sleep.between.retries}")
+	private String sleepBetweenRetries;
+
+	@Value("${jwcc.uri.sms}")
+	private String uri;
+
+	@Value("${jwcc.licensekey}")
+	private String licenceKey;
+
+	@Value("${jwcc.username}")
+	private String username;
+
+	@Value("${jwcc.password}")
+	private String password;
+
+	@Value("${jwcc.api_version}")
+	private String apiVersion;
 
 	private static final Logger LOGGER = LoggerFactory
 			.getLogger(JasperWirelessConfig.class);
@@ -91,7 +105,7 @@ public class JasperWirelessConfig {
 		webServiceTemplate.setMarshaller(this.marshaller());
 		webServiceTemplate.setUnmarshaller(this.marshaller());
 		webServiceTemplate
-				.setDefaultUri("https://kpnapi.jasperwireless.com/ws/service/Sms");
+		.setDefaultUri("https://kpnapi.jasperwireless.com/ws/service/Sms");
 		webServiceTemplate.setInterceptors(new ClientInterceptor[] { this
 				.wss4jSecurityInterceptorClient() });
 		webServiceTemplate.setMessageFactory(this.messageFactory());
@@ -109,24 +123,15 @@ public class JasperWirelessConfig {
 	}
 
 	@Bean
-	public JasperWirelessAccess jasperWirelessAccess(
-			@Value("${" + PROPERTY_NAME_CONTROLCENTER_SMS_URI + "}") final String uri,
-			@Value("${" + PROPERTY_NAME_CONTROLCENTER_LICENSEKEY + "}") final String key,
-			@Value("${" + PROPERTY_NAME_CONTROLCENTER_USERNAME + "}") final String username,
-			@Value("${" + PROPERTY_NAME_CONTROLCENTER_PASSWORD + "}") final String password,
-			@Value("${" + PROPERTY_NAME_CONTROLCENTER_API_VERSION + "}") final String version) {
-
-		return new JasperWirelessAccess(uri, key, username, password, version);
+	public JasperWirelessAccess jasperWirelessAccess() {
+		return new JasperWirelessAccess(this.uri, this.licenceKey,
+				this.username, this.password, this.apiVersion);
 	}
 
 	@Bean
-	public JasperWirelessAccess jasperWirelessTerminalAccess(
-			@Value("${" + PROPERTY_NAME_CONTROLCENTER_TERMINAL_URI + "}") final String uri,
-			@Value("${" + PROPERTY_NAME_CONTROLCENTER_LICENSEKEY + "}") final String key,
-			@Value("${" + PROPERTY_NAME_CONTROLCENTER_USERNAME + "}") final String username,
-			@Value("${" + PROPERTY_NAME_CONTROLCENTER_PASSWORD + "}") final String password,
-			@Value("${" + PROPERTY_NAME_CONTROLCENTER_API_VERSION + "}") final String version) {
-		return new JasperWirelessAccess(uri, key, username, password, version);
+	public JasperWirelessAccess jasperWirelessTerminalAccess() {
+		return new JasperWirelessAccess(this.uri, this.licenceKey,
+				this.username, this.password, this.apiVersion);
 	}
 
 	@Bean
@@ -135,14 +140,12 @@ public class JasperWirelessConfig {
 	}
 
 	@Bean
-	public int jasperGetSessionRetries(
-			@Value("${" + GETSESSION_RETRIES + "}") final int retries) {
-		return retries;
+	public int jasperGetSessionRetries() {
+		return Integer.parseInt(this.retries);
 	}
 
 	@Bean
-	public int jasperGetSessionSleepBetweenRetries(@Value("${"
-			+ GETSESSION_SLEEP_BETWEEN_RETRIES + "}") final int sleep) {
-		return sleep;
+	public int jasperGetSessionSleepBetweenRetries() {
+		return Integer.parseInt(this.sleepBetweenRetries);
 	}
 }
