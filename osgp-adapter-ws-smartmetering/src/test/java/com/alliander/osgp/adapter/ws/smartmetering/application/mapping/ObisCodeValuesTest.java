@@ -17,6 +17,7 @@ public class ObisCodeValuesTest {
     @Test
     public void testObisCodeValues() {
         final AdhocMapper mapper = new AdhocMapper();
+
         final ObisCodeValues obisCodeValues = new ObisCodeValues();
         obisCodeValues.setA((short) 1);
         obisCodeValues.setB((short) 2);
@@ -35,4 +36,22 @@ public class ObisCodeValuesTest {
         Assert.assertEquals((byte) 5, obisCodeValues2.getE());
         Assert.assertEquals((byte) -1, obisCodeValues2.getF());
     }
+    
+    @Test
+    public void testObisCodeValues2() {
+        final AdhocMapper mapper = new AdhocMapper();
+
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.ObisCodeValues obisCodeValues1 = 
+                new com.alliander.osgp.domain.core.valueobjects.smartmetering.ObisCodeValues((byte)1, (byte)2, (byte)3, (byte)-22, (byte)5, (byte)-1);
+
+        final ObisCodeValues obisCodeValues2 = mapper.map(
+                obisCodeValues1, ObisCodeValues.class);
+
+        Assert.assertEquals((short) 1, obisCodeValues2.getA());
+        Assert.assertEquals((short) 2, obisCodeValues2.getB());
+        Assert.assertEquals((short) 3, obisCodeValues2.getC());
+        Assert.assertEquals((short) 234, obisCodeValues2.getD());
+        Assert.assertEquals((short) 5, obisCodeValues2.getE());
+        Assert.assertEquals((short) 255, obisCodeValues2.getF());
+    }    
 }

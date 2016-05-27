@@ -53,7 +53,7 @@ public class DeviceManagementService extends AbstractService {
 
     public void updateKey(final String organisationIdentification, @Identification final String deviceIdentification,
             final String correlationUid, final String messageType, @PublicKey final String publicKey)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.info("MessageType: {}. Updating key for device [{}] on behalf of organisation [{}]",
                 deviceIdentification, organisationIdentification, messageType);
@@ -99,8 +99,7 @@ public class DeviceManagementService extends AbstractService {
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            osgpException = new TechnicalException(ComponentType.UNKNOWN,
-                    "Unexpected exception while retrieving response message", e);
+            osgpException = new TechnicalException(ComponentType.UNKNOWN, "Exception occurred while updating key", e);
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
@@ -158,8 +157,7 @@ public class DeviceManagementService extends AbstractService {
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            osgpException = new TechnicalException(ComponentType.UNKNOWN,
-                    "Unexpected exception while retrieving response message", e);
+            osgpException = new TechnicalException(ComponentType.UNKNOWN, "Exception occurred while revoking key", e);
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,

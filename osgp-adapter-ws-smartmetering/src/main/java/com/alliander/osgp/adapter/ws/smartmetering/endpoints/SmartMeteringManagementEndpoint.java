@@ -26,7 +26,7 @@ import com.alliander.osgp.adapter.ws.endpointinterceptors.ScheduleTime;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.DevicePage;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsAsyncResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsQuery;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsRequestData;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.GetDevicesRequest;
@@ -82,11 +82,11 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
 
             // Get the request parameters, make sure that date time are in UTC.
             final String deviceIdentification = request.getDeviceIdentification();
-            final List<FindEventsQuery> findEventsQuery = request.getFindEventsQuery();
+            final List<FindEventsRequestData> findEventsQuery = request.getFindEventsRequestData();
 
             final String correlationUid = this.managementService.enqueueFindEventsRequest(organisationIdentification,
                     deviceIdentification, this.managementMapper.mapAsList(findEventsQuery,
-                            com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQuery.class),
+                            com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsRequestData.class),
                     MessagePriorityEnum.getMessagePriority(messagePriority), this.managementMapper.map(scheduleTime,
                             Long.class));
 

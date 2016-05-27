@@ -7,8 +7,6 @@
  */
 package com.alliander.osgp.adapter.ws.admin.application.services;
 
-import static org.springframework.data.jpa.domain.Specifications.where;
-
 import java.util.List;
 
 import javax.naming.OperationNotSupportedException;
@@ -17,7 +15,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +22,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,7 +53,6 @@ import com.alliander.osgp.domain.core.services.DeviceDomainService;
 import com.alliander.osgp.domain.core.services.OrganisationDomainService;
 import com.alliander.osgp.domain.core.services.SecurityService;
 import com.alliander.osgp.domain.core.specifications.DeviceSpecifications;
-import com.alliander.osgp.domain.core.specifications.EventSpecifications;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.validation.PublicKey;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
@@ -94,9 +89,6 @@ public class DeviceManagementService {
 
     @Autowired
     private OrganisationRepository organisationRepository;
-
-    @Autowired
-    private EventSpecifications eventSpecifications;
 
     @Autowired
     private DeviceRepository deviceRepository;
@@ -346,7 +338,7 @@ public class DeviceManagementService {
 
     public Page<DeviceLogItem> findOslpMessages(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Min(value = 0) final int pageNumber)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.debug("findOslpMessage called with organisation {}, device {} and pagenumber {}", new Object[] {
                 organisationIdentification, deviceIdentification, pageNumber });
@@ -362,52 +354,6 @@ public class DeviceManagementService {
         }
 
         return this.logItemRepository.findAll(request);
-    }
-
-    public Page<Event> findEvents(@Identification final String organisationIdentification,
-            final String deviceIdentification, final Integer pageSize, final Integer pageNumber, final DateTime from,
-            final DateTime until) throws FunctionalException {
-
-        LOGGER.debug("findEvents called for organisation {} and device {}", organisationIdentification,
-                deviceIdentification);
-
-        final Organisation organisation = this.findOrganisation(organisationIdentification);
-
-        this.pagingSettings.updatePagingSettings(pageSize, pageNumber);
-
-        final PageRequest request = new PageRequest(this.pagingSettings.getPageNumber(),
-                this.pagingSettings.getPageSize(), Sort.Direction.DESC, "creationTime");
-
-        Specifications<Event> specifications;
-
-        try {
-            if (deviceIdentification != null && !deviceIdentification.isEmpty()) {
-                final Device device = this.findDevice(deviceIdentification);
-                this.isAllowed(organisation, device, DeviceFunction.GET_EVENT_NOTIFICATIONS);
-
-                specifications = where(this.eventSpecifications.isFromDevice(device));
-            } else {
-                specifications = where(this.eventSpecifications.isAuthorized(organisation));
-            }
-
-            if (from != null) {
-                specifications = specifications.and(this.eventSpecifications.isCreatedAfter(from.toDate()));
-            }
-
-            if (until != null) {
-                specifications = specifications.and(this.eventSpecifications.isCreatedBefore(until.toDate()));
-            }
-        } catch (final ArgumentNullOrEmptyException e) {
-            LOGGER.error("an argument is null", e);
-            throw new FunctionalException(FunctionalExceptionType.ARGUMENT_NULL, ComponentType.WS_ADMIN, e);
-        }
-
-        LOGGER.debug("request offset     : {}", request.getOffset());
-        LOGGER.debug("        pageNumber : {}", request.getPageNumber());
-        LOGGER.debug("        pageSize   : {}", request.getPageSize());
-        LOGGER.debug("        sort       : {}", request.getSort());
-
-        return this.eventRepository.findAll(specifications, request);
     }
 
     // === REMOVE DEVICE ===
@@ -465,7 +411,7 @@ public class DeviceManagementService {
      */
     public void setOwner(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Identification final String newOwner)
-                    throws FunctionalException {
+            throws FunctionalException {
         Organisation organisation = this.findOrganisation(organisationIdentification);
         final Device device = this.findDevice(deviceIdentification);
         this.isAllowed(organisation, PlatformFunction.SET_OWNER);
@@ -590,7 +536,7 @@ public class DeviceManagementService {
 
     public void updateDeviceProtocol(final String organisationIdentification,
             @Identification final String deviceIdentification, final String protocol, final String protocolVersion)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.debug("Updating protocol for device [{}] on behalf of organisation [{}] to protocol: {}, version: {}",
                 deviceIdentification, organisationIdentification, protocol, protocolVersion);
@@ -641,6 +587,10 @@ public class DeviceManagementService {
 
         final Organisation organisation = this.findOrganisation(organisationIdentification);
         this.isAllowed(organisation, PlatformFunction.DEACTIVATE_DEVICE);
+
+        if (this.deviceRepository.findByDeviceIdentification(deviceIdentification) == null) {
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.WS_ADMIN);
+        }
 
         this.enqueueDeactivateDeviceRequest(organisationIdentification, deviceIdentification);
     }

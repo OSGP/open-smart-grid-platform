@@ -11,7 +11,7 @@ import java.io.Serializable;
 
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
-public class KeySet implements Serializable, ActionRequest {
+public class SetKeysRequestData implements Serializable, ActionRequest {
 
     private static final long serialVersionUID = 1573954141584647005L;
 
@@ -19,7 +19,7 @@ public class KeySet implements Serializable, ActionRequest {
 
     private byte[] encryptionKey;
 
-    public KeySet(final byte[] authenticationKey, final byte[] encryptionKey) {
+    public SetKeysRequestData(final byte[] authenticationKey, final byte[] encryptionKey) {
         this.authenticationKey = authenticationKey;
         this.encryptionKey = encryptionKey;
     }

@@ -25,8 +25,8 @@ import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionRequest;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleMessageDataContainer;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleResponseMessageDataContainer;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleMessageRequest;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleMessagesResponse;
 import com.alliander.osgp.shared.exceptionhandling.CorrelationUidException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
@@ -55,7 +55,7 @@ public class BundleService {
     }
 
     public MeterResponseData dequeueBundleResponse(final String correlationUid) throws CorrelationUidException {
-        return this.meterResponseDataService.dequeue(correlationUid, BundleResponseMessageDataContainer.class);
+        return this.meterResponseDataService.dequeue(correlationUid, BundleMessagesResponse.class);
     }
 
     public String enqueueBundleRequest(final String organisationIdentification, final String deviceIdentification,
@@ -83,7 +83,7 @@ public class BundleService {
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
         .deviceMessageMetadata(deviceMessageMetadata)
-        .request(new BundleMessageDataContainer(actionList))
+        .request(new BundleMessageRequest(actionList))
         .build();
         // @formatter:on
 

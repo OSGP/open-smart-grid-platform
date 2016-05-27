@@ -24,7 +24,7 @@ public class PeriodicMeterReadsContainer extends ActionResponse implements Seria
     }
 
     public List<PeriodicMeterReads> getPeriodicMeterReads() {
-        return new ArrayList<PeriodicMeterReads>(this.periodicMeterReads);
+        return new ArrayList<>(this.periodicMeterReads);
     }
 
     public PeriodType getPeriodType() {

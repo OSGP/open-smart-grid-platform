@@ -52,7 +52,7 @@
 
   <xsd:complexType name="GetFirmwareVersionRequestData">
     <xsd:complexContent>
-      <xsd:extension base="common:Command">
+      <xsd:extension base="common:Query">
         <xsd:sequence>
         </xsd:sequence>
       </xsd:extension>
@@ -262,7 +262,7 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
-        <xsd:element name="ActivityCalendarData" type="tns:ActivityCalendarDataType" />
+        <xsd:element name="ActivityCalendarData" type="tns:SetActivityCalendarRequestData" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -370,7 +370,7 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
-        <xsd:element name="KeySet" type="tns:KeySet" />
+        <xsd:element name="SetKeysRequestData" type="tns:SetKeysRequestData" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -505,7 +505,7 @@
     </xsd:complexContent>
   </xsd:complexType>
 
-  <xsd:complexType name="ActivityCalendarDataType">
+  <xsd:complexType name="SetActivityCalendarRequestData">
     <xsd:complexContent>
       <xsd:extension base="common:Command">
         <xsd:sequence>
@@ -681,7 +681,7 @@
     </xsd:restriction>
   </xsd:simpleType>
 
-  <xsd:complexType name="KeySet">
+  <xsd:complexType name="SetKeysRequestData">
     <xsd:complexContent>
       <xsd:extension base="common:Command">
         <xsd:sequence>

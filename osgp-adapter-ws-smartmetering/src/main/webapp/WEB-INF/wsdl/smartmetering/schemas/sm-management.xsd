@@ -25,7 +25,7 @@
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" minOccurs="1"	maxOccurs="1" />
-				<xsd:element name="FindEventsQuery" type="tns:FindEventsQuery" minOccurs="1" maxOccurs="unbounded" />
+				<xsd:element name="FindEventsRequestData" type="tns:FindEventsRequestData" minOccurs="1" maxOccurs="unbounded" />
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
@@ -67,7 +67,7 @@
 	<!-- Data Types -->	
 	
 	<!-- Query for FindEventsRequest -->
-	<xsd:complexType name="FindEventsQuery">
+	<xsd:complexType name="FindEventsRequestData">
 		<xsd:complexContent>			
 			<xsd:extension base="common:Query">
 				<xsd:sequence>

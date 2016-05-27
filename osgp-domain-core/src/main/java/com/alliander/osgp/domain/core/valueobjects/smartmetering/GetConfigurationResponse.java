@@ -7,13 +7,13 @@
  */
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
-public class GetConfigurationResponseContainer extends ActionResponse {
+public class GetConfigurationResponse extends ActionResponse {
 
     private static final long serialVersionUID = 8942300410552414718L;
 
     private String configurationData;
 
-    public GetConfigurationResponseContainer(final String configurationData) {
+    public GetConfigurationResponse(final String configurationData) {
         this.configurationData = configurationData;
     }
 

@@ -26,27 +26,27 @@
 	<xsd:complexType name="Actions">
 		<xsd:sequence>
 			<xsd:choice maxOccurs="unbounded">
-				<xsd:element name="FindEventsQuery" type="smman:FindEventsQuery" />
-				<xsd:element name="SpecialDaysRequestData" type="smconf:SpecialDaysRequestData" />
-				<xsd:element name="ReadAlarmRegisterData" type="smmon:ReadAlarmRegisterData" />
-				<xsd:element name="ActualMeterReadsData" type="smmon:ActualMeterReadsData" />
-				<xsd:element name="ActualMeterReadsGasData" type="smmon:ActualMeterReadsGasData" />
-				<xsd:element name="GetAdministrativeStatusData" type="smconf:GetAdministrativeStatusData" />
-				<xsd:element name="PeriodicMeterReadsRequestData" type="smmon:PeriodicMeterReadsRequestData" />
-				<xsd:element name="PeriodicMeterReadsGasRequestData" type="smmon:PeriodicMeterReadsGasRequestData" />
-				<xsd:element name="SetAdministrativeStatusTypeData" type="smconf:AdministrativeStatusTypeData" />
-				<xsd:element name="ActivityCalendarDataType" type="smconf:ActivityCalendarDataType" />
-				<xsd:element name="SetEncryptionKeyExchangeOnGMeterRequestData" type="smconf:SetEncryptionKeyExchangeOnGMeterRequestData" />
-				<xsd:element name="SetAlarmNotificationsRequestData" type="smconf:SetAlarmNotificationsRequestData" />
-				<xsd:element name="SetConfigurationObjectRequestData" type="smconf:SetConfigurationObjectRequestData" />
-				<xsd:element name="SetPushSetupAlarmRequestData" type="smconf:SetPushSetupAlarmRequestData" />
-				<xsd:element name="SetPushSetupSmsRequestData" type="smconf:SetPushSetupSmsRequestData" />
-				<xsd:element name="SynchronizeTimeRequestData" type="adhoc:SynchronizeTimeRequestData" />
-				<xsd:element name="GetConfigurationRequestData" type="adhoc:GetConfigurationRequestData" />
-				<xsd:element name="GetFirmwareVersionRequestData" type="smconf:GetFirmwareVersionRequestData" />
-				<xsd:element name="SpecificConfigurationObjectRequestData" type="adhoc:SpecificConfigurationObjectRequestData" />
-				<xsd:element name="KeySet" type="smconf:KeySet" />
-                <xsd:element name="GetAssociationLnObjectsRequestData" type="adhoc:GetAssociationLnObjectsRequestData" />
+				<xsd:element name="FindEventsRequest" type="smman:FindEventsRequestData" />
+				<xsd:element name="GetSpecialDaysRequest" type="smconf:SpecialDaysRequestData" />
+				<xsd:element name="ReadAlarmRegisterRequest" type="smmon:ReadAlarmRegisterData" />
+				<xsd:element name="GetActualMeterReadsRequest" type="smmon:ActualMeterReadsData" />
+				<xsd:element name="GetActualMeterReadsGasRequest" type="smmon:ActualMeterReadsGasData" />
+				<xsd:element name="GetAdministrativeStatusRequest" type="smconf:GetAdministrativeStatusData" />
+				<xsd:element name="GetPeriodicMeterReadsRequest" type="smmon:PeriodicMeterReadsRequestData" />
+				<xsd:element name="GetPeriodicMeterReadsGasRequest" type="smmon:PeriodicMeterReadsGasRequestData" />
+				<xsd:element name="SetAdministrativeStatusRequest" type="smconf:AdministrativeStatusTypeData" />
+				<xsd:element name="SetActivityCalendarRequest" type="smconf:SetActivityCalendarRequestData" />
+				<xsd:element name="SetEncryptionKeyExchangeOnGMeterRequest" type="smconf:SetEncryptionKeyExchangeOnGMeterRequestData" />
+				<xsd:element name="SetAlarmNotificationsRequest" type="smconf:SetAlarmNotificationsRequestData" />
+				<xsd:element name="SetConfigurationObjectRequest" type="smconf:SetConfigurationObjectRequestData" />
+				<xsd:element name="SetPushSetupAlarmRequest" type="smconf:SetPushSetupAlarmRequestData" />
+				<xsd:element name="SetPushSetupSmsRequest" type="smconf:SetPushSetupSmsRequestData" />
+				<xsd:element name="SynchronizeTimeRequest" type="adhoc:SynchronizeTimeRequestData" />
+				<xsd:element name="GetConfigurationRequest" type="adhoc:GetConfigurationRequestData" />
+				<xsd:element name="GetFirmwareVersionRequest" type="smconf:GetFirmwareVersionRequestData" />
+				<xsd:element name="GetSpecificConfigurationObjectRequest" type="adhoc:SpecificConfigurationObjectRequestData" />
+				<xsd:element name="SetKeysRequest" type="smconf:SetKeysRequestData" />
+                <xsd:element name="GetAssociationLnObjectsRequest" type="adhoc:GetAssociationLnObjectsRequestData" />
 			</xsd:choice>
 		</xsd:sequence>
 	</xsd:complexType>
