@@ -22,15 +22,15 @@ import com.jasperwireless.api.ws.service.ObjectFactory;
 public class JasperWirelessTerminalClient {
 
 	@Autowired
-	WebServiceTemplate webServiceTemplate;
+	private WebServiceTemplate webServiceTemplate;
 
 	private static final ObjectFactory WS_CLIENT_FACTORY = new ObjectFactory();
 
 	@Autowired
-	CorrelationIdProviderService correlationIdProviderService;
+	private CorrelationIdProviderService correlationIdProviderService;
 
 	@Autowired
-	JasperWirelessAccess jasperWirelessTerminalAccess;
+	private JasperWirelessAccess jasperWirelessTerminalAccess;
 
 	public GetSessionInfoResponse getSession(final String iccid) {
 		final GetSessionInfoRequest getSessionInfoRequest = WS_CLIENT_FACTORY

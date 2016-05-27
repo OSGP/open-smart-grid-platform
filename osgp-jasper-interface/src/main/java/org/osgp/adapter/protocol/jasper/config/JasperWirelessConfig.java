@@ -7,7 +7,6 @@
  */
 package org.osgp.adapter.protocol.jasper.config;
 
-import javax.annotation.Resource;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPException;
 
@@ -19,10 +18,10 @@ import org.osgp.adapter.protocol.jasper.infra.ws.JasperWirelessSmsClient;
 import org.osgp.adapter.protocol.jasper.infra.ws.JasperWirelessTerminalClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
@@ -35,7 +34,7 @@ import org.springframework.ws.soap.security.wss4j.Wss4jSecurityInterceptor;
  * The usage of Java configuration requires Spring Framework 3.0
  */
 @Configuration
-@PropertySource("file:${osp/osgpAdapterProtocolDlms/config}")
+@PropertySource("file:${osp/osgpJasper/config}")
 public class JasperWirelessConfig {
 
 	// JMS Settings
@@ -50,9 +49,6 @@ public class JasperWirelessConfig {
 
 	private static final Logger LOGGER = LoggerFactory
 			.getLogger(JasperWirelessConfig.class);
-
-	@Resource
-	private Environment environment;
 
 	public JasperWirelessConfig() {
 		InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
@@ -93,7 +89,7 @@ public class JasperWirelessConfig {
 		webServiceTemplate.setMarshaller(this.marshaller());
 		webServiceTemplate.setUnmarshaller(this.marshaller());
 		webServiceTemplate
-		.setDefaultUri("https://kpnapi.jasperwireless.com/ws/service/Sms");
+				.setDefaultUri("https://kpnapi.jasperwireless.com/ws/service/Sms");
 		webServiceTemplate.setInterceptors(new ClientInterceptor[] { this
 				.wss4jSecurityInterceptorClient() });
 		webServiceTemplate.setMessageFactory(this.messageFactory());
@@ -111,33 +107,24 @@ public class JasperWirelessConfig {
 	}
 
 	@Bean
-	public JasperWirelessAccess jasperWirelessAccess() {
-		return new JasperWirelessAccess(
-				this.environment
-				.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_SMS_URI),
-				this.environment
-				.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_LICENSEKEY),
-				this.environment
-				.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_USERNAME),
-				this.environment
-				.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_PASSWORD),
-				this.environment
-				.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_API_VERSION));
+	public JasperWirelessAccess jasperWirelessAccess(
+			@Value("${" + PROPERTY_NAME_CONTROLCENTER_SMS_URI + "}") final String uri,
+			@Value("${" + PROPERTY_NAME_CONTROLCENTER_LICENSEKEY + "}") final String key,
+			@Value("${" + PROPERTY_NAME_CONTROLCENTER_USERNAME + "}") final String username,
+			@Value("${" + PROPERTY_NAME_CONTROLCENTER_PASSWORD + "}") final String password,
+			@Value("${" + PROPERTY_NAME_CONTROLCENTER_API_VERSION + "}") final String version) {
+
+		return new JasperWirelessAccess(uri, key, username, password, version);
 	}
 
 	@Bean
-	public JasperWirelessAccess jasperWirelessTerminalAccess() {
-		return new JasperWirelessAccess(
-				this.environment
-				.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_TERMINAL_URI),
-				this.environment
-				.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_LICENSEKEY),
-				this.environment
-				.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_USERNAME),
-				this.environment
-				.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_PASSWORD),
-				this.environment
-				.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_API_VERSION));
+	public JasperWirelessAccess jasperWirelessTerminalAccess(
+			@Value("${" + PROPERTY_NAME_CONTROLCENTER_TERMINAL_URI + "}") final String uri,
+			@Value("${" + PROPERTY_NAME_CONTROLCENTER_LICENSEKEY + "}") final String key,
+			@Value("${" + PROPERTY_NAME_CONTROLCENTER_USERNAME + "}") final String username,
+			@Value("${" + PROPERTY_NAME_CONTROLCENTER_PASSWORD + "}") final String password,
+			@Value("${" + PROPERTY_NAME_CONTROLCENTER_API_VERSION + "}") final String version) {
+		return new JasperWirelessAccess(uri, key, username, password, version);
 	}
 
 	@Bean
@@ -146,14 +133,14 @@ public class JasperWirelessConfig {
 	}
 
 	@Bean
-	public int jasperGetSessionRetries() {
-		return Integer.parseInt(this.environment
-				.getProperty(GETSESSION_RETRIES));
+	public int jasperGetSessionRetries(
+			@Value("${" + GETSESSION_RETRIES + "}") final int retries) {
+		return retries;
 	}
 
 	@Bean
-	public int jasperGetSessionSleepBetweenRetries() {
-		return Integer.parseInt(this.environment
-				.getProperty(GETSESSION_SLEEP_BETWEEN_RETRIES));
+	public int jasperGetSessionSleepBetweenRetries(@Value("${"
+			+ GETSESSION_SLEEP_BETWEEN_RETRIES + "}") final int sleep) {
+		return sleep;
 	}
 }

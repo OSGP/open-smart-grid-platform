@@ -9,16 +9,9 @@ package org.osgp.adapter.protocol.jasper.config;
 
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.jboss.netty.logging.Slf4JLoggerFactory;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.DateTimeZone;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * An application context Java configuration class. The usage of Java
@@ -27,43 +20,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @ComponentScan(basePackages = { "org.osgp.adapter.protocol.jasper",
 "com.alliander.osgp.shared.security" })
-@EnableTransactionManagement()
 @Import({ JasperWirelessConfig.class })
-@PropertySource("file:${osp/osgpAdapterProtocolDlms/config}")
 public class ApplicationContext {
-
-	private static final String LOCAL_TIME_ZONE_IDENTIFIER = "Europe/Paris";
-	private static final DateTimeZone LOCAL_TIME_ZONE = DateTimeZone
-			.forID(LOCAL_TIME_ZONE_IDENTIFIER);
-	private static final int TIME_ZONE_OFFSET_MINUTES = LOCAL_TIME_ZONE
-			.getStandardOffset(new DateTime().getMillis())
-			/ DateTimeConstants.MILLIS_PER_MINUTE;
 
 	public ApplicationContext() {
 		InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
 	}
 
-	// === Time zone config ===
-
-	@Bean
-	public String localTimeZoneIdentifier() {
-		return LOCAL_TIME_ZONE_IDENTIFIER;
-	}
-
-	@Bean
-	public DateTimeZone localTimeZone() {
-		return LOCAL_TIME_ZONE;
-	}
-
-	@Bean
-	public Integer timeZoneOffsetMinutes() {
-		return TIME_ZONE_OFFSET_MINUTES;
-	}
-
-	@Bean
-	public PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-		final PropertySourcesPlaceholderConfigurer propertySource = new PropertySourcesPlaceholderConfigurer();
-		propertySource.setIgnoreUnresolvablePlaceholders(true);
-		return propertySource;
-	}
 }

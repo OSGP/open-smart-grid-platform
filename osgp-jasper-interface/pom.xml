@@ -18,7 +18,7 @@
   <name>jasper-interface</name>
   <url>http://maven.apache.org</url>
   
-   <parent>
+  <parent>
     <groupId>org.osgp</groupId>
     <artifactId>parent-pa-dlms</artifactId>
     <version>3.4.0-SNAPSHOT</version>
@@ -155,38 +155,17 @@
       <classifier>all</classifier>
     </dependency>
 
-        <!-- Spring Test -->
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-test</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>xmlunit</groupId>
-      <artifactId>xmlunit</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
-    </dependency>
-        
-        <!-- javax inject -->
-    <dependency>
-      <groupId>javax.inject</groupId>
-      <artifactId>javax.inject</artifactId>
-    </dependency>
-
-        <!-- Apache ws support -->
+    <!-- Apache ws support -->
     <dependency>
       <groupId>org.apache.ws.security</groupId>
       <artifactId>wss4j</artifactId>
     </dependency>
 
-        <!-- Joda Time (Date/Time util) -->
+    <!-- Joda Time (Date/Time util) -->
     <dependency>
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
     </dependency>
-
 
     <!-- Logging -->
     <dependency>
@@ -202,37 +181,11 @@
       <artifactId>logback-ext-spring</artifactId>
     </dependency>
 
-        <!-- Netty -->
+    <!-- Netty -->
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty</artifactId>
     </dependency>
 
-        <!-- Servlet API 3.0 -->
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-        <!-- Apache commons -->
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-    </dependency>
-
-
-
-
-        <!-- Testing dependencies -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-test</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 </project>

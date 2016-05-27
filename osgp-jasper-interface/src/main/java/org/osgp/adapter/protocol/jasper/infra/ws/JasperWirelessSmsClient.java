@@ -30,13 +30,13 @@ public class JasperWirelessSmsClient {
 	private static final ObjectFactory WS_CLIENT_FACTORY = new ObjectFactory();
 
 	@Autowired
-	WebServiceTemplate webServiceTemplate;
+	private WebServiceTemplate webServiceTemplate;
 
 	@Autowired
-	CorrelationIdProviderService correlationIdProviderService;
+	private CorrelationIdProviderService correlationIdProviderService;
 
 	@Autowired
-	JasperWirelessAccess jasperWirelessAccess;
+	private JasperWirelessAccess jasperWirelessAccess;
 
 	public SendSMSResponse sendWakeUpSMS(final String iccid) {
 

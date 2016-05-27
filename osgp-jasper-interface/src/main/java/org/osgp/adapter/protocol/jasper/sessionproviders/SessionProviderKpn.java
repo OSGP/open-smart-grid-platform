@@ -28,7 +28,7 @@ public class SessionProviderKpn extends SessionProvider {
 			.getLogger(SessionProviderKpn.class);
 
 	@Autowired
-	JasperWirelessTerminalClient jasperWirelessTerminalClient;
+	private JasperWirelessTerminalClient jasperWirelessTerminalClient;
 
 	/**
 	 * Initialization function executed after dependency injection has finished.

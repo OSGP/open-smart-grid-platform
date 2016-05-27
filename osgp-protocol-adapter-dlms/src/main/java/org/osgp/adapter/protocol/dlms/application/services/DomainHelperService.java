@@ -16,8 +16,6 @@ import org.osgp.adapter.protocol.jasper.sessionproviders.SessionProvider;
 import org.osgp.adapter.protocol.jasper.sessionproviders.SessionProviderService;
 import org.osgp.adapter.protocol.jasper.sessionproviders.exceptions.SessionProviderException;
 import org.osgp.adapter.protocol.jasper.sessionproviders.exceptions.SessionProviderUnsupportedException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,9 +25,6 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 
 @Service(value = "dlmsDomainHelperService")
 public class DomainHelperService {
-
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(DomainHelperService.class);
 
 	private static final ComponentType COMPONENT_TYPE = ComponentType.PROTOCOL_DLMS;
 
@@ -75,7 +70,7 @@ public class DomainHelperService {
 
 	public DlmsDevice findDlmsDevice(
 			final DlmsDeviceMessageMetadata messageMetadata)
-					throws ProtocolAdapterException {
+			throws ProtocolAdapterException {
 		return this.findDlmsDevice(messageMetadata.getDeviceIdentification(),
 				messageMetadata.getIpAddress());
 	}
