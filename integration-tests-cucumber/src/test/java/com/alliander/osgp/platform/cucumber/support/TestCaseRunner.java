@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.platform.cucumber.SmartMetering;
 import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCase;
 import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCaseRunner;
 import com.eviware.soapui.model.support.PropertiesMap;
@@ -26,13 +27,13 @@ import com.eviware.soapui.model.testsuite.TestCase;
 import com.eviware.soapui.support.SoapUIException;
 
 @Component
-public class TestCaseRunner implements CucumberConstants {
+public class TestCaseRunner extends SmartMetering {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TestCaseRunner.class);
 
     @Autowired
     private ResponseNotifier responseNotifier;
-    
+
     public TestCaseResult runWsdlTestCase(final TestCase testCase, final Map<String, String> propertiesMap,
             final String testCaseNameRequest) throws XmlException, IOException, SoapUIException {
         final WsdlTestCase wsdlTestCase = (WsdlTestCase) testCase;
@@ -42,17 +43,18 @@ public class TestCaseRunner implements CucumberConstants {
         }
 
         final WsdlTestCaseRunner wsdlTestCaseRunner = new WsdlTestCaseRunner(wsdlTestCase, new PropertiesMap());
-       
-        String correlId = getCorrelId(propertiesMap);
+
+        final String correlId = this.getCorrelId(propertiesMap);
         if (correlId != null) {
-            if (!responseNotifier.waitForResponse(correlId, getLaptime(propertiesMap), getMaxLaps(propertiesMap))) {
+            if (!this.responseNotifier.waitForResponse(correlId, this.getLaptime(propertiesMap),
+                    this.getMaxLaps(propertiesMap))) {
                 LOGGER.warn("no response retrieved with maximum time");
-            } 
+            }
         }
-        
+
         return new TestCaseResult(wsdlTestCaseRunner.runTestStepByName(testCaseNameRequest), wsdlTestCaseRunner);
     }
-    
+
     private String getCorrelId(final Map<String, String> propertiesMap) {
         if (propertiesMap.containsKey(CORRELATION_UID)) {
             return propertiesMap.get(CORRELATION_UID);
@@ -60,7 +62,7 @@ public class TestCaseRunner implements CucumberConstants {
             return null;
         }
     }
-    
+
     private int getLaptime(final Map<String, String> propertiesMap) {
         if (propertiesMap.containsKey(LAP_TIME)) {
             return new Integer(propertiesMap.get(LAP_TIME));
@@ -68,7 +70,7 @@ public class TestCaseRunner implements CucumberConstants {
             return 5000;
         }
     }
-    
+
     private int getMaxLaps(final Map<String, String> propertiesMap) {
         if (propertiesMap.containsKey(MAX_LAPCOUNT)) {
             return new Integer(propertiesMap.get(MAX_LAPCOUNT));

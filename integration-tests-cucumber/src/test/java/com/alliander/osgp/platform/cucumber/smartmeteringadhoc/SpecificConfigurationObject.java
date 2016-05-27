@@ -10,14 +10,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.platform.cucumber.SmartMetering;
-import com.alliander.osgp.platform.cucumber.support.CucumberConstants;
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
 import com.alliander.osgp.platform.cucumber.support.OrganisationId;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class SpecificConfigurationObject extends SmartMetering implements CucumberConstants {
+public class SpecificConfigurationObject extends SmartMetering {
     private static final String PATH_RESULT_CONFIGURATION_DATA = "/Envelope/Body/SpecificConfigurationObjectResponse/ConfigurationData/text()";
 
     private static final String XPATH_MATCHER_RESULT_CONFIGURATION_DATA = "DataObject: Choice=\\w[A-Z]+\\(\\d+\\), ResultData \\w+, value=";

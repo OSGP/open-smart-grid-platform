@@ -36,6 +36,8 @@ public class SmartMetering {
     protected static final String DEVICE_IDENTIFICATION_G = "DeviceIdentificationG";
     protected static final String ORGANISATION_IDENTIFICATION = "OrganisationIdentification";
     protected static final String CORRELATION_UID = "CorrelationUid";
+    protected static final String LAP_TIME = "LapTime";
+    protected static final String MAX_LAPCOUNT = "MaxLapCount";
 
     protected String response;
     protected String correlationUid;

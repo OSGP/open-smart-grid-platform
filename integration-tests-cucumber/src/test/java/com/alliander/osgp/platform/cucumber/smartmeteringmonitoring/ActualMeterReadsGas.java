@@ -18,14 +18,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.platform.cucumber.SmartMetering;
-import com.alliander.osgp.platform.cucumber.support.CucumberConstants;
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
 import com.alliander.osgp.platform.cucumber.support.OrganisationId;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class ActualMeterReadsGas extends SmartMetering implements CucumberConstants{
+public class ActualMeterReadsGas extends SmartMetering {
     private static final String PATH_RESULT_LOGTIME = "/Envelope/Body/ActualMeterReadsGasResponse/LogTime/text()";
     private static final String PATH_RESULT_CONSUMPTION = "/Envelope/Body/ActualMeterReadsGasResponse/Consumption/text()";
     private static final String PATH_RESULT_CAPTURETIME = "/Envelope/Body/ActualMeterReadsGasResponse/CaptureTime/text()";
