@@ -46,12 +46,12 @@ public class RunXpathResult {
         return new XpathResult(xpath.compile(path), doc);
     }
 
-    public boolean assertXpath(final String response, final String PATH_RESULT_LOGTIME,
-            final String XPATH_MATCHER_RESULT_LOGTIME) throws XPathExpressionException, ParserConfigurationException,
+    public boolean assertXpath(final String response, final String pathResultLogtime,
+            final String xpathMatcherResultLogtime) throws XPathExpressionException, ParserConfigurationException,
             SAXException, IOException {
-        final XpathResult xpathResult = this.runXPathExpression(response, PATH_RESULT_LOGTIME);
+        final XpathResult xpathResult = this.runXPathExpression(response, pathResultLogtime);
         final XPathExpression expr = xpathResult.getXpathExpression();
-        this.responsePattern = Pattern.compile(XPATH_MATCHER_RESULT_LOGTIME);
+        this.responsePattern = Pattern.compile(xpathMatcherResultLogtime);
         this.responseMatcher = this.responsePattern.matcher(expr.evaluate(xpathResult.getDocument()));
 
         return this.responseMatcher.find();

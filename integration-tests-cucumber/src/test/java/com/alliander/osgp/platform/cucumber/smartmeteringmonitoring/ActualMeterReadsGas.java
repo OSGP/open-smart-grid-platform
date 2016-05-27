@@ -17,17 +17,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alliander.osgp.platform.cucumber.SuperCucumber;
+import com.alliander.osgp.platform.cucumber.SmartMetering;
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
 import com.alliander.osgp.platform.cucumber.support.OrganisationId;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class ActualMeterReadsGas extends SuperCucumber {
-    private String response;
-    private String correlationUid;
-
+public class ActualMeterReadsGas extends SmartMetering {
     private static final String PATH_RESULT_LOGTIME = "/Envelope/Body/ActualMeterReadsGasResponse/LogTime/text()";
     private static final String PATH_RESULT_CONSUMPTION = "/Envelope/Body/ActualMeterReadsGasResponse/Consumption/text()";
     private static final String PATH_RESULT_CAPTURETIME = "/Envelope/Body/ActualMeterReadsGasResponse/CaptureTime/text()";
@@ -54,14 +51,14 @@ public class ActualMeterReadsGas extends SuperCucumber {
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_G, this.deviceId.getDeviceIdG());
         PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION, this.organisationId.getOrganisationId());
 
-        this.correlationUid = this.RequestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
+        this.RequestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }
 
     @Then("^the actual meter reads gas result should be returned$")
     public void theActualMeterReadsResultShouldBeReturned() throws Throwable {
         PROPERTIES_MAP.put(CORRELATION_UID, this.correlationUid);
 
-        this.response = this.ResponseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
+        this.ResponseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
 
         assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_LOGTIME, XPATH_MATCHER_RESULT_LOGTIME));
         assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_CONSUMPTION, XPATH_MATCHER_RESULT));

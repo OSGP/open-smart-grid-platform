@@ -9,17 +9,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alliander.osgp.platform.cucumber.SuperCucumber;
+import com.alliander.osgp.platform.cucumber.SmartMetering;
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
 import com.alliander.osgp.platform.cucumber.support.OrganisationId;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class SynchronizeTime extends SuperCucumber {
-    private String response;
-    private String correlationUid;
-
+public class SynchronizeTime extends SmartMetering {
     private static final String PATH_RESULT = "/Envelope/Body/SynchronizeTimeResponse/Result/text()";
 
     private static final String XPATH_MATCHER_RESULT = "OK";
@@ -43,14 +40,14 @@ public class SynchronizeTime extends SuperCucumber {
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_E, this.deviceId.getDeviceIdE());
         PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION, this.organisationId.getOrganisationId());
 
-        this.correlationUid = this.RequestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
+        this.RequestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }
 
     @Then("^the date and time is synchronized on the device$")
     public void theDateAndTimeIsSynchronizedOnTheDevice() throws Throwable {
         PROPERTIES_MAP.put(CORRELATION_UID, this.correlationUid);
 
-        this.response = this.ResponseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
+        this.ResponseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
 
         assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT, XPATH_MATCHER_RESULT));
     }

@@ -21,13 +21,26 @@ import com.eviware.soapui.model.testsuite.TestCase;
 import com.eviware.soapui.model.testsuite.TestStepResult;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
-public class SuperCucumber {
+/**
+ * Super class for TestCase runner implementations. Each Runner will be called
+ * from a subclass.
+ *
+ * @author CGI
+ *
+ */
+
+public class SmartMetering {
     protected static final String SOAP_PROJECT_XML = "../cucumber/soap-ui-project/FLEX-OVL-V3---SmartMetering-soapui-project.xml";
     protected static final String XPATH_MATCHER_CORRELATIONUID = "\\|\\|\\|\\S{17}\\|\\|\\|\\S{17}";
     protected static final String DEVICE_IDENTIFICATION_E = "DeviceIdentificationE";
     protected static final String DEVICE_IDENTIFICATION_G = "DeviceIdentificationG";
     protected static final String ORGANISATION_IDENTIFICATION = "OrganisationIdentification";
     protected static final String CORRELATION_UID = "CorrelationUid";
+
+    protected String response;
+    protected String correlationUid;
+    private Pattern correlationUidPattern;
+    private Matcher correlationUidMatcher;
 
     private TestCase testCase;
 
@@ -43,45 +56,55 @@ public class SuperCucumber {
     @Autowired
     private OrganisationId organisationId;
 
-    protected String RequestRunner(final Map<String, String> propertiesMap, final String TEST_CASE_NAME_REQUEST,
-            final String TEST_CASE_XML, final String TEST_SUITE_XML) throws Throwable {
+    /**
+     * RequestRunner is called from the @When step from a subclass which
+     * represents cucumber test scenario('s) The RequestRunner needs a
+     * propertiesMap which includes a deviceId and organisationId to call the
+     * SoapUI testcase step when the wsdlTestCase is created. The other
+     * parameters are specific for which test to call. The correlationUid is the
+     * eventually desired result to retrieve the result in the ResponseRunner
+     * method.
+     */
 
-        String response;
-        String correlationUid;
-        Pattern correlationUidPattern;
-        final Matcher correlationUidMatcher;
+    protected void RequestRunner(final Map<String, String> propertiesMap, final String testCaseNameRequest,
+            final String testCaseXml, final String testSuiteXml) throws Throwable {
 
-        correlationUidPattern = Pattern.compile(this.organisationId.getOrganisationId() + XPATH_MATCHER_CORRELATIONUID);
-        this.testCase = this.wsdlProjectFactory.createWsdlTestCase(SOAP_PROJECT_XML, TEST_SUITE_XML, TEST_CASE_XML);
+        this.correlationUidPattern = Pattern.compile(this.organisationId.getOrganisationId()
+                + XPATH_MATCHER_CORRELATIONUID);
+        this.testCase = this.wsdlProjectFactory.createWsdlTestCase(SOAP_PROJECT_XML, testSuiteXml, testCaseXml);
 
         final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase, propertiesMap,
-                TEST_CASE_NAME_REQUEST);
+                testCaseNameRequest);
         final TestStepResult runTestStepByNameResult = runTestStepByName.getRunTestStepByName();
         final WsdlTestCaseRunner wsdlTestCaseRunner = runTestStepByName.getResults();
         assertEquals(TestStepStatus.OK, runTestStepByNameResult.getStatus());
 
-        response = ((MessageExchange) wsdlTestCaseRunner.getResults().get(0)).getResponseContent();
-        correlationUidMatcher = correlationUidPattern.matcher(response);
-        assertTrue(correlationUidMatcher.find());
-        correlationUid = correlationUidMatcher.group();
-
-        return correlationUid;
+        this.response = ((MessageExchange) wsdlTestCaseRunner.getResults().get(0)).getResponseContent();
+        this.correlationUidMatcher = this.correlationUidPattern.matcher(this.response);
+        assertTrue(this.correlationUidMatcher.find());
+        this.correlationUid = this.correlationUidMatcher.group();
     }
 
-    protected String ResponseRunner(final Map<String, String> propertiesMap, final String TEST_CASE_NAME_RESPONSE,
-            final Logger LOGGER) throws Throwable {
+    /**
+     * ResponseRunner is called from the @Then step from a subclass which
+     * represents cucumber test scenario('s) The ResponseRunner needs a
+     * propertiesMap which includes a deviceId, organisationId and
+     * organisationId to call the SoapUI testcase step when the wsdlTestCase is
+     * created. The other parameters are specific for which test to call. The
+     * response is the eventually desired result which can be used to validate
+     * the test result.
+     */
 
-        String response;
+    protected void ResponseRunner(final Map<String, String> propertiesMap, final String testCaseNameResponse,
+            final Logger logger) throws Throwable {
 
         final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase, propertiesMap,
-                TEST_CASE_NAME_RESPONSE);
+                testCaseNameResponse);
         final TestStepResult runTestStepByNameResult = runTestStepByName.getRunTestStepByName();
         final WsdlTestCaseRunner wsdlTestCaseRunner = runTestStepByName.getResults();
         assertEquals(TestStepStatus.OK, runTestStepByNameResult.getStatus());
 
-        response = ((MessageExchange) wsdlTestCaseRunner.getResults().get(0)).getResponseContent();
-        LOGGER.info(TEST_CASE_NAME_RESPONSE + " response {}", response);
-
-        return response;
+        this.response = ((MessageExchange) wsdlTestCaseRunner.getResults().get(0)).getResponseContent();
+        logger.info(testCaseNameResponse + " response {}", this.response);
     }
 }
