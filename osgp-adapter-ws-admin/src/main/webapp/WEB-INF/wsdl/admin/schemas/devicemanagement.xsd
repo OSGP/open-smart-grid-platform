@@ -140,7 +140,7 @@
   <xsd:element name="DeactivateDeviceRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="common:Identification"></xsd:element>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"></xsd:element>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
