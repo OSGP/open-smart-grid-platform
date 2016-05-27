@@ -17,14 +17,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+
 import com.alliander.osgp.platform.cucumber.SmartMetering;
+
+import com.alliander.osgp.platform.cucumber.support.CucumberConstants;
+
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
 import com.alliander.osgp.platform.cucumber.support.OrganisationId;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class ReadAlarmRegister extends SmartMetering {
+public class ReadAlarmRegister extends SmartMetering implements CucumberConstants{
+
     private static final String PATH_RESULT_ALARMTYPES = "/Envelope/Body/ReadAlarmRegisterResponse/AlarmRegister/AlarmTypes/text()";
 
     private static final String XPATH_MATCHER_RESULT_ALARMTYPES = "\\w[A-Z]";
@@ -54,7 +59,6 @@ public class ReadAlarmRegister extends SmartMetering {
     @Then("^the alarm register should be returned$")
     public void theActualMeterReadsResultShouldBeReturned() throws Throwable {
         PROPERTIES_MAP.put(CORRELATION_UID, this.correlationUid);
-
         this.ResponseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
 
         assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_ALARMTYPES,

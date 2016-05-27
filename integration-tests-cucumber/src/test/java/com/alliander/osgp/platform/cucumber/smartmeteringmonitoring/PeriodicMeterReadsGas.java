@@ -18,13 +18,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.platform.cucumber.SmartMetering;
+
+import com.alliander.osgp.platform.cucumber.support.CucumberConstants;
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
 import com.alliander.osgp.platform.cucumber.support.OrganisationId;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class PeriodicMeterReadsGas extends SmartMetering {
+public class PeriodicMeterReadsGas extends SmartMetering implements CucumberConstants{
     private static final String PATH_RESULT_PERIODTYPE = "/Envelope/Body/PeriodicMeterReadsGasResponse/PeriodType/text()";
     private static final String PATH_RESULT_LOGTIME = "/Envelope/Body/PeriodicMeterReadsGasResponse/PeriodicMeterReadsGas/LogTime/text()";
     private static final String PATH_RESULT_CONSUMPTION = "/Envelope/Body/PeriodicMeterReadsGasResponse/PeriodicMeterReadsGas/Consumption/text()";
@@ -51,6 +53,7 @@ public class PeriodicMeterReadsGas extends SmartMetering {
 
     @When("^the get periodic meter reads gas request is received$")
     public void theGetPeriodicMeterReadsRequestIsReceived() throws Throwable {
+
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_G, this.deviceId.getDeviceIdG());
         PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION, this.organisationId.getOrganisationId());
 
@@ -81,7 +84,6 @@ public class PeriodicMeterReadsGas extends SmartMetering {
     @Then("^the interval meter reads gas result should be returned$")
     public void theIntervalMeterReadsResultShouldBeReturned() throws Throwable {
         PROPERTIES_MAP.put(CORRELATION_UID, this.correlationUid);
-
         this.ResponseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
 
         assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_PERIODTYPE,

@@ -13,10 +13,25 @@ import com.alliander.osgp.platform.cucumber.SmartMetering;
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
 import com.alliander.osgp.platform.cucumber.support.OrganisationId;
 
+import com.alliander.osgp.platform.cucumber.support.CucumberConstants;
+import com.alliander.osgp.platform.cucumber.support.DeviceId;
+import com.alliander.osgp.platform.cucumber.support.OrganisationId;
+import com.alliander.osgp.platform.cucumber.support.ResponseNotifierImpl;
+import com.alliander.osgp.platform.cucumber.support.RunXpathResult;
+import com.alliander.osgp.platform.cucumber.support.TestCaseResult;
+import com.alliander.osgp.platform.cucumber.support.TestCaseRunner;
+import com.alliander.osgp.platform.cucumber.support.WsdlProjectFactory;
+import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCaseRunner;
+import com.eviware.soapui.model.iface.MessageExchange;
+import com.eviware.soapui.model.testsuite.TestCase;
+import com.eviware.soapui.model.testsuite.TestStepResult;
+import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
+
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class SynchronizeTime extends SmartMetering {
+
+public class SynchronizeTime extends SmartMetering implements CucumberConstants {
     private static final String PATH_RESULT = "/Envelope/Body/SynchronizeTimeResponse/Result/text()";
 
     private static final String XPATH_MATCHER_RESULT = "OK";

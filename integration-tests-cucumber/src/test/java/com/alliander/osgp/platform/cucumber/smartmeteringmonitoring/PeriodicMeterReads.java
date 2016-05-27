@@ -18,13 +18,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.platform.cucumber.SmartMetering;
+
+import com.alliander.osgp.platform.cucumber.support.CucumberConstants;
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
 import com.alliander.osgp.platform.cucumber.support.OrganisationId;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class PeriodicMeterReads extends SmartMetering {
+public class PeriodicMeterReads extends SmartMetering implements CucumberConstants{
+
     private static final String PATH_RESULT_PERIODTYPE = "/Envelope/Body/PeriodicMeterReadsResponse/PeriodType/text()";
     private static final String PATH_RESULT_LOGTIME = "/Envelope/Body/PeriodicMeterReadsResponse/PeriodicMeterReads/LogTime/text()";
     private static final String PATH_RESULT_ACTIVE_ENERGY_IMPORT_TARIFF_ONE = "/Envelope/Body/PeriodicMeterReadsResponse/PeriodicMeterReads/ActiveEnergyImportTariffOne/text()";
@@ -52,6 +55,7 @@ public class PeriodicMeterReads extends SmartMetering {
 
     @When("^the get periodic meter reads request is received$")
     public void theGetPeriodicMeterReadsRequestIsReceived() throws Throwable {
+
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_E, this.deviceId.getDeviceIdE());
         PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION, this.organisationId.getOrganisationId());
 
