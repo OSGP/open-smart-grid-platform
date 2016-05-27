@@ -1,11 +1,11 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.osgp.adapter.protocol.dlms.infra.ws;
+package org.osgp.adapter.protocol.jasper.infra.ws;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -28,8 +28,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.osgp.adapter.protocol.jasper.config.JasperWirelessAccess;
-import org.osgp.adapter.protocol.jasper.infra.ws.CorrelationIdProviderService;
-import org.osgp.adapter.protocol.jasper.infra.ws.JasperWirelessSmsClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -75,13 +73,13 @@ public class JasperWirelessSmsClientTest {
 	}
 
 	@Autowired
-	WebServiceTemplate webServiceTemplate;
+	private WebServiceTemplate webServiceTemplate;
 
 	@Autowired
-	JasperWirelessAccess jasperWirelessAccess;
+	private JasperWirelessAccess jasperWirelessAccess;
 
 	@Mock
-	CorrelationIdProviderService correlationIdProviderService;
+	private CorrelationIdProviderService correlationIdProviderService;
 
 	private MockWebServiceServer mockServer;
 
