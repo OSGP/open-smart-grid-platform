@@ -12,6 +12,7 @@ import org.jboss.netty.logging.Slf4JLoggerFactory;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeZone;
+import org.osgp.adapter.protocol.jasper.config.JasperWirelessConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -26,10 +27,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 @Configuration
 @ComponentScan(basePackages = { "org.osgp.adapter.protocol.dlms",
-		"org.osgp.adapter.protocol.jasper",
-		"com.alliander.osgp.shared.security" })
+"com.alliander.osgp.shared.security" })
 @EnableTransactionManagement()
-@Import({ MessagingConfig.class, DlmsPersistenceConfig.class })
+@Import({ MessagingConfig.class, DlmsPersistenceConfig.class,
+		JasperWirelessConfig.class })
 @PropertySource("file:${osp/osgpAdapterProtocolDlms/config}")
 public class ApplicationContext {
 

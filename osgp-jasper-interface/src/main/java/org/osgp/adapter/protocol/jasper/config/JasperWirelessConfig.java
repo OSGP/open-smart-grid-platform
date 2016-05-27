@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
@@ -35,6 +36,7 @@ import org.springframework.ws.soap.security.wss4j.Wss4jSecurityInterceptor;
  */
 @Configuration
 @PropertySource("file:${osp/osgpJasper/config}")
+@ComponentScan(basePackages = { "org.osgp.adapter.protocol.jasper" })
 public class JasperWirelessConfig {
 
 	// JMS Settings
