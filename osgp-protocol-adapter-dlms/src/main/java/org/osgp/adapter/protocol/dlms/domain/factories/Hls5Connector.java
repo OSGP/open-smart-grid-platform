@@ -142,12 +142,23 @@ public class Hls5Connector {
                 .enableEncryption(decryptedEncryption).responseTimeout(this.responseTimeout)
                 .logicalDeviceAddress(this.logicalDeviceAddress).clientAccessPoint(this.clientAccessPoint);
 
+        setOptionalValues(tcpConnectionBuilder);
+        
         final Integer challengeLength = this.device.getChallengeLength();
         if (challengeLength != null) {
             tcpConnectionBuilder.challengeLength(challengeLength);
         }
 
         return tcpConnectionBuilder.buildLnConnection();
+    }
+
+    private void setOptionalValues(final TcpConnectionBuilder tcpConnectionBuilder) {
+        if (this.device.getPort() != null) {
+            tcpConnectionBuilder.tcpPort(this.device.getPort().intValue());
+        }
+        if (this.device.getLogicalId() != null) {
+            tcpConnectionBuilder.logicalDeviceAddress(this.device.getLogicalId().intValue());
+        }
     }
 
     private void discardInvalidKeys() {
