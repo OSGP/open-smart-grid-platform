@@ -9,7 +9,7 @@ package org.osgp.adapter.protocol.dlms.application.services;
 
 import java.io.Serializable;
 
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAssociationLnObjectsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetSpecificConfigurationObjectCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.RetrieveConfigurationObjectsCommandExecutor;
@@ -39,22 +39,22 @@ public class AdhocService {
 
     // === REQUEST Synchronize Time DATA ===
 
-    public void synchronizeTime(final ClientConnection conn, final DlmsDevice device) throws ProtocolAdapterException {
+    public void synchronizeTime(final DlmsConnection conn, final DlmsDevice device) throws ProtocolAdapterException {
         this.synchronizeTimeCommandExecutor.execute(conn, device, null);
     }
 
-    public String retrieveConfigurationObjects(final ClientConnection conn, final DlmsDevice device)
+    public String retrieveConfigurationObjects(final DlmsConnection conn, final DlmsDevice device)
             throws ProtocolAdapterException {
 
         return this.retrieveConfigurationObjectsCommandExecutor.execute(conn, device, null);
     }
 
-    public AssociationLnListTypeDto getAssociationLnObjects(final ClientConnection conn, final DlmsDevice device)
+    public AssociationLnListTypeDto getAssociationLnObjects(final DlmsConnection conn, final DlmsDevice device)
             throws ProtocolAdapterException {
         return this.getAssociationLnObjectsCommandExecutor.execute(conn, device, null);
     }
 
-    public Serializable getSpecificConfigurationObject(final ClientConnection conn, final DlmsDevice device,
+    public Serializable getSpecificConfigurationObject(final DlmsConnection conn, final DlmsDevice device,
             final SpecificConfigurationObjectRequestDto specificConfigurationObjectRequestDataDto)
                     throws ProtocolAdapterException {
         return this.getSpecificConfigurationObjectCommandExecutor.execute(conn, device,

@@ -14,7 +14,7 @@ import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders.exceptions.SessionProviderException;
 import org.osgp.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -115,7 +115,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         LOGGER.debug("Processing {} request message", this.deviceRequestMessageType.name());
         final DlmsDeviceMessageMetadata messageMetadata = new DlmsDeviceMessageMetadata();
 
-        ClientConnection conn = null;
+        DlmsConnection conn = null;
         DlmsDevice device = null;
 
         final boolean isScheduled = message.propertyExists(Constants.IS_SCHEDULED) ? message
@@ -166,7 +166,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
      * queue. This response object can also be null for methods that don't
      * provide result data.
      *
-     * @param ClientConnection
+     * @param DlmsConnection
      *            the connection to the device.
      * @param device
      *            the device.
@@ -177,10 +177,10 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
      * @throws ProtocolAdapterException
      * @throws SessionProviderException
      */
-    protected Serializable handleMessage(final ClientConnection conn, final DlmsDevice device,
+    protected Serializable handleMessage(final DlmsConnection conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
         throw new UnsupportedOperationException(
-                "handleMessage(ClientConnection, DlmsDevice, Serializable) should be overriden by a subclass, or usesDeviceConnection should return false.");
+                "handleMessage(DlmsConnection, DlmsDevice, Serializable) should be overriden by a subclass, or usesDeviceConnection should return false.");
     }
 
     protected Serializable handleMessage(final Serializable requestObject) throws OsgpException,

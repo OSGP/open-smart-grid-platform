@@ -32,7 +32,7 @@ import org.mockito.internal.util.reflection.Whitebox;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
@@ -70,10 +70,10 @@ public class SetConfigurationObjectCommandExecutorTest {
     }
 
     @Mock
-    private ClientConnection connMock;
+    private DlmsConnection connMock;
 
     @Mock
-    private List<GetResult> resultListMock;
+    private GetResult resultListMock;
 
     @Mock
     private GetResult getResultMock;
@@ -115,9 +115,8 @@ public class SetConfigurationObjectCommandExecutorTest {
         // Mock the retrieval of the current ConfigurationObject
         this.mockRetrievalOfCurrentConfigurationObject();
 
-        final List<AccessResultCode> accessResultCodeList = new ArrayList<AccessResultCode>();
-        accessResultCodeList.add(AccessResultCode.SUCCESS);
-        when(this.connMock.set(eq(false), any(SetParameter.class))).thenReturn(accessResultCodeList);
+        final AccessResultCode accessResultCode = AccessResultCode.SUCCESS;
+        when(this.connMock.set(eq(false), any(SetParameter.class))).thenReturn(accessResultCode);
 
         final DlmsDevice device = this.getDlmsDevice();
         final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
@@ -150,21 +149,19 @@ public class SetConfigurationObjectCommandExecutorTest {
         final DataObject capturedDataObject = (DataObject) Whitebox.getInternalState(capturedSetParameter, "data");
         // -1 --> bits 11111111
         // -64 --> bits 11000000
-        assertEquals("[ENUMERATE Value: 1, BIT_STRING Value: [-1, -64]]", capturedDataObject.rawValue().toString());
+        assertEquals("[ENUMERATE Value: 1, BIT_STRING Value: [-1, -64]]", capturedDataObject.getRawValue().toString());
     }
 
     private void mockRetrievalOfCurrentConfigurationObject() throws IOException, TimeoutException, DecoderException {
         when(this.connMock.get(eq(false), any(AttributeAddress.class))).thenReturn(this.resultListMock);
-        when(this.resultListMock.isEmpty()).thenReturn(false);
-        when(this.resultListMock.get(0)).thenReturn(this.getResultMock);
-        when(this.resultListMock.size()).thenReturn(1);
-        when(this.getResultMock.resultCode()).thenReturn(AccessResultCode.SUCCESS);
-        when(this.getResultMock.resultData()).thenReturn(this.resultDataObjectMock);
-        when(this.resultDataObjectMock.value()).thenReturn(this.linkedListMock);
+        when(this.resultListMock).thenReturn(this.getResultMock);
+        when(this.getResultMock.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
+        when(this.getResultMock.getResultData()).thenReturn(this.resultDataObjectMock);
+        when(this.resultDataObjectMock.getValue()).thenReturn(this.linkedListMock);
         when(this.linkedListMock.get(0)).thenReturn(this.gprsOperationModeDataMock);
         when(this.linkedListMock.get(1)).thenReturn(this.flagsDataMock);
-        when(this.gprsOperationModeDataMock.value()).thenReturn(1);
-        when(this.flagsDataMock.value()).thenReturn(this.flagStringMock);
+        when(this.gprsOperationModeDataMock.getValue()).thenReturn(1);
+        when(this.flagsDataMock.getValue()).thenReturn(this.flagStringMock);
         final byte[] flagByteArray = Hex.decodeHex(CURRENT_CONFIGURATION_OBJECT_BITSTRING_ALL_ENABLED.toCharArray());
         when(this.flagStringMock.bitString()).thenReturn(flagByteArray);
     }

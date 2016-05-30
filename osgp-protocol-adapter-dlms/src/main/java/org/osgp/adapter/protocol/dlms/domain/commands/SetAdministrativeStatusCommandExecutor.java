@@ -11,7 +11,7 @@ import java.io.IOException;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
@@ -40,7 +40,7 @@ public class SetAdministrativeStatusCommandExecutor implements
     private ConfigurationMapper configurationMapper;
 
     @Override
-    public AccessResultCode execute(final ClientConnection conn, final DlmsDevice device,
+    public AccessResultCode execute(final DlmsConnection conn, final DlmsDevice device,
             final AdministrativeStatusTypeDto administrativeStatusType) throws ProtocolAdapterException {
 
         LOGGER.info(
@@ -54,7 +54,7 @@ public class SetAdministrativeStatusCommandExecutor implements
         final SetParameter setParameter = new SetParameter(attributeAddress, value);
 
         try {
-            return conn.set(setParameter).get(0);
+            return conn.set(setParameter);
         } catch (final IOException e) {
             throw new ConnectionException(e);
         }

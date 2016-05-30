@@ -9,7 +9,7 @@ package org.osgp.adapter.protocol.dlms.application.services;
 
 import java.io.Serializable;
 
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetActualMeterReadsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetActualMeterReadsGasCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsCommandExecutor;
@@ -52,7 +52,7 @@ public class MonitoringService {
 
     // === REQUEST PERIODIC METER DATA ===
 
-    public Serializable requestPeriodicMeterReads(final ClientConnection conn, final DlmsDevice device,
+    public Serializable requestPeriodicMeterReads(final DlmsConnection conn, final DlmsDevice device,
             final PeriodicMeterReadsRequestDto periodicMeterReadsQuery) throws ProtocolAdapterException {
 
         Serializable response = null;
@@ -66,7 +66,7 @@ public class MonitoringService {
 
     }
 
-    public Serializable requestActualMeterReads(final ClientConnection conn, final DlmsDevice device,
+    public Serializable requestActualMeterReads(final DlmsConnection conn, final DlmsDevice device,
             final ActualMeterReadsQueryDto actualMeterReadsRequest) throws ProtocolAdapterException {
 
         Serializable response = null;
@@ -79,7 +79,7 @@ public class MonitoringService {
         return response;
     }
 
-    public AlarmRegisterResponseDto requestReadAlarmRegister(final ClientConnection conn, final DlmsDevice device,
+    public AlarmRegisterResponseDto requestReadAlarmRegister(final DlmsConnection conn, final DlmsDevice device,
             final ReadAlarmRegisterRequestDto readAlarmRegisterRequest) throws ProtocolAdapterException {
 
         return this.readAlarmRegisterCommandExecutor.execute(conn, device, readAlarmRegisterRequest);

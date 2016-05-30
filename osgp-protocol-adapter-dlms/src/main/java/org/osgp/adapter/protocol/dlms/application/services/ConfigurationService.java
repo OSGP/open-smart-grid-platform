@@ -10,7 +10,7 @@ package org.osgp.adapter.protocol.dlms.application.services;
 import java.util.List;
 
 import org.openmuc.jdlms.AccessResultCode;
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.SecurityUtils.KeyId;
 import org.osgp.adapter.protocol.dlms.application.models.ProtocolMeterInfo;
@@ -105,7 +105,7 @@ public class ConfigurationService {
     @Autowired
     private ReplaceKeyCommandExecutor replaceKeyCommandExecutor;
 
-    public void requestSpecialDays(final ClientConnection conn, final DlmsDevice device,
+    public void requestSpecialDays(final DlmsConnection conn, final DlmsDevice device,
             final SpecialDaysRequestDto specialDaysRequest) throws ProtocolAdapterException {
 
         // The Special days towards the Smart Meter
@@ -128,7 +128,7 @@ public class ConfigurationService {
 
     // === REQUEST Configuration Object DATA ===
 
-    public void requestSetConfiguration(final ClientConnection conn, final DlmsDevice device,
+    public void requestSetConfiguration(final DlmsConnection conn, final DlmsDevice device,
             final SetConfigurationObjectRequestDto setConfigurationObjectRequest) throws ProtocolAdapterException {
 
         // Configuration Object towards the Smart Meter
@@ -158,7 +158,7 @@ public class ConfigurationService {
 
     }
 
-    public void requestSetAdministrativeStatus(final ClientConnection conn, final DlmsDevice device,
+    public void requestSetAdministrativeStatus(final DlmsConnection conn, final DlmsDevice device,
             final AdministrativeStatusTypeDto administrativeStatusType) throws ProtocolAdapterException {
 
         LOGGER.info("Device for Set Administrative Status is: {}", device);
@@ -171,7 +171,7 @@ public class ConfigurationService {
         }
     }
 
-    public void setAlarmNotifications(final ClientConnection conn, final DlmsDevice device,
+    public void setAlarmNotifications(final DlmsConnection conn, final DlmsDevice device,
             final AlarmNotificationsDto alarmNotifications) throws ProtocolAdapterException {
 
         LOGGER.info("Alarm Notifications to set on the device: {}", alarmNotifications);
@@ -184,13 +184,13 @@ public class ConfigurationService {
         }
     }
 
-    public AdministrativeStatusTypeDto requestGetAdministrativeStatus(final ClientConnection conn,
+    public AdministrativeStatusTypeDto requestGetAdministrativeStatus(final DlmsConnection conn,
             final DlmsDevice device) throws ProtocolAdapterException {
 
         return this.getAdministrativeStatusCommandExecutor.execute(conn, device, null);
     }
 
-    public String setEncryptionKeyExchangeOnGMeter(final ClientConnection conn, final DlmsDevice device,
+    public String setEncryptionKeyExchangeOnGMeter(final DlmsConnection conn, final DlmsDevice device,
             final GMeterInfoDto gMeterInfo) throws ProtocolAdapterException {
 
         LOGGER.info("Device for Set Encryption Key Exchange On G-Meter is: {}", device);
@@ -212,7 +212,7 @@ public class ConfigurationService {
         return "Set Encryption Key Exchange On G-Meter Result is OK for device id: " + device.getDeviceIdentification();
     }
 
-    public String setActivityCalendar(final ClientConnection conn, final DlmsDevice device,
+    public String setActivityCalendar(final DlmsConnection conn, final DlmsDevice device,
             final ActivityCalendarDto activityCalendar) throws ProtocolAdapterException {
 
         LOGGER.info("Device for Activity Calendar is: {}", device);
@@ -231,7 +231,7 @@ public class ConfigurationService {
 
     }
 
-    public void setPushSetupAlarm(final ClientConnection conn, final DlmsDevice device,
+    public void setPushSetupAlarm(final DlmsConnection conn, final DlmsDevice device,
             final PushSetupAlarmDto pushSetupAlarm) throws ProtocolAdapterException {
 
         LOGGER.info("Push Setup Alarm to set on the device: {}", pushSetupAlarm);
@@ -245,7 +245,7 @@ public class ConfigurationService {
         }
     }
 
-    public void setPushSetupSms(final ClientConnection conn, final DlmsDevice device, final PushSetupSmsDto pushSetupSms)
+    public void setPushSetupSms(final DlmsConnection conn, final DlmsDevice device, final PushSetupSmsDto pushSetupSms)
             throws ProtocolAdapterException {
 
         LOGGER.info("Push Setup Sms to set on the device: {}", pushSetupSms);
@@ -260,19 +260,19 @@ public class ConfigurationService {
 
     }
 
-    public List<FirmwareVersionDto> requestFirmwareVersion(final ClientConnection conn, final DlmsDevice device)
+    public List<FirmwareVersionDto> requestFirmwareVersion(final DlmsConnection conn, final DlmsDevice device)
             throws ProtocolAdapterException {
 
         return this.getFirmwareVersionCommandExecutor.execute(conn, device, null);
     }
 
-    public void replaceKeys(final ClientConnection conn, final DlmsDevice device, final SetKeysRequestDto keySet)
+    public void replaceKeys(final DlmsConnection conn, final DlmsDevice device, final SetKeysRequestDto keySet)
             throws ProtocolAdapterException {
 
         this.replaceKeySet(conn, device, keySet);
     }
 
-    private void replaceKeySet(final ClientConnection conn, final DlmsDevice device, final SetKeysRequestDto keySet)
+    private void replaceKeySet(final DlmsConnection conn, final DlmsDevice device, final SetKeysRequestDto keySet)
             throws ProtocolAdapterException {
 
         try {

@@ -10,7 +10,7 @@ package org.osgp.adapter.protocol.dlms.application.services;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.osgp.adapter.protocol.dlms.domain.commands.RetrieveEventsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
@@ -41,7 +41,7 @@ public class ManagementService {
 
     // === FIND EVENTS ===
 
-    public EventMessageDataResponseDto findEvents(final ClientConnection conn, final DlmsDevice device,
+    public EventMessageDataResponseDto findEvents(final DlmsConnection conn, final DlmsDevice device,
             final FindEventsRequestList findEventsQueryMessageDataContainer)
             throws ProtocolAdapterException {
 

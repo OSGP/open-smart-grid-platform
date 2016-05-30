@@ -7,7 +7,7 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.SecurityUtils.KeyId;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
@@ -37,7 +37,7 @@ public class ReplaceKeyBundleCommandExecutorImpl extends BundleCommandExecutor<S
     }
 
     @Override
-    public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device, final SetKeysRequestDto keySetDto) {
+    public ActionResponseDto execute(final DlmsConnection conn, final DlmsDevice device, final SetKeysRequestDto keySetDto) {
 
         // Add the // Change AUTHENTICATION key.
         LOGGER.info("Keys to set on the device {}: {}", device.getDeviceIdentification(), keySetDto);

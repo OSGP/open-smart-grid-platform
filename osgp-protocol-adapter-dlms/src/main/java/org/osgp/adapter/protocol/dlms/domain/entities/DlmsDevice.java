@@ -67,6 +67,18 @@ public class DlmsDevice extends AbstractEntity {
     @Column
     private boolean ipAddressIsStatic;
 
+    // The following three are optional columns that are used in de device simulator (DeviceServer)
+    @Column 
+    private Long port;
+
+    @Column 
+    private Long clientId;
+
+    @Column 
+    private Long logicalId;
+
+    //-- This comes from: Core Device.
+    
     @Transient
     private String ipAddress;
 
@@ -85,7 +97,8 @@ public class DlmsDevice extends AbstractEntity {
     @Override
     public String toString() {
         return String.format("DlmsDevice[deviceId=%s, hls3=%b, hls4=%b, hls5=%b, ipAddress=%s]",
-                this.deviceIdentification, this.hls3Active, this.hls4Active, this.hls5Active, this.ipAddress);
+                this.deviceIdentification, this.hls3Active, this.hls4Active, this.hls5Active,
+                this.ipAddress, this.port, this.logicalId, this.clientId);
     }
 
     @Override
@@ -202,6 +215,31 @@ public class DlmsDevice extends AbstractEntity {
 
     public void addSecurityKey(final SecurityKey securityKey) {
         this.securityKeys.add(securityKey);
+    }
+
+    
+    public Long getPort() {
+        return port;
+    }
+
+    public void setPort(Long port) {
+        this.port = port;
+    }
+
+    public Long getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(Long clientId) {
+        this.clientId = clientId;
+    }
+
+    public Long getLogicalId() {
+        return logicalId;
+    }
+
+    public void setLogicalId(Long logicalId) {
+        this.logicalId = logicalId;
     }
 
     /**

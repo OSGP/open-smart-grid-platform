@@ -7,7 +7,7 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands.stub;
 
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
@@ -20,7 +20,7 @@ public abstract class AbstractCommandExecutorStub {
     private ProtocolAdapterException protocolAdapterException;
     private RuntimeException runtimeException;
 
-    protected ActionResponseDto doExecute(final ClientConnection conn, final DlmsDevice device,
+    protected ActionResponseDto doExecute(final DlmsConnection conn, final DlmsDevice device,
             final ActionRequestDto object) throws ProtocolAdapterException {
 
         if (this.runtimeException != null) {

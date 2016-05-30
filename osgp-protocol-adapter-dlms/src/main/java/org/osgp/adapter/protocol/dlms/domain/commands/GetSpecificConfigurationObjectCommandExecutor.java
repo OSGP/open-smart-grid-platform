@@ -10,7 +10,7 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 import java.util.List;
 
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
@@ -33,7 +33,7 @@ CommandExecutor<SpecificConfigurationObjectRequestDto, String> {
     private static final Logger LOGGER = LoggerFactory.getLogger(GetSpecificConfigurationObjectCommandExecutor.class);
 
     @Override
-    public String execute(final ClientConnection conn, final DlmsDevice device,
+    public String execute(final DlmsConnection conn, final DlmsDevice device,
             final SpecificConfigurationObjectRequestDto requestData) throws ProtocolAdapterException {
 
         final ObisCode obisCode = new ObisCode(requestData.getObisCode().getA(), requestData.getObisCode().getB(),
@@ -48,7 +48,7 @@ CommandExecutor<SpecificConfigurationObjectRequestDto, String> {
 
         final List<GetResult> getResultList = this.dlmsHelper.getAndCheck(conn, device,
                 "Get specific configuration object for class", attributeAddress);
-        final DataObject dataObject = getResultList.get(0).resultData();
+        final DataObject dataObject = getResultList.get(0).getResultData();
         return this.dlmsHelper.getDebugInfo(dataObject);
     }
 

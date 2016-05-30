@@ -7,7 +7,7 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands.stub;
 
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetSpecialDaysBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -19,7 +19,7 @@ public class SetSpecialDaysBundleCommandExecutorStub extends AbstractCommandExec
         SetSpecialDaysBundleCommandExecutor {
 
     @Override
-    public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
+    public ActionResponseDto execute(final DlmsConnection conn, final DlmsDevice device,
             final SpecialDaysRequestDataDto object) throws ProtocolAdapterException {
         return this.doExecute(conn, device, object);
     }

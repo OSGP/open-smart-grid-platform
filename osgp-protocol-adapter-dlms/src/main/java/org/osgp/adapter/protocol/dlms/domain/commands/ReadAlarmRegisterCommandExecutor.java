@@ -8,12 +8,10 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeoutException;
 
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
@@ -42,37 +40,31 @@ public class ReadAlarmRegisterCommandExecutor implements CommandExecutor<ReadAla
     private AlarmHelperService alarmHelperService;
 
     @Override
-    public AlarmRegisterResponseDto execute(final ClientConnection conn, final DlmsDevice device,
+    public AlarmRegisterResponseDto execute(final DlmsConnection conn, final DlmsDevice device,
             final ReadAlarmRegisterRequestDto object) throws ProtocolAdapterException {
         return new AlarmRegisterResponseDto(this.retrieveAlarmRegister(conn));
     }
 
-    private Set<AlarmTypeDto> retrieveAlarmRegister(final ClientConnection conn) throws ProtocolAdapterException {
+    private Set<AlarmTypeDto> retrieveAlarmRegister(final DlmsConnection conn) throws ProtocolAdapterException {
 
         final AttributeAddress alarmRegisterValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
-        List<GetResult> getResultList;
+        GetResult getResult=null;
         try {
-            getResultList = conn.get(alarmRegisterValue);
-        } catch (IOException | TimeoutException e) {
+            getResult = conn.get(alarmRegisterValue);
+        } catch (IOException e) {
             throw new ConnectionException(e);
         }
 
-        if (getResultList.isEmpty()) {
+        if (getResult==null) {
             throw new ProtocolAdapterException("No GetResult received while retrieving alarm register.");
         }
 
-        if (getResultList.size() > 1) {
-            throw new ProtocolAdapterException("Expected 1 GetResult while retrieving alarm register, got "
-                    + getResultList.size());
-        }
-
-        final GetResult result = getResultList.get(0);
-        final DataObject resultData = result.resultData();
+        final DataObject resultData = getResult.getResultData();
         if (resultData != null && resultData.isNumber()) {
-            return this.alarmHelperService.toAlarmTypes((Long) result.resultData().value());
+            return this.alarmHelperService.toAlarmTypes((Long) getResult.getResultData().getValue());
         } else {
-            LOGGER.error("Result: {} --> {}", result.resultCode().name(), result.resultData());
+            LOGGER.error("Result: {} --> {}", getResult.getResultCode().name(), getResult.getResultData());
             throw new ProtocolAdapterException("Invalid register value received from the meter.");
         }
     }

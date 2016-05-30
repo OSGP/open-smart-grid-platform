@@ -16,7 +16,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SelectiveAccessDescription;
@@ -86,7 +86,7 @@ CommandExecutor<PeriodicMeterReadsRequestDto, PeriodicMeterReadsResponseDto> {
     private AmrProfileStatusCodeHelperService amrProfileStatusCodeHelperService;
 
     @Override
-    public PeriodicMeterReadsResponseDto execute(final ClientConnection conn, final DlmsDevice device,
+    public PeriodicMeterReadsResponseDto execute(final DlmsConnection conn, final DlmsDevice device,
             final PeriodicMeterReadsRequestDto periodicMeterReadsRequest) throws ProtocolAdapterException {
 
         final PeriodTypeDto periodType = periodicMeterReadsRequest.getPeriodType();
@@ -113,10 +113,10 @@ CommandExecutor<PeriodicMeterReadsRequestDto, PeriodicMeterReadsResponseDto> {
 
         final DataObject resultData = this.dlmsHelperService.readDataObject(getResultList.get(0),
                 "Periodic E-Meter Reads");
-        final List<DataObject> bufferedObjectsList = resultData.value();
+        final List<DataObject> bufferedObjectsList = resultData.getValue();
 
         for (final DataObject bufferedObject : bufferedObjectsList) {
-            final List<DataObject> bufferedObjects = bufferedObject.value();
+            final List<DataObject> bufferedObjects = bufferedObject.getValue();
             this.processNextPeriodicMeterReads(periodType, beginDateTime, endDateTime, periodicMeterReads,
                     bufferedObjects, getResultList);
         }
@@ -172,10 +172,10 @@ CommandExecutor<PeriodicMeterReadsRequestDto, PeriodicMeterReadsResponseDto> {
                 .get(BUFFER_INDEX_AMR_STATUS));
 
         final DlmsMeterValueDto positiveActiveEnergy = this.dlmsHelperService.getScaledMeterValue(
-                bufferedObjects.get(BUFFER_INDEX_A_POS), results.get(RESULT_INDEX_IMPORT).resultData(),
+                bufferedObjects.get(BUFFER_INDEX_A_POS), results.get(RESULT_INDEX_IMPORT).getResultData(),
                 "positiveActiveEnergy");
         final DlmsMeterValueDto negativeActiveEnergy = this.dlmsHelperService.getScaledMeterValue(
-                bufferedObjects.get(BUFFER_INDEX_A_NEG), results.get(RESULT_INDEX_IMPORT_2_OR_EXPORT).resultData(),
+                bufferedObjects.get(BUFFER_INDEX_A_NEG), results.get(RESULT_INDEX_IMPORT_2_OR_EXPORT).getResultData(),
                 "negativeActiveEnergy");
 
         final PeriodicMeterReadsResponseItemDto nextMeterReads = new PeriodicMeterReadsResponseItemDto(bufferedDateTime.toDate(),
@@ -191,16 +191,16 @@ CommandExecutor<PeriodicMeterReadsRequestDto, PeriodicMeterReadsResponseDto> {
                 .get(BUFFER_INDEX_AMR_STATUS));
 
         final DlmsMeterValueDto positiveActiveEnergyTariff1 = this.dlmsHelperService.getScaledMeterValue(
-                bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_1), results.get(RESULT_INDEX_IMPORT).resultData(),
+                bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_1), results.get(RESULT_INDEX_IMPORT).getResultData(),
                 "positiveActiveEnergyTariff1");
         final DlmsMeterValueDto positiveActiveEnergyTariff2 = this.dlmsHelperService.getScaledMeterValue(bufferedObjects
-                .get(BUFFER_INDEX_A_POS_RATE_2), results.get(RESULT_INDEX_IMPORT_2_OR_EXPORT).resultData(),
+                .get(BUFFER_INDEX_A_POS_RATE_2), results.get(RESULT_INDEX_IMPORT_2_OR_EXPORT).getResultData(),
                 "positiveActiveEnergyTariff2");
         final DlmsMeterValueDto negativeActiveEnergyTariff1 = this.dlmsHelperService.getScaledMeterValue(
-                bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_1), results.get(RESULT_INDEX_EXPORT).resultData(),
+                bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_1), results.get(RESULT_INDEX_EXPORT).getResultData(),
                 "negativeActiveEnergyTariff1");
         final DlmsMeterValueDto negativeActiveEnergyTariff2 = this.dlmsHelperService.getScaledMeterValue(
-                bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_2), results.get(RESULT_INDEX_EXPORT_2).resultData(),
+                bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_2), results.get(RESULT_INDEX_EXPORT_2).getResultData(),
                 "negativeActiveEnergyTariff2");
 
         final PeriodicMeterReadsResponseItemDto nextMeterReads = new PeriodicMeterReadsResponseItemDto(bufferedDateTime.toDate(),
@@ -227,7 +227,7 @@ CommandExecutor<PeriodicMeterReadsRequestDto, PeriodicMeterReadsResponseDto> {
         }
 
         final Set<AmrProfileStatusCodeFlagDto> flags = this.amrProfileStatusCodeHelperService
-                .toAmrProfileStatusCodeFlags((Number) amrProfileStatusData.value());
+                .toAmrProfileStatusCodeFlags((Number) amrProfileStatusData.getValue());
         return new AmrProfileStatusCodeDto(flags);
     }
 
@@ -240,16 +240,16 @@ CommandExecutor<PeriodicMeterReadsRequestDto, PeriodicMeterReadsResponseDto> {
          * include the AMR Profile status.
          */
         final DlmsMeterValueDto positiveActiveEnergyTariff1 = this.dlmsHelperService.getScaledMeterValue(
-                bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_1 - 1), results.get(RESULT_INDEX_IMPORT).resultData(),
+                bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_1 - 1), results.get(RESULT_INDEX_IMPORT).getResultData(),
                 "positiveActiveEnergyTariff1");
         final DlmsMeterValueDto positiveActiveEnergyTariff2 = this.dlmsHelperService.getScaledMeterValue(bufferedObjects
-                .get(BUFFER_INDEX_A_POS_RATE_2 - 1), results.get(RESULT_INDEX_IMPORT_2_OR_EXPORT).resultData(),
+                .get(BUFFER_INDEX_A_POS_RATE_2 - 1), results.get(RESULT_INDEX_IMPORT_2_OR_EXPORT).getResultData(),
                 "positiveActiveEnergyTariff2");
         final DlmsMeterValueDto negativeActiveEnergyTariff1 = this.dlmsHelperService.getScaledMeterValue(
-                bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_1 - 1), results.get(RESULT_INDEX_EXPORT).resultData(),
+                bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_1 - 1), results.get(RESULT_INDEX_EXPORT).getResultData(),
                 "negativeActiveEnergyTariff1");
         final DlmsMeterValueDto negativeActiveEnergyTariff2 = this.dlmsHelperService.getScaledMeterValue(
-                bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_2 - 1), results.get(RESULT_INDEX_EXPORT_2).resultData(),
+                bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_2 - 1), results.get(RESULT_INDEX_EXPORT_2).getResultData(),
                 "negativeActiveEnergyTariff2");
 
         final PeriodicMeterReadsResponseItemDto nextMeterReads = new PeriodicMeterReadsResponseItemDto(bufferedDateTime.toDate(),

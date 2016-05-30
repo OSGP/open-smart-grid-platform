@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.crypto.BadPaddingException;
@@ -19,7 +18,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 import org.bouncycastle.util.encoders.Hex;
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.MethodParameter;
 import org.openmuc.jdlms.MethodResult;
 import org.openmuc.jdlms.MethodResultCode;
@@ -63,7 +62,7 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor implements
     private EncryptionService encryptionService;
 
     @Override
-    public MethodResultCode execute(final ClientConnection conn, final DlmsDevice device,
+    public MethodResultCode execute(final DlmsConnection conn, final DlmsDevice device,
             final ProtocolMeterInfo protocolMeterInfo) throws ProtocolAdapterException {
         try {
             LOGGER.debug("SetEncryptionKeyExchangeOnGMeterCommandExecutor.execute called");
@@ -79,7 +78,7 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor implements
             final MethodParameter methodTransferKey = this.getTransferKeyToMBusMethodParameter(obisCode,
                     decryptedMasterKey, decryptedEncryptionKey);
 
-            List<MethodResult> methodResultCode = conn.action(methodTransferKey);
+            MethodResult methodResultCode = conn.action(methodTransferKey);
             this.checkMethodResultCode(methodResultCode, "getTransferKeyToMBusMethodParameter");
             LOGGER.info("Success!: Finished calling getTransferKeyToMBusMethodParameter class_id {} obis_code {}",
                     CLASS_ID, obisCode);
@@ -101,12 +100,11 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor implements
         }
     }
 
-    private void checkMethodResultCode(final List<MethodResult> methodResultCode, final String methodParameterName)
+    private void checkMethodResultCode(final MethodResult methodResultCode, final String methodParameterName)
             throws ProtocolAdapterException {
-        if (methodResultCode == null || methodResultCode.size() != 1 || methodResultCode.get(0) == null
-                || !MethodResultCode.SUCCESS.equals(methodResultCode.get(0).resultCode())) {
+        if (methodResultCode == null || !MethodResultCode.SUCCESS.equals(methodResultCode.getResultCode())) {
             throw new ProtocolAdapterException("Error while executing " + methodParameterName + ". Reason = "
-                    + methodResultCode.get(0).resultCode());
+                    + methodResultCode.getResultCode());
         }
     }
 

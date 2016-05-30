@@ -12,7 +12,7 @@ import java.util.List;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
@@ -33,20 +33,20 @@ CommandExecutor<PushSetupAlarmDto, AccessResultCode> {
     private static final ObisCode OBIS_CODE = new ObisCode("0.1.25.9.0.255");
 
     @Override
-    public AccessResultCode execute(final ClientConnection conn, final DlmsDevice device,
+    public AccessResultCode execute(final DlmsConnection conn, final DlmsDevice device,
             final PushSetupAlarmDto pushSetupAlarm) throws ProtocolAdapterException {
 
         final SetParameter setParameterSendDestinationAndMethod = this.getSetParameter(pushSetupAlarm);
 
-        List<AccessResultCode> resultCodes;
+        AccessResultCode resultCode;
         try {
-            resultCodes = conn.set(setParameterSendDestinationAndMethod);
+            resultCode = conn.set(setParameterSendDestinationAndMethod);
         } catch (final IOException e) {
             throw new ConnectionException(e);
         }
 
-        if (resultCodes != null && !resultCodes.isEmpty()) {
-            return resultCodes.get(0);
+        if (resultCode != null) {
+            return resultCode;
         } else {
             throw new ProtocolAdapterException("Error setting Alarm push setup data.");
         }
