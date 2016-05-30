@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.adapter.ws.infra.specifications;
 
+import java.util.Date;
+
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -23,6 +25,19 @@ import com.alliander.osgp.domain.core.exceptions.ArgumentNullOrEmptyException;
 import com.alliander.osgp.domain.core.specifications.DeviceSpecifications;
 
 public class JpaDeviceSpecifications implements DeviceSpecifications {
+
+    @Override
+    public Specification<Device> hasTechnicalInstallationDate() throws ArgumentNullOrEmptyException {
+
+        return new Specification<Device>() {
+            @Override
+            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
+                    final CriteriaBuilder cb) {
+
+                return cb.isNotNull(deviceRoot.<Date> get("technicalInstallationDate"));
+            }
+        };
+    }
 
     @Override
     public Specification<Device> forOrganisation(final Organisation organisation) throws ArgumentNullOrEmptyException {

@@ -206,6 +206,12 @@ public class Device implements Serializable {
     @JoinTable(name = "firmware_history", joinColumns = { @JoinColumn(name = "device") }, inverseJoinColumns = { @JoinColumn(name = "firmware") })
     protected List<Firmware> firmwareHistory;
 
+    /**
+     * Installation time of this entity.
+     */
+    @Column()
+    protected Date technicalInstallationDate;
+
     public Device() {
         // Default constructor
     }
@@ -450,4 +456,13 @@ public class Device implements Serializable {
     public void addFirmwareHistory(final Firmware firmware) {
         this.firmwareHistory.add(firmware);
     }
+
+    public Date getTechnicalInstallationDate() {
+        return this.technicalInstallationDate;
+    }
+
+    public void setTechnicalInstallationDate(final Date technicalInstallationDate) {
+        this.technicalInstallationDate = technicalInstallationDate;
+    }
+
 }

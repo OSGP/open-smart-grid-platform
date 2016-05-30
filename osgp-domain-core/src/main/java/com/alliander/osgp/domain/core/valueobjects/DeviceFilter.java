@@ -23,6 +23,7 @@ public class DeviceFilter {
     private DeviceInMaintenanceFilterType deviceInMaintenance;
     private String sortDir;
     private String sortedBy;
+    private boolean hasTechnicalInstallation;
 
     public DeviceFilter() {
 
@@ -32,7 +33,7 @@ public class DeviceFilter {
             final String street, final String city, final String postalCode, final String alias, final String number,
             final String municipality, final DeviceExternalManagedFilterType deviceExternalManaged,
             final DeviceActivatedFilterType deviceActivated,
-            final DeviceInMaintenanceFilterType deviceInMaintenance, final String sortDir, final String sortedBy) {
+            final DeviceInMaintenanceFilterType deviceInMaintenance, final String sortDir, final String sortedBy, final boolean hasTechnicalInstallation) {
         this.organisationIdentification = organisationIdentification;
         this.deviceIdentification = deviceIdentification;
         this.alias = alias;
@@ -46,6 +47,7 @@ public class DeviceFilter {
         this.deviceInMaintenance = deviceInMaintenance;
         this.sortDir = sortDir;
         this.sortedBy = sortedBy;
+        this.hasTechnicalInstallation = hasTechnicalInstallation;
     }
 
     public String getOrganisationIdentification() {
@@ -107,4 +109,13 @@ public class DeviceFilter {
     public void setDeviceInMaintenance(final DeviceInMaintenanceFilterType deviceInMaintenance) {
         this.deviceInMaintenance = deviceInMaintenance;
     }
+
+    public boolean isHasTechnicalInstallation() {
+        return this.hasTechnicalInstallation;
+    }
+
+    public void setHasTechnicalInstallation(final boolean hasTechnicalInstallation) {
+        this.hasTechnicalInstallation = hasTechnicalInstallation;
+    }
+
 }
