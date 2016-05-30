@@ -117,18 +117,6 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-context-support</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-jdbc</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-orm</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-tx</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
@@ -142,12 +130,6 @@
       <scope>test</scope>
     </dependency>
     
-    <!-- Spring Data -->
-    <dependency>
-      <groupId>org.springframework.data</groupId>
-      <artifactId>spring-data-jpa</artifactId>
-    </dependency>
-
     <!-- Spring WS -->
     <dependency>
       <groupId>org.springframework.ws</groupId>
@@ -171,12 +153,6 @@
     <dependency>
       <groupId>org.apache.ws.security</groupId>
       <artifactId>wss4j</artifactId>
-    </dependency>
-
-    <!-- Joda Time (Date/Time util) -->
-    <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time</artifactId>
     </dependency>
 
     <!-- Logging -->
