@@ -12,7 +12,7 @@ import java.io.IOException;
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
@@ -33,7 +33,7 @@ public class SynchronizeTimeCommandExecutor implements CommandExecutor<DataObjec
     private DlmsHelperService dlmsHelperService;
 
     @Override
-    public AccessResultCode execute(final ClientConnection conn, final DlmsDevice device, final DataObject object)
+    public AccessResultCode execute(final DlmsConnection conn, final DlmsDevice device, final DataObject object)
             throws ProtocolAdapterException {
         final AttributeAddress clockTime = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
@@ -43,7 +43,7 @@ public class SynchronizeTimeCommandExecutor implements CommandExecutor<DataObjec
         final SetParameter setParameter = new SetParameter(clockTime, time);
 
         try {
-            return conn.set(setParameter).get(0);
+            return conn.set(setParameter);
         } catch (final IOException e) {
             throw new ConnectionException(e);
         }

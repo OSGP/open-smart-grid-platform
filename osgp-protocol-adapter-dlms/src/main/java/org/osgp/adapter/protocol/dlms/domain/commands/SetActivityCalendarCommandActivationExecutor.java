@@ -8,9 +8,8 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
-import java.util.List;
 
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.MethodParameter;
 import org.openmuc.jdlms.MethodResult;
 import org.openmuc.jdlms.MethodResultCode;
@@ -32,21 +31,21 @@ public class SetActivityCalendarCommandActivationExecutor implements CommandExec
     private static final int METHOD_ID_ACTIVATE_PASSIVE_CALENDAR = 1;
 
     @Override
-    public MethodResultCode execute(final ClientConnection conn, final DlmsDevice device, final Void v)
+    public MethodResultCode execute(final DlmsConnection conn, final DlmsDevice device, final Void v)
             throws ProtocolAdapterException {
 
         LOGGER.info("ACTIVATING PASSIVE CALENDAR");
         final MethodParameter method = new MethodParameter(CLASS_ID, OBIS_CODE, METHOD_ID_ACTIVATE_PASSIVE_CALENDAR);
-        List<MethodResult> methodResultCode;
+        MethodResult methodResultCode=null;
         try {
             methodResultCode = conn.action(method);
         } catch (final IOException e) {
             throw new ConnectionException(e);
         }
-        if (methodResultCode == null || methodResultCode.isEmpty() || methodResultCode.get(0) == null) {
+        if (methodResultCode == null) {
             throw new ProtocolAdapterException(
-                    "action method for ClientConnection should return a list with one MethodResult");
+                    "action method for DlmsConnection should return a list with one MethodResult");
         }
-        return methodResultCode.get(0).resultCode();
+        return methodResultCode.getResultCode();
     }
 }

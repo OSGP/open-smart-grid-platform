@@ -14,7 +14,8 @@ import java.net.UnknownHostException;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.bouncycastle.util.Arrays;
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.Authentication;
+import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.TcpConnectionBuilder;
 import org.osgp.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -64,7 +65,7 @@ public class Hls5Connector {
         this.device = device;
     }
 
-    public ClientConnection connect() throws TechnicalException {
+    public DlmsConnection connect() throws TechnicalException {
         if (this.device == null) {
             throw new IllegalStateException("Can not connect because no device is set.");
         }
@@ -72,7 +73,7 @@ public class Hls5Connector {
         this.checkIpAddress();
 
         try {
-            final ClientConnection connection = this.createConnection();
+            final DlmsConnection connection = this.createConnection();
             this.discardInvalidKeys();
             return connection;
         } catch (final UnknownHostException e) {
@@ -116,7 +117,7 @@ public class Hls5Connector {
      *             When there are problems decrypting the encrypted security and
      *             authorisation keys.
      */
-    private ClientConnection createConnection() throws IOException, TechnicalException, EncrypterException {
+    private DlmsConnection createConnection() throws IOException, TechnicalException, EncrypterException {
         final SecurityKey validAuthenticationKey = this.getSecurityKey(SecurityKeyType.E_METER_AUTHENTICATION);
         final SecurityKey validEncryptionKey = this.getSecurityKey(SecurityKeyType.E_METER_ENCRYPTION);
 
@@ -136,17 +137,20 @@ public class Hls5Connector {
         decryptedAuthentication = Arrays.copyOfRange(decryptedAuthentication, 16, decryptedAuthentication.length);
         decryptedEncryption = Arrays.copyOfRange(decryptedEncryption, 16, decryptedEncryption.length);
 
+        Authentication auth = Authentication.newGmacAuthentication(decryptedAuthentication, decryptedEncryption);
+        
         // Setup connection to device
-        final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(InetAddress.getByName(this.device
-                .getIpAddress())).useGmacAuthentication(decryptedAuthentication, decryptedEncryption)
-                .enableEncryption(decryptedEncryption).responseTimeout(this.responseTimeout)
-                .logicalDeviceAddress(this.logicalDeviceAddress).clientAccessPoint(this.clientAccessPoint);
+        final TcpConnectionBuilder tcpConnectionBuilder = 
+                new TcpConnectionBuilder(InetAddress.getByName(this.device.getIpAddress()))
+                .setAuthentication(auth)
+                .setResponseTimeout(this.responseTimeout)
+                .setLogicalDeviceId(this.logicalDeviceAddress);
 
         setOptionalValues(tcpConnectionBuilder);
         
         final Integer challengeLength = this.device.getChallengeLength();
         if (challengeLength != null) {
-            tcpConnectionBuilder.challengeLength(challengeLength);
+            tcpConnectionBuilder.setChallengeLength(challengeLength);
         }
 
         return tcpConnectionBuilder.buildLnConnection();
@@ -154,10 +158,10 @@ public class Hls5Connector {
 
     private void setOptionalValues(final TcpConnectionBuilder tcpConnectionBuilder) {
         if (this.device.getPort() != null) {
-            tcpConnectionBuilder.tcpPort(this.device.getPort().intValue());
+            tcpConnectionBuilder.setTcpPort(this.device.getPort().intValue());
         }
         if (this.device.getLogicalId() != null) {
-            tcpConnectionBuilder.logicalDeviceAddress(this.device.getLogicalId().intValue());
+            tcpConnectionBuilder.setLogicalDeviceId(this.device.getLogicalId().intValue());
         }
     }
 

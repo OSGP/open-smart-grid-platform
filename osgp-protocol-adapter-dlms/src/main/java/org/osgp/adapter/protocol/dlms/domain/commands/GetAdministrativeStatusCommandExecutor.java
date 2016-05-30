@@ -8,11 +8,9 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
@@ -40,7 +38,7 @@ public class GetAdministrativeStatusCommandExecutor implements CommandExecutor<V
     private ConfigurationMapper configurationMapper;
 
     @Override
-    public AdministrativeStatusTypeDto execute(final ClientConnection conn, final DlmsDevice device, final Void useless)
+    public AdministrativeStatusTypeDto execute(final DlmsConnection conn, final DlmsDevice device, final Void useless)
             throws ProtocolAdapterException {
 
         final AttributeAddress getParameter = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
@@ -49,27 +47,22 @@ public class GetAdministrativeStatusCommandExecutor implements CommandExecutor<V
                 "Retrieving current administrative status by issuing get request for class id: {}, obis code: {}, attribute id: {}",
                 CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
-        List<GetResult> getResultList;
+        GetResult getResult=null;
         try {
-            getResultList = conn.get(getParameter);
-        } catch (IOException | TimeoutException e) {
+            getResult = conn.get(getParameter);
+        } catch (IOException e) {
             throw new ConnectionException(e);
         }
 
-        if (getResultList.isEmpty()) {
+        if (getResult==null) {
             throw new ProtocolAdapterException("No GetResult received while retrieving administrative status.");
         }
 
-        if (getResultList.size() > 1) {
-            throw new ProtocolAdapterException("Expected 1 GetResult while retrieving administrative status, got "
-                    + getResultList.size());
-        }
-
-        final DataObject dataObject = getResultList.get(0).resultData();
+        final DataObject dataObject = getResult.getResultData();
         if (!dataObject.isNumber()) {
             throw new ProtocolAdapterException("Received unexpected result data.");
         }
 
-        return this.configurationMapper.map((Integer) dataObject.value(), AdministrativeStatusTypeDto.class);
+        return this.configurationMapper.map((Integer) dataObject.getValue(), AdministrativeStatusTypeDto.class);
     }
 }

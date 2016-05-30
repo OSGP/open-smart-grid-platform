@@ -16,7 +16,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
@@ -63,7 +63,7 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
     private DlmsHelperService dlmsHelperService;
 
     @Override
-    public AccessResultCode execute(final ClientConnection conn, final DlmsDevice device,
+    public AccessResultCode execute(final DlmsConnection conn, final DlmsDevice device,
             final ConfigurationObjectDto configurationObject) throws ProtocolAdapterException {
 
         try {
@@ -71,7 +71,7 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
 
             final SetParameter setParameter = this.buildSetParameter(configurationObject, configurationObjectOnDevice);
 
-            return conn.set(setParameter).get(0);
+            return conn.set(setParameter);
         } catch (IOException | TimeoutException e) {
             throw new ConnectionException(e);
         }
@@ -179,7 +179,7 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
         return null;
     }
 
-    private ConfigurationObjectDto retrieveConfigurationObject(final ClientConnection conn) throws IOException,
+    private ConfigurationObjectDto retrieveConfigurationObject(final DlmsConnection conn) throws IOException,
     TimeoutException, ProtocolAdapterException {
 
         final AttributeAddress configurationObjectValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
@@ -187,33 +187,23 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
         LOGGER.info(
                 "Retrieving current configuration object by issuing get request for class id: {}, obis code: {}, attribute id: {}",
                 CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
-        final List<GetResult> getResultList = conn.get(configurationObjectValue);
+        final GetResult getResult = conn.get(configurationObjectValue);
 
-        if (getResultList == null || getResultList.isEmpty()) {
+        if (getResult == null) {
             throw new ProtocolAdapterException("No result received while retrieving current configuration object.");
         }
 
-        if (getResultList.size() > 1) {
-            throw new ProtocolAdapterException("Expected 1 result while retrieving current configuration object, got "
-                    + getResultList.size());
-        }
 
-        if (getResultList.get(0) == null) {
-            throw new ProtocolAdapterException(
-                    "Expected data in result while retrieving current configuration object, got "
-                            + getResultList.size());
-        }
-
-        return this.getConfigurationObject(getResultList);
+        return this.getConfigurationObject(getResult);
     }
 
-    private ConfigurationObjectDto getConfigurationObject(final List<GetResult> resultList)
+    private ConfigurationObjectDto getConfigurationObject(final GetResult result)
             throws ProtocolAdapterException {
 
-        final DataObject resultData = resultList.get(0).resultData();
+        final DataObject resultData = result.getResultData();
         LOGGER.info("Configuration object current complex data: {}", this.dlmsHelperService.getDebugInfo(resultData));
 
-        final List<DataObject> linkedList = resultData.value();
+        final List<DataObject> linkedList = resultData.getValue();
 
         if (linkedList == null || linkedList.isEmpty()) {
             throw new ProtocolAdapterException(
@@ -226,9 +216,9 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
                     "Expected Gprs operation mode data in result while retrieving current configuration object, but got nothing");
         }
         GprsOperationModeTypeDto gprsOperationMode = null;
-        if (((Number) gprsOperationModeData.value()).longValue() == 1) {
+        if (((Number) gprsOperationModeData.getValue()).longValue() == 1) {
             gprsOperationMode = GprsOperationModeTypeDto.ALWAYS_ON;
-        } else if (((Number) gprsOperationModeData.value()).longValue() == 2) {
+        } else if (((Number) gprsOperationModeData.getValue()).longValue() == 2) {
             gprsOperationMode = GprsOperationModeTypeDto.TRIGGERED;
         }
 
@@ -237,11 +227,11 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
             throw new ProtocolAdapterException(
                     "Expected flag bit data in result while retrieving current configuration object, but got nothing");
         }
-        if (!(flagsData.value() instanceof BitString)) {
+        if (!(flagsData.getValue() instanceof BitString)) {
             throw new ProtocolAdapterException("Value in DataObject is not a BitString: "
-                    + resultData.value().getClass().getName());
+                    + resultData.getValue().getClass().getName());
         }
-        final byte[] flagByteArray = ((BitString) flagsData.value()).bitString();
+        final byte[] flagByteArray = ((BitString) flagsData.getValue()).bitString();
 
         final List<ConfigurationFlagDto> listConfigurationFlag = this.configurationObjectHelperService
                 .toConfigurationFlags(flagByteArray);

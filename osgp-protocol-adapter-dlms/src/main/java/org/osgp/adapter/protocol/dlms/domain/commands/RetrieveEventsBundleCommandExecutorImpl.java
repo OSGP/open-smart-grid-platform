@@ -9,7 +9,7 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.util.List;
 
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -39,7 +39,7 @@ BundleCommandExecutor<FindEventsRequestDto, ActionResponseDto> implements Retrie
     }
 
     @Override
-    public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
+    public ActionResponseDto execute(final DlmsConnection conn, final DlmsDevice device,
             final FindEventsRequestDto findEventsQuery) {
 
         List<EventDto> eventDtoList;

@@ -54,9 +54,9 @@ public class DlmsHelperServiceTest {
         final DataObject dateInSummerTimeDataObject = this.dlmsHelperService.asDataObject(this.dateTimeSummerTime());
 
         assertTrue(dateInSummerTimeDataObject.isCosemDateFormat());
-        assertTrue(dateInSummerTimeDataObject.value() instanceof CosemDateTime);
+        assertTrue(dateInSummerTimeDataObject.getValue() instanceof CosemDateTime);
 
-        final CosemDateTime cosemDateTime = (CosemDateTime) dateInSummerTimeDataObject.value();
+        final CosemDateTime cosemDateTime = (CosemDateTime) dateInSummerTimeDataObject.getValue();
 
         assertArrayEquals(this.byteArraySummerTime(), cosemDateTime.encode());
     }
@@ -67,9 +67,9 @@ public class DlmsHelperServiceTest {
         final DataObject dateInWinterTimeDataObject = this.dlmsHelperService.asDataObject(this.dateTimeWinterTime());
 
         assertTrue(dateInWinterTimeDataObject.isCosemDateFormat());
-        assertTrue(dateInWinterTimeDataObject.value() instanceof CosemDateTime);
+        assertTrue(dateInWinterTimeDataObject.getValue() instanceof CosemDateTime);
 
-        final CosemDateTime cosemDateTime = (CosemDateTime) dateInWinterTimeDataObject.value();
+        final CosemDateTime cosemDateTime = (CosemDateTime) dateInWinterTimeDataObject.getValue();
 
         assertArrayEquals(this.byteArrayWinterTime(), cosemDateTime.encode());
     }

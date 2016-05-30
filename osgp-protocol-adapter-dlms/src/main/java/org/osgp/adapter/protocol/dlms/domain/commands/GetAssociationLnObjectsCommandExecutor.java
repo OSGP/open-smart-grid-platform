@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
@@ -61,7 +61,7 @@ public class GetAssociationLnObjectsCommandExecutor implements CommandExecutor<V
     private DlmsHelperService dlmsHelperService;
 
     @Override
-    public AssociationLnListTypeDto execute(final ClientConnection conn, final DlmsDevice device, final Void object)
+    public AssociationLnListTypeDto execute(final DlmsConnection conn, final DlmsDevice device, final Void object)
             throws ProtocolAdapterException {
 
         final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
@@ -72,14 +72,14 @@ public class GetAssociationLnObjectsCommandExecutor implements CommandExecutor<V
         final List<GetResult> getResultList = this.dlmsHelperService.getAndCheck(conn, device,
                 "Association LN Objects", attributeAddress);
 
-        final DataObject resultData = getResultList.get(0).resultData();
+        final DataObject resultData = getResultList.get(0).getResultData();
         if (!resultData.isComplex()) {
             throw new ProtocolAdapterException("Unexpected type of element");
         }
 
         @SuppressWarnings("unchecked")
         final List<AssociationLnListElementDto> elements = this
-        .convertAssociationLnList((List<DataObject>) getResultList.get(0).resultData().value());
+        .convertAssociationLnList((List<DataObject>) getResultList.get(0).getResultData().getValue());
 
         return new AssociationLnListTypeDto(elements);
     }
@@ -90,10 +90,10 @@ public class GetAssociationLnObjectsCommandExecutor implements CommandExecutor<V
 
         for (final DataObject obisCodeMetaData : resultDataValue) {
             @SuppressWarnings("unchecked")
-            final List<DataObject> obisCodeMetaDataList = (List<DataObject>) obisCodeMetaData.value();
+            final List<DataObject> obisCodeMetaDataList = (List<DataObject>) obisCodeMetaData.getValue();
             final AssociationLnListElementDto element = new AssociationLnListElementDto(
                     this.dlmsHelperService.readLong(obisCodeMetaDataList.get(CLASS_ID_INDEX), "classId"), new Integer(
-                            (short) obisCodeMetaDataList.get(VERSION_INDEX).value()),
+                            (short) obisCodeMetaDataList.get(VERSION_INDEX).getValue()),
                             this.dlmsHelperService.readLogicalName(obisCodeMetaDataList.get(OBIS_CODE_INDEX),
                             "AssociationLN Element"), this.convertAccessRights(obisCodeMetaDataList
                                             .get(ACCESS_RIGHTS_INDEX)));
@@ -110,17 +110,17 @@ public class GetAssociationLnObjectsCommandExecutor implements CommandExecutor<V
         }
 
         @SuppressWarnings("unchecked")
-        final List<DataObject> accessRights = (List<DataObject>) dataObject.value();
+        final List<DataObject> accessRights = (List<DataObject>) dataObject.getValue();
 
         @SuppressWarnings("unchecked")
         final AttributeAccessDescriptorDto attributeAccessDescriptor = this
                 .convertAttributeAccessDescriptor((List<DataObject>) accessRights.get(
-                        ACCESS_RIGHTS_ATTRIBUTE_ACCESS_INDEX).value());
+                        ACCESS_RIGHTS_ATTRIBUTE_ACCESS_INDEX).getValue());
 
         @SuppressWarnings("unchecked")
         final MethodAccessDescriptorDto methodAccessDescriptor = this
                 .convertMethodAttributeAccessDescriptor((List<DataObject>) accessRights.get(
-                        ACCESS_RIGHTS_METHOD_ACCESS_INDEX).value());
+                        ACCESS_RIGHTS_METHOD_ACCESS_INDEX).getValue());
 
         return new AccessRightDto(attributeAccessDescriptor, methodAccessDescriptor);
     }
@@ -131,14 +131,14 @@ public class GetAssociationLnObjectsCommandExecutor implements CommandExecutor<V
         final List<AttributeAccessItemDto> attributeAccessItems = new ArrayList<>();
 
         for (final DataObject attributeAccessItemRaw : attributeAccessDescriptor) {
-            final List<DataObject> attributeAccessItem = (List<DataObject>) attributeAccessItemRaw.value();
+            final List<DataObject> attributeAccessItem = (List<DataObject>) attributeAccessItemRaw.getValue();
 
             AccessSelectorListDto asl = null;
             if (attributeAccessItem.get(ACCESS_RIGHTS_ATTRIBUTE_ACCESS_ACCESS_SELECTORS_INDEX).isNull()) {
                 asl = new AccessSelectorListDto(Collections.<Integer> emptyList());
             } else {
                 asl = new AccessSelectorListDto(this.convertAccessSelectors((List<DataObject>) attributeAccessItem.get(
-                        ACCESS_RIGHTS_ATTRIBUTE_ACCESS_ACCESS_SELECTORS_INDEX).value()));
+                        ACCESS_RIGHTS_ATTRIBUTE_ACCESS_ACCESS_SELECTORS_INDEX).getValue()));
             }
 
             attributeAccessItems.add(new AttributeAccessItemDto(this.dlmsHelperService.readLong(
@@ -166,7 +166,7 @@ public class GetAssociationLnObjectsCommandExecutor implements CommandExecutor<V
 
         for (final DataObject methodAccessItemRaw : methodAccessDescriptor) {
             @SuppressWarnings("unchecked")
-            final List<DataObject> methodAccessItem = (List<DataObject>) methodAccessItemRaw.value();
+            final List<DataObject> methodAccessItem = (List<DataObject>) methodAccessItemRaw.getValue();
             methodAccessItems.add(new MethodAccessItemDto(this.dlmsHelperService.readLong(
                     methodAccessItem.get(ACCESS_RIGHTS_METHOD_ACCESS_METHOD_ID_INDEX), "").intValue(),
                     MethodAccessModeTypeDto.values()[this.dlmsHelperService.readLong(

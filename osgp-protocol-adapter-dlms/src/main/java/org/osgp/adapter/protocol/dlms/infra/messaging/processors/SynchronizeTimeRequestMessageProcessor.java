@@ -9,7 +9,7 @@ package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 
 import java.io.Serializable;
 
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.osgp.adapter.protocol.dlms.application.services.AdhocService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -32,7 +32,7 @@ public class SynchronizeTimeRequestMessageProcessor extends DeviceRequestMessage
     }
 
     @Override
-    protected Serializable handleMessage(final ClientConnection conn, final DlmsDevice device,
+    protected Serializable handleMessage(final DlmsConnection conn, final DlmsDevice device,
             final Serializable requestObject) throws ProtocolAdapterException {
         this.adhocService.synchronizeTime(conn, device);
         return null;

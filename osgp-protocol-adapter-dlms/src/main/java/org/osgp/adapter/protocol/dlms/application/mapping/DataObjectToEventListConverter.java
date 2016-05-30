@@ -37,7 +37,7 @@ public class DataObjectToEventListConverter {
             throw new ProtocolAdapterException("DataObject should not be null");
         }
 
-        final List<DataObject> listOfEvents = source.value();
+        final List<DataObject> listOfEvents = source.getValue();
         for (final DataObject eventDataObject : listOfEvents) {
             eventList.add(this.getEvent(eventDataObject, eventLogCategory));
         }
@@ -49,7 +49,7 @@ public class DataObjectToEventListConverter {
     private EventDto getEvent(final DataObject eventDataObject, final EventLogCategoryDto eventLogCategory)
             throws ProtocolAdapterException {
 
-        final List<DataObject> eventData = eventDataObject.value();
+        final List<DataObject> eventData = eventDataObject.getValue();
 
         if (eventData == null) {
             throw new ProtocolAdapterException("eventData DataObject should not be null");
@@ -67,7 +67,7 @@ public class DataObjectToEventListConverter {
         if (!eventData.get(1).isNumber()) {
             throw new ProtocolAdapterException("eventData value is not a number");
         }
-        final Short code = eventData.get(1).value();
+        final Short code = eventData.get(1).getValue();
 
         Integer eventCounter = null;
 
@@ -75,7 +75,7 @@ public class DataObjectToEventListConverter {
             if (!eventData.get(2).isNumber()) {
                 throw new ProtocolAdapterException("eventData value is not a number");
             }
-            eventCounter = eventData.get(2).value();
+            eventCounter = eventData.get(2).getValue();
         }
 
         LOGGER.info("Event time is {}, event code is {} and event counter is {}", dateTime, code, eventCounter);

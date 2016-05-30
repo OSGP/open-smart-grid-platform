@@ -9,7 +9,7 @@ package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 
 import java.io.Serializable;
 
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders.exceptions.SessionProviderException;
 import org.osgp.adapter.protocol.dlms.application.services.ManagementService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -36,7 +36,7 @@ public class FindEventsRequestMessageProcessor extends DeviceRequestMessageProce
     }
 
     @Override
-    protected Serializable handleMessage(final ClientConnection conn, final DlmsDevice device,
+    protected Serializable handleMessage(final DlmsConnection conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
 
         return this.managementService.findEvents(conn, device, (FindEventsRequestList) requestObject);

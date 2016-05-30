@@ -13,6 +13,7 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.BitString;
 import org.openmuc.jdlms.datatypes.CosemDate;
@@ -31,7 +32,7 @@ import org.openmuc.jdlms.datatypes.CosemDateTime;
 import org.openmuc.jdlms.datatypes.CosemDateTime.ClockStatus;
 import org.openmuc.jdlms.datatypes.CosemTime;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.openmuc.jdlms.internal.asn1.cosem.Data.Choices;
+import org.openmuc.jdlms.datatypes.DataObject.Type;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -83,7 +84,7 @@ public class DlmsHelperService {
      * @return
      * @throws ProtocolAdapterException
      */
-    public List<GetResult> getAndCheck(final ClientConnection conn, final DlmsDevice device, final String description,
+    public List<GetResult> getAndCheck(final DlmsConnection conn, final DlmsDevice device, final String description,
             final AttributeAddress... params) throws ProtocolAdapterException {
         final List<GetResult> getResults = this.getWithList(conn, device, params);
         this.checkResultList(getResults, params.length, description);
@@ -111,8 +112,8 @@ public class DlmsHelperService {
             throws ProtocolAdapterException {
         if (getResultList.isEmpty()) {
             throw new ProtocolAdapterException("No GetResult received: " + description);
-        } else if (getResultList.size() == 1 && AccessResultCode.SUCCESS != getResultList.get(0).resultCode()) {
-            throw new ProtocolAdapterException(getResultList.get(0).resultCode().name());
+        } else if (getResultList.size() == 1 && AccessResultCode.SUCCESS != getResultList.get(0).getResultCode()) {
+            throw new ProtocolAdapterException(getResultList.get(0).getResultCode().name());
         }
 
         if (getResultList.size() != expectedResults) {
@@ -121,11 +122,11 @@ public class DlmsHelperService {
         }
     }
 
-    public List<GetResult> getWithList(final ClientConnection conn, final DlmsDevice device,
+    public List<GetResult> getWithList(final DlmsConnection conn, final DlmsDevice device,
             final AttributeAddress... params) throws ProtocolAdapterException {
         try {
             if (device.isWithListSupported()) {
-                return conn.get(params);
+                return conn.get(Arrays.asList(params));
             } else {
                 return this.getWithListWorkaround(conn, params);
             }
@@ -152,7 +153,7 @@ public class DlmsHelperService {
      */
     public DlmsMeterValueDto getScaledMeterValue(final GetResult value, final GetResult scalerUnit,
             final String description) throws ProtocolAdapterException {
-        return this.getScaledMeterValue(value.resultData(), scalerUnit.resultData(), description);
+        return this.getScaledMeterValue(value.getResultData(), scalerUnit.getResultData(), description);
     }
 
     public DlmsMeterValueDto getScaledMeterValue(final DataObject value, final DataObject scalerUnitObject,
@@ -168,7 +169,7 @@ public class DlmsHelperService {
             throw new ProtocolAdapterException("complex data (structure) expected while retrieving scaler and unit."
                     + this.getDebugInfo(scalerUnitObject));
         }
-        final List<DataObject> dataObjects = scalerUnitObject.value();
+        final List<DataObject> dataObjects = scalerUnitObject.getValue();
         if (dataObjects.size() != 2) {
             throw new ProtocolAdapterException("expected 2 values while retrieving scaler and unit."
                     + this.getDebugInfo(scalerUnitObject));
@@ -197,24 +198,19 @@ public class DlmsHelperService {
      * @throws IOException
      * @throws TimeoutException
      *
-     * @see #getWithList(ClientConnection, DlmsDevice, AttributeAddress...)
+     * @see #getWithList(DlmsConnection, DlmsDevice, AttributeAddress...)
      */
-    private List<GetResult> getWithListWorkaround(final ClientConnection conn, final AttributeAddress... params)
+    private List<GetResult> getWithListWorkaround(final DlmsConnection conn, final AttributeAddress... params)
             throws IOException, TimeoutException {
         final List<GetResult> getResultList = new ArrayList<>();
         for (final AttributeAddress param : params) {
-            final List<GetResult> getResultListForParam = conn.get(param);
-            if (getResultListForParam.size() != 1) {
-                throw new AssertionError("GetResult list contains " + getResultListForParam.size()
-                        + " elements instead of 1");
-            }
-            getResultList.add(getResultListForParam.get(0));
+            getResultList.add(conn.get(param));
         }
         return getResultList;
     }
 
     private void checkResultCode(final GetResult getResult, final String description) throws ProtocolAdapterException {
-        final AccessResultCode resultCode = getResult.resultCode();
+        final AccessResultCode resultCode = getResult.getResultCode();
         LOGGER.debug(description + " - AccessResultCode: {}", resultCode);
         if (resultCode != AccessResultCode.SUCCESS) {
             throw new ProtocolAdapterException("No success retrieving " + description + ": AccessResultCode = "
@@ -224,12 +220,12 @@ public class DlmsHelperService {
 
     public Long readLong(final GetResult getResult, final String description) throws ProtocolAdapterException {
         this.checkResultCode(getResult, description);
-        return this.readLong(getResult.resultData(), description);
+        return this.readLong(getResult.getResultData(), description);
     }
 
     public Long readLongNotNull(final GetResult getResult, final String description) throws ProtocolAdapterException {
         this.checkResultCode(getResult, description);
-        return this.readLongNotNull(getResult.resultData(), description);
+        return this.readLongNotNull(getResult.getResultData(), description);
     }
 
     public Long readLongNotNull(final DataObject resultData, final String description) throws ProtocolAdapterException {
@@ -243,7 +239,7 @@ public class DlmsHelperService {
     public DataObject readDataObject(final GetResult getResult, final String description)
             throws ProtocolAdapterException {
         this.checkResultCode(getResult, description);
-        return getResult.resultData();
+        return getResult.getResultData();
     }
 
     public Long readLong(final DataObject resultData, final String description) throws ProtocolAdapterException {
@@ -265,7 +261,7 @@ public class DlmsHelperService {
     public CosemDateTimeDto readDateTime(final GetResult getResult, final String description)
             throws ProtocolAdapterException {
         this.checkResultCode(getResult, description);
-        return this.readDateTime(getResult.resultData(), description);
+        return this.readDateTime(getResult.getResultData(), description);
     }
 
     public CosemDateTimeDto readDateTime(final DataObject resultData, final String description)
@@ -275,22 +271,22 @@ public class DlmsHelperService {
             return null;
         }
         if (resultData.isByteArray()) {
-            return this.fromDateTimeValue((byte[]) resultData.value());
+            return this.fromDateTimeValue((byte[]) resultData.getValue());
         } else if (resultData.isCosemDateFormat()) {
-            return this.fromDateTimeValue(((CosemDateTime) resultData.value()).encode());
+            return this.fromDateTimeValue(((CosemDateTime) resultData.getValue()).encode());
         } else {
             LOGGER.error("Unexpected ResultData for DateTime value: {}", this.getDebugInfo(resultData));
             throw new ProtocolAdapterException("Expected ResultData of ByteArray or CosemDateFormat, got: "
-                    + resultData.choiceIndex());
+                    + resultData.getType());
         }
     }
 
     public CosemDateTimeDto convertDataObjectToDateTime(final DataObject object) throws ProtocolAdapterException {
         CosemDateTimeDto dateTime = null;
         if (object.isByteArray()) {
-            dateTime = this.fromDateTimeValue((byte[]) object.value());
+            dateTime = this.fromDateTimeValue((byte[]) object.getValue());
         } else if (object.isCosemDateFormat()) {
-            dateTime = this.fromDateTimeValue(((CosemDateTime) object.value()).encode());
+            dateTime = this.fromDateTimeValue(((CosemDateTime) object.getValue()).encode());
         } else {
             this.logAndThrowExceptionForUnexpectedResultData(object, "ByteArray or CosemDateFormat");
         }
@@ -346,7 +342,7 @@ public class DlmsHelperService {
     public List<CosemObjectDefinitionDto> readListOfObjectDefinition(final GetResult getResult, final String description)
             throws ProtocolAdapterException {
         this.checkResultCode(getResult, description);
-        return this.readListOfObjectDefinition(getResult.resultData(), description);
+        return this.readListOfObjectDefinition(getResult.getResultData(), description);
     }
 
     public List<CosemObjectDefinitionDto> readListOfObjectDefinition(final DataObject resultData,
@@ -397,7 +393,7 @@ public class DlmsHelperService {
     public SendDestinationAndMethodDto readSendDestinationAndMethod(final GetResult getResult, final String description)
             throws ProtocolAdapterException {
         this.checkResultCode(getResult, description);
-        return this.readSendDestinationAndMethod(getResult.resultData(), description);
+        return this.readSendDestinationAndMethod(getResult.getResultData(), description);
     }
 
     public SendDestinationAndMethodDto readSendDestinationAndMethod(final DataObject resultData,
@@ -466,7 +462,7 @@ public class DlmsHelperService {
     public List<WindowElementDto> readListOfWindowElement(final GetResult getResult, final String description)
             throws ProtocolAdapterException {
         this.checkResultCode(getResult, description);
-        return this.readListOfWindowElement(getResult.resultData(), description);
+        return this.readListOfWindowElement(getResult.getResultData(), description);
     }
 
     public List<WindowElementDto> readListOfWindowElement(final DataObject resultData, final String description)
@@ -523,7 +519,7 @@ public class DlmsHelperService {
 
         final String objectText;
         if (dataObject.isComplex()) {
-            if (dataObject.value() instanceof List) {
+            if (dataObject.getValue() instanceof List) {
                 final StringBuilder builder = new StringBuilder();
                 builder.append("[");
                 builder.append(System.lineSeparator());
@@ -532,31 +528,31 @@ public class DlmsHelperService {
                 builder.append(System.lineSeparator());
                 objectText = builder.toString();
             } else {
-                objectText = String.valueOf(dataObject.rawValue());
+                objectText = String.valueOf(dataObject.getRawValue());
             }
         } else if (dataObject.isByteArray()) {
-            objectText = this.getDebugInfoByteArray((byte[]) dataObject.value());
+            objectText = this.getDebugInfoByteArray((byte[]) dataObject.getValue());
         } else if (dataObject.isBitString()) {
-            objectText = this.getDebugInfoBitStringBytes(((BitString) dataObject.value()).bitString());
-        } else if (dataObject.isCosemDateFormat() && dataObject.value() instanceof CosemDateTime) {
-            objectText = this.getDebugInfoDateTimeBytes(((CosemDateTime) dataObject.value()).encode());
+            objectText = this.getDebugInfoBitStringBytes(((BitString) dataObject.getValue()).bitString());
+        } else if (dataObject.isCosemDateFormat() && dataObject.getValue() instanceof CosemDateTime) {
+            objectText = this.getDebugInfoDateTimeBytes(((CosemDateTime) dataObject.getValue()).encode());
         } else {
-            objectText = String.valueOf(dataObject.rawValue());
+            objectText = String.valueOf(dataObject.getRawValue());
         }
 
         return objectText;
     }
 
     private String getChoiceTextForDebugInfo(final DataObject dataObject) {
-        final Choices choiceIndex = dataObject.choiceIndex();
+        final Type choiceIndex = dataObject.getType();
         if (choiceIndex == null) {
             return "null";
         }
-        return choiceIndex.name() + "(" + choiceIndex.getValue() + ")";
+        return choiceIndex.name();
     }
 
     private String getRawValueClassForDebugInfo(final DataObject dataObject) {
-        final Object rawValue = dataObject.rawValue();
+        final Object rawValue = dataObject.getRawValue();
         if (rawValue == null) {
             return "null";
         }
@@ -564,7 +560,7 @@ public class DlmsHelperService {
     }
 
     private void appendItemValues(final DataObject dataObject, final StringBuilder builder) {
-        for (final Object obj : (List<?>) dataObject.value()) {
+        for (final Object obj : (List<?>) dataObject.getValue()) {
             builder.append("\t");
             if (obj instanceof DataObject) {
                 builder.append(this.getDebugInfo((DataObject) obj));
@@ -713,7 +709,7 @@ public class DlmsHelperService {
         if (resultData == null || resultData.isNull()) {
             return null;
         }
-        final Object resultValue = resultData.value();
+        final Object resultValue = resultData.getValue();
         if (!resultData.isNumber() || !(resultValue instanceof Number)) {
             this.logAndThrowExceptionForUnexpectedResultData(resultData, interpretation);
         }
@@ -726,7 +722,7 @@ public class DlmsHelperService {
         if (resultData == null || resultData.isNull()) {
             return new byte[0];
         }
-        final Object resultValue = resultData.value();
+        final Object resultValue = resultData.getValue();
         if (!resultData.isByteArray() || !(resultValue instanceof byte[])) {
             this.logAndThrowExceptionForUnexpectedResultData(resultData, "byte array to be interpreted as "
                     + interpretation);
@@ -741,7 +737,7 @@ public class DlmsHelperService {
         if (resultData == null || resultData.isNull()) {
             return Collections.emptyList();
         }
-        final Object resultValue = resultData.value();
+        final Object resultValue = resultData.getValue();
         if (!resultData.isComplex() || !(resultValue instanceof List)) {
             this.logAndThrowExceptionForUnexpectedResultData(resultData, "List");
         }
@@ -755,8 +751,8 @@ public class DlmsHelperService {
     private void logAndThrowExceptionForUnexpectedResultData(final DataObject resultData, final String expectedType)
             throws ProtocolAdapterException {
         LOGGER.error("Unexpected ResultData for {} value: {}", expectedType, this.getDebugInfo(resultData));
-        final String resultDataType = resultData.value() == null ? "null" : resultData.value().getClass().getName();
+        final String resultDataType = resultData.getValue() == null ? "null" : resultData.getValue().getClass().getName();
         throw new ProtocolAdapterException("Expected ResultData of " + expectedType + ", got: "
-                + resultData.choiceIndex() + ", value type: " + resultDataType);
+                + resultData.getType() + ", value type: " + resultDataType);
     }
 }

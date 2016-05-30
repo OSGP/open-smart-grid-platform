@@ -7,7 +7,7 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.MethodResultCode;
 import org.osgp.adapter.protocol.dlms.application.models.ProtocolMeterInfo;
 import org.osgp.adapter.protocol.dlms.application.services.DomainHelperService;
@@ -42,7 +42,7 @@ SetEncryptionKeyExchangeOnGMeterBundleCommandExecutor {
     }
 
     @Override
-    public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
+    public ActionResponseDto execute(final DlmsConnection conn, final DlmsDevice device,
             final GMeterInfoDto gMeterInfo) {
 
         DlmsDevice gMeterDevice;
