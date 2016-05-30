@@ -15,6 +15,7 @@ import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.bouncycastle.util.Arrays;
 import org.openmuc.jdlms.Authentication;
+import org.openmuc.jdlms.Authentication.CryptographicAlgorithm;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.TcpConnectionBuilder;
 import org.osgp.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
@@ -137,14 +138,15 @@ public class Hls5Connector {
         decryptedAuthentication = Arrays.copyOfRange(decryptedAuthentication, 16, decryptedAuthentication.length);
         decryptedEncryption = Arrays.copyOfRange(decryptedEncryption, 16, decryptedEncryption.length);
 
-        Authentication auth = Authentication.newGmacAuthentication(decryptedAuthentication, decryptedEncryption);
+        Authentication auth = Authentication.newGmacAuthentication(decryptedAuthentication, decryptedEncryption, CryptographicAlgorithm.AES_GMC_128);
         
         // Setup connection to device
         final TcpConnectionBuilder tcpConnectionBuilder = 
                 new TcpConnectionBuilder(InetAddress.getByName(this.device.getIpAddress()))
                 .setAuthentication(auth)
                 .setResponseTimeout(this.responseTimeout)
-                .setLogicalDeviceId(this.logicalDeviceAddress);
+                .setLogicalDeviceId(this.logicalDeviceAddress)
+                .setClientId(clientAccessPoint);
 
         setOptionalValues(tcpConnectionBuilder);
         
