@@ -297,15 +297,6 @@ public class Iec61850ClientEventListener implements ClientEventListener {
             }
         }
 
-        final BdaTimestamp trgTimeNode = (BdaTimestamp) evnRpn.getChild(EVENT_NODE_TRIGGER_TIME);
-        if (trgTimeNode != null && trgTimeNode.getDate() != null) {
-            final DateTime trgTime = new DateTime(trgTimeNode.getDate());
-            if (sb.length() > 0) {
-                sb.append("; ");
-            }
-            sb.append(trgTime);
-        }
-
         final BdaVisibleString remarkNode = (BdaVisibleString) evnRpn.getChild(EVENT_NODE_REMARK);
         if (remarkNode != null && !EVENT_NODE_REMARK.equalsIgnoreCase(remarkNode.getStringValue())) {
             if (sb.length() > 0) {
@@ -319,6 +310,11 @@ public class Iec61850ClientEventListener implements ClientEventListener {
 
     private DateTime determineDateTime(final FcModelNode evnRpn, final DateTime timeOfEntry) {
 
+        final BdaTimestamp trgTimeNode = (BdaTimestamp) evnRpn.getChild(EVENT_NODE_TRIGGER_TIME);
+        if (trgTimeNode != null && trgTimeNode.getDate() != null) {
+            return new DateTime(trgTimeNode.getDate());
+        }
+
         if (timeOfEntry != null) {
             /*
              * Use the reports time of entry for the event. The trigger time
@@ -327,11 +323,6 @@ public class Iec61850ClientEventListener implements ClientEventListener {
              * See: determineDescription(FcModelNode)
              */
             return timeOfEntry;
-        }
-
-        final BdaTimestamp trgTimeNode = (BdaTimestamp) evnRpn.getChild(EVENT_NODE_TRIGGER_TIME);
-        if (trgTimeNode != null && trgTimeNode.getDate() != null) {
-            return new DateTime(trgTimeNode.getDate());
         }
 
         /*
