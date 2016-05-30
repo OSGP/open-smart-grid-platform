@@ -14,6 +14,7 @@ import org.bouncycastle.util.encoders.Hex;
 import org.openmuc.jdlms.Authentication;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.TcpConnectionBuilder;
+import org.openmuc.jdlms.Authentication.CryptographicAlgorithm;
 import org.osgp.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
@@ -137,12 +138,14 @@ public class RecoverKeyProcess implements Runnable {
                 .getKey());
         final byte[] encryptionKey = Hex.decode(this.getSecurityKey(SecurityKeyType.E_METER_ENCRYPTION).getKey());
 
-        Authentication auth = Authentication.newGmacAuthentication(authenticationKey, encryptionKey);
+        Authentication auth = Authentication.newGmacAuthentication(authenticationKey, encryptionKey, CryptographicAlgorithm.AES_GMC_128);
         
         final TcpConnectionBuilder tcpConnectionBuilder = 
                 new TcpConnectionBuilder(InetAddress.getByName(this.device.getIpAddress()))
-                .setAuthentication(auth)
-                .setLogicalDeviceId(this.logicalDeviceAddress);
+                    .setAuthentication(auth)
+                    .setResponseTimeout(this.responseTimeout)
+                    .setLogicalDeviceId(this.logicalDeviceAddress)
+                    .setClientId(clientAccessPoint);
 
         final Integer challengeLength = this.device.getChallengeLength();
         if (challengeLength != null) {
