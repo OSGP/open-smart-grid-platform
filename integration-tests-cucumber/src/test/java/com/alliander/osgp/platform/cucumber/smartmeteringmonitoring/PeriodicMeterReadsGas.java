@@ -60,7 +60,7 @@ public class PeriodicMeterReadsGas extends SmartMetering {
 
     @Then("^the periodic meter reads gas result should be returned$")
     public void thePeriodicMeterReadsResultShouldBeReturned() throws Throwable {
-        PROPERTIES_MAP.put(CORRELATION_UID, this.correlationUid);
+        PROPERTIES_MAP.put(getCorrelationUid(), this.correlationUid);
 
         this.ResponseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
 
@@ -81,7 +81,7 @@ public class PeriodicMeterReadsGas extends SmartMetering {
 
     @Then("^the interval meter reads gas result should be returned$")
     public void theIntervalMeterReadsResultShouldBeReturned() throws Throwable {
-        PROPERTIES_MAP.put(CORRELATION_UID, this.correlationUid);
+        PROPERTIES_MAP.put(getCorrelationUid(), this.correlationUid);
         this.ResponseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
 
         assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_PERIODTYPE,

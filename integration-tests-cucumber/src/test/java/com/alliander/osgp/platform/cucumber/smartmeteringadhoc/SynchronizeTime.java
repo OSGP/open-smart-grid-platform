@@ -45,7 +45,7 @@ public class SynchronizeTime extends SmartMetering {
 
     @Then("^the date and time is synchronized on the device$")
     public void theDateAndTimeIsSynchronizedOnTheDevice() throws Throwable {
-        PROPERTIES_MAP.put(CORRELATION_UID, this.correlationUid);
+        PROPERTIES_MAP.put(getCorrelationUid(), this.correlationUid);
 
         this.ResponseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
 

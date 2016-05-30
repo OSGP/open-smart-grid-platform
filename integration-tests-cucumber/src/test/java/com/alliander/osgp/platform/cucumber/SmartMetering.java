@@ -35,9 +35,24 @@ public class SmartMetering {
     protected static final String DEVICE_IDENTIFICATION_E = "DeviceIdentificationE";
     protected static final String DEVICE_IDENTIFICATION_G = "DeviceIdentificationG";
     protected static final String ORGANISATION_IDENTIFICATION = "OrganisationIdentification";
-    protected static final String CORRELATION_UID = "CorrelationUid";
-    protected static final String LAP_TIME = "LapTime";
-    protected static final String MAX_LAPCOUNT = "MaxLapCount";
+    private static final String CORRELATION_UID = "CorrelationUid";
+
+    /**
+     * The values below can be used to increase or decrease the maximum polling
+     * time to the response database. the total polling time =
+     * laptime*maxlapcount (where laptime = time in milisecs.
+     *
+     * So for example if the feature 'FastFeature' normally finishes within 10
+     * seconds, the in FastFeature.java these lines could be added:
+     * PROPERTIES_MAP.put(LAP_TIME, "500"); PROPERTIES_MAP.put(MAX_LAPCOUNT,
+     * "100"); Hence instead of polling every 5 second, now we poll every half
+     * second, and this should be finished within 50 seconds (500*100 = 50000
+     * msecs)
+     *
+     */
+
+    private static final String LAP_TIME = "LapTime";
+    private static final String MAX_LAPCOUNT = "MaxLapCount";
 
     protected String response;
     protected String correlationUid;
@@ -108,5 +123,17 @@ public class SmartMetering {
 
         this.response = ((MessageExchange) wsdlTestCaseRunner.getResults().get(0)).getResponseContent();
         logger.info(testCaseNameResponse + " response {}", this.response);
+    }
+
+    public static String getCorrelationUid() {
+        return CORRELATION_UID;
+    }
+
+    public static String getLapTime() {
+        return LAP_TIME;
+    }
+
+    public static String getMaxLapcount() {
+        return MAX_LAPCOUNT;
     }
 }

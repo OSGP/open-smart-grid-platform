@@ -53,7 +53,7 @@ public class ReadAlarmRegister extends SmartMetering {
 
     @Then("^the alarm register should be returned$")
     public void theActualMeterReadsResultShouldBeReturned() throws Throwable {
-        PROPERTIES_MAP.put(CORRELATION_UID, this.correlationUid);
+        PROPERTIES_MAP.put(getCorrelationUid(), this.correlationUid);
         this.ResponseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
 
         assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_ALARMTYPES,

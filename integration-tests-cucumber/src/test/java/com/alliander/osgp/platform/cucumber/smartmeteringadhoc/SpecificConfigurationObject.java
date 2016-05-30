@@ -45,7 +45,7 @@ public class SpecificConfigurationObject extends SmartMetering {
 
     @Then("^the specific configuration item should be returned$")
     public void theSpecificConfigurationItemShouldBeReturned() throws Throwable {
-        PROPERTIES_MAP.put(CORRELATION_UID, this.correlationUid);
+        PROPERTIES_MAP.put(getCorrelationUid(), this.correlationUid);
 
         this.ResponseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
 

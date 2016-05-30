@@ -47,8 +47,9 @@ public class ConfigurationObjects extends SmartMetering {
 
     @Then("^all the configuration items should be returned$")
     public void allTheConfigurationItemsShouldBeReturned() throws Throwable {
-        PROPERTIES_MAP.put(CORRELATION_UID, this.correlationUid);
-
+        PROPERTIES_MAP.put(getCorrelationUid(), this.correlationUid);
+        PROPERTIES_MAP.put(getLapTime(), "500");
+        PROPERTIES_MAP.put(getMaxLapcount(), "100");
         this.ResponseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
 
         assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT, XPATH_MATCHER_RESULT));

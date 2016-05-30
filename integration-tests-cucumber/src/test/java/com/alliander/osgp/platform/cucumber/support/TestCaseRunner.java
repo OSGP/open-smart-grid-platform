@@ -27,12 +27,12 @@ import com.eviware.soapui.model.testsuite.TestCase;
 import com.eviware.soapui.support.SoapUIException;
 
 @Component
-public class TestCaseRunner extends SmartMetering {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(TestCaseRunner.class);
+public class TestCaseRunner {
 
     @Autowired
-    private ResponseNotifier responseNotifier;
+    protected ResponseNotifier responseNotifier;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestCaseRunner.class);
 
     public TestCaseResult runWsdlTestCase(final TestCase testCase, final Map<String, String> propertiesMap,
             final String testCaseNameRequest) throws XmlException, IOException, SoapUIException {
@@ -56,24 +56,24 @@ public class TestCaseRunner extends SmartMetering {
     }
 
     private String getCorrelId(final Map<String, String> propertiesMap) {
-        if (propertiesMap.containsKey(CORRELATION_UID)) {
-            return propertiesMap.get(CORRELATION_UID);
+        if (propertiesMap.containsKey(SmartMetering.getCorrelationUid())) {
+            return propertiesMap.get(SmartMetering.getCorrelationUid());
         } else {
             return null;
         }
     }
 
     private int getLaptime(final Map<String, String> propertiesMap) {
-        if (propertiesMap.containsKey(LAP_TIME)) {
-            return new Integer(propertiesMap.get(LAP_TIME));
+        if (propertiesMap.containsKey(SmartMetering.getLapTime())) {
+            return new Integer(propertiesMap.get(SmartMetering.getLapTime()));
         } else {
             return 5000;
         }
     }
 
     private int getMaxLaps(final Map<String, String> propertiesMap) {
-        if (propertiesMap.containsKey(MAX_LAPCOUNT)) {
-            return new Integer(propertiesMap.get(MAX_LAPCOUNT));
+        if (propertiesMap.containsKey(SmartMetering.getMaxLapcount())) {
+            return new Integer(propertiesMap.get(SmartMetering.getMaxLapcount()));
         } else {
             return 25;
         }

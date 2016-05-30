@@ -56,7 +56,7 @@ public class ActualMeterReadsGas extends SmartMetering {
 
     @Then("^the actual meter reads gas result should be returned$")
     public void theActualMeterReadsResultShouldBeReturned() throws Throwable {
-        PROPERTIES_MAP.put(CORRELATION_UID, this.correlationUid);
+        PROPERTIES_MAP.put(getCorrelationUid(), this.correlationUid);
 
         this.ResponseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
 
