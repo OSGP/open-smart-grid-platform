@@ -925,8 +925,10 @@ public class Iec61850DeviceService implements DeviceService {
                 .getChild(LogicalNodeAttributeDefinitons.PROPERTY_SOFTWARE_CONFIG_LIGHT_TYPE);
         final LightTypeDto lightType = LightTypeDto.valueOf(lightTypeValue.getStringValue());
 
-        final BdaInt16 astroGateSunRiseOffset = (BdaInt16) softwareConfiguration.getChild("adRiseOft");
-        final BdaInt16 astroGateSunSetOffset = (BdaInt16) softwareConfiguration.getChild("adSetOft");
+        final BdaInt16 astroGateSunRiseOffset = (BdaInt16) softwareConfiguration
+                .getChild(LogicalNodeAttributeDefinitons.PROPERTY_POSITION_OFFSET_SUNRISE);
+        final BdaInt16 astroGateSunSetOffset = (BdaInt16) softwareConfiguration
+                .getChild(LogicalNodeAttributeDefinitons.PROPERTY_POSITION_OFFSET_SUNSET);
 
         final ConfigurationDto configuration = new ConfigurationDto(lightType, daliConfiguration, relayConfiguration,
                 shortTermHistoryIntervalMinutes, preferredLinkType, meterType, longTermHistoryInterval,
@@ -1060,13 +1062,36 @@ public class Iec61850DeviceService implements DeviceService {
             @Override
             public Void apply() throws Exception {
 
-                // TODO add these once the date formatting is sorted out. (Maybe
-                // an invalid format causes issues?)
-                // summerTimeDetails --> CSLC.Clock.dstBegT
-                // winterTimeDetails --> CSLC.Clock.dstEndT
+                if (configuration.getRelayConfiguration() != null
+                        && configuration.getRelayConfiguration().getRelayMap() != null) {
 
-                // TODO set relayTypes once they are writable
-                // relayMap.getRelayType() --> XSWC{1-4}.post.stVal
+                    final List<RelayMapDto> relayMaps = configuration.getRelayConfiguration().getRelayMap();
+                    for (final RelayMapDto relayMap : relayMaps) {
+                        final Integer internalIndex = relayMap.getAddress();
+                        final RelayTypeDto relayType = relayMap.getRelayType();
+
+                        final String switchTypeObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                                + LogicalNodeAttributeDefinitons.getNodeNameForRelayIndex(internalIndex)
+                                + LogicalNodeAttributeDefinitons.PROPERTY_SWITCH_TYPE;
+
+                        final FcModelNode switchTypeControl = Iec61850DeviceService.this.getNode(serverModel,
+                                switchTypeObjectReference, Fc.CO);
+
+                        final FcModelNode oper = (FcModelNode) switchTypeControl.getChild(
+                                LogicalNodeAttributeDefinitons.PROPERTY_SWITCH_TYPE_ATTRIBUTE_OPER, Fc.CO);
+
+                        final BdaInt8 ctlVal = (BdaInt8) oper.getChild(
+                                LogicalNodeAttributeDefinitons.PROPERTY_SWITCH_TYPE_OPER_ATTRIBUTE_CONTROL, Fc.CO);
+
+                        final byte switchTypeValue = (byte) (RelayTypeDto.LIGHT.equals(relayType) ? SWITCH_TYPE_LIGHT
+                                : SWITCH_TYPE_TARIFF);
+                        LOGGER.info("Updating Switch for internal index {} to {} ({})", internalIndex, switchTypeValue,
+                                relayType);
+
+                        ctlVal.setValue(switchTypeValue);
+                        clientAssociation.setDataValues(oper);
+                    }
+                }
 
                 // checking to see if all register values are null, so that we
                 // don't read the values for no reason
@@ -1113,12 +1138,11 @@ public class Iec61850DeviceService implements DeviceService {
 
                 }
 
-                // TODO re-add this code when firmware 01.01.33 is replaced
                 // checking to see if all software config values are null, so
                 // that we don't read the values for no reason
                 if (!(configuration.getAstroGateSunRiseOffset() == null
                         && configuration.getAstroGateSunSetOffset() == null && configuration.getLightType() == null)) {
-                    //
+
                     final String swcfObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
                             + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
                             + LogicalNodeAttributeDefinitons.PROPERTY_SOFTWARE_CONFIGURATION;
@@ -1126,38 +1150,32 @@ public class Iec61850DeviceService implements DeviceService {
                     final FcModelNode softwareConfiguration = Iec61850DeviceService.this.getNode(serverModel,
                             swcfObjectReference, Fc.CF);
 
-                    // if (configuration.getAstroGateSunRiseOffset() != null) {
-                    //
-                    // final BdaInt16 astroGateSunRiseOffset = (BdaInt16)
-                    // Iec61850DeviceService.this
-                    // .getChildOfNodeWithConstraint(softwareConfiguration,
-                    // LogicalNodeAttributeDefinitons.PROPERTY_POSITION_OFFSET_SUNRISE,
-                    // Fc.CF);
-                    //
-                    // LOGGER.info("Updating AstroGateSunRiseOffset to {}",
-                    // configuration.getAstroGateSunRiseOffset());
-                    //
-                    // // Get the value and send the value to the device.
-                    // astroGateSunRiseOffset.setValue(configuration.getAstroGateSunRiseOffset().shortValue());
-                    // clientAssociation.setDataValues(astroGateSunRiseOffset);
-                    // }
-                    //
-                    // if (configuration.getAstroGateSunSetOffset() != null) {
-                    //
-                    // final BdaInt16 astroGateSunSetOffset = (BdaInt16)
-                    // Iec61850DeviceService.this
-                    // .getChildOfNodeWithConstraint(softwareConfiguration,
-                    // LogicalNodeAttributeDefinitons.PROPERTY_POSITION_OFFSET_SUNSET,
-                    // Fc.CF);
-                    //
-                    // LOGGER.info("Updating AstroGateSunSetOffset to {}",
-                    // configuration.getAstroGateSunSetOffset());
-                    //
-                    // // Get the value and send the value to the device.
-                    // astroGateSunSetOffset.setValue(configuration.getAstroGateSunSetOffset().shortValue());
-                    // clientAssociation.setDataValues(astroGateSunSetOffset);
-                    // }
-                    //
+                    if (configuration.getAstroGateSunRiseOffset() != null) {
+
+                        final BdaInt16 astroGateSunRiseOffset = (BdaInt16) Iec61850DeviceService.this
+                                .getChildOfNodeWithConstraint(softwareConfiguration,
+                                        LogicalNodeAttributeDefinitons.PROPERTY_POSITION_OFFSET_SUNRISE, Fc.CF);
+
+                        LOGGER.info("Updating AstroGateSunRiseOffset to {}", configuration.getAstroGateSunRiseOffset());
+
+                        // Get the value and send the value to the device.
+                        astroGateSunRiseOffset.setValue(configuration.getAstroGateSunRiseOffset().shortValue());
+                        clientAssociation.setDataValues(astroGateSunRiseOffset);
+                    }
+
+                    if (configuration.getAstroGateSunSetOffset() != null) {
+
+                        final BdaInt16 astroGateSunSetOffset = (BdaInt16) Iec61850DeviceService.this
+                                .getChildOfNodeWithConstraint(softwareConfiguration,
+                                        LogicalNodeAttributeDefinitons.PROPERTY_POSITION_OFFSET_SUNSET, Fc.CF);
+
+                        LOGGER.info("Updating AstroGateSunSetOffset to {}", configuration.getAstroGateSunSetOffset());
+
+                        // Get the value and send the value to the device.
+                        astroGateSunSetOffset.setValue(configuration.getAstroGateSunSetOffset().shortValue());
+                        clientAssociation.setDataValues(astroGateSunSetOffset);
+                    }
+
                     if (configuration.getLightType() != null) {
 
                         final BdaVisibleString lightTypeValue = (BdaVisibleString) softwareConfiguration
@@ -1173,7 +1191,9 @@ public class Iec61850DeviceService implements DeviceService {
 
                 // checking to see if all register values are null, so that we
                 // don't read the values for no reason
-                if (!(configuration.getTimeSyncFrequency() == null && configuration.isAutomaticSummerTimingEnabled() == null)) {
+                if (!(configuration.getTimeSyncFrequency() == null
+                        && configuration.isAutomaticSummerTimingEnabled() == null
+                        && configuration.getSummerTimeDetails() == null && configuration.getWinterTimeDetails() == null)) {
 
                     final String clockObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
                             + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
@@ -1209,6 +1229,45 @@ public class Iec61850DeviceService implements DeviceService {
                         clientAssociation.setDataValues(automaticSummerTimingEnabled);
                     }
 
+                    /*
+                     * Perform some effort to create dstBegT/dstEndt information
+                     * based on provided DateTime values. This will work in a
+                     * number of cases, but to be able to do this accurately in
+                     * an international context, DST transition times will
+                     * probably have to be based on information about the
+                     * timezone the device is operating in, instead of a
+                     * particular DateTime provided by the caller without
+                     * further information.
+                     */
+                    final DaylightSavingTimeTransition.DstTransitionFormat dstFormatMwd = DaylightSavingTimeTransition.DstTransitionFormat.DAY_OF_WEEK_OF_MONTH;
+                    final DateTime summerTimeDetails = configuration.getSummerTimeDetails();
+                    final DateTime winterTimeDetails = configuration.getWinterTimeDetails();
+                    if (summerTimeDetails != null) {
+
+                        final String mwdValueForBeginOfDst = DaylightSavingTimeTransition.forDateTimeAccordingToFormat(
+                                summerTimeDetails, dstFormatMwd).getTransition();
+
+                        final BdaVisibleString dstBegT = (BdaVisibleString) clockConfiguration.getChild("dstBegT");
+
+                        LOGGER.info("Updating DstBeginTime to {} based on SummerTimeDetails {}", mwdValueForBeginOfDst,
+                                summerTimeDetails);
+
+                        dstBegT.setValue(mwdValueForBeginOfDst);
+                        clientAssociation.setDataValues(dstBegT);
+                    }
+                    if (winterTimeDetails != null) {
+
+                        final String mwdValueForEndOfDst = DaylightSavingTimeTransition.forDateTimeAccordingToFormat(
+                                winterTimeDetails, dstFormatMwd).getTransition();
+
+                        final BdaVisibleString dstEndT = (BdaVisibleString) clockConfiguration.getChild("dstEndT");
+
+                        LOGGER.info("Updating DstEndTime to {} based on WinterTimeDetails {}", mwdValueForEndOfDst,
+                                winterTimeDetails);
+
+                        dstEndT.setValue(mwdValueForEndOfDst);
+                        clientAssociation.setDataValues(dstEndT);
+                    }
                 }
 
                 // checking to see if all network values are null, so that we
@@ -1266,9 +1325,6 @@ public class Iec61850DeviceService implements DeviceService {
                     deviceFixedIpGateway.setValue(deviceFixedIp.getGateWay());
                     clientAssociation.setDataValues(deviceFixedIpGateway);
                 }
-
-                // Disconnect from the device.
-                clientAssociation.disconnect();
 
                 return null;
             }
