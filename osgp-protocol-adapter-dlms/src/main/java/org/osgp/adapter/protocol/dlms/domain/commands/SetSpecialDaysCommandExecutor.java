@@ -13,7 +13,7 @@ import java.util.List;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
@@ -36,7 +36,7 @@ public class SetSpecialDaysCommandExecutor implements CommandExecutor<List<Speci
     private DlmsHelperService dlmsHelperService;
 
     @Override
-    public AccessResultCode execute(final ClientConnection conn, final DlmsDevice device,
+    public AccessResultCode execute(final DlmsConnection conn, final DlmsDevice device,
             final List<SpecialDayDto> specialDays) throws ProtocolAdapterException {
 
         final List<DataObject> specialDayEntries = new ArrayList<>();
@@ -59,7 +59,7 @@ public class SetSpecialDaysCommandExecutor implements CommandExecutor<List<Speci
         final SetParameter request = new SetParameter(specialDaysTableEntries, entries);
 
         try {
-            return conn.set(request).get(0);
+            return conn.set(request);
         } catch (final IOException e) {
             throw new ConnectionException(e);
         }

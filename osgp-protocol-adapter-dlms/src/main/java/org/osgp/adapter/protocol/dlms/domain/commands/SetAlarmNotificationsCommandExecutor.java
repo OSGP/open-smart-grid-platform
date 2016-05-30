@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -19,7 +18,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
@@ -96,7 +95,7 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
     }
 
     @Override
-    public AccessResultCode execute(final ClientConnection conn, final DlmsDevice device,
+    public AccessResultCode execute(final DlmsConnection conn, final DlmsDevice device,
             final AlarmNotificationsDto alarmNotifications) throws ProtocolAdapterException {
 
         try {
@@ -115,7 +114,7 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
         }
     }
 
-    public AlarmNotificationsDto retrieveCurrentAlarmNotifications(final ClientConnection conn) throws IOException,
+    public AlarmNotificationsDto retrieveCurrentAlarmNotifications(final DlmsConnection conn) throws IOException,
             TimeoutException, ProtocolAdapterException {
 
         final AttributeAddress alarmFilterValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
@@ -123,21 +122,16 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
         LOGGER.info(
                 "Retrieving current alarm filter by issuing get request for class id: {}, obis code: {}, attribute id: {}",
                 CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
-        final List<GetResult> getResultList = conn.get(alarmFilterValue);
+        final GetResult getResult = conn.get(alarmFilterValue);
 
-        if (getResultList.isEmpty()) {
+        if (getResult==null) {
             throw new ProtocolAdapterException("No GetResult received while retrieving current alarm filter.");
         }
 
-        if (getResultList.size() > 1) {
-            throw new ProtocolAdapterException("Expected 1 GetResult while retrieving current alarm filter, got "
-                    + getResultList.size());
-        }
-
-        return this.alarmNotifications(getResultList.get(0).resultData());
+        return this.alarmNotifications(getResult.getResultData());
     }
 
-    public AccessResultCode writeUpdatedAlarmNotifications(final ClientConnection conn, final long alarmFilterLongValue)
+    public AccessResultCode writeUpdatedAlarmNotifications(final DlmsConnection conn, final long alarmFilterLongValue)
             throws IOException, TimeoutException {
 
         final AttributeAddress alarmFilterValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
@@ -145,7 +139,7 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
 
         final SetParameter setParameter = new SetParameter(alarmFilterValue, value);
 
-        return conn.set(setParameter).get(0);
+        return conn.set(setParameter);
     }
 
     public AlarmNotificationsDto alarmNotifications(final DataObject alarmFilter) throws ProtocolAdapterException {
@@ -158,12 +152,12 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
             throw new ProtocolAdapterException("DataObject isNumber is expected to be true for alarm notifications.");
         }
 
-        if (!(alarmFilter.value() instanceof Number)) {
+        if (!(alarmFilter.getValue() instanceof Number)) {
             throw new ProtocolAdapterException("Value in DataObject is not a java.lang.Number: "
-                    + alarmFilter.value().getClass().getName());
+                    + alarmFilter.getValue().getClass().getName());
         }
 
-        return this.alarmNotifications(((Number) alarmFilter.value()).longValue());
+        return this.alarmNotifications(((Number) alarmFilter.getValue()).longValue());
 
     }
 

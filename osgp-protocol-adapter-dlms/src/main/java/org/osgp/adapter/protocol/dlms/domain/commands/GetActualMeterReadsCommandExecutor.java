@@ -11,7 +11,7 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -79,7 +79,7 @@ public class GetActualMeterReadsCommandExecutor implements CommandExecutor<Actua
     private DlmsHelperService dlmsHelperService;
 
     @Override
-    public MeterReadsResponseDto execute(final ClientConnection conn, final DlmsDevice device,
+    public MeterReadsResponseDto execute(final DlmsConnection conn, final DlmsDevice device,
             final ActualMeterReadsQueryDto actualMeterReadsQuery) throws ProtocolAdapterException {
 
         if (actualMeterReadsQuery != null && actualMeterReadsQuery.isMbusQuery()) {

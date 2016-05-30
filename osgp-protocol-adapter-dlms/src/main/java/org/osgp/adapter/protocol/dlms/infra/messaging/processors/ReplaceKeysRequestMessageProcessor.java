@@ -9,12 +9,13 @@ package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 
 import java.io.Serializable;
 
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.osgp.adapter.protocol.dlms.application.services.ConfigurationService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
+import org.osgp.adapter.protocol.jasper.sessionproviders.exceptions.SessionProviderException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,23 +23,21 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.SetKeysRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Component
-public class ReplaceKeysRequestMessageProcessor extends
-		DeviceRequestMessageProcessor {
+public class ReplaceKeysRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
-	@Autowired
-	private ConfigurationService configurationService;
+    @Autowired
+    private ConfigurationService configurationService;
 
-	public ReplaceKeysRequestMessageProcessor() {
-		super(DeviceRequestMessageType.REPLACE_KEYS);
-	}
+    public ReplaceKeysRequestMessageProcessor() {
+        super(DeviceRequestMessageType.REPLACE_KEYS);
+    }
 
-	@Override
-	protected Serializable handleMessage(final ClientConnection conn,
-			final DlmsDevice device, final Serializable requestObject)
-			throws OsgpException, ProtocolAdapterException {
-		final SetKeysRequestDto keySet = (SetKeysRequestDto) requestObject;
-		this.configurationService.replaceKeys(conn, device, keySet);
+    @Override
+    protected Serializable handleMessage(final DlmsConnection conn, final DlmsDevice device,
+            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
+        final SetKeysRequestDto keySet = (SetKeysRequestDto) requestObject;
+        this.configurationService.replaceKeys(conn, device, keySet);
 
-		return null;
-	}
+        return null;
+    }
 }

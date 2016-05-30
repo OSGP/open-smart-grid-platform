@@ -9,12 +9,13 @@ package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 
 import java.io.Serializable;
 
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.osgp.adapter.protocol.dlms.application.services.MonitoringService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
+import org.osgp.adapter.protocol.jasper.sessionproviders.exceptions.SessionProviderException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,23 +23,20 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterReques
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Component
-public class ReadAlarmRegisterRequestMessageProcessor extends
-		DeviceRequestMessageProcessor {
+public class ReadAlarmRegisterRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
-	@Autowired
-	private MonitoringService monitoringService;
+    @Autowired
+    private MonitoringService monitoringService;
 
-	protected ReadAlarmRegisterRequestMessageProcessor() {
-		super(DeviceRequestMessageType.READ_ALARM_REGISTER);
-	}
+    protected ReadAlarmRegisterRequestMessageProcessor() {
+        super(DeviceRequestMessageType.READ_ALARM_REGISTER);
+    }
 
-	@Override
-	protected Serializable handleMessage(final ClientConnection conn,
-			final DlmsDevice device, final Serializable requestObject)
-			throws OsgpException, ProtocolAdapterException {
+    @Override
+    protected Serializable handleMessage(final DlmsConnection conn, final DlmsDevice device,
+            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
 
-		final ReadAlarmRegisterRequestDto readAlarmRegisterRequest = (ReadAlarmRegisterRequestDto) requestObject;
-		return this.monitoringService.requestReadAlarmRegister(conn, device,
-				readAlarmRegisterRequest);
-	}
+        final ReadAlarmRegisterRequestDto readAlarmRegisterRequest = (ReadAlarmRegisterRequestDto) requestObject;
+        return this.monitoringService.requestReadAlarmRegister(conn, device, readAlarmRegisterRequest);
+    }
 }

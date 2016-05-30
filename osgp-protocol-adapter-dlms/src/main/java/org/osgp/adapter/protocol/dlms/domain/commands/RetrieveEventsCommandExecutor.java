@@ -12,12 +12,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SelectiveAccessDescription;
@@ -67,7 +66,7 @@ public class RetrieveEventsCommandExecutor implements CommandExecutor<FindEvents
     // @formatter:on
 
     @Override
-    public List<EventDto> execute(final ClientConnection conn, final DlmsDevice device,
+    public List<EventDto> execute(final DlmsConnection conn, final DlmsDevice device,
             final FindEventsRequestDto findEventsQuery) throws ProtocolAdapterException {
 
         final SelectiveAccessDescription selectiveAccessDescription = this.getSelectiveAccessDescription(
@@ -77,32 +76,26 @@ public class RetrieveEventsCommandExecutor implements CommandExecutor<FindEvents
                 EVENT_LOG_CATEGORY_OBISCODE_MAP.get(findEventsQuery.getEventLogCategory()), ATTRIBUTE_ID,
                 selectiveAccessDescription);
 
-        List<GetResult> getResultList;
+        GetResult getResult;
         try {
-            getResultList = conn.get(eventLogBuffer);
-        } catch (IOException | TimeoutException e) {
+            getResult = conn.get(eventLogBuffer);
+        } catch (IOException e) {
             throw new ConnectionException(e);
         }
 
-        if (getResultList.isEmpty()) {
+        if (getResult==null) {
             throw new ProtocolAdapterException("No GetResult received while retrieving event register "
                     + findEventsQuery.getEventLogCategory());
         }
 
-        if (getResultList.size() > 1) {
-            throw new ProtocolAdapterException("Expected 1 GetResult while retrieving event log for "
-                    + findEventsQuery.getEventLogCategory() + ". Got " + getResultList.size());
-        }
-
-        final GetResult result = getResultList.get(0);
-        if (!AccessResultCode.SUCCESS.equals(result.resultCode())) {
+        if (!AccessResultCode.SUCCESS.equals(getResult.getResultCode())) {
             LOGGER.info("Result of getting events for {} is {}", findEventsQuery.getEventLogCategory(),
-                    result.resultCode());
+                    getResult.getResultCode());
             throw new ProtocolAdapterException("Getting the events for  " + findEventsQuery.getEventLogCategory()
-                    + " from the meter resulted in: " + result.resultCode());
+                    + " from the meter resulted in: " + getResult.getResultCode());
         }
 
-        final DataObject resultData = result.resultData();
+        final DataObject resultData = getResult.getResultData();
         return this.dataObjectToEventListConverter.convert(resultData, findEventsQuery.getEventLogCategory());
     }
 

@@ -16,7 +16,7 @@ import java.util.Set;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
@@ -53,7 +53,7 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
     private DlmsHelperService dlmsHelperService;
 
     @Override
-    public AccessResultCode execute(final ClientConnection conn, final DlmsDevice device,
+    public AccessResultCode execute(final DlmsConnection conn, final DlmsDevice device,
             final ActivityCalendarDto activityCalendar) throws ProtocolAdapterException {
         LOGGER.debug("SetActivityCalendarCommandExecutor.execute {} called", activityCalendar.getCalendarName());
 
@@ -67,22 +67,22 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
 
         final Map<String, AccessResultCode> allAccessResultCodeMap = new HashMap<>();
 
-        List<AccessResultCode> resultCode;
+        AccessResultCode resultCode=null;
         try {
             resultCode = conn.set(calendarNameParameter);
-            allAccessResultCodeMap.put("Activity Calendar Name Passive", resultCode.get(0));
+            allAccessResultCodeMap.put("Activity Calendar Name Passive", resultCode);
 
             LOGGER.info("WRITING SEASONS");
             resultCode = conn.set(seasonProfileParameter);
-            allAccessResultCodeMap.put("Season Profile Passive", resultCode.get(0));
+            allAccessResultCodeMap.put("Season Profile Passive", resultCode);
 
             LOGGER.info("WRITING DAYS");
             resultCode = conn.set(dayProfileTablePassive);
-            allAccessResultCodeMap.put("Day Profile Table Passive", resultCode.get(0));
+            allAccessResultCodeMap.put("Day Profile Table Passive", resultCode);
 
             LOGGER.info("WRITING WEEKS");
             resultCode = conn.set(weekProfileTableParameter);
-            allAccessResultCodeMap.put("Week Profile Table Passive", resultCode.get(0));
+            allAccessResultCodeMap.put("Week Profile Table Passive", resultCode);
         } catch (final IOException e) {
             throw new ConnectionException(e);
         }

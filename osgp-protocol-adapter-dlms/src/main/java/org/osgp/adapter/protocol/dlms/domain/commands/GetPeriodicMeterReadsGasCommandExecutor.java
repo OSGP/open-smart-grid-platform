@@ -19,7 +19,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SelectiveAccessDescription;
@@ -214,7 +214,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
     private AmrProfileStatusCodeHelperService amrProfileStatusCodeHelperService;
 
     @Override
-    public PeriodicMeterReadGasResponseDto execute(final ClientConnection conn, final DlmsDevice device,
+    public PeriodicMeterReadGasResponseDto execute(final DlmsConnection conn, final DlmsDevice device,
             final PeriodicMeterReadsRequestDto periodicMeterReadsQuery) throws ProtocolAdapterException {
 
         final PeriodTypeDto periodType;
@@ -249,10 +249,10 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
 
         final DataObject resultData = this.dlmsHelperService.readDataObject(getResultList.get(0),
                 "Periodic G-Meter Reads");
-        final List<DataObject> bufferedObjectsList = resultData.value();
+        final List<DataObject> bufferedObjectsList = resultData.getValue();
 
         for (final DataObject bufferedObject : bufferedObjectsList) {
-            final List<DataObject> bufferedObjects = bufferedObject.value();
+            final List<DataObject> bufferedObjects = bufferedObject.getValue();
             this.processNextPeriodicMeterReads(periodType, beginDateTime, endDateTime, periodicMeterReads,
                     bufferedObjects, periodicMeterReadsQuery.getChannel(), device.isSelectiveAccessSupported(),
                     getResultList);
@@ -324,7 +324,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
         }
         final PeriodicMeterReadsGasResponseItemDto nextPeriodicMeterReads = new PeriodicMeterReadsGasResponseItemDto(bufferedDateTime.toDate(),
                 this.dlmsHelperService.getScaledMeterValue(gasValue,
-                        results.get(RESULT_INDEX_SCALER_UNIT).resultData(), GAS_VALUE), captureTime,
+                        results.get(RESULT_INDEX_SCALER_UNIT).getResultData(), GAS_VALUE), captureTime,
                 amrProfileStatusCode);
         periodicMeterReads.add(nextPeriodicMeterReads);
     }
@@ -361,7 +361,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
         }
         final PeriodicMeterReadsGasResponseItemDto nextPeriodicMeterReads = new PeriodicMeterReadsGasResponseItemDto(bufferedDateTime.toDate(),
                 this.dlmsHelperService.getScaledMeterValue(gasValue,
-                        results.get(RESULT_INDEX_SCALER_UNIT).resultData(), GAS_VALUE), captureTime,
+                        results.get(RESULT_INDEX_SCALER_UNIT).getResultData(), GAS_VALUE), captureTime,
                 amrProfileStatusCode);
         periodicMeterReads.add(nextPeriodicMeterReads);
     }
@@ -396,7 +396,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
         }
         final PeriodicMeterReadsGasResponseItemDto nextPeriodicMeterReads = new PeriodicMeterReadsGasResponseItemDto(bufferedDateTime.toDate(),
                 this.dlmsHelperService.getScaledMeterValue(gasValue,
-                        results.get(RESULT_INDEX_SCALER_UNIT).resultData(), GAS_VALUE), captureTime);
+                        results.get(RESULT_INDEX_SCALER_UNIT).getResultData(), GAS_VALUE), captureTime);
         periodicMeterReads.add(nextPeriodicMeterReads);
     }
 
@@ -587,7 +587,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
         }
 
         final Set<AmrProfileStatusCodeFlagDto> flags = this.amrProfileStatusCodeHelperService
-                .toAmrProfileStatusCodeFlags((Number) amrProfileStatusData.value());
+                .toAmrProfileStatusCodeFlags((Number) amrProfileStatusData.getValue());
         return new AmrProfileStatusCodeDto(flags);
     }
 

@@ -9,12 +9,13 @@ package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 
 import java.io.Serializable;
 
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.osgp.adapter.protocol.dlms.application.services.ConfigurationService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
+import org.osgp.adapter.protocol.jasper.sessionproviders.exceptions.SessionProviderException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,23 +26,21 @@ import com.alliander.osgp.shared.exceptionhandling.OsgpException;
  * Class for processing set push setup sms request messages
  */
 @Component
-public class SetPushSetupSmsRequestMessageProcessor extends
-		DeviceRequestMessageProcessor {
+public class SetPushSetupSmsRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
-	@Autowired
-	private ConfigurationService configurationService;
+    @Autowired
+    private ConfigurationService configurationService;
 
-	public SetPushSetupSmsRequestMessageProcessor() {
-		super(DeviceRequestMessageType.SET_PUSH_SETUP_SMS);
-	}
+    public SetPushSetupSmsRequestMessageProcessor() {
+        super(DeviceRequestMessageType.SET_PUSH_SETUP_SMS);
+    }
 
-	@Override
-	protected Serializable handleMessage(final ClientConnection conn,
-			final DlmsDevice device, final Serializable requestObject)
-			throws OsgpException, ProtocolAdapterException {
+    @Override
+    protected Serializable handleMessage(final DlmsConnection conn, final DlmsDevice device,
+            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
 
-		final PushSetupSmsDto pushSetupSms = (PushSetupSmsDto) requestObject;
-		this.configurationService.setPushSetupSms(conn, device, pushSetupSms);
-		return null;
-	}
+        final PushSetupSmsDto pushSetupSms = (PushSetupSmsDto) requestObject;
+        this.configurationService.setPushSetupSms(conn, device, pushSetupSms);
+        return null;
+    }
 }

@@ -9,12 +9,13 @@ package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 
 import java.io.Serializable;
 
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.osgp.adapter.protocol.dlms.application.services.ConfigurationService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
+import org.osgp.adapter.protocol.jasper.sessionproviders.exceptions.SessionProviderException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,23 +26,20 @@ import com.alliander.osgp.shared.exceptionhandling.OsgpException;
  * Class for processing set Activity Calendar request messages
  */
 @Component
-public class SetActivityCalendarRequestMessageProcessor extends
-		DeviceRequestMessageProcessor {
+public class SetActivityCalendarRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
-	@Autowired
-	private ConfigurationService configurationService;
+    @Autowired
+    private ConfigurationService configurationService;
 
-	public SetActivityCalendarRequestMessageProcessor() {
-		super(DeviceRequestMessageType.SET_ACTIVITY_CALENDAR);
-	}
+    public SetActivityCalendarRequestMessageProcessor() {
+        super(DeviceRequestMessageType.SET_ACTIVITY_CALENDAR);
+    }
 
-	@Override
-	protected Serializable handleMessage(final ClientConnection conn,
-			final DlmsDevice device, final Serializable requestObject)
-			throws OsgpException, ProtocolAdapterException {
-		final ActivityCalendarDto activityCalendarDto = (ActivityCalendarDto) requestObject;
+    @Override
+    protected Serializable handleMessage(final DlmsConnection conn, final DlmsDevice device,
+            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
+        final ActivityCalendarDto activityCalendarDto = (ActivityCalendarDto) requestObject;
 
-		return this.configurationService.setActivityCalendar(conn, device,
-				activityCalendarDto);
-	}
+        return this.configurationService.setActivityCalendar(conn, device, activityCalendarDto);
+    }
 }

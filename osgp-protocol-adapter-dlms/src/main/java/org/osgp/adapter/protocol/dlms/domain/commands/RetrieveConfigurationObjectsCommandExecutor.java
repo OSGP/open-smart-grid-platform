@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
@@ -45,7 +45,7 @@ public class RetrieveConfigurationObjectsCommandExecutor implements CommandExecu
     private static final Logger LOGGER = LoggerFactory.getLogger(RetrieveConfigurationObjectsCommandExecutor.class);
 
     @Override
-    public String execute(final ClientConnection conn, final DlmsDevice device, final DataObject object)
+    public String execute(final DlmsConnection conn, final DlmsDevice device, final DataObject object)
             throws ProtocolAdapterException {
 
         final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
@@ -56,14 +56,14 @@ public class RetrieveConfigurationObjectsCommandExecutor implements CommandExecu
         final List<GetResult> getResultList = this.dlmsHelper.getAndCheck(conn, device,
                 "Retrieving configuration objects for class", attributeAddress);
 
-        final DataObject resultData = getResultList.get(0).resultData();
+        final DataObject resultData = getResultList.get(0).getResultData();
         if (!resultData.isComplex()) {
             this.throwUnexpectedTypeProtocolAdapterException();
         }
         // The check here above "!resultData.isComplex()" garantees that can be
         // cast to a List.
         @SuppressWarnings("unchecked")
-        final List<DataObject> resultDataValue = (List<DataObject>) getResultList.get(0).resultData().value();
+        final List<DataObject> resultDataValue = (List<DataObject>) getResultList.get(0).getResultData().getValue();
 
         final List<ClassIdObisAttr> allObisCodes = this.getAllObisCodes(resultDataValue);
         this.logAllObisCodes(allObisCodes);
@@ -83,37 +83,37 @@ public class RetrieveConfigurationObjectsCommandExecutor implements CommandExecu
         int index = 1;
         LOGGER.debug("List of all ObisCodes:");
         for (final ClassIdObisAttr obisAttr : allObisCodes) {
-            LOGGER.debug("{}/{} {} #attr{}", index++, allObisCodes.size(), obisAttr.getObisCode().value(),
+            LOGGER.debug("{}/{} {} #attr{}", index++, allObisCodes.size(), obisAttr.getObisCode().getValue(),
                     obisAttr.getNoAttr());
         }
     }
 
-    private String createOutput(final ClientConnection conn, final List<ClassIdObisAttr> allObisCodes)
+    private String createOutput(final DlmsConnection conn, final List<ClassIdObisAttr> allObisCodes)
             throws ProtocolAdapterException, IOException, TimeoutException {
         String output = "";
         int index = 1;
         for (final ClassIdObisAttr obisAttr : allObisCodes) {
-            LOGGER.debug("Creating output for {} {}/{}", obisAttr.getObisCode().value(), index++, allObisCodes.size());
+            LOGGER.debug("Creating output for {} {}/{}", obisAttr.getObisCode().getValue(), index++, allObisCodes.size());
             output += this.getAllDataFromObisCode(conn, obisAttr);
             LOGGER.debug("Length of output is now: {}", output.length());
         }
         return output;
     }
 
-    private String getAllDataFromObisCode(final ClientConnection conn, final ClassIdObisAttr obisAttr)
+    private String getAllDataFromObisCode(final DlmsConnection conn, final ClassIdObisAttr obisAttr)
             throws ProtocolAdapterException, IOException, TimeoutException {
         String output = "";
 
         final int noOfAttr = obisAttr.getNoAttr();
         for (int attributeValue = 1; attributeValue <= noOfAttr; attributeValue++) {
-            LOGGER.debug("Creating output for {} attr: {}/{}", obisAttr.getObisCode().value(), attributeValue, noOfAttr);
+            LOGGER.debug("Creating output for {} attr: {}/{}", obisAttr.getObisCode().getValue(), attributeValue, noOfAttr);
             output += this.getAllDataFromAttribute(conn, obisAttr.getClassNumber(), obisAttr.getObisCode(),
                     attributeValue);
         }
         return output;
     }
 
-    private String getAllDataFromAttribute(final ClientConnection conn, final int classNumber,
+    private String getAllDataFromAttribute(final DlmsConnection conn, final int classNumber,
             final DataObject obisCode, final int attributeValue) throws ProtocolAdapterException, IOException,
             TimeoutException {
 
@@ -121,7 +121,7 @@ public class RetrieveConfigurationObjectsCommandExecutor implements CommandExecu
             this.throwUnexpectedTypeProtocolAdapterException();
         }
 
-        final byte[] obisCodeByteArray = obisCode.value();
+        final byte[] obisCodeByteArray = obisCode.getValue();
         if (obisCodeByteArray.length != OBIS_CODE_BYTE_ARRAY_LENGTH) {
             this.throwUnexpectedTypeProtocolAdapterException();
         }
@@ -130,12 +130,11 @@ public class RetrieveConfigurationObjectsCommandExecutor implements CommandExecu
 
         LOGGER.debug("Retrieving configuration objects data for class id: {}, obis code: {}, attribute id: {}",
                 classNumber, obisCodeByteArray, attributeValue);
-        final List<GetResult> getResultList = conn.get(attributeAddress);
+        final GetResult getResult = conn.get(attributeAddress);
 
-        final GetResult getResult = getResultList.get(0);
-        LOGGER.debug("ResultCode: {}", getResult.resultCode());
+        LOGGER.debug("ResultCode: {}", getResult.getResultCode());
 
-        return this.dlmsHelper.getDebugInfo(getResult.resultData());
+        return this.dlmsHelper.getDebugInfo(getResult.getResultData());
     }
 
     private ObisCode createObisCode(final byte[] obisCodeByteArray) {
@@ -148,7 +147,7 @@ public class RetrieveConfigurationObjectsCommandExecutor implements CommandExecu
         final List<ClassIdObisAttr> allObisCodes = new ArrayList<>();
 
         for (final DataObject obisCodeMetaData : obisCodeMetaDataTree) {
-            final List<DataObject> obisCodeMetaDataList = (List<DataObject>) obisCodeMetaData.value();
+            final List<DataObject> obisCodeMetaDataList = (List<DataObject>) obisCodeMetaData.getValue();
             final ClassIdObisAttr classIdObisAttr = new ClassIdObisAttr(this.getClassNumber(obisCodeMetaDataList
                     .get(CLASS_ID_INDEX)), obisCodeMetaDataList.get(OBIS_CODE_INDEX),
                     this.getNoOffAttributes(obisCodeMetaDataList));
@@ -160,7 +159,7 @@ public class RetrieveConfigurationObjectsCommandExecutor implements CommandExecu
 
     private int getClassNumber(final DataObject dataObject) {
         // is long unsi
-        return (int) dataObject.value();
+        return (int) dataObject.getValue();
     }
 
     private void throwUnexpectedTypeProtocolAdapterException() throws ProtocolAdapterException {
@@ -172,12 +171,12 @@ public class RetrieveConfigurationObjectsCommandExecutor implements CommandExecu
         if (!element3.isComplex()) {
             this.throwUnexpectedTypeProtocolAdapterException();
         }
-        final List<DataObject> attributesList = (List) element3.value();
+        final List<DataObject> attributesList = (List) element3.getValue();
         final DataObject attributes = attributesList.get(0);
         if (!attributes.isComplex()) {
             this.throwUnexpectedTypeProtocolAdapterException();
         }
-        final List<DataObject> listValue = attributes.value();
+        final List<DataObject> listValue = attributes.getValue();
         return listValue.size();
     }
 

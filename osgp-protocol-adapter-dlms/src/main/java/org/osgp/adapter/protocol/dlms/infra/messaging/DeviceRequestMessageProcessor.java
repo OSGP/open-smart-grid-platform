@@ -14,7 +14,7 @@ import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.osgp.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
@@ -45,213 +45,184 @@ import com.alliander.osgp.shared.infra.jms.RetryHeader;
  */
 public abstract class DeviceRequestMessageProcessor implements MessageProcessor {
 
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(DeviceRequestMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceRequestMessageProcessor.class);
 
-	@Autowired
-	protected DeviceResponseMessageSender responseMessageSender;
+    @Autowired
+    protected DeviceResponseMessageSender responseMessageSender;
 
-	@Autowired
-	@Qualifier("protocolDlmsDeviceRequestMessageProcessorMap")
-	protected MessageProcessorMap dlmsRequestMessageProcessorMap;
+    @Autowired
+    @Qualifier("protocolDlmsDeviceRequestMessageProcessorMap")
+    protected MessageProcessorMap dlmsRequestMessageProcessorMap;
 
-	@Autowired
-	protected OsgpExceptionConverter osgpExceptionConverter;
+    @Autowired
+    protected OsgpExceptionConverter osgpExceptionConverter;
 
-	@Autowired
-	private DomainHelperService domainHelperService;
+    @Autowired
+    private DomainHelperService domainHelperService;
 
-	@Autowired
-	private DlmsConnectionFactory dlmsConnectionFactory;
+    @Autowired
+    private DlmsConnectionFactory dlmsConnectionFactory;
 
-	@Autowired
-	private RetryHeaderFactory retryHeaderFactory;
+    @Autowired
+    private RetryHeaderFactory retryHeaderFactory;
 
-	protected final DeviceRequestMessageType deviceRequestMessageType;
+    protected final DeviceRequestMessageType deviceRequestMessageType;
 
-	/**
-	 * Each MessageProcessor should register it's MessageType at construction.
-	 *
-	 * @param deviceRequestMessageType
-	 *            The MessageType the MessageProcessor implementation can
-	 *            process.
-	 */
-	protected DeviceRequestMessageProcessor(
-			final DeviceRequestMessageType deviceRequestMessageType) {
-		this.deviceRequestMessageType = deviceRequestMessageType;
-	}
+    /**
+     * Each MessageProcessor should register it's MessageType at construction.
+     *
+     * @param deviceRequestMessageType
+     *            The MessageType the MessageProcessor implementation can
+     *            process.
+     */
+    protected DeviceRequestMessageProcessor(final DeviceRequestMessageType deviceRequestMessageType) {
+        this.deviceRequestMessageType = deviceRequestMessageType;
+    }
 
-	/**
-	 * Initialization function executed after dependency injection has finished.
-	 * The MessageProcessor Singleton is added to the HashMap of
-	 * MessageProcessors. The key for the HashMap is the integer value of the
-	 * enumeration member.
-	 */
-	@PostConstruct
-	public void init() {
-		this.dlmsRequestMessageProcessorMap.addMessageProcessor(
-				this.deviceRequestMessageType.ordinal(),
-				this.deviceRequestMessageType.name(), this);
-	}
+    /**
+     * Initialization function executed after dependency injection has finished.
+     * The MessageProcessor Singleton is added to the HashMap of
+     * MessageProcessors. The key for the HashMap is the integer value of the
+     * enumeration member.
+     */
+    @PostConstruct
+    public void init() {
+        this.dlmsRequestMessageProcessorMap.addMessageProcessor(this.deviceRequestMessageType.ordinal(),
+                this.deviceRequestMessageType.name(), this);
+    }
 
-	/**
-	 * @param logger
-	 *            the logger from the calling subClass
-	 * @param exception
-	 *            the exception to be logged
-	 * @param messageMetadata
-	 *            a DlmsDeviceMessageMetadata containing debug info to be logged
-	 */
-	private void logJmsException(final Logger logger,
-			final JMSException exception,
-			final DlmsDeviceMessageMetadata messageMetadata) {
-		logger.error(
-				"UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.",
-				exception);
-		logger.debug("correlationUid: {}", messageMetadata.getCorrelationUid());
-		logger.debug("domain: {}", messageMetadata.getDomain());
-		logger.debug("domainVersion: {}", messageMetadata.getDomainVersion());
-		logger.debug("messageType: {}", messageMetadata.getMessageType());
-		logger.debug("organisationIdentification: {}",
-				messageMetadata.getOrganisationIdentification());
-		logger.debug("deviceIdentification: {}",
-				messageMetadata.getDeviceIdentification());
-	}
+    /**
+     * @param logger
+     *            the logger from the calling subClass
+     * @param exception
+     *            the exception to be logged
+     * @param messageMetadata
+     *            a DlmsDeviceMessageMetadata containing debug info to be logged
+     */
+    private void logJmsException(final Logger logger, final JMSException exception,
+            final DlmsDeviceMessageMetadata messageMetadata) {
+        logger.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", exception);
+        logger.debug("correlationUid: {}", messageMetadata.getCorrelationUid());
+        logger.debug("domain: {}", messageMetadata.getDomain());
+        logger.debug("domainVersion: {}", messageMetadata.getDomainVersion());
+        logger.debug("messageType: {}", messageMetadata.getMessageType());
+        logger.debug("organisationIdentification: {}", messageMetadata.getOrganisationIdentification());
+        logger.debug("deviceIdentification: {}", messageMetadata.getDeviceIdentification());
+    }
 
-	@Override
-	public void processMessage(final ObjectMessage message) throws JMSException {
-		LOGGER.debug("Processing {} request message",
-				this.deviceRequestMessageType.name());
-		final DlmsDeviceMessageMetadata messageMetadata = new DlmsDeviceMessageMetadata();
+    @Override
+    public void processMessage(final ObjectMessage message) throws JMSException {
+        LOGGER.debug("Processing {} request message", this.deviceRequestMessageType.name());
+        final DlmsDeviceMessageMetadata messageMetadata = new DlmsDeviceMessageMetadata();
 
-		ClientConnection conn = null;
-		DlmsDevice device = null;
+        DlmsConnection conn = null;
+        DlmsDevice device = null;
 
-		final boolean isScheduled = message
-				.propertyExists(Constants.IS_SCHEDULED) ? message
-				.getBooleanProperty(Constants.IS_SCHEDULED) : false;
+        final boolean isScheduled = message.propertyExists(Constants.IS_SCHEDULED)
+                ? message.getBooleanProperty(Constants.IS_SCHEDULED) : false;
 
-		try {
-			// Handle message
-			messageMetadata.handleMessage(message);
+        try {
+            // Handle message
+            messageMetadata.handleMessage(message);
 
-			LOGGER.info("{} called for device: {} for organisation: {}",
-					message.getJMSType(),
-					messageMetadata.getDeviceIdentification(),
-					messageMetadata.getOrganisationIdentification());
+            LOGGER.info("{} called for device: {} for organisation: {}", message.getJMSType(),
+                    messageMetadata.getDeviceIdentification(), messageMetadata.getOrganisationIdentification());
 
-			Serializable response = null;
-			if (this.usesDeviceConnection()) {
-				device = this.domainHelperService
-						.findDlmsDevice(messageMetadata);
-				conn = this.dlmsConnectionFactory.getConnection(device);
-				response = this
-						.handleMessage(conn, device, message.getObject());
-			} else {
-				response = this.handleMessage(message.getObject());
-			}
+            Serializable response = null;
+            if (this.usesDeviceConnection()) {
+                device = this.domainHelperService.findDlmsDevice(messageMetadata);
+                conn = this.dlmsConnectionFactory.getConnection(device);
+                response = this.handleMessage(conn, device, message.getObject());
+            } else {
+                response = this.handleMessage(message.getObject());
+            }
 
-			// Send response
-			this.sendResponseMessage(messageMetadata,
-					ResponseMessageResultType.OK, null,
-					this.responseMessageSender, response, isScheduled);
-		} catch (final JMSException exception) {
-			this.logJmsException(LOGGER, exception, messageMetadata);
-		} catch (final Exception exception) {
-			// Return original request + exception
-			LOGGER.error("Unexpected exception during {}",
-					this.deviceRequestMessageType.name(), exception);
+            // Send response
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, this.responseMessageSender,
+                    response, isScheduled);
+        } catch (final JMSException exception) {
+            this.logJmsException(LOGGER, exception, messageMetadata);
+        } catch (final Exception exception) {
+            // Return original request + exception
+            LOGGER.error("Unexpected exception during {}", this.deviceRequestMessageType.name(), exception);
 
-			this.sendResponseMessage(messageMetadata,
-					ResponseMessageResultType.NOT_OK, exception,
-					this.responseMessageSender, message.getObject(),
-					isScheduled);
-		} finally {
-			if (conn != null) {
-				LOGGER.info("Closing connection with {}",
-						device.getDeviceIdentification());
-				try {
-					conn.close();
-				} catch (final IOException e) {
-					LOGGER.error("Error while closing connection", e);
-				}
-			}
-		}
-	}
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, exception,
+                    this.responseMessageSender, message.getObject(), isScheduled);
+        } finally {
+            if (conn != null) {
+                LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
+                try {
+                    conn.close();
+                } catch (final IOException e) {
+                    LOGGER.error("Error while closing connection", e);
+                }
+            }
+        }
+    }
 
-	/**
-	 * Implementation of this method should call a service that can handle the
-	 * requestObject and return a response object to be put on the response
-	 * queue. This response object can also be null for methods that don't
-	 * provide result data.
-	 *
-	 * @param ClientConnection
-	 *            the connection to the device.
-	 * @param device
-	 *            the device.
-	 * @param requestObject
-	 *            Request data object.
-	 * @return A serializable object to be put on the response queue.
-	 * @throws OsgpException
-	 * @throws ProtocolAdapterException
-	 * @throws SessionProviderException
-	 */
-	protected Serializable handleMessage(final ClientConnection conn,
-			final DlmsDevice device, final Serializable requestObject)
-			throws OsgpException, ProtocolAdapterException {
-		throw new UnsupportedOperationException(
-				"handleMessage(ClientConnection, DlmsDevice, Serializable) should be overriden by a subclass, or usesDeviceConnection should return false.");
-	}
+    /**
+     * Implementation of this method should call a service that can handle the
+     * requestObject and return a response object to be put on the response
+     * queue. This response object can also be null for methods that don't
+     * provide result data.
+     *
+     * @param DlmsConnection
+     *            the connection to the device.
+     * @param device
+     *            the device.
+     * @param requestObject
+     *            Request data object.
+     * @return A serializable object to be put on the response queue.
+     * @throws OsgpException
+     * @throws ProtocolAdapterException
+     * @throws SessionProviderException
+     */
+    protected Serializable handleMessage(final DlmsConnection conn, final DlmsDevice device,
+            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
+        throw new UnsupportedOperationException(
+                "handleMessage(DlmsConnection, DlmsDevice, Serializable) should be overriden by a subclass, or usesDeviceConnection should return false.");
+    }
 
-	protected Serializable handleMessage(final Serializable requestObject)
-			throws OsgpException, ProtocolAdapterException {
-		throw new UnsupportedOperationException(
-				"handleMessage(Serializable) should be overriden by a subclass, or usesDeviceConnection should return true.");
-	}
+    protected Serializable handleMessage(final Serializable requestObject)
+            throws OsgpException, ProtocolAdapterException {
+        throw new UnsupportedOperationException(
+                "handleMessage(Serializable) should be overriden by a subclass, or usesDeviceConnection should return true.");
+    }
 
-	private void sendResponseMessage(
-			final DlmsDeviceMessageMetadata dlmsDeviceMessageMetadata,
-			final ResponseMessageResultType result, final Exception exception,
-			final DeviceResponseMessageSender responseMessageSender,
-			final Serializable responseObject, final boolean isScheduled) {
+    private void sendResponseMessage(final DlmsDeviceMessageMetadata dlmsDeviceMessageMetadata,
+            final ResponseMessageResultType result, final Exception exception,
+            final DeviceResponseMessageSender responseMessageSender, final Serializable responseObject,
+            final boolean isScheduled) {
 
-		final DeviceMessageMetadata deviceMessageMetadata = dlmsDeviceMessageMetadata
-				.asDeviceMessageMetadata();
-		OsgpException osgpException = null;
-		if (exception != null) {
-			osgpException = this.osgpExceptionConverter
-					.ensureOsgpOrTechnicalException(exception);
-		}
+        final DeviceMessageMetadata deviceMessageMetadata = dlmsDeviceMessageMetadata.asDeviceMessageMetadata();
+        OsgpException osgpException = null;
+        if (exception != null) {
+            osgpException = this.osgpExceptionConverter.ensureOsgpOrTechnicalException(exception);
+        }
 
-		RetryHeader retryHeader;
-		if ((result == ResponseMessageResultType.NOT_OK)
-				&& (exception instanceof RetryableException)) {
-			retryHeader = this.retryHeaderFactory
-					.createRetryHeader(dlmsDeviceMessageMetadata
-							.getRetryCount());
-		} else {
-			retryHeader = this.retryHeaderFactory.createEmtpyRetryHeader();
-		}
+        RetryHeader retryHeader;
+        if ((result == ResponseMessageResultType.NOT_OK) && (exception instanceof RetryableException)) {
+            retryHeader = this.retryHeaderFactory.createRetryHeader(dlmsDeviceMessageMetadata.getRetryCount());
+        } else {
+            retryHeader = this.retryHeaderFactory.createEmtpyRetryHeader();
+        }
 
-		final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
-				.deviceMessageMetadata(deviceMessageMetadata)
-				.domain(dlmsDeviceMessageMetadata.getDomain())
-				.domainVersion(dlmsDeviceMessageMetadata.getDomainVersion())
-				.result(result).osgpException(osgpException)
-				.dataObject(responseObject)
-				.retryCount(dlmsDeviceMessageMetadata.getRetryCount())
-				.retryHeader(retryHeader).scheduled(isScheduled).build();
+        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).domain(dlmsDeviceMessageMetadata.getDomain())
+                .domainVersion(dlmsDeviceMessageMetadata.getDomainVersion()).result(result).osgpException(osgpException)
+                .dataObject(responseObject).retryCount(dlmsDeviceMessageMetadata.getRetryCount())
+                .retryHeader(retryHeader).scheduled(isScheduled).build();
 
-		responseMessageSender.send(responseMessage);
-	}
+        responseMessageSender.send(responseMessage);
+    }
 
-	/**
-	 * Used to determine if the handleMessage needs a device connection or not.
-	 * Default value is true, override to alter behaviour of subclasses.
-	 *
-	 * @return Use device connection in handleMessage.
-	 */
-	protected boolean usesDeviceConnection() {
-		return true;
-	}
+    /**
+     * Used to determine if the handleMessage needs a device connection or not.
+     * Default value is true, override to alter behaviour of subclasses.
+     *
+     * @return Use device connection in handleMessage.
+     */
+    protected boolean usesDeviceConnection() {
+        return true;
+    }
 }

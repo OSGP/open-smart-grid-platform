@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -48,7 +48,7 @@ public class GetFirmwareVersionsCommandExecutor implements CommandExecutor<Void,
     private DlmsHelperService dlmsHelperService;
 
     @Override
-    public List<FirmwareVersionDto> execute(final ClientConnection conn, final DlmsDevice device, final Void useless)
+    public List<FirmwareVersionDto> execute(final DlmsConnection conn, final DlmsDevice device, final Void useless)
             throws ProtocolAdapterException {
 
         final List<FirmwareVersionDto> resultList = new ArrayList<>();
@@ -57,11 +57,11 @@ public class GetFirmwareVersionsCommandExecutor implements CommandExecutor<Void,
                 "retrieve firmware versions", ATTRIBUTE_ADDRESSES);
 
         resultList.add(new FirmwareVersionDto(ACTIVE_FIRMWARE, this.dlmsHelperService.readString(
-                getResultList.get(INDEX_ACTIVE_FIRMWARE_VERSION).resultData(), ACTIVE_FIRMWARE)));
+                getResultList.get(INDEX_ACTIVE_FIRMWARE_VERSION).getResultData(), ACTIVE_FIRMWARE)));
         resultList.add(new FirmwareVersionDto(MODULE_ACTIVE_FIRMWARE, this.dlmsHelperService.readString(getResultList
-                .get(INDEX_MODULE_ACTIVE_FIRMWARE_VERSION).resultData(), MODULE_ACTIVE_FIRMWARE)));
+                .get(INDEX_MODULE_ACTIVE_FIRMWARE_VERSION).getResultData(), MODULE_ACTIVE_FIRMWARE)));
         resultList.add(new FirmwareVersionDto(COMMUNICATION_MODULE_ACTIVE_FIRMWARE, this.dlmsHelperService.readString(
-                getResultList.get(INDEX_COMMUNICATION_MODULE_ACTIVE_FIRMWARE_VERSION).resultData(),
+                getResultList.get(INDEX_COMMUNICATION_MODULE_ACTIVE_FIRMWARE_VERSION).getResultData(),
                 COMMUNICATION_MODULE_ACTIVE_FIRMWARE)));
 
         return resultList;
