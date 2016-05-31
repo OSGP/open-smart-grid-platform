@@ -382,6 +382,7 @@
       <xsd:element name="deviceIdentification" type="common:Identification" />
       <xsd:element name="organisationIdentification" type="common:Identification" />
       <xsd:element name="functionGroup" type="tns:DeviceFunctionGroup" />
+      <xsd:element name="revoked" type="xsd:boolean" minOccurs="0" />
     </xsd:sequence>
   </xsd:complexType>
 </xsd:schema>

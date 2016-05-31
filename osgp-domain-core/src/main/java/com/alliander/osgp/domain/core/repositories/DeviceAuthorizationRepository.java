@@ -36,4 +36,6 @@ public interface DeviceAuthorizationRepository extends JpaRepository<DeviceAutho
             + "         where da.device = ?1 and da.functionGroup = com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup.OWNER) "
             + "     or da.organisation = ?2)")
     List<DeviceAuthorization> findByDeviceForOrganisation(Device device, Organisation organisation);
+
+    void deleteByDeviceAndFunctionGroup(Device device, DeviceFunctionGroup functionGroup);
 }

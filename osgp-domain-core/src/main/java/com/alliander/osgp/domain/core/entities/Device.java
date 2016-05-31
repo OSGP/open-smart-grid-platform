@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -232,6 +233,18 @@ public class Device implements Serializable {
         final DeviceAuthorization authorization = new DeviceAuthorization(this, organisation, functionGroup);
         this.authorizations.add(authorization);
         return authorization;
+    }
+
+    public void removeAuthorization(final Organisation organisation,
+            final DeviceFunctionGroup functionGroup) {
+        final Iterator<DeviceAuthorization> i = this.authorizations.iterator();
+        while (i.hasNext()) {
+            final DeviceAuthorization da = i.next();
+            if (da.getFunctionGroup().equals(functionGroup)) {
+                i.remove();
+                break;
+            }
+        }
     }
 
     public void addOrganisation(final String organisationIdentification) {
