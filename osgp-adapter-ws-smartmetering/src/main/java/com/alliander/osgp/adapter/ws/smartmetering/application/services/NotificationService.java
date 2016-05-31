@@ -56,7 +56,7 @@ public class NotificationService {
             this.sendNotificationServiceClient.sendNotification(organisationIdentification, notification,
                     this.notificationURL);
         } catch (final WebServiceSecurityException e){
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
         }
 
     }
