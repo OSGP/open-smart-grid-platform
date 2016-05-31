@@ -8,6 +8,7 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openmuc.jdlms.ObisCode;
 
@@ -15,6 +16,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ObisCodeValuesDto;
 
 public class ObisCodeValuesTest {
 
+    @Ignore
     @Test
     public void testObisCodeValues() {
         final ObisCodeValuesDto obisCodeValues = new ObisCodeValuesDto((byte) 1, (byte) 2, (byte) 3, (byte) 234,

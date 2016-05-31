@@ -15,13 +15,13 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.openmuc.jdlms.DlmsConnection;
-import org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders.exceptions.SessionProviderException;
 import org.osgp.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
 import org.osgp.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.exceptions.RetryableException;
+import org.osgp.adapter.protocol.jasper.sessionproviders.exceptions.SessionProviderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -118,8 +118,8 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         DlmsConnection conn = null;
         DlmsDevice device = null;
 
-        final boolean isScheduled = message.propertyExists(Constants.IS_SCHEDULED) ? message
-                .getBooleanProperty(Constants.IS_SCHEDULED) : false;
+        final boolean isScheduled = message.propertyExists(Constants.IS_SCHEDULED)
+                ? message.getBooleanProperty(Constants.IS_SCHEDULED) : false;
 
         try {
             // Handle message
@@ -183,8 +183,8 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
                 "handleMessage(DlmsConnection, DlmsDevice, Serializable) should be overriden by a subclass, or usesDeviceConnection should return false.");
     }
 
-    protected Serializable handleMessage(final Serializable requestObject) throws OsgpException,
-            ProtocolAdapterException {
+    protected Serializable handleMessage(final Serializable requestObject)
+            throws OsgpException, ProtocolAdapterException {
         throw new UnsupportedOperationException(
                 "handleMessage(Serializable) should be overriden by a subclass, or usesDeviceConnection should return true.");
     }
@@ -201,7 +201,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         }
 
         RetryHeader retryHeader;
-        if (result == ResponseMessageResultType.NOT_OK && exception instanceof RetryableException) {
+        if ((result == ResponseMessageResultType.NOT_OK) && (exception instanceof RetryableException)) {
             retryHeader = this.retryHeaderFactory.createRetryHeader(dlmsDeviceMessageMetadata.getRetryCount());
         } else {
             retryHeader = this.retryHeaderFactory.createEmtpyRetryHeader();
@@ -209,10 +209,9 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).domain(dlmsDeviceMessageMetadata.getDomain())
-                .domainVersion(dlmsDeviceMessageMetadata.getDomainVersion()).result(result)
-                .osgpException(osgpException).dataObject(responseObject)
-                .retryCount(dlmsDeviceMessageMetadata.getRetryCount()).retryHeader(retryHeader).scheduled(isScheduled)
-                .build();
+                .domainVersion(dlmsDeviceMessageMetadata.getDomainVersion()).result(result).osgpException(osgpException)
+                .dataObject(responseObject).retryCount(dlmsDeviceMessageMetadata.getRetryCount())
+                .retryHeader(retryHeader).scheduled(isScheduled).build();
 
         responseMessageSender.send(responseMessage);
     }

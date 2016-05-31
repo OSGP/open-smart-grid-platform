@@ -50,6 +50,7 @@
     <osgp.version>3.4.0-SNAPSHOT</osgp.version>
     <osgp.dlms.version>3.4.0-SNAPSHOT</osgp.dlms.version>
     <osgp.shared.version>3.5.0-SNAPSHOT</osgp.shared.version>
+    <osgp.jasper-interface.version>3.4.0-SNAPSHOT</osgp.jasper-interface.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <spring.version>4.2.0.RELEASE</spring.version>
@@ -127,6 +128,11 @@
         <groupId>com.alliander.osgp</groupId>
         <artifactId>shared</artifactId>
         <version>${osgp.shared.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.osgp</groupId>
+        <artifactId>jasper-interface</artifactId>
+        <version>${osgp.jasper-interface.version}</version>
       </dependency>
 
       <dependency>
