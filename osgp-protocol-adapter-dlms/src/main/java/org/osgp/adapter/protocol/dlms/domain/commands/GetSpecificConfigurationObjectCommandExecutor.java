@@ -36,9 +36,9 @@ CommandExecutor<SpecificConfigurationObjectRequestDto, String> {
     public String execute(final DlmsConnection conn, final DlmsDevice device,
             final SpecificConfigurationObjectRequestDto requestData) throws ProtocolAdapterException {
 
-        final ObisCode obisCode = new ObisCode(requestData.getObisCode().getA(), requestData.getObisCode().getB(),
-                requestData.getObisCode().getC(), requestData.getObisCode().getD(), requestData.getObisCode().getE(),
-                requestData.getObisCode().getF());
+        final ObisCode obisCode = new ObisCode(toInt(requestData.getObisCode().getA()), toInt(requestData.getObisCode().getB()),
+                toInt(requestData.getObisCode().getC()), toInt(requestData.getObisCode().getD()), 
+                toInt(requestData.getObisCode().getE()), toInt(requestData.getObisCode().getF()));
 
         LOGGER.debug("Get specific configuration object for class id: {}, obis code: {}, attribute id: {}",
                 requestData.getClassId(), obisCode, requestData.getAttribute());
@@ -50,6 +50,10 @@ CommandExecutor<SpecificConfigurationObjectRequestDto, String> {
                 "Get specific configuration object for class", attributeAddress);
         final DataObject dataObject = getResultList.get(0).getResultData();
         return this.dlmsHelper.getDebugInfo(dataObject);
+    }
+
+    private int toInt(final byte aByte) {
+        return aByte & 0xFF;
     }
 
 }
