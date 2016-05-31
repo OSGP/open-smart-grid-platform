@@ -18,18 +18,18 @@
   <description>Web service module for smart metering.</description>
 
   <parent>
-        <groupId>com.alliander.osgp</groupId>
-        <artifactId>parent-platform</artifactId>
-        <version>3.6.0-SNAPSHOT</version>
-        <relativePath>../parent-platform/pom.xml</relativePath>
+    <groupId>com.alliander.osgp</groupId>
+    <artifactId>parent-platform</artifactId>
+    <version>3.6.0-SNAPSHOT</version>
+    <relativePath>../parent-platform/pom.xml</relativePath>
   </parent>
 
   <properties>
-        <display.version>${project.version}-${BUILD_TAG}</display.version>
+    <display.version>${project.version}-${BUILD_TAG}</display.version>
   </properties>
 
   <build>
-        <plugins>
+    <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jaxb2-maven-plugin</artifactId>
