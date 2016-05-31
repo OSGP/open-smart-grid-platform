@@ -30,6 +30,8 @@ import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.soap.security.support.KeyStoreFactoryBean;
 import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 
+import com.alliander.osgp.adapter.ws.smartmetering.exceptions.WebServiceSecurityException;
+
 public class WebServiceTemplateFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceTemplateFactory.class);
 
@@ -65,7 +67,7 @@ public class WebServiceTemplateFactory {
     }
 
     public WebServiceTemplate getTemplate(final String organisationIdentification, final String userName,
-            final String notificationURL) throws GeneralSecurityException, IOException {
+            final String notificationURL) throws WebServiceSecurityException {
 
         if (StringUtils.isEmpty(organisationIdentification)) {
             LOGGER.error("organisationIdentification is empty or null");
@@ -99,7 +101,7 @@ public class WebServiceTemplateFactory {
     }
 
     private WebServiceTemplate createTemplate(final String organisationIdentification, final String userName,
-            final String notificationUrl) throws GeneralSecurityException, IOException {
+            final String notificationUrl) throws WebServiceSecurityException {
         final WebServiceTemplate webServiceTemplate = new WebServiceTemplate(this.messageFactory);
 
         webServiceTemplate.setDefaultUri(notificationUrl);
@@ -109,42 +111,48 @@ public class WebServiceTemplateFactory {
         webServiceTemplate.setInterceptors(new ClientInterceptor[] { new OrganisationIdentificationClientInterceptor(
                 organisationIdentification, userName, this.applicationName, NAMESPACE,
                 ORGANISATION_IDENTIFICATION_HEADER, USER_NAME_HEADER, APPLICATION_NAME_HEADER) });
-
-        webServiceTemplate.setMessageSender(this.webServiceMessageSender(organisationIdentification));
+        try {
+            webServiceTemplate.setMessageSender(this.webServiceMessageSender(organisationIdentification));
+        } catch (final WebServiceSecurityException e) {
+            LOGGER.warn("Security exception, cause: {}", e);
+            throw e;
+        }
 
         return webServiceTemplate;
     }
 
     /**
-     * @throws IOException
-     *             if something goes wrong when opening the keystore.
-     * @throws GeneralSecurityException
-     *             if something goes wrong when opening the keystore.
+     * @throws WebServiceSecurityException if an error occurs while attempting to create a secured connection. 
      */
-    private HttpComponentsMessageSender webServiceMessageSender(final String keystore) throws GeneralSecurityException,
-            IOException {
+    private HttpComponentsMessageSender webServiceMessageSender(final String keystore) throws WebServiceSecurityException{
 
-        // Open keystore, assuming same identity
-        final KeyStoreFactoryBean keyStoreFactory = new KeyStoreFactoryBean();
-        keyStoreFactory.setType(this.keyStoreType);
-        keyStoreFactory.setLocation(new FileSystemResource(this.keyStoreLocation + "/" + keystore + ".pfx"));
-        keyStoreFactory.setPassword(this.keyStorePassword);
-        keyStoreFactory.afterPropertiesSet();
+        try {
+            // Open keystore, assuming same identity
+            final KeyStoreFactoryBean keyStoreFactory = new KeyStoreFactoryBean();
+            keyStoreFactory.setType(this.keyStoreType);
+            keyStoreFactory.setLocation(new FileSystemResource(this.keyStoreLocation + "/" + keystore + ".pfx"));
+            keyStoreFactory.setPassword(this.keyStorePassword);
+            keyStoreFactory.afterPropertiesSet();
 
-        final KeyStore keyStore = keyStoreFactory.getObject();
-        if (keyStore == null || keyStore.size() == 0) {
-            throw new KeyStoreException("Key store is empty");
+            final KeyStore keyStore = keyStoreFactory.getObject();
+            if (keyStore == null || keyStore.size() == 0) {
+                throw new KeyStoreException("Key store is empty");
+            }
+
+            // Create HTTP sender and associate keystore to it
+            final HttpComponentsMessageSender sender = new HttpComponentsMessageSender();
+            final HttpClient client = sender.getHttpClient();
+            final SSLSocketFactory socketFactory = new SSLSocketFactory(keyStore, this.keyStorePassword,
+                    this.trustStoreFactory.getObject());
+
+            final Scheme scheme = new Scheme("https", 443, socketFactory);
+            client.getConnectionManager().getSchemeRegistry().register(scheme);
+
+            return sender;
+
+        } catch (IOException | GeneralSecurityException e) {
+            throw new WebServiceSecurityException("An exception occured while creating a secured connection.", e);
         }
 
-        // Create HTTP sender and associate keystore to it
-        final HttpComponentsMessageSender sender = new HttpComponentsMessageSender();
-        final HttpClient client = sender.getHttpClient();
-        final SSLSocketFactory socketFactory = new SSLSocketFactory(keyStore, this.keyStorePassword,
-                this.trustStoreFactory.getObject());
-
-        final Scheme scheme = new Scheme("https", 443, socketFactory);
-        client.getConnectionManager().getSchemeRegistry().register(scheme);
-
-        return sender;
     }
 }

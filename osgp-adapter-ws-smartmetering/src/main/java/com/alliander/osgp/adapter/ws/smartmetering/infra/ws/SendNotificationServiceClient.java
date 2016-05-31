@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.Notification;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.SendNotificationRequest;
+import com.alliander.osgp.adapter.ws.smartmetering.exceptions.WebServiceSecurityException;
 
 public class SendNotificationServiceClient {
 
@@ -33,7 +34,7 @@ public class SendNotificationServiceClient {
      * @throws IOException
      */
     public void sendNotification(final String organisationIdentification, final Notification notification,
-            final String notificationURL) throws GeneralSecurityException, IOException {
+            final String notificationURL) throws WebServiceSecurityException {
 
         final SendNotificationRequest sendNotificationRequest = new SendNotificationRequest();
 
