@@ -52,15 +52,15 @@ public class ActualMeterReads extends SmartMetering {
 
     @When("^the get actual meter reads request is received$")
     public void theGetActualMeterReadsRequestIsReceived() throws Throwable {
-        PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_E, this.deviceId.getDeviceIdE());
-        PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION, this.organisationId.getOrganisationId());
+        PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_E_LABEL, this.deviceId.getDeviceIdE());
+        PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, this.organisationId.getOrganisationId());
 
         this.RequestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }
 
     @Then("^the actual meter reads result should be returned$")
     public void theActualMeterReadsResultShouldBeReturned() throws Throwable {
-        PROPERTIES_MAP.put(getCorrelationUid(), this.correlationUid);
+        PROPERTIES_MAP.put(CORRELATION_UID_LABEL, this.correlationUid);
 
         this.ResponseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
 

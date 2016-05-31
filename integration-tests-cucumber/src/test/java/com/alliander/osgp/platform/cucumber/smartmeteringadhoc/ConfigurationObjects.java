@@ -39,17 +39,17 @@ public class ConfigurationObjects extends SmartMetering {
 
     @When("^the retrieve configuration request is received$")
     public void theGetRetrieveConfigurationRequestIsReceived() throws Throwable {
-        PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_E, this.deviceId.getDeviceIdE());
-        PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION, this.organisationId.getOrganisationId());
+        PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_E_LABEL, this.deviceId.getDeviceIdE());
+        PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, this.organisationId.getOrganisationId());
 
         this.RequestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }
 
     @Then("^all the configuration items should be returned$")
     public void allTheConfigurationItemsShouldBeReturned() throws Throwable {
-        PROPERTIES_MAP.put(getCorrelationUid(), this.correlationUid);
-        PROPERTIES_MAP.put(getLapTime(), "500");
-        PROPERTIES_MAP.put(getMaxLapcount(), "100");
+        PROPERTIES_MAP.put(CORRELATION_UID_LABEL, this.correlationUid);
+        PROPERTIES_MAP.put(TIME_OUT, "900000");
+        PROPERTIES_MAP.put(MAX_TIME, "1800000");
         this.ResponseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
 
         assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT, XPATH_MATCHER_RESULT));

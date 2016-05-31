@@ -52,15 +52,15 @@ public class PeriodicMeterReadsGas extends SmartMetering {
     @When("^the get periodic meter reads gas request is received$")
     public void theGetPeriodicMeterReadsRequestIsReceived() throws Throwable {
 
-        PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_G, this.deviceId.getDeviceIdG());
-        PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION, this.organisationId.getOrganisationId());
+        PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_G_LABEL, this.deviceId.getDeviceIdG());
+        PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, this.organisationId.getOrganisationId());
 
         this.RequestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML_225, TEST_SUITE_XML);
     }
 
     @Then("^the periodic meter reads gas result should be returned$")
     public void thePeriodicMeterReadsResultShouldBeReturned() throws Throwable {
-        PROPERTIES_MAP.put(getCorrelationUid(), this.correlationUid);
+        PROPERTIES_MAP.put(CORRELATION_UID_LABEL, this.correlationUid);
 
         this.ResponseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
 
@@ -73,15 +73,15 @@ public class PeriodicMeterReadsGas extends SmartMetering {
 
     @When("^the get interval meter reads gas request is received$")
     public void theGetIntervalMeterReadsRequestIsReceived() throws Throwable {
-        PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_G, this.deviceId.getDeviceIdG());
-        PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION, this.organisationId.getOrganisationId());
+        PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_G_LABEL, this.deviceId.getDeviceIdG());
+        PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, this.organisationId.getOrganisationId());
 
         this.RequestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML_228, TEST_SUITE_XML);
     }
 
     @Then("^the interval meter reads gas result should be returned$")
     public void theIntervalMeterReadsResultShouldBeReturned() throws Throwable {
-        PROPERTIES_MAP.put(getCorrelationUid(), this.correlationUid);
+        PROPERTIES_MAP.put(CORRELATION_UID_LABEL, this.correlationUid);
         this.ResponseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
 
         assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_PERIODTYPE,

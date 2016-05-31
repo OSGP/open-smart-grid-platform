@@ -24,35 +24,26 @@ import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 /**
  * Super class for TestCase runner implementations. Each Runner will be called
  * from a subclass.
- *
- * @author CGI
- *
  */
 
 public class SmartMetering {
     protected static final String SOAP_PROJECT_XML = "../cucumber/soap-ui-project/FLEX-OVL-V3---SmartMetering-soapui-project.xml";
     protected static final String XPATH_MATCHER_CORRELATIONUID = "\\|\\|\\|\\S{17}\\|\\|\\|\\S{17}";
-    protected static final String DEVICE_IDENTIFICATION_E = "DeviceIdentificationE";
-    protected static final String DEVICE_IDENTIFICATION_G = "DeviceIdentificationG";
-    protected static final String ORGANISATION_IDENTIFICATION = "OrganisationIdentification";
-    private static final String CORRELATION_UID = "CorrelationUid";
+    protected static final String DEVICE_IDENTIFICATION_E_LABEL = "DeviceIdentificationE";
+    protected static final String DEVICE_IDENTIFICATION_G_LABEL = "DeviceIdentificationG";
+    protected static final String ORGANISATION_IDENTIFICATION_LABEL = "OrganisationIdentification";
+    public final static String CORRELATION_UID_LABEL = "CorrelationUid";
 
     /**
-     * The values below can be used to increase or decrease the maximum polling
-     * time to the response database. the total polling time =
-     * laptime*maxlapcount (where laptime = time in milisecs.
-     *
-     * So for example if the feature 'FastFeature' normally finishes within 10
-     * seconds, the in FastFeature.java these lines could be added:
-     * PROPERTIES_MAP.put(LAP_TIME, "500"); PROPERTIES_MAP.put(MAX_LAPCOUNT,
-     * "100"); Hence instead of polling every 5 second, now we poll every half
-     * second, and this should be finished within 50 seconds (500*100 = 50000
-     * msecs)
-     *
+     * TIME_OUT represents the time in milliseconds before there will be started
+     * with polling the database for a response. MAX_TIME represents the maximum
+     * allowed polling time in milliseconds within the response should be
+     * returned. When this time is over, the polling will stop and return the
+     * result when available.
      */
 
-    private static final String LAP_TIME = "LapTime";
-    private static final String MAX_LAPCOUNT = "MaxLapCount";
+    public static final String TIME_OUT = "TimeOut";
+    public static final String MAX_TIME = "MaxTime";
 
     protected String response;
     protected String correlationUid;
@@ -75,14 +66,19 @@ public class SmartMetering {
 
     /**
      * RequestRunner is called from the @When step from a subclass which
-     * represents cucumber test scenario('s) The RequestRunner needs a
-     * propertiesMap which includes a deviceId and organisationId to call the
-     * SoapUI testcase step when the wsdlTestCase is created. The other
-     * parameters are specific for which test to call. The correlationUid is the
-     * eventually desired result to retrieve the result in the ResponseRunner
-     * method.
+     * represents cucumber test scenario('s) and return the correlationUid.
+     *
+     * @param propertiesMap
+     *            includes all needed properties for a specific test run such as
+     *            DeviceId and OrganisationId
+     * @param testCaseNameRequest
+     *            is the specific testcase request step to be executed
+     * @param testCaseXml
+     *            is the testcase name which includes the testcase
+     * @param testSuiteXml
+     *            is the testsuite name which includes the testcase
+     * @throws Throwable
      */
-
     protected void RequestRunner(final Map<String, String> propertiesMap, final String testCaseNameRequest,
             final String testCaseXml, final String testSuiteXml) throws Throwable {
 
@@ -104,14 +100,17 @@ public class SmartMetering {
 
     /**
      * ResponseRunner is called from the @Then step from a subclass which
-     * represents cucumber test scenario('s) The ResponseRunner needs a
-     * propertiesMap which includes a deviceId, organisationId and
-     * organisationId to call the SoapUI testcase step when the wsdlTestCase is
-     * created. The other parameters are specific for which test to call. The
-     * response is the eventually desired result which can be used to validate
-     * the test result.
+     * represents cucumber test scenario('s) and returns the response.
+     *
+     * @param propertiesMap
+     *            includes all needed properties for a specific test run such as
+     *            DeviceId, OrganisationId and CorrelationUid
+     * @param testCaseNameResponse
+     *            is the specific testcase response step to be executed
+     * @param logger
+     *            saves the response message in a logger
+     * @throws Throwable
      */
-
     protected void ResponseRunner(final Map<String, String> propertiesMap, final String testCaseNameResponse,
             final Logger logger) throws Throwable {
 
@@ -123,17 +122,5 @@ public class SmartMetering {
 
         this.response = ((MessageExchange) wsdlTestCaseRunner.getResults().get(0)).getResponseContent();
         logger.info(testCaseNameResponse + " response {}", this.response);
-    }
-
-    public static String getCorrelationUid() {
-        return CORRELATION_UID;
-    }
-
-    public static String getLapTime() {
-        return LAP_TIME;
-    }
-
-    public static String getMaxLapcount() {
-        return MAX_LAPCOUNT;
     }
 }

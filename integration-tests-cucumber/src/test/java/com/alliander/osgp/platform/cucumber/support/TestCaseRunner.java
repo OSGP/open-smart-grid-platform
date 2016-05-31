@@ -46,8 +46,8 @@ public class TestCaseRunner {
 
         final String correlId = this.getCorrelId(propertiesMap);
         if (correlId != null) {
-            if (!this.responseNotifier.waitForResponse(correlId, this.getLaptime(propertiesMap),
-                    this.getMaxLaps(propertiesMap))) {
+            if (!this.responseNotifier.waitForResponse(correlId, this.getTimeout(propertiesMap),
+                    this.getMaxTime(propertiesMap))) {
                 LOGGER.warn("no response retrieved with maximum time");
             }
         }
@@ -56,26 +56,26 @@ public class TestCaseRunner {
     }
 
     private String getCorrelId(final Map<String, String> propertiesMap) {
-        if (propertiesMap.containsKey(SmartMetering.getCorrelationUid())) {
-            return propertiesMap.get(SmartMetering.getCorrelationUid());
+        if (propertiesMap.containsKey(SmartMetering.CORRELATION_UID_LABEL)) {
+            return propertiesMap.get(SmartMetering.CORRELATION_UID_LABEL);
         } else {
             return null;
         }
     }
 
-    private int getLaptime(final Map<String, String> propertiesMap) {
-        if (propertiesMap.containsKey(SmartMetering.getLapTime())) {
-            return new Integer(propertiesMap.get(SmartMetering.getLapTime()));
+    private int getTimeout(final Map<String, String> propertiesMap) {
+        if (propertiesMap.containsKey(SmartMetering.TIME_OUT)) {
+            return new Integer(propertiesMap.get(SmartMetering.TIME_OUT));
         } else {
-            return 5000;
+            return 10000;
         }
     }
 
-    private int getMaxLaps(final Map<String, String> propertiesMap) {
-        if (propertiesMap.containsKey(SmartMetering.getMaxLapcount())) {
-            return new Integer(propertiesMap.get(SmartMetering.getMaxLapcount()));
+    private int getMaxTime(final Map<String, String> propertiesMap) {
+        if (propertiesMap.containsKey(SmartMetering.MAX_TIME)) {
+            return new Integer(propertiesMap.get(SmartMetering.MAX_TIME));
         } else {
-            return 25;
+            return 60000;
         }
     }
 

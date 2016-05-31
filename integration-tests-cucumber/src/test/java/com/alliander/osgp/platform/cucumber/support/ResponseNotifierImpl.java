@@ -41,15 +41,18 @@ public class ResponseNotifierImpl implements ResponseNotifier {
     private String password;
 
     @Override
-    public boolean waitForResponse(final String correlid, final int laptime, final int maxlaps) {
+    public boolean waitForResponse(final String correlid, final int timeout, final int maxtime) {
         Statement statement = null;
         try {
+            Thread.sleep(timeout);
+
             statement = this.conn().createStatement();
-            int pollcount = 0;
+            final int interval = 3000;
+            int delayedtime = 0;
 
             while (true) {
-                Thread.sleep(laptime);
-                if (pollcount++ < maxlaps) {
+                Thread.sleep(interval);
+                if ((delayedtime += interval) < maxtime) {
                     final PollResult pollres = this.pollDatabase(statement, correlid);
                     if (pollres.equals(PollResult.OK)) {
                         return true;
