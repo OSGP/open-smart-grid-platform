@@ -319,16 +319,6 @@ public class DeviceManagementService {
 
         this.isAllowed(ownerOrganisation, device, DeviceFunction.SET_DEVICE_AUTHORIZATION);
 
-        // Check if group is already set on device
-        for (final DeviceAuthorization authorization : device.getAuthorizations()) {
-            if (authorization.getOrganisation() == organisation && authorization.getFunctionGroup() == group) {
-                break;
-            }
-            LOGGER.info("Organisation {} already has no authorization for group {} on device {}", new Object[] {
-                    organisationIdentification, deviceIdentification, group });
-            return;
-        }
-
         // All checks pass, remove authorization
         device.removeAuthorization(organisation, group);
         this.deviceRepository.save(device);
