@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
 
@@ -29,7 +28,8 @@ import com.alliander.osgp.shared.infra.jms.MessageProcessor;
  * MessageProcessors after dependency injection has completed.
  *
  */
-public abstract class OsgpCoreRequestMessageProcessor extends AbstractRequestMessageProcessor implements MessageProcessor  {
+public abstract class OsgpCoreRequestMessageProcessor extends AbstractRequestMessageProcessor implements
+        MessageProcessor {
 
     /**
      * Logger for this class.
@@ -82,9 +82,6 @@ public abstract class OsgpCoreRequestMessageProcessor extends AbstractRequestMes
                 this.deviceFunction.name(), this);
     }
 
-    protected abstract void handleMessage(DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
-            throws FunctionalException;
-
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
         Object dataObject = null;
@@ -104,7 +101,7 @@ public abstract class OsgpCoreRequestMessageProcessor extends AbstractRequestMes
             this.handleMessage(deviceMessageMetadata, dataObject);
 
         } catch (final Exception e) {
-            this.handleError(e, deviceMessageMetadata);
+            this.handleError(e, deviceMessageMetadata, "Unexpected exception while retrieving message");
         }
     }
 

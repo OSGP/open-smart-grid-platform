@@ -6,14 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
-public class AbstractRequestMessageProcessor {
-
+public abstract class AbstractRequestMessageProcessor {
 
     @Autowired
     protected WebServiceResponseMessageSender webServiceResponseMessageSender;
@@ -22,7 +22,10 @@ public class AbstractRequestMessageProcessor {
      * Logger for this class.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractRequestMessageProcessor.class);
-    
+
+    protected abstract void handleMessage(DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
+            throws FunctionalException;
+
     /**
      * In case of an error, this function can be used to send a response
      * containing the exception to the web-service-adapter.
@@ -32,23 +35,24 @@ public class AbstractRequestMessageProcessor {
      * @param deviceMessageMetadata
      *            The {@link DeviceMessageMetadata}
      */
-    protected void handleError(final Exception e, final DeviceMessageMetadata deviceMessageMetadata) {
+    protected void handleError(final Exception e, final DeviceMessageMetadata deviceMessageMetadata,
+            final String errorMessage) {
         LOGGER.info("handeling error: {} for message type: {}", e.getMessage(), deviceMessageMetadata.getMessageType());
-        final OsgpException osgpException = this.ensureOsgpException(e);
-        
+        final OsgpException osgpException = this.ensureOsgpException(e, errorMessage);
+
         this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 ResponseMessageResultType.NOT_OK, osgpException, null, deviceMessageMetadata.getMessagePriority()),
                 deviceMessageMetadata.getMessageType());
     }
 
-    private OsgpException ensureOsgpException(final Exception e) {
+    protected OsgpException ensureOsgpException(final Exception e, final String errorMessage) {
 
         if (e instanceof OsgpException) {
             return (OsgpException) e;
         }
 
-        return new TechnicalException(ComponentType.DOMAIN_SMART_METERING,
-                "Unexpected exception while retrieving message", e);
+        return new TechnicalException(ComponentType.DOMAIN_SMART_METERING, errorMessage, e);
     }
+
 }
