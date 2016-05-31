@@ -9,7 +9,6 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -27,6 +26,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.internal.util.reflection.Whitebox;
@@ -74,8 +74,8 @@ public class SetConfigurationObjectCommandExecutorTest {
     private DlmsConnection connMock;
 
     @Mock
-    private GetResult resultListMock;
-
+    private List<GetResult> getResultListMock;
+    
     @Mock
     private GetResult getResultMock;
 
@@ -117,8 +117,9 @@ public class SetConfigurationObjectCommandExecutorTest {
         // Mock the retrieval of the current ConfigurationObject
         this.mockRetrievalOfCurrentConfigurationObject();
 
-        final AccessResultCode accessResultCode = AccessResultCode.SUCCESS;
-        when(this.connMock.set(eq(false), any(SetParameter.class))).thenReturn(accessResultCode);
+        final List<AccessResultCode> accessResultCodeList =  new ArrayList<>();
+        accessResultCodeList.add(AccessResultCode.SUCCESS);
+        when(this.connMock.set(eq(false), Matchers.anyListOf(SetParameter.class))).thenReturn(accessResultCodeList);
 
         final DlmsDevice device = this.getDlmsDevice();
         final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
@@ -128,6 +129,7 @@ public class SetConfigurationObjectCommandExecutorTest {
         final DataObject dataObject = DataObject.newStructureData(new ArrayList<DataObject>());
         final SetParameter setParameter = new SetParameter(attributeAddress, dataObject);
 
+        //TODO this call below still gives errors, that is because the DlmsConnection 1.0.0 differs significantly from the older ClientConnection 
         // Verify test
         final ArgumentCaptor<SetParameter> setParameterCaptor = ArgumentCaptor.forClass(SetParameter.class);
         verify(this.connMock).set(eq(false), setParameterCaptor.capture());
@@ -155,8 +157,11 @@ public class SetConfigurationObjectCommandExecutorTest {
     }
 
     private void mockRetrievalOfCurrentConfigurationObject() throws IOException, TimeoutException, DecoderException {
-        when(this.connMock.get(eq(false), any(AttributeAddress.class))).thenReturn(this.resultListMock);
-        when(this.resultListMock).thenReturn(this.getResultMock);
+        when(this.connMock.get(eq(false), Matchers.anyListOf(AttributeAddress.class))).thenReturn(this.getResultListMock);
+        when(this.connMock.get(eq(false), Matchers.any(AttributeAddress.class))).thenReturn(this.getResultMock);
+        when(this.connMock.get(eq(Matchers.anyListOf(AttributeAddress.class)))).thenReturn(this.getResultListMock);
+        when(this.connMock.get(eq(Matchers.any(AttributeAddress.class)))).thenReturn(this.getResultMock);
+
         when(this.getResultMock.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
         when(this.getResultMock.getResultData()).thenReturn(this.resultDataObjectMock);
         when(this.resultDataObjectMock.getValue()).thenReturn(this.linkedListMock);

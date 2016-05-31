@@ -138,10 +138,15 @@ public class RetrieveConfigurationObjectsCommandExecutor implements CommandExecu
     }
 
     private ObisCode createObisCode(final byte[] obisCodeByteArray) {
-        return new ObisCode(obisCodeByteArray[0], obisCodeByteArray[1], obisCodeByteArray[2], obisCodeByteArray[3],
-                obisCodeByteArray[4], obisCodeByteArray[5]);
+        return new ObisCode(toInt(obisCodeByteArray[0]), toInt(obisCodeByteArray[1]), toInt(obisCodeByteArray[2]), 
+                toInt(obisCodeByteArray[3]), toInt(obisCodeByteArray[4]), toInt(obisCodeByteArray[5]));
     }
 
+    private int toInt(final byte aByte) {
+        return aByte & 0xFF;
+    }
+    
+    @SuppressWarnings("unchecked")
     private List<ClassIdObisAttr> getAllObisCodes(final List<DataObject> obisCodeMetaDataTree)
             throws ProtocolAdapterException {
         final List<ClassIdObisAttr> allObisCodes = new ArrayList<>();
