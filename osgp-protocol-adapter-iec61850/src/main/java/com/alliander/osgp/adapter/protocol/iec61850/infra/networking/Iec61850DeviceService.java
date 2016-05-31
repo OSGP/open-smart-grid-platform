@@ -56,6 +56,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetFirmware
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetPowerUsageHistoryDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetStatusDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DaylightSavingTimeTransition;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.EventType;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.ScheduleEntry;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.ScheduleWeekday;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.TriggerType;
@@ -72,6 +73,7 @@ import com.alliander.osgp.dto.valueobjects.ConfigurationDto;
 import com.alliander.osgp.dto.valueobjects.DaliConfigurationDto;
 import com.alliander.osgp.dto.valueobjects.DeviceFixedIpDto;
 import com.alliander.osgp.dto.valueobjects.DeviceStatusDto;
+import com.alliander.osgp.dto.valueobjects.EventNotificationTypeDto;
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 import com.alliander.osgp.dto.valueobjects.HistoryTermTypeDto;
 import com.alliander.osgp.dto.valueobjects.LightTypeDto;
@@ -716,10 +718,42 @@ public class Iec61850DeviceService implements DeviceService {
 
         LOGGER.info("Called setEventNotifications, doing nothing for now and returning OK");
 
-        final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
-                deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
-                deviceRequest.getCorrelationUid(), DeviceMessageStatus.OK);
-        deviceResponseHandler.handleResponse(deviceResponse);
+        final List<EventNotificationTypeDto> eventNotifications = deviceRequest.getEventNotificationsContainer()
+                .getEventNotifications();
+        final String filter = EventType.getEventTypeFilterMaskForNotificationTypes(eventNotifications);
+
+        try {
+
+            final ServerModel serverModel = this.connectAndRetrieveServerModel(deviceRequest);
+            final ClientAssociation clientAssociation = this.iec61850DeviceConnectionService
+                    .getClientAssociation(deviceRequest.getDeviceIdentification());
+
+            this.setEventNotificationFilterOnDevice(serverModel, clientAssociation, filter);
+
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.OK);
+            deviceResponseHandler.handleResponse(deviceResponse);
+        } catch (final ConnectionFailureException se) {
+            LOGGER.error("Could not connect to device after all retries", se);
+
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+
+            deviceResponseHandler.handleException(se, deviceResponse, true);
+            return;
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during setEventNotificationFilterOnDevice", e);
+
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+
+            deviceResponseHandler.handleException(e, deviceResponse, false);
+            return;
+        }
+
     }
 
     // ======================================
@@ -1712,6 +1746,40 @@ public class Iec61850DeviceService implements DeviceService {
 
                 certificateUrlDownloadStartTime.setDate(oneMinuteFromNow);
                 clientAssociation.setDataValues(certificateUrlDownloadStartTime);
+
+                return null;
+            }
+        };
+
+        this.iec61850Client.sendCommandWithRetry(function);
+
+    }
+
+    private void setEventNotificationFilterOnDevice(final ServerModel serverModel,
+            final ClientAssociation clientAssociation, final String filter) throws ProtocolAdapterException,
+            FunctionalException {
+
+        final Function<Void> function = new Function<Void>() {
+
+            @Override
+            public Void apply() throws Exception {
+
+                LOGGER.info("Setting the event notification filter");
+
+                final String eventBufferConfigurationObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                        + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
+                        + LogicalNodeAttributeDefinitons.PROPERTY_EVENT_BUFFER;
+
+                final FcModelNode eventBufferConfiguration = Iec61850DeviceService.this.getNode(serverModel,
+                        eventBufferConfigurationObjectReference, Fc.CF);
+
+                final BdaVisibleString enbEvnType = (BdaVisibleString) eventBufferConfiguration
+                        .getChild(LogicalNodeAttributeDefinitons.PROPERTY_EVENT_BUFFER_FILTER);
+
+                LOGGER.info("Updating the enabled EventType filter to {}", filter);
+
+                enbEvnType.setValue(filter);
+                clientAssociation.setDataValues(enbEvnType);
 
                 return null;
             }

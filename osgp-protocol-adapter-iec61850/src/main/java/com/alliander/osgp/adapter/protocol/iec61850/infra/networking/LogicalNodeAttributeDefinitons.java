@@ -253,6 +253,11 @@ public final class LogicalNodeAttributeDefinitons {
     public static final String PROPERTY_REG_CONFIGURATION = ".Reg";
 
     /**
+     * Property of CSLC Node, Event Buffer.
+     */
+    public static final String PROPERTY_EVENT_BUFFER = ".EvnBuf";
+
+    /**
      * Attribute of Property Reg, used to read or set the IP address of the
      * platform.
      */
@@ -383,6 +388,12 @@ public final class LogicalNodeAttributeDefinitons {
      * night schedule.
      */
     public static final String PROPERTY_SENSOR_ATTRIBUTE_CONTROL = "ctlVal";
+
+    /**
+     * Attribute of the CSLC Event Buffer configuration, filter for enabled
+     * event types.
+     */
+    public static final String PROPERTY_EVENT_BUFFER_FILTER = "enbEvnType";
 
     private LogicalNodeAttributeDefinitons() {
         // Private constructor to prevent instantiation of this class.
