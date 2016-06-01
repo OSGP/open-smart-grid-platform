@@ -26,115 +26,97 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 @Service(value = "dlmsDomainHelperService")
 public class DomainHelperService {
 
-	private static final ComponentType COMPONENT_TYPE = ComponentType.PROTOCOL_DLMS;
+    private static final ComponentType COMPONENT_TYPE = ComponentType.PROTOCOL_DLMS;
 
-	@Autowired
-	private DlmsDeviceRepository dlmsDeviceRepository;
+    @Autowired
+    private DlmsDeviceRepository dlmsDeviceRepository;
 
-	@Autowired
-	private SessionProviderService sessionProviderService;
+    @Autowired
+    private SessionProviderService sessionProviderService;
 
-	@Autowired
-	private JasperWirelessSmsClient jasperWirelessSmsClient;
+    @Autowired
+    private JasperWirelessSmsClient jasperWirelessSmsClient;
 
-	@Autowired
-	private int jasperGetSessionRetries;
+    @Autowired
+    private int jasperGetSessionRetries;
 
-	@Autowired
-	private int jasperGetSessionSleepBetweenRetries;
+    @Autowired
+    private int jasperGetSessionSleepBetweenRetries;
 
-	/**
-	 * Use {@link #findDlmsDevice(DlmsDeviceMessageMetadata)} instead, as this
-	 * will also set the IP address.
-	 * <p>
-	 * If this method turns out to be called from a location where
-	 * {@link DlmsDeviceMessageMetadata} is not available, check if the IP
-	 * address needs to be provided in another way.
-	 *
-	 * @deprecated
-	 */
-	@Deprecated
-	public DlmsDevice findDlmsDevice(final String deviceIdentification)
-			throws FunctionalException {
-		final DlmsDevice dlmsDevice = this.dlmsDeviceRepository
-				.findByDeviceIdentification(deviceIdentification);
-		if (dlmsDevice == null) {
-			throw new FunctionalException(
-					FunctionalExceptionType.UNKNOWN_DEVICE, COMPONENT_TYPE,
-					new ProtocolAdapterException(
-							"Unable to communicate with unknown device: "
-									+ deviceIdentification));
-		}
-		return dlmsDevice;
-	}
+    /**
+     * Use {@link #findDlmsDevice(DlmsDeviceMessageMetadata)} instead, as this
+     * will also set the IP address.
+     * <p>
+     * If this method turns out to be called from a location where
+     * {@link DlmsDeviceMessageMetadata} is not available, check if the IP
+     * address needs to be provided in another way.
+     *
+     * @deprecated
+     */
+    @Deprecated
+    public DlmsDevice findDlmsDevice(final String deviceIdentification) throws FunctionalException {
+        final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
+        if (dlmsDevice == null) {
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, COMPONENT_TYPE,
+                    new ProtocolAdapterException("Unable to communicate with unknown device: " + deviceIdentification));
+        }
+        return dlmsDevice;
+    }
 
-	public DlmsDevice findDlmsDevice(
-			final DlmsDeviceMessageMetadata messageMetadata)
-			throws ProtocolAdapterException {
-		return this.findDlmsDevice(messageMetadata.getDeviceIdentification(),
-				messageMetadata.getIpAddress());
-	}
+    public DlmsDevice findDlmsDevice(final DlmsDeviceMessageMetadata messageMetadata) throws ProtocolAdapterException {
+        return this.findDlmsDevice(messageMetadata.getDeviceIdentification(), messageMetadata.getIpAddress());
+    }
 
-	public DlmsDevice findDlmsDevice(final String deviceIdentification,
-			final String ipAddress) throws ProtocolAdapterException {
-		final DlmsDevice dlmsDevice = this.dlmsDeviceRepository
-				.findByDeviceIdentification(deviceIdentification);
-		if (dlmsDevice == null) {
-			throw new ProtocolAdapterException(
-					"Unable to communicate with unknown device: "
-							+ deviceIdentification);
-		}
+    public DlmsDevice findDlmsDevice(final String deviceIdentification, final String ipAddress)
+            throws ProtocolAdapterException {
+        final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
+        if (dlmsDevice == null) {
+            throw new ProtocolAdapterException("Unable to communicate with unknown device: " + deviceIdentification);
+        }
 
-		if (dlmsDevice.isIpAddressIsStatic()) {
-			dlmsDevice.setIpAddress(ipAddress);
-		} else {
-			dlmsDevice.setIpAddress(this
-					.getDeviceIpAddressFromSessionProvider(dlmsDevice));
-		}
-		return dlmsDevice;
-	}
+        if (dlmsDevice.isIpAddressIsStatic()) {
+            dlmsDevice.setIpAddress(ipAddress);
+        } else {
+            dlmsDevice.setIpAddress(this.getDeviceIpAddressFromSessionProvider(dlmsDevice));
+        }
+        return dlmsDevice;
+    }
 
-	private String getDeviceIpAddressFromSessionProvider(
-			final DlmsDevice dlmsDevice) throws ProtocolAdapterException {
+    private String getDeviceIpAddressFromSessionProvider(final DlmsDevice dlmsDevice) throws ProtocolAdapterException {
 
-		final SessionProvider sessionProvider = this.sessionProviderService
-				.getSessionProvider(dlmsDevice.getCommunicationProvider());
-		String deviceIpAddress = null;
-		try {
-			deviceIpAddress = sessionProvider.getIpAddress(dlmsDevice
-					.getIccId());
-			if (deviceIpAddress != null) {
-				return deviceIpAddress;
-			}
+        final SessionProvider sessionProvider = this.sessionProviderService.getSessionProvider(dlmsDevice
+                .getCommunicationProvider());
+        String deviceIpAddress = null;
+        try {
+            deviceIpAddress = sessionProvider.getIpAddress(dlmsDevice.getIccId());
+            if (deviceIpAddress != null) {
+                return deviceIpAddress;
+            }
 
-			// If the result is null then the meter is not in session (not
-			// awake).
-			// So wake up the meter and start polling for the session
-			this.jasperWirelessSmsClient.sendWakeUpSMS(dlmsDevice.getIccId());
-			for (int i = 0; i < this.jasperGetSessionRetries; i++) {
-				Thread.sleep(this.jasperGetSessionSleepBetweenRetries);
-				deviceIpAddress = sessionProvider.getIpAddress(dlmsDevice
-						.getIccId());
+            // If the result is null then the meter is not in session (not
+            // awake).
+            // So wake up the meter and start polling for the session
+            this.jasperWirelessSmsClient.sendWakeUpSMS(dlmsDevice.getIccId());
+            for (int i = 0; i < this.jasperGetSessionRetries; i++) {
+                Thread.sleep(this.jasperGetSessionSleepBetweenRetries);
+                deviceIpAddress = sessionProvider.getIpAddress(dlmsDevice.getIccId());
 
-				if (deviceIpAddress != null) {
-					break;
-				}
-			}
-		} catch (final InterruptedException e) {
-			throw new ProtocolAdapterException(
-					"Interrupted while sleeping before calling the sessionProvider.getIpAddress",
-					e);
-		} catch (SessionProviderUnsupportedException | SessionProviderException e) {
-			throw new ProtocolAdapterException("", e);
-		}
-		if ((deviceIpAddress == null) || "".equals(deviceIpAddress)) {
-			throw new ProtocolAdapterException("Session provider: "
-					+ dlmsDevice.getCommunicationProvider()
-					+ " did not return an IP address for device: "
-					+ dlmsDevice.getDeviceIdentification() + "and iccId: "
-					+ dlmsDevice.getIccId());
+                if (deviceIpAddress != null) {
+                    break;
+                }
+            }
+        } catch (final InterruptedException e) {
+            throw new ProtocolAdapterException(
+                    "Interrupted while sleeping before calling the sessionProvider.getIpAddress", e);
+        } catch (SessionProviderUnsupportedException | SessionProviderException e) {
+            throw new ProtocolAdapterException("", e);
+        }
+        if ((deviceIpAddress == null) || "".equals(deviceIpAddress)) {
+            throw new ProtocolAdapterException("Session provider: " + dlmsDevice.getCommunicationProvider()
+                    + " did not return an IP address for device: " + dlmsDevice.getDeviceIdentification()
+                    + "and iccId: " + dlmsDevice.getIccId());
 
-		}
-		return deviceIpAddress;
-	}
+        }
+        return deviceIpAddress;
+    }
 }

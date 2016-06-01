@@ -25,92 +25,74 @@ import com.jasperwireless.api.ws.service.SendSMSResponse;
 
 public class JasperWirelessSmsClient {
 
-	private static final String WAKEUPSMS_TYPE = "wakeupsms";
+    private static final String WAKEUPSMS_TYPE = "wakeupsms";
 
-	private static final ObjectFactory WS_CLIENT_FACTORY = new ObjectFactory();
+    private static final ObjectFactory WS_CLIENT_FACTORY = new ObjectFactory();
 
-	@Autowired
-	private WebServiceTemplate webServiceTemplate;
+    @Autowired
+    private WebServiceTemplate webServiceTemplate;
 
-	@Autowired
-	private CorrelationIdProviderService correlationIdProviderService;
+    @Autowired
+    private CorrelationIdProviderService correlationIdProviderService;
 
-	@Autowired
-	private JasperWirelessAccess jasperWirelessAccess;
+    @Autowired
+    private JasperWirelessAccess jasperWirelessAccess;
 
-	public SendSMSResponse sendWakeUpSMS(final String iccid) {
+    public SendSMSResponse sendWakeUpSMS(final String iccid) {
 
-		final SendSMSRequest sendSMSRequest = WS_CLIENT_FACTORY
-				.createSendSMSRequest();
-		sendSMSRequest.setLicenseKey(this.jasperWirelessAccess.getLicenseKey());
-		sendSMSRequest.setMessageId(this.correlationIdProviderService
-				.getCorrelationId(WAKEUPSMS_TYPE, iccid));
-		sendSMSRequest.setMessageText("");
-		sendSMSRequest.setMessageTextEncoding("");
-		sendSMSRequest.setSentToIccid(iccid);
-		sendSMSRequest.setVersion(this.jasperWirelessAccess.getApiVersion());
+        final SendSMSRequest sendSMSRequest = WS_CLIENT_FACTORY.createSendSMSRequest();
+        sendSMSRequest.setLicenseKey(this.jasperWirelessAccess.getLicenseKey());
+        sendSMSRequest.setMessageId(this.correlationIdProviderService.getCorrelationId(WAKEUPSMS_TYPE, iccid));
+        sendSMSRequest.setMessageText("");
+        sendSMSRequest.setMessageTextEncoding("");
+        sendSMSRequest.setSentToIccid(iccid);
+        sendSMSRequest.setVersion(this.jasperWirelessAccess.getApiVersion());
 
-		for (final ClientInterceptor interceptor : this.webServiceTemplate
-				.getInterceptors()) {
-			if (interceptor instanceof Wss4jSecurityInterceptor) {
-				setUsernameToken((Wss4jSecurityInterceptor) interceptor,
-						this.jasperWirelessAccess.getUsername(),
-						this.jasperWirelessAccess.getPassword());
-			}
-		}
+        for (final ClientInterceptor interceptor : this.webServiceTemplate.getInterceptors()) {
+            if (interceptor instanceof Wss4jSecurityInterceptor) {
+                setUsernameToken((Wss4jSecurityInterceptor) interceptor, this.jasperWirelessAccess.getUsername(),
+                        this.jasperWirelessAccess.getPassword());
+            }
+        }
 
-		// override default uri
-		this.webServiceTemplate.setDefaultUri(this.jasperWirelessAccess
-				.getUri());
+        // override default uri
+        this.webServiceTemplate.setDefaultUri(this.jasperWirelessAccess.getUri());
 
-		return (SendSMSResponse) this.webServiceTemplate
-				.marshalSendAndReceive(sendSMSRequest, new SoapActionCallback(
-						"http://api.jasperwireless.com/ws/service/sms/SendSMS"));
-	}
+        return (SendSMSResponse) this.webServiceTemplate.marshalSendAndReceive(sendSMSRequest, new SoapActionCallback(
+                "http://api.jasperwireless.com/ws/service/sms/SendSMS"));
+    }
 
-	public GetSMSDetailsResponse getSMSDetails(final Long smsMessageId,
-			final String iccid) {
+    public GetSMSDetailsResponse getSMSDetails(final Long smsMessageId, final String iccid) {
 
-		final GetSMSDetailsRequest getSMSDetailsRequest = WS_CLIENT_FACTORY
-				.createGetSMSDetailsRequest();
-		getSMSDetailsRequest.setLicenseKey(this.jasperWirelessAccess
-				.getLicenseKey());
-		getSMSDetailsRequest.setMessageId(this.correlationIdProviderService
-				.getCorrelationId(WAKEUPSMS_TYPE, iccid));
+        final GetSMSDetailsRequest getSMSDetailsRequest = WS_CLIENT_FACTORY.createGetSMSDetailsRequest();
+        getSMSDetailsRequest.setLicenseKey(this.jasperWirelessAccess.getLicenseKey());
+        getSMSDetailsRequest.setMessageId(this.correlationIdProviderService.getCorrelationId(WAKEUPSMS_TYPE, iccid));
 
-		final GetSMSDetailsRequest.SmsMsgIds smsMsgIds = new GetSMSDetailsRequest.SmsMsgIds();
-		final List<Long> smsMsgId = smsMsgIds.getSmsMsgId();
-		smsMsgId.add(smsMessageId);
-		getSMSDetailsRequest.setSmsMsgIds(smsMsgIds);
-		getSMSDetailsRequest.setMessageTextEncoding("");
-		getSMSDetailsRequest.setVersion(this.jasperWirelessAccess
-				.getApiVersion());
+        final GetSMSDetailsRequest.SmsMsgIds smsMsgIds = new GetSMSDetailsRequest.SmsMsgIds();
+        final List<Long> smsMsgId = smsMsgIds.getSmsMsgId();
+        smsMsgId.add(smsMessageId);
+        getSMSDetailsRequest.setSmsMsgIds(smsMsgIds);
+        getSMSDetailsRequest.setMessageTextEncoding("");
+        getSMSDetailsRequest.setVersion(this.jasperWirelessAccess.getApiVersion());
 
-		for (final ClientInterceptor interceptor : this.webServiceTemplate
-				.getInterceptors()) {
-			if (interceptor instanceof Wss4jSecurityInterceptor) {
-				setUsernameToken((Wss4jSecurityInterceptor) interceptor,
-						this.jasperWirelessAccess.getUsername(),
-						this.jasperWirelessAccess.getPassword());
-			}
-		}
+        for (final ClientInterceptor interceptor : this.webServiceTemplate.getInterceptors()) {
+            if (interceptor instanceof Wss4jSecurityInterceptor) {
+                setUsernameToken((Wss4jSecurityInterceptor) interceptor, this.jasperWirelessAccess.getUsername(),
+                        this.jasperWirelessAccess.getPassword());
+            }
+        }
 
-		// override default uri
-		this.webServiceTemplate.setDefaultUri(this.jasperWirelessAccess
-				.getUri());
+        // override default uri
+        this.webServiceTemplate.setDefaultUri(this.jasperWirelessAccess.getUri());
 
-		return (GetSMSDetailsResponse) this.webServiceTemplate
-				.marshalSendAndReceive(
-						getSMSDetailsRequest,
-						new SoapActionCallback(
-								"http://api.jasperwireless.com/ws/service/sms/GetSMSDetails"));
-	}
+        return (GetSMSDetailsResponse) this.webServiceTemplate.marshalSendAndReceive(getSMSDetailsRequest,
+                new SoapActionCallback("http://api.jasperwireless.com/ws/service/sms/GetSMSDetails"));
+    }
 
-	private static void setUsernameToken(
-			final Wss4jSecurityInterceptor interceptor, final String user,
-			final String pass) {
-		interceptor.setSecurementUsername(user);
-		interceptor.setSecurementPassword(pass);
-		interceptor.setSecurementPasswordType(WSConstants.PW_TEXT);
-	}
+    private static void setUsernameToken(final Wss4jSecurityInterceptor interceptor, final String user,
+            final String pass) {
+        interceptor.setSecurementUsername(user);
+        interceptor.setSecurementPassword(pass);
+        interceptor.setSecurementPasswordType(WSConstants.PW_TEXT);
+    }
 }

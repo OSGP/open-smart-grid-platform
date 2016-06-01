@@ -13,10 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class SessionProvider {
 
-	@Autowired
-	protected SessionProviderMap sessionProviderMap;
+    @Autowired
+    protected SessionProviderMap sessionProviderMap;
 
-	public abstract String getIpAddress(String iccId)
-			throws SessionProviderException,
-			SessionProviderUnsupportedException;
+    public abstract String getIpAddress(String iccId) throws SessionProviderException,
+    SessionProviderUnsupportedException;
 }

@@ -26,46 +26,42 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * configuration requires Spring Framework 3.0
  */
 @Configuration
-@ComponentScan(basePackages = { "org.osgp.adapter.protocol.dlms",
-"com.alliander.osgp.shared.security" })
+@ComponentScan(basePackages = { "org.osgp.adapter.protocol.dlms", "com.alliander.osgp.shared.security" })
 @EnableTransactionManagement()
-@Import({ MessagingConfig.class, DlmsPersistenceConfig.class,
-		JasperWirelessConfig.class })
+@Import({ MessagingConfig.class, DlmsPersistenceConfig.class, JasperWirelessConfig.class })
 @PropertySource("file:${osp/osgpAdapterProtocolDlms/config}")
 public class ApplicationContext {
 
-	private static final String LOCAL_TIME_ZONE_IDENTIFIER = "Europe/Paris";
-	private static final DateTimeZone LOCAL_TIME_ZONE = DateTimeZone
-			.forID(LOCAL_TIME_ZONE_IDENTIFIER);
-	private static final int TIME_ZONE_OFFSET_MINUTES = LOCAL_TIME_ZONE
-			.getStandardOffset(new DateTime().getMillis())
-			/ DateTimeConstants.MILLIS_PER_MINUTE;
+    private static final String LOCAL_TIME_ZONE_IDENTIFIER = "Europe/Paris";
+    private static final DateTimeZone LOCAL_TIME_ZONE = DateTimeZone.forID(LOCAL_TIME_ZONE_IDENTIFIER);
+    private static final int TIME_ZONE_OFFSET_MINUTES = LOCAL_TIME_ZONE.getStandardOffset(new DateTime().getMillis())
+            / DateTimeConstants.MILLIS_PER_MINUTE;
 
-	public ApplicationContext() {
-		InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
-	}
+    public ApplicationContext() {
+        InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
+    }
 
-	// === Time zone config ===
+    // === Time zone config ===
 
-	@Bean
-	public String localTimeZoneIdentifier() {
-		return LOCAL_TIME_ZONE_IDENTIFIER;
-	}
+    @Bean
+    public String localTimeZoneIdentifier() {
+        return LOCAL_TIME_ZONE_IDENTIFIER;
+    }
 
-	@Bean
-	public DateTimeZone localTimeZone() {
-		return LOCAL_TIME_ZONE;
-	}
+    @Bean
+    public DateTimeZone localTimeZone() {
+        return LOCAL_TIME_ZONE;
+    }
 
-	@Bean
-	public Integer timeZoneOffsetMinutes() {
-		return TIME_ZONE_OFFSET_MINUTES;
-	}
+    @Bean
+    public Integer timeZoneOffsetMinutes() {
+        return TIME_ZONE_OFFSET_MINUTES;
+    }
 
-	@Bean
-	public PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-		final PropertySourcesPlaceholderConfigurer propertySource = new PropertySourcesPlaceholderConfigurer();
-		propertySource.setIgnoreUnresolvablePlaceholders(true);
-		return propertySource;
-	}
+    @Bean
+    public PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+        final PropertySourcesPlaceholderConfigurer propertySource = new PropertySourcesPlaceholderConfigurer();
+        propertySource.setIgnoreUnresolvablePlaceholders(true);
+        return propertySource;
+    }
 }
