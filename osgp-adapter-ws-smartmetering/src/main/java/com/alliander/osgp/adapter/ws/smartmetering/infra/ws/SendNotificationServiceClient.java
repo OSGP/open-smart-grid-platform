@@ -40,10 +40,8 @@ public class SendNotificationServiceClient {
 
         sendNotificationRequest.setNotification(notification);
 
-        // TODO send username
-        
         this.webServiceTemplateFactory.getTemplate(organisationIdentification, "LianderNetManagement", notificationURL)
-                .marshalSendAndReceive(sendNotificationRequest);
+        .marshalSendAndReceive(sendNotificationRequest);
 
     }
 }
