@@ -18,9 +18,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.platform.cucumber.SmartMetering;
+import com.alliander.osgp.platform.cucumber.hooks.SimulatePushedAlarms;
 import com.alliander.osgp.platform.cucumber.smartmeteringmonitoring.ActualMeterReadsGas;
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
 import com.alliander.osgp.platform.cucumber.support.OrganisationId;
+import com.alliander.osgp.platform.cucumber.support.ResponseNotifierImpl;
 
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
@@ -45,9 +47,19 @@ public class SetPushSetupAlarm extends SmartMetering {
     @Autowired
     private OrganisationId organisationId;
 
+    @Autowired
+    private ResponseNotifierImpl responseNotifierImpl;
+
     @When("^an alarm notification is received from a known device$")
     public void anAlarmNotificationIsReceivedFromAKnownDevice() throws Throwable {
-        PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_G_LABEL, this.deviceId.getDeviceIdG());
+        try {
+            SimulatePushedAlarms.simulateAlarm("E9998000014123414", new byte[] { 0x2C, 0x00, 0x00, 0x01, 0x02 });
+            SimulatePushedAlarms.simulateAlarm("Z9876543210123456", new byte[] { 0x2C, 0x04, 0x20, 0x00, 0x00 });
+        } catch (final Exception e) {
+            LOGGER.error("Error occured: ", e);
+        }
+
+        PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_E_LABEL, this.deviceId.getDeviceIdG());
         PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, this.organisationId.getOrganisationId());
 
         this.RequestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
@@ -62,9 +74,9 @@ public class SetPushSetupAlarm extends SmartMetering {
         assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_LOGTIME, XPATH_MATCHER_RESULT));
     }
 
-    @And("^the alarm should be pushed to the osgp_logging database device_log_item table$")
-    public void theAlarmShouldBePushedToTheOsgp_loggingDatabaseDevice_log_itemTable() throws Throwable {
-
+    @And("^the alarm should be pushed to the osgp_logging database \"([^\"]*)\" table$")
+    public void theAlarmShouldBePushedToTheOsgp_loggingDatabaseTable(final String table) throws Throwable {
+        assertTrue(this.responseNotifierImpl.readDatabaseTable(table, this.correlationUid));
     }
 
     @When("^an alarm notification is received from an unknown device$")
