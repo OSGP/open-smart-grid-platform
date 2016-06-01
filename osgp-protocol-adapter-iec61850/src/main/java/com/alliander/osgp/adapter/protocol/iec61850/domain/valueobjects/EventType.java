@@ -34,6 +34,19 @@ public enum EventType {
     NTP_SYNC_ALARM_OFFSET(23, "NTP_SYNC_ALARM_OFFSET", EventNotificationTypeDto.COMM_EVENTS, EventTypeDto.NTP_SYNC_ALARM_OFFSET),
     NTP_SYNC_MAX_OFFSET(24, "NTP_SYNC_MAX_OFFSET", EventNotificationTypeDto.COMM_EVENTS, EventTypeDto.NTP_SYNC_MAX_OFFSET),
     AUTHENTICATION_FAIL(25, "AUTHENTICATION_FAIL", EventNotificationTypeDto.SECURITY_EVENTS, EventTypeDto.AUTHENTICATION_FAIL);
+    
+    private final int code;
+    private final String description;
+    private final EventNotificationTypeDto notificationType;
+    private final EventTypeDto osgpEventType;
+
+    EventType(final int code, final String description, final EventNotificationTypeDto notificationType,
+            final EventTypeDto osgpEventType) {
+        this.code = code;
+        this.description = description;
+        this.notificationType = notificationType;
+        this.osgpEventType = osgpEventType;
+    }
 
     public static EventType forCode(final int code) {
         for (final EventType eventType : EventType.values()) {
@@ -90,17 +103,27 @@ public enum EventType {
         return eventTypes;
     }
 
-    private final int code;
-    private final String description;
-    private final EventNotificationTypeDto notificationType;
-    private final EventTypeDto osgpEventType;
+    public static final Set<EventNotificationTypeDto> getNotificationTypesForFilter(final String filter) {
+        final Set<EventType> eventTypesForFilter = getEventTypesForFilter(filter);
+        if (eventTypesForFilter == null) {
+            return null;
+        }
+        final Set<EventNotificationTypeDto> notificationTypes = EnumSet.noneOf(EventNotificationTypeDto.class);
+        for (final EventType eventType : eventTypesForFilter) {
+            notificationTypes.add(eventType.getNotificationType());
+        }
 
-    EventType(final int code, final String description, final EventNotificationTypeDto notificationType,
-            final EventTypeDto osgpEventType) {
-        this.code = code;
-        this.description = description;
-        this.notificationType = notificationType;
-        this.osgpEventType = osgpEventType;
+        /*
+         * Verify that either all or none of the event types per notification
+         * type were set, by checking the filter for the observed notification
+         * types against the filter used to determine these notification types.
+         */
+        final String verifyFilter = getEventTypeFilterMaskForNotificationTypes(notificationTypes);
+        if (!filter.equals(verifyFilter)) {
+            throw new IllegalArgumentException("The event filter received (" + filter
+                    + ") belongs with notification types for which some, but not all of the events are filtered.");
+        }
+        return notificationTypes;
     }
 
     @Override
@@ -114,7 +137,7 @@ public enum EventType {
     }
 
     public int bitmaskValue() {
-        return (int) Math.pow(2, this.code - 1);
+        return 1 << (this.code - 1);
     }
 
     public String getDescription() {

@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
@@ -859,12 +860,21 @@ public class Iec61850DeviceService implements DeviceService {
                     : "off"));
         }
 
-        // TODO caution: the referredLinkType and actualLinkType are
-        // hardcoded
-        // TODO eventNotificationsMask, the kaifa device will have a
-        // 1-9
-        // value that will have to be mapped to our
-        // eventNotificationsMask
+        final String eventBufferConfigurationObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
+                + LogicalNodeAttributeDefinitons.PROPERTY_EVENT_BUFFER;
+        final FcModelNode eventBufferConfiguration = (FcModelNode) serverModel.findModelNode(
+                eventBufferConfigurationObjectReference, Fc.CF);
+        final BdaVisibleString enbEvnType = (BdaVisibleString) eventBufferConfiguration
+                .getChild(LogicalNodeAttributeDefinitons.PROPERTY_EVENT_BUFFER_FILTER);
+        final String filter = enbEvnType.getStringValue();
+        LOGGER.info("Got EvnBuf.enbEvnType filter {}", filter);
+        final Set<EventNotificationTypeDto> notificationTypes = EventType.getNotificationTypesForFilter(filter);
+
+        int eventNotificationsMask = 0;
+        for (final EventNotificationTypeDto notificationType : notificationTypes) {
+            eventNotificationsMask |= notificationType.getValue();
+        }
 
         // Getting the LightType
         final String softwareConfigurationObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
@@ -878,8 +888,13 @@ public class Iec61850DeviceService implements DeviceService {
                 .getChild(LogicalNodeAttributeDefinitons.PROPERTY_SOFTWARE_CONFIG_LIGHT_TYPE);
         final LightTypeDto lightType = LightTypeDto.valueOf(lightTypeValue.getStringValue());
 
-        return new DeviceStatusDto(lightValues, LinkTypeDto.ETHERNET, LinkTypeDto.ETHERNET, lightType, 0);
-
+        /*
+         * The preferredLinkType and actualLinkType are hardcoded to
+         * LinkTypeDto.ETHERNET, other link types do not apply to the device
+         * type in use.
+         */
+        return new DeviceStatusDto(lightValues, LinkTypeDto.ETHERNET, LinkTypeDto.ETHERNET, lightType,
+                eventNotificationsMask);
     }
 
     private List<PowerUsageDataDto> getPowerUsageHistoryDataFromDevice(final ServerModel serverModel,

@@ -87,4 +87,45 @@ public class EventTypeTest {
 
         assertEquals(firmwareEvents, EventType.getEventTypesForFilter(filterForFirmwareEvents));
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testFilterShouldContainAllOrNoEventsPerNotificationType() throws Exception {
+        final String filterForLightEventsWithoutLightOn = EventType.getEventTypeFilterMask(EnumSet
+                .of(EventType.LIGHT_EVENTS_LIGHT_OFF));
+        EventType.getNotificationTypesForFilter(filterForLightEventsWithoutLightOn);
+    }
+
+    @Test
+    public void testOneNotificationTypeForAllEventTypes() throws Exception {
+        final String filterForTariffEvents = EventType.getEventTypeFilterMask(EnumSet.of(
+                EventType.TARIFF_EVENTS_TARIFF_OFF, EventType.TARIFF_EVENTS_TARIFF_ON));
+        final Set<EventNotificationTypeDto> actualNotificationTypes = EventType
+                .getNotificationTypesForFilter(filterForTariffEvents);
+        final Set<EventNotificationTypeDto> expectedNotificationTypes = EnumSet
+                .of(EventNotificationTypeDto.TARIFF_EVENTS);
+        assertEquals(expectedNotificationTypes, actualNotificationTypes);
+    }
+
+    @Test
+    public void testSomeNotificationTypesForAllEventTypes() throws Exception {
+        final String filterForDiagTariffAndSecurityEvents = EventType.getEventTypeFilterMask(EnumSet.of(
+                EventType.DIAG_EVENTS_GENERAL, EventType.TARIFF_EVENTS_TARIFF_OFF, EventType.TARIFF_EVENTS_TARIFF_ON,
+                EventType.AUTHENTICATION_FAIL));
+        final Set<EventNotificationTypeDto> actualNotificationTypes = EventType
+                .getNotificationTypesForFilter(filterForDiagTariffAndSecurityEvents);
+        final Set<EventNotificationTypeDto> expectedNotificationTypes = EnumSet.of(
+                EventNotificationTypeDto.DIAG_EVENTS, EventNotificationTypeDto.TARIFF_EVENTS,
+                EventNotificationTypeDto.SECURITY_EVENTS);
+        assertEquals(expectedNotificationTypes, actualNotificationTypes);
+    }
+
+    @Test
+    public void testAllNotificationTypesForAllEventTypes() throws Exception {
+        final Set<EventNotificationTypeDto> actualNotificationTypes = EventType
+                .getNotificationTypesForFilter("1FFFFFF");
+        final Set<EventNotificationTypeDto> expectedNotificationTypes = EnumSet.allOf(EventNotificationTypeDto.class);
+        // HARDWARE_FAILURE notifications not reported.
+        expectedNotificationTypes.remove(EventNotificationTypeDto.HARDWARE_FAILURE);
+        assertEquals(expectedNotificationTypes, actualNotificationTypes);
+    }
 }
