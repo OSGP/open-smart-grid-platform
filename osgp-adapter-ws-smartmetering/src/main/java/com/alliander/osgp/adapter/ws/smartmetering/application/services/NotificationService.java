@@ -16,6 +16,7 @@ import org.springframework.validation.annotation.Validated;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.Notification;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
+import com.alliander.osgp.adapter.ws.smartmetering.exceptions.WebServiceSecurityException;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.SendNotificationServiceClient;
 import com.alliander.osgp.domain.core.validation.Identification;
 
@@ -54,8 +55,9 @@ public class NotificationService {
         try {
             this.sendNotificationServiceClient.sendNotification(organisationIdentification, notification,
                     this.notificationURL);
-        } catch (final Exception e) {
-            LOGGER.error("Notification exception", e);
+        } catch (final WebServiceSecurityException e){
+            LOGGER.error(e.getMessage(), e);
         }
+
     }
 }
