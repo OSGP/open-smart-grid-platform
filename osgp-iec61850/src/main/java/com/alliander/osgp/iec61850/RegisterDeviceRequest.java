@@ -18,9 +18,9 @@ public class RegisterDeviceRequest implements Serializable {
 
     /**
      * The elements inside the IEC61850 Register Device Request expressed in
-     * bytes separated by a forward slash (0x2F).
+     * bytes separated by a comma (0x2C).
      */
-    private static final byte SEPARATOR = '/';
+    private static final byte SEPARATOR = ',';
 
     private final String serialNumber;
     private final String ipAddress;
