@@ -29,6 +29,4 @@ public interface ResponseNotifier {
      *         available within a timelap.
      */
     boolean waitForResponse(final String correlid, final int timeout, final int maxtime);
-
-    boolean readDatabaseTable(String table, String correlid);
 }

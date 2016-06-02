@@ -85,7 +85,7 @@ public class ResponseNotifierImpl implements ResponseNotifier {
                     result = PollResult.OK;
                 }
             }
-            rs.close();
+            // rs.close();
             return result;
         } catch (final SQLException se) {
             this.LOGGER.error(se.getMessage());
@@ -134,50 +134,6 @@ public class ResponseNotifierImpl implements ResponseNotifier {
             System.exit(2);
         }
         return this.connection;
-    }
-
-    @Override
-    public boolean readDatabaseTable(final String table, final String correlid) {
-        Statement statement = null;
-        try {
-            statement = this.conn().createStatement();
-
-            while (true) {
-                final PollResult pollres = this.readDatabase(statement, table, correlid);
-                if (pollres.equals(PollResult.OK)) {
-                    return true;
-                } else if (pollres.equals(PollResult.ERROR)) {
-                    return false;
-                }
-            }
-
-        } catch (final SQLException se) {
-            this.LOGGER.error(se.getMessage());
-            return false;
-        } finally {
-            this.closeStatement(statement);
-        }
-    }
-
-    private PollResult readDatabase(final Statement statement, final String table, final String correlid) {
-        ResultSet rs = null;
-        PollResult result = PollResult.NOT_OK;
-        try {
-            rs = statement
-                    .executeQuery("SELECT count(*) FROM " + table + " WHERE correlation_uid = '" + correlid + "'");
-            while (rs.next()) {
-                if (rs.getInt(1) > 0) {
-                    result = PollResult.OK;
-                }
-            }
-            rs.close();
-            return result;
-        } catch (final SQLException se) {
-            this.LOGGER.error(se.getMessage());
-            return PollResult.ERROR;
-        } finally {
-            this.closeResultSet(rs);
-        }
     }
 
     // -------------

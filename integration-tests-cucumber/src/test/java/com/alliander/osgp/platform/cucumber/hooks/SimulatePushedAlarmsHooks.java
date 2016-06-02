@@ -6,7 +6,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 
-public class SimulatePushedAlarms {
+public class SimulatePushedAlarmsHooks {
 
     public static void simulateAlarm(final String deviceId, final byte[] alarmsToPush) throws UnknownHostException,
     IOException {
