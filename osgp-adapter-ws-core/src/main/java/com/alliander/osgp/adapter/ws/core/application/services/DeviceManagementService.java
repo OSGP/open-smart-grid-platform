@@ -460,6 +460,7 @@ public class DeviceManagementService {
                 updateDevice.getGpsLatitude(), updateDevice.getGpsLongitude());
 
         existingDevice.setActivated(updateDevice.isActivated());
+        existingDevice.setTechnicalInstallationDate(updateDevice.getTechnicalInstallationDate());
 
         final Ssld ssld = this.writableSsldRepository.findOne(existingDevice.getId());
         ssld.updateOutputSettings(updateDevice.receiveOutputSettings());
