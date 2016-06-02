@@ -133,6 +133,10 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                 destination.setHasSchedule(source.isHasSchedule());
                 destination.setActivated(source.isActivated());
 
+                if (source.getTechnicalInstallationDate() != null) {
+                    destination.setTechnicalInstallationDate(source.getTechnicalInstallationDate().toGregorianCalendar().getTime());
+                }
+
                 // clearing the existing Eans to prevent duplication
                 destination.setEans(new ArrayList<Ean>());
 
@@ -209,6 +213,10 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                 destination.updateOutputSettings(deviceOutputSettings);
                 destination.setPublicKeyPresent(source.isPublicKeyPresent());
                 destination.setHasSchedule(source.isHasSchedule());
+
+                if (source.getTechnicalInstallationDate() != null) {
+                    destination.setTechnicalInstallationDate(source.getTechnicalInstallationDate().toGregorianCalendar().getTime());
+                }
 
                 return destination;
             }
