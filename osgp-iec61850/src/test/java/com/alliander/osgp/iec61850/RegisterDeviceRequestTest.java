@@ -11,7 +11,7 @@ public class RegisterDeviceRequestTest {
 
     private static final String TESTED_SERIAL_NUMBER = "1234567890";
     private static final String TESTED_IP_ADDRESS = "127.0.0.1";
-    private static final byte[] TESTED_BYTES = (TESTED_SERIAL_NUMBER + "/" + TESTED_IP_ADDRESS)
+    private static final byte[] TESTED_BYTES = (TESTED_SERIAL_NUMBER + "," + TESTED_IP_ADDRESS)
             .getBytes(StandardCharsets.US_ASCII);
 
     @Test
