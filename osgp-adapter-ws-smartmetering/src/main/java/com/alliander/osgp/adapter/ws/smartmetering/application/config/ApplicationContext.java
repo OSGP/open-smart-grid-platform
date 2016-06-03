@@ -68,8 +68,10 @@ public class ApplicationContext {
     }
 
     @Bean
-    public static PropertySourcesPlaceholderConfigurer placeholderConfigurer() {
-        return new PropertySourcesPlaceholderConfigurer();
+    public PropertySourcesPlaceholderConfigurer placeholderConfigurer() {
+        final PropertySourcesPlaceholderConfigurer propertySource = new PropertySourcesPlaceholderConfigurer();
+        propertySource.setIgnoreUnresolvablePlaceholders(true);
+        return propertySource;
     }
 
 }
