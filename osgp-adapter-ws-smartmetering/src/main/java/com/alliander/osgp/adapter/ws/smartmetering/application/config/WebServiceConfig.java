@@ -76,7 +76,7 @@ public class WebServiceConfig {
     @Value("${web.service.keystore.type}")
     private String webserviceKeystoreType;
 
-    @Value("${web.service.notification.url")
+    @Value("${web.service.notification.url}")
     private String webserviceNotificationUrl;
     @Value("${application.name}")
     private String applicationName;
