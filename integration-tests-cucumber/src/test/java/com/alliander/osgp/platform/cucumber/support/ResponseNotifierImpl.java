@@ -31,13 +31,13 @@ public class ResponseNotifierImpl implements ResponseNotifier {
 
     private Connection connection;
 
-    @Value("${cucumber.polldbs.url}")
+    @Value("${cucumber.osgpadapterwssmartmeteringdbs.url}")
     private String jdbcUrl;
 
-    @Value("${cucumber.polldbs.username}")
+    @Value("${cucumber.dbs.username}")
     private String username;
 
-    @Value("${cucumber.polldbs.password}")
+    @Value("${cucumber.dbs.password}")
     private String password;
 
     @Override
@@ -78,8 +78,8 @@ public class ResponseNotifierImpl implements ResponseNotifier {
         ResultSet rs = null;
         PollResult result = PollResult.NOT_OK;
         try {
-            rs = statement.executeQuery("SELECT count(*) FROM meter_response_data WHERE correlation_uid = '" + correlid
-                    + "'");
+            rs = statement.executeQuery(
+                    "SELECT count(*) FROM meter_response_data WHERE correlation_uid = '" + correlid + "'");
             while (rs.next()) {
                 if (rs.getInt(1) > 0) {
                     result = PollResult.OK;
@@ -106,6 +106,9 @@ public class ResponseNotifierImpl implements ResponseNotifier {
     }
 
     private void closeResultSet(final ResultSet rs) {
+        if (rs == null) {
+            return;
+        }
         try {
             rs.close();
         } catch (final SQLException e) {

@@ -18,12 +18,14 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -32,24 +34,41 @@ public class RunXpathResult {
     private Pattern responsePattern;
     private Matcher responseMatcher;
 
-    public XpathResult runXPathExpression(final String response, final String path)
+    public XpathResult runXPathExpression(final String xml, final String path)
             throws ParserConfigurationException, SAXException, IOException, XPathExpressionException {
 
-        final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        final DocumentBuilder builder = factory.newDocumentBuilder();
-        final InputSource is = new InputSource();
-        is.setCharacterStream(new StringReader(response));
-        final Document doc = builder.parse(is);
-        final XPathFactory xPathfactory = XPathFactory.newInstance();
-        final XPath xpath = xPathfactory.newXPath();
+        final Document doc = this.getDocument(xml);
+        final XPath xpath = this.getXpath();
 
         return new XpathResult(xpath.compile(path), doc);
     }
 
-    public boolean assertXpath(final String response, final String pathResultLogtime,
-            final String xpathMatcherResultLogtime) throws XPathExpressionException, ParserConfigurationException,
-            SAXException, IOException {
-        final XpathResult xpathResult = this.runXPathExpression(response, pathResultLogtime);
+    private XPath getXpath() {
+        final XPathFactory xPathfactory = XPathFactory.newInstance();
+        final XPath xpath = xPathfactory.newXPath();
+        return xpath;
+    }
+
+    public Document getDocument(final String xml) throws ParserConfigurationException, SAXException, IOException {
+        final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        final DocumentBuilder builder = factory.newDocumentBuilder();
+        final InputSource is = new InputSource();
+        is.setCharacterStream(new StringReader(xml));
+        final Document doc = builder.parse(is);
+        return doc;
+    }
+
+    public NodeList getNodeList(final String xml, final String path)
+            throws ParserConfigurationException, SAXException, IOException, XPathExpressionException {
+        final Document doc = this.getDocument(xml);
+        final XPath xpath = this.getXpath();
+        final XPathExpression expr = xpath.compile(path);
+        return (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
+    }
+
+    public boolean assertXpath(final String xml, final String pathResultLogtime, final String xpathMatcherResultLogtime)
+            throws XPathExpressionException, ParserConfigurationException, SAXException, IOException {
+        final XpathResult xpathResult = this.runXPathExpression(xml, pathResultLogtime);
         final XPathExpression expr = xpathResult.getXpathExpression();
         this.responsePattern = Pattern.compile(xpathMatcherResultLogtime);
         this.responseMatcher = this.responsePattern.matcher(expr.evaluate(xpathResult.getDocument()));
