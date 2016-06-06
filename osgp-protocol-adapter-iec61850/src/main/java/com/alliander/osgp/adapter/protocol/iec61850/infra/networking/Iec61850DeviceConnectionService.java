@@ -72,7 +72,9 @@ public class Iec61850DeviceConnectionService {
         try {
             // Try to connect.
             LOGGER.info("Trying to connect to deviceIdentification: {} at ip {}", deviceIdentification, ipAddress);
-            final ClientAssociation clientAssociation = this.iec61850Client.connect(deviceIdentification, inetAddress);
+            final Iec61850ClientAssociation iec61850clientAssociation = this.iec61850Client.connect(
+                    deviceIdentification, inetAddress);
+            final ClientAssociation clientAssociation = iec61850clientAssociation.getClientAssociation();
 
             // Set response time-out
             clientAssociation.setResponseTimeout(this.responseTimeout);
@@ -84,11 +86,18 @@ public class Iec61850DeviceConnectionService {
             this.iec61850Client.readAllDataValues(clientAssociation);
 
             // Cache the connection.
-            this.cacheIec61850Connection(deviceIdentification, new Iec61850Connection(clientAssociation, serverModel));
+            this.cacheIec61850Connection(deviceIdentification, new Iec61850Connection(iec61850clientAssociation,
+                    serverModel));
         } catch (final ServiceError e) {
             LOGGER.error("Unexpected exception when connecting to an IEC61850 device", e);
             return;
         }
+    }
+
+    public Iec61850ClientAssociation getIec61850ClientAssociation(final String deviceIdentification)
+            throws ProtocolAdapterException {
+        final Iec61850Connection iec61850Connection = this.fetchIec61850Connection(deviceIdentification);
+        return iec61850Connection.getIec61850ClientAssociation();
     }
 
     public ClientAssociation getClientAssociation(final String deviceIdentification) throws ProtocolAdapterException {

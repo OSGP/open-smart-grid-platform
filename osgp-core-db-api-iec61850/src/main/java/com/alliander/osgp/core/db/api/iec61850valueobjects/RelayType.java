@@ -7,27 +7,27 @@
  */
 package com.alliander.osgp.core.db.api.iec61850valueobjects;
 
-import com.alliander.osgp.dto.valueobjects.DomainType;
+import com.alliander.osgp.dto.valueobjects.DomainTypeDto;
 
 public enum RelayType {
     LIGHT {
         @Override
-        public DomainType domainType() {
-            return DomainType.PUBLIC_LIGHTING;
+        public DomainTypeDto domainType() {
+            return DomainTypeDto.PUBLIC_LIGHTING;
         }
     },
     TARIFF {
         @Override
-        public DomainType domainType() {
-            return DomainType.TARIFF_SWITCHING;
+        public DomainTypeDto domainType() {
+            return DomainTypeDto.TARIFF_SWITCHING;
         }
     },
     TARIFF_REVERSED {
         @Override
-        public DomainType domainType() {
-            return DomainType.TARIFF_SWITCHING;
+        public DomainTypeDto domainType() {
+            return DomainTypeDto.TARIFF_SWITCHING;
         }
     };
 
-    public abstract DomainType domainType();
+    public abstract DomainTypeDto domainType();
 }

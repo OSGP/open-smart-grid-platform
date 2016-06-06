@@ -20,7 +20,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.requests.UpdateDevice
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
-import com.alliander.osgp.dto.valueobjects.Certification;
+import com.alliander.osgp.dto.valueobjects.CertificationDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.ConnectionFailureException;
 import com.alliander.osgp.shared.infra.jms.Constants;
@@ -53,7 +53,7 @@ public class CommonUpdateDeviceSslCertificationRequestMessageProcessor extends D
         String ipAddress = null;
         Boolean isScheduled = null;
         int retryCount = 0;
-        Certification certification = null;
+        CertificationDto certification = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -65,7 +65,7 @@ public class CommonUpdateDeviceSslCertificationRequestMessageProcessor extends D
             ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
             isScheduled = message.getBooleanProperty(Constants.IS_SCHEDULED);
             retryCount = message.getIntProperty(Constants.RETRY_COUNT);
-            certification = (Certification) message.getObject();
+            certification = (CertificationDto) message.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);

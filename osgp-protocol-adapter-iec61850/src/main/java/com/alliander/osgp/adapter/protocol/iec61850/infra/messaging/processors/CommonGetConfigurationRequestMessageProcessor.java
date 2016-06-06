@@ -21,7 +21,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetConfigur
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
-import com.alliander.osgp.dto.valueobjects.Configuration;
+import com.alliander.osgp.dto.valueobjects.ConfigurationDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.ConnectionFailureException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -127,7 +127,7 @@ public class CommonGetConfigurationRequestMessageProcessor extends DeviceRequest
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = null;
-        Configuration configuration = null;
+        ConfigurationDto configuration = null;
 
         try {
             final GetConfigurationDeviceResponse response = (GetConfigurationDeviceResponse) deviceResponse;

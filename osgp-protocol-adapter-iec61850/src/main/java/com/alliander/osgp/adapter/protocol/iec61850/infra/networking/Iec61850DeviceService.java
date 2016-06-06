@@ -7,11 +7,13 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
@@ -31,6 +33,7 @@ import org.openmuc.openiec61850.Fc;
 import org.openmuc.openiec61850.FcModelNode;
 import org.openmuc.openiec61850.ModelNode;
 import org.openmuc.openiec61850.ServerModel;
+import org.openmuc.openiec61850.ServiceError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +45,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.GetPowerUsageHistoryDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetConfigurationDeviceRequest;
+import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetEventNotificationsDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetLightDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetScheduleDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetTransitionDeviceRequest;
@@ -52,6 +56,8 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetConfigur
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetFirmwareVersionDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetPowerUsageHistoryDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetStatusDeviceResponse;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DaylightSavingTimeTransition;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.EventType;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.ScheduleEntry;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.ScheduleWeekday;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.TriggerType;
@@ -67,28 +73,33 @@ import com.alliander.osgp.core.db.api.iec61850.application.services.SsldDataServ
 import com.alliander.osgp.core.db.api.iec61850.entities.DeviceOutputSetting;
 import com.alliander.osgp.core.db.api.iec61850.entities.Ssld;
 import com.alliander.osgp.core.db.api.iec61850valueobjects.RelayType;
-import com.alliander.osgp.dto.valueobjects.ActionTimeType;
-import com.alliander.osgp.dto.valueobjects.Certification;
-import com.alliander.osgp.dto.valueobjects.Configuration;
-import com.alliander.osgp.dto.valueobjects.DaliConfiguration;
-import com.alliander.osgp.dto.valueobjects.DeviceStatus;
+import com.alliander.osgp.dto.valueobjects.ActionTimeTypeDto;
+import com.alliander.osgp.dto.valueobjects.CertificationDto;
+import com.alliander.osgp.dto.valueobjects.ConfigurationDto;
+import com.alliander.osgp.dto.valueobjects.DaliConfigurationDto;
+import com.alliander.osgp.dto.valueobjects.DeviceFixedIpDto;
+import com.alliander.osgp.dto.valueobjects.DeviceStatusDto;
+import com.alliander.osgp.dto.valueobjects.EventNotificationTypeDto;
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
-import com.alliander.osgp.dto.valueobjects.HistoryTermType;
-import com.alliander.osgp.dto.valueobjects.LightType;
-import com.alliander.osgp.dto.valueobjects.LightValue;
-import com.alliander.osgp.dto.valueobjects.LinkType;
-import com.alliander.osgp.dto.valueobjects.LongTermIntervalType;
-import com.alliander.osgp.dto.valueobjects.MeterType;
-import com.alliander.osgp.dto.valueobjects.PowerUsageData;
-import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryMessageDataContainer;
-import com.alliander.osgp.dto.valueobjects.RelayConfiguration;
-import com.alliander.osgp.dto.valueobjects.RelayData;
-import com.alliander.osgp.dto.valueobjects.RelayMap;
-import com.alliander.osgp.dto.valueobjects.Schedule;
-import com.alliander.osgp.dto.valueobjects.SsldData;
-import com.alliander.osgp.dto.valueobjects.TimePeriod;
-import com.alliander.osgp.dto.valueobjects.TransitionMessageDataContainer;
-import com.alliander.osgp.dto.valueobjects.TransitionType;
+import com.alliander.osgp.dto.valueobjects.HistoryTermTypeDto;
+import com.alliander.osgp.dto.valueobjects.LightTypeDto;
+import com.alliander.osgp.dto.valueobjects.LightValueDto;
+import com.alliander.osgp.dto.valueobjects.LinkTypeDto;
+import com.alliander.osgp.dto.valueobjects.LongTermIntervalTypeDto;
+import com.alliander.osgp.dto.valueobjects.MeterTypeDto;
+import com.alliander.osgp.dto.valueobjects.PowerUsageDataDto;
+import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryMessageDataContainerDto;
+import com.alliander.osgp.dto.valueobjects.RelayConfigurationDto;
+import com.alliander.osgp.dto.valueobjects.RelayDataDto;
+import com.alliander.osgp.dto.valueobjects.RelayMapDto;
+import com.alliander.osgp.dto.valueobjects.RelayTypeDto;
+import com.alliander.osgp.dto.valueobjects.ScheduleDto;
+import com.alliander.osgp.dto.valueobjects.SsldDataDto;
+import com.alliander.osgp.dto.valueobjects.TimePeriodDto;
+import com.alliander.osgp.dto.valueobjects.TransitionMessageDataContainerDto;
+import com.alliander.osgp.dto.valueobjects.TransitionTypeDto;
+import com.alliander.osgp.dto.valueobjects.WeekDayTypeDto;
+import com.alliander.osgp.dto.valueobjects.WindowTypeDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -96,6 +107,8 @@ import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
 @Component
 public class Iec61850DeviceService implements DeviceService {
+
+    private static final DateTimeZone TIME_ZONE_AMSTERDAM = DateTimeZone.forID("Europe/Amsterdam");
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850DeviceService.class);
 
@@ -118,11 +131,16 @@ public class Iec61850DeviceService implements DeviceService {
     // The value used to indicate that the time on or time off of a schedule
     // entry is unused.
     private static final int DEFAULT_SCHEDULE_VALUE = -1;
+    // The number of schedule entries available for a relay.
+    private static final int MAX_NUMBER_OF_SCHEDULE_ENTRIES = 64;
 
     // Used to keep the firmware version apart in the FirmwareVersionDto objects
     // of getFirmwareVersion
     private static final String FUNCTIONAL_FIRMWARE_TYPE_DESCRIPTION = "Functional firmware version";
     private static final String SECURITY_FIRMWARE_TYPE_DESCRIPTION = "Security firmware version";
+
+    private static final int SWITCH_TYPE_TARIFF = 0;
+    private static final int SWITCH_TYPE_LIGHT = 1;
 
     @Override
     public void getStatus(final DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler) {
@@ -138,7 +156,7 @@ public class Iec61850DeviceService implements DeviceService {
             final Ssld ssld = this.ssldDataService.findDevice(deviceRequest.getDeviceIdentification());
 
             // Getting the data with retries
-            final DeviceStatus deviceStatus = this.getStatusFromDevice(serverModel, ssld);
+            final DeviceStatusDto deviceStatus = this.getStatusFromDevice(serverModel, ssld);
 
             final GetStatusDeviceResponse deviceResponse = new GetStatusDeviceResponse(
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
@@ -178,7 +196,7 @@ public class Iec61850DeviceService implements DeviceService {
             final List<DeviceOutputSetting> deviceOutputSettingsLightRelays = this.ssldDataService.findByRelayType(
                     ssld, RelayType.LIGHT);
 
-            final List<PowerUsageData> powerUsageHistoryData = this.getPowerUsageHistoryDataFromDevice(serverModel,
+            final List<PowerUsageDataDto> powerUsageHistoryData = this.getPowerUsageHistoryDataFromDevice(serverModel,
                     deviceRequest.getDeviceIdentification(), deviceRequest.getPowerUsageHistoryContainer(),
                     deviceOutputSettingsLightRelays);
 
@@ -222,7 +240,7 @@ public class Iec61850DeviceService implements DeviceService {
             final ClientAssociation clientAssociation = this.iec61850DeviceConnectionService
                     .getClientAssociation(deviceRequest.getDeviceIdentification());
 
-            for (final LightValue lightValue : deviceRequest.getLightValuesContainer().getLightValues()) {
+            for (final LightValueDto lightValue : deviceRequest.getLightValuesContainer().getLightValues()) {
 
                 final Ssld ssld = this.ssldDataService.findDevice(deviceRequest.getDeviceIdentification());
 
@@ -291,7 +309,7 @@ public class Iec61850DeviceService implements DeviceService {
             final ClientAssociation clientAssociation = this.iec61850DeviceConnectionService
                     .getClientAssociation(deviceRequest.getDeviceIdentification());
 
-            final Configuration configuration = deviceRequest.getConfiguration();
+            final ConfigurationDto configuration = deviceRequest.getConfiguration();
 
             // ignoring required, unused fields daliconfiguration, meterType,
             // shortTermHistoryIntervalMinutes, preferredLinkType,
@@ -341,7 +359,7 @@ public class Iec61850DeviceService implements DeviceService {
             // Getting the ssld for the device outputsettings
             final Ssld ssld = this.ssldDataService.findDevice(deviceRequest.getDeviceIdentification());
 
-            final Configuration configuration = this.getConfigurationFromDevice(serverModel, ssld);
+            final ConfigurationDto configuration = this.getConfigurationFromDevice(serverModel, ssld);
 
             final GetConfigurationDeviceResponse response = new GetConfigurationDeviceResponse(
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
@@ -379,8 +397,8 @@ public class Iec61850DeviceService implements DeviceService {
                     .getClientAssociation(deviceRequest.getDeviceIdentification());
             // this.rebootDevice(serverModel, clientAssociation,
             // deviceRequest.getDeviceIdentification());
-            this.rebootDevice(new DeviceConnection(new Iec61850Connection(clientAssociation, serverModel),
-                    deviceRequest.getDeviceIdentification()));
+            this.rebootDevice(new DeviceConnection(new Iec61850Connection(new Iec61850ClientAssociation(
+                    clientAssociation, null), serverModel), deviceRequest.getDeviceIdentification()));
 
             final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
@@ -462,12 +480,12 @@ public class Iec61850DeviceService implements DeviceService {
             serverModel = this.iec61850DeviceConnectionService.getServerModel(deviceRequest.getDeviceIdentification());
 
             // Getting the status
-            final DeviceStatus deviceStatus = this.getStatusFromDevice(serverModel, ssld);
+            final DeviceStatusDto deviceStatus = this.getStatusFromDevice(serverModel, ssld);
 
             LOGGER.info("Fetching and checking the devicestatus");
 
             // Checking to see if all light relays have the correct state
-            for (final LightValue lightValue : deviceStatus.getLightValues()) {
+            for (final LightValueDto lightValue : deviceStatus.getLightValues()) {
                 if (lightRelays.contains(lightValue.getIndex()) && lightValue.isOn() != startOfTest) {
                     // One the the light relays is not in the correct state,
                     // request failed
@@ -516,9 +534,7 @@ public class Iec61850DeviceService implements DeviceService {
 
             final Ssld ssld = this.ssldDataService.findDevice(deviceRequest.getDeviceIdentification());
 
-            // TODO make this method more generic once the light schedules are
-            // implemented
-            this.setTariffScheduleOnDevice(serverModel, clientAssociation, deviceRequest
+            this.setScheduleOnDevice(serverModel, clientAssociation, deviceRequest.getRelayType(), deviceRequest
                     .getScheduleMessageDataContainer().getScheduleList(), ssld);
 
         } catch (final ConnectionFailureException se) {
@@ -558,7 +574,8 @@ public class Iec61850DeviceService implements DeviceService {
 
             // Getting the data with retries
             final List<FirmwareVersionDto> firmwareVersions = this.getFirmwareVersionFromDevice(new DeviceConnection(
-                    new Iec61850Connection(clientAssociation, serverModel), deviceRequest.getDeviceIdentification()));
+                    new Iec61850Connection(new Iec61850ClientAssociation(clientAssociation, null), serverModel),
+                    deviceRequest.getDeviceIdentification()));
 
             final GetFirmwareVersionDeviceResponse deviceResponse = new GetFirmwareVersionDeviceResponse(
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
@@ -592,16 +609,24 @@ public class Iec61850DeviceService implements DeviceService {
 
         try {
             final ServerModel serverModel = this.connectAndRetrieveServerModel(deviceRequest);
-            final ClientAssociation clientAssociation = this.iec61850DeviceConnectionService
-                    .getClientAssociation(deviceRequest.getDeviceIdentification());
+            final Iec61850ClientAssociation iec61850ClientAssociation = this.iec61850DeviceConnectionService
+                    .getIec61850ClientAssociation(deviceRequest.getDeviceIdentification());
+            final ClientAssociation clientAssociation = iec61850ClientAssociation.getClientAssociation();
 
-            this.transitionDevice(new DeviceConnection(new Iec61850Connection(clientAssociation, serverModel),
-                    deviceRequest.getDeviceIdentification()), deviceRequest.getTransitionTypeContainer());
+            this.transitionDevice(new DeviceConnection(new Iec61850Connection(new Iec61850ClientAssociation(
+                    clientAssociation, null), serverModel), deviceRequest.getDeviceIdentification()), deviceRequest
+                    .getTransitionTypeContainer());
 
             final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
                     deviceRequest.getCorrelationUid(), DeviceMessageStatus.OK);
             deviceResponseHandler.handleResponse(deviceResponse);
+
+            // Enabling device reporting. This is placed here because this is
+            // called twice a day.
+            this.enableReportingOnDevice(serverModel, iec61850ClientAssociation,
+                    deviceRequest.getDeviceIdentification());
+
         } catch (final ConnectionFailureException se) {
             LOGGER.error("Could not connect to device after all retries", se);
 
@@ -633,9 +658,9 @@ public class Iec61850DeviceService implements DeviceService {
             final ClientAssociation clientAssociation = this.iec61850DeviceConnectionService
                     .getClientAssociation(deviceRequest.getDeviceIdentification());
 
-            this.pushFirmwareToDevice(new DeviceConnection(new Iec61850Connection(clientAssociation, serverModel),
-                    deviceRequest.getDeviceIdentification()), serverModel, clientAssociation, deviceRequest
-                    .getFirmwareDomain().concat(deviceRequest.getFirmwareUrl()));
+            this.pushFirmwareToDevice(new DeviceConnection(new Iec61850Connection(new Iec61850ClientAssociation(
+                    clientAssociation, null), serverModel), deviceRequest.getDeviceIdentification()), serverModel,
+                    clientAssociation, deviceRequest.getFirmwareDomain().concat(deviceRequest.getFirmwareUrl()));
 
             final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
@@ -690,6 +715,50 @@ public class Iec61850DeviceService implements DeviceService {
             return;
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during writeDataValue", e);
+
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+
+            deviceResponseHandler.handleException(e, deviceResponse, false);
+            return;
+        }
+
+    }
+
+    @Override
+    public void setEventNotifications(final SetEventNotificationsDeviceRequest deviceRequest,
+            final DeviceResponseHandler deviceResponseHandler) {
+
+        LOGGER.info("Called setEventNotifications, doing nothing for now and returning OK");
+
+        final List<EventNotificationTypeDto> eventNotifications = deviceRequest.getEventNotificationsContainer()
+                .getEventNotifications();
+        final String filter = EventType.getEventTypeFilterMaskForNotificationTypes(eventNotifications);
+
+        try {
+
+            final ServerModel serverModel = this.connectAndRetrieveServerModel(deviceRequest);
+            final ClientAssociation clientAssociation = this.iec61850DeviceConnectionService
+                    .getClientAssociation(deviceRequest.getDeviceIdentification());
+
+            this.setEventNotificationFilterOnDevice(serverModel, clientAssociation, filter);
+
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.OK);
+            deviceResponseHandler.handleResponse(deviceResponse);
+        } catch (final ConnectionFailureException se) {
+            LOGGER.error("Could not connect to device after all retries", se);
+
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+
+            deviceResponseHandler.handleException(se, deviceResponse, true);
+            return;
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during setEventNotificationFilterOnDevice", e);
 
             final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
@@ -776,11 +845,11 @@ public class Iec61850DeviceService implements DeviceService {
         this.iec61850Client.sendCommandWithRetry(function);
     }
 
-    private DeviceStatus getStatusFromDevice(final ServerModel serverModel, final Ssld ssld)
+    private DeviceStatusDto getStatusFromDevice(final ServerModel serverModel, final Ssld ssld)
             throws ProtocolAdapterException {
 
         // getting the light relay values
-        final List<LightValue> lightValues = new ArrayList<>();
+        final List<LightValueDto> lightValues = new ArrayList<>();
 
         for (final DeviceOutputSetting deviceOutputSetting : ssld.getOutputSettings()) {
 
@@ -798,18 +867,27 @@ public class Iec61850DeviceService implements DeviceService {
             final BdaBoolean state = (BdaBoolean) switchPositonState.getChild("stVal");
 
             final boolean on = state.getValue();
-            lightValues.add(new LightValue(deviceOutputSetting.getExternalId(), on, null));
+            lightValues.add(new LightValueDto(deviceOutputSetting.getExternalId(), on, null));
 
             LOGGER.info(String.format("Got status of relay %d => %s", deviceOutputSetting.getInternalId(), on ? "on"
                     : "off"));
         }
 
-        // TODO caution: the referredLinkType and actualLinkType are
-        // hardcoded
-        // TODO eventNotificationsMask, the kaifa device will have a
-        // 1-9
-        // value that will have to be mapped to our
-        // eventNotificationsMask
+        final String eventBufferConfigurationObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
+                + LogicalNodeAttributeDefinitons.PROPERTY_EVENT_BUFFER;
+        final FcModelNode eventBufferConfiguration = (FcModelNode) serverModel.findModelNode(
+                eventBufferConfigurationObjectReference, Fc.CF);
+        final BdaVisibleString enbEvnType = (BdaVisibleString) eventBufferConfiguration
+                .getChild(LogicalNodeAttributeDefinitons.PROPERTY_EVENT_BUFFER_FILTER);
+        final String filter = enbEvnType.getStringValue();
+        LOGGER.info("Got EvnBuf.enbEvnType filter {}", filter);
+        final Set<EventNotificationTypeDto> notificationTypes = EventType.getNotificationTypesForFilter(filter);
+
+        int eventNotificationsMask = 0;
+        for (final EventNotificationTypeDto notificationType : notificationTypes) {
+            eventNotificationsMask |= notificationType.getValue();
+        }
 
         // Getting the LightType
         final String softwareConfigurationObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
@@ -821,28 +899,35 @@ public class Iec61850DeviceService implements DeviceService {
 
         final BdaVisibleString lightTypeValue = (BdaVisibleString) softwareConfiguration
                 .getChild(LogicalNodeAttributeDefinitons.PROPERTY_SOFTWARE_CONFIG_LIGHT_TYPE);
-        final LightType lightType = LightType.valueOf(lightTypeValue.getStringValue());
+        final LightTypeDto lightType = LightTypeDto.valueOf(lightTypeValue.getStringValue());
 
-        return new DeviceStatus(lightValues, LinkType.ETHERNET, LinkType.ETHERNET, lightType, 0);
-
+        /*
+         * The preferredLinkType and actualLinkType are hardcoded to
+         * LinkTypeDto.ETHERNET, other link types do not apply to the device
+         * type in use.
+         */
+        return new DeviceStatusDto(lightValues, LinkTypeDto.ETHERNET, LinkTypeDto.ETHERNET, lightType,
+                eventNotificationsMask);
     }
 
-    private List<PowerUsageData> getPowerUsageHistoryDataFromDevice(final ServerModel serverModel,
-            final String deviceIdentification, final PowerUsageHistoryMessageDataContainer powerUsageHistoryContainer,
+    private List<PowerUsageDataDto> getPowerUsageHistoryDataFromDevice(final ServerModel serverModel,
+            final String deviceIdentification,
+            final PowerUsageHistoryMessageDataContainerDto powerUsageHistoryContainer,
             final List<DeviceOutputSetting> deviceOutputSettingsLightRelays) throws ProtocolAdapterException,
             TechnicalException {
 
-        final HistoryTermType historyTermType = powerUsageHistoryContainer.getHistoryTermType();
+        final HistoryTermTypeDto historyTermType = powerUsageHistoryContainer.getHistoryTermType();
         if (historyTermType != null) {
             LOGGER.info("device: {}, ignoring HistoryTermType ({}) determining power usage history",
                     deviceIdentification, historyTermType);
         }
-        final TimePeriod timePeriod = powerUsageHistoryContainer.getTimePeriod();
+        final TimePeriodDto timePeriod = powerUsageHistoryContainer.getTimePeriod();
 
-        final List<PowerUsageData> powerUsageHistoryData = new ArrayList<>();
+        final List<PowerUsageDataDto> powerUsageHistoryData = new ArrayList<>();
         for (final DeviceOutputSetting deviceOutputSetting : deviceOutputSettingsLightRelays) {
-            final List<PowerUsageData> powerUsageData = Iec61850DeviceService.this.getPowerUsageHistoryDataFromRelay(
-                    serverModel, deviceIdentification, timePeriod, deviceOutputSetting);
+            final List<PowerUsageDataDto> powerUsageData = Iec61850DeviceService.this
+                    .getPowerUsageHistoryDataFromRelay(serverModel, deviceIdentification, timePeriod,
+                            deviceOutputSetting);
             powerUsageHistoryData.addAll(powerUsageData);
         }
         /*-
@@ -859,40 +944,34 @@ public class Iec61850DeviceService implements DeviceService {
         return powerUsageHistoryData;
     }
 
-    private Configuration getConfigurationFromDevice(final ServerModel serverModel, final Ssld ssld)
+    private ConfigurationDto getConfigurationFromDevice(final ServerModel serverModel, final Ssld ssld)
             throws ProtocolAdapterException {
 
         // Keeping the hardcoded values and values that aren't fetched from the
         // device out of the Function
 
         // Hardcoded (not supported)
-        final MeterType meterType = MeterType.AUX;
+        final MeterTypeDto meterType = MeterTypeDto.AUX;
         // Hardcoded (not supported)
         final Integer shortTermHistoryIntervalMinutes = 15;
         // Hardcoded (not supported)
-        final LinkType preferredLinkType = LinkType.ETHERNET;
+        final LinkTypeDto preferredLinkType = LinkTypeDto.ETHERNET;
         // Hardcoded (not supported)
         final Integer longTermHistoryInterval = 1;
         // Hardcoded (not supported)
-        final LongTermIntervalType longTermHistoryIntervalType = LongTermIntervalType.DAYS;
+        final LongTermIntervalTypeDto longTermHistoryIntervalType = LongTermIntervalTypeDto.DAYS;
 
-        final List<RelayMap> relayMaps = new ArrayList<>();
+        final List<RelayMapDto> relayMaps = new ArrayList<>();
 
         for (final DeviceOutputSetting deviceOutputSetting : ssld.getOutputSettings()) {
-
-            // TODO uncomment this code when XSWC1.SwType.stVal
-            // functions properly. Exception handling hasn't been worked
-            // out for this flow yet!
-            // Iec61850DeviceService.this.checkRelayTypes(deviceOutputSetting,
-            // serverModel);
-
-            relayMaps.add(Iec61850DeviceService.this.mapper.map(deviceOutputSetting, RelayMap.class));
+            this.checkRelayType(deviceOutputSetting, serverModel);
+            relayMaps.add(Iec61850DeviceService.this.mapper.map(deviceOutputSetting, RelayMapDto.class));
         }
 
-        final RelayConfiguration relayConfiguration = new RelayConfiguration(relayMaps);
+        final RelayConfigurationDto relayConfiguration = new RelayConfigurationDto(relayMaps);
 
         // PSLD specific => just sending null so it'll be ignored
-        final DaliConfiguration daliConfiguration = null;
+        final DaliConfigurationDto daliConfiguration = null;
 
         LOGGER.info("Reading the software configuration values");
 
@@ -906,13 +985,14 @@ public class Iec61850DeviceService implements DeviceService {
 
         final BdaVisibleString lightTypeValue = (BdaVisibleString) softwareConfiguration
                 .getChild(LogicalNodeAttributeDefinitons.PROPERTY_SOFTWARE_CONFIG_LIGHT_TYPE);
-        final LightType lightType = LightType.valueOf(lightTypeValue.getStringValue());
+        final LightTypeDto lightType = LightTypeDto.valueOf(lightTypeValue.getStringValue());
 
-        // These will be used later on
-        final BdaInt16 astroGateSunRiseOffset = (BdaInt16) softwareConfiguration.getChild("osRise");
-        final BdaInt16 astroGateSunSetOffset = (BdaInt16) softwareConfiguration.getChild("osSet");
+        final BdaInt16 astroGateSunRiseOffset = (BdaInt16) softwareConfiguration
+                .getChild(LogicalNodeAttributeDefinitons.PROPERTY_POSITION_OFFSET_SUNRISE);
+        final BdaInt16 astroGateSunSetOffset = (BdaInt16) softwareConfiguration
+                .getChild(LogicalNodeAttributeDefinitons.PROPERTY_POSITION_OFFSET_SUNSET);
 
-        final Configuration configuration = new Configuration(lightType, daliConfiguration, relayConfiguration,
+        final ConfigurationDto configuration = new ConfigurationDto(lightType, daliConfiguration, relayConfiguration,
                 shortTermHistoryIntervalMinutes, preferredLinkType, meterType, longTermHistoryInterval,
                 longTermHistoryIntervalType);
 
@@ -929,6 +1009,7 @@ public class Iec61850DeviceService implements DeviceService {
         final FcModelNode regConfiguration = (FcModelNode) serverModel.findModelNode(regObjectReference, Fc.CF);
 
         final BdaVisibleString serverAddress = (BdaVisibleString) regConfiguration.getChild("svrAddr");
+
         final BdaInt32 serverPort = (BdaInt32) regConfiguration.getChild("svrPort");
 
         configuration.setOspgIpAddress(serverAddress.getStringValue());
@@ -946,10 +1027,18 @@ public class Iec61850DeviceService implements DeviceService {
 
         final FcModelNode ipConfiguration = (FcModelNode) serverModel.findModelNode(ipcfObjectReference, Fc.CF);
 
-        final BdaVisibleString deviceFixIpValue = (BdaVisibleString) ipConfiguration.getChild("ipAddr");
+        final BdaVisibleString deviceFixedIpAddress = (BdaVisibleString) ipConfiguration
+                .getChild(LogicalNodeAttributeDefinitons.PROPERTY_POSITION_FIXED_IP_ADDRESS);
+        final BdaVisibleString deviceFixedIpNetMask = (BdaVisibleString) ipConfiguration
+                .getChild(LogicalNodeAttributeDefinitons.PROPERTY_POSITION_FIXED_IP_NETMASK);
+        final BdaVisibleString deviceFixedIpGateway = (BdaVisibleString) ipConfiguration
+                .getChild(LogicalNodeAttributeDefinitons.PROPERTY_POSITION_FIXED_IP_GATEWAY);
         final BdaBoolean dhcpEnabled = (BdaBoolean) ipConfiguration.getChild("enbDHCP");
 
-        configuration.setDeviceFixIpValue(new String(deviceFixIpValue.getValue()));
+        final DeviceFixedIpDto deviceFixedIp = new DeviceFixedIpDto(deviceFixedIpAddress.getStringValue(),
+                deviceFixedIpNetMask.getStringValue(), deviceFixedIpGateway.getStringValue());
+
+        configuration.setDeviceFixedIp(deviceFixedIp);
         configuration.setDhcpEnabled(dhcpEnabled.getValue());
 
         // setting the software configuration values
@@ -976,17 +1065,58 @@ public class Iec61850DeviceService implements DeviceService {
 
         configuration.setTimeSyncFrequency(timeSyncFrequency.getValue());
         configuration.setAutomaticSummerTimingEnabled(automaticSummerTimingEnabled.getValue());
-        // TODO hardcoded current time for now
-        configuration.setSummerTimeDetails(new DateTime());
-        // TODO hardcoded current time for now
-        configuration.setWinterTimeDetails(new DateTime());
+        configuration.setSummerTimeDetails(new DaylightSavingTimeTransition(TIME_ZONE_AMSTERDAM, summerTimeDetails
+                .getStringValue()).getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
+        configuration.setWinterTimeDetails(new DaylightSavingTimeTransition(TIME_ZONE_AMSTERDAM, winterTimeDetails
+                .getStringValue()).getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
 
         return configuration;
 
     }
 
+    private void checkRelayType(final DeviceOutputSetting deviceOutputSetting, final ServerModel serverModel)
+            throws ProtocolAdapterException {
+
+        final RelayType registeredRelayType = deviceOutputSetting.getRelayType();
+
+        final int expectedSwType;
+        if (RelayType.LIGHT.equals(registeredRelayType)) {
+            expectedSwType = SWITCH_TYPE_LIGHT;
+        } else if (RelayType.TARIFF.equals(registeredRelayType)
+                || RelayType.TARIFF_REVERSED.equals(registeredRelayType)) {
+            expectedSwType = SWITCH_TYPE_TARIFF;
+        } else {
+            throw new ProtocolAdapterException("DeviceOutputSetting (internal index = "
+                    + deviceOutputSetting.getInternalId() + ", external index = " + deviceOutputSetting.getExternalId()
+                    + ") does not have a known RelayType: " + registeredRelayType);
+        }
+
+        final String switchTypeObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                + LogicalNodeAttributeDefinitons.getNodeNameForRelayIndex(deviceOutputSetting.getInternalId())
+                + LogicalNodeAttributeDefinitons.PROPERTY_SWITCH_TYPE;
+
+        final FcModelNode switchTypeStatus = this.getNode(serverModel, switchTypeObjectReference, Fc.ST);
+
+        final BdaInt8 swTypeValue = (BdaInt8) switchTypeStatus
+                .getChild(LogicalNodeAttributeDefinitons.PROPERTY_SW_TYPE_ATTRIBUTE_VALUE);
+
+        final int actualSwType = swTypeValue.getValue();
+        if (expectedSwType != actualSwType) {
+            throw new ProtocolAdapterException("DeviceOutputSetting (internal index = "
+                    + deviceOutputSetting.getInternalId()
+                    + ", external index = "
+                    + deviceOutputSetting.getExternalId()
+                    + ") has a RelayType ("
+                    + registeredRelayType
+                    + ") that does not match the SwType on the device: "
+                    + (actualSwType == SWITCH_TYPE_TARIFF ? "Tariff switch (0)"
+                            : (actualSwType == SWITCH_TYPE_LIGHT ? "Light switch (1)" : "Unknown value: "
+                                    + actualSwType)));
+        }
+    }
+
     private void setConfigurationOnDevice(final ServerModel serverModel, final ClientAssociation clientAssociation,
-            final Ssld ssld, final Configuration configuration) throws ProtocolAdapterException {
+            final Ssld ssld, final ConfigurationDto configuration) throws ProtocolAdapterException {
 
         // creating the Function that will be retried, if necessary
         final Function<Void> function = new Function<Void>() {
@@ -994,13 +1124,36 @@ public class Iec61850DeviceService implements DeviceService {
             @Override
             public Void apply() throws Exception {
 
-                // TODO add these once the date formatting is sorted out. (Maybe
-                // an invalid format causes issues?)
-                // summerTimeDetails --> CSLC.Clock.dstBegT
-                // winterTimeDetails --> CSLC.Clock.dstEndT
+                if (configuration.getRelayConfiguration() != null
+                        && configuration.getRelayConfiguration().getRelayMap() != null) {
 
-                // TODO set relayTypes once they are writable
-                // relayMap.getRelayType() --> XSWC{1-4}.post.stVal
+                    final List<RelayMapDto> relayMaps = configuration.getRelayConfiguration().getRelayMap();
+                    for (final RelayMapDto relayMap : relayMaps) {
+                        final Integer internalIndex = relayMap.getAddress();
+                        final RelayTypeDto relayType = relayMap.getRelayType();
+
+                        final String switchTypeObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                                + LogicalNodeAttributeDefinitons.getNodeNameForRelayIndex(internalIndex)
+                                + LogicalNodeAttributeDefinitons.PROPERTY_SWITCH_TYPE;
+
+                        final FcModelNode switchTypeControl = Iec61850DeviceService.this.getNode(serverModel,
+                                switchTypeObjectReference, Fc.CO);
+
+                        final FcModelNode oper = (FcModelNode) switchTypeControl.getChild(
+                                LogicalNodeAttributeDefinitons.PROPERTY_SWITCH_TYPE_ATTRIBUTE_OPER, Fc.CO);
+
+                        final BdaInt8 ctlVal = (BdaInt8) oper.getChild(
+                                LogicalNodeAttributeDefinitons.PROPERTY_SWITCH_TYPE_OPER_ATTRIBUTE_CONTROL, Fc.CO);
+
+                        final byte switchTypeValue = (byte) (RelayTypeDto.LIGHT.equals(relayType) ? SWITCH_TYPE_LIGHT
+                                : SWITCH_TYPE_TARIFF);
+                        LOGGER.info("Updating Switch for internal index {} to {} ({})", internalIndex, switchTypeValue,
+                                relayType);
+
+                        ctlVal.setValue(switchTypeValue);
+                        clientAssociation.setDataValues(oper);
+                    }
+                }
 
                 // checking to see if all register values are null, so that we
                 // don't read the values for no reason
@@ -1100,7 +1253,9 @@ public class Iec61850DeviceService implements DeviceService {
 
                 // checking to see if all register values are null, so that we
                 // don't read the values for no reason
-                if (!(configuration.getTimeSyncFrequency() == null && configuration.isAutomaticSummerTimingEnabled() == null)) {
+                if (!(configuration.getTimeSyncFrequency() == null
+                        && configuration.isAutomaticSummerTimingEnabled() == null
+                        && configuration.getSummerTimeDetails() == null && configuration.getWinterTimeDetails() == null)) {
 
                     final String clockObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
                             + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
@@ -1136,11 +1291,50 @@ public class Iec61850DeviceService implements DeviceService {
                         clientAssociation.setDataValues(automaticSummerTimingEnabled);
                     }
 
+                    /*
+                     * Perform some effort to create dstBegT/dstEndt information
+                     * based on provided DateTime values. This will work in a
+                     * number of cases, but to be able to do this accurately in
+                     * an international context, DST transition times will
+                     * probably have to be based on information about the
+                     * timezone the device is operating in, instead of a
+                     * particular DateTime provided by the caller without
+                     * further information.
+                     */
+                    final DaylightSavingTimeTransition.DstTransitionFormat dstFormatMwd = DaylightSavingTimeTransition.DstTransitionFormat.DAY_OF_WEEK_OF_MONTH;
+                    final DateTime summerTimeDetails = configuration.getSummerTimeDetails();
+                    final DateTime winterTimeDetails = configuration.getWinterTimeDetails();
+                    if (summerTimeDetails != null) {
+
+                        final String mwdValueForBeginOfDst = DaylightSavingTimeTransition.forDateTimeAccordingToFormat(
+                                summerTimeDetails, dstFormatMwd).getTransition();
+
+                        final BdaVisibleString dstBegT = (BdaVisibleString) clockConfiguration.getChild("dstBegT");
+
+                        LOGGER.info("Updating DstBeginTime to {} based on SummerTimeDetails {}", mwdValueForBeginOfDst,
+                                summerTimeDetails);
+
+                        dstBegT.setValue(mwdValueForBeginOfDst);
+                        clientAssociation.setDataValues(dstBegT);
+                    }
+                    if (winterTimeDetails != null) {
+
+                        final String mwdValueForEndOfDst = DaylightSavingTimeTransition.forDateTimeAccordingToFormat(
+                                winterTimeDetails, dstFormatMwd).getTransition();
+
+                        final BdaVisibleString dstEndT = (BdaVisibleString) clockConfiguration.getChild("dstEndT");
+
+                        LOGGER.info("Updating DstEndTime to {} based on WinterTimeDetails {}", mwdValueForEndOfDst,
+                                winterTimeDetails);
+
+                        dstEndT.setValue(mwdValueForEndOfDst);
+                        clientAssociation.setDataValues(dstEndT);
+                    }
                 }
 
                 // checking to see if all network values are null, so that we
                 // don't read the values for no reason
-                if (!(configuration.isDhcpEnabled() == null && configuration.getDeviceFixIpValue() == null)) {
+                if (!(configuration.isDhcpEnabled() == null && configuration.getDeviceFixedIp() == null)) {
 
                     final String networkObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
                             + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
@@ -1162,22 +1356,37 @@ public class Iec61850DeviceService implements DeviceService {
                         clientAssociation.setDataValues(dhcpEnabled);
                     }
 
-                    if (configuration.getDeviceFixIpValue() != null) {
+                    // All values in DeviceFixedIpDto are non-nullable, so no
+                    // nullchecks are needed.
+                    final DeviceFixedIpDto deviceFixedIp = configuration.getDeviceFixedIp();
 
-                        final BdaVisibleString deviceFixIpValue = (BdaVisibleString) Iec61850DeviceService.this
-                                .getChildOfNodeWithConstraint(networkConfiguration,
-                                        LogicalNodeAttributeDefinitons.PROPERTY_POSITION_FIXED_IP, Fc.CF);
+                    final BdaVisibleString deviceFixedIpAddress = (BdaVisibleString) Iec61850DeviceService.this
+                            .getChildOfNodeWithConstraint(networkConfiguration,
+                                    LogicalNodeAttributeDefinitons.PROPERTY_POSITION_FIXED_IP_ADDRESS, Fc.CF);
 
-                        LOGGER.info("Updating DeviceFixIpValue to {}", configuration.getDeviceFixIpValue());
+                    final BdaVisibleString deviceFixedIpNetmask = (BdaVisibleString) Iec61850DeviceService.this
+                            .getChildOfNodeWithConstraint(networkConfiguration,
+                                    LogicalNodeAttributeDefinitons.PROPERTY_POSITION_FIXED_IP_NETMASK, Fc.CF);
 
-                        // Get the value and send the value to the device.
-                        deviceFixIpValue.setValue(configuration.getDeviceFixIpValue());
-                        clientAssociation.setDataValues(deviceFixIpValue);
-                    }
+                    final BdaVisibleString deviceFixedIpGateway = (BdaVisibleString) Iec61850DeviceService.this
+                            .getChildOfNodeWithConstraint(networkConfiguration,
+                                    LogicalNodeAttributeDefinitons.PROPERTY_POSITION_FIXED_IP_GATEWAY, Fc.CF);
+
+                    LOGGER.info("Updating deviceFixedIpAddress to {}", configuration.getDeviceFixedIp().getIpAddress());
+                    // Set the value and send the value to the device.
+                    deviceFixedIpAddress.setValue(deviceFixedIp.getIpAddress());
+                    clientAssociation.setDataValues(deviceFixedIpAddress);
+
+                    LOGGER.info("Updating deviceFixedIpNetmask to {}", configuration.getDeviceFixedIp().getNetMask());
+                    // Set the value and send the value to the device.
+                    deviceFixedIpNetmask.setValue(deviceFixedIp.getNetMask());
+                    clientAssociation.setDataValues(deviceFixedIpNetmask);
+
+                    LOGGER.info("Updating deviceFixIpGateway to {}", configuration.getDeviceFixedIp().getGateWay());
+                    // Set the value and send the value to the device.
+                    deviceFixedIpGateway.setValue(deviceFixedIp.getGateWay());
+                    clientAssociation.setDataValues(deviceFixedIpGateway);
                 }
-
-                // Disconnect from the device.
-                clientAssociation.disconnect();
 
                 return null;
             }
@@ -1250,12 +1459,15 @@ public class Iec61850DeviceService implements DeviceService {
         this.iec61850Client.sendCommandWithRetry(function);
     }
 
-    private void setTariffScheduleOnDevice(final ServerModel serverModel, final ClientAssociation clientAssociation,
-            final List<Schedule> scheduleList, final Ssld ssld) throws ProtocolAdapterException, FunctionalException {
+    private void setScheduleOnDevice(final ServerModel serverModel, final ClientAssociation clientAssociation,
+            final RelayTypeDto relayType, final List<ScheduleDto> scheduleList, final Ssld ssld)
+            throws ProtocolAdapterException, FunctionalException {
+
+        final String tariffOrLight = relayType.equals(RelayTypeDto.LIGHT) ? "light" : "tariff";
 
         // Creating a list of all Schedule entries, grouped by relay index
         final Map<Integer, List<ScheduleEntry>> relaySchedulesEntries = this.createScheduleEntries(scheduleList, ssld,
-                RelayType.TARIFF);
+                relayType);
 
         for (final Integer relayIndex : relaySchedulesEntries.keySet()) {
 
@@ -1264,8 +1476,15 @@ public class Iec61850DeviceService implements DeviceService {
                 @Override
                 public Void apply() throws Exception {
 
-                    // TODO clear existing schedule. Do this at the end for the
-                    // remaining schedules?
+                    final List<ScheduleEntry> scheduleEntries = relaySchedulesEntries.get(relayIndex);
+                    final int numberOfScheduleEntries = scheduleEntries.size();
+
+                    if (numberOfScheduleEntries > MAX_NUMBER_OF_SCHEDULE_ENTRIES) {
+                        throw new ProtocolAdapterException("Received " + numberOfScheduleEntries + " " + tariffOrLight
+                                + " schedule entries for relay " + relayIndex + " for device "
+                                + ssld.getDeviceIdentification() + ". Setting more than "
+                                + MAX_NUMBER_OF_SCHEDULE_ENTRIES + " is not possible.");
+                    }
 
                     final String scheduleObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
                             + LogicalNodeAttributeDefinitons.getNodeNameForRelayIndex(relayIndex)
@@ -1274,36 +1493,63 @@ public class Iec61850DeviceService implements DeviceService {
                     final FcModelNode scheduleConfiguration = Iec61850DeviceService.this.getNode(serverModel,
                             scheduleObjectReference, Fc.CF);
 
-                    for (int i = 0; i < relaySchedulesEntries.get(relayIndex).size(); i++) {
+                    // Clear existing schedule by disabling schedule entries.
+                    for (int i = 0; i < MAX_NUMBER_OF_SCHEDULE_ENTRIES; i++) {
 
-                        LOGGER.info("Writing schedule entry {} for relay {}", i + 1, relayIndex);
-
-                        final ScheduleEntry scheduleEntry = relaySchedulesEntries.get(relayIndex).get(i);
+                        LOGGER.info("Disabling schedule entry {} of {} for relay {} before setting new {} schedule",
+                                i + 1, MAX_NUMBER_OF_SCHEDULE_ENTRIES, relayIndex, tariffOrLight);
 
                         final ConstructedDataAttribute scheduleNode = (ConstructedDataAttribute) Iec61850DeviceService.this
                                 .getChildOfNodeWithConstraint(scheduleConfiguration,
-                                        LogicalNodeAttributeDefinitons.getSchedulePropertyNameForRelayIndex(i + 1),
-                                        Fc.CF);
+                                        LogicalNodeAttributeDefinitons.getSchedulePropertyNameForIndex(i + 1), Fc.CF);
 
-                        // Setting enables
                         final BdaBoolean enabled = (BdaBoolean) Iec61850DeviceService.this.getChildOfNode(scheduleNode,
                                 LogicalNodeAttributeDefinitons.PROPERTY_SCHEDULE_ENABLE);
-                        enabled.setValue(scheduleEntry.isEnabled());
-                        clientAssociation.setDataValues(enabled);
+                        if (enabled.getValue()) {
+                            enabled.setValue(false);
+                            clientAssociation.setDataValues(enabled);
+                        }
+                    }
+
+                    for (int i = 0; i < numberOfScheduleEntries; i++) {
+
+                        LOGGER.info("Writing {} schedule entry {} for relay {}", tariffOrLight, i + 1, relayIndex);
+
+                        final ScheduleEntry scheduleEntry = scheduleEntries.get(i);
+
+                        final ConstructedDataAttribute scheduleNode = (ConstructedDataAttribute) Iec61850DeviceService.this
+                                .getChildOfNodeWithConstraint(scheduleConfiguration,
+                                        LogicalNodeAttributeDefinitons.getSchedulePropertyNameForIndex(i + 1), Fc.CF);
+
+                        final BdaBoolean enabled = (BdaBoolean) Iec61850DeviceService.this.getChildOfNode(scheduleNode,
+                                LogicalNodeAttributeDefinitons.PROPERTY_SCHEDULE_ENABLE);
+                        if (enabled.getValue() != scheduleEntry.isEnabled()) {
+                            enabled.setValue(scheduleEntry.isEnabled());
+                            clientAssociation.setDataValues(enabled);
+                        }
 
                         final BdaInt32 day = (BdaInt32) Iec61850DeviceService.this.getChildOfNode(scheduleNode,
                                 LogicalNodeAttributeDefinitons.PROPERTY_SCHEDULE_DAY);
-                        day.setValue(scheduleEntry.getWeekday().getIndex());
-                        clientAssociation.setDataValues(day);
+                        if (day.getValue() != scheduleEntry.getDay()) {
+                            day.setValue(scheduleEntry.getDay());
+                            clientAssociation.setDataValues(day);
+                        }
 
-                        // Setting the default values for all of these
+                        /*
+                         * A schedule entry on the platform is about switching
+                         * on a certain time, or on a certain trigger. The
+                         * schedule entries on the device are about a period
+                         * with a time on and a time off. To bridge these
+                         * different approaches, either the on or the off values
+                         * on the device are set to a certain default to
+                         * indicate they are not relevant to the schedule entry.
+                         */
+
                         int timeOnValue = DEFAULT_SCHEDULE_VALUE;
                         byte timeOnTypeValue = DEFAULT_SCHEDULE_VALUE;
                         int timeOffValue = DEFAULT_SCHEDULE_VALUE;
                         byte timeOffTypeValue = DEFAULT_SCHEDULE_VALUE;
 
-                        // checking to see if the timeOn of timeOff values have
-                        // to be filled
                         if (scheduleEntry.isOn()) {
                             timeOnValue = scheduleEntry.getTime();
                             timeOnTypeValue = (byte) scheduleEntry.getTriggerType().getIndex();
@@ -1315,24 +1561,52 @@ public class Iec61850DeviceService implements DeviceService {
 
                         final BdaInt32 timeOn = (BdaInt32) Iec61850DeviceService.this.getChildOfNode(scheduleNode,
                                 LogicalNodeAttributeDefinitons.PROPERTY_SCHEDULE_TIME_ON);
-                        timeOn.setValue(timeOnValue);
-                        clientAssociation.setDataValues(timeOn);
+                        if (timeOn.getValue() != timeOnValue) {
+                            timeOn.setValue(timeOnValue);
+                            clientAssociation.setDataValues(timeOn);
+                        }
 
                         final BdaInt8 timeOnActionTime = (BdaInt8) Iec61850DeviceService.this.getChildOfNode(
                                 scheduleNode, LogicalNodeAttributeDefinitons.PROPERTY_SCHEDULE_TIME_ON_TYPE);
-                        timeOnActionTime.setValue(timeOnTypeValue);
-                        clientAssociation.setDataValues(timeOnActionTime);
+                        if (timeOnActionTime.getValue() != timeOnTypeValue) {
+                            timeOnActionTime.setValue(timeOnTypeValue);
+                            clientAssociation.setDataValues(timeOnActionTime);
+                        }
 
                         final BdaInt32 timeOff = (BdaInt32) Iec61850DeviceService.this.getChildOfNode(scheduleNode,
                                 LogicalNodeAttributeDefinitons.PROPERTY_SCHEDULE_TIME_OFF);
-                        timeOff.setValue(timeOffValue);
-                        clientAssociation.setDataValues(timeOff);
+                        if (timeOff.getValue() != timeOffValue) {
+                            timeOff.setValue(timeOffValue);
+                            clientAssociation.setDataValues(timeOff);
+                        }
 
                         final BdaInt8 timeOffActionTime = (BdaInt8) Iec61850DeviceService.this.getChildOfNode(
                                 scheduleNode, LogicalNodeAttributeDefinitons.PROPERTY_SCHEDULE_TIME_OFF_TYPE);
-                        timeOffActionTime.setValue(timeOffTypeValue);
-                        clientAssociation.setDataValues(timeOffActionTime);
+                        if (timeOffActionTime.getValue() != timeOffTypeValue) {
+                            timeOffActionTime.setValue(timeOffTypeValue);
+                            clientAssociation.setDataValues(timeOffActionTime);
+                        }
 
+                        final BdaInt16U minimumTimeOn = (BdaInt16U) Iec61850DeviceService.this.getChildOfNode(
+                                scheduleNode, LogicalNodeAttributeDefinitons.PROPERTY_SCHEDULE_MINIMUM_TIME_ON);
+                        if (minimumTimeOn.getValue() != scheduleEntry.getMinimumLightsOn()) {
+                            minimumTimeOn.setValue(scheduleEntry.getMinimumLightsOn());
+                            clientAssociation.setDataValues(minimumTimeOn);
+                        }
+
+                        final BdaInt16U triggerMinutesBefore = (BdaInt16U) Iec61850DeviceService.this.getChildOfNode(
+                                scheduleNode, LogicalNodeAttributeDefinitons.PROPERTY_SCHEDULE_TRIGGER_MINUTES_BEFORE);
+                        if (triggerMinutesBefore.getValue() != scheduleEntry.getTriggerWindowMinutesBefore()) {
+                            triggerMinutesBefore.setValue(scheduleEntry.getTriggerWindowMinutesBefore());
+                            clientAssociation.setDataValues(triggerMinutesBefore);
+                        }
+
+                        final BdaInt16U triggerMinutesAfter = (BdaInt16U) Iec61850DeviceService.this.getChildOfNode(
+                                scheduleNode, LogicalNodeAttributeDefinitons.PROPERTY_SCHEDULE_TRIGGER_MINUTES_AFTER);
+                        if (triggerMinutesAfter.getValue() != scheduleEntry.getTriggerWindowMinutesAfter()) {
+                            triggerMinutesAfter.setValue(scheduleEntry.getTriggerWindowMinutesAfter());
+                            clientAssociation.setDataValues(triggerMinutesAfter);
+                        }
                     }
 
                     return null;
@@ -1400,11 +1674,11 @@ public class Iec61850DeviceService implements DeviceService {
     }
 
     private void transitionDevice(final DeviceConnection deviceConnection,
-            final TransitionMessageDataContainer transitionMessageDataContainer) throws ProtocolAdapterException {
+            final TransitionMessageDataContainerDto transitionMessageDataContainer) throws ProtocolAdapterException {
 
-        final TransitionType transitionType = transitionMessageDataContainer.getTransitionType();
+        final TransitionTypeDto transitionType = transitionMessageDataContainer.getTransitionType();
         LOGGER.info("device: {}, transition: {}", deviceConnection.getDeviceIdentification(), transitionType);
-        final boolean controlValueForTransition = transitionType.equals(TransitionType.DAY_NIGHT);
+        final boolean controlValueForTransition = transitionType.equals(TransitionTypeDto.DAY_NIGHT);
 
         final DateTime dateTime = transitionMessageDataContainer.getDateTime();
         if (dateTime != null) {
@@ -1422,29 +1696,29 @@ public class Iec61850DeviceService implements DeviceService {
                  * LogicalNodeAttributeDefinitons.PROPERTY_SENSOR;
                  * LOGGER.info("device: {}, sensorObjectReference: {}",
                  * deviceIdentification, sensorObjectReference);
-                 * 
+                 *
                  * final FcModelNode sensorConfiguration = (FcModelNode)
                  * serverModel.findModelNode(sensorObjectReference, Fc.CO);
                  * LOGGER.info("device: {}, sensorConfiguration: {}",
                  * deviceIdentification, sensorConfiguration);
-                 * 
+                 *
                  * final FcModelNode oper = (FcModelNode)
                  * sensorConfiguration.getChild(
                  * LogicalNodeAttributeDefinitons.PROPERTY_SENSOR_ATTRIBUTE_OPER
                  * , Fc.CO); LOGGER.info("device: {}, oper: {}",
                  * deviceIdentification, oper);
-                 * 
+                 *
                  * final BdaBoolean ctlVal = (BdaBoolean) oper.getChild(
                  * LogicalNodeAttributeDefinitons
                  * .PROPERTY_SENSOR_ATTRIBUTE_CONTROL, Fc.CO);
                  * LOGGER.info("device: {}, ctlVal: {}", deviceIdentification,
                  * ctlVal);
-                 * 
+                 *
                  * ctlVal.setValue(controlValueForTransition);
                  * LOGGER.info("device: {}, set ctlVal to {} means {} message",
                  * deviceIdentification, controlValueForTransition,
                  * controlValueForTransition ? "Evening" : "Morning");
-                 * 
+                 *
                  * clientAssociation.setDataValues(oper); return null;
                  */
 
@@ -1549,7 +1823,7 @@ public class Iec61850DeviceService implements DeviceService {
     }
 
     private void pushSslCertificateToDevice(final ServerModel serverModel, final ClientAssociation clientAssociation,
-            final Certification certification) throws ProtocolAdapterException, FunctionalException {
+            final CertificationDto certification) throws ProtocolAdapterException, FunctionalException {
 
         final Function<Void> function = new Function<Void>() {
 
@@ -1604,6 +1878,70 @@ public class Iec61850DeviceService implements DeviceService {
 
         this.iec61850Client.sendCommandWithRetry(function);
 
+    }
+
+    private void setEventNotificationFilterOnDevice(final ServerModel serverModel,
+            final ClientAssociation clientAssociation, final String filter) throws ProtocolAdapterException,
+            FunctionalException {
+
+        final Function<Void> function = new Function<Void>() {
+
+            @Override
+            public Void apply() throws Exception {
+
+                LOGGER.info("Setting the event notification filter");
+
+                final String eventBufferConfigurationObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                        + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
+                        + LogicalNodeAttributeDefinitons.PROPERTY_EVENT_BUFFER;
+
+                final FcModelNode eventBufferConfiguration = Iec61850DeviceService.this.getNode(serverModel,
+                        eventBufferConfigurationObjectReference, Fc.CF);
+
+                final BdaVisibleString enbEvnType = (BdaVisibleString) eventBufferConfiguration
+                        .getChild(LogicalNodeAttributeDefinitons.PROPERTY_EVENT_BUFFER_FILTER);
+
+                LOGGER.info("Updating the enabled EventType filter to {}", filter);
+
+                enbEvnType.setValue(filter);
+                clientAssociation.setDataValues(enbEvnType);
+
+                return null;
+            }
+        };
+
+        this.iec61850Client.sendCommandWithRetry(function);
+
+    }
+
+    private void enableReportingOnDevice(final ServerModel serverModel,
+            final Iec61850ClientAssociation iec61850ClientAssociation, final String deviceIdentification)
+            throws ServiceError, IOException {
+
+        final ClientAssociation clientAssociation = iec61850ClientAssociation.getClientAssociation();
+
+        final String eventReportingDataObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                + LogicalNodeAttributeDefinitons.LOGICAL_NODE_LLN0 + LogicalNodeAttributeDefinitons.PROPERTY_REPORTING;
+
+        final FcModelNode eventReportingDataNode = (FcModelNode) serverModel.findModelNode(
+                eventReportingDataObjectReference, Fc.BR);
+
+        final Iec61850ClientEventListener reportListener = iec61850ClientAssociation.getReportListener();
+        final BdaInt16U sqNum = (BdaInt16U) eventReportingDataNode
+                .getChild(LogicalNodeAttributeDefinitons.PROPERTY_SEQUENCE_NUMBER);
+        if (sqNum == null) {
+            LOGGER.warn("Child {} of {} is null. No SqNum available for filtering incoming event reports.",
+                    LogicalNodeAttributeDefinitons.PROPERTY_SEQUENCE_NUMBER, eventReportingDataNode);
+        } else {
+            reportListener.setSqNum(sqNum.getValue());
+        }
+
+        final BdaBoolean enableReporting = (BdaBoolean) eventReportingDataNode
+                .getChild(LogicalNodeAttributeDefinitons.PROPERTY_ENABLE_REPORTING);
+
+        LOGGER.info("Allowing device {} to send events", deviceIdentification);
+        enableReporting.setValue(true);
+        clientAssociation.setDataValues(enableReporting);
     }
 
     // ========================
@@ -1675,51 +2013,98 @@ public class Iec61850DeviceService implements DeviceService {
         }
     }
 
-    /*
-     * Converts a {@link Schedule} to a {@link ScheduleEntry}
+    private ScheduleEntry convertToScheduleEntry(final ScheduleDto schedule, final LightValueDto lightValue)
+            throws ProtocolAdapterException {
+
+        final ScheduleEntry.Builder builder = new ScheduleEntry.Builder();
+        try {
+            if (schedule.getTime() != null) {
+                builder.time(this.convertTime(schedule.getTime()));
+            }
+            final WindowTypeDto triggerWindow = schedule.getTriggerWindow();
+            if (triggerWindow != null) {
+                if (triggerWindow.getMinutesBefore() > Integer.MAX_VALUE) {
+                    throw new IllegalArgumentException("Schedule TriggerWindow minutesBefore must not be greater than "
+                            + Integer.MAX_VALUE);
+                }
+                if (triggerWindow.getMinutesAfter() > Integer.MAX_VALUE) {
+                    throw new IllegalArgumentException("Schedule TriggerWindow minutesAfter must not be greater than "
+                            + Integer.MAX_VALUE);
+                }
+                builder.triggerWindowMinutesBefore((int) triggerWindow.getMinutesBefore());
+                builder.triggerWindowMinutesAfter((int) triggerWindow.getMinutesAfter());
+            }
+            builder.triggerType(this.extractTriggerType(schedule));
+            builder.enabled(schedule.getIsEnabled() == null ? true : schedule.getIsEnabled());
+            final WeekDayTypeDto weekDay = schedule.getWeekDay();
+            if (WeekDayTypeDto.ABSOLUTEDAY.equals(weekDay)) {
+                final DateTime specialDay = schedule.getStartDay();
+                if (specialDay == null) {
+                    throw new IllegalArgumentException(
+                            "Schedule startDay must not be null when weekDay equals ABSOLUTEDAY");
+                }
+                builder.specialDay(specialDay);
+            } else {
+                builder.weekday(ScheduleWeekday.valueOf(schedule.getWeekDay().name()));
+            }
+            builder.on(lightValue.isOn());
+            if (schedule.getMinimumLightsOn() != null) {
+                builder.minimumLightsOn(schedule.getMinimumLightsOn());
+            }
+            return builder.build();
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            throw new ProtocolAdapterException("Error converting ScheduleDto and LightValueDto into a ScheduleEntry: "
+                    + e.getMessage(), e);
+        }
+    }
+
+    /**
+     *
+     * @param time
+     *            a time String in the format hh:mm:ss.SSS, hh:mm:ss or hh:mm.
+     * @return the short value formed by parsing the digits of hhmm from the
+     *         given time.
+     * @throws ProtocolAdapterException
+     *             if time is {@code null} or not of the format specified.
      */
-    private ScheduleEntry convertToScheduleEntry(final Schedule schedule, final LightValue lightValue) {
+    private short convertTime(final String time) throws ProtocolAdapterException {
 
-        // A time is formatted as hh:mm:ss, the time on the device is formatted
-        // as hhmm in int form
-        final short time = Short.valueOf(schedule.getTime().replace(":", "").substring(0, 4));
+        if (time == null || !time.matches("\\d\\d:\\d\\d(:\\d\\d)?\\.?\\d*")) {
+            throw new ProtocolAdapterException("Schedule time (" + time
+                    + ") is not formatted as hh:mm, hh:mm:ss or hh:mm:ss.SSS");
+        }
+        return Short.parseShort(time.replace(":", "").substring(0, 4));
+    }
 
-        // TODO what to do when weekday is ABSOLUTEDAY? Special days is not
-        // implemented yet
-        final ScheduleWeekday weekday = ScheduleWeekday.valueOf(schedule.getWeekDay().name());
-
-        // ActionTime ABSOLUTETIME --> Fix
-        // TriggerType LIGHT_TRIGGER & ActionTime SUNRISE or SUNSET --> Sensor
-        // TriggerType ASTRONOMICAL --> Autonome
+    private TriggerType extractTriggerType(final ScheduleDto schedule) {
         final TriggerType triggerType;
-
-        if (ActionTimeType.ABSOLUTETIME.equals(schedule.getActionTime())) {
+        if (ActionTimeTypeDto.ABSOLUTETIME.equals(schedule.getActionTime())) {
             triggerType = TriggerType.FIX;
-        } else if (com.alliander.osgp.dto.valueobjects.TriggerType.ASTRONOMICAL.equals(schedule.getTriggerType())) {
+        } else if (com.alliander.osgp.dto.valueobjects.TriggerTypeDto.ASTRONOMICAL.equals(schedule.getTriggerType())) {
             triggerType = TriggerType.AUTONOME;
         } else {
             triggerType = TriggerType.SENSOR;
         }
-
-        return new ScheduleEntry(schedule.getIsEnabled() == null ? true : schedule.getIsEnabled(), triggerType,
-                weekday, time, lightValue.isOn());
-
+        return triggerType;
     }
 
     /*
      * returns a map of schedule entries, grouped by the internal index
      */
-    private Map<Integer, List<ScheduleEntry>> createScheduleEntries(final List<Schedule> scheduleList, final Ssld ssld,
-            final RelayType relayType) throws FunctionalException {
+    private Map<Integer, List<ScheduleEntry>> createScheduleEntries(final List<ScheduleDto> scheduleList,
+            final Ssld ssld, final RelayTypeDto relayTypeDto) throws FunctionalException {
 
         final Map<Integer, List<ScheduleEntry>> relaySchedulesEntries = new HashMap<>();
 
-        for (final Schedule schedule : scheduleList) {
-            for (final LightValue lightValue : schedule.getLightValue()) {
+        final RelayType relayType = RelayType.valueOf(relayTypeDto.name());
+
+        for (final ScheduleDto schedule : scheduleList) {
+            for (final LightValueDto lightValue : schedule.getLightValue()) {
 
                 final List<Integer> indexes = new ArrayList<>();
 
-                if (lightValue.getIndex() == 0 && RelayType.TARIFF.equals(relayType)) {
+                if (lightValue.getIndex() == 0
+                        && (RelayType.TARIFF.equals(relayType) || RelayType.TARIFF_REVERSED.equals(relayType))) {
 
                     // Index 0 is not allowed for tariff switching
                     throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
@@ -1741,7 +2126,13 @@ public class Iec61850DeviceService implements DeviceService {
                             lightValue.getIndex()));
                 }
 
-                final ScheduleEntry scheduleEntry = this.convertToScheduleEntry(schedule, lightValue);
+                ScheduleEntry scheduleEntry;
+                try {
+                    scheduleEntry = this.convertToScheduleEntry(schedule, lightValue);
+                } catch (final ProtocolAdapterException e) {
+                    throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+                            ComponentType.PROTOCOL_IEC61850, e);
+                }
 
                 for (final Integer internalIndex : indexes) {
 
@@ -1819,10 +2210,10 @@ public class Iec61850DeviceService implements DeviceService {
         return DateTime.now().withZone(DateTimeZone.forOffsetHours(offset));
     }
 
-    private List<PowerUsageData> getPowerUsageHistoryDataFromRelay(final ServerModel serverModel,
-            final String deviceIdentification, final TimePeriod timePeriod,
+    private List<PowerUsageDataDto> getPowerUsageHistoryDataFromRelay(final ServerModel serverModel,
+            final String deviceIdentification, final TimePeriodDto timePeriod,
             final DeviceOutputSetting deviceOutputSetting) throws TechnicalException {
-        final List<PowerUsageData> powerUsageHistoryDataFromRelay = new ArrayList<>();
+        final List<PowerUsageDataDto> powerUsageHistoryDataFromRelay = new ArrayList<>();
 
         final int relayIndex = deviceOutputSetting.getExternalId();
 
@@ -1869,11 +2260,11 @@ public class Iec61850DeviceService implements DeviceService {
             }
 
             // MeterType.AUX hardcoded (not supported)
-            final PowerUsageData powerUsageData = new PowerUsageData(date, MeterType.AUX, 0, 0);
-            final List<RelayData> relayDataList = new ArrayList<>();
-            final RelayData relayData = new RelayData(relayIndex, totalMinutesOnForDate);
+            final PowerUsageDataDto powerUsageData = new PowerUsageDataDto(date, MeterTypeDto.AUX, 0, 0);
+            final List<RelayDataDto> relayDataList = new ArrayList<>();
+            final RelayDataDto relayData = new RelayDataDto(relayIndex, totalMinutesOnForDate);
             relayDataList.add(relayData);
-            final SsldData ssldData = new SsldData(0, 0, 0, 0, 0, 0, 0, 0, 0, relayDataList);
+            final SsldDataDto ssldData = new SsldDataDto(0, 0, 0, 0, 0, 0, 0, 0, 0, relayDataList);
             powerUsageData.setSsldData(ssldData);
             powerUsageHistoryDataFromRelay.add(powerUsageData);
         }
@@ -1881,7 +2272,7 @@ public class Iec61850DeviceService implements DeviceService {
         return powerUsageHistoryDataFromRelay;
     }
 
-    private boolean timePeriodContainsDateTime(final TimePeriod timePeriod, final DateTime date,
+    private boolean timePeriodContainsDateTime(final TimePeriodDto timePeriod, final DateTime date,
             final String deviceIdentification, final int relayIndex, final int bufferIndex) {
         if (timePeriod == null) {
             LOGGER.info(
@@ -1914,4 +2305,5 @@ public class Iec61850DeviceService implements DeviceService {
                 date);
         return true;
     }
+
 }

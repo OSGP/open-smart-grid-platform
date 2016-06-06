@@ -9,7 +9,6 @@ package com.alliander.osgp.adapter.protocol.iec61850.infra.networking;
 
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.ScheduleWeekday;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.TriggerType;
-import com.alliander.osgp.dto.valueobjects.LightType;
 
 /**
  * Definitions of Logical Device, Logical Nodes and Attributes.
@@ -29,6 +28,29 @@ public final class LogicalNodeAttributeDefinitons {
      * CSLC, configuration Logical Node.
      */
     public static final String LOGICAL_NODE_CSLC = "/CSLC";
+
+    /**
+     * LLN0, configuration Logical Node zero.
+     */
+    public static final String LOGICAL_NODE_LLN0 = "/LLN0";
+
+    /**
+     * Property of LLN0 Node, evn_rpn01, contains the reporting information
+     */
+    public static final String PROPERTY_REPORTING = ".evn_rpn01";
+
+    /**
+     * Property of LLN0's Node, evn_rpn01. Enables reporting. This boolean is
+     * reset to false by the device once the reports are sent.
+     */
+    public static final String PROPERTY_ENABLE_REPORTING = "RptEna";
+
+    /**
+     * Property of LLN0's Node, evn_rpn01. Next SqNum for a report not yet
+     * reported. This value is updated by the device when newer reports have
+     * been sent.
+     */
+    public static final String PROPERTY_SEQUENCE_NUMBER = "SqNum";
 
     /*
      * XSWC, prefix of the relays' Logical Node.
@@ -100,6 +122,40 @@ public final class LogicalNodeAttributeDefinitons {
     public static final String PROPERTY_SCHEDULE_TIME_OFF_TYPE = "tOffT";
 
     /**
+     * Minimum time lights on
+     *
+     * Property of sche node, which is a node of the schedule node of the XSWC
+     * Node
+     * */
+    public static final String PROPERTY_SCHEDULE_MINIMUM_TIME_ON = "minOnPer";
+
+    /*
+     * A minOffPer property also exists on the devices, which is not used by
+     * OSGP, which is why it does not appear here.
+     */
+
+    /**
+     * Minutes before of the trigger window
+     *
+     * Property of sche node, which is a node of the schedule node of the XSWC
+     * Node
+     * */
+    public static final String PROPERTY_SCHEDULE_TRIGGER_MINUTES_BEFORE = "srBefWd";
+
+    /**
+     * Minutes after of the trigger window
+     *
+     * Property of sche node, which is a node of the schedule node of the XSWC
+     * Node
+     * */
+    public static final String PROPERTY_SCHEDULE_TRIGGER_MINUTES_AFTER = "srAftWd";
+
+    /*
+     * igBefWd / igAftWd (ignore window for fixed time schedule) are not
+     * implemented, so no schedule properties are included here.
+     */
+
+    /**
      * Attribute of Property CfSt, enbOper, enables the operation of a relay.
      */
     public static final String PROPERTY_MASTER_CONTROL_ATTRIBUTE_ENABLE_OPERATION = "enbOper";
@@ -128,6 +184,17 @@ public final class LogicalNodeAttributeDefinitons {
      * Property of XSWC Node, SwitchType
      */
     public static final String PROPERTY_SWITCH_TYPE = ".SwType";
+
+    /**
+     * Attribute of Property SwType, Oper, sets the switch type of a relay.
+     */
+    public static final String PROPERTY_SWITCH_TYPE_ATTRIBUTE_OPER = "Oper";
+
+    /**
+     * Attribute of Property Oper, used to set the switch type (0=Tariff switch,
+     * 1=Light switch).
+     */
+    public static final String PROPERTY_SWITCH_TYPE_OPER_ATTRIBUTE_CONTROL = "ctlVal";
 
     /**
      * Property of XSWC Node, On Interval Buffer
@@ -186,6 +253,11 @@ public final class LogicalNodeAttributeDefinitons {
     public static final String PROPERTY_REG_CONFIGURATION = ".Reg";
 
     /**
+     * Property of CSLC Node, Event Buffer.
+     */
+    public static final String PROPERTY_EVENT_BUFFER = ".EvnBuf";
+
+    /**
      * Attribute of Property Reg, used to read or set the IP address of the
      * platform.
      */
@@ -200,6 +272,12 @@ public final class LogicalNodeAttributeDefinitons {
     // SWCf
 
     /**
+     * Attribute of Property SwType, used to read the type (tariff=0/light=1) of
+     * the switch.
+     */
+    public static final String PROPERTY_SW_TYPE_ATTRIBUTE_VALUE = "stVal";
+
+    /**
      * Attribute of Property Pos, used to read the status of the relay.
      */
     public static final String PROPERTY_POSITION_ATTRIBUTE_STATE = "stVal";
@@ -208,7 +286,7 @@ public final class LogicalNodeAttributeDefinitons {
      * Attribute of Property SWCf, used to read the value of the offset from
      * astronomic sunrise.
      */
-    public static final String PROPERTY_POSITION_OFFSET_SUNRISE = "osRise";
+    public static final String PROPERTY_POSITION_OFFSET_SUNRISE = "adRiseOft";
 
     /**
      * Attribute of Property Clock, used to read the value of time sync period.
@@ -229,7 +307,7 @@ public final class LogicalNodeAttributeDefinitons {
      * Attribute of Property SWCf, used to read the value of the offset from
      * astronomic sunset.
      */
-    public static final String PROPERTY_POSITION_OFFSET_SUNSET = "osSet";
+    public static final String PROPERTY_POSITION_OFFSET_SUNSET = "adSetOft";
 
     /**
      * Attribute of Property SWCf, used to read the value of the
@@ -260,7 +338,19 @@ public final class LogicalNodeAttributeDefinitons {
     /**
      * Attribute of Property SWCf, used to read the value of fixed ip address
      */
-    public static final String PROPERTY_POSITION_FIXED_IP = "ipAddr";
+    public static final String PROPERTY_POSITION_FIXED_IP_ADDRESS = "ipAddr";
+
+    /**
+     * Attribute of Property SWCf, used to read the value of fixed ip address'
+     * netmask
+     */
+    public static final String PROPERTY_POSITION_FIXED_IP_NETMASK = "netmask";
+
+    /**
+     * Attribute of Property SWCf, used to read the value of fixed ip address'
+     * gateway
+     */
+    public static final String PROPERTY_POSITION_FIXED_IP_GATEWAY = "gateway";
 
     /**
      * Attribute of Property SWCf, used to enable dhcp
@@ -299,6 +389,12 @@ public final class LogicalNodeAttributeDefinitons {
      */
     public static final String PROPERTY_SENSOR_ATTRIBUTE_CONTROL = "ctlVal";
 
+    /**
+     * Attribute of the CSLC Event Buffer configuration, filter for enabled
+     * event types.
+     */
+    public static final String PROPERTY_EVENT_BUFFER_FILTER = "enbEvnType";
+
     private LogicalNodeAttributeDefinitons() {
         // Private constructor to prevent instantiation of this class.
     }
@@ -316,9 +412,12 @@ public final class LogicalNodeAttributeDefinitons {
     }
 
     /**
-     * Returns the value of the Relay's logical node for the given index
+     * Returns the value of schedule entry for the given index.
+     *
+     * @param index
+     *            schedule entry index (1..{@value #MAX_SCHEDULE_INDEX})
      */
-    public static final String getSchedulePropertyNameForRelayIndex(final int index) {
+    public static final String getSchedulePropertyNameForIndex(final int index) {
 
         if (index < 1 || index > MAX_SCHEDULE_INDEX) {
             throw new IllegalArgumentException("Invalid index value : " + index);

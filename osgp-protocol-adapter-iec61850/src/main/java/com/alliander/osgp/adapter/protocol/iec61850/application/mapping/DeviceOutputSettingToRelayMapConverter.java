@@ -11,20 +11,20 @@ import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
 import com.alliander.osgp.core.db.api.iec61850.entities.DeviceOutputSetting;
-import com.alliander.osgp.dto.valueobjects.RelayMap;
-import com.alliander.osgp.dto.valueobjects.RelayType;
+import com.alliander.osgp.dto.valueobjects.RelayMapDto;
+import com.alliander.osgp.dto.valueobjects.RelayTypeDto;
 
-public class DeviceOutputSettingToRelayMapConverter extends BidirectionalConverter<DeviceOutputSetting, RelayMap> {
+public class DeviceOutputSettingToRelayMapConverter extends BidirectionalConverter<DeviceOutputSetting, RelayMapDto> {
 
     @Override
-    public RelayMap convertTo(final DeviceOutputSetting source, final Type<RelayMap> destinationType) {
-        final RelayType relayType = RelayType.valueOf(source.getRelayType().name());
+    public RelayMapDto convertTo(final DeviceOutputSetting source, final Type<RelayMapDto> destinationType) {
+        final RelayTypeDto relayType = RelayTypeDto.valueOf(source.getRelayType().name());
 
-        return new RelayMap(source.getExternalId(), source.getInternalId(), relayType, source.getAlias());
+        return new RelayMapDto(source.getExternalId(), source.getInternalId(), relayType, source.getAlias());
     }
 
     @Override
-    public DeviceOutputSetting convertFrom(final RelayMap source, final Type<DeviceOutputSetting> destinationType) {
+    public DeviceOutputSetting convertFrom(final RelayMapDto source, final Type<DeviceOutputSetting> destinationType) {
 
         final com.alliander.osgp.core.db.api.iec61850valueobjects.RelayType relayType = com.alliander.osgp.core.db.api.iec61850valueobjects.RelayType
                 .valueOf(source.getRelayType().name());

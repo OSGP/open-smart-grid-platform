@@ -22,8 +22,8 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceReques
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceResponseMessageSender;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
-import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryMessageDataContainer;
-import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryResponseMessageDataContainer;
+import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryMessageDataContainerDto;
+import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryResponseMessageDataContainerDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.ConnectionFailureException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -63,7 +63,7 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends D
         int retryCount = 0;
         final int messagePriority;
         final Long scheduleTime;
-        PowerUsageHistoryMessageDataContainer powerUsageHistoryMessageDataContainerDto;
+        PowerUsageHistoryMessageDataContainerDto powerUsageHistoryMessageDataContainerDto;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -78,7 +78,7 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends D
             messagePriority = message.getJMSPriority();
             scheduleTime = message.propertyExists(Constants.SCHEDULE_TIME) ? message
                     .getLongProperty(Constants.SCHEDULE_TIME) : null;
-            powerUsageHistoryMessageDataContainerDto = (PowerUsageHistoryMessageDataContainer) message.getObject();
+                    powerUsageHistoryMessageDataContainerDto = (PowerUsageHistoryMessageDataContainerDto) message.getObject();
 
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
@@ -102,11 +102,11 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends D
             @Override
             public void handleResponse(final DeviceResponse deviceResponse) {
                 PublicLightingGetPowerUsageHistoryRequestMessageProcessor.this
-                        .handleGetPowerUsageHistoryDeviceResponse((GetPowerUsageHistoryDeviceResponse) deviceResponse,
-                                PublicLightingGetPowerUsageHistoryRequestMessageProcessor.this.responseMessageSender,
-                                requestMessageData.getDomain(), requestMessageData.getDomainVersion(),
-                                requestMessageData.getMessageType(), requestMessageData.getRetryCount(),
-                                messagePriority, scheduleTime);
+                .handleGetPowerUsageHistoryDeviceResponse((GetPowerUsageHistoryDeviceResponse) deviceResponse,
+                        PublicLightingGetPowerUsageHistoryRequestMessageProcessor.this.responseMessageSender,
+                        requestMessageData.getDomain(), requestMessageData.getDomainVersion(),
+                        requestMessageData.getMessageType(), requestMessageData.getRetryCount(),
+                        messagePriority, scheduleTime);
             }
 
             @Override
@@ -143,10 +143,10 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends D
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = null;
-        PowerUsageHistoryResponseMessageDataContainer powerUsageHistoryResponseMessageDataContainer = null;
+        PowerUsageHistoryResponseMessageDataContainerDto powerUsageHistoryResponseMessageDataContainer = null;
 
         try {
-            powerUsageHistoryResponseMessageDataContainer = new PowerUsageHistoryResponseMessageDataContainer(
+            powerUsageHistoryResponseMessageDataContainer = new PowerUsageHistoryResponseMessageDataContainerDto(
                     deviceResponse.getPowerUsageHistoryData());
         } catch (final Exception e) {
             LOGGER.error("Device Response Exception", e);

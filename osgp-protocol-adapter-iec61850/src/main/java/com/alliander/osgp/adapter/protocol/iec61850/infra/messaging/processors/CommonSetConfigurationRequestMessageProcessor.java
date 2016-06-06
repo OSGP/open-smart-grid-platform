@@ -20,7 +20,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetConfigura
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
-import com.alliander.osgp.dto.valueobjects.Configuration;
+import com.alliander.osgp.dto.valueobjects.ConfigurationDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.ConnectionFailureException;
 import com.alliander.osgp.shared.infra.jms.Constants;
@@ -52,7 +52,7 @@ public class CommonSetConfigurationRequestMessageProcessor extends DeviceRequest
         String ipAddress = null;
         Boolean isScheduled = null;
         int retryCount = 0;
-        Configuration configuration = null;
+        ConfigurationDto configuration = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -64,7 +64,7 @@ public class CommonSetConfigurationRequestMessageProcessor extends DeviceRequest
             ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
             isScheduled = message.getBooleanProperty(Constants.IS_SCHEDULED);
             retryCount = message.getIntProperty(Constants.RETRY_COUNT);
-            configuration = (Configuration) message.getObject();
+            configuration = (ConfigurationDto) message.getObject();
 
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);

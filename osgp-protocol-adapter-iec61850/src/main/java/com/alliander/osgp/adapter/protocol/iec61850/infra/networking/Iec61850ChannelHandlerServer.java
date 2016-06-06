@@ -18,8 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.OsgpRequestMessageSender;
 import com.alliander.osgp.core.db.api.iec61850.entities.Ssld;
-import com.alliander.osgp.dto.valueobjects.DeviceFunction;
-import com.alliander.osgp.dto.valueobjects.DeviceRegistrationData;
+import com.alliander.osgp.dto.valueobjects.DeviceFunctionDto;
+import com.alliander.osgp.dto.valueobjects.DeviceRegistrationDataDto;
 import com.alliander.osgp.iec61850.RegisterDeviceRequest;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 
@@ -55,13 +55,14 @@ public class Iec61850ChannelHandlerServer extends Iec61850ChannelHandler {
         final String deviceType = Ssld.SSLD_TYPE;
         final String ipAddress = message.getIpAddress();
 
-        final DeviceRegistrationData deviceRegistrationData = new DeviceRegistrationData(ipAddress, deviceType, true);
+        final DeviceRegistrationDataDto deviceRegistrationData = new DeviceRegistrationDataDto(ipAddress, deviceType,
+                true);
 
         final RequestMessage requestMessage = new RequestMessage(correlationId, "no-organisation",
                 deviceIdentification, ipAddress, deviceRegistrationData);
 
         LOGGER.info("Sending register device request to OSGP with correlation ID: " + correlationId);
-        this.osgpRequestMessageSender.send(requestMessage, DeviceFunction.REGISTER_DEVICE.name());
+        this.osgpRequestMessageSender.send(requestMessage, DeviceFunctionDto.REGISTER_DEVICE.name());
 
         try {
             this.iec61850Client.disableRegistration(deviceIdentification, InetAddress.getByName(ipAddress));

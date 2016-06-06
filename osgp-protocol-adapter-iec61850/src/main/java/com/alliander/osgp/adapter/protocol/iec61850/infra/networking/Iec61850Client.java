@@ -15,12 +15,10 @@ import javax.annotation.Resource;
 
 import org.openmuc.openiec61850.BdaBoolean;
 import org.openmuc.openiec61850.ClientAssociation;
-import org.openmuc.openiec61850.ClientEventListener;
 import org.openmuc.openiec61850.ClientSap;
 import org.openmuc.openiec61850.Fc;
 import org.openmuc.openiec61850.FcModelNode;
 import org.openmuc.openiec61850.ModelNode;
-import org.openmuc.openiec61850.Report;
 import org.openmuc.openiec61850.SclParseException;
 import org.openmuc.openiec61850.ServerModel;
 import org.openmuc.openiec61850.ServiceError;
@@ -30,14 +28,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.protocol.iec61850.application.services.DeviceManagementService;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ConnectionFailureException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Function;
 
 @Component
-public class Iec61850Client implements ClientEventListener {
+public class Iec61850Client {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850Client.class);
+
+    @Autowired
+    private DeviceManagementService deviceManagementService;
 
     @Autowired
     private int iec61850PortClient;
@@ -57,7 +59,7 @@ public class Iec61850Client implements ClientEventListener {
                 this.iec61850PortClientLocal, this.iec61850PortServer);
     }
 
-    public ClientAssociation connect(final String deviceIdentification, final InetAddress ipAddress)
+    public Iec61850ClientAssociation connect(final String deviceIdentification, final InetAddress ipAddress)
             throws ServiceError {
 
         final ClientSap clientSap = new ClientSap();
@@ -70,12 +72,19 @@ public class Iec61850Client implements ClientEventListener {
         // clientSap.setTSelLocal(new byte[] { 0, 0 });
 
         // final SampleClient eventHandler = new SampleClient();
-        ClientAssociation association;
+        final Iec61850ClientAssociation clientAssociation;
 
         LOGGER.info("Attempting to connect to server: {} on port: {}", ipAddress.getHostAddress(),
                 this.iec61850PortServer);
         try {
-            association = clientSap.associate(ipAddress, this.iec61850PortServer, null, this);
+            final Iec61850ClientEventListener reportListener = new Iec61850ClientEventListener(deviceIdentification,
+                    this.deviceManagementService);
+            final ClientAssociation association = clientSap.associate(ipAddress, this.iec61850PortServer, null,
+                    reportListener);
+            clientAssociation = new Iec61850ClientAssociation(association, reportListener);
+        } catch (final ProtocolAdapterException e) {
+            LOGGER.error("Error setting up ClientEventListener for server association", e);
+            return null;
         } catch (final IOException e) {
             // an IOException will always indicate a fatal exception. It
             // indicates that the association was closed and
@@ -156,37 +165,13 @@ public class Iec61850Client implements ClientEventListener {
         // final BdaQuality totWq = (BdaQuality) totW.getChild("q");
         // @formatter:on
 
-        return association;
+        return clientAssociation;
     }
 
     public void disconnect(final ClientAssociation clientAssociation, final String deviceIdentification) {
         LOGGER.info("disconnecting from device: {}...", deviceIdentification);
         clientAssociation.disconnect();
         LOGGER.info("disconnected from device: {} !!!", deviceIdentification);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.openmuc.openiec61850.ClientEventListener#newReport(org.openmuc.
-     * openiec61850.Report)
-     */
-    @Override
-    public void newReport(final Report report) {
-        LOGGER.info("Iec61850Client.newReport, reportId: {}", report.getRptId());
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.openmuc.openiec61850.ClientEventListener#associationClosed(java.io
-     * .IOException)
-     */
-    @Override
-    public void associationClosed(final IOException e) {
-        LOGGER.info("Iec61850Client.associationClosed, exception (if present): {}", e == null ? "no exception message"
-                : e.getMessage());
     }
 
     public ServerModel readServerModelFromDevice(final ClientAssociation clientAssociation) {
@@ -228,15 +213,16 @@ public class Iec61850Client implements ClientEventListener {
     public void disableRegistration(final String deviceIdentification, final InetAddress ipAddress)
             throws ProtocolAdapterException {
 
-        final ClientAssociation clientAssociation;
+        final Iec61850ClientAssociation iec61850ClientAssociation;
         try {
-            clientAssociation = this.connect(deviceIdentification, ipAddress);
+            iec61850ClientAssociation = this.connect(deviceIdentification, ipAddress);
         } catch (final ServiceError e) {
             throw new ProtocolAdapterException("Unexpected error connecting to device to disable registration.", e);
         }
-        if (clientAssociation == null) {
+        if (iec61850ClientAssociation == null || iec61850ClientAssociation.getClientAssociation() == null) {
             throw new ProtocolAdapterException("Unable to connect to device to disable registration.");
         }
+        final ClientAssociation clientAssociation = iec61850ClientAssociation.getClientAssociation();
 
         final Function<Void> function = new Function<Void>() {
 
