@@ -24,6 +24,7 @@ import com.alliander.osgp.platform.cucumber.SmartMetering;
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
 import com.alliander.osgp.platform.cucumber.support.OrganisationId;
 
+import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
@@ -70,7 +71,7 @@ public class Bundle extends SmartMetering {
 
     }
 
-    @Then("^the requests in the bundled request message will be executed from top to bottom$")
+    @And("^the requests in the bundled request message will be executed from top to bottom$")
     public void theRequestsInTheBundledRequestMessageWillBeExecutedFromTopToBottom() throws Throwable {
         PROPERTIES_MAP.put(CORRELATION_UID_LABEL, this.correlationUid);
         PROPERTIES_MAP.put(TIME_OUT, "90000");

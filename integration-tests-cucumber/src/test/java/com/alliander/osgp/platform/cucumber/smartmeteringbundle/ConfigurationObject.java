@@ -27,6 +27,9 @@ import cucumber.api.java.en.When;
 public class ConfigurationObject extends SmartMetering {
 
     private static final String TEST_SUITE_XML = "SmartmeterAdhoc";
+    private static final String TEST_CASE_XML_501 = "501 Retrieve specific configuration object bundle";
+    private static final String TEST_CASE_XML_526 = "526 Retrieve association objectlist bundle";
+
     private static final String TEST_CASE_NAME_REQUEST = "Bundle - Request 1";
     private static final String TEST_CASE_NAME_RESPONSE = "GetBundleResponse - Request 1";
 
@@ -51,8 +54,7 @@ public class ConfigurationObject extends SmartMetering {
         PROPERTIES_MAP.put("ObisCodeE", Integer.toString(obisCodeE));
         PROPERTIES_MAP.put("ObisCodeF", Integer.toString(obisCodeF));
 
-        this.RequestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, "501 Retrieve specific configuration object bundle",
-                TEST_SUITE_XML);
+        this.RequestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML_501, TEST_SUITE_XML);
     }
 
     private void setDeviceAndOrganisationProperties() {
@@ -63,8 +65,7 @@ public class ConfigurationObject extends SmartMetering {
     @When("^the get associationLnObjects request is received as part of a bundled request$")
     public void theGetAssociationLnObjectsRequestIsReceivedAsPartOfABundledRequest() throws Throwable {
         this.setDeviceAndOrganisationProperties();
-        this.RequestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, "526 Retrieve association objectlist bundle",
-                TEST_SUITE_XML);
+        this.RequestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML_526, TEST_SUITE_XML);
     }
 
     @Then("^\"([^\"]*)\" is part of the response$")
