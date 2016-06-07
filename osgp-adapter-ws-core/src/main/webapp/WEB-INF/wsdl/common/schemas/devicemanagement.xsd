@@ -80,6 +80,7 @@
         <xsd:element name="Until" type="xsd:dateTime" minOccurs="0" />
         <xsd:element name="PageSize" type="xsd:int" minOccurs="0" />
         <xsd:element name="Page" type="xsd:int" minOccurs="0" />
+        <xsd:element name="EventTypes" type="tns:EventType" minOccurs="0" maxOccurs="unbounded" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>

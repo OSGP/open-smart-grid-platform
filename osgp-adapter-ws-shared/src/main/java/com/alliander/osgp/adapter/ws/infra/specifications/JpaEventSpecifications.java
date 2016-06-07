@@ -8,9 +8,11 @@
 package com.alliander.osgp.adapter.ws.infra.specifications;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
@@ -24,6 +26,7 @@ import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.exceptions.ArgumentNullOrEmptyException;
 import com.alliander.osgp.domain.core.specifications.EventSpecifications;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
+import com.alliander.osgp.domain.core.valueobjects.EventType;
 
 public class JpaEventSpecifications implements EventSpecifications {
 
@@ -97,6 +100,23 @@ public class JpaEventSpecifications implements EventSpecifications {
                                         DeviceFunctionGroup.MANAGEMENT.ordinal()))));
 
                 return cb.in(eventRoot.get(DEVICE)).value(subquery);
+            }
+        };
+    }
+
+    @Override
+    public Specification<Event> hasEventTypes(final List<EventType> eventTypes) throws ArgumentNullOrEmptyException {
+        if (eventTypes == null || eventTypes.isEmpty()) {
+            throw new ArgumentNullOrEmptyException("eventTypes");
+        }
+
+        return new Specification<Event>() {
+            @Override
+            public Predicate toPredicate(final Root<Event> eventRoot, final CriteriaQuery<?> query,
+                    final CriteriaBuilder cb) {
+
+                final Path<Event> eventType = eventRoot.<Event> get("eventType");
+                return eventType.in(eventTypes);
             }
         };
     }

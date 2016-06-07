@@ -64,6 +64,7 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.DeviceInMaintenanceFilterType;
 import com.alliander.osgp.domain.core.valueobjects.EventNotificationMessageDataContainer;
 import com.alliander.osgp.domain.core.valueobjects.EventNotificationType;
+import com.alliander.osgp.domain.core.valueobjects.EventType;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunction;
 import com.alliander.osgp.logging.domain.entities.DeviceLogItem;
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
@@ -179,7 +180,7 @@ public class DeviceManagementService {
     @Transactional(value = "transactionManager")
     public Page<Event> findEvents(@Identification final String organisationIdentification,
             final String deviceIdentification, final Integer pageSize, final Integer pageNumber, final DateTime from,
-            final DateTime until) throws FunctionalException {
+            final DateTime until, final List<EventType> eventTypes) throws FunctionalException {
 
         LOGGER.debug("findEvents called for organisation {} and device {}", organisationIdentification,
                 deviceIdentification);
@@ -209,6 +210,10 @@ public class DeviceManagementService {
 
             if (until != null) {
                 specifications = specifications.and(this.eventSpecifications.isCreatedBefore(until.toDate()));
+            }
+
+            if (eventTypes != null && !eventTypes.isEmpty()) {
+                specifications = specifications.and(this.eventSpecifications.hasEventTypes(eventTypes));
             }
         } catch (final ArgumentNullOrEmptyException e) {
             throw new FunctionalException(FunctionalExceptionType.ARGUMENT_NULL, ComponentType.WS_CORE, e);
@@ -522,15 +527,17 @@ public class DeviceManagementService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final CommonRequestMessage message = new CommonRequestMessage(CommonRequestMessageType.UPDATE_DEVICE_SSL_CERTIFICATION,
-                correlationUid, organisationIdentification, deviceIdentification, certification, null);
+        final CommonRequestMessage message = new CommonRequestMessage(
+                CommonRequestMessageType.UPDATE_DEVICE_SSL_CERTIFICATION, correlationUid, organisationIdentification,
+                deviceIdentification, certification, null);
 
         this.commonRequestMessageSender.send(message);
 
         return correlationUid;
     }
 
-    public ResponseMessage dequeueUpdateDeviceSslCertificationResponse(final String correlationUid) throws OsgpException {
+    public ResponseMessage dequeueUpdateDeviceSslCertificationResponse(final String correlationUid)
+            throws OsgpException {
         return this.commonResponseMessageFinder.findMessage(correlationUid);
     }
 
@@ -548,8 +555,9 @@ public class DeviceManagementService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final CommonRequestMessage message = new CommonRequestMessage(CommonRequestMessageType.SET_DEVICE_VERIFICATION_KEY,
-                correlationUid, organisationIdentification, deviceIdentification, verificationKey, null);
+        final CommonRequestMessage message = new CommonRequestMessage(
+                CommonRequestMessageType.SET_DEVICE_VERIFICATION_KEY, correlationUid, organisationIdentification,
+                deviceIdentification, verificationKey, null);
 
         this.commonRequestMessageSender.send(message);
 
