@@ -232,7 +232,7 @@ public class FirmwareManagementService {
                     new ExistingEntityException(Manufacturer.class, manufacturerId));
         }
 
-        final DeviceModel savedDeviceModel = this.deviceModelRepository.findByManufacturerId(manufacturer);
+        final DeviceModel savedDeviceModel = this.deviceModelRepository.findByManufacturerIdAndModelCode(manufacturer, modelCode);
 
         if (savedDeviceModel != null) {
             LOGGER.info("DeviceModel already exixts.");
@@ -244,6 +244,29 @@ public class FirmwareManagementService {
         }
     }
 
+    /**
+     * Removes a DeviceModel from the platform. Throws exception if
+     * {@link DeviceModel} doesn't exists
+     */
+    @Transactional(value = "writableTransactionManager")
+    public void removeDeviceModel(@Identification final String organisationIdentification, @Valid final String manufacturer, final String modelCode)
+            throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        this.domainHelperService.isAllowed(organisation, PlatformFunction.REMOVE_DEVICE_MODELS);
+
+        //final Manufacturer dataseManufacturer = this.manufacturerRepository.findByManufacturerId(code);
+        final Manufacturer dbManufacturer = this.manufacturerRepository.findByManufacturerId(manufacturer);
+        final DeviceModel removedDeviceModel = this.deviceModelRepository.findByManufacturerIdAndModelCode(dbManufacturer, modelCode);
+
+        if (removedDeviceModel == null) {
+            LOGGER.info("DeviceModel not found.");
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICEMODEL, ComponentType.WS_CORE,
+                    new ExistingEntityException(Manufacturer.class, modelCode));
+        } else {
+            this.deviceModelRepository.delete(removedDeviceModel);
+        }
+    }
 
     public ResponseMessage dequeueGetFirmwareResponse(final String correlationUid) throws OsgpException {
         return this.commonResponseMessageFinder.findMessage(correlationUid);

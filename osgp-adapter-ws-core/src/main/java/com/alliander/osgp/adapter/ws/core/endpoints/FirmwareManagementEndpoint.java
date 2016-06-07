@@ -41,6 +41,8 @@ import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareV
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionResponse;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.RemoveDeviceModelRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.RemoveDeviceModelResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.RemoveManufacturerRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.RemoveManufacturerResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.SwitchFirmwareAsyncRequest;
@@ -412,8 +414,6 @@ public class FirmwareManagementEndpoint {
         return response;
     }
 
-
-
     @PayloadRoot(localPart = "AddDeviceModelRequest", namespace = NAMESPACE)
     @ResponsePayload
     public AddDeviceModelResponse addDeviceModel(
@@ -444,8 +444,31 @@ public class FirmwareManagementEndpoint {
         return addDeviceModelResponse;
     }
 
+    @PayloadRoot(localPart = "RemoveDeviceModelRequest", namespace = NAMESPACE)
+    @ResponsePayload
+    public RemoveDeviceModelResponse removedDeviceModel(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final RemoveDeviceModelRequest request) throws OsgpException {
 
+        LOGGER.info("Removing devicemodel:{}.", request.getDeviceModelId());
 
+        try {
+            this.firmwareManagementService.removeDeviceModel(organisationIdentification, request.getDeviceManufacturerId(), request.getDeviceModelId());
+        } catch (final MethodConstraintViolationException e) {
+            LOGGER.error("Exception removing deviceModel: {} ", e.getMessage(), e);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
+        } catch (final Exception e) {
+            LOGGER.error("Exception: {} while removing deviceModel: {} for organisation {}",
+                    new Object[] { e.getMessage(), request.getDeviceModelId(), organisationIdentification }, e);
+            this.handleException(e);
+        }
+
+        final RemoveDeviceModelResponse removeDeviceModelResponse = new RemoveDeviceModelResponse();
+        removeDeviceModelResponse.setResult(OsgpResultType.OK);
+
+        return removeDeviceModelResponse;
+    }
 
     private void handleException(final Exception e) throws OsgpException {
         // Rethrow exception if it already is a functional or technical

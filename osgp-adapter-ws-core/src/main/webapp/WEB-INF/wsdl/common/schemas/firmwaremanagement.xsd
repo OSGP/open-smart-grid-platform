@@ -196,6 +196,13 @@
             <xsd:element name="DeviceModelId" minOccurs="1" maxOccurs="1">
                <xsd:simpleType>
                   <xsd:restriction base="xsd:string">
+                     <xsd:maxLength value="15" />
+                  </xsd:restriction>
+               </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="DeviceManufacturerId" minOccurs="1" maxOccurs="1">
+               <xsd:simpleType>
+                  <xsd:restriction base="xsd:string">
                      <xsd:maxLength value="4" />
                   </xsd:restriction>
                </xsd:simpleType>
