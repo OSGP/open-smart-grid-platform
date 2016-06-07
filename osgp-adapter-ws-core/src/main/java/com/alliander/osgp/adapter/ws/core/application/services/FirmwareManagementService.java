@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.adapter.ws.core.application.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -24,8 +25,10 @@ import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessage;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessageSender;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessageType;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
+import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceModelRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableManufacturerRepository;
 import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.exceptions.ExistingEntityException;
@@ -59,6 +62,9 @@ public class FirmwareManagementService {
 
     @Autowired
     private WritableManufacturerRepository manufacturerRepository;
+
+    @Autowired
+    private WritableDeviceModelRepository deviceModelRepository;
 
     public String enqueueUpdateFirmwareRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @NotBlank final String firmwareIdentification,
@@ -132,12 +138,12 @@ public class FirmwareManagementService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.CREATE_MANUFACTURER);
 
-        final Manufacturer dataseManufacturer = this.manufacturerRepository.findByCode(manufacturer.getCode());
+        final Manufacturer dataseManufacturer = this.manufacturerRepository.findByManufacturerId(manufacturer.getManufacturerId());
 
         if (dataseManufacturer != null) {
             LOGGER.info("Manufacturer already exixts.");
             throw new FunctionalException(FunctionalExceptionType.EXISTING_MANUFACTURER, ComponentType.WS_CORE,
-                    new ExistingEntityException(Manufacturer.class, manufacturer.getCode()));
+                    new ExistingEntityException(Manufacturer.class, manufacturer.getManufacturerId()));
         } else {
             this.manufacturerRepository.save(manufacturer);
         }
@@ -154,14 +160,14 @@ public class FirmwareManagementService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.CHANGE_MANUFACTURER);
 
-        final Manufacturer databaseManufacturer = this.manufacturerRepository.findByCode(manufacturer.getCode());
+        final Manufacturer databaseManufacturer = this.manufacturerRepository.findByManufacturerId(manufacturer.getManufacturerId());
 
         if (databaseManufacturer == null) {
             LOGGER.info("Manufacturer not found.");
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_MANUFACTURER, ComponentType.WS_CORE,
-                    new ExistingEntityException(Manufacturer.class, manufacturer.getCode()));
+                    new ExistingEntityException(Manufacturer.class, manufacturer.getManufacturerId()));
         } else {
-            databaseManufacturer.setCode(manufacturer.getCode());
+            databaseManufacturer.setManufacturerId(manufacturer.getManufacturerId());
             databaseManufacturer.setName(manufacturer.getName());
             databaseManufacturer.setUsePrefix(manufacturer.isUsePrefix());
 
@@ -180,7 +186,7 @@ public class FirmwareManagementService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.REMOVE_MANUFACTURER);
 
-        final Manufacturer dataseManufacturer = this.manufacturerRepository.findByCode(code);
+        final Manufacturer dataseManufacturer = this.manufacturerRepository.findByManufacturerId(code);
 
         if (dataseManufacturer == null) {
             LOGGER.info("Manufacturer not found.");
@@ -190,6 +196,54 @@ public class FirmwareManagementService {
             this.manufacturerRepository.delete(dataseManufacturer);
         }
     }
+
+
+    /**
+     * Returns a list of all DeviceModels in the Platform
+     */
+    @Transactional(value = "writableTransactionManager")
+    public List<DeviceModel> findAllDeviceModels(final String organisationIdentification) throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_DEVICE_MODELS);
+
+        List<DeviceModel> deviceModels = new ArrayList<DeviceModel>();
+        deviceModels = this.deviceModelRepository.findAll();
+
+        return deviceModels;
+    }
+
+    /**
+     * Adds new deviceModel to the platform. Throws exception if
+     * {@link DeviceModel} already exists
+     */
+    @Transactional(value = "writableTransactionManager")
+    public void addDeviceModel(@Identification final String organisationIdentification,
+            final String manufacturerId, final String modelCode, final String description) throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        this.domainHelperService.isAllowed(organisation, PlatformFunction.CREATE_DEVICEMODEL);
+
+        final Manufacturer manufacturer = this.manufacturerRepository.findByManufacturerId(manufacturerId);
+
+        if (manufacturer == null) {
+            LOGGER.info("Manufacturer doesn't exixts.");
+            throw new FunctionalException(FunctionalExceptionType.EXISTING_MANUFACTURER, ComponentType.WS_CORE,
+                    new ExistingEntityException(Manufacturer.class, manufacturerId));
+        }
+
+        final DeviceModel savedDeviceModel = this.deviceModelRepository.findByManufacturer(manufacturer);
+
+        if (savedDeviceModel != null) {
+            LOGGER.info("DeviceModel already exixts.");
+            throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICEMODEL, ComponentType.WS_CORE,
+                    new ExistingEntityException(DeviceModel.class, manufacturerId));
+        } else {
+            final DeviceModel deviceModel = new DeviceModel(manufacturer, modelCode, description);
+            this.deviceModelRepository.save(deviceModel);
+        }
+    }
+
 
     public ResponseMessage dequeueGetFirmwareResponse(final String correlationUid) throws OsgpException {
         return this.commonResponseMessageFinder.findMessage(correlationUid);

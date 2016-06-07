@@ -24,31 +24,31 @@ public class DeviceModel extends AbstractEntity {
     private static final long serialVersionUID = -834369362882020365L;
 
     @ManyToOne()
-    @JoinColumn(name = "manufacturer")
+    @JoinColumn(name = "manufacturer_id")
     private Manufacturer manufacturer;
 
-    @Column(nullable = false, length = 10)
-    private String code;
+    @Column(nullable = false, length = 15)
+    private String modelCode;
 
     @Column(nullable = false, length = 255)
-    private String name;
+    private String description;
 
-    public DeviceModel(final Manufacturer manufacturer, final String code, final String name) {
+    public DeviceModel(final Manufacturer manufacturer, final String modelCode, final String description) {
         this.manufacturer = manufacturer;
-        this.code = code;
-        this.name = name;
+        this.modelCode = modelCode;
+        this.description = description;
     }
 
     public Manufacturer getManufacturer() {
         return this.manufacturer;
     }
 
-    public String getCode() {
-        return this.code;
+    public String getDescription() {
+        return this.description;
     }
 
-    public String getName() {
-        return this.name;
+    public String getModelCode() {
+        return this.modelCode;
     }
 
 }
