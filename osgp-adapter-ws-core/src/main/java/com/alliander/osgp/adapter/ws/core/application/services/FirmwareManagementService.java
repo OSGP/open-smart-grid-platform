@@ -232,7 +232,7 @@ public class FirmwareManagementService {
                     new ExistingEntityException(Manufacturer.class, manufacturerId));
         }
 
-        final DeviceModel savedDeviceModel = this.deviceModelRepository.findByManufacturer(manufacturer);
+        final DeviceModel savedDeviceModel = this.deviceModelRepository.findByManufacturerId(manufacturer);
 
         if (savedDeviceModel != null) {
             LOGGER.info("DeviceModel already exixts.");
