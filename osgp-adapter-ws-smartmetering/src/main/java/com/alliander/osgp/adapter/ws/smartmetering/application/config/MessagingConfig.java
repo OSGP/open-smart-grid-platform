@@ -81,6 +81,9 @@ public class MessagingConfig {
     @Resource
     private Environment environment;
 
+    @Autowired
+    public SmartMeteringResponseMessageListener smartMeteringResponseMessageListener;
+
     // === JMS SETTINGS ===
 
     @Bean
@@ -269,9 +272,6 @@ public class MessagingConfig {
         messageListenerContainer.setSessionTransacted(true);
         return messageListenerContainer;
     }
-
-    @Autowired
-    public SmartMeteringResponseMessageListener smartMeteringResponseMessageListener;
 
     @Bean
     public SmartMeteringResponseMessageListener smartMeteringResponseMessageListener() {

@@ -263,7 +263,7 @@ public class DeviceManagementService {
             if (deviceFilter == null) {
                 final DeviceFilter df = new DeviceFilter(organisationIdentification, null, null, null, null, null,
                         null, null, DeviceExternalManagedFilterType.BOTH, DeviceActivatedFilterType.BOTH,
-                        DeviceInMaintenanceFilterType.BOTH, null, null);
+                        DeviceInMaintenanceFilterType.BOTH, null, null, false);
                 devices = this.applyFilter(df, organisation, request);
             } else {
                 deviceFilter.updateOrganisationIdentification(organisationIdentification);
@@ -344,6 +344,10 @@ public class DeviceManagementService {
                 if (!DeviceInMaintenanceFilterType.BOTH.equals(deviceFilter.getDeviceInMaintenance())) {
                     specifications = specifications.and(this.deviceSpecifications.isInMaintetance(deviceFilter
                             .getDeviceInMaintenance().getValue()));
+                }
+
+                if (deviceFilter.isHasTechnicalInstallation()) {
+                    specifications = specifications.and(this.deviceSpecifications.hasTechnicalInstallationDate());
                 }
 
                 devices = this.deviceRepository.findAll(specifications, request);
@@ -456,6 +460,7 @@ public class DeviceManagementService {
                 updateDevice.getGpsLatitude(), updateDevice.getGpsLongitude());
 
         existingDevice.setActivated(updateDevice.isActivated());
+        existingDevice.setTechnicalInstallationDate(updateDevice.getTechnicalInstallationDate());
 
         final Ssld ssld = this.writableSsldRepository.findOne(existingDevice.getId());
         ssld.updateOutputSettings(updateDevice.receiveOutputSettings());

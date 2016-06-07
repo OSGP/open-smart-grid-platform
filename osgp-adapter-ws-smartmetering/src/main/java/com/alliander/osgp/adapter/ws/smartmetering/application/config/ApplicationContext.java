@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -64,6 +65,13 @@ public class ApplicationContext {
     @Bean
     public EventSpecifications eventSpecifications() {
         return new JpaEventSpecifications();
+    }
+
+    @Bean
+    public PropertySourcesPlaceholderConfigurer placeholderConfigurer() {
+        final PropertySourcesPlaceholderConfigurer propertySource = new PropertySourcesPlaceholderConfigurer();
+        propertySource.setIgnoreUnresolvablePlaceholders(true);
+        return propertySource;
     }
 
 }

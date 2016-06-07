@@ -69,6 +69,7 @@ public class ActionMapperResponseService {
     private CommonMapper commonMapper;
 
     private static Map<Class<? extends ActionResponse>, ConfigurableMapper> CLASS_TO_MAPPER_MAP = new HashMap<>();
+    private static Map<Class<? extends ActionResponse>, Class<?>> CLASS_MAP = new HashMap<>();
 
     /**
      * Specifies which mapper to use for the core object class received.
@@ -91,7 +92,6 @@ public class ActionMapperResponseService {
     /**
      * Specifies to which core object the ws object needs to be mapped.
      */
-    private static Map<Class<? extends ActionResponse>, Class<?>> CLASS_MAP = new HashMap<>();
     static {
         CLASS_MAP.put(MeterReadsGas.class,
                 com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponseData.class);
