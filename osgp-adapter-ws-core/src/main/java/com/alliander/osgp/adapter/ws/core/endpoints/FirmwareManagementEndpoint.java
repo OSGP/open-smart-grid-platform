@@ -30,6 +30,8 @@ import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.AddDeviceMod
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.AddDeviceModelResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.AddManufacturerRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.AddManufacturerResponse;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.ChangeDeviceModelRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.ChangeDeviceModelResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.ChangeManufacturerRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.ChangeManufacturerResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllDeviceModelsRequest;
@@ -468,6 +470,35 @@ public class FirmwareManagementEndpoint {
         removeDeviceModelResponse.setResult(OsgpResultType.OK);
 
         return removeDeviceModelResponse;
+    }
+
+    @PayloadRoot(localPart = "ChangeDeviceModelRequest", namespace = NAMESPACE)
+    @ResponsePayload
+    public ChangeDeviceModelResponse changeDeviceModel(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final ChangeDeviceModelRequest request) throws OsgpException {
+
+        LOGGER.info("Changing devicemodel:{}.", request.getDeviceModel().getModelCode());
+
+        try {
+            this.firmwareManagementService.changeDeviceModel(organisationIdentification,
+                    request.getDeviceModel().getManufacturer(),
+                    request.getDeviceModel().getModelCode(),
+                    request.getDeviceModel().getDescription());
+        } catch (final MethodConstraintViolationException e) {
+            LOGGER.error("Exception Changing devicemodel: {} ", e.getMessage(), e);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
+        } catch (final Exception e) {
+            LOGGER.error("Exception: {} while Changing devicemodel: {} for organisation {}",
+                    new Object[] { e.getMessage(), request.getDeviceModel().getModelCode(), organisationIdentification }, e);
+            this.handleException(e);
+        }
+
+        final ChangeDeviceModelResponse changeDeviceModelResponse = new ChangeDeviceModelResponse();
+        changeDeviceModelResponse.setResult(OsgpResultType.OK);
+
+        return changeDeviceModelResponse;
     }
 
     private void handleException(final Exception e) throws OsgpException {

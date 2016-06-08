@@ -268,6 +268,31 @@ public class FirmwareManagementService {
         }
     }
 
+    /**
+     * Updates a DeviceModel to the platform. Throws exception if
+     * {@link DeviceModel} doesn't exists.
+     */
+    @Transactional(value = "writableTransactionManager")
+    public void changeDeviceModel(@Identification final String organisationIdentification,
+            final String manufacturer, final String modelCode, final String description) throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        this.domainHelperService.isAllowed(organisation, PlatformFunction.CHANGE_MANUFACTURER);
+
+        final Manufacturer dbManufacturer = this.manufacturerRepository.findByManufacturerId(manufacturer);
+        final DeviceModel changedDeviceModel = this.deviceModelRepository.findByManufacturerIdAndModelCode(dbManufacturer, modelCode);
+
+        if (changedDeviceModel == null) {
+            LOGGER.info("DeviceModel not found.");
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICEMODEL, ComponentType.WS_CORE,
+                    new ExistingEntityException(Manufacturer.class, modelCode));
+        } else {
+
+            changedDeviceModel.setDescription(description);
+            this.deviceModelRepository.save(changedDeviceModel);
+        }
+    }
+
     public ResponseMessage dequeueGetFirmwareResponse(final String correlationUid) throws OsgpException {
         return this.commonResponseMessageFinder.findMessage(correlationUid);
     }

@@ -55,4 +55,8 @@ public class DeviceModel extends AbstractEntity {
         return this.modelCode;
     }
 
+    public void setDescription(final String description) {
+        this.description = description;
+    }
+
 }
