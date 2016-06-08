@@ -31,13 +31,13 @@ public class DatabaseReader {
 
     private Connection connection;
 
-    @Value("${cucumber.readdbs.url}")
+    @Value("${cucumber.osgploggingdbs.url}")
     private String jdbcUrl;
 
-    @Value("${cucumber.polldbs.username}")
+    @Value("${cucumber.dbs.username}")
     private String username;
 
-    @Value("${cucumber.polldbs.password}")
+    @Value("${cucumber.dbs.password}")
     private String password;
 
     private void closeStatement(final Statement statement) {

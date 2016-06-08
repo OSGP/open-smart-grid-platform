@@ -141,28 +141,17 @@
       <groupId>org.springframework.ws</groupId>
       <artifactId>spring-ws-support</artifactId>
     </dependency>
-  
-    <!-- Hibernate -->
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-entitymanager</artifactId>
-    </dependency>
 
-    <!-- Hibernate validator -->
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-validator</artifactId>
-    </dependency>  
+   <dependency>
+      <groupId>com.alliander.osgp</groupId>
+      <artifactId>osgp-adapter-ws-smartmetering</artifactId>
+      <classifier>classes</classifier>
+    </dependency>
     
    <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <version>9.4.1207.jre7</version>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     
   </dependencies>

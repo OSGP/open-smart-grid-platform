@@ -31,13 +31,13 @@ public class ResponseNotifierImpl implements ResponseNotifier {
 
     private Connection connection;
 
-    @Value("${cucumber.polldbs.url}")
+    @Value("${cucumber.osgpadapterwssmartmeteringdbs.url}")
     private String jdbcUrl;
 
-    @Value("${cucumber.polldbs.username}")
+    @Value("${cucumber.dbs.username}")
     private String username;
 
-    @Value("${cucumber.polldbs.password}")
+    @Value("${cucumber.dbs.password}")
     private String password;
 
     @Override
@@ -85,7 +85,6 @@ public class ResponseNotifierImpl implements ResponseNotifier {
                     result = PollResult.OK;
                 }
             }
-            // rs.close();
             return result;
         } catch (final SQLException se) {
             this.LOGGER.error(se.getMessage());

@@ -9,6 +9,8 @@
  */
 package com.alliander.osgp.platform.cucumber.support;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -48,7 +50,10 @@ public class TestCaseRunner {
         if (correlId != null) {
             if (!this.responseNotifier.waitForResponse(correlId, this.getTimeout(propertiesMap),
                     this.getMaxTime(propertiesMap))) {
-                LOGGER.warn("no response retrieved with maximum time");
+                LOGGER.warn("no response retrieved within maximum time");
+            } else {
+                assertTrue(this.resetCorrelId(propertiesMap));
+                // reset the correlationUid to null for the next request
             }
         }
 
@@ -60,6 +65,15 @@ public class TestCaseRunner {
             return propertiesMap.get(SmartMetering.CORRELATION_UID_LABEL);
         } else {
             return null;
+        }
+    }
+
+    private boolean resetCorrelId(final Map<String, String> propertiesMap) {
+        if (propertiesMap.containsKey(SmartMetering.CORRELATION_UID_LABEL)) {
+            propertiesMap.put(SmartMetering.CORRELATION_UID_LABEL, null);
+            return true;
+        } else {
+            return false;
         }
     }
 

@@ -63,7 +63,7 @@ public class ReplaceKeys extends SmartMetering {
     }
 
     @And("^the new keys are stored in the osgp_adapter_protocol_dlms database security_key table$")
-    public void theNewKeysAreStoredInTheOsgp_adapter_protocol_dlmsDatabaseSecurity_keyTable() throws Throwable {
+    public void theNewKeysAreStoredInTheOsgpAdapterProtocolDlmsDatabaseSecurityKeyTable() throws Throwable {
 
     }
 }

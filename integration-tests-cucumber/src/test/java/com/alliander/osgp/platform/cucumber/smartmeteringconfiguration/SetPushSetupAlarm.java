@@ -10,12 +10,9 @@ package com.alliander.osgp.platform.cucumber.smartmeteringconfiguration;
 
 import static org.junit.Assert.assertTrue;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,11 +56,6 @@ public class SetPushSetupAlarm extends SmartMetering {
 
     @When("^an alarm notification is received from a known device$")
     public void anAlarmNotificationIsReceivedFromAKnownDevice() throws Throwable {
-        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-        LOGGER.info(sdf.format(new Date()));
-
         try {
             SimulatePushedAlarmsHooks.simulateAlarm(KnownDevice, new byte[] { 0x2C, 0x00, 0x00, 0x01, 0x02 });
             SimulatePushedAlarmsHooks.simulateAlarm(KnownDevice, new byte[] { 0x2C, 0x04, 0x20, 0x00, 0x00 });
@@ -87,7 +79,7 @@ public class SetPushSetupAlarm extends SmartMetering {
     }
 
     @And("^the alarm should be pushed to the osgp_logging database \"([^\"]*)\" table$")
-    public void theAlarmShouldBePushedToTheOsgp_loggingDatabaseTable(final String table) throws Throwable {
+    public void theAlarmShouldBePushedToTheOsgpLoggingDatabaseTable(final String table) throws Throwable {
         final List<String> result = this.databaseReader.readDevideLogItem(table, KnownDevice, UnknownDevice);
         for (int i = 0; i < 4; i++) {
             LOGGER.info(result.get(i));
