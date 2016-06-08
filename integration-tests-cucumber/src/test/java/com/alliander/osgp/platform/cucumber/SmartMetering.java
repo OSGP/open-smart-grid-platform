@@ -45,6 +45,7 @@ public class SmartMetering {
     public static final String TIME_OUT = "TimeOut";
     public static final String MAX_TIME = "MaxTime";
 
+    protected String request;
     protected String response;
     protected String correlationUid;
     private Pattern correlationUidPattern;
@@ -82,8 +83,8 @@ public class SmartMetering {
     protected void RequestRunner(final Map<String, String> propertiesMap, final String testCaseNameRequest,
             final String testCaseXml, final String testSuiteXml) throws Throwable {
 
-        this.correlationUidPattern = Pattern.compile(this.organisationId.getOrganisationId()
-                + XPATH_MATCHER_CORRELATIONUID);
+        this.correlationUidPattern = Pattern
+                .compile(this.organisationId.getOrganisationId() + XPATH_MATCHER_CORRELATIONUID);
         this.testCase = this.wsdlProjectFactory.createWsdlTestCase(SOAP_PROJECT_XML, testSuiteXml, testCaseXml);
 
         final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase, propertiesMap,
@@ -92,7 +93,9 @@ public class SmartMetering {
         final WsdlTestCaseRunner wsdlTestCaseRunner = runTestStepByName.getResults();
         assertEquals(TestStepStatus.OK, runTestStepByNameResult.getStatus());
 
-        this.response = ((MessageExchange) wsdlTestCaseRunner.getResults().get(0)).getResponseContent();
+        final MessageExchange messageExchange = (MessageExchange) wsdlTestCaseRunner.getResults().get(0);
+        this.request = messageExchange.getRequestContent();
+        this.response = messageExchange.getResponseContent();
         this.correlationUidMatcher = this.correlationUidPattern.matcher(this.response);
         assertTrue(this.correlationUidMatcher.find());
         this.correlationUid = this.correlationUidMatcher.group();
