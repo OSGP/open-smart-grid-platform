@@ -241,14 +241,11 @@ public class Device implements Serializable {
         return authorization;
     }
 
-    public void removeAuthorization(final Organisation organisation,
-            final DeviceFunctionGroup functionGroup) {
-        final Iterator<DeviceAuthorization> i = this.authorizations.iterator();
-        while (i.hasNext()) {
-            final DeviceAuthorization da = i.next();
-            if (da.getFunctionGroup().equals(functionGroup)) {
-                i.remove();
-                break;
+    public void removeAuthorization(final Organisation organisation, final DeviceFunctionGroup functionGroup) {
+        for (final Iterator<DeviceAuthorization> iter = this.authorizations.listIterator(); iter.hasNext();) {
+            final DeviceAuthorization da = iter.next();
+            if (da.getFunctionGroup().equals(functionGroup) && da.getOrganisation().equals(organisation)) {
+                iter.remove();
             }
         }
     }
