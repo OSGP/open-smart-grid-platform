@@ -34,8 +34,8 @@ public class RunXpathResult {
     private Pattern responsePattern;
     private Matcher responseMatcher;
 
-    public XpathResult runXPathExpression(final String xml, final String path)
-            throws ParserConfigurationException, SAXException, IOException, XPathExpressionException {
+    public XpathResult runXPathExpression(final String xml, final String path) throws ParserConfigurationException,
+            SAXException, IOException, XPathExpressionException {
 
         final Document doc = this.getDocument(xml);
         final XPath xpath = this.getXpath();
@@ -54,12 +54,11 @@ public class RunXpathResult {
         final DocumentBuilder builder = factory.newDocumentBuilder();
         final InputSource is = new InputSource();
         is.setCharacterStream(new StringReader(xml));
-        final Document doc = builder.parse(is);
-        return doc;
+        return builder.parse(is);
     }
 
-    public NodeList getNodeList(final String xml, final String path)
-            throws ParserConfigurationException, SAXException, IOException, XPathExpressionException {
+    public NodeList getNodeList(final String xml, final String path) throws ParserConfigurationException, SAXException,
+            IOException, XPathExpressionException {
         final Document doc = this.getDocument(xml);
         final XPath xpath = this.getXpath();
         final XPathExpression expr = xpath.compile(path);
