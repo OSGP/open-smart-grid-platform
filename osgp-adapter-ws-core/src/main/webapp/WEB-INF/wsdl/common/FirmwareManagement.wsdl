@@ -76,9 +76,6 @@
         </wsdl:part>
     </wsdl:message>
 
-
-
-
     <wsdl:message name="FindAllDeviceModelsResponse">
         <wsdl:part element="fman:FindAllDeviceModelsResponse" name="FindAllDeviceModelsResponse">
         </wsdl:part>
@@ -133,11 +130,6 @@
         </wsdl:part>
     </wsdl:message>
 
-
-
-
-
-    
     <wsdl:message name="FindAllManufacturersResponse">
         <wsdl:part element="fman:FindAllManufacturersResponse" name="FindAllManufacturersResponse">
         </wsdl:part>
@@ -443,7 +435,6 @@
               </wsdl:output>
         </wsdl:operation>
         
-        
         <wsdl:operation name="FindAllDeviceModels">
             <soap:operation soapAction="" />
             <wsdl:input name="FindAllDeviceModelsRequest">
@@ -494,9 +485,6 @@
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>
-        
-        
-                
         
     </wsdl:binding>
 

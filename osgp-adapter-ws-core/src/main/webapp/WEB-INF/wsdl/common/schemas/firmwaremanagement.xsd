@@ -157,7 +157,6 @@
       </xsd:complexType>
    </xsd:element>
 
-
    <xsd:element name="FindAllDeviceModelsRequest">
       <xsd:complexType>
          <xsd:sequence>
@@ -235,11 +234,7 @@
       </xsd:complexType>
    </xsd:element>
    
-   
-   
-   
-
-<xsd:element name="SwitchFirmwareRequest">
+   <xsd:element name="SwitchFirmwareRequest">
         <xsd:complexType>
             <xsd:sequence>
                 <xsd:element name="DeviceIdentification" type="common:Identification" />
@@ -294,7 +289,6 @@
       </xsd:sequence>
    </xsd:complexType>
 
-
    <xsd:complexType name="DeviceModel">
       <xsd:sequence>
 
@@ -321,10 +315,8 @@
                </xsd:restriction>
             </xsd:simpleType>
          </xsd:element>
-
       </xsd:sequence>
    </xsd:complexType>
-
 
     <xsd:complexType name="FirmwareVersion">
       <xsd:sequence>
