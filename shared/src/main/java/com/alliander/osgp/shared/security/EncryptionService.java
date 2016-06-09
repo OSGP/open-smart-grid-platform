@@ -68,15 +68,15 @@ public class EncryptionService {
     /**
      * for testability
      *
-     * @param keyPath
+     * @param key
+     *            A SecretKeySpec instance
      */
-    protected EncryptionService(final String keyPath) {
-        super();
-        this.keyPath = keyPath;
-        this.initEncryption();
+    protected EncryptionService(final SecretKeySpec key) {
+        this.key = key;
     }
 
     public EncryptionService() {
+        // Default constructor.
     }
 
     /*
