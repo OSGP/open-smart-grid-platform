@@ -64,7 +64,7 @@ public class EncryptionServiceTest {
 
         final byte[] encrypted = encryptionService.encrypt(TEST_CONTENT.getBytes());
         final byte[] decrypted = encryptionService.decrypt(encrypted);
-        Assert.assertNotEquals(TEST_CONTENT, new String(decrypted));
+        Assert.assertEquals(TEST_CONTENT, new String(decrypted));
     }
 
     @Test
