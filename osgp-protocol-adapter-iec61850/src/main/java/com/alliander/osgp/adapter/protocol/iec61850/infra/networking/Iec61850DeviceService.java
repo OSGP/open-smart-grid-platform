@@ -1015,13 +1015,12 @@ public class Iec61850DeviceService implements DeviceService {
         final String summerTimeDetails = clock.getString(SubDataAttribute.SUMMER_TIME_DETAILS);
         final String winterTimeDetails = clock.getString(SubDataAttribute.WINTER_TIME_DETAILS);
 
-        // final String winterTimeDetails = clock.getString();
         configuration.setTimeSyncFrequency(timeSyncFrequency);
         configuration.setAutomaticSummerTimingEnabled(automaticSummerTimingEnabled);
         configuration.setSummerTimeDetails(new DaylightSavingTimeTransition(TIME_ZONE_AMSTERDAM, summerTimeDetails)
-        .getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
+                .getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
         configuration.setWinterTimeDetails(new DaylightSavingTimeTransition(TIME_ZONE_AMSTERDAM, winterTimeDetails)
-        .getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
+                .getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
 
         return configuration;
     }
