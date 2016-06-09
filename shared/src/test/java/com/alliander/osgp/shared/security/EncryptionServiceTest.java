@@ -16,8 +16,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.alliander.osgp.shared.exceptionhandling.EncrypterException;
-
 public class EncryptionServiceTest {
 
     private static final String SRC_TEST_RESOURCES_SECRET = "src/test/resources/secret";
@@ -41,21 +39,6 @@ public class EncryptionServiceTest {
     public void testEnDecrypt() throws NoSuchAlgorithmException, IOException, NoSuchProviderException {
         final KeyGenerator keygen = KeyGenerator.getInstance(AES, BC);
         keygen.init(128);
-        final SecretKey key = keygen.generateKey();
-        final byte[] keyBytes = key.getEncoded();
-
-        final SecretKeySpec secretKey = this.createSecretKeySpec(keyBytes);
-        final EncryptionService encryptionService = new TestableEncService(secretKey);
-
-        final byte[] encrypted = encryptionService.encrypt(TEST_CONTENT.getBytes());
-        final byte[] decrypted = encryptionService.decrypt(encrypted);
-        Assert.assertEquals(TEST_CONTENT, new String(decrypted));
-    }
-
-    @Test(expected = EncrypterException.class)
-    public void testEnDecryptWrongKeySize() throws NoSuchAlgorithmException, IOException, NoSuchProviderException {
-        final KeyGenerator keygen = KeyGenerator.getInstance(AES, BC);
-        keygen.init(256);
         final SecretKey key = keygen.generateKey();
         final byte[] keyBytes = key.getEncoded();
 
