@@ -406,7 +406,7 @@ public class FirmwareManagementEndpoint {
             response.getDeviceModels().addAll(this.firmwareManagementMapper.mapAsList(deviceModels,
                     com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.DeviceModel.class));
         } catch (final MethodConstraintViolationException e) {
-            LOGGER.error("Exception find all devicemodels {}: ", e.getMessage());
+            LOGGER.error("Exception find all devicemodels {}: ", e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
