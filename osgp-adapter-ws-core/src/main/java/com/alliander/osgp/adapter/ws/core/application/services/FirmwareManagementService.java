@@ -32,6 +32,7 @@ import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.exceptions.ExistingEntityException;
+import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
@@ -229,7 +230,7 @@ public class FirmwareManagementService {
         if (manufacturer == null) {
             LOGGER.info("Manufacturer doesn't exixts.");
             throw new FunctionalException(FunctionalExceptionType.EXISTING_MANUFACTURER, ComponentType.WS_CORE,
-                    new ExistingEntityException(Manufacturer.class, manufacturerId));
+                    new UnknownEntityException(Manufacturer.class, manufacturerId));
         }
 
         final DeviceModel savedDeviceModel = this.deviceModelRepository.findByManufacturerIdAndModelCode(manufacturer, modelCode);
@@ -255,9 +256,8 @@ public class FirmwareManagementService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.REMOVE_DEVICE_MODELS);
 
-        //final Manufacturer dataseManufacturer = this.manufacturerRepository.findByManufacturerId(code);
-        final Manufacturer dbManufacturer = this.manufacturerRepository.findByManufacturerId(manufacturer);
-        final DeviceModel removedDeviceModel = this.deviceModelRepository.findByManufacturerIdAndModelCode(dbManufacturer, modelCode);
+        final Manufacturer dataseManufacturer = this.manufacturerRepository.findByManufacturerId(manufacturer);
+        final DeviceModel removedDeviceModel = this.deviceModelRepository.findByManufacturerIdAndModelCode(dataseManufacturer, modelCode);
 
         if (removedDeviceModel == null) {
             LOGGER.info("DeviceModel not found.");
@@ -279,8 +279,8 @@ public class FirmwareManagementService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.CHANGE_MANUFACTURER);
 
-        final Manufacturer dbManufacturer = this.manufacturerRepository.findByManufacturerId(manufacturer);
-        final DeviceModel changedDeviceModel = this.deviceModelRepository.findByManufacturerIdAndModelCode(dbManufacturer, modelCode);
+        final Manufacturer dataseManufacturer = this.manufacturerRepository.findByManufacturerId(manufacturer);
+        final DeviceModel changedDeviceModel = this.deviceModelRepository.findByManufacturerIdAndModelCode(dataseManufacturer, modelCode);
 
         if (changedDeviceModel == null) {
             LOGGER.info("DeviceModel not found.");
