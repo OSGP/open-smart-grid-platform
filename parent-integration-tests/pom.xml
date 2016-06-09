@@ -163,6 +163,12 @@
 
       <dependency>
         <groupId>com.alliander.osgp</groupId>
+        <artifactId>osgp-adapter-ws-smartmetering</artifactId>
+        <version>${osgp.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.alliander.osgp</groupId>
         <artifactId>osgp-adapter-ws-admin</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>

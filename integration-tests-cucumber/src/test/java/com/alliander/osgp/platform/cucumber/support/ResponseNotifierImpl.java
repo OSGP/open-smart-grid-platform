@@ -31,25 +31,29 @@ public class ResponseNotifierImpl implements ResponseNotifier {
 
     private Connection connection;
 
-    @Value("${cucumber.polldbs.url}")
+    @Value("${cucumber.osgpadapterwssmartmeteringdbs.url}")
     private String jdbcUrl;
 
-    @Value("${cucumber.polldbs.username}")
+    @Value("${cucumber.dbs.username}")
     private String username;
 
-    @Value("${cucumber.polldbs.password}")
+    @Value("${cucumber.dbs.password}")
     private String password;
 
-    public boolean waitForResponse(final String correlid, final int laptime, final int maxlaps) {
+    @Override
+    public boolean waitForResponse(final String correlid, final int timeout, final int maxtime) {
         Statement statement = null;
         try {
-            statement = conn().createStatement();
-            int pollcount = 0;
+            Thread.sleep(timeout);
+
+            statement = this.conn().createStatement();
+            final int interval = 3000;
+            int delayedtime = 0;
 
             while (true) {
-                Thread.sleep(laptime);
-                if (pollcount++ < maxlaps) {
-                    PollResult pollres = pollDatabase(statement, correlid);
+                Thread.sleep(interval);
+                if ((delayedtime += interval) < maxtime) {
+                    final PollResult pollres = this.pollDatabase(statement, correlid);
                     if (pollres.equals(PollResult.OK)) {
                         return true;
                     } else if (pollres.equals(PollResult.ERROR)) {
@@ -59,86 +63,89 @@ public class ResponseNotifierImpl implements ResponseNotifier {
                     return false;
                 }
             }
-        } catch (SQLException se) {
-            LOGGER.error(se.getMessage());
+        } catch (final SQLException se) {
+            this.LOGGER.error(se.getMessage());
             return false;
-        } catch(InterruptedException intex) {
-            LOGGER.error(intex.getMessage());
+        } catch (final InterruptedException intex) {
+            this.LOGGER.error(intex.getMessage());
             return false;
         } finally {
-            closeStatement(statement);
+            this.closeStatement(statement);
         }
     }
 
     private PollResult pollDatabase(final Statement statement, final String correlid) {
-        ResultSet rs =  null;
+        ResultSet rs = null;
         PollResult result = PollResult.NOT_OK;
         try {
-            rs = statement.executeQuery("SELECT count(*) FROM meter_response_data WHERE correlation_uid = '" + correlid + "'");
+            rs = statement.executeQuery(
+                    "SELECT count(*) FROM meter_response_data WHERE correlation_uid = '" + correlid + "'");
             while (rs.next()) {
                 if (rs.getInt(1) > 0) {
                     result = PollResult.OK;
                 }
             }
-            rs.close();
             return result;
-        } catch (SQLException se) {
-            LOGGER.error(se.getMessage());
+        } catch (final SQLException se) {
+            this.LOGGER.error(se.getMessage());
             return PollResult.ERROR;
         } finally {
-            closeResultSet(rs);
+            this.closeResultSet(rs);
         }
     }
-    
-    private void closeStatement(Statement statement) {
+
+    private void closeStatement(final Statement statement) {
         if (statement != null) {
             try {
                 statement.close();
-            } catch (SQLException e) {
-                LOGGER.error(e.getMessage());
+            } catch (final SQLException e) {
+                this.LOGGER.error(e.getMessage());
             }
         }
     }
 
-
-    private void closeResultSet(ResultSet rs) {
+    private void closeResultSet(final ResultSet rs) {
+        if (rs == null) {
+            return;
+        }
         try {
             rs.close();
-        } catch (SQLException e) {
-            LOGGER.error(e.getMessage());
+        } catch (final SQLException e) {
+            this.LOGGER.error(e.getMessage());
         }
     }
-    
+
     private Connection conn() {
-        if (connection == null) {
-            connection = connectToDatabaseOrDie();
+        if (this.connection == null) {
+            this.connection = this.connectToDatabaseOrDie();
         }
-        return connection;
+        return this.connection;
     }
 
     private Connection connectToDatabaseOrDie() {
         try {
             Class.forName("org.postgresql.Driver");
-            connection = DriverManager.getConnection(jdbcUrl, username, password);
-        } catch (ClassNotFoundException e) {
-            LOGGER.error(e.getMessage());;
+            this.connection = DriverManager.getConnection(this.jdbcUrl, this.username, this.password);
+        } catch (final ClassNotFoundException e) {
+            this.LOGGER.error(e.getMessage());
+            ;
             System.exit(1);
-        } catch (SQLException e) {
-            LOGGER.error(e.getMessage());;
+        } catch (final SQLException e) {
+            this.LOGGER.error(e.getMessage());
+            ;
             System.exit(2);
         }
-        return connection;
+        return this.connection;
     }
 
-   
-    //-------------
-    
-  //To resolve ${} in @Value
+    // -------------
+
+    // To resolve ${} in @Value
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertyConfigInDev() {
         return new PropertySourcesPlaceholderConfigurer();
     }
-    
+
     private enum PollResult {
         OK,
         NOT_OK,

@@ -9,6 +9,8 @@
  */
 package com.alliander.osgp.platform.cucumber.support;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -19,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.platform.cucumber.SmartMetering;
 import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCase;
 import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCaseRunner;
 import com.eviware.soapui.model.support.PropertiesMap;
@@ -26,13 +29,13 @@ import com.eviware.soapui.model.testsuite.TestCase;
 import com.eviware.soapui.support.SoapUIException;
 
 @Component
-public class TestCaseRunner implements CucumberConstants {
+public class TestCaseRunner {
+
+    @Autowired
+    protected ResponseNotifier responseNotifier;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TestCaseRunner.class);
 
-    @Autowired
-    private ResponseNotifier responseNotifier;
-    
     public TestCaseResult runWsdlTestCase(final TestCase testCase, final Map<String, String> propertiesMap,
             final String testCaseNameRequest) throws XmlException, IOException, SoapUIException {
         final WsdlTestCase wsdlTestCase = (WsdlTestCase) testCase;
@@ -42,38 +45,51 @@ public class TestCaseRunner implements CucumberConstants {
         }
 
         final WsdlTestCaseRunner wsdlTestCaseRunner = new WsdlTestCaseRunner(wsdlTestCase, new PropertiesMap());
-       
-        String correlId = getCorrelId(propertiesMap);
+
+        final String correlId = this.getCorrelId(propertiesMap);
         if (correlId != null) {
-            if (!responseNotifier.waitForResponse(correlId, getLaptime(propertiesMap), getMaxLaps(propertiesMap))) {
-                LOGGER.warn("no response retrieved with maximum time");
-            } 
+            if (!this.responseNotifier.waitForResponse(correlId, this.getTimeout(propertiesMap),
+                    this.getMaxTime(propertiesMap))) {
+                LOGGER.warn("no response retrieved within maximum time");
+            } else {
+                assertTrue(this.resetCorrelId(propertiesMap));
+                // reset the correlationUid to null for the next request
+            }
         }
-        
+
         return new TestCaseResult(wsdlTestCaseRunner.runTestStepByName(testCaseNameRequest), wsdlTestCaseRunner);
     }
-    
+
     private String getCorrelId(final Map<String, String> propertiesMap) {
-        if (propertiesMap.containsKey(CORRELATION_UID)) {
-            return propertiesMap.get(CORRELATION_UID);
+        if (propertiesMap.containsKey(SmartMetering.CORRELATION_UID_LABEL)) {
+            return propertiesMap.get(SmartMetering.CORRELATION_UID_LABEL);
         } else {
             return null;
         }
     }
-    
-    private int getLaptime(final Map<String, String> propertiesMap) {
-        if (propertiesMap.containsKey(LAP_TIME)) {
-            return new Integer(propertiesMap.get(LAP_TIME));
+
+    private boolean resetCorrelId(final Map<String, String> propertiesMap) {
+        if (propertiesMap.containsKey(SmartMetering.CORRELATION_UID_LABEL)) {
+            propertiesMap.put(SmartMetering.CORRELATION_UID_LABEL, null);
+            return true;
         } else {
-            return 5000;
+            return false;
         }
     }
-    
-    private int getMaxLaps(final Map<String, String> propertiesMap) {
-        if (propertiesMap.containsKey(MAX_LAPCOUNT)) {
-            return new Integer(propertiesMap.get(MAX_LAPCOUNT));
+
+    private int getTimeout(final Map<String, String> propertiesMap) {
+        if (propertiesMap.containsKey(SmartMetering.TIME_OUT)) {
+            return new Integer(propertiesMap.get(SmartMetering.TIME_OUT));
         } else {
-            return 25;
+            return 10000;
+        }
+    }
+
+    private int getMaxTime(final Map<String, String> propertiesMap) {
+        if (propertiesMap.containsKey(SmartMetering.MAX_TIME)) {
+            return new Integer(propertiesMap.get(SmartMetering.MAX_TIME));
+        } else {
+            return 60000;
         }
     }
 
