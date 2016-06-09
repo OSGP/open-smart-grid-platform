@@ -97,17 +97,8 @@ public class DomainHelperService {
             // awake).
             // So wake up the meter and start polling for the session
             this.jasperWirelessSmsClient.sendWakeUpSMS(dlmsDevice.getIccId());
-            for (int i = 0; i < this.jasperGetSessionRetries; i++) {
-                Thread.sleep(this.jasperGetSessionSleepBetweenRetries);
-                deviceIpAddress = sessionProvider.getIpAddress(dlmsDevice.getIccId());
+            deviceIpAddress = this.pollForSession(sessionProvider, dlmsDevice);
 
-                if (deviceIpAddress != null) {
-                    break;
-                }
-            }
-        } catch (final InterruptedException e) {
-            throw new ProtocolAdapterException(
-                    "Interrupted while sleeping before calling the sessionProvider.getIpAddress", e);
         } catch (SessionProviderUnsupportedException | SessionProviderException e) {
             throw new ProtocolAdapterException("", e);
         }
@@ -116,6 +107,27 @@ public class DomainHelperService {
                     + " did not return an IP address for device: " + dlmsDevice.getDeviceIdentification()
                     + "and iccId: " + dlmsDevice.getIccId());
 
+        }
+        return deviceIpAddress;
+    }
+
+    private String pollForSession(final SessionProvider sessionProvider, final DlmsDevice dlmsDevice)
+            throws ProtocolAdapterException {
+
+        String deviceIpAddress = null;
+        try {
+            for (int i = 0; i < this.jasperGetSessionRetries; i++) {
+                Thread.sleep(this.jasperGetSessionSleepBetweenRetries);
+                deviceIpAddress = sessionProvider.getIpAddress(dlmsDevice.getIccId());
+                if (deviceIpAddress != null) {
+                    return deviceIpAddress;
+                }
+            }
+        } catch (final InterruptedException e) {
+            throw new ProtocolAdapterException(
+                    "Interrupted while sleeping before calling the sessionProvider.getIpAddress", e);
+        } catch (SessionProviderUnsupportedException | SessionProviderException e) {
+            throw new ProtocolAdapterException("", e);
         }
         return deviceIpAddress;
     }

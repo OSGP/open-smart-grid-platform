@@ -60,14 +60,36 @@ public class DataObjectToEventListConverter {
                     + eventLogCategory.getNumberOfEventElements());
         }
 
+        // extract values from List<DataObject> eventData.
+        final DateTime dateTime = this.extractDateTime(eventData);
+        final Short code = this.extractCode(eventData);
+        final Integer eventCounter = this.extractEventCounter(eventLogCategory, eventData);
+
+        LOGGER.info("Event time is {}, event code is {} and event counter is {}", dateTime, code, eventCounter);
+
+        // build a new EventDto with those values.
+        return new EventDto(dateTime, code.intValue(), eventCounter);
+    }
+
+    private DateTime extractDateTime(final List<DataObject> eventData) throws ProtocolAdapterException {
+
         final DateTime dateTime = this.dlmsHelperService.convertDataObjectToDateTime(eventData.get(0)).asDateTime();
         if (dateTime == null) {
             throw new ProtocolAdapterException("eventData time is null/unspecified");
         }
+        return dateTime;
+    }
+
+    private Short extractCode(final List<DataObject> eventData) throws ProtocolAdapterException {
+
         if (!eventData.get(1).isNumber()) {
             throw new ProtocolAdapterException("eventData value is not a number");
         }
-        final Short code = eventData.get(1).getValue();
+        return eventData.get(1).getValue();
+    }
+
+    private Integer extractEventCounter(final EventLogCategoryDto eventLogCategory, final List<DataObject> eventData)
+            throws ProtocolAdapterException {
 
         Integer eventCounter = null;
 
@@ -78,8 +100,6 @@ public class DataObjectToEventListConverter {
             eventCounter = eventData.get(2).getValue();
         }
 
-        LOGGER.info("Event time is {}, event code is {} and event counter is {}", dateTime, code, eventCounter);
-
-        return new EventDto(dateTime, code.intValue(), eventCounter);
+        return eventCounter;
     }
 }
