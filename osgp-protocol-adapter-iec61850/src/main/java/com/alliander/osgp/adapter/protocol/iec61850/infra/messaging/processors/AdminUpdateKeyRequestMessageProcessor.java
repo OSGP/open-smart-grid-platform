@@ -16,6 +16,8 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.NotSupportedException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
@@ -27,12 +29,6 @@ public class AdminUpdateKeyRequestMessageProcessor extends DeviceRequestMessageP
      * Logger for this class
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(AdminUpdateKeyRequestMessageProcessor.class);
-
-    /**
-     * Autowired field device management application service
-     */
-    // @Autowired
-    // private DeviceManagementService deviceManagementService;
 
     public AdminUpdateKeyRequestMessageProcessor() {
         super(DeviceRequestMessageType.UPDATE_KEY);
@@ -67,13 +63,10 @@ public class AdminUpdateKeyRequestMessageProcessor extends DeviceRequestMessageP
             return;
         }
 
-        // final String publicKey = (String) message.getObject();
-        //
         LOGGER.info("Calling application service function: {} for domain: {} {}", messageType, domain, domainVersion);
 
-        // this.deviceManagementService.updateKey(organisationIdentification,
-        // deviceIdentification, correlationUid,
-        // this.responseMessageSender, domain, domainVersion, messageType,
-        // publicKey);
+        this.handleExpectedError(new NotSupportedException(ComponentType.PROTOCOL_IEC61850,
+                "UpdateKey is not supported"), correlationUid, organisationIdentification, deviceIdentification,
+                domain, domainVersion, messageType);
     }
 }

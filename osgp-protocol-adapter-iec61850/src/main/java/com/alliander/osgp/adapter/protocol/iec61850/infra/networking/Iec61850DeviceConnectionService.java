@@ -71,7 +71,8 @@ public class Iec61850DeviceConnectionService {
         // values.
         try {
             // Try to connect.
-            LOGGER.info("Trying to connect to deviceIdentification: {} at ip {}", deviceIdentification, ipAddress);
+            LOGGER.info("Trying to connect to deviceIdentification: {} at IP address {}", deviceIdentification,
+                    ipAddress);
             final Iec61850ClientAssociation iec61850clientAssociation = this.iec61850Client.connect(
                     deviceIdentification, inetAddress);
             final ClientAssociation clientAssociation = iec61850clientAssociation.getClientAssociation();
@@ -94,6 +95,23 @@ public class Iec61850DeviceConnectionService {
         }
     }
 
+    public void disconnect(final String deviceIdentification) {
+        try {
+            LOGGER.info("Trying to disconnect from deviceIdentification: {}", deviceIdentification);
+            final Iec61850Connection iec61850Connection = this.fetchIec61850Connection(deviceIdentification);
+            if (iec61850Connection != null) {
+                iec61850Connection.getClientAssociation().disconnect();
+                this.removeIec61850Connection(deviceIdentification);
+                LOGGER.info("Disconnected from deviceIdentification: {}", deviceIdentification);
+            } else {
+                LOGGER.info("Unable to disconnect from deviceIdentification: {}, no cached connection was found",
+                        deviceIdentification);
+            }
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during disconnect()", e);
+        }
+    }
+
     public Iec61850ClientAssociation getIec61850ClientAssociation(final String deviceIdentification)
             throws ProtocolAdapterException {
         final Iec61850Connection iec61850Connection = this.fetchIec61850Connection(deviceIdentification);
@@ -107,7 +125,6 @@ public class Iec61850DeviceConnectionService {
 
     public ServerModel getServerModel(final String deviceIdentification) throws ProtocolAdapterException {
         final Iec61850Connection iec61850Connection = this.fetchIec61850Connection(deviceIdentification);
-        // TODO: add null-check.
         return iec61850Connection.getServerModel();
     }
 
@@ -127,11 +144,9 @@ public class Iec61850DeviceConnectionService {
     private Iec61850Connection fetchIec61850Connection(final String deviceIdentification)
             throws ProtocolAdapterException {
         final Iec61850Connection iec61850Connection = cache.get(deviceIdentification);
-        // if (iec61850Connection == null) {
-        // throw new
-        // ProtocolAdapterException(String.format("No connection found for deviceIdentification: %s",
-        // deviceIdentification));
-        // }
+        if (iec61850Connection == null) {
+            LOGGER.info("No connection found for device: {}", deviceIdentification);
+        }
         return iec61850Connection;
     }
 

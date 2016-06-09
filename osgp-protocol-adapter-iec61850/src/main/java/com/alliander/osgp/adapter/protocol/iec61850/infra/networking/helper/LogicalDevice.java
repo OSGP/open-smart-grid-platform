@@ -8,13 +8,21 @@
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper;
 
 /**
- * An interface, containing a function that can be applied. <R> is the given
- * return type. Can be {@link Void}
+ * Contains the name of the Logical Device.
  */
-public interface Function<R> {
-
+public enum LogicalDevice {
     /**
-     * The function, containing the bussiness logic of the Function
+     * The name of the Logical Device.
      */
-    R apply() throws Exception;
+    LOGICAL_DEVICE("SWDeviceGenericIO");
+
+    private String description;
+
+    private LogicalDevice(final String description) {
+        this.description = description;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
 }

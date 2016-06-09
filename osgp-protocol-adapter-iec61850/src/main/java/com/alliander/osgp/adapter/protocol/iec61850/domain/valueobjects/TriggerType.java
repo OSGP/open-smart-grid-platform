@@ -11,7 +11,6 @@ package com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects;
  * The timeout type, used by the Device schedule
  */
 public enum TriggerType {
-
     FIX(0),
     SENSOR(1),
     AUTONOME(2);
@@ -23,7 +22,6 @@ public enum TriggerType {
     }
 
     public static TriggerType getByIndex(final int index) {
-
         for (final TriggerType triggerType : values()) {
             if (triggerType.index == index) {
                 return triggerType;

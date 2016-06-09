@@ -8,7 +8,7 @@
 package com.alliander.osgp.adapter.protocol.iec61850.exceptions;
 
 /**
- * An exception, thrown when an invalid device configuration is detected
+ * Exception thrown when an invalid device configuration is detected.
  */
 public class InvalidConfigurationException extends ProtocolAdapterException {
 

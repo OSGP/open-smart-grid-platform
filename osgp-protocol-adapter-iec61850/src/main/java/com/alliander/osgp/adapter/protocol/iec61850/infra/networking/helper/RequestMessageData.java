@@ -73,5 +73,4 @@ public class RequestMessageData {
     public String getDeviceIdentification() {
         return this.deviceIdentification;
     }
-
 }

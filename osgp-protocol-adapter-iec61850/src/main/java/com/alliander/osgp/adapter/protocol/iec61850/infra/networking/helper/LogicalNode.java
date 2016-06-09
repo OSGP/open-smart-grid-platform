@@ -11,11 +11,29 @@ package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper;
  * Contains a list of all Logical nodes of the IEC61850 Device
  */
 public enum LogicalNode {
-
+    /**
+     * LLN0, configuration Logical Node zero.
+     */
+    LOGICAL_NODE_ZERO("LLN0"),
+    /**
+     * CSLC, configuration Logical Node.
+     */
     STREET_LIGHT_CONFIGURATION("CSLC"),
+    /**
+     * XSWC1, relays number 1 Logical Node.
+     */
     SWITCH_COMPONENT_ONE("XSWC1"),
+    /**
+     * XSWC2, relays number 1 Logical Node.
+     */
     SWITCH_COMPONENT_TWO("XSWC2"),
+    /**
+     * XSWC3, relays number 1 Logical Node.
+     */
     SWITCH_COMPONENT_THREE("XSWC3"),
+    /**
+     * XSWC4, relays number 1 Logical Node.
+     */
     SWITCH_COMPONENT_FOUR("XSWC4");
 
     private final String description;
@@ -28,7 +46,15 @@ public enum LogicalNode {
         return this.description;
     }
 
-    public LogicalNode getSwitchComponentByIndex(final int index) {
+    /**
+     * Get the name of a relay Logical Node by index/number.
+     *
+     * @param index
+     *            The index/number of the relay.
+     *
+     * @return The name of a relay Logical Node.
+     */
+    public static LogicalNode getSwitchComponentByIndex(final int index) {
         switch (index) {
         case 1:
             return SWITCH_COMPONENT_ONE;
@@ -42,5 +68,4 @@ public enum LogicalNode {
             throw new IllegalArgumentException("Invalid index value : " + index);
         }
     }
-
 }
