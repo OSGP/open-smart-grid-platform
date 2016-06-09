@@ -3,13 +3,13 @@ package com.alliander.osgp.shared.security;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.Security;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Assert;
@@ -18,17 +18,13 @@ import org.junit.Test;
 
 public class EncryptionServiceTest {
 
-    private static final String KEY2 = "key";
-    private static final String SECRET = "secret";
     private static final String SRC_TEST_RESOURCES_SECRET = "src/test/resources/secret";
-    private static final String TESTJE = "testje";
+    private static final String TEST_CONTENT = "content to encrypt and decrypt";
 
     private static class TestableEncService extends EncryptionService {
-
-        protected TestableEncService(final String keyPath) {
-            super(keyPath);
+        protected TestableEncService(final SecretKeySpec key) {
+            super(key);
         }
-
     }
 
     private static final String BC = "BC";
@@ -41,56 +37,58 @@ public class EncryptionServiceTest {
 
     @Test
     public void testEnDecrypt() throws NoSuchAlgorithmException, IOException, NoSuchProviderException {
-
         final KeyGenerator keygen = KeyGenerator.getInstance(AES, BC);
-        keygen.init(256);
+        keygen.init(128);
         final SecretKey key = keygen.generateKey();
-
         final byte[] keyBytes = key.getEncoded();
-        final File temp = File.createTempFile(SECRET, KEY2);
-        Files.write(temp.toPath(), keyBytes, StandardOpenOption.APPEND);
 
-        final EncryptionService encryptionService = new TestableEncService(temp.getPath());
+        final SecretKeySpec secretKey = this.createSecretKeySpec(keyBytes);
+        final EncryptionService encryptionService = new TestableEncService(secretKey);
 
-        Assert.assertEquals(TESTJE, new String(encryptionService.decrypt(encryptionService.encrypt(TESTJE.getBytes()))));
-
+        final byte[] encrypted = encryptionService.encrypt(TEST_CONTENT.getBytes());
+        final byte[] decrypted = encryptionService.decrypt(encrypted);
+        Assert.assertEquals(TEST_CONTENT, new String(decrypted));
     }
 
     @Test
     public void testEnDecryptDifferentService() throws NoSuchAlgorithmException, IOException, NoSuchProviderException {
-
         final KeyGenerator keygen = KeyGenerator.getInstance(AES, BC);
         keygen.init(128);
         final SecretKey key = keygen.generateKey();
-
         final byte[] keyBytes = key.getEncoded();
-        final File temp = File.createTempFile(SECRET, KEY2);
-        Files.write(temp.toPath(), keyBytes, StandardOpenOption.APPEND);
 
-        final byte[] enc = new TestableEncService(temp.getPath()).encrypt(TESTJE.getBytes());
+        final SecretKeySpec secretKey = this.createSecretKeySpec(keyBytes);
+        final byte[] enc = new TestableEncService(secretKey).encrypt(TEST_CONTENT.getBytes());
 
-        Assert.assertEquals(TESTJE, new String(new TestableEncService(temp.getPath()).decrypt(enc)));
-
+        Assert.assertEquals(TEST_CONTENT, new String(new TestableEncService(secretKey).decrypt(enc)));
     }
 
     @Test
     public void testOpenSslSecret() throws NoSuchAlgorithmException, IOException, NoSuchProviderException {
+        final SecretKeySpec secretKey = this.createSecretKeySpec(new File(SRC_TEST_RESOURCES_SECRET));
+        final byte[] enc = new TestableEncService(secretKey).encrypt(TEST_CONTENT.getBytes());
 
-        final byte[] enc = new TestableEncService(new File(SRC_TEST_RESOURCES_SECRET).getPath()).encrypt(TESTJE
-                .getBytes());
-
-        Assert.assertEquals(TESTJE,
-                new String(new TestableEncService(new File(SRC_TEST_RESOURCES_SECRET).getPath()).decrypt(enc)));
-
+        Assert.assertEquals(TEST_CONTENT, new String(new TestableEncService(secretKey).decrypt(enc)));
     }
 
     @Test
     public void testOpenSslEncrypted() throws NoSuchAlgorithmException, IOException, NoSuchProviderException {
         final byte[] encrypted = Files.readAllBytes(new File("src/test/resources/plain.enc").toPath());
-        final byte[] decrypted = new EncryptionService(new File(SRC_TEST_RESOURCES_SECRET).getPath())
-                .decrypt(encrypted);
-        Assert.assertEquals("hallo", new String(decrypted));
+        final SecretKeySpec secretKey = this.createSecretKeySpec(new File(SRC_TEST_RESOURCES_SECRET).getPath());
+        final byte[] decrypted = new EncryptionService(secretKey).decrypt(encrypted);
 
+        Assert.assertEquals("hallo", new String(decrypted));
     }
 
+    private SecretKeySpec createSecretKeySpec(final byte[] bytes) throws IOException {
+        return new SecretKeySpec(bytes, EncryptionService.SECRET_KEY_SPEC);
+    }
+
+    private SecretKeySpec createSecretKeySpec(final String filePath) throws IOException {
+        return new SecretKeySpec(Files.readAllBytes(new File(filePath).toPath()), EncryptionService.SECRET_KEY_SPEC);
+    }
+
+    private SecretKeySpec createSecretKeySpec(final File file) throws IOException {
+        return new SecretKeySpec(Files.readAllBytes(file.toPath()), EncryptionService.SECRET_KEY_SPEC);
+    }
 }
