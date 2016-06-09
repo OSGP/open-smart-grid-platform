@@ -312,13 +312,8 @@ public class Iec61850DeviceService implements DeviceService {
             // ignoring required, unused fields daliconfiguration, meterType,
             // shortTermHistoryIntervalMinutes, preferredLinkType,
             // longTermHistoryInterval and longTermHistoryIntervalType
-
-            final Ssld ssld = this.ssldDataService.findDevice(deviceRequest.getDeviceIdentification());
-
             this.setConfigurationOnDevice(new DeviceConnection(new Iec61850Connection(new Iec61850ClientAssociation(
-                    clientAssociation, null), serverModel), deviceRequest.getDeviceIdentification()), ssld,
-                    configuration);
-
+                    clientAssociation, null), serverModel), deviceRequest.getDeviceIdentification()), configuration);
         } catch (final ConnectionFailureException se) {
             LOGGER.error("Could not connect to device after all retries", se);
 
@@ -1018,9 +1013,9 @@ public class Iec61850DeviceService implements DeviceService {
         configuration.setTimeSyncFrequency(timeSyncFrequency);
         configuration.setAutomaticSummerTimingEnabled(automaticSummerTimingEnabled);
         configuration.setSummerTimeDetails(new DaylightSavingTimeTransition(TIME_ZONE_AMSTERDAM, summerTimeDetails)
-                .getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
+        .getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
         configuration.setWinterTimeDetails(new DaylightSavingTimeTransition(TIME_ZONE_AMSTERDAM, winterTimeDetails)
-                .getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
+        .getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
 
         return configuration;
     }
@@ -1059,8 +1054,8 @@ public class Iec61850DeviceService implements DeviceService {
         }
     }
 
-    private void setConfigurationOnDevice(final DeviceConnection deviceConnection, final Ssld ssld,
-            final ConfigurationDto configuration) throws ProtocolAdapterException {
+    private void setConfigurationOnDevice(final DeviceConnection deviceConnection, final ConfigurationDto configuration)
+            throws ProtocolAdapterException {
         final Function<Void> function = new Function<Void>() {
 
             @Override
