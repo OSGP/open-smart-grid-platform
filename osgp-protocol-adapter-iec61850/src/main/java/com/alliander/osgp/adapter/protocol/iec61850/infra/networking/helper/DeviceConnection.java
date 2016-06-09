@@ -32,8 +32,6 @@ public class DeviceConnection {
         final FcModelNode fcModelNode = (FcModelNode) this.connection.getServerModel().findModelNode(
                 this.createObjectReference(logicalNode, dataAttribute), fc);
         if (fcModelNode == null) {
-            // TODO exceptionHandling, null probably means the node doesn't
-            // exist
             LOGGER.error("FcModelNdoe is null, most likely the data attribute: {} does not exist",
                     dataAttribute.getDescription());
         }
