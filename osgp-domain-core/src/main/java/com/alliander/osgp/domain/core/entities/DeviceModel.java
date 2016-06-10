@@ -5,7 +5,6 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-
 package com.alliander.osgp.domain.core.entities;
 
 import javax.persistence.Column;

@@ -25,10 +25,12 @@ import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessage;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessageSender;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessageType;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
+import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceModelFirmwareRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceModelRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableManufacturerRepository;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
+import com.alliander.osgp.domain.core.entities.DeviceModelFirmware;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.exceptions.ExistingEntityException;
@@ -66,6 +68,9 @@ public class FirmwareManagementService {
 
     @Autowired
     private WritableDeviceModelRepository deviceModelRepository;
+
+    @Autowired
+    private WritableDeviceModelFirmwareRepository deviceModelFirmwareRepository;
 
     public String enqueueUpdateFirmwareRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @NotBlank final String firmwareIdentification,
@@ -198,7 +203,6 @@ public class FirmwareManagementService {
         }
     }
 
-
     /**
      * Returns a list of all DeviceModels in the Platform
      */
@@ -291,6 +295,21 @@ public class FirmwareManagementService {
             changedDeviceModel.setDescription(description);
             this.deviceModelRepository.save(changedDeviceModel);
         }
+    }
+
+    /**
+     * Returns a list of all DeviceModelFirmwares in the Platform
+     */
+    @Transactional(value = "writableTransactionManager")
+    public List<DeviceModelFirmware> findAllDeviceModelFirmwares(final String organisationIdentification) throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_DEVICE_MODELS_FIRMWARE);
+
+        List<DeviceModelFirmware> deviceModelFirmwares = new ArrayList<DeviceModelFirmware>();
+        deviceModelFirmwares = this.deviceModelFirmwareRepository.findAll();
+
+        return deviceModelFirmwares;
     }
 
     public ResponseMessage dequeueGetFirmwareResponse(final String correlationUid) throws OsgpException {

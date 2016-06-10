@@ -34,6 +34,8 @@ import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.ChangeDevice
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.ChangeDeviceModelResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.ChangeManufacturerRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.ChangeManufacturerResponse;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllDeviceModelFirmwaresRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllDeviceModelFirmwaresResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllDeviceModelsRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllDeviceModelsResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllManufacturersRequest;
@@ -56,6 +58,7 @@ import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwa
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareResponse;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
+import com.alliander.osgp.domain.core.entities.DeviceModelFirmware;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
@@ -499,6 +502,36 @@ public class FirmwareManagementEndpoint {
         changeDeviceModelResponse.setResult(OsgpResultType.OK);
 
         return changeDeviceModelResponse;
+    }
+
+    // === DEVICEMODELFIRMWARES LOGIC ===
+
+    @PayloadRoot(localPart = "FindAllDeviceModelFirmwaresRequest", namespace = NAMESPACE)
+    @ResponsePayload
+    public FindAllDeviceModelFirmwaresResponse findAllDeviceModelFirmwares(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final FindAllDeviceModelFirmwaresRequest request) throws OsgpException {
+
+        LOGGER.info("Find all DeviceModelFirmwares for organisation: {}.", organisationIdentification);
+
+        final FindAllDeviceModelFirmwaresResponse response = new FindAllDeviceModelFirmwaresResponse();
+
+        try {
+            final List<DeviceModelFirmware> deviceModelFirmwares = this.firmwareManagementService
+                    .findAllDeviceModelFirmwares(organisationIdentification);
+
+            response.getDeviceModelFirmwares().addAll(this.firmwareManagementMapper.mapAsList(deviceModelFirmwares,
+                    com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.DeviceModelFirmware.class));
+
+        } catch (final MethodConstraintViolationException e) {
+            LOGGER.error("Exception find all devicemodelfirmwares {}: ", e);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+
+        return response;
     }
 
     private void handleException(final Exception e) throws OsgpException {
