@@ -186,18 +186,25 @@ public class FirmwareManagementService {
      * {@link Manufacturer} doesn't exists
      */
     @Transactional(value = "writableTransactionManager")
-    public void removeManufacturer(@Identification final String organisationIdentification, @Valid final String code)
+    public void removeManufacturer(@Identification final String organisationIdentification, @Valid final String manufacturerId)
             throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.REMOVE_MANUFACTURER);
 
-        final Manufacturer dataseManufacturer = this.manufacturerRepository.findByManufacturerId(code);
+        final Manufacturer dataseManufacturer = this.manufacturerRepository.findByManufacturerId(manufacturerId);
+        final List<DeviceModel> deviceModels = this.deviceModelRepository.findByManufacturerId(dataseManufacturer);
+
+        if (deviceModels.size() > 0) {
+            LOGGER.info("Manufacturer is linked to a Model.");
+            throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICEMODEL_MANUFACTURER, ComponentType.WS_CORE,
+                    new ExistingEntityException(DeviceModel.class, deviceModels.get(0).getModelCode()));
+        }
 
         if (dataseManufacturer == null) {
             LOGGER.info("Manufacturer not found.");
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_MANUFACTURER, ComponentType.WS_CORE,
-                    new ExistingEntityException(Manufacturer.class, code));
+                    new ExistingEntityException(Manufacturer.class, manufacturerId));
         } else {
             this.manufacturerRepository.delete(dataseManufacturer);
         }
