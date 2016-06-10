@@ -29,13 +29,13 @@
       <artifactId>osgp-dto</artifactId>
     </dependency>
 
-		<!-- Joda Time (Date/Time util) -->
+        <!-- Joda Time (Date/Time util) -->
     <dependency>
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
     </dependency>
 
-		<!-- OpenMUC Dependencies -->
+        <!-- OpenMUC Dependencies -->
     <dependency>
       <groupId>org.openmuc</groupId>
       <artifactId>jdlms</artifactId>
