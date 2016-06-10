@@ -16,10 +16,12 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.NotSupportedException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
- * Class for processing common revoke key request messages
+ * Class for processing common revoke key request messages.
  */
 @Component("iec61850AdminRevokeKeyRequestMessageProcessor")
 public class AdminRevokeKeyRequestMessageProcessor extends DeviceRequestMessageProcessor {
@@ -27,12 +29,6 @@ public class AdminRevokeKeyRequestMessageProcessor extends DeviceRequestMessageP
      * Logger for this class
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(AdminRevokeKeyRequestMessageProcessor.class);
-
-    /**
-     * Autowired field device management application service
-     */
-    // @Autowired
-    // private DeviceManagementService deviceManagementService;
 
     public AdminRevokeKeyRequestMessageProcessor() {
         super(DeviceRequestMessageType.REVOKE_KEY);
@@ -69,8 +65,8 @@ public class AdminRevokeKeyRequestMessageProcessor extends DeviceRequestMessageP
 
         LOGGER.info("Calling application service function: {} for domain: {} {}", messageType, domain, domainVersion);
 
-        // this.deviceManagementService.revokeKey(organisationIdentification,
-        // deviceIdentification, correlationUid,
-        // this.responseMessageSender, domain, domainVersion, messageType);
+        this.handleExpectedError(new NotSupportedException(ComponentType.PROTOCOL_IEC61850,
+                "RevokeKey is not supported"), correlationUid, organisationIdentification, deviceIdentification,
+                domain, domainVersion, messageType);
     }
 }

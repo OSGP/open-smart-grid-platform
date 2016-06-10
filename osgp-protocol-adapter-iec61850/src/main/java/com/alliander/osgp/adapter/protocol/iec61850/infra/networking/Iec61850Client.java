@@ -13,16 +13,12 @@ import java.net.InetAddress;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
-import org.openmuc.openiec61850.BdaBoolean;
 import org.openmuc.openiec61850.ClientAssociation;
 import org.openmuc.openiec61850.ClientSap;
 import org.openmuc.openiec61850.Fc;
-import org.openmuc.openiec61850.FcModelNode;
-import org.openmuc.openiec61850.ModelNode;
 import org.openmuc.openiec61850.SclParseException;
 import org.openmuc.openiec61850.ServerModel;
 import org.openmuc.openiec61850.ServiceError;
-import org.openmuc.openiec61850.Urcb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +27,12 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.protocol.iec61850.application.services.DeviceManagementService;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ConnectionFailureException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Function;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalNode;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.NodeContainer;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
 
 @Component
 public class Iec61850Client {
@@ -59,19 +60,27 @@ public class Iec61850Client {
                 this.iec61850PortClientLocal, this.iec61850PortServer);
     }
 
+    /**
+     * Connect to a given device. This will read the device model, create a
+     * client association and read all data values from the device.
+     *
+     * @param deviceIdentification
+     *            The device identification.
+     * @param ipAddress
+     *            The IP address of the device.
+     *
+     * @return An {@link Iec61850ClientAssociation} instance.
+     *
+     * @throws ServiceError
+     *             In case the connection to the device could not be
+     *             established.
+     */
     public Iec61850ClientAssociation connect(final String deviceIdentification, final InetAddress ipAddress)
             throws ServiceError {
+        // Alternatively you could use ClientSap(SocketFactory factory) to e.g.
+        // connect using SSL.
 
         final ClientSap clientSap = new ClientSap();
-        // alternatively you could use ClientSap(SocketFactory factory) to e.g.
-        // connect using SSL
-
-        // optionally you can set some association parameters (but usually the
-        // default should work):
-        // clientSap.setTSelRemote(new byte[] { 0, 1 });
-        // clientSap.setTSelLocal(new byte[] { 0, 0 });
-
-        // final SampleClient eventHandler = new SampleClient();
         final Iec61850ClientAssociation clientAssociation;
 
         LOGGER.info("Attempting to connect to server: {} on port: {}", ipAddress.getHostAddress(),
@@ -95,90 +104,37 @@ public class Iec61850Client {
             return null;
         }
 
-        LOGGER.info("Connected to device: {} !!!", deviceIdentification);
-
-        // @formatter:off
-        // ServerModel serverModel;
-        // try {
-        // // requestModel() will call all GetDirectory and GetDefinition ACSI
-        // // services needed to get the complete
-        // // server model
-        // serverModel = association.retrieveModel();
-        // } catch (final ServiceError e) {
-        // LOGGER.error("Service Error requesting model.", e);
-        // association.close();
-        // return null;
-        // } catch (final IOException e) {
-        // LOGGER.error("Fatal IOException requesting model.", e);
-        // return null;
-        // }
-        //
-        // // instead of calling retrieveModel you could read the model directly
-        // // from an SCL file:
-        // // try {
-        // // serverModel =
-        // //
-        // association.getModelFromSclFile("../sampleServer/sampleModel.icd");
-        // // } catch (SclParseException e1) {
-        // // logger.error("Error parsing SCL file.", e1);
-        // // return;
-        // // }
-        //
-        //
-        // // get the values of all data attributes in the model:
-        // try {
-        // association.getAllDataValues();
-        // } catch (final IOException e) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
-        //
-        // // example for writing a variable:
-        // final FcModelNode modCtlModel = (FcModelNode)
-        // serverModel.findModelNode("ied1lDevice1/CSWI1.Mod.ctlModel",
-        // Fc.CF);
-        // association.setDataValues(modCtlModel);
-        //
-        // // example for enabling reporting:
-        // final Urcb urcb = serverModel.getUrcb("ied1lDevice1/LLN0.urcb1");
-        // if (urcb == null) {
-        // LOGGER.error("ReportControlBlock not found");
-        // } else {
-        // association.getRcbValues(urcb);
-        // LOGGER.info("urcb name: " + urcb.getName());
-        // LOGGER.info("RptId: " + urcb.getRptId());
-        // LOGGER.info("RptEna: " + urcb.getRptEna().getValue());
-        // association.reserveUrcb(urcb);
-        // association.enableReporting(urcb);
-        // association.startGi(urcb);
-        // association.disableReporting(urcb);
-        // association.cancelUrcbReservation(urcb);
-        // }
-        //
-        //
-        // // example for reading a variable:
-        // final FcModelNode totW = (FcModelNode)
-        // serverModel.findModelNode("ied1lDevice1/MMXU1.TotW", Fc.MX);
-        // final BdaFloat32 totWmag = (BdaFloat32)
-        // totW.getChild("mag").getChild("f");
-        // final BdaTimestamp totWt = (BdaTimestamp) totW.getChild("t");
-        // final BdaQuality totWq = (BdaQuality) totW.getChild("q");
-        // @formatter:on
-
+        LOGGER.info("Connected to device: {}", deviceIdentification);
         return clientAssociation;
     }
 
+    /**
+     * Disconnect from the device.
+     *
+     * @param clientAssociation
+     *            The {@link ClientAssociation} instance.
+     * @param deviceIdentification
+     *            The device identification.
+     */
     public void disconnect(final ClientAssociation clientAssociation, final String deviceIdentification) {
         LOGGER.info("disconnecting from device: {}...", deviceIdentification);
         clientAssociation.disconnect();
         LOGGER.info("disconnected from device: {} !!!", deviceIdentification);
     }
 
+    /**
+     * Read the device model from the device.
+     *
+     * @param clientAssociation
+     *            The {@link ClientAssociation} instance.
+     *
+     * @return A {@link ServerModel} instance.
+     */
     public ServerModel readServerModelFromDevice(final ClientAssociation clientAssociation) {
         ServerModel serverModel;
         try {
-            // retrieveModel() will call all GetDirectory and GetDefinition ACSI
-            // services needed to get the complete server model
+            // RetrieveModel() will call all GetDirectory and GetDefinition ACSI
+            // services needed to get the complete server model.
             serverModel = clientAssociation.retrieveModel();
             return serverModel;
         } catch (final ServiceError e) {
@@ -192,6 +148,7 @@ public class Iec61850Client {
     }
 
     /**
+     * Use an ICD file (model file) to read the device model.
      *
      * @param clientAssociation
      *            Instance of {@link ClientAssociation}
@@ -200,8 +157,8 @@ public class Iec61850Client {
      * @return Instance of {@link ServerModel}
      */
     public ServerModel readServerModelFromSclFile(final ClientAssociation clientAssociation, final String filePath) {
-        // instead of calling retrieveModel you could read the model directly
-        // from an SCL file:
+        // Instead of calling retrieveModel you could read the model directly
+        // from an SCL file.
         try {
             return clientAssociation.getModelFromSclFile(filePath);
         } catch (final SclParseException e) {
@@ -210,9 +167,21 @@ public class Iec61850Client {
         }
     }
 
+    /**
+     * After the device has registered with the platform successfully, the
+     * device has to be informed that the registration worked. Disable an
+     * attribute so the device will stop attempting to register once a minute.
+     *
+     * @param deviceIdentification
+     *            The device identification.
+     * @param ipAddress
+     *            The IP address of the device.
+     *
+     * @throws ProtocolAdapterException
+     *             In case the connection to the device can not be established.
+     */
     public void disableRegistration(final String deviceIdentification, final InetAddress ipAddress)
             throws ProtocolAdapterException {
-
         final Iec61850ClientAssociation iec61850ClientAssociation;
         try {
             iec61850ClientAssociation = this.connect(deviceIdentification, ipAddress);
@@ -222,22 +191,16 @@ public class Iec61850Client {
         if (iec61850ClientAssociation == null || iec61850ClientAssociation.getClientAssociation() == null) {
             throw new ProtocolAdapterException("Unable to connect to device to disable registration.");
         }
-        final ClientAssociation clientAssociation = iec61850ClientAssociation.getClientAssociation();
 
         final Function<Void> function = new Function<Void>() {
 
             @Override
             public Void apply() throws Exception {
-
-                final ServerModel serverModel = Iec61850Client.this.readServerModelFromDevice(clientAssociation);
-                final String objectReferenceRegNode = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
-                        + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
-                        + LogicalNodeAttributeDefinitons.PROPERTY_REG_CONFIGURATION;
-                final FcModelNode registrationNode = (FcModelNode) serverModel.findModelNode(objectReferenceRegNode,
-                        Fc.CF);
-                final BdaBoolean notificationEnabledNode = (BdaBoolean) registrationNode.getChild("ntfEnb");
-                notificationEnabledNode.setValue(false);
-                clientAssociation.setDataValues(notificationEnabledNode);
+                final DeviceConnection deviceConnection = new DeviceConnection(new Iec61850Connection(
+                        iec61850ClientAssociation, null), deviceIdentification);
+                final NodeContainer deviceRegistration = deviceConnection.getFcModelNode(
+                        LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.REGISTRATION, Fc.CF);
+                deviceRegistration.writeBoolean(SubDataAttribute.DEVICE_REGISTRATION_ENABLED, false);
 
                 return null;
             }
@@ -246,96 +209,22 @@ public class Iec61850Client {
         this.sendCommandWithRetry(function);
     }
 
+    /**
+     * Read the values of all data attributes of all Logical Nodes.
+     *
+     * @param clientAssociation
+     *            An {@link ClientAssociation} instance.
+     *
+     * @return True if all values have been read successfully.
+     */
     public boolean readAllDataValues(final ClientAssociation clientAssociation) {
-        // get the values of all data attributes in the model:
+        // Get the values of all data attributes in the model.
         try {
             clientAssociation.getAllDataValues();
             return true;
         } catch (ServiceError | IOException e) {
             LOGGER.error("Unexpected excpetion during readAllDataValues", e);
             return false;
-        }
-    }
-
-    public void readDataValue(final ServerModel serverModel, final String logicalNodeProperty) {
-        LOGGER.info("readDataValue for logicalNodeProperty: {}", logicalNodeProperty);
-
-        // final FcModelNode totW = (FcModelNode)
-        // serverModel.findModelNode("ied1lDevice1/MMXU1.TotW", Fc.MX);
-        // final BdaFloat32 totWmag = (BdaFloat32)
-        // totW.getChild("mag").getChild("f");
-        // final BdaTimestamp totWt = (BdaTimestamp) totW.getChild("t");
-        // final BdaQuality totWq = (BdaQuality) totW.getChild("q");
-
-        // LOGGER.info("totWmag: {}, totWt: {}, totWq: {}", totWmag.getFloat(),
-        // totWt.getDate(), totWq.getValue());
-
-        final String xswc1PositionStateObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
-                + LogicalNodeAttributeDefinitons.getNodeNameForRelayIndex(1)
-                + LogicalNodeAttributeDefinitons.PROPERTY_POSITION;
-        final FcModelNode switchPositonState = (FcModelNode) serverModel.findModelNode(
-                xswc1PositionStateObjectReference, Fc.ST);
-        final BdaBoolean state = (BdaBoolean) switchPositonState
-                .getChild(LogicalNodeAttributeDefinitons.PROPERTY_POSITION_ATTRIBUTE_STATE);
-        LOGGER.info("state: {}", state);
-    }
-
-    public void writeDataValue(final ClientAssociation clientAssociation, final ServerModel serverModel,
-            final String logicalNodeProperty, final boolean isOn) {
-        // LOGGER.info("writeDataValue for logicalNodeProperty: {}",
-        // logicalNodeProperty);
-        //
-        // final FcModelNode modCtlModel = (FcModelNode)
-        // serverModel.findModelNode("ied1lDevice1/CSWI1.Mod.ctlModel",
-        // Fc.CF);
-        // try {
-        // clientAssociation.setDataValues(modCtlModel);
-        // } catch (ServiceError | IOException e) {
-        // LOGGER.error("Unexpected excpetion during readAllDataValues", e);
-        // }
-
-        LOGGER.info("writeDataValue for logicalNodeProperty: {}", logicalNodeProperty);
-
-        final String xswc1PositionOperationObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
-                + LogicalNodeAttributeDefinitons.getNodeNameForRelayIndex(1)
-                + LogicalNodeAttributeDefinitons.PROPERTY_POSITION;
-
-        LOGGER.info("xswc1PositionOperationObjectReference: {}", xswc1PositionOperationObjectReference);
-
-        final FcModelNode switchPositionOperation = (FcModelNode) serverModel.findModelNode(
-                xswc1PositionOperationObjectReference, Fc.CO);
-
-        try {
-            final ModelNode x = switchPositionOperation.getChild("Oper");
-
-            final BdaBoolean position = (BdaBoolean) x.getChild("ctlVal");
-            position.setValue(isOn);
-            clientAssociation.setDataValues((FcModelNode) x);
-        } catch (ServiceError | IOException e) {
-            LOGGER.error("Unexpected excpetion during writeDataValue", e);
-        }
-    }
-
-    public void enableUnbufferedReporting(final ClientAssociation clientAssociation, final ServerModel serverModel,
-            final String logicalNodeProperty) {
-        // example for enabling unbuffered reporting:
-        final Urcb urcb = serverModel.getUrcb("ied1lDevice1/LLN0.urcb1");
-        if (urcb == null) {
-            LOGGER.error("ReportControlBlock not found");
-        } else {
-            try {
-                clientAssociation.getRcbValues(urcb);
-                LOGGER.info("urcb name: " + urcb.getName());
-                LOGGER.info("RptId: " + urcb.getRptId());
-                LOGGER.info("RptEna: " + urcb.getRptEna().getValue());
-                clientAssociation.reserveUrcb(urcb);
-                clientAssociation.enableReporting(urcb);
-                clientAssociation.startGi(urcb);
-                clientAssociation.disableReporting(urcb);
-                clientAssociation.cancelUrcbReservation(urcb);
-            } catch (ServiceError | IOException e) {
-                LOGGER.error("Unexpected excpetion during enableReporting", e);
-            }
         }
     }
 

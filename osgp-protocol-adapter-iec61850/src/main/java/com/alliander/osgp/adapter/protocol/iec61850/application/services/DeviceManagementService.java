@@ -32,7 +32,7 @@ public class DeviceManagementService {
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementService.class);
 
     @Autowired
-    SsldDataRepository ssldDataRepository;
+    private SsldDataRepository ssldDataRepository;
 
     @Autowired
     private OsgpRequestMessageSender osgpRequestMessageSender;
@@ -45,14 +45,15 @@ public class DeviceManagementService {
      * Send an event notification to OSGP Core.
      *
      * @param deviceIdentification
-     *            The identification of the device
+     *            The identification of the device.
      * @param eventNotifications
-     *            The event notifications
+     *            The event notifications.
+     * 
      * @throws ProtocolAdapterException
+     *             In case the device can not be found in the database.
      */
     public void addEventNotifications(final String deviceIdentification,
-            final List<EventNotificationDto> eventNotifications)
-            throws ProtocolAdapterException {
+            final List<EventNotificationDto> eventNotifications) throws ProtocolAdapterException {
 
         final Ssld ssldDevice = this.ssldDataRepository.findByDeviceIdentification(deviceIdentification);
         if (ssldDevice == null) {
@@ -68,6 +69,17 @@ public class DeviceManagementService {
         this.osgpRequestMessageSender.send(requestMessage, DeviceFunctionDto.ADD_EVENT_NOTIFICATION.name());
     }
 
+    /**
+     * Get the device output setting (relay configuration) for a given device.
+     *
+     * @param deviceIdentification
+     *            The device identification.
+     *
+     * @return The {@link DeviceOutputSettings} for the device.
+     *
+     * @throws ProtocolAdapterException
+     *             In case the device can not be found in the database.
+     */
     public List<DeviceOutputSetting> getDeviceOutputSettings(final String deviceIdentification)
             throws ProtocolAdapterException {
 

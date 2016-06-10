@@ -11,7 +11,6 @@ package com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects;
  * The ActionType indexing, used by the Device schedule
  */
 public enum ScheduleWeekday {
-
     WEEKEND(-2),
     WEEKDAY(-1),
     ALL(0),
@@ -30,7 +29,6 @@ public enum ScheduleWeekday {
     }
 
     public static ScheduleWeekday getByIndex(final int index) {
-
         for (final ScheduleWeekday deviceRelayType : values()) {
             if (deviceRelayType.index == index) {
                 return deviceRelayType;
