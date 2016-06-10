@@ -301,6 +301,33 @@ public class DeviceManagementService {
 
     }
 
+    public void removeDeviceAuthorization(@Identification final String ownerOrganisationIdentification,
+            @Identification final String organisationIdentification, @Identification final String deviceIdentification,
+            @NotNull final DeviceFunctionGroup group) throws FunctionalException {
+
+        if (group == DeviceFunctionGroup.OWNER) {
+            throw new FunctionalException(FunctionalExceptionType.METHOD_NOT_ALLOWED_FOR_OWNER, ComponentType.WS_ADMIN,
+                    new OperationNotSupportedException("Owner not allowed to set via this method."));
+        }
+
+        // Check input data and authorization
+        final Organisation organisation = this.findOrganisation(organisationIdentification);
+
+        final Organisation ownerOrganisation = this.findOrganisation(ownerOrganisationIdentification);
+
+        final Device device = this.findDevice(deviceIdentification);
+
+        this.isAllowed(ownerOrganisation, device, DeviceFunction.SET_DEVICE_AUTHORIZATION);
+
+        // All checks pass, remove authorization
+        device.removeAuthorization(organisation, group);
+        this.deviceRepository.save(device);
+        this.authorizationRepository.deleteByDeviceAndFunctionGroup(device, group);
+
+        LOGGER.info("Organisation {} now no longer has authorization for function group {} on device {}",
+                organisationIdentification, deviceIdentification, group);
+    }
+
     /**
      * Get all devices which have no owner.
      *

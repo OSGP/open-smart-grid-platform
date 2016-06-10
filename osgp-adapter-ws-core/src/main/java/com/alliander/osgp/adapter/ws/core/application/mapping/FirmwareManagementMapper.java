@@ -21,5 +21,11 @@ public class FirmwareManagementMapper extends ConfigurableMapper {
     @Override
     public void configure(final MapperFactory mapperFactory) {
         mapperFactory.classMap(FirmwareVersion.class, FirmwareVersionDto.class).byDefault().register();
+
+        mapperFactory.registerClassMap(mapperFactory
+                .classMap(com.alliander.osgp.domain.core.entities.DeviceModel.class,
+                        com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.DeviceModel.class)
+                        .field("manufacturerId.manufacturerId", "manufacturer").byDefault().toClassMap());
     }
+
 }
