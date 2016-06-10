@@ -41,6 +41,7 @@ public enum FunctionalExceptionType {
     // Manufacturer exceptions
     UNKNOWN_MANUFACTURER(501, "Manufacturer does not exist."),
     EXISTING_MANUFACTURER(502, "Manufacturer already exists."),
+    EXISTING_DEVICEMODEL_MANUFACTURER(503, "Manufacturer is linked to a Model."),
 
     // DeviceModel exceptions
     UNKNOWN_DEVICEMODEL(601, "DeviceModel does not exist."),
