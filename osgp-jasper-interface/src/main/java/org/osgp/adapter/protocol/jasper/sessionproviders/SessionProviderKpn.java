@@ -11,7 +11,6 @@ import javax.annotation.PostConstruct;
 
 import org.osgp.adapter.protocol.jasper.infra.ws.JasperWirelessTerminalClient;
 import org.osgp.adapter.protocol.jasper.sessionproviders.exceptions.SessionProviderException;
-import org.osgp.adapter.protocol.jasper.sessionproviders.exceptions.SessionProviderUnsupportedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +39,7 @@ public class SessionProviderKpn extends SessionProvider {
     }
 
     @Override
-    public String getIpAddress(final String iccId) throws SessionProviderException, SessionProviderUnsupportedException {
+    public String getIpAddress(final String iccId) throws SessionProviderException {
         GetSessionInfoResponse response = null;
         try {
             response = this.jasperWirelessTerminalClient.getSession(iccId);
@@ -48,7 +47,7 @@ public class SessionProviderKpn extends SessionProvider {
             final String errorMessage = String.format("iccId %s is probably not supported in this session provider",
                     iccId);
             LOGGER.warn(errorMessage);
-            throw new SessionProviderUnsupportedException(errorMessage, e);
+            throw new SessionProviderException(errorMessage, e);
         }
 
         final SessionInfoType sessionInfoType = this.getSessionInfo(response);

@@ -15,7 +15,6 @@ import org.osgp.adapter.protocol.jasper.infra.ws.JasperWirelessSmsClient;
 import org.osgp.adapter.protocol.jasper.sessionproviders.SessionProvider;
 import org.osgp.adapter.protocol.jasper.sessionproviders.SessionProviderService;
 import org.osgp.adapter.protocol.jasper.sessionproviders.exceptions.SessionProviderException;
-import org.osgp.adapter.protocol.jasper.sessionproviders.exceptions.SessionProviderUnsupportedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,16 +43,10 @@ public class DomainHelperService {
     private int jasperGetSessionSleepBetweenRetries;
 
     /**
-     * Use {@link #findDlmsDevice(DlmsDeviceMessageMetadata)} instead, as this
-     * will also set the IP address.
-     * <p>
-     * If this method turns out to be called from a location where
-     * {@link DlmsDeviceMessageMetadata} is not available, check if the IP
-     * address needs to be provided in another way.
-     *
-     * @deprecated
+     * This method can be used to find an mBusDevice. For other devices, use
+     * {@link #findDlmsDevice(DlmsDeviceMessageMetadata)} instead, as this will
+     * also set the IP address.
      */
-    @Deprecated
     public DlmsDevice findDlmsDevice(final String deviceIdentification) throws FunctionalException {
         final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
         if (dlmsDevice == null) {
@@ -99,7 +92,7 @@ public class DomainHelperService {
             this.jasperWirelessSmsClient.sendWakeUpSMS(dlmsDevice.getIccId());
             deviceIpAddress = this.pollForSession(sessionProvider, dlmsDevice);
 
-        } catch (SessionProviderUnsupportedException | SessionProviderException e) {
+        } catch (final SessionProviderException e) {
             throw new ProtocolAdapterException("", e);
         }
         if ((deviceIpAddress == null) || "".equals(deviceIpAddress)) {
@@ -126,7 +119,7 @@ public class DomainHelperService {
         } catch (final InterruptedException e) {
             throw new ProtocolAdapterException(
                     "Interrupted while sleeping before calling the sessionProvider.getIpAddress", e);
-        } catch (SessionProviderUnsupportedException | SessionProviderException e) {
+        } catch (final SessionProviderException e) {
             throw new ProtocolAdapterException("", e);
         }
         return deviceIpAddress;
