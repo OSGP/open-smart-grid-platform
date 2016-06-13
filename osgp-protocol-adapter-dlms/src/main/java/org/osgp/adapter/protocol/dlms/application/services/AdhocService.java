@@ -9,6 +9,7 @@ package org.osgp.adapter.protocol.dlms.application.services;
 
 import java.io.Serializable;
 
+import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.DlmsConnection;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAssociationLnObjectsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetSpecificConfigurationObjectCommandExecutor;
@@ -40,7 +41,11 @@ public class AdhocService {
     // === REQUEST Synchronize Time DATA ===
 
     public void synchronizeTime(final DlmsConnection conn, final DlmsDevice device) throws ProtocolAdapterException {
-        this.synchronizeTimeCommandExecutor.execute(conn, device, null);
+        final AccessResultCode accessResultCode = this.synchronizeTimeCommandExecutor.execute(conn, device, null);
+
+        if (!AccessResultCode.SUCCESS.equals(accessResultCode)) {
+            throw new ProtocolAdapterException("AccessResultCode for synchronizeTime: " + accessResultCode);
+        }
     }
 
     public String retrieveConfigurationObjects(final DlmsConnection conn, final DlmsDevice device)
@@ -56,7 +61,7 @@ public class AdhocService {
 
     public Serializable getSpecificConfigurationObject(final DlmsConnection conn, final DlmsDevice device,
             final SpecificConfigurationObjectRequestDto specificConfigurationObjectRequestDataDto)
-                    throws ProtocolAdapterException {
+            throws ProtocolAdapterException {
         return this.getSpecificConfigurationObjectCommandExecutor.execute(conn, device,
                 specificConfigurationObjectRequestDataDto);
     }
