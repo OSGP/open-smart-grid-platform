@@ -47,10 +47,10 @@ public class DeviceModelFirmware extends AbstractEntity {
     private String moduleVersionFunc;
 
     @Column(length = 100)
-    private String moduleVersionMA;
+    private String moduleVersionMa;
 
     @Column(length = 100)
-    private String moduleVersionMBus;
+    private String moduleVersionMbus;
 
     @Column(length = 100)
     private String moduleVersionSec;
@@ -70,8 +70,8 @@ public class DeviceModelFirmware extends AbstractEntity {
         this.pushToNewDevices = pushToNewDevices;
         this.moduleVersionComm = moduleVersionComm;
         this.moduleVersionFunc = moduleVersionFunc;
-        this.moduleVersionMA = moduleVersionMA;
-        this.moduleVersionMBus = moduleVersionMBus;
+        this.moduleVersionMa = moduleVersionMA;
+        this.moduleVersionMbus = moduleVersionMBus;
         this.moduleVersionSec = moduleVersionSec;
     }
 
@@ -103,12 +103,12 @@ public class DeviceModelFirmware extends AbstractEntity {
         return this.moduleVersionFunc;
     }
 
-    public String getModuleVersionMA() {
-        return this.moduleVersionMA;
+    public String getModuleVersionMa() {
+        return this.moduleVersionMa;
     }
 
-    public String getModuleVersionMBus() {
-        return this.moduleVersionMBus;
+    public String getModuleVersionMbus() {
+        return this.moduleVersionMbus;
     }
 
     public String getModuleVersionSec() {
