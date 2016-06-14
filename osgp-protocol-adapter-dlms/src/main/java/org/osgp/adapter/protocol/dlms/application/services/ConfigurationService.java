@@ -45,10 +45,10 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfoDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeTypeDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SetKeysRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarmDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetKeysRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDayDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDto;
@@ -139,11 +139,10 @@ public class ConfigurationService {
         final ConfigurationFlagsDto configurationFlags = configurationObject.getConfigurationFlags();
 
         LOGGER.info(VISUAL_SEPARATOR);
-        LOGGER.info("******** Configuration Object: 0-0:94.31.3.255 *******");
+        LOGGER.info("******** Configuration Object: 0-1:94.31.3.255 *******");
         LOGGER.info(VISUAL_SEPARATOR);
         LOGGER.info("Operation mode:{} ", gprsOperationModeType.name());
         LOGGER.info("Flags:");
-
         for (final ConfigurationFlagDto configurationFlag : configurationFlags.getConfigurationFlag()) {
             LOGGER.info("Flag : {}, enabled = {}", configurationFlag.getConfigurationFlagType().toString(),
                     configurationFlag.isEnabled());
@@ -184,8 +183,8 @@ public class ConfigurationService {
         }
     }
 
-    public AdministrativeStatusTypeDto requestGetAdministrativeStatus(final DlmsConnection conn,
-            final DlmsDevice device) throws ProtocolAdapterException {
+    public AdministrativeStatusTypeDto requestGetAdministrativeStatus(final DlmsConnection conn, final DlmsDevice device)
+            throws ProtocolAdapterException {
 
         return this.getAdministrativeStatusCommandExecutor.execute(conn, device, null);
     }

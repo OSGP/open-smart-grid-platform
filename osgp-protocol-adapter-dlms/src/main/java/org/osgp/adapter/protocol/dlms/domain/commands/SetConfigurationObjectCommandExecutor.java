@@ -45,7 +45,7 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
     private static final ObisCode OBIS_CODE = new ObisCode("0.1.94.31.3.255");
     private static final int ATTRIBUTE_ID = 2;
 
-    private static final List<ConfigurationFlagTypeDto> FLAGS_TYPES_FORBIDDEN_TO_SET = new ArrayList<ConfigurationFlagTypeDto>();
+    private static final List<ConfigurationFlagTypeDto> FLAGS_TYPES_FORBIDDEN_TO_SET = new ArrayList<>();
     static {
         FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagTypeDto.PO_ENABLE);
         FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagTypeDto.HLS_3_ON_P_3_ENABLE);
@@ -90,7 +90,7 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
     private DataObject buildSetParameterData(final ConfigurationObjectDto configurationObject,
             final ConfigurationObjectDto configurationObjectOnDevice) {
 
-        final List<DataObject> linkedList = new LinkedList<DataObject>();
+        final List<DataObject> linkedList = new LinkedList<>();
         if (GprsOperationModeTypeDto.ALWAYS_ON.equals(configurationObject.getGprsOperationMode())) {
             linkedList.add(DataObject.newEnumerateData(1));
         } else if (GprsOperationModeTypeDto.TRIGGERED.equals(configurationObject.getGprsOperationMode())) {
@@ -142,7 +142,7 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
     }
 
     private List<ConfigurationFlagDto> getNewFlags(final ConfigurationObjectDto configurationObject) {
-        final List<ConfigurationFlagDto> configurationFlags = new ArrayList<ConfigurationFlagDto>();
+        final List<ConfigurationFlagDto> configurationFlags = new ArrayList<>();
         for (final ConfigurationFlagDto configurationFlag : configurationObject.getConfigurationFlags()
                 .getConfigurationFlag()) {
             if (!this.isForbidden(configurationFlag.getConfigurationFlagType())) {
@@ -153,8 +153,8 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
     }
 
     /**
-     * Check if the configuratioFlag is forbidden. Check is done agains the list
-     * of forbidden flag types
+     * Check if the configuratioFlag is forbidden. Check is done against the
+     * list of forbidden flag types
      *
      * @param configurationFlag
      *            the flag to check
@@ -180,7 +180,7 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
     }
 
     private ConfigurationObjectDto retrieveConfigurationObject(final DlmsConnection conn) throws IOException,
-    TimeoutException, ProtocolAdapterException {
+            TimeoutException, ProtocolAdapterException {
 
         final AttributeAddress configurationObjectValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
@@ -193,12 +193,10 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
             throw new ProtocolAdapterException("No result received while retrieving current configuration object.");
         }
 
-
         return this.getConfigurationObject(getResult);
     }
 
-    private ConfigurationObjectDto getConfigurationObject(final GetResult result)
-            throws ProtocolAdapterException {
+    private ConfigurationObjectDto getConfigurationObject(final GetResult result) throws ProtocolAdapterException {
 
         final DataObject resultData = result.getResultData();
         LOGGER.info("Configuration object current complex data: {}", this.dlmsHelperService.getDebugInfo(resultData));
@@ -209,6 +207,17 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
             throw new ProtocolAdapterException(
                     "Expected data in result while retrieving current configuration object, but got nothing");
         }
+
+        // get gprsOperationMode and configurationFlags from List<DataObject>
+        // linkedList, use them to build a ConfigurationObjectDto and return
+        // that.
+        final GprsOperationModeTypeDto gprsOperationMode = this.getGprsOperationModeType(linkedList);
+        final ConfigurationFlagsDto configurationFlags = this.getConfigurationFlags(linkedList, resultData);
+        return new ConfigurationObjectDto(gprsOperationMode, configurationFlags);
+    }
+
+    private GprsOperationModeTypeDto getGprsOperationModeType(final List<DataObject> linkedList)
+            throws ProtocolAdapterException {
 
         final DataObject gprsOperationModeData = linkedList.get(0);
         if (gprsOperationModeData == null) {
@@ -222,7 +231,13 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
             gprsOperationMode = GprsOperationModeTypeDto.TRIGGERED;
         }
 
+        return gprsOperationMode;
+    }
+
+    private ConfigurationFlagsDto getConfigurationFlags(final List<DataObject> linkedList, final DataObject resultData)
+            throws ProtocolAdapterException {
         final DataObject flagsData = linkedList.get(1);
+
         if (flagsData == null) {
             throw new ProtocolAdapterException(
                     "Expected flag bit data in result while retrieving current configuration object, but got nothing");
@@ -236,6 +251,6 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
         final List<ConfigurationFlagDto> listConfigurationFlag = this.configurationObjectHelperService
                 .toConfigurationFlags(flagByteArray);
 
-        return new ConfigurationObjectDto(gprsOperationMode, new ConfigurationFlagsDto(listConfigurationFlag));
+        return new ConfigurationFlagsDto(listConfigurationFlag);
     }
 }

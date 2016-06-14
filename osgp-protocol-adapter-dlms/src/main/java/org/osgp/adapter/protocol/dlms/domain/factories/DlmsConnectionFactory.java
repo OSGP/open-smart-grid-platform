@@ -43,7 +43,6 @@ public class DlmsConnectionFactory {
             connector.setDevice(device);
             return connector.connect();
         } else {
-            // TODO ADD IMPLEMENTATIONS FOR OTHER SECURITY MODES
             throw new UnsupportedOperationException("Only HLS 5 connections are currently supported");
         }
     }

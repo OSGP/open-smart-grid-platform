@@ -17,16 +17,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObjectDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDataDto;
 
 @Component()
 public class SetConfigurationObjectBundleCommandExecutorImpl extends
-BundleCommandExecutor<SetConfigurationObjectRequestDataDto, ActionResponseDto> implements
-SetConfigurationObjectBundleCommandExecutor {
+        BundleCommandExecutor<SetConfigurationObjectRequestDataDto, ActionResponseDto> implements
+        SetConfigurationObjectBundleCommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetConfigurationObjectBundleCommandExecutorImpl.class);
 
@@ -47,21 +44,6 @@ SetConfigurationObjectBundleCommandExecutor {
         // Configuration Object towards the Smart Meter
         final ConfigurationObjectDto configurationObject = setConfigurationObjectRequestDataDto
                 .getConfigurationObject();
-
-        final GprsOperationModeTypeDto gprsOperationModeType = configurationObject.getGprsOperationMode();
-        final ConfigurationFlagsDto configurationFlags = configurationObject.getConfigurationFlags();
-
-        LOGGER.info(VISUAL_SEPARATOR);
-        LOGGER.info("******** Configuration Object: 0-0:94.31.3.255 *******");
-        LOGGER.info(VISUAL_SEPARATOR);
-        LOGGER.info("Operation mode:{} ", gprsOperationModeType.name());
-        LOGGER.info("Flags:");
-
-        for (final ConfigurationFlagDto configurationFlag : configurationFlags.getConfigurationFlag()) {
-            LOGGER.info("Flag : {}, enabled = {}", configurationFlag.getConfigurationFlagType().toString(),
-                    configurationFlag.isEnabled());
-        }
-        LOGGER.info(VISUAL_SEPARATOR);
 
         AccessResultCode accessResultCode;
         try {

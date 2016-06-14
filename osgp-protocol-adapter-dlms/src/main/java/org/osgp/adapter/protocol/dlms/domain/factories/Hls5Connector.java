@@ -67,10 +67,9 @@ public class Hls5Connector {
     }
 
     public DlmsConnection connect() throws TechnicalException {
-        if (this.device == null) {
-            throw new IllegalStateException("Can not connect because no device is set.");
-        }
 
+        // Make sure neither device or device.getIpAddress() is null.
+        this.checkDevice();
         this.checkIpAddress();
 
         try {
@@ -94,6 +93,12 @@ public class Hls5Connector {
                     this.device.getDeviceIdentification(), e);
             throw new TechnicalException(ComponentType.PROTOCOL_DLMS,
                     "decryption on security keys went wrong for device: " + this.device.getDeviceIdentification());
+        }
+    }
+
+    private void checkDevice() {
+        if (this.device == null) {
+            throw new IllegalStateException("Can not connect because no device is set.");
         }
     }
 
@@ -138,18 +143,16 @@ public class Hls5Connector {
         decryptedAuthentication = Arrays.copyOfRange(decryptedAuthentication, 16, decryptedAuthentication.length);
         decryptedEncryption = Arrays.copyOfRange(decryptedEncryption, 16, decryptedEncryption.length);
 
-        Authentication auth = Authentication.newGmacAuthentication(decryptedAuthentication, decryptedEncryption, CryptographicAlgorithm.AES_GMC_128);
-        
-        // Setup connection to device
-        final TcpConnectionBuilder tcpConnectionBuilder = 
-                new TcpConnectionBuilder(InetAddress.getByName(this.device.getIpAddress()))
-                .setAuthentication(auth)
-                .setResponseTimeout(this.responseTimeout)
-                .setLogicalDeviceId(this.logicalDeviceAddress)
-                .setClientId(clientAccessPoint);
+        final Authentication auth = Authentication.newGmacAuthentication(decryptedAuthentication, decryptedEncryption,
+                CryptographicAlgorithm.AES_GMC_128);
 
-        setOptionalValues(tcpConnectionBuilder);
-        
+        // Setup connection to device
+        final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(InetAddress.getByName(this.device
+                .getIpAddress())).setAuthentication(auth).setResponseTimeout(this.responseTimeout)
+                .setLogicalDeviceId(this.logicalDeviceAddress).setClientId(this.clientAccessPoint);
+
+        this.setOptionalValues(tcpConnectionBuilder);
+
         final Integer challengeLength = this.device.getChallengeLength();
         if (challengeLength != null) {
             tcpConnectionBuilder.setChallengeLength(challengeLength);

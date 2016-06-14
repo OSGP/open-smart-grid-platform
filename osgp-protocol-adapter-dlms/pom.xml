@@ -96,8 +96,8 @@
     </dependency>
     
     <dependency>
-        <groupId>org.osgp</groupId>
-        <artifactId>jasper-interface</artifactId>
+      <groupId>org.osgp</groupId>
+      <artifactId>jasper-interface</artifactId>
     </dependency>
 
     <dependency>

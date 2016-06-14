@@ -53,7 +53,7 @@ public class DlmsDevice extends AbstractEntity {
 
     @OneToMany(mappedBy = "dlmsDevice", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
-    private List<SecurityKey> securityKeys = new ArrayList<>();
+    private final List<SecurityKey> securityKeys = new ArrayList<>();
 
     @Column
     private Integer challengeLength;
@@ -67,18 +67,19 @@ public class DlmsDevice extends AbstractEntity {
     @Column
     private boolean ipAddressIsStatic;
 
-    // The following three are optional columns that are used in de device simulator (DeviceServer)
-    @Column 
+    // The following three are optional columns that are used in the device
+    // simulator (DeviceServer)
+    @Column
     private Long port;
 
-    @Column 
+    @Column
     private Long clientId;
 
-    @Column 
+    @Column
     private Long logicalId;
 
-    //-- This comes from: Core Device.
-    
+    // -- This comes from: Core Device.
+
     @Transient
     private String ipAddress;
 
@@ -217,28 +218,27 @@ public class DlmsDevice extends AbstractEntity {
         this.securityKeys.add(securityKey);
     }
 
-    
     public Long getPort() {
-        return port;
+        return this.port;
     }
 
-    public void setPort(Long port) {
+    public void setPort(final Long port) {
         this.port = port;
     }
 
     public Long getClientId() {
-        return clientId;
+        return this.clientId;
     }
 
-    public void setClientId(Long clientId) {
+    public void setClientId(final Long clientId) {
         this.clientId = clientId;
     }
 
     public Long getLogicalId() {
-        return logicalId;
+        return this.logicalId;
     }
 
-    public void setLogicalId(Long logicalId) {
+    public void setLogicalId(final Long logicalId) {
         this.logicalId = logicalId;
     }
 

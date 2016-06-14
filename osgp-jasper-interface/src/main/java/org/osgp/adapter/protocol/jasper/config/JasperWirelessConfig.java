@@ -39,113 +39,107 @@ import org.springframework.ws.soap.security.wss4j.Wss4jSecurityInterceptor;
 @ComponentScan(basePackages = { "org.osgp.adapter.protocol.jasper" })
 public class JasperWirelessConfig {
 
-	@Value("${jwcc.uri.terminal}")
-	private String terminal;
+    @Value("${jwcc.uri.terminal}")
+    private String terminal;
 
-	@Value("${jwcc.getsession.retries}")
-	private String retries;
+    @Value("${jwcc.getsession.retries}")
+    private String retries;
 
-	@Value("${jwcc.getsession.sleep.between.retries}")
-	private String sleepBetweenRetries;
+    @Value("${jwcc.getsession.sleep.between.retries}")
+    private String sleepBetweenRetries;
 
-	@Value("${jwcc.uri.sms}")
-	private String uri;
+    @Value("${jwcc.uri.sms}")
+    private String uri;
 
-	@Value("${jwcc.licensekey}")
-	private String licenceKey;
+    @Value("${jwcc.licensekey}")
+    private String licenceKey;
 
-	@Value("${jwcc.username}")
-	private String username;
+    @Value("${jwcc.username}")
+    private String username;
 
-	@Value("${jwcc.password}")
-	private String password;
+    @Value("${jwcc.password}")
+    private String password;
 
-	@Value("${jwcc.api_version}")
-	private String apiVersion;
+    @Value("${jwcc.api_version}")
+    private String apiVersion;
 
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(JasperWirelessConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JasperWirelessConfig.class);
 
-	public JasperWirelessConfig() {
-		InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
-	}
+    public JasperWirelessConfig() {
+        InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
+    }
 
-	@Bean
-	public Jaxb2Marshaller marshaller() {
-		final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-		marshaller.setContextPaths("com.jasperwireless.api.ws.service");
-		return marshaller;
-	}
+    @Bean
+    public Jaxb2Marshaller marshaller() {
+        final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+        marshaller.setContextPaths("com.jasperwireless.api.ws.service");
+        return marshaller;
+    }
 
-	@Bean
-	public SaajSoapMessageFactory messageFactory() throws OsgpJasperException {
-		SaajSoapMessageFactory saajSoapMessageFactory = null;
-		try {
-			saajSoapMessageFactory = new SaajSoapMessageFactory(
-					MessageFactory.newInstance());
-			saajSoapMessageFactory.setSoapVersion(SoapVersion.SOAP_11);
-		} catch (final SOAPException e) {
-			final String msg = "Error in creating a webservice message wrapper";
-			LOGGER.error(msg, e);
-			throw new OsgpJasperException(msg, e);
-		}
-		return saajSoapMessageFactory;
-	}
+    @Bean
+    public SaajSoapMessageFactory messageFactory() throws OsgpJasperException {
+        SaajSoapMessageFactory saajSoapMessageFactory = null;
+        try {
+            saajSoapMessageFactory = new SaajSoapMessageFactory(MessageFactory.newInstance());
+            saajSoapMessageFactory.setSoapVersion(SoapVersion.SOAP_11);
+        } catch (final SOAPException e) {
+            final String msg = "Error in creating a webservice message wrapper";
+            LOGGER.error(msg, e);
+            throw new OsgpJasperException(msg, e);
+        }
+        return saajSoapMessageFactory;
+    }
 
-	@Bean
-	public Wss4jSecurityInterceptor wss4jSecurityInterceptorClient() {
-		final Wss4jSecurityInterceptor wss4jSecurityInterceptor = new Wss4jSecurityInterceptor();
-		wss4jSecurityInterceptor.setSecurementActions("UsernameToken");
-		return wss4jSecurityInterceptor;
-	}
+    @Bean
+    public Wss4jSecurityInterceptor wss4jSecurityInterceptorClient() {
+        final Wss4jSecurityInterceptor wss4jSecurityInterceptor = new Wss4jSecurityInterceptor();
+        wss4jSecurityInterceptor.setSecurementActions("UsernameToken");
+        return wss4jSecurityInterceptor;
+    }
 
-	@Bean
-	public WebServiceTemplate webServiceTemplate() throws OsgpJasperException {
-		final WebServiceTemplate webServiceTemplate = new WebServiceTemplate();
-		webServiceTemplate.setMarshaller(this.marshaller());
-		webServiceTemplate.setUnmarshaller(this.marshaller());
-		webServiceTemplate
-		.setDefaultUri("https://kpnapi.jasperwireless.com/ws/service/Sms");
-		webServiceTemplate.setInterceptors(new ClientInterceptor[] { this
-				.wss4jSecurityInterceptorClient() });
-		webServiceTemplate.setMessageFactory(this.messageFactory());
-		return webServiceTemplate;
-	}
+    @Bean
+    public WebServiceTemplate webServiceTemplate() throws OsgpJasperException {
+        final WebServiceTemplate webServiceTemplate = new WebServiceTemplate();
+        webServiceTemplate.setMarshaller(this.marshaller());
+        webServiceTemplate.setUnmarshaller(this.marshaller());
+        webServiceTemplate.setDefaultUri("https://kpnapi.jasperwireless.com/ws/service/Sms");
+        webServiceTemplate.setInterceptors(new ClientInterceptor[] { this.wss4jSecurityInterceptorClient() });
+        webServiceTemplate.setMessageFactory(this.messageFactory());
+        return webServiceTemplate;
+    }
 
-	@Bean
-	public JasperWirelessSmsClient jasperWirelessSmsClient() {
-		return new JasperWirelessSmsClient();
-	}
+    @Bean
+    public JasperWirelessSmsClient jasperWirelessSmsClient() {
+        return new JasperWirelessSmsClient();
+    }
 
-	@Bean
-	public JasperWirelessTerminalClient jasperWirelessTerminalClient() {
-		return new JasperWirelessTerminalClient();
-	}
+    @Bean
+    public JasperWirelessTerminalClient jasperWirelessTerminalClient() {
+        return new JasperWirelessTerminalClient();
+    }
 
-	@Bean
-	public JasperWirelessAccess jasperWirelessAccess() {
-		return new JasperWirelessAccess(this.uri, this.licenceKey,
-				this.username, this.password, this.apiVersion);
-	}
+    @Bean
+    public JasperWirelessAccess jasperWirelessAccess() {
+        return new JasperWirelessAccess(this.uri, this.licenceKey, this.username, this.password, this.apiVersion);
+    }
 
-	@Bean
-	public JasperWirelessAccess jasperWirelessTerminalAccess() {
-		return new JasperWirelessAccess(this.uri, this.licenceKey,
-				this.username, this.password, this.apiVersion);
-	}
+    @Bean
+    public JasperWirelessAccess jasperWirelessTerminalAccess() {
+        return new JasperWirelessAccess(this.uri, this.licenceKey, this.username, this.password, this.apiVersion);
+    }
 
-	@Bean
-	public CorrelationIdProviderService correlationIdProviderService() {
-		return new CorrelationIdProviderService();
-	}
+    @Bean
+    public CorrelationIdProviderService correlationIdProviderService() {
+        return new CorrelationIdProviderService();
+    }
 
-	@Bean
-	public int jasperGetSessionRetries() {
-		return Integer.parseInt(this.retries);
-	}
+    @Bean
+    public int jasperGetSessionRetries() {
+        return Integer.parseInt(this.retries);
+    }
 
-	@Bean
-	public int jasperGetSessionSleepBetweenRetries() {
-		return Integer.parseInt(this.sleepBetweenRetries);
-	}
+    @Bean
+    public int jasperGetSessionSleepBetweenRetries() {
+        return Integer.parseInt(this.sleepBetweenRetries);
+    }
 }

@@ -13,10 +13,10 @@ import org.springframework.stereotype.Service;
 @Service(value = "dlmsSessionProviderService")
 public class SessionProviderService {
 
-	@Autowired
-	private SessionProviderMap sessionProviderMap;
+    @Autowired
+    private SessionProviderMap sessionProviderMap;
 
-	public SessionProvider getSessionProvider(final String provider) {
-		return this.sessionProviderMap.getProvider(provider);
-	}
+    public SessionProvider getSessionProvider(final String provider) {
+        return this.sessionProviderMap.getProvider(provider);
+    }
 }

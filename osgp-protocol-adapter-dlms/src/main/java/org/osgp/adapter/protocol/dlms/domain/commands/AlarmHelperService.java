@@ -22,17 +22,18 @@ public class AlarmHelperService {
 
     private static final ByteRegisterConverter<AlarmTypeDto> BYTE_REGISTER_CONVERTER;
 
+    /**
+     * Gives the position of the alarm code as indicated by the AlarmType in the
+     * bit string representation of the alarm register.
+     * <p>
+     * A position of 0 means the least significant bit, up to the maximum of 31
+     * for the most significant bit. Since the 4 most significant bits in the
+     * object are not used according to the DSMR documentation, the practical
+     * meaningful most significant bit is bit 27.
+     */
+    private static final Map<AlarmTypeDto, Integer> map = new EnumMap<>(AlarmTypeDto.class);
+
     static {
-        /**
-         * Gives the position of the alarm code as indicated by the AlarmType in
-         * the bit string representation of the alarm register.
-         * <p>
-         * A position of 0 means the least significant bit, up to the maximum of
-         * 31 for the most significant bit. Since the 4 most significant bits in
-         * the object are not used according to the DSMR documentation, the
-         * practical meaningful most significant bit is bit 27.
-         */
-        final Map<AlarmTypeDto, Integer> map = new EnumMap<>(AlarmTypeDto.class);
 
         // Bits for group: Other Alarms
         map.put(AlarmTypeDto.CLOCK_INVALID, 0);
@@ -68,6 +69,17 @@ public class AlarmHelperService {
 
         BYTE_REGISTER_CONVERTER = new ByteRegisterConverter<>(Collections.unmodifiableMap(map),
                 NUMBER_OF_BITS_IN_REGISTER);
+    }
+
+    /**
+     * Returns an unmodifiable instance of the map containing a bit index for
+     * every AlarmType.
+     *
+     * @return an unmodifiable map containing every AlarmType and it's bit
+     *         index.
+     */
+    public Map<AlarmTypeDto, Integer> getAlarmRegisterBitIndexPerAlarmType() {
+        return Collections.unmodifiableMap(map);
     }
 
     /**

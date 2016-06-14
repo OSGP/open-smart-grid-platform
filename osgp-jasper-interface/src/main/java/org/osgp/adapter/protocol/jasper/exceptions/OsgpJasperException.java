@@ -8,16 +8,16 @@
 package org.osgp.adapter.protocol.jasper.exceptions;
 
 public class OsgpJasperException extends Exception {
-	/**
-	 * Serial Version UID.
-	 */
-	private static final long serialVersionUID = 4296034756159213906L;
+    /**
+     * Serial Version UID.
+     */
+    private static final long serialVersionUID = 4296034756159213906L;
 
-	public OsgpJasperException(final String message) {
-		super(message);
-	}
+    public OsgpJasperException(final String message) {
+        super(message);
+    }
 
-	public OsgpJasperException(final String message, final Throwable throwable) {
-		super(message, throwable);
-	}
+    public OsgpJasperException(final String message, final Throwable throwable) {
+        super(message, throwable);
+    }
 }

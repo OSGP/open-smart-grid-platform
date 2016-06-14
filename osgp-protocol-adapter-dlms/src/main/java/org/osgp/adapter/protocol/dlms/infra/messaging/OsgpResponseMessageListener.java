@@ -39,19 +39,16 @@ public class OsgpResponseMessageListener implements MessageListener {
             final String result = responseMessage == null ? null : responseMessage.getResult().toString();
             final OsgpException osgpException = responseMessage == null ? null : responseMessage.getOsgpException();
 
-            switch (DeviceFunctionDto.valueOf(messageType)) {
-            case REGISTER_DEVICE:
+            if (DeviceFunctionDto.REGISTER_DEVICE.equals(DeviceFunctionDto.valueOf(messageType))) {
+
                 if (ResponseMessageResultType.valueOf(result).equals(ResponseMessageResultType.NOT_OK)) {
                     throw new ProtocolAdapterException(String.format(
                             "Response for device: %s for MessageType: %s is: %s, error: %s", deviceIdentifcation,
                             messageType, result, osgpException));
+                } else {
+                    throw new UnknownMessageTypeException("Unknown JMSType: " + messageType);
                 }
-                break;
-
-            default:
-                throw new UnknownMessageTypeException("Unknown JMSType: " + messageType);
             }
-
         } catch (final JMSException ex) {
             LOGGER.error("Exception: {} ", ex.getMessage(), ex);
         } catch (final ProtocolAdapterException e) {

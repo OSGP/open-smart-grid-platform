@@ -33,9 +33,9 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCodeFla
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValueDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodTypeDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseItemDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseItemDto;
 
 @Component()
 public class GetPeriodicMeterReadsCommandExecutor implements
@@ -131,18 +131,8 @@ CommandExecutor<PeriodicMeterReadsRequestDto, PeriodicMeterReadsResponseDto> {
         final CosemDateTimeDto cosemDateTime = this.dlmsHelperService.readDateTime(
                 bufferedObjects.get(BUFFER_INDEX_CLOCK), "Clock from " + periodType + " buffer");
         final DateTime bufferedDateTime = cosemDateTime == null ? null : cosemDateTime.asDateTime();
-        if (bufferedDateTime == null) {
-            final DateTimeFormatter dtf = ISODateTimeFormat.dateTime();
-            LOGGER.warn("Not using an object from capture buffer (clock=" + cosemDateTime
-                    + "), because the date does not match the given period, since it is not fully specified: ["
-                    + dtf.print(beginDateTime) + " .. " + dtf.print(endDateTime) + "].");
-            return;
-        }
-        if (bufferedDateTime.isBefore(beginDateTime) || bufferedDateTime.isAfter(endDateTime)) {
-            final DateTimeFormatter dtf = ISODateTimeFormat.dateTime();
-            LOGGER.warn("Not using an object from capture buffer (clock=" + dtf.print(bufferedDateTime)
-                    + "), because the date does not match the given period: [" + dtf.print(beginDateTime) + " .. "
-                    + dtf.print(endDateTime) + "].");
+
+        if (!this.validateBufferedDateTime(bufferedDateTime, cosemDateTime, beginDateTime, endDateTime)) {
             return;
         }
 
@@ -164,9 +154,30 @@ CommandExecutor<PeriodicMeterReadsRequestDto, PeriodicMeterReadsResponseDto> {
         }
     }
 
-    private void processNextPeriodicMeterReadsForInterval(final List<PeriodicMeterReadsResponseItemDto> periodicMeterReads,
-            final List<DataObject> bufferedObjects, final DateTime bufferedDateTime, final List<GetResult> results)
-                    throws ProtocolAdapterException {
+    private boolean validateBufferedDateTime(final DateTime bufferedDateTime, final CosemDateTimeDto cosemDateTime,
+            final DateTime beginDateTime, final DateTime endDateTime) {
+
+        if (bufferedDateTime == null) {
+            final DateTimeFormatter dtf = ISODateTimeFormat.dateTime();
+            LOGGER.warn("Not using an object from capture buffer (clock=" + cosemDateTime
+                    + "), because the date does not match the given period, since it is not fully specified: ["
+                    + dtf.print(beginDateTime) + " .. " + dtf.print(endDateTime) + "].");
+            return false;
+        }
+        if (bufferedDateTime.isBefore(beginDateTime) || bufferedDateTime.isAfter(endDateTime)) {
+            final DateTimeFormatter dtf = ISODateTimeFormat.dateTime();
+            LOGGER.warn("Not using an object from capture buffer (clock=" + dtf.print(bufferedDateTime)
+                    + "), because the date does not match the given period: [" + dtf.print(beginDateTime) + " .. "
+                    + dtf.print(endDateTime) + "].");
+            return false;
+        }
+
+        return true;
+    }
+
+    private void processNextPeriodicMeterReadsForInterval(
+            final List<PeriodicMeterReadsResponseItemDto> periodicMeterReads, final List<DataObject> bufferedObjects,
+            final DateTime bufferedDateTime, final List<GetResult> results) throws ProtocolAdapterException {
 
         final AmrProfileStatusCodeDto amrProfileStatusCode = this.readAmrProfileStatusCode(bufferedObjects
                 .get(BUFFER_INDEX_AMR_STATUS));
@@ -178,14 +189,14 @@ CommandExecutor<PeriodicMeterReadsRequestDto, PeriodicMeterReadsResponseDto> {
                 bufferedObjects.get(BUFFER_INDEX_A_NEG), results.get(RESULT_INDEX_IMPORT_2_OR_EXPORT).getResultData(),
                 "negativeActiveEnergy");
 
-        final PeriodicMeterReadsResponseItemDto nextMeterReads = new PeriodicMeterReadsResponseItemDto(bufferedDateTime.toDate(),
-                positiveActiveEnergy, negativeActiveEnergy, amrProfileStatusCode);
+        final PeriodicMeterReadsResponseItemDto nextMeterReads = new PeriodicMeterReadsResponseItemDto(
+                bufferedDateTime.toDate(), positiveActiveEnergy, negativeActiveEnergy, amrProfileStatusCode);
         periodicMeterReads.add(nextMeterReads);
     }
 
-    private void processNextPeriodicMeterReadsForDaily(final List<PeriodicMeterReadsResponseItemDto> periodicMeterReads,
-            final List<DataObject> bufferedObjects, final DateTime bufferedDateTime, final List<GetResult> results)
-                    throws ProtocolAdapterException {
+    private void processNextPeriodicMeterReadsForDaily(
+            final List<PeriodicMeterReadsResponseItemDto> periodicMeterReads, final List<DataObject> bufferedObjects,
+            final DateTime bufferedDateTime, final List<GetResult> results) throws ProtocolAdapterException {
 
         final AmrProfileStatusCodeDto amrProfileStatusCode = this.readAmrProfileStatusCode(bufferedObjects
                 .get(BUFFER_INDEX_AMR_STATUS));
@@ -193,9 +204,9 @@ CommandExecutor<PeriodicMeterReadsRequestDto, PeriodicMeterReadsResponseDto> {
         final DlmsMeterValueDto positiveActiveEnergyTariff1 = this.dlmsHelperService.getScaledMeterValue(
                 bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_1), results.get(RESULT_INDEX_IMPORT).getResultData(),
                 "positiveActiveEnergyTariff1");
-        final DlmsMeterValueDto positiveActiveEnergyTariff2 = this.dlmsHelperService.getScaledMeterValue(bufferedObjects
-                .get(BUFFER_INDEX_A_POS_RATE_2), results.get(RESULT_INDEX_IMPORT_2_OR_EXPORT).getResultData(),
-                "positiveActiveEnergyTariff2");
+        final DlmsMeterValueDto positiveActiveEnergyTariff2 = this.dlmsHelperService.getScaledMeterValue(
+                bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_2), results.get(RESULT_INDEX_IMPORT_2_OR_EXPORT)
+                .getResultData(), "positiveActiveEnergyTariff2");
         final DlmsMeterValueDto negativeActiveEnergyTariff1 = this.dlmsHelperService.getScaledMeterValue(
                 bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_1), results.get(RESULT_INDEX_EXPORT).getResultData(),
                 "negativeActiveEnergyTariff1");
@@ -203,9 +214,9 @@ CommandExecutor<PeriodicMeterReadsRequestDto, PeriodicMeterReadsResponseDto> {
                 bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_2), results.get(RESULT_INDEX_EXPORT_2).getResultData(),
                 "negativeActiveEnergyTariff2");
 
-        final PeriodicMeterReadsResponseItemDto nextMeterReads = new PeriodicMeterReadsResponseItemDto(bufferedDateTime.toDate(),
-                positiveActiveEnergyTariff1, positiveActiveEnergyTariff2, negativeActiveEnergyTariff1,
-                negativeActiveEnergyTariff2, amrProfileStatusCode);
+        final PeriodicMeterReadsResponseItemDto nextMeterReads = new PeriodicMeterReadsResponseItemDto(
+                bufferedDateTime.toDate(), positiveActiveEnergyTariff1, positiveActiveEnergyTariff2,
+                negativeActiveEnergyTariff1, negativeActiveEnergyTariff2, amrProfileStatusCode);
         periodicMeterReads.add(nextMeterReads);
     }
 
@@ -231,9 +242,9 @@ CommandExecutor<PeriodicMeterReadsRequestDto, PeriodicMeterReadsResponseDto> {
         return new AmrProfileStatusCodeDto(flags);
     }
 
-    private void processNextPeriodicMeterReadsForMonthly(final List<PeriodicMeterReadsResponseItemDto> periodicMeterReads,
-            final List<DataObject> bufferedObjects, final DateTime bufferedDateTime, final List<GetResult> results)
-                    throws ProtocolAdapterException {
+    private void processNextPeriodicMeterReadsForMonthly(
+            final List<PeriodicMeterReadsResponseItemDto> periodicMeterReads, final List<DataObject> bufferedObjects,
+            final DateTime bufferedDateTime, final List<GetResult> results) throws ProtocolAdapterException {
 
         /*
          * Buffer indexes minus one, since Monthly captured objects don't
@@ -242,9 +253,9 @@ CommandExecutor<PeriodicMeterReadsRequestDto, PeriodicMeterReadsResponseDto> {
         final DlmsMeterValueDto positiveActiveEnergyTariff1 = this.dlmsHelperService.getScaledMeterValue(
                 bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_1 - 1), results.get(RESULT_INDEX_IMPORT).getResultData(),
                 "positiveActiveEnergyTariff1");
-        final DlmsMeterValueDto positiveActiveEnergyTariff2 = this.dlmsHelperService.getScaledMeterValue(bufferedObjects
-                .get(BUFFER_INDEX_A_POS_RATE_2 - 1), results.get(RESULT_INDEX_IMPORT_2_OR_EXPORT).getResultData(),
-                "positiveActiveEnergyTariff2");
+        final DlmsMeterValueDto positiveActiveEnergyTariff2 = this.dlmsHelperService.getScaledMeterValue(
+                bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_2 - 1), results.get(RESULT_INDEX_IMPORT_2_OR_EXPORT)
+                .getResultData(), "positiveActiveEnergyTariff2");
         final DlmsMeterValueDto negativeActiveEnergyTariff1 = this.dlmsHelperService.getScaledMeterValue(
                 bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_1 - 1), results.get(RESULT_INDEX_EXPORT).getResultData(),
                 "negativeActiveEnergyTariff1");
@@ -252,14 +263,15 @@ CommandExecutor<PeriodicMeterReadsRequestDto, PeriodicMeterReadsResponseDto> {
                 bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_2 - 1), results.get(RESULT_INDEX_EXPORT_2).getResultData(),
                 "negativeActiveEnergyTariff2");
 
-        final PeriodicMeterReadsResponseItemDto nextMeterReads = new PeriodicMeterReadsResponseItemDto(bufferedDateTime.toDate(),
-                positiveActiveEnergyTariff1, positiveActiveEnergyTariff2, negativeActiveEnergyTariff1,
-                negativeActiveEnergyTariff2);
+        final PeriodicMeterReadsResponseItemDto nextMeterReads = new PeriodicMeterReadsResponseItemDto(
+                bufferedDateTime.toDate(), positiveActiveEnergyTariff1, positiveActiveEnergyTariff2,
+                negativeActiveEnergyTariff1, negativeActiveEnergyTariff2);
         periodicMeterReads.add(nextMeterReads);
     }
 
-    private AttributeAddress[] getProfileBufferAndScalerUnit(final PeriodTypeDto periodType, final DateTime beginDateTime,
-            final DateTime endDateTime, final boolean isSelectingValuesSupported) throws ProtocolAdapterException {
+    private AttributeAddress[] getProfileBufferAndScalerUnit(final PeriodTypeDto periodType,
+            final DateTime beginDateTime, final DateTime endDateTime, final boolean isSelectingValuesSupported)
+                    throws ProtocolAdapterException {
 
         final SelectiveAccessDescription access = this.getSelectiveAccessDescription(periodType, beginDateTime,
                 endDateTime, isSelectingValuesSupported);

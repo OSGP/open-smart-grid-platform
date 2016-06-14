@@ -10,17 +10,16 @@ package org.osgp.adapter.protocol.jasper.sessionproviders.exceptions;
 
 public class SessionProviderException extends Exception {
 
-	/**
-	 * Serial Version UID.
-	 */
-	private static final long serialVersionUID = -5449632007365870329L;
+    /**
+     * Serial Version UID.
+     */
+    private static final long serialVersionUID = -5449632007365870329L;
 
-	public SessionProviderException(final String message) {
-		super(message);
-	}
+    public SessionProviderException(final String message) {
+        super(message);
+    }
 
-	public SessionProviderException(final String message,
-			final Throwable throwable) {
-		super(message, throwable);
-	}
+    public SessionProviderException(final String message, final Throwable throwable) {
+        super(message, throwable);
+    }
 }

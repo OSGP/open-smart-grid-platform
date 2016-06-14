@@ -18,13 +18,12 @@ import org.springframework.context.annotation.Import;
  * configuration requires Spring Framework 3.0
  */
 @Configuration
-@ComponentScan(basePackages = { "org.osgp.adapter.protocol.jasper",
-"com.alliander.osgp.shared.security" })
+@ComponentScan(basePackages = { "org.osgp.adapter.protocol.jasper", "com.alliander.osgp.shared.security" })
 @Import({ JasperWirelessConfig.class })
 public class ApplicationContext {
 
-	public ApplicationContext() {
-		InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
-	}
+    public ApplicationContext() {
+        InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
+    }
 
 }

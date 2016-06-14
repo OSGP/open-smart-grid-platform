@@ -15,14 +15,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class CorrelationIdProviderService {
 
-	public String getCorrelationId(final String type, final String iccid) {
+    public String getCorrelationId(final String type, final String iccid) {
 
-		return type + "|||" + iccid + "|||" + this.getCurrentDateString();
-	}
+        return type + "|||" + iccid + "|||" + this.getCurrentDateString();
+    }
 
-	private String getCurrentDateString() {
-		final Date now = new Date();
-		final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddkkmmssSSS");
-		return sdf.format(now);
-	}
+    private String getCurrentDateString() {
+        final Date now = new Date();
+        final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddkkmmssSSS");
+        return sdf.format(now);
+    }
 }
