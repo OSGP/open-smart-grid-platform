@@ -21,34 +21,42 @@ import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 @Entity
 public class DeviceModel extends AbstractEntity {
 
-    private static final long serialVersionUID = -834369362882020365L;
+    private static final long serialVersionUID = 7957241305474770350L;
 
     @ManyToOne()
-    @JoinColumn(name = "manufacturer")
-    private Manufacturer manufacturer;
+    @JoinColumn()
+    private Manufacturer manufacturerId;
 
-    @Column(nullable = false, length = 10)
-    private String code;
+    @Column(nullable = false, length = 15)
+    private String modelCode;
 
-    @Column(nullable = false, length = 255)
-    private String name;
+    @Column(length = 255)
+    private String description;
 
-    public DeviceModel(final Manufacturer manufacturer, final String code, final String name) {
-        this.manufacturer = manufacturer;
-        this.code = code;
-        this.name = name;
+    public DeviceModel() {
+        // Default constructor
     }
 
-    public Manufacturer getManufacturer() {
-        return this.manufacturer;
+    public DeviceModel(final Manufacturer manufacturerId, final String modelCode, final String description) {
+        this.manufacturerId = manufacturerId;
+        this.modelCode = modelCode;
+        this.description = description;
     }
 
-    public String getCode() {
-        return this.code;
+    public Manufacturer getManufacturerId() {
+        return this.manufacturerId;
     }
 
-    public String getName() {
-        return this.name;
+    public String getDescription() {
+        return this.description;
+    }
+
+    public String getModelCode() {
+        return this.modelCode;
+    }
+
+    public void setDescription(final String description) {
+        this.description = description;
     }
 
 }

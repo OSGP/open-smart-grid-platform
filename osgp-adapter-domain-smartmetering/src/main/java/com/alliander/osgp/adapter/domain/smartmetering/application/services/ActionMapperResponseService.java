@@ -41,14 +41,13 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTyp
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AssociationLnObjectsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesRequestDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FirmwareVersionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGasResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadGasResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -69,11 +68,29 @@ public class ActionMapperResponseService {
     @Autowired
     private CommonMapper commonMapper;
 
+    private static Map<Class<? extends ActionResponseDto>, ConfigurableMapper> classToMapperMap = new HashMap<>();  
+    private static Map<Class<? extends ActionResponseDto>, Class<? extends ActionResponse>> classMap = new HashMap<>();
+    
+    /**
+     * Specifies to which core value object the DTO object needs to be mapped.
+     */
+    static {
+        classMap.put(EventMessageDataResponseDto.class, EventMessagesResponse.class);
+        classMap.put(MeterReadsResponseDto.class, MeterReads.class);
+        classMap.put(MeterReadsGasResponseDto.class, MeterReadsGas.class);
+        classMap.put(ActionResponseDto.class, ActionResponse.class);
+        classMap.put(AlarmRegisterResponseDto.class, AlarmRegister.class);
+        classMap.put(AdministrativeStatusTypeResponseDto.class, AdministrativeStatusTypeResponse.class);
+        classMap.put(PeriodicMeterReadsResponseDto.class, PeriodicMeterReadsContainer.class);
+        classMap.put(PeriodicMeterReadGasResponseDto.class, PeriodicMeterReadsContainerGas.class);
+        classMap.put(GetConfigurationResponseDto.class, GetConfigurationResponse.class);
+        classMap.put(FirmwareVersionResponseDto.class, FirmwareVersionResponse.class);
+        classMap.put(AssociationLnObjectsResponseDto.class, AssociationLnObjectsResponseData.class);
+    }
+
     /**
      * Specifies which mapper to use for the DTO class received.
      */
-    private static Map<Class<? extends ActionResponseDto>, ConfigurableMapper> classToMapperMap = new HashMap<>();
-
     @PostConstruct
     private void postConstruct() {
         classToMapperMap.put(EventMessageDataResponseDto.class, this.managementMapper);
@@ -87,24 +104,6 @@ public class ActionMapperResponseService {
         classToMapperMap.put(GetConfigurationResponseDto.class, this.configurationMapper);
         classToMapperMap.put(FirmwareVersionResponseDto.class, this.configurationMapper);
         classToMapperMap.put(AssociationLnObjectsResponseDto.class, this.commonMapper);
-    }
-
-    /**
-     * Specifies to which core value object the DTO object needs to be mapped.BundleMessagesResponseDto
-     */
-    private static Map<Class<? extends ActionResponseDto>, Class<? extends ActionResponse>> classMap = new HashMap<>();
-    static {
-        classMap.put(EventMessageDataResponseDto.class, EventMessagesResponse.class);
-        classMap.put(MeterReadsResponseDto.class, MeterReads.class);
-        classMap.put(MeterReadsGasResponseDto.class, MeterReadsGas.class);
-        classMap.put(ActionResponseDto.class, ActionResponse.class);
-        classMap.put(AlarmRegisterResponseDto.class, AlarmRegister.class);
-        classMap.put(AdministrativeStatusTypeResponseDto.class, AdministrativeStatusTypeResponse.class);
-        classMap.put(PeriodicMeterReadsResponseDto.class, PeriodicMeterReadsContainer.class);
-        classMap.put(PeriodicMeterReadGasResponseDto.class, PeriodicMeterReadsContainerGas.class);
-        classMap.put(GetConfigurationResponseDto.class, GetConfigurationResponse.class);
-        classMap.put(FirmwareVersionResponseDto.class, FirmwareVersionResponse.class);
-        classMap.put(AssociationLnObjectsResponseDto.class, AssociationLnObjectsResponseData.class);
     }
 
     public BundleMessagesResponse mapAllActions(

@@ -58,13 +58,13 @@ public class DeviceManagementMapper extends ConfigurableMapper {
         mapperFactory.registerClassMap(mapperFactory
                 .classMap(com.alliander.osgp.domain.core.entities.Device.class,
                         com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device.class)
-                .field("ipAddress", "networkAddress").byDefault().toClassMap());
+                        .field("ipAddress", "networkAddress").byDefault().toClassMap());
 
         mapperFactory.registerClassMap(mapperFactory
                 .classMap(com.alliander.osgp.domain.core.entities.Event.class,
                         com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Event.class)
-                .field("device.deviceIdentification", "deviceIdentification").field("dateTime", "timestamp")
-                .byDefault().toClassMap());
+                        .field("device.deviceIdentification", "deviceIdentification").field("dateTime", "timestamp")
+                        .byDefault().toClassMap());
 
         mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
         mapperFactory.getConverterFactory().registerConverter(new EventTypeConverter());
@@ -133,6 +133,10 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                 destination.setHasSchedule(source.isHasSchedule());
                 destination.setActivated(source.isActivated());
 
+                if (source.getTechnicalInstallationDate() != null) {
+                    destination.setTechnicalInstallationDate(source.getTechnicalInstallationDate().toGregorianCalendar().getTime());
+                }
+
                 // clearing the existing Eans to prevent duplication
                 destination.setEans(new ArrayList<Ean>());
 
@@ -150,7 +154,7 @@ public class DeviceManagementMapper extends ConfigurableMapper {
     }
 
     private static class DeviceConverter extends
-            BidirectionalConverter<Device, com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device> {
+    BidirectionalConverter<Device, com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device> {
 
         private SsldRepository ssldRepository;
 
@@ -209,6 +213,10 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                 destination.updateOutputSettings(deviceOutputSettings);
                 destination.setPublicKeyPresent(source.isPublicKeyPresent());
                 destination.setHasSchedule(source.isHasSchedule());
+
+                if (source.getTechnicalInstallationDate() != null) {
+                    destination.setTechnicalInstallationDate(source.getTechnicalInstallationDate().toGregorianCalendar().getTime());
+                }
 
                 return destination;
             }
@@ -273,6 +281,16 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                 destination.setContainerMunicipality(source.getContainerMunicipality());
                 destination.setDeviceIdentification(source.getDeviceIdentification());
                 destination.setDeviceType(source.getDeviceType());
+
+                if (source.getTechnicalInstallationDate() != null) {
+                    final GregorianCalendar gCalendarTechnicalInstallation = new GregorianCalendar();
+                    gCalendarTechnicalInstallation.setTime(source.getTechnicalInstallationDate());
+                    try {
+                        destination.setTechnicalInstallationDate(DatatypeFactory.newInstance().newXMLGregorianCalendar(gCalendarTechnicalInstallation));
+                    } catch (final DatatypeConfigurationException e) {
+                        LOGGER.error("Bad date format in technical installation date", e);
+                    }
+                }
 
                 if (source.getGpsLatitude() != null) {
                     destination.setGpsLatitude(Float.toString(source.getGpsLatitude()));
