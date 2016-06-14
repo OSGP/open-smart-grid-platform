@@ -9,9 +9,6 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
 import java.util.BitSet;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.TimeoutException;
@@ -45,54 +42,7 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
 
     private static final int NUMBER_OF_BITS_IN_ALARM_FILTER = 32;
 
-    /**
-     * Gives the position of the alarm code as indicated by the AlarmType in the
-     * bit string representation of the alarm register.
-     * <p>
-     * A position of 0 means the least significant bit, up to the maximum of 31
-     * for the most significant bit. Since the 4 most significant bits in the
-     * object are not used according to the DSMR documentation, the practical
-     * meaningful most significant bit is bit 27.
-     */
-    private static final Map<AlarmTypeDto, Integer> alarmRegisterBitIndexPerAlarmType;
-
-    static {
-        final Map<AlarmTypeDto, Integer> map = new EnumMap<>(AlarmTypeDto.class);
-
-        // Bits for group: Other Alarms
-        map.put(AlarmTypeDto.CLOCK_INVALID, 0);
-        map.put(AlarmTypeDto.REPLACE_BATTERY, 1);
-        map.put(AlarmTypeDto.POWER_UP, 2);
-        // bits 3 to 7 are not used
-
-        // Bits for group: Critical Alarms
-        map.put(AlarmTypeDto.PROGRAM_MEMORY_ERROR, 8);
-        map.put(AlarmTypeDto.RAM_ERROR, 9);
-        map.put(AlarmTypeDto.NV_MEMORY_ERROR, 10);
-        map.put(AlarmTypeDto.MEASUREMENT_SYSTEM_ERROR, 11);
-        map.put(AlarmTypeDto.WATCHDOG_ERROR, 12);
-        map.put(AlarmTypeDto.FRAUD_ATTEMPT, 13);
-        // bits 14 and 15 are not used
-
-        // Bits for group: M-Bus Alarms
-        map.put(AlarmTypeDto.COMMUNICATION_ERROR_M_BUS_CHANNEL_1, 16);
-        map.put(AlarmTypeDto.COMMUNICATION_ERROR_M_BUS_CHANNEL_2, 17);
-        map.put(AlarmTypeDto.COMMUNICATION_ERROR_M_BUS_CHANNEL_3, 18);
-        map.put(AlarmTypeDto.COMMUNICATION_ERROR_M_BUS_CHANNEL_4, 19);
-        map.put(AlarmTypeDto.FRAUD_ATTEMPT_M_BUS_CHANNEL_1, 20);
-        map.put(AlarmTypeDto.FRAUD_ATTEMPT_M_BUS_CHANNEL_2, 21);
-        map.put(AlarmTypeDto.FRAUD_ATTEMPT_M_BUS_CHANNEL_3, 22);
-        map.put(AlarmTypeDto.FRAUD_ATTEMPT_M_BUS_CHANNEL_4, 23);
-
-        // Bits for group: Reserved
-        map.put(AlarmTypeDto.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_1, 24);
-        map.put(AlarmTypeDto.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_2, 25);
-        map.put(AlarmTypeDto.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_3, 26);
-        map.put(AlarmTypeDto.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_4, 27);
-        // bits 28 to 31 are not used
-
-        alarmRegisterBitIndexPerAlarmType = Collections.unmodifiableMap(map);
-    }
+    private final AlarmHelperService alarmHelperService = new AlarmHelperService();
 
     @Override
     public AccessResultCode execute(final DlmsConnection conn, final DlmsDevice device,
@@ -115,7 +65,7 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
     }
 
     public AlarmNotificationsDto retrieveCurrentAlarmNotifications(final DlmsConnection conn) throws IOException,
-            TimeoutException, ProtocolAdapterException {
+    TimeoutException, ProtocolAdapterException {
 
         final AttributeAddress alarmFilterValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
@@ -124,7 +74,7 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
                 CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
         final GetResult getResult = conn.get(alarmFilterValue);
 
-        if (getResult==null) {
+        if (getResult == null) {
             throw new ProtocolAdapterException("No GetResult received while retrieving current alarm filter.");
         }
 
@@ -165,16 +115,16 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
             final AlarmNotificationsDto alarmNotificationsToSet) {
 
         /*
-         * Create a new (modifyable) set of alarm notifications, based on the
+         * Create a new (modifiable) set of alarm notifications, based on the
          * notifications to set.
-         * 
+         *
          * Next, add all notifications on the device. These will only really be
          * added to the new set of notifications if it did not contain a
          * notification for the alarm type for which the notification is added.
-         * 
+         *
          * This works because of the specification of addAll for the set,
          * claiming elements will only be added if not already present, and the
-         * defintion of equals on the AlarmNotification, ensuring only a simgle
+         * definition of equals on the AlarmNotification, ensuring only a single
          * setting per AlarmType.
          */
 
@@ -193,7 +143,8 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
 
         final AlarmTypeDto[] alarmTypes = AlarmTypeDto.values();
         for (final AlarmTypeDto alarmType : alarmTypes) {
-            final boolean enabled = bitSet.get(alarmRegisterBitIndexPerAlarmType.get(alarmType));
+            final boolean enabled = bitSet.get(this.alarmHelperService.getAlarmRegisterBitIndexPerAlarmType().get(
+                    alarmType));
             notifications.add(new AlarmNotificationDto(alarmType, enabled));
         }
 
@@ -205,8 +156,9 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
         final BitSet bitSet = new BitSet(NUMBER_OF_BITS_IN_ALARM_FILTER);
         final Set<AlarmNotificationDto> notifications = alarmNotifications.getAlarmNotificationsSet();
         for (final AlarmNotificationDto alarmNotification : notifications) {
-            bitSet.set(alarmRegisterBitIndexPerAlarmType.get(alarmNotification.getAlarmType()),
-                    alarmNotification.isEnabled());
+            bitSet.set(
+                    this.alarmHelperService.getAlarmRegisterBitIndexPerAlarmType()
+                    .get(alarmNotification.getAlarmType()), alarmNotification.isEnabled());
         }
 
         return bitSet.toLongArray()[0];
