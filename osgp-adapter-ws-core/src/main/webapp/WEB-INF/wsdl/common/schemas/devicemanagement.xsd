@@ -289,6 +289,7 @@
         <xsd:element name="DeviceAuthorizations" type="tns:DeviceAuthorization" minOccurs="0" maxOccurs="unbounded" />
       </xsd:sequence>
       <xsd:element name="InMaintenance" type="xsd:boolean" minOccurs="0" />
+      <xsd:element name="TechnicalInstallationDate" type="xsd:dateTime"  minOccurs="0" />
     </xsd:sequence>
   </xsd:complexType>
 
@@ -322,6 +323,7 @@
       <xsd:element name="DeviceInMaintenance" type="tns:DeviceInMaintetanceFilterType" minOccurs="0" />
       <xsd:element name="SortDir" type="xsd:string" minOccurs="0" />
       <xsd:element name="SortedBy" type="xsd:string" minOccurs="0" />
+      <xsd:element name="HasTechnicalInstallation" type="xsd:boolean" />
     </xsd:sequence>
   </xsd:complexType>
 

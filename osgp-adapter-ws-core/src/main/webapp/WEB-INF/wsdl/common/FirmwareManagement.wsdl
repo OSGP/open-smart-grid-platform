@@ -76,6 +76,60 @@
         </wsdl:part>
     </wsdl:message>
 
+    <wsdl:message name="FindAllDeviceModelsResponse">
+        <wsdl:part element="fman:FindAllDeviceModelsResponse" name="FindAllDeviceModelsResponse">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="FindAllDeviceModelsHeader">
+        <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+        <wsdl:part element="common:UserName" name="UserName" />
+        <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+    </wsdl:message>
+    <wsdl:message name="FindAllDeviceModelsRequest">
+        <wsdl:part element="fman:FindAllDeviceModelsRequest" name="FindAllDeviceModelsRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="AddDeviceModelHeader">
+        <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+        <wsdl:part element="common:UserName" name="UserName" />
+        <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+    </wsdl:message>
+    <wsdl:message name="AddDeviceModelResponse">
+        <wsdl:part element="fman:AddDeviceModelResponse" name="AddDeviceModelResponse">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="AddDeviceModelRequest">
+        <wsdl:part element="fman:AddDeviceModelRequest" name="AddDeviceModelRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="RemoveDeviceModelHeader">
+        <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+        <wsdl:part element="common:UserName" name="UserName" />
+        <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+    </wsdl:message>
+    <wsdl:message name="RemoveDeviceModelResponse">
+        <wsdl:part element="fman:RemoveDeviceModelResponse" name="RemoveDeviceModelResponse">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="RemoveDeviceModelRequest">
+        <wsdl:part element="fman:RemoveDeviceModelRequest" name="RemoveDeviceModelRequest">
+        </wsdl:part>
+    </wsdl:message>
+
+    <wsdl:message name="ChangeDeviceModelHeader">
+        <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+        <wsdl:part element="common:UserName" name="UserName" />
+        <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+    </wsdl:message>
+    <wsdl:message name="ChangeDeviceModelResponse">
+        <wsdl:part element="fman:ChangeDeviceModelResponse" name="ChangeDeviceModelResponse">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="ChangeDeviceModelRequest">
+        <wsdl:part element="fman:ChangeDeviceModelRequest" name="ChangeDeviceModelRequest">
+        </wsdl:part>
+    </wsdl:message>
+
     <wsdl:message name="FindAllManufacturersResponse">
         <wsdl:part element="fman:FindAllManufacturersResponse" name="FindAllManufacturersResponse">
         </wsdl:part>
@@ -158,7 +212,7 @@
         <wsdl:part element="fman:SwitchFirmwareResponse" name="SwitchFirmwareResponse">
         </wsdl:part>
     </wsdl:message>
-      
+
     <wsdl:portType name="FirmwareManagementPort">
         <wsdl:operation name="UpdateFirmware">
             <wsdl:input message="tns:UpdateFirmwareRequest" name="UpdateFirmwareRequest">
@@ -220,6 +274,32 @@
             <wsdl:input message="tns:SwitchFirmwareAsyncRequest" name="SwitchFirmwareAsyncRequest">
             </wsdl:input>
             <wsdl:output message="tns:SwitchFirmwareResponse" name="SwitchFirmwareResponse">
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="FindAllDeviceModels">
+            <wsdl:input message="tns:FindAllDeviceModelsRequest"
+                name="FindAllDeviceModelsRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:FindAllDeviceModelsResponse"
+                name="FindAllDeviceModelsResponse">
+            </wsdl:output>
+        </wsdl:operation>
+                <wsdl:operation name="AddDeviceModel">
+            <wsdl:input message="tns:AddDeviceModelRequest" name="AddDeviceModelRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:AddDeviceModelResponse" name="AddDeviceModelResponse">
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="ChangeDeviceModel">
+            <wsdl:input message="tns:ChangeDeviceModelRequest" name="ChangeDeviceModelRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:ChangeDeviceModelResponse" name="ChangeDeviceModelResponse">
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="RemoveDeviceModel">
+            <wsdl:input message="tns:RemoveDeviceModelRequest" name="RemoveDeviceModelRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:RemoveDeviceModelResponse" name="RemoveDeviceModelResponse">
             </wsdl:output>
         </wsdl:operation>
     </wsdl:portType>
@@ -354,8 +434,60 @@
                   <soap:body use="literal"/>
               </wsdl:output>
         </wsdl:operation>
+        
+        <wsdl:operation name="FindAllDeviceModels">
+            <soap:operation soapAction="" />
+            <wsdl:input name="FindAllDeviceModelsRequest">
+                <soap:header message="tns:FindAllDeviceModelsHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:FindAllDeviceModelsHeader" part="UserName" use="literal" />
+                <soap:header message="tns:FindAllDeviceModelsHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="FindAllDeviceModelsResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="AddDeviceModel">
+            <soap:operation soapAction="" />
+            <wsdl:input name="AddDeviceModelRequest">
+                <soap:header message="tns:AddDeviceModelHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:AddDeviceModelHeader" part="UserName" use="literal" />
+                <soap:header message="tns:AddDeviceModelHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="AddDeviceModelResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="ChangeDeviceModel">
+            <soap:operation soapAction="" />
+            <wsdl:input name="ChangeDeviceModelRequest">
+                <soap:header message="tns:ChangeDeviceModelHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ChangeDeviceModelHeader" part="UserName" use="literal" />
+                <soap:header message="tns:ChangeDeviceModelHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="ChangeDeviceModelResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="RemoveDeviceModel">
+            <soap:operation soapAction="" />
+            <wsdl:input name="RemoveDeviceModelRequest">
+                <soap:header message="tns:RemoveDeviceModelHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:RemoveDeviceModelHeader" part="UserName" use="literal" />
+                <soap:header message="tns:RemoveDeviceModelHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="RemoveDeviceModelResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        
     </wsdl:binding>
-    
+
     <wsdl:service name="FirmwareManagementPortService">
         <wsdl:port binding="tns:FirmwareManagementPortSoap11" name="FirmwareManagementPortSoap11">
             <soap:address

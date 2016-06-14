@@ -46,7 +46,8 @@ public class SecurityService {
                 PlatformFunction.CREATE_MANUFACTURER, PlatformFunction.GET_MANUFACTURERS,
                 PlatformFunction.DEACTIVATE_DEVICE, PlatformFunction.CHANGE_MANUFACTURER,
                 PlatformFunction.REMOVE_MANUFACTURER, PlatformFunction.GET_PROTOCOL_INFOS,
-                PlatformFunction.UPDATE_DEVICE_PROTOCOL });
+                PlatformFunction.UPDATE_DEVICE_PROTOCOL, PlatformFunction.GET_DEVICE_MODELS,
+                PlatformFunction.CREATE_DEVICEMODEL, PlatformFunction.REMOVE_DEVICE_MODELS });
 
         platformMapping.put(PlatformFunctionGroup.USER, new PlatformFunction[] { PlatformFunction.GET_ORGANISATIONS,
                 PlatformFunction.FIND_DEVICES });

@@ -26,10 +26,16 @@ import com.alliander.osgp.adapter.ws.core.application.services.FirmwareManagemen
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.core.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.common.OsgpResultType;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.AddDeviceModelRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.AddDeviceModelResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.AddManufacturerRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.AddManufacturerResponse;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.ChangeDeviceModelRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.ChangeDeviceModelResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.ChangeManufacturerRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.ChangeManufacturerResponse;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllDeviceModelsRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllDeviceModelsResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllManufacturersRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllManufacturersResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FirmwareVersion;
@@ -37,6 +43,8 @@ import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareV
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionResponse;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.RemoveDeviceModelRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.RemoveDeviceModelResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.RemoveManufacturerRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.RemoveManufacturerResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.SwitchFirmwareAsyncRequest;
@@ -47,6 +55,7 @@ import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwa
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareResponse;
+import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
@@ -247,7 +256,7 @@ public class FirmwareManagementEndpoint {
 
         try {
             this.firmwareManagementService.addManufacturer(organisationIdentification, new Manufacturer(request
-                    .getManufacturer().getCode(), request.getManufacturer().getName(), request.getManufacturer()
+                    .getManufacturer().getManufacturerId(), request.getManufacturer().getName(), request.getManufacturer()
                     .isUsePrefix()));
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("Exception adding manufacturer: {} ", e.getMessage(), e);
@@ -255,7 +264,7 @@ public class FirmwareManagementEndpoint {
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
             LOGGER.error("Exception: {} while adding manufacturer: {} for organisation {}",
-                    new Object[] { e.getMessage(), request.getManufacturer().getCode(), organisationIdentification }, e);
+                    new Object[] { e.getMessage(), request.getManufacturer().getManufacturerId(), organisationIdentification }, e);
             this.handleException(e);
         }
 
@@ -275,7 +284,7 @@ public class FirmwareManagementEndpoint {
 
         try {
             this.firmwareManagementService.changeManufacturer(organisationIdentification, new Manufacturer(request
-                    .getManufacturer().getCode(), request.getManufacturer().getName(), request.getManufacturer()
+                    .getManufacturer().getManufacturerId(), request.getManufacturer().getName(), request.getManufacturer()
                     .isUsePrefix()));
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("Exception Changeing manufacturer: {} ", e.getMessage(), e);
@@ -283,7 +292,7 @@ public class FirmwareManagementEndpoint {
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
             LOGGER.error("Exception: {} while Changeing manufacturer: {} for organisation {}",
-                    new Object[] { e.getMessage(), request.getManufacturer().getCode(), organisationIdentification }, e);
+                    new Object[] { e.getMessage(), request.getManufacturer().getManufacturerId(), organisationIdentification }, e);
             this.handleException(e);
         }
 
@@ -299,17 +308,17 @@ public class FirmwareManagementEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final RemoveManufacturerRequest request) throws OsgpException {
 
-        LOGGER.info("Removing manufacturer:{}.", request.getCode());
+        LOGGER.info("Removing manufacturer:{}.", request.getManufacturerId());
 
         try {
-            this.firmwareManagementService.removeManufacturer(organisationIdentification, request.getCode());
+            this.firmwareManagementService.removeManufacturer(organisationIdentification, request.getManufacturerId());
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("Exception Removeing manufacturer: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
             LOGGER.error("Exception: {} while Removeing manufacturer: {} for organisation {}",
-                    new Object[] { e.getMessage(), request.getCode(), organisationIdentification }, e);
+                    new Object[] { e.getMessage(), request.getManufacturerId(), organisationIdentification }, e);
             this.handleException(e);
         }
 
@@ -375,6 +384,121 @@ public class FirmwareManagementEndpoint {
         }
 
         return response;
+    }
+
+
+    // === DEVICEMODELS LOGIC ===
+
+    @PayloadRoot(localPart = "FindAllDeviceModelsRequest", namespace = NAMESPACE)
+    @ResponsePayload
+    public FindAllDeviceModelsResponse findAllDeviceModels(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final FindAllDeviceModelsRequest request) throws OsgpException {
+
+        LOGGER.info("Find all DeviceModels for organisation: {}.", organisationIdentification);
+
+        final FindAllDeviceModelsResponse response = new FindAllDeviceModelsResponse();
+
+        try {
+            final List<DeviceModel> deviceModels = this.firmwareManagementService
+                    .findAllDeviceModels(organisationIdentification);
+
+            response.getDeviceModels().addAll(this.firmwareManagementMapper.mapAsList(deviceModels,
+                    com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.DeviceModel.class));
+        } catch (final MethodConstraintViolationException e) {
+            LOGGER.error("Exception find all devicemodels {}: ", e);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+
+        return response;
+    }
+
+    @PayloadRoot(localPart = "AddDeviceModelRequest", namespace = NAMESPACE)
+    @ResponsePayload
+    public AddDeviceModelResponse addDeviceModel(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final AddDeviceModelRequest request) throws OsgpException {
+
+        LOGGER.info("Adding deviceModel:{}.", request.getDeviceModel().getModelCode());
+
+        try {
+            this.firmwareManagementService.addDeviceModel(organisationIdentification,
+                    request.getDeviceModel().getManufacturer(),
+                    request.getDeviceModel().getModelCode(),
+                    request.getDeviceModel().getDescription());
+        } catch (final MethodConstraintViolationException e) {
+            LOGGER.error("Exception adding manufacturer: {} ", e.getMessage(), e);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
+        } catch (final Exception e) {
+            LOGGER.error("Exception: {} while adding devicemodel: {} for organisation {}",
+                    new Object[] { e.getMessage(), request.getDeviceModel().getModelCode(), organisationIdentification }, e);
+
+            this.handleException(e);
+        }
+
+        final AddDeviceModelResponse addDeviceModelResponse = new AddDeviceModelResponse();
+        addDeviceModelResponse.setResult(OsgpResultType.OK);
+
+        return addDeviceModelResponse;
+    }
+
+    @PayloadRoot(localPart = "RemoveDeviceModelRequest", namespace = NAMESPACE)
+    @ResponsePayload
+    public RemoveDeviceModelResponse removedDeviceModel(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final RemoveDeviceModelRequest request) throws OsgpException {
+
+        LOGGER.info("Removing devicemodel:{}.", request.getDeviceModelId());
+
+        try {
+            this.firmwareManagementService.removeDeviceModel(organisationIdentification, request.getDeviceManufacturerId(), request.getDeviceModelId());
+        } catch (final MethodConstraintViolationException e) {
+            LOGGER.error("Exception removing deviceModel: {} ", e.getMessage(), e);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
+        } catch (final Exception e) {
+            LOGGER.error("Exception: {} while removing deviceModel: {} for organisation {}",
+                    new Object[] { e.getMessage(), request.getDeviceModelId(), organisationIdentification }, e);
+            this.handleException(e);
+        }
+
+        final RemoveDeviceModelResponse removeDeviceModelResponse = new RemoveDeviceModelResponse();
+        removeDeviceModelResponse.setResult(OsgpResultType.OK);
+
+        return removeDeviceModelResponse;
+    }
+
+    @PayloadRoot(localPart = "ChangeDeviceModelRequest", namespace = NAMESPACE)
+    @ResponsePayload
+    public ChangeDeviceModelResponse changeDeviceModel(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final ChangeDeviceModelRequest request) throws OsgpException {
+
+        LOGGER.info("Changing devicemodel:{}.", request.getDeviceModel().getModelCode());
+
+        try {
+            this.firmwareManagementService.changeDeviceModel(organisationIdentification,
+                    request.getDeviceModel().getManufacturer(),
+                    request.getDeviceModel().getModelCode(),
+                    request.getDeviceModel().getDescription());
+        } catch (final MethodConstraintViolationException e) {
+            LOGGER.error("Exception Changing devicemodel: {} ", e.getMessage(), e);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
+        } catch (final Exception e) {
+            LOGGER.error("Exception: {} while Changing devicemodel: {} for organisation {}",
+                    new Object[] { e.getMessage(), request.getDeviceModel().getModelCode(), organisationIdentification }, e);
+            this.handleException(e);
+        }
+
+        final ChangeDeviceModelResponse changeDeviceModelResponse = new ChangeDeviceModelResponse();
+        changeDeviceModelResponse.setResult(OsgpResultType.OK);
+
+        return changeDeviceModelResponse;
     }
 
     private void handleException(final Exception e) throws OsgpException {

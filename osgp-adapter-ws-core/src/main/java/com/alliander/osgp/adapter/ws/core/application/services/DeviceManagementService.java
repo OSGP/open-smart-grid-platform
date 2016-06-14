@@ -158,7 +158,7 @@ public class DeviceManagementService {
     @Transactional(value = "readableTransactionManager")
     public Page<DeviceLogItem> findDeviceMessages(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Min(value = 0) final int pageNumber)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.debug("findOslpMessage called with organisation {}, device {} and pagenumber {}", new Object[] {
                 organisationIdentification, deviceIdentification, pageNumber });
@@ -263,7 +263,7 @@ public class DeviceManagementService {
             if (deviceFilter == null) {
                 final DeviceFilter df = new DeviceFilter(organisationIdentification, null, null, null, null, null,
                         null, null, DeviceExternalManagedFilterType.BOTH, DeviceActivatedFilterType.BOTH,
-                        DeviceInMaintenanceFilterType.BOTH, null, null);
+                        DeviceInMaintenanceFilterType.BOTH, null, null, false);
                 devices = this.applyFilter(df, organisation, request);
             } else {
                 deviceFilter.updateOrganisationIdentification(organisationIdentification);
@@ -346,6 +346,10 @@ public class DeviceManagementService {
                             .getDeviceInMaintenance().getValue()));
                 }
 
+                if (deviceFilter.isHasTechnicalInstallation()) {
+                    specifications = specifications.and(this.deviceSpecifications.hasTechnicalInstallationDate());
+                }
+
                 devices = this.deviceRepository.findAll(specifications, request);
             } else {
                 devices = this.deviceRepository.findAll(request);
@@ -365,7 +369,7 @@ public class DeviceManagementService {
     @Transactional(value = "transactionManager")
     public String enqueueSetEventNotificationsRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final List<EventNotificationType> eventNotifications)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -456,6 +460,9 @@ public class DeviceManagementService {
                 updateDevice.getGpsLatitude(), updateDevice.getGpsLongitude());
 
         existingDevice.setActivated(updateDevice.isActivated());
+        if (updateDevice.getTechnicalInstallationDate() != null) {
+            existingDevice.setTechnicalInstallationDate(updateDevice.getTechnicalInstallationDate());
+        }
 
         final Ssld ssld = this.writableSsldRepository.findOne(existingDevice.getId());
         ssld.updateOutputSettings(updateDevice.receiveOutputSettings());
@@ -517,15 +524,17 @@ public class DeviceManagementService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final CommonRequestMessage message = new CommonRequestMessage(CommonRequestMessageType.UPDATE_DEVICE_SSL_CERTIFICATION,
-                correlationUid, organisationIdentification, deviceIdentification, certification, null);
+        final CommonRequestMessage message = new CommonRequestMessage(
+                CommonRequestMessageType.UPDATE_DEVICE_SSL_CERTIFICATION, correlationUid, organisationIdentification,
+                deviceIdentification, certification, null);
 
         this.commonRequestMessageSender.send(message);
 
         return correlationUid;
     }
 
-    public ResponseMessage dequeueUpdateDeviceSslCertificationResponse(final String correlationUid) throws OsgpException {
+    public ResponseMessage dequeueUpdateDeviceSslCertificationResponse(final String correlationUid)
+            throws OsgpException {
         return this.commonResponseMessageFinder.findMessage(correlationUid);
     }
 
@@ -543,8 +552,9 @@ public class DeviceManagementService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final CommonRequestMessage message = new CommonRequestMessage(CommonRequestMessageType.SET_DEVICE_VERIFICATION_KEY,
-                correlationUid, organisationIdentification, deviceIdentification, verificationKey, null);
+        final CommonRequestMessage message = new CommonRequestMessage(
+                CommonRequestMessageType.SET_DEVICE_VERIFICATION_KEY, correlationUid, organisationIdentification,
+                deviceIdentification, verificationKey, null);
 
         this.commonRequestMessageSender.send(message);
 

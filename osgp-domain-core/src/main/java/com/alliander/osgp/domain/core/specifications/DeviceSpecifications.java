@@ -37,4 +37,6 @@ public interface DeviceSpecifications {
 
     Specification<Device> isInMaintetance(final Boolean inMaintenance) throws ArgumentNullOrEmptyException;
 
+    Specification<Device> hasTechnicalInstallationDate() throws ArgumentNullOrEmptyException;
+
 }
