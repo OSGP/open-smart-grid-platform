@@ -308,15 +308,61 @@ public class FirmwareManagementService {
      * Returns a list of all DeviceModelFirmwares in the Platform
      */
     @Transactional(value = "writableTransactionManager")
-    public List<DeviceModelFirmware> findAllDeviceModelFirmwares(final String organisationIdentification) throws FunctionalException {
+    public List<DeviceModelFirmware> findAllDeviceModelFirmwares(final String organisationIdentification, final String manufacturer, final String modelCode) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_DEVICE_MODELS_FIRMWARE);
 
-        List<DeviceModelFirmware> deviceModelFirmwares = new ArrayList<DeviceModelFirmware>();
-        deviceModelFirmwares = this.deviceModelFirmwareRepository.findAll();
+        final Manufacturer dataseManufacturer = this.manufacturerRepository.findByManufacturerId(manufacturer);
+        final DeviceModel databaseDeviceModel = this.deviceModelRepository.findByManufacturerIdAndModelCode(dataseManufacturer, modelCode);
+
+        final List<DeviceModelFirmware> deviceModelFirmwares = this.deviceModelFirmwareRepository.findByDeviceModel(databaseDeviceModel);
 
         return deviceModelFirmwares;
+    }
+
+    /**
+     * Adds new deviceModelFirmware to the platform. Throws exception if
+     * {@link DeviceModelFirmware} already exists
+     */
+    @Transactional(value = "writableTransactionManager")
+    public void addDeviceModelFirmware(@Identification final String organisationIdentification,
+            final String description,
+            final byte[] file,
+            final String filename,
+            final String manufacturer,
+            final String modelCode,
+            final String moduleVersionComm,
+            final String moduleVersionFunc,
+            final String moduleVersionMa,
+            final String moduleVersionMbus,
+            final String moduleVersionSec,
+            final boolean pushToNewDevices) throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_DEVICE_MODELS_FIRMWARE);
+
+        final Manufacturer dataseManufacturer = this.manufacturerRepository.findByManufacturerId(manufacturer);
+
+        if (dataseManufacturer == null) {
+            LOGGER.info("Manufacturer doesn't exixts.");
+            throw new FunctionalException(FunctionalExceptionType.EXISTING_MANUFACTURER, ComponentType.WS_CORE,
+                    new UnknownEntityException(Manufacturer.class, manufacturer));
+        }
+
+        final DeviceModel databaseDeviceModel = this.deviceModelRepository.findByManufacturerIdAndModelCode(dataseManufacturer, modelCode);
+
+        if (databaseDeviceModel == null) {
+            LOGGER.info("DeviceModel already exixts.");
+            throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICEMODEL, ComponentType.WS_CORE,
+                    new UnknownEntityException(DeviceModel.class, modelCode));
+        } else {
+            final DeviceModelFirmware deviceModelFirmware = new DeviceModelFirmware(databaseDeviceModel, filename, modelCode,
+                    description, pushToNewDevices, moduleVersionComm, moduleVersionFunc, moduleVersionMa, moduleVersionMbus,
+                    moduleVersionSec, file);
+
+            this.deviceModelFirmwareRepository.save(deviceModelFirmware);
+        }
     }
 
     public ResponseMessage dequeueGetFirmwareResponse(final String correlationUid) throws OsgpException {

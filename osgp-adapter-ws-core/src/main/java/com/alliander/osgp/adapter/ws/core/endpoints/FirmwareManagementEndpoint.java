@@ -26,6 +26,8 @@ import com.alliander.osgp.adapter.ws.core.application.services.FirmwareManagemen
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.core.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.common.OsgpResultType;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.AddDeviceModelFirmwareRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.AddDeviceModelFirmwareResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.AddDeviceModelRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.AddDeviceModelResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.AddManufacturerRequest;
@@ -433,7 +435,7 @@ public class FirmwareManagementEndpoint {
                     request.getDeviceModel().getModelCode(),
                     request.getDeviceModel().getDescription());
         } catch (final MethodConstraintViolationException e) {
-            LOGGER.error("Exception adding manufacturer: {} ", e.getMessage(), e);
+            LOGGER.error("Exception adding devicemodel: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -512,13 +514,14 @@ public class FirmwareManagementEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final FindAllDeviceModelFirmwaresRequest request) throws OsgpException {
 
-        LOGGER.info("Find all DeviceModelFirmwares for organisation: {}.", organisationIdentification);
+        LOGGER.info("Find all DeviceModelFirmwares for organisation {} from manufacturer {} with model code {}.", organisationIdentification,
+                request.getManufacturer(), request.getModelCode());
 
         final FindAllDeviceModelFirmwaresResponse response = new FindAllDeviceModelFirmwaresResponse();
 
         try {
             final List<DeviceModelFirmware> deviceModelFirmwares = this.firmwareManagementService
-                    .findAllDeviceModelFirmwares(organisationIdentification);
+                    .findAllDeviceModelFirmwares(organisationIdentification, request.getManufacturer(), request.getModelCode());
 
             response.getDeviceModelFirmwares().addAll(this.firmwareManagementMapper.mapAsList(deviceModelFirmwares,
                     com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.DeviceModelFirmware.class));
@@ -532,6 +535,45 @@ public class FirmwareManagementEndpoint {
         }
 
         return response;
+    }
+
+    @PayloadRoot(localPart = "AddDeviceModelFirmwareRequest", namespace = NAMESPACE)
+    @ResponsePayload
+    public AddDeviceModelFirmwareResponse addDeviceModelFirmware(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final AddDeviceModelFirmwareRequest request) throws OsgpException {
+
+        LOGGER.info("Adding deviceModelFirmware:{}.", request.getDeviceModelFirmware().getFilename());
+
+        try {
+            this.firmwareManagementService.addDeviceModelFirmware(organisationIdentification,
+                    request.getDeviceModelFirmware().getDescription(),
+                    request.getDeviceModelFirmware().getFile(),
+                    request.getDeviceModelFirmware().getFilename(),
+                    request.getDeviceModelFirmware().getManufacturer(),
+                    request.getDeviceModelFirmware().getModelCode(),
+                    request.getDeviceModelFirmware().getModuleVersionComm(),
+                    request.getDeviceModelFirmware().getModuleVersionFunc(),
+                    request.getDeviceModelFirmware().getModuleVersionMa(),
+                    request.getDeviceModelFirmware().getModuleVersionMbus(),
+                    request.getDeviceModelFirmware().getModuleVersionSec(),
+                    request.getDeviceModelFirmware().isPushToNewDevices());
+
+        } catch (final MethodConstraintViolationException e) {
+            LOGGER.error("Exception adding devicemodelfirmware: {} ", e.getMessage(), e);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
+        } catch (final Exception e) {
+            LOGGER.error("Exception: {} while adding devicemodelfirmware: {} for organisation {}",
+                    new Object[] { e.getMessage(), request.getDeviceModelFirmware().getFilename(), organisationIdentification }, e);
+
+            this.handleException(e);
+        }
+
+        final AddDeviceModelFirmwareResponse addDeviceModelFirmwareResponse = new AddDeviceModelFirmwareResponse();
+        addDeviceModelFirmwareResponse.setResult(OsgpResultType.OK);
+
+        return addDeviceModelFirmwareResponse;
     }
 
     private void handleException(final Exception e) throws OsgpException {

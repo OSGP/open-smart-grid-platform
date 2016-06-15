@@ -240,6 +240,8 @@
    <xsd:element name="FindAllDeviceModelFirmwaresRequest">
       <xsd:complexType>
          <xsd:sequence>
+         	<xsd:element name="Manufacturer" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+         	<xsd:element name="ModelCode" type="xsd:string" minOccurs="1" maxOccurs="1"/>
          </xsd:sequence>
       </xsd:complexType>
    </xsd:element>
@@ -391,7 +393,14 @@
 
    <xsd:complexType name="DeviceModelFirmware">
       <xsd:sequence>
-         <xsd:element name="filename" type="xsd:string" minOccurs="0" />
+         <xsd:element name="Filename" type="xsd:string" minOccurs="0" />
+         <xsd:element name="Manufacturer" minOccurs="0">
+            <xsd:simpleType>
+               <xsd:restriction base="xsd:string">
+                  <xsd:maxLength value="4" />
+               </xsd:restriction>
+            </xsd:simpleType>
+         </xsd:element>
          <xsd:element name="ModelCode" minOccurs="0">
             <xsd:simpleType>
                <xsd:restriction base="xsd:string">
@@ -406,12 +415,13 @@
                </xsd:restriction>
             </xsd:simpleType>
          </xsd:element>
-         <xsd:element name="pushToNewDevices" type="xsd:boolean" />
-         <xsd:element name="moduleVersionComm" type="xsd:string" />
-         <xsd:element name="moduleVersionFunc" type="xsd:string" />
-         <xsd:element name="moduleVersionMa" type="xsd:string" />
-         <xsd:element name="moduleVersionMbus" type="xsd:string" />
-         <xsd:element name="moduleVersionSec" type="xsd:string" />
+         <xsd:element name="PushToNewDevices" type="xsd:boolean" />
+         <xsd:element name="ModuleVersionComm" type="xsd:string" />
+         <xsd:element name="ModuleVersionFunc" type="xsd:string" />
+         <xsd:element name="ModuleVersionMa" type="xsd:string" />
+         <xsd:element name="ModuleVersionMbus" type="xsd:string" />
+         <xsd:element name="ModuleVersionSec" type="xsd:string" />
+         <xsd:element name="File" minOccurs="0" type="xsd:base64Binary"/>
       </xsd:sequence>
    </xsd:complexType>
 

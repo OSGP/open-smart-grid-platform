@@ -26,8 +26,6 @@ public class DeviceModelFirmware extends AbstractEntity {
     @JoinColumn()
     private DeviceModel deviceModel;
 
-    //private String deviceModelFirmwareId;
-
     @Column()
     private String filename;
 
@@ -38,7 +36,7 @@ public class DeviceModelFirmware extends AbstractEntity {
     private String description;
 
     @Column()
-    private Boolean pushToNewDevices;
+    private boolean pushToNewDevices;
 
     @Column(length = 100)
     private String moduleVersionComm;
@@ -47,21 +45,24 @@ public class DeviceModelFirmware extends AbstractEntity {
     private String moduleVersionFunc;
 
     @Column(length = 100)
-    private String moduleVersionMA;
+    private String moduleVersionMa;
 
     @Column(length = 100)
-    private String moduleVersionMBus;
+    private String moduleVersionMbus;
 
     @Column(length = 100)
     private String moduleVersionSec;
+
+    @Column()
+    private byte[] file;
 
     public DeviceModelFirmware() {
         // Default constructor
     }
 
     public DeviceModelFirmware(final DeviceModel deviceModel, final String filename, final String modelCode, final String description,
-            final Boolean pushToNewDevices, final String moduleVersionComm, final String moduleVersionFunc,
-            final String moduleVersionMA, final String moduleVersionMBus, final String moduleVersionSec) {
+            final boolean pushToNewDevices, final String moduleVersionComm, final String moduleVersionFunc,
+            final String moduleVersionMa, final String moduleVersionMbus, final String moduleVersionSec, final byte[] file) {
 
         this.deviceModel = deviceModel;
         this.filename = filename;
@@ -70,9 +71,10 @@ public class DeviceModelFirmware extends AbstractEntity {
         this.pushToNewDevices = pushToNewDevices;
         this.moduleVersionComm = moduleVersionComm;
         this.moduleVersionFunc = moduleVersionFunc;
-        this.moduleVersionMA = moduleVersionMA;
-        this.moduleVersionMBus = moduleVersionMBus;
+        this.moduleVersionMa = moduleVersionMa;
+        this.moduleVersionMbus = moduleVersionMbus;
         this.moduleVersionSec = moduleVersionSec;
+        this.file = file;
     }
 
     public DeviceModel getDeviceModel() {
@@ -91,7 +93,7 @@ public class DeviceModelFirmware extends AbstractEntity {
         return this.description;
     }
 
-    public Boolean getPushToNewDevices() {
+    public boolean getPushToNewDevices() {
         return this.pushToNewDevices;
     }
 
@@ -103,16 +105,20 @@ public class DeviceModelFirmware extends AbstractEntity {
         return this.moduleVersionFunc;
     }
 
-    public String getModuleVersionMA() {
-        return this.moduleVersionMA;
-    }
-
-    public String getModuleVersionMBus() {
-        return this.moduleVersionMBus;
-    }
-
     public String getModuleVersionSec() {
         return this.moduleVersionSec;
+    }
+
+    public String getModuleVersionMa() {
+        return this.moduleVersionMa;
+    }
+
+    public String getModuleVersionMbus() {
+        return this.moduleVersionMbus;
+    }
+
+    public byte[] getFile() {
+        return this.file;
     }
 
 }
