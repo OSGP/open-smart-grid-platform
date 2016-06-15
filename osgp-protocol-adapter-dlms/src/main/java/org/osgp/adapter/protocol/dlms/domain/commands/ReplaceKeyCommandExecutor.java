@@ -8,6 +8,7 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
 
 import org.apache.commons.codec.DecoderException;
@@ -31,6 +32,16 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.shared.exceptionhandling.EncrypterException;
 import com.alliander.osgp.shared.security.EncryptionService;
 
+/**
+ * This is the command executor that corresponds with UpdateFirmwareRequest.
+ * Some code may look odd, specifically in the execute() method. 
+ * The reason is that the device may return OK after a replacekeys request, but in fact is NOT_OK. 
+ * To overcome this behavior, instead of replacing the auth/enc keys immediately in the security_key table, first 
+ * temporary keys are inserted with a valid_to=null and valid_from=null! Only when these keys to be valid in next request
+ * these keys become permanent, otherwise the previous keys (that were before the last replacekeys request) are 'restored'.
+ * See also DlmsDevice: discardInvalidKeys, promoteInvalidKeys, het/hasNewSecurityKey.
+ *
+ */
 @Component
 public class ReplaceKeyCommandExecutor implements CommandExecutor<ReplaceKeyCommandExecutor.KeyWrapper, DlmsDevice> {
 
@@ -102,8 +113,11 @@ public class ReplaceKeyCommandExecutor implements CommandExecutor<ReplaceKeyComm
             final ReplaceKeyCommandExecutor.KeyWrapper keyWrapper) throws ProtocolAdapterException {
         try {
             // Decrypt the cipher text using the private key.
-            final byte[] decryptedKey = this.encryptionService.decrypt(keyWrapper.getBytes());
-            final byte[] decryptedMasterKey = this.encryptionService.decrypt(this.getMasterKey(device));
+            byte[] decryptedKey = this.encryptionService.decrypt(keyWrapper.getBytes());
+            decryptedKey =  Arrays.copyOfRange(decryptedKey, 16, decryptedKey.length);
+
+            byte[] decryptedMasterKey = this.encryptionService.decrypt(this.getMasterKey(device));
+            decryptedMasterKey = Arrays.copyOfRange(decryptedMasterKey, 16, decryptedMasterKey.length);
 
             final MethodParameter methodParameterAuth = SecurityUtils.globalKeyTransfer(decryptedMasterKey,
                     decryptedKey, keyWrapper.getKeyId());
@@ -181,3 +195,4 @@ public class ReplaceKeyCommandExecutor implements CommandExecutor<ReplaceKeyComm
         return this.dlmsDeviceRepository.save(device);
     }
 }
+
