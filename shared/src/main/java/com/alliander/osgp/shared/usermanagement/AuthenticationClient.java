@@ -46,6 +46,13 @@ public class AuthenticationClient extends AbstractClient {
     private String loginPath = "/login";
 
     /*
+     * To login: POST to /login-mellon JSON like:
+     * {"username":"myname","password":"ignored","application":"myapp"} with
+     * header value token = "the mellon shared secret"
+     */
+    private String loginMellonPath = "/login-mellon";
+
+    /*
      * To authenticate: GET to /authenticate with proper header values like:
      * requestingOrgId = "some org id" and token = "the security token"
      */
@@ -163,6 +170,58 @@ public class AuthenticationClient extends AbstractClient {
             final String body = this.checkResponse(response);
 
             // Map the body to the LoginResponse.
+            loginResponse = this.jacksonObjectMapper.readValue(body, LoginResponse.class);
+        } catch (final Exception e) {
+            LOGGER.error(LOGIN_FAILED, e);
+            throw new AuthenticationClientException(LOGIN_FAILED, e);
+        }
+
+        return loginResponse;
+    }
+
+    /**
+     * Login to the user management API with username from Mellon based on
+     * external Identity Provider login.
+     *
+     * @param loginRequest
+     *            The LoginRequest containing user name and application, any
+     *            password is ignored.
+     * @param secret
+     *            a shared secret to communicate with REST APIs regarding an
+     *            externally authenticated user whose username is received
+     *            through Mellon.
+     *
+     * @return A LoginResponse containing feedback message, error message and
+     *         authentication token.
+     *
+     * @throws AuthenticationClientException
+     *             In case the LoginRequest argument is null, the user name or
+     *             application are an empty string, the response is null, the
+     *             HTTP status code is not equal to 200 OK or if the response
+     *             body is empty.
+     */
+    public LoginResponse loginMellon(final LoginRequest loginRequest, final String secret)
+            throws AuthenticationClientException {
+
+        LoginResponse loginResponse = null;
+
+        try {
+            if (loginRequest == null) {
+                throw new AuthenticationClientException("loginRequest is null");
+            }
+
+            if (StringUtils.isEmpty(loginRequest.getUsername())) {
+                throw new AuthenticationClientException("username is empty");
+            }
+
+            // Pause for 0.1 seconds to annoy brute force attempts.
+            Thread.sleep(100);
+
+            final Response response = this.getWebClientInstance().path(this.loginMellonPath)
+                    .header(HEADER_PARAM_TOKEN, secret).post(loginRequest);
+
+            final String body = this.checkResponse(response);
+
             loginResponse = this.jacksonObjectMapper.readValue(body, LoginResponse.class);
         } catch (final Exception e) {
             LOGGER.error(LOGIN_FAILED, e);
