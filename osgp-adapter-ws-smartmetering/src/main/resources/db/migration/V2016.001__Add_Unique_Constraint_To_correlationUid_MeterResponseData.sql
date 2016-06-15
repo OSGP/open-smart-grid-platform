@@ -1,1 +1,0 @@
-create unique index on meter_response_data (correlation_uid)
