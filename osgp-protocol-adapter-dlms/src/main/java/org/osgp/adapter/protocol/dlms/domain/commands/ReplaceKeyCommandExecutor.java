@@ -35,10 +35,12 @@ import com.alliander.osgp.shared.security.EncryptionService;
 /**
  * This is the command executor that corresponds with UpdateFirmwareRequest.
  * Some code may look odd, specifically in the execute() method. 
- * The reason is that the device may return OK after a replacekeys request, but in fact is NOT_OK. 
- * To overcome this behavior, instead of replacing the auth/enc keys immediately in the security_key table, first 
- * temporary keys are inserted with a valid_to=null and valid_from=null! Only when these keys to be valid in next request
- * these keys become permanent, otherwise the previous keys (that were before the last replacekeys request) are 'restored'.
+ * The reason is that the device may (sometimes) return NOT_OK after a replacekeys request but was in fact successful!
+ * Actually the situation is that (sometimes) the device returns NOT_OK but does replace the keys. 
+ * So the key that was sent to the device that received the status NOT_OK should be saved, 
+ * so in case the supposedly valid key (the key that was on the device before replace keys was executed) does not work anymore 
+ * the new (but supposedly NOT_OK) key can be tried. This key is recognized because both: valid_to=null and valid_from=null !
+ * If that key works we know the device gave the wrong response and this key should be made valid. 
  * See also DlmsDevice: discardInvalidKeys, promoteInvalidKeys, het/hasNewSecurityKey.
  *
  */
