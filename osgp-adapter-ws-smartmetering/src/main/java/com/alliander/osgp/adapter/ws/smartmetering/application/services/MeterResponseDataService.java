@@ -35,7 +35,14 @@ public class MeterResponseDataService {
      * @param meterResponseData
      */
     public void enqueue(final MeterResponseData meterResponseData) {
-        this.meterResponseDataRepository.save(meterResponseData);
+
+        if (this.meterResponseDataRepository.findSingleResultByCorrelationUid(meterResponseData.getCorrelationUid()) == null) {
+            this.meterResponseDataRepository.save(meterResponseData);
+        } else {
+            LOGGER.warn(
+                    "Not saving meter repsonse data, because it already exists for correlationUid: {} already exists.",
+                    meterResponseData.getCorrelationUid());
+        }
     }
 
     /**
