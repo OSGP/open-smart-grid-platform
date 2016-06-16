@@ -393,6 +393,7 @@
 
    <xsd:complexType name="DeviceModelFirmware">
       <xsd:sequence>
+         <xsd:element name="Id" type="xsd:int" minOccurs="1" maxOccurs="1"/>
          <xsd:element name="Filename" type="xsd:string" minOccurs="0" />
          <xsd:element name="Manufacturer" minOccurs="0">
             <xsd:simpleType>
