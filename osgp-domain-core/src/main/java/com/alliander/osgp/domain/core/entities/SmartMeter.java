@@ -30,6 +30,13 @@ public class SmartMeter extends Device {
         // Default constructor for hibernate
     }
 
+    public SmartMeter(final String deviceIdentification, final String alias, final String containerCity,
+            final String containerPostalCode, final String containerStreet, final String containerNumber,
+            final String containerMunicipality, final Float gpsLatitude, final Float gpsLongitude) {
+        super(deviceIdentification, alias, containerCity, containerPostalCode, containerStreet, containerNumber,
+                containerMunicipality, gpsLatitude, gpsLongitude);
+    }
+
     public void setDeviceType(final String deviceType) {
         this.deviceType = deviceType;
     }
