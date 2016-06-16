@@ -25,8 +25,8 @@ import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.entities.Ssld;
 
 public abstract class AbstractDeviceConverter<T extends com.alliander.osgp.domain.core.entities.Device> extends
-        BidirectionalConverter<T, Device> {
-    static final Logger LOGGER = LoggerFactory.getLogger(AbstractDeviceConverter.class);
+BidirectionalConverter<T, Device> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDeviceConverter.class);
 
     public AbstractDeviceConverter() {
         super();
@@ -85,7 +85,7 @@ public abstract class AbstractDeviceConverter<T extends com.alliander.osgp.domai
         }
 
         destination
-                .setNetworkAddress(source.getNetworkAddress() == null ? null : source.getNetworkAddress().toString());
+        .setNetworkAddress(source.getNetworkAddress() == null ? null : source.getNetworkAddress().toString());
         destination.setOwner(source.getOwner() == null ? "" : source.getOwner().getName());
         destination.getOrganisations().addAll(source.getOrganisations());
 

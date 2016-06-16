@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 
 class SmartMeterConverter extends AbstractDeviceConverter<SmartMeter> {
-    static final Logger LOGGER = LoggerFactory.getLogger(SmartMeterConverter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SmartMeterConverter.class);
 
     @Override
     public SmartMeter convertFrom(final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device source,

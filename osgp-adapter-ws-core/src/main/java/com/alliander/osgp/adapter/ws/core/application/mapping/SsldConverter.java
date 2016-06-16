@@ -158,4 +158,34 @@ class SsldConverter extends AbstractDeviceConverter<Ssld> {
         }
         return output;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((this.ssldRepository == null) ? 0 : this.ssldRepository.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (this.getClass() != obj.getClass()) {
+            return false;
+        }
+        final SsldConverter other = (SsldConverter) obj;
+        if (this.ssldRepository == null) {
+            if (other.ssldRepository != null) {
+                return false;
+            }
+        } else if (!this.ssldRepository.equals(other.ssldRepository)) {
+            return false;
+        }
+        return true;
+    }
 }

@@ -74,4 +74,10 @@ public class SmartMeter extends Device {
     public void setDeviceIdentification(final String deviceIdentification) {
         this.deviceIdentification = deviceIdentification;
     }
+
+    public SmartMeter(final String supplier, final Short channel) {
+        super();
+        this.supplier = supplier;
+        this.channel = channel;
+    }
 }
