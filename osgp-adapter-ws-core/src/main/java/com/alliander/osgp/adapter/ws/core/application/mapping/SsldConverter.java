@@ -167,6 +167,7 @@ class SsldConverter extends BidirectionalConverter<Ssld, Device> {
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
+        result = prime * result + ((this.helper == null) ? 0 : this.helper.hashCode());
         result = prime * result + ((this.ssldRepository == null) ? 0 : this.ssldRepository.hashCode());
         return result;
     }
@@ -183,6 +184,13 @@ class SsldConverter extends BidirectionalConverter<Ssld, Device> {
             return false;
         }
         final SsldConverter other = (SsldConverter) obj;
+        if (this.helper == null) {
+            if (other.helper != null) {
+                return false;
+            }
+        } else if (!this.helper.equals(other.helper)) {
+            return false;
+        }
         if (this.ssldRepository == null) {
             if (other.ssldRepository != null) {
                 return false;
@@ -192,4 +200,5 @@ class SsldConverter extends BidirectionalConverter<Ssld, Device> {
         }
         return true;
     }
+
 }

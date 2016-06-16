@@ -31,7 +31,7 @@ class DeviceConverterHelper<T extends com.alliander.osgp.domain.core.entities.De
         this.clazz = clazz;
     }
 
-    protected T initEntity(final Device source) {
+    T initEntity(final Device source) {
         if (source.getGpsLatitude() == null) {
             source.setGpsLatitude("0");
         }
@@ -61,7 +61,7 @@ class DeviceConverterHelper<T extends com.alliander.osgp.domain.core.entities.De
         return destination;
     }
 
-    protected Device initJaxb(final T source) {
+    Device initJaxb(final T source) {
 
         final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device destination = new com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device();
         destination.setAlias(source.getAlias());
@@ -84,7 +84,7 @@ class DeviceConverterHelper<T extends com.alliander.osgp.domain.core.entities.De
         }
 
         destination
-                .setNetworkAddress(source.getNetworkAddress() == null ? null : source.getNetworkAddress().toString());
+        .setNetworkAddress(source.getNetworkAddress() == null ? null : source.getNetworkAddress().toString());
         destination.setOwner(source.getOwner() == null ? "" : source.getOwner().getName());
         destination.getOrganisations().addAll(source.getOrganisations());
 
@@ -104,7 +104,7 @@ class DeviceConverterHelper<T extends com.alliander.osgp.domain.core.entities.De
         return destination;
     }
 
-    protected void setTechnicalInstallationDate(final T source, final Device destination) {
+    void setTechnicalInstallationDate(final T source, final Device destination) {
         if (source.getTechnicalInstallationDate() != null) {
             final GregorianCalendar gCalendarTechnicalInstallation = new GregorianCalendar();
             gCalendarTechnicalInstallation.setTime(source.getTechnicalInstallationDate());
