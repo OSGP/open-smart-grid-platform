@@ -40,86 +40,85 @@ class SsldConverter extends AbstractDeviceConverter<Ssld> {
     public com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device convertTo(final Ssld source,
             final Type<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device> destinationType) {
 
-        if (source != null) {
-            final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device destination = this.initJaxb(source);
+        if (source == null) {
+            return null;
+        }
+        final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device destination = this.initJaxb(source);
 
-            final List<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting> deviceOutputSettings = new ArrayList<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting>();
+        final List<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting> deviceOutputSettings = new ArrayList<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting>();
 
-            final Ssld ssld = this.ssldRepository.findByDeviceIdentification(source.getDeviceIdentification());
+        final Ssld ssld = this.ssldRepository.findByDeviceIdentification(source.getDeviceIdentification());
 
-            if (ssld != null) {
-                for (final DeviceOutputSetting deviceOutputSetting : ssld.getOutputSettings()) {
-                    final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting newDeviceOutputSetting = new com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting();
+        if (ssld != null) {
+            for (final DeviceOutputSetting deviceOutputSetting : ssld.getOutputSettings()) {
+                final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting newDeviceOutputSetting = new com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting();
 
-                    newDeviceOutputSetting.setExternalId(deviceOutputSetting.getExternalId());
-                    newDeviceOutputSetting.setInternalId(deviceOutputSetting.getInternalId());
-                    newDeviceOutputSetting.setRelayType(deviceOutputSetting.getOutputType() == null ? null : RelayType
-                            .valueOf(deviceOutputSetting.getOutputType().name()));
-                    newDeviceOutputSetting.setAlias(deviceOutputSetting.getAlias());
-                    deviceOutputSettings.add(newDeviceOutputSetting);
-                }
-
-                destination.setPublicKeyPresent(ssld.isPublicKeyPresent());
-                destination.setHasSchedule(ssld.getHasSchedule());
-
-                final List<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean> eans = new ArrayList<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean>();
-                for (final com.alliander.osgp.domain.core.entities.Ean ean : ssld.getEans()) {
-                    final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean newEan = new com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean();
-                    newEan.setCode(ean.getCode());
-                    newEan.setDescription(ean.getDescription());
-                    eans.add(newEan);
-                }
-                destination.getEans().addAll(eans);
-
-                this.addRelayStatusses(destination, ssld);
+                newDeviceOutputSetting.setExternalId(deviceOutputSetting.getExternalId());
+                newDeviceOutputSetting.setInternalId(deviceOutputSetting.getInternalId());
+                newDeviceOutputSetting.setRelayType(deviceOutputSetting.getOutputType() == null ? null : RelayType
+                        .valueOf(deviceOutputSetting.getOutputType().name()));
+                newDeviceOutputSetting.setAlias(deviceOutputSetting.getAlias());
+                deviceOutputSettings.add(newDeviceOutputSetting);
             }
 
-            destination.getOutputSettings().addAll(deviceOutputSettings);
+            destination.setPublicKeyPresent(ssld.isPublicKeyPresent());
+            destination.setHasSchedule(ssld.getHasSchedule());
 
-            return destination;
+            final List<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean> eans = new ArrayList<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean>();
+            for (final com.alliander.osgp.domain.core.entities.Ean ean : ssld.getEans()) {
+                final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean newEan = new com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean();
+                newEan.setCode(ean.getCode());
+                newEan.setDescription(ean.getDescription());
+                eans.add(newEan);
+            }
+            destination.getEans().addAll(eans);
+
+            this.addRelayStatusses(destination, ssld);
         }
-        return null;
+
+        destination.getOutputSettings().addAll(deviceOutputSettings);
+
+        return destination;
     }
 
     @Override
     public Ssld convertFrom(final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device source,
             final Type<Ssld> destinationType) {
-        Ssld destination = null;
 
-        if (source != null) {
-
-            destination = this.initEntity(source, Ssld.class);
-
-            final List<com.alliander.osgp.domain.core.entities.DeviceOutputSetting> deviceOutputSettings = new ArrayList<com.alliander.osgp.domain.core.entities.DeviceOutputSetting>();
-
-            for (final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting deviceOutputSetting : source
-                    .getOutputSettings()) {
-                com.alliander.osgp.domain.core.entities.DeviceOutputSetting newDeviceOutputSetting = new com.alliander.osgp.domain.core.entities.DeviceOutputSetting();
-
-                newDeviceOutputSetting = new com.alliander.osgp.domain.core.entities.DeviceOutputSetting(
-                        deviceOutputSetting.getInternalId(), deviceOutputSetting.getExternalId(),
-                        deviceOutputSetting.getRelayType() == null ? null
-                                : com.alliander.osgp.domain.core.valueobjects.RelayType.valueOf(deviceOutputSetting
-                                        .getRelayType().name()), deviceOutputSetting.getAlias());
-
-                deviceOutputSettings.add(newDeviceOutputSetting);
-            }
-            destination.updateOutputSettings(deviceOutputSettings);
-            destination.setPublicKeyPresent(source.isPublicKeyPresent());
-            destination.setHasSchedule(source.isHasSchedule());
-
-            // clearing the existing Eans to prevent duplication
-            destination.setEans(new ArrayList<Ean>());
-
-            for (final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean ean : source.getEans()) {
-                final Ean newEan = new Ean(destination, ean.getCode(), ean.getDescription());
-
-                destination.getEans().add(newEan);
-            }
-
-            return destination;
+        if (source == null) {
+            return null;
         }
-        return null;
+
+        final Ssld destination = this.initEntity(source, Ssld.class);
+
+        final List<com.alliander.osgp.domain.core.entities.DeviceOutputSetting> deviceOutputSettings = new ArrayList<com.alliander.osgp.domain.core.entities.DeviceOutputSetting>();
+
+        for (final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting deviceOutputSetting : source
+                .getOutputSettings()) {
+            com.alliander.osgp.domain.core.entities.DeviceOutputSetting newDeviceOutputSetting = new com.alliander.osgp.domain.core.entities.DeviceOutputSetting();
+
+            newDeviceOutputSetting = new com.alliander.osgp.domain.core.entities.DeviceOutputSetting(
+                    deviceOutputSetting.getInternalId(), deviceOutputSetting.getExternalId(),
+                    deviceOutputSetting.getRelayType() == null ? null
+                            : com.alliander.osgp.domain.core.valueobjects.RelayType.valueOf(deviceOutputSetting
+                                    .getRelayType().name()), deviceOutputSetting.getAlias());
+
+            deviceOutputSettings.add(newDeviceOutputSetting);
+        }
+        destination.updateOutputSettings(deviceOutputSettings);
+        destination.setPublicKeyPresent(source.isPublicKeyPresent());
+        destination.setHasSchedule(source.isHasSchedule());
+
+        // clearing the existing Eans to prevent duplication
+        destination.setEans(new ArrayList<Ean>());
+
+        for (final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean ean : source.getEans()) {
+            final Ean newEan = new Ean(destination, ean.getCode(), ean.getDescription());
+
+            destination.getEans().add(newEan);
+        }
+
+        return destination;
     }
 
     private void addRelayStatusses(final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device destination,
