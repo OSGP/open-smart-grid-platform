@@ -291,6 +291,7 @@
       <xsd:complexType>
          <xsd:sequence>
             <xsd:element name="DeviceModelFirmware" type="tns:DeviceModelFirmware" />
+            <xsd:element name="Id" type="xsd:int" minOccurs="1" maxOccurs="1"/>
          </xsd:sequence>
       </xsd:complexType>
    </xsd:element>

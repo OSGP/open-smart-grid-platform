@@ -121,4 +121,48 @@ public class DeviceModelFirmware extends AbstractEntity {
         return this.file;
     }
 
+    public void setDeviceModel(final DeviceModel deviceModel) {
+        this.deviceModel = deviceModel;
+    }
+
+    public void setFilename(final String filename) {
+        this.filename = filename;
+    }
+
+    public void setModelCode(final String modelCode) {
+        this.modelCode = modelCode;
+    }
+
+    public void setDescription(final String description) {
+        this.description = description;
+    }
+
+    public void setPushToNewDevices(final boolean pushToNewDevices) {
+        this.pushToNewDevices = pushToNewDevices;
+    }
+
+    public void setModuleVersionComm(final String moduleVersionComm) {
+        this.moduleVersionComm = moduleVersionComm;
+    }
+
+    public void setModuleVersionFunc(final String moduleVersionFunc) {
+        this.moduleVersionFunc = moduleVersionFunc;
+    }
+
+    public void setModuleVersionMa(final String moduleVersionMa) {
+        this.moduleVersionMa = moduleVersionMa;
+    }
+
+    public void setModuleVersionMbus(final String moduleVersionMbus) {
+        this.moduleVersionMbus = moduleVersionMbus;
+    }
+
+    public void setModuleVersionSec(final String moduleVersionSec) {
+        this.moduleVersionSec = moduleVersionSec;
+    }
+
+    public void setFile(final byte[] file) {
+        this.file = file;
+    }
+
 }

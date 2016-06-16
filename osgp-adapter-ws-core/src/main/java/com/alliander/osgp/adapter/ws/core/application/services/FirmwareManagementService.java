@@ -234,7 +234,7 @@ public class FirmwareManagementService {
             final String manufacturerId, final String modelCode, final String description) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
-        this.domainHelperService.isAllowed(organisation, PlatformFunction.CREATE_DEVICEMODEL);
+        this.domainHelperService.isAllowed(organisation, PlatformFunction.CREATE_DEVICE_MODEL);
 
         final Manufacturer manufacturer = this.manufacturerRepository.findByManufacturerId(manufacturerId);
 
@@ -265,7 +265,7 @@ public class FirmwareManagementService {
             throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
-        this.domainHelperService.isAllowed(organisation, PlatformFunction.REMOVE_DEVICE_MODELS);
+        this.domainHelperService.isAllowed(organisation, PlatformFunction.REMOVE_DEVICE_MODEL);
 
         final Manufacturer dataseManufacturer = this.manufacturerRepository.findByManufacturerId(manufacturer);
         final DeviceModel removedDeviceModel = this.deviceModelRepository.findByManufacturerIdAndModelCode(dataseManufacturer, modelCode);
@@ -288,7 +288,7 @@ public class FirmwareManagementService {
             final String manufacturer, final String modelCode, final String description) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
-        this.domainHelperService.isAllowed(organisation, PlatformFunction.CHANGE_MANUFACTURER);
+        this.domainHelperService.isAllowed(organisation, PlatformFunction.CHANGE_DEVICE_MODEL);
 
         final Manufacturer dataseManufacturer = this.manufacturerRepository.findByManufacturerId(manufacturer);
         final DeviceModel changedDeviceModel = this.deviceModelRepository.findByManufacturerIdAndModelCode(dataseManufacturer, modelCode);
@@ -311,10 +311,10 @@ public class FirmwareManagementService {
     public List<DeviceModelFirmware> findAllDeviceModelFirmwares(final String organisationIdentification, final String manufacturer, final String modelCode) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
-        this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_DEVICE_MODELS_FIRMWARE);
+        this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_DEVICE_MODEL_FIRMWARE);
 
-        final Manufacturer dataseManufacturer = this.manufacturerRepository.findByManufacturerId(manufacturer);
-        final DeviceModel databaseDeviceModel = this.deviceModelRepository.findByManufacturerIdAndModelCode(dataseManufacturer, modelCode);
+        final Manufacturer databaseManufacturer = this.manufacturerRepository.findByManufacturerId(manufacturer);
+        final DeviceModel databaseDeviceModel = this.deviceModelRepository.findByManufacturerIdAndModelCode(databaseManufacturer, modelCode);
 
         final List<DeviceModelFirmware> deviceModelFirmwares = this.deviceModelFirmwareRepository.findByDeviceModel(databaseDeviceModel);
 
@@ -340,13 +340,13 @@ public class FirmwareManagementService {
             final boolean pushToNewDevices) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
-        this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_DEVICE_MODELS_FIRMWARE);
+        this.domainHelperService.isAllowed(organisation, PlatformFunction.CREATE_DEVICE_MODEL_FIRMWARE);
 
         final Manufacturer dataseManufacturer = this.manufacturerRepository.findByManufacturerId(manufacturer);
 
         if (dataseManufacturer == null) {
             LOGGER.info("Manufacturer doesn't exixts.");
-            throw new FunctionalException(FunctionalExceptionType.EXISTING_MANUFACTURER, ComponentType.WS_CORE,
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_MANUFACTURER, ComponentType.WS_CORE,
                     new UnknownEntityException(Manufacturer.class, manufacturer));
         }
 
@@ -354,7 +354,7 @@ public class FirmwareManagementService {
 
         if (databaseDeviceModel == null) {
             LOGGER.info("DeviceModel already exixts.");
-            throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICEMODEL, ComponentType.WS_CORE,
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICEMODEL, ComponentType.WS_CORE,
                     new UnknownEntityException(DeviceModel.class, modelCode));
         } else {
             final DeviceModelFirmware deviceModelFirmware = new DeviceModelFirmware(databaseDeviceModel, filename, modelCode,
@@ -362,6 +362,90 @@ public class FirmwareManagementService {
                     moduleVersionSec, file);
 
             this.deviceModelFirmwareRepository.save(deviceModelFirmware);
+        }
+    }
+
+    /**
+     * Updates a DeviceModelFirmware to the platform. Throws exception if
+     * {@link DeviceModelFirmware} doesn't exists.
+     */
+    @Transactional(value = "writableTransactionManager")
+    public void changeDeviceModelFirmware(@Identification final String organisationIdentification,
+            final int id,
+            final String description,
+            final byte[] file,
+            final String filename,
+            final String manufacturer,
+            final String modelCode,
+            final String moduleVersionComm,
+            final String moduleVersionFunc,
+            final String moduleVersionMa,
+            final String moduleVersionMbus,
+            final String moduleVersionSec,
+            final boolean pushToNewDevices) throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        this.domainHelperService.isAllowed(organisation, PlatformFunction.CHANGE_DEVICE_MODEL_FIRMWARE);
+
+        final Manufacturer dataseManufacturer = this.manufacturerRepository.findByManufacturerId(manufacturer);
+
+        if (dataseManufacturer == null) {
+            LOGGER.info("Manufacturer doesn't exixts.");
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_MANUFACTURER, ComponentType.WS_CORE,
+                    new UnknownEntityException(Manufacturer.class, manufacturer));
+        }
+
+        final DeviceModel databaseDeviceModel = this.deviceModelRepository.findByManufacturerIdAndModelCode(dataseManufacturer, modelCode);
+
+        if (databaseDeviceModel == null) {
+            LOGGER.info("DeviceModel already exixts.");
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICEMODEL, ComponentType.WS_CORE,
+                    new UnknownEntityException(DeviceModel.class, modelCode));
+        } else {
+
+            final DeviceModelFirmware changedDeviceModelFirmware = this.deviceModelFirmwareRepository.findById(id);
+
+            if (changedDeviceModelFirmware == null) {
+                LOGGER.info("DeviceModelFirmware not found.");
+                throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICEMODEL_FIRMWARE, ComponentType.WS_CORE,
+                        new UnknownEntityException(DeviceModelFirmware.class, filename));
+            } else {
+                changedDeviceModelFirmware.setDescription(description);
+                changedDeviceModelFirmware.setDeviceModel(databaseDeviceModel);
+                changedDeviceModelFirmware.setFile(file);
+                changedDeviceModelFirmware.setFilename(filename);
+                changedDeviceModelFirmware.setModelCode(modelCode);
+                changedDeviceModelFirmware.setModuleVersionComm(moduleVersionComm);
+                changedDeviceModelFirmware.setModuleVersionFunc(moduleVersionFunc);
+                changedDeviceModelFirmware.setModuleVersionMa(moduleVersionMa);
+                changedDeviceModelFirmware.setModuleVersionMbus(moduleVersionMbus);
+                changedDeviceModelFirmware.setModuleVersionSec(moduleVersionSec);
+                changedDeviceModelFirmware.setPushToNewDevices(pushToNewDevices);
+
+                this.deviceModelFirmwareRepository.save(changedDeviceModelFirmware);
+            }
+        }
+    }
+
+    /**
+     * Removes a DeviceModelFirmware from the platform. Throws exception if
+     * {@link DeviceModelFirmware} doesn't exists
+     */
+    @Transactional(value = "writableTransactionManager")
+    public void removeDeviceModelFirmware(@Identification final String organisationIdentification, @Valid final int firmwareIdentification)
+            throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        this.domainHelperService.isAllowed(organisation, PlatformFunction.REMOVE_DEVICE_MODEL_FIRMWARE);
+
+        final DeviceModelFirmware removedDeviceModelFirmware = this.deviceModelFirmwareRepository.findById(firmwareIdentification);
+
+        if (removedDeviceModelFirmware == null) {
+            LOGGER.info("DeviceModelFirmware not found.");
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICEMODEL_FIRMWARE, ComponentType.WS_CORE,
+                    new UnknownEntityException(DeviceModelFirmware.class, String.valueOf(firmwareIdentification)));
+        } else {
+            this.deviceModelFirmwareRepository.delete(removedDeviceModelFirmware);
         }
     }
 
