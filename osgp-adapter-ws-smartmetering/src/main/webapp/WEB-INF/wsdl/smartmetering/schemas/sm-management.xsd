@@ -49,7 +49,7 @@
 	<xsd:element name="FindEventsResponse">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element name="Events" type="tns:Event" maxOccurs="unbounded" />
+				<xsd:element name="Events" type="tns:Event" maxOccurs="unbounded" minOccurs="0" />
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
@@ -58,7 +58,7 @@
 		<xsd:complexContent>
 			<xsd:extension base="common:Response">
 				<xsd:sequence>
-					<xsd:element name="Events" type="tns:Event" maxOccurs="unbounded" />
+					<xsd:element name="Events" type="tns:Event" maxOccurs="unbounded" minOccurs="0" />
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
