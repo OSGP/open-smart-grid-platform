@@ -51,7 +51,7 @@ public class AdHocManagementEndpoint {
     public SetRebootAsyncResponse setReboot(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SetRebootRequest request) throws OsgpException {
 
-        LOGGER.info("Set Light Request received from organisation: {} for device: {}.", organisationIdentification,
+        LOGGER.info("Set Reboot received from organisation: {} for device: {}.", organisationIdentification,
                 request.getDeviceIdentification());
 
         final SetRebootAsyncResponse response = new SetRebootAsyncResponse();
