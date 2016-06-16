@@ -20,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.RelayType;
-import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
 import com.alliander.osgp.domain.core.entities.Ean;
 import com.alliander.osgp.domain.core.entities.RelayStatus;
@@ -41,9 +40,9 @@ class SsldConverter extends AbstractDeviceConverter<Ssld> {
     public com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device convertTo(final Ssld source,
             final Type<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device> destinationType) {
 
-        final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device destination = new com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device();
-
         if (source != null) {
+            final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device destination = this.initJaxb(source);
+
             final List<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting> deviceOutputSettings = new ArrayList<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting>();
 
             final Ssld ssld = this.ssldRepository.findByDeviceIdentification(source.getDeviceIdentification());
@@ -77,43 +76,6 @@ class SsldConverter extends AbstractDeviceConverter<Ssld> {
 
             destination.getOutputSettings().addAll(deviceOutputSettings);
 
-            destination.setAlias(source.getAlias());
-            destination.setActivated(source.isActivated());
-            destination.setContainerCity(source.getContainerCity());
-            destination.setContainerNumber(source.getContainerNumber());
-            destination.setContainerPostalCode(source.getContainerPostalCode());
-            destination.setContainerStreet(source.getContainerStreet());
-            destination.setContainerMunicipality(source.getContainerMunicipality());
-            destination.setDeviceIdentification(source.getDeviceIdentification());
-            destination.setDeviceType(source.getDeviceType());
-
-            this.setTechnicalInstallationDate(source, destination);
-
-            if (source.getGpsLatitude() != null) {
-                destination.setGpsLatitude(Float.toString(source.getGpsLatitude()));
-            }
-            if (source.getGpsLongitude() != null) {
-                destination.setGpsLongitude(Float.toString(source.getGpsLongitude()));
-            }
-
-            destination.setNetworkAddress(source.getNetworkAddress() == null ? null : source.getNetworkAddress()
-                    .toString());
-            destination.setOwner(source.getOwner() == null ? "" : source.getOwner().getName());
-            destination.getOrganisations().addAll(source.getOrganisations());
-
-            destination.setInMaintenance(source.isInMaintenance());
-
-            final List<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceAuthorization> deviceAuthorizations = new ArrayList<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceAuthorization>();
-            for (final DeviceAuthorization deviceAuthorisation : source.getAuthorizations()) {
-                final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceAuthorization newDeviceAuthorization = new com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceAuthorization();
-
-                newDeviceAuthorization.setFunctionGroup(deviceAuthorisation.getFunctionGroup().name());
-                newDeviceAuthorization.setOrganisation(deviceAuthorisation.getOrganisation()
-                        .getOrganisationIdentification());
-                deviceAuthorizations.add(newDeviceAuthorization);
-            }
-            destination.getDeviceAuthorizations().addAll(deviceAuthorizations);
-
             return destination;
         }
         return null;
@@ -126,7 +88,7 @@ class SsldConverter extends AbstractDeviceConverter<Ssld> {
 
         if (source != null) {
 
-            destination = this.init(source, Ssld.class);
+            destination = this.initEntity(source, Ssld.class);
 
             final List<com.alliander.osgp.domain.core.entities.DeviceOutputSetting> deviceOutputSettings = new ArrayList<com.alliander.osgp.domain.core.entities.DeviceOutputSetting>();
 
