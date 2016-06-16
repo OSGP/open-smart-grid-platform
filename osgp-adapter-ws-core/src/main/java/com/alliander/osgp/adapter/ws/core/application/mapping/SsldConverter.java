@@ -14,11 +14,13 @@ import java.util.List;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
+import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.RelayType;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
 import com.alliander.osgp.domain.core.entities.Ean;
@@ -26,8 +28,9 @@ import com.alliander.osgp.domain.core.entities.RelayStatus;
 import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 
-class SsldConverter extends AbstractDeviceConverter<Ssld> {
+class SsldConverter extends BidirectionalConverter<Ssld, Device> {
     private static final Logger LOGGER = LoggerFactory.getLogger(SsldConverter.class);
+    private final DeviceConverterHelper<Ssld> helper = new DeviceConverterHelper<>(Ssld.class);
 
     private final SsldRepository ssldRepository;
 
@@ -43,7 +46,8 @@ class SsldConverter extends AbstractDeviceConverter<Ssld> {
         if (source == null) {
             return null;
         }
-        final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device destination = this.initJaxb(source);
+        final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device destination = this.helper
+                .initJaxb(source);
 
         final List<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting> deviceOutputSettings = new ArrayList<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting>();
 
@@ -89,7 +93,7 @@ class SsldConverter extends AbstractDeviceConverter<Ssld> {
             return null;
         }
 
-        final Ssld destination = this.initEntity(source, Ssld.class);
+        final Ssld destination = this.helper.initEntity(source);
 
         final List<com.alliander.osgp.domain.core.entities.DeviceOutputSetting> deviceOutputSettings = new ArrayList<com.alliander.osgp.domain.core.entities.DeviceOutputSetting>();
 

@@ -14,21 +14,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device;
-import com.alliander.osgp.domain.core.entities.SmartMeter;
 
-class SmartMeterConverter extends BidirectionalConverter<SmartMeter, Device> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SmartMeterConverter.class);
+class DeviceConverter extends BidirectionalConverter<com.alliander.osgp.domain.core.entities.Device, Device> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceConverter.class);
 
-    private final DeviceConverterHelper<SmartMeter> helper = new DeviceConverterHelper<>(SmartMeter.class);
+    private final DeviceConverterHelper<com.alliander.osgp.domain.core.entities.Device> helper = new DeviceConverterHelper<>(
+            com.alliander.osgp.domain.core.entities.Device.class);
 
     @Override
-    public SmartMeter convertFrom(final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device source,
-            final Type<SmartMeter> destinationType) {
+    public com.alliander.osgp.domain.core.entities.Device convertFrom(
+            final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device source,
+            final Type<com.alliander.osgp.domain.core.entities.Device> destinationType) {
         return this.helper.initEntity(source);
     }
 
     @Override
-    public com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device convertTo(final SmartMeter source,
+    public com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device convertTo(
+            final com.alliander.osgp.domain.core.entities.Device source,
             final Type<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device> destinationType) {
         return this.helper.initJaxb(source);
     }

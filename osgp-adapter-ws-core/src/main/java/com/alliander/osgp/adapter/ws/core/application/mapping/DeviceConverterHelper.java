@@ -14,8 +14,6 @@ import java.util.List;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,15 +22,16 @@ import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.entities.Ssld;
 
-public abstract class AbstractDeviceConverter<T extends com.alliander.osgp.domain.core.entities.Device> extends
-BidirectionalConverter<T, Device> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDeviceConverter.class);
+class DeviceConverterHelper<T extends com.alliander.osgp.domain.core.entities.Device> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceConverterHelper.class);
 
-    public AbstractDeviceConverter() {
-        super();
+    private final Class<T> clazz;
+
+    public DeviceConverterHelper(final Class<T> clazz) {
+        this.clazz = clazz;
     }
 
-    protected T initEntity(final Device source, final Class<? extends T> clazz) {
+    protected T initEntity(final Device source) {
         if (source.getGpsLatitude() == null) {
             source.setGpsLatitude("0");
         }
@@ -40,7 +39,7 @@ BidirectionalConverter<T, Device> {
             source.setGpsLongitude("0");
         }
         T destination = null;
-        if (clazz.isAssignableFrom(SmartMeter.class)) {
+        if (this.clazz.isAssignableFrom(SmartMeter.class)) {
             destination = (T) new SmartMeter(source.getDeviceIdentification(), source.getAlias(),
                     source.getContainerCity(), source.getContainerPostalCode(), source.getContainerStreet(),
                     source.getContainerNumber(), source.getContainerMunicipality(), Float.valueOf(source
@@ -85,7 +84,7 @@ BidirectionalConverter<T, Device> {
         }
 
         destination
-        .setNetworkAddress(source.getNetworkAddress() == null ? null : source.getNetworkAddress().toString());
+                .setNetworkAddress(source.getNetworkAddress() == null ? null : source.getNetworkAddress().toString());
         destination.setOwner(source.getOwner() == null ? "" : source.getOwner().getName());
         destination.getOrganisations().addAll(source.getOrganisations());
 
