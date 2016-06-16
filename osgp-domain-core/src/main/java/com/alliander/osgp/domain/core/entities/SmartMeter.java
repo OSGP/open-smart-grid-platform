@@ -80,4 +80,42 @@ public class SmartMeter extends Device {
         this.supplier = supplier;
         this.channel = channel;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((this.channel == null) ? 0 : this.channel.hashCode());
+        result = prime * result + ((this.supplier == null) ? 0 : this.supplier.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (this.getClass() != obj.getClass()) {
+            return false;
+        }
+        final SmartMeter other = (SmartMeter) obj;
+        if (this.channel == null) {
+            if (other.channel != null) {
+                return false;
+            }
+        } else if (!this.channel.equals(other.channel)) {
+            return false;
+        }
+        if (this.supplier == null) {
+            if (other.supplier != null) {
+                return false;
+            }
+        } else if (!this.supplier.equals(other.supplier)) {
+            return false;
+        }
+        return true;
+    }
 }
