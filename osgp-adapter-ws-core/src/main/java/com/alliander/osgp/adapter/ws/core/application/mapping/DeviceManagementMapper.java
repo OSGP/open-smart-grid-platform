@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.adapter.ws.core.application.mapping;
 
+import java.util.Objects;
+
 import javax.annotation.PostConstruct;
 
 import ma.glasnost.orika.MapperFactory;
@@ -32,6 +34,11 @@ public class DeviceManagementMapper extends ConfigurableMapper {
 
     public DeviceManagementMapper() {
         super(false);
+    }
+
+    protected DeviceManagementMapper(final SsldRepository ssldRepository) {
+        super(false);
+        this.ssldRepository = ssldRepository;
     }
 
     @PostConstruct
@@ -62,32 +69,12 @@ public class DeviceManagementMapper extends ConfigurableMapper {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((this.ssldRepository == null) ? 0 : this.ssldRepository.hashCode());
-        return result;
+        return super.hashCode() + Objects.hashCode(this.ssldRepository);
     }
 
     @Override
     public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (this.getClass() != obj.getClass()) {
-            return false;
-        }
-        final DeviceManagementMapper other = (DeviceManagementMapper) obj;
-        if (this.ssldRepository == null) {
-            if (other.ssldRepository != null) {
-                return false;
-            }
-        } else if (!this.ssldRepository.equals(other.ssldRepository)) {
-            return false;
-        }
-        return true;
+        return super.equals(obj) && Objects.equals(this.ssldRepository, ((DeviceManagementMapper) obj).ssldRepository);
     }
 
 }

@@ -50,11 +50,10 @@ class SsldConverter extends BidirectionalConverter<Ssld, Device> {
         final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device destination = this.helper
                 .initJaxb(source);
 
-        final List<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting> deviceOutputSettings = new ArrayList<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting>();
-
         final Ssld ssld = this.ssldRepository.findByDeviceIdentification(source.getDeviceIdentification());
 
         if (ssld != null) {
+            final List<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting> deviceOutputSettings = new ArrayList<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting>();
             for (final DeviceOutputSetting deviceOutputSetting : ssld.getOutputSettings()) {
                 final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting newDeviceOutputSetting = new com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting();
 
@@ -65,6 +64,7 @@ class SsldConverter extends BidirectionalConverter<Ssld, Device> {
                 newDeviceOutputSetting.setAlias(deviceOutputSetting.getAlias());
                 deviceOutputSettings.add(newDeviceOutputSetting);
             }
+            destination.getOutputSettings().addAll(deviceOutputSettings);
 
             destination.setPublicKeyPresent(ssld.isPublicKeyPresent());
             destination.setHasSchedule(ssld.getHasSchedule());
@@ -80,8 +80,6 @@ class SsldConverter extends BidirectionalConverter<Ssld, Device> {
 
             this.addRelayStatusses(destination, ssld);
         }
-
-        destination.getOutputSettings().addAll(deviceOutputSettings);
 
         return destination;
     }
