@@ -10,10 +10,10 @@ Background:
   Scenario: find event information from a meter
     When the find standard events request is received
     Then standard events should be returned
-    
+
     When the find fraud events request is received
     Then fraud events should be returned
-    
+
     When the find communication events request is received
     Then communication events should be returned
 
