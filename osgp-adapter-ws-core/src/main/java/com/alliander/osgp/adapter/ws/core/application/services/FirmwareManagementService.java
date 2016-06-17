@@ -419,7 +419,9 @@ public class FirmwareManagementService {
             } else {
                 changedDeviceModelFirmware.setDescription(description);
                 changedDeviceModelFirmware.setDeviceModel(databaseDeviceModel);
-                changedDeviceModelFirmware.setFile(file);
+
+                //this property can not be saved by a changing devicemodelfirmware call
+                //changedDeviceModelFirmware.setFile(file);
                 changedDeviceModelFirmware.setFilename(filename);
                 changedDeviceModelFirmware.setModelCode(modelCode);
                 changedDeviceModelFirmware.setModuleVersionComm(moduleVersionComm);
@@ -428,6 +430,17 @@ public class FirmwareManagementService {
                 changedDeviceModelFirmware.setModuleVersionMbus(moduleVersionMbus);
                 changedDeviceModelFirmware.setModuleVersionSec(moduleVersionSec);
                 changedDeviceModelFirmware.setPushToNewDevices(pushToNewDevices);
+
+                // set all devicefirmwares.pushToNewDevices on false
+                if (pushToNewDevices) {
+                    final List<DeviceModelFirmware> deviceModelFirmwares = this.deviceModelFirmwareRepository.findByDeviceModel(databaseDeviceModel);
+                    for (final DeviceModelFirmware deviceModelFirmware : deviceModelFirmwares) {
+                        if (deviceModelFirmware.getPushToNewDevices()) {
+                            deviceModelFirmware.setPushToNewDevices(false);
+                        }
+                    }
+                    this.deviceModelFirmwareRepository.save(deviceModelFirmwares);
+                }
 
                 this.deviceModelFirmwareRepository.save(changedDeviceModelFirmware);
             }
