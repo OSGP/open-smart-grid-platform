@@ -7,6 +7,9 @@
  */
 package com.alliander.osgp.adapter.ws.core.application.services;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -364,9 +367,23 @@ public class FirmwareManagementService {
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICEMODEL, ComponentType.WS_CORE,
                     new UnknownEntityException(DeviceModel.class, modelCode));
         } else {
+            String md5Hash;
+            try {
+                final MessageDigest md = MessageDigest.getInstance("MD5");
+                final byte[] messageDigest = md.digest(file);
+                final BigInteger number = new BigInteger(1, messageDigest);
+                md5Hash = number.toString(16);
+                while (md5Hash.length() < 32) {
+                    md5Hash = "0" + md5Hash;
+                }
+            } catch (final NoSuchAlgorithmException e) {
+                LOGGER.error("RuntimeException while creating MD5 hash for device model firmware.", e);
+                throw new RuntimeException(e);
+            }
+
             final DeviceModelFirmware deviceModelFirmware = new DeviceModelFirmware(databaseDeviceModel, filename, modelCode,
                     description, pushToNewDevices, moduleVersionComm, moduleVersionFunc, moduleVersionMa, moduleVersionMbus,
-                    moduleVersionSec, file);
+                    moduleVersionSec, file, md5Hash);
 
             if (pushToNewDevices) {
                 final List<DeviceModelFirmware> deviceModelFirmwares = this.deviceModelFirmwareRepository.findByDeviceModel(databaseDeviceModel);

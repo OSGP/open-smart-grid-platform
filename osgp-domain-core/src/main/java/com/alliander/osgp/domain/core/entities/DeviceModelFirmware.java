@@ -56,13 +56,16 @@ public class DeviceModelFirmware extends AbstractEntity {
     @Column()
     private byte[] file;
 
+    @Column()
+    private String hash;
+
     public DeviceModelFirmware() {
         // Default constructor
     }
 
     public DeviceModelFirmware(final DeviceModel deviceModel, final String filename, final String modelCode, final String description,
             final boolean pushToNewDevices, final String moduleVersionComm, final String moduleVersionFunc,
-            final String moduleVersionMa, final String moduleVersionMbus, final String moduleVersionSec, final byte[] file) {
+            final String moduleVersionMa, final String moduleVersionMbus, final String moduleVersionSec, final byte[] file, final String hash) {
 
         this.deviceModel = deviceModel;
         this.filename = filename;
@@ -75,6 +78,7 @@ public class DeviceModelFirmware extends AbstractEntity {
         this.moduleVersionMbus = moduleVersionMbus;
         this.moduleVersionSec = moduleVersionSec;
         this.file = file;
+        this.hash = hash;
     }
 
     public DeviceModel getDeviceModel() {
@@ -163,6 +167,14 @@ public class DeviceModelFirmware extends AbstractEntity {
 
     public void setFile(final byte[] file) {
         this.file = file;
+    }
+
+    public String getHash() {
+        return this.hash;
+    }
+
+    public void setHash(final String hash) {
+        this.hash = hash;
     }
 
 }
