@@ -318,6 +318,13 @@ public class FirmwareManagementService {
 
         final List<DeviceModelFirmware> deviceModelFirmwares = this.deviceModelFirmwareRepository.findByDeviceModel(databaseDeviceModel);
 
+        // performance issue, clean list with firmware files for front-end admin app.
+        for (final DeviceModelFirmware deviceModelFirmware : deviceModelFirmwares) {
+            if (deviceModelFirmware.getFile() != null) {
+                deviceModelFirmware.setFile(null);
+            }
+        }
+
         return deviceModelFirmwares;
     }
 
