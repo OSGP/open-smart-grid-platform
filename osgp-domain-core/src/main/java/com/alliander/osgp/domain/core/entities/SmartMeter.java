@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.domain.core.entities;
 
+import java.util.Objects;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.PrimaryKeyJoinColumn;
@@ -28,6 +30,13 @@ public class SmartMeter extends Device {
 
     public SmartMeter() {
         // Default constructor for hibernate
+    }
+
+    public SmartMeter(final String deviceIdentification, final String alias, final String containerCity,
+            final String containerPostalCode, final String containerStreet, final String containerNumber,
+            final String containerMunicipality, final Float gpsLatitude, final Float gpsLongitude) {
+        super(deviceIdentification, alias, containerCity, containerPostalCode, containerStreet, containerNumber,
+                containerMunicipality, gpsLatitude, gpsLongitude);
     }
 
     public void setDeviceType(final String deviceType) {
@@ -66,5 +75,22 @@ public class SmartMeter extends Device {
 
     public void setDeviceIdentification(final String deviceIdentification) {
         this.deviceIdentification = deviceIdentification;
+    }
+
+    public SmartMeter(final String supplier, final Short channel) {
+        super();
+        this.supplier = supplier;
+        this.channel = channel;
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode() + Objects.hash(this.supplier, this.channel);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        return super.equals(obj) && Objects.equals(this.supplier, ((SmartMeter) obj).supplier)
+                && Objects.equals(this.channel, ((SmartMeter) obj).channel);
     }
 }
