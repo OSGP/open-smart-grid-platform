@@ -27,7 +27,7 @@ import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
  */
 
 public class SmartMetering {
-    protected static final String SOAP_PROJECT_XML = "../cucumber/soap-ui-project/FLEX-OVL-V3---SmartMetering-soapui-project.xml";
+    protected static final String SOAP_PROJECT_XML = "/etc/osp/soapui/SmartMetering-soapui-project.xml";
     protected static final String XPATH_MATCHER_CORRELATIONUID = "\\|\\|\\|\\S{17}\\|\\|\\|\\S{17}";
     protected static final String DEVICE_IDENTIFICATION_E_LABEL = "DeviceIdentificationE";
     protected static final String DEVICE_IDENTIFICATION_G_LABEL = "DeviceIdentificationG";

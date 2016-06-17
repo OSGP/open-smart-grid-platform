@@ -290,6 +290,13 @@
         <classifier>classes</classifier>
       </dependency>
 
+      <dependency>
+        <groupId>org.osgp</groupId>
+        <artifactId>osgp-protocol-adapter-dlms</artifactId>
+        <version>3.4.0-SNAPSHOT</version>
+        <classifier>classes</classifier>
+      </dependency>
+
       <!-- Spring Framework -->
       <dependency>
         <groupId>org.springframework</groupId>
