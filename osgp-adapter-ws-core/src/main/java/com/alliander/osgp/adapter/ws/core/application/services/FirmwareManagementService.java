@@ -368,6 +368,16 @@ public class FirmwareManagementService {
                     description, pushToNewDevices, moduleVersionComm, moduleVersionFunc, moduleVersionMa, moduleVersionMbus,
                     moduleVersionSec, file);
 
+            if (pushToNewDevices) {
+                final List<DeviceModelFirmware> deviceModelFirmwares = this.deviceModelFirmwareRepository.findByDeviceModel(databaseDeviceModel);
+                for (final DeviceModelFirmware dbDeviceModelFirmware : deviceModelFirmwares) {
+                    if (dbDeviceModelFirmware.getPushToNewDevices()) {
+                        dbDeviceModelFirmware.setPushToNewDevices(false);
+                    }
+                }
+                this.deviceModelFirmwareRepository.save(deviceModelFirmwares);
+            }
+
             this.deviceModelFirmwareRepository.save(deviceModelFirmware);
         }
     }
@@ -410,7 +420,7 @@ public class FirmwareManagementService {
                     new UnknownEntityException(DeviceModel.class, modelCode));
         } else {
 
-            final DeviceModelFirmware changedDeviceModelFirmware = this.deviceModelFirmwareRepository.findById(id);
+            final DeviceModelFirmware changedDeviceModelFirmware = this.deviceModelFirmwareRepository.findById(Long.valueOf(id));
 
             if (changedDeviceModelFirmware == null) {
                 LOGGER.info("DeviceModelFirmware not found.");
@@ -435,7 +445,7 @@ public class FirmwareManagementService {
                 if (pushToNewDevices) {
                     final List<DeviceModelFirmware> deviceModelFirmwares = this.deviceModelFirmwareRepository.findByDeviceModel(databaseDeviceModel);
                     for (final DeviceModelFirmware deviceModelFirmware : deviceModelFirmwares) {
-                        if (deviceModelFirmware.getPushToNewDevices()) {
+                        if (deviceModelFirmware.getPushToNewDevices() && (deviceModelFirmware.getId() != Long.valueOf(id))) {
                             deviceModelFirmware.setPushToNewDevices(false);
                         }
                     }
@@ -458,7 +468,7 @@ public class FirmwareManagementService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.REMOVE_DEVICE_MODEL_FIRMWARE);
 
-        final DeviceModelFirmware removedDeviceModelFirmware = this.deviceModelFirmwareRepository.findById(firmwareIdentification);
+        final DeviceModelFirmware removedDeviceModelFirmware = this.deviceModelFirmwareRepository.findById(Long.valueOf(firmwareIdentification));
 
         if (removedDeviceModelFirmware == null) {
             LOGGER.info("DeviceModelFirmware not found.");

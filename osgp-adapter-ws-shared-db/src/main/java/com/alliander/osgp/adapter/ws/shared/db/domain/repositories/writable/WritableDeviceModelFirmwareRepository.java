@@ -18,5 +18,5 @@ import com.alliander.osgp.domain.core.entities.DeviceModelFirmware;
 @Repository
 public interface WritableDeviceModelFirmwareRepository extends JpaRepository<DeviceModelFirmware, Long> {
     List<DeviceModelFirmware> findByDeviceModel(DeviceModel deviceModel);
-    DeviceModelFirmware findById(Integer id);
+    DeviceModelFirmware findById(Long id);
 }
