@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.adapter.ws.core.application.mapping;
 
+import java.util.Objects;
+
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
@@ -31,32 +33,12 @@ class SmartMeterConverter extends BidirectionalConverter<SmartMeter, Device> {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + ((this.helper == null) ? 0 : this.helper.hashCode());
-        return result;
+        return super.hashCode() + Objects.hash(this.helper);
     }
 
     @Override
     public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (!super.equals(obj)) {
-            return false;
-        }
-        if (this.getClass() != obj.getClass()) {
-            return false;
-        }
-        final SmartMeterConverter other = (SmartMeterConverter) obj;
-        if (this.helper == null) {
-            if (other.helper != null) {
-                return false;
-            }
-        } else if (!this.helper.equals(other.helper)) {
-            return false;
-        }
-        return true;
+        return super.equals(obj) && Objects.equals(this.helper, ((SmartMeterConverter) obj).helper);
     }
 
 }

@@ -10,6 +10,7 @@ package com.alliander.osgp.adapter.ws.core.application.mapping;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Objects;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -165,40 +166,13 @@ class SsldConverter extends BidirectionalConverter<Ssld, Device> {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + ((this.helper == null) ? 0 : this.helper.hashCode());
-        result = prime * result + ((this.ssldRepository == null) ? 0 : this.ssldRepository.hashCode());
-        return result;
+        return super.hashCode() + Objects.hash(this.helper, this.ssldRepository);
     }
 
     @Override
     public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (!super.equals(obj)) {
-            return false;
-        }
-        if (this.getClass() != obj.getClass()) {
-            return false;
-        }
-        final SsldConverter other = (SsldConverter) obj;
-        if (this.helper == null) {
-            if (other.helper != null) {
-                return false;
-            }
-        } else if (!this.helper.equals(other.helper)) {
-            return false;
-        }
-        if (this.ssldRepository == null) {
-            if (other.ssldRepository != null) {
-                return false;
-            }
-        } else if (!this.ssldRepository.equals(other.ssldRepository)) {
-            return false;
-        }
-        return true;
+        return super.equals(obj) && Objects.equals(this.helper, ((SsldConverter) obj).helper)
+                && Objects.equals(this.ssldRepository, ((SsldConverter) obj).ssldRepository);
     }
 
 }

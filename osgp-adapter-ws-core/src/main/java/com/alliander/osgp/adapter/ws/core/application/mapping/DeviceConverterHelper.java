@@ -84,7 +84,7 @@ class DeviceConverterHelper<T extends com.alliander.osgp.domain.core.entities.De
         }
 
         destination
-        .setNetworkAddress(source.getNetworkAddress() == null ? null : source.getNetworkAddress().toString());
+                .setNetworkAddress(source.getNetworkAddress() == null ? null : source.getNetworkAddress().toString());
         destination.setOwner(source.getOwner() == null ? "" : source.getOwner().getName());
         destination.getOrganisations().addAll(source.getOrganisations());
 
@@ -104,7 +104,7 @@ class DeviceConverterHelper<T extends com.alliander.osgp.domain.core.entities.De
         return destination;
     }
 
-    void setTechnicalInstallationDate(final T source, final Device destination) {
+    private void setTechnicalInstallationDate(final T source, final Device destination) {
         if (source.getTechnicalInstallationDate() != null) {
             final GregorianCalendar gCalendarTechnicalInstallation = new GregorianCalendar();
             gCalendarTechnicalInstallation.setTime(source.getTechnicalInstallationDate());
