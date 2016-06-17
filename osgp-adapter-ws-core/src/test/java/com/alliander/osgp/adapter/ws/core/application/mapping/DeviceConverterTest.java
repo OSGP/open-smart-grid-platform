@@ -1,14 +1,16 @@
 package com.alliander.osgp.adapter.ws.core.application.mapping;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.alliander.osgp.domain.core.entities.Device;
@@ -38,17 +40,17 @@ public class DeviceConverterTest {
         final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device jaxbDevice = this.deviceManagementMapper
                 .map(device, com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device.class);
 
-        Assert.assertEquals("id", jaxbDevice.getDeviceIdentification());
-        Assert.assertEquals("alias", jaxbDevice.getAlias());
-        Assert.assertEquals("city", jaxbDevice.getContainerCity());
-        Assert.assertEquals("postal", jaxbDevice.getContainerPostalCode());
-        Assert.assertEquals("street", jaxbDevice.getContainerStreet());
-        Assert.assertEquals("nr", jaxbDevice.getContainerNumber());
-        Assert.assertEquals("munic", jaxbDevice.getContainerMunicipality());
-        Assert.assertEquals("12.0", jaxbDevice.getGpsLatitude());
-        Assert.assertEquals("13.0", jaxbDevice.getGpsLongitude());
-        Assert.assertEquals("localhost/127.0.0.1", jaxbDevice.getNetworkAddress());
-        Assert.assertEquals("type", jaxbDevice.getDeviceType());
+        assertEquals("id", jaxbDevice.getDeviceIdentification());
+        assertEquals("alias", jaxbDevice.getAlias());
+        assertEquals("city", jaxbDevice.getContainerCity());
+        assertEquals("postal", jaxbDevice.getContainerPostalCode());
+        assertEquals("street", jaxbDevice.getContainerStreet());
+        assertEquals("nr", jaxbDevice.getContainerNumber());
+        assertEquals("munic", jaxbDevice.getContainerMunicipality());
+        assertEquals("12.0", jaxbDevice.getGpsLatitude());
+        assertEquals("13.0", jaxbDevice.getGpsLongitude());
+        assertEquals("localhost/127.0.0.1", jaxbDevice.getNetworkAddress());
+        assertEquals("type", jaxbDevice.getDeviceType());
     }
 
     @Test
@@ -59,17 +61,17 @@ public class DeviceConverterTest {
         final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device jaxbDevice = this.deviceManagementMapper
                 .map(device, com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device.class);
 
-        Assert.assertEquals("id", jaxbDevice.getDeviceIdentification());
-        Assert.assertEquals("alias", jaxbDevice.getAlias());
-        Assert.assertEquals("city", jaxbDevice.getContainerCity());
-        Assert.assertEquals("postal", jaxbDevice.getContainerPostalCode());
-        Assert.assertEquals("street", jaxbDevice.getContainerStreet());
-        Assert.assertEquals("nr", jaxbDevice.getContainerNumber());
-        Assert.assertEquals("munic", jaxbDevice.getContainerMunicipality());
-        Assert.assertEquals("12.0", jaxbDevice.getGpsLatitude());
-        Assert.assertEquals("13.0", jaxbDevice.getGpsLongitude());
-        Assert.assertEquals("localhost/127.0.0.1", jaxbDevice.getNetworkAddress());
-        Assert.assertEquals("type", jaxbDevice.getDeviceType());
+        assertEquals("id", jaxbDevice.getDeviceIdentification());
+        assertEquals("alias", jaxbDevice.getAlias());
+        assertEquals("city", jaxbDevice.getContainerCity());
+        assertEquals("postal", jaxbDevice.getContainerPostalCode());
+        assertEquals("street", jaxbDevice.getContainerStreet());
+        assertEquals("nr", jaxbDevice.getContainerNumber());
+        assertEquals("munic", jaxbDevice.getContainerMunicipality());
+        assertEquals("12.0", jaxbDevice.getGpsLatitude());
+        assertEquals("13.0", jaxbDevice.getGpsLongitude());
+        assertEquals("localhost/127.0.0.1", jaxbDevice.getNetworkAddress());
+        assertEquals("type", jaxbDevice.getDeviceType());
 
     }
 
@@ -79,26 +81,25 @@ public class DeviceConverterTest {
         device.updateRegistrationData(InetAddress.getByName("localhost"), Ssld.SSLD_TYPE);
         device.getOutputSettings();
 
-        Mockito.when(this.ssldRepository.findByDeviceIdentification(Mockito.anyString())).thenReturn(device);
+        when(this.ssldRepository.findByDeviceIdentification(anyString())).thenReturn(device);
 
         final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device jaxbDevice = this.deviceManagementMapper
                 .map(device, com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device.class);
 
-        Assert.assertEquals("id", jaxbDevice.getDeviceIdentification());
-        Assert.assertEquals("alias", jaxbDevice.getAlias());
-        Assert.assertEquals("city", jaxbDevice.getContainerCity());
-        Assert.assertEquals("postal", jaxbDevice.getContainerPostalCode());
-        Assert.assertEquals("street", jaxbDevice.getContainerStreet());
-        Assert.assertEquals("nr", jaxbDevice.getContainerNumber());
-        Assert.assertEquals("munic", jaxbDevice.getContainerMunicipality());
-        Assert.assertEquals("12.0", jaxbDevice.getGpsLatitude());
-        Assert.assertEquals("13.0", jaxbDevice.getGpsLongitude());
-        Assert.assertEquals("localhost/127.0.0.1", jaxbDevice.getNetworkAddress());
-        Assert.assertEquals(Ssld.SSLD_TYPE, jaxbDevice.getDeviceType());
-        Assert.assertEquals(3, jaxbDevice.getOutputSettings().size());
+        assertEquals("id", jaxbDevice.getDeviceIdentification());
+        assertEquals("alias", jaxbDevice.getAlias());
+        assertEquals("city", jaxbDevice.getContainerCity());
+        assertEquals("postal", jaxbDevice.getContainerPostalCode());
+        assertEquals("street", jaxbDevice.getContainerStreet());
+        assertEquals("nr", jaxbDevice.getContainerNumber());
+        assertEquals("munic", jaxbDevice.getContainerMunicipality());
+        assertEquals("12.0", jaxbDevice.getGpsLatitude());
+        assertEquals("13.0", jaxbDevice.getGpsLongitude());
+        assertEquals("localhost/127.0.0.1", jaxbDevice.getNetworkAddress());
+        assertEquals(Ssld.SSLD_TYPE, jaxbDevice.getDeviceType());
+        assertEquals(3, jaxbDevice.getOutputSettings().size());
         for (int i = 0; i < 3; i++) {
-            Assert.assertEquals(device.getOutputSettings().get(i).getAlias(), jaxbDevice.getOutputSettings().get(i)
-                    .getAlias());
+            assertEquals(device.getOutputSettings().get(i).getAlias(), jaxbDevice.getOutputSettings().get(i).getAlias());
 
         }
 
