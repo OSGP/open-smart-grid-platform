@@ -41,7 +41,7 @@ public abstract class AbstractFindEventsReads extends SmartMetering {
     private static final String TEST_CASE_NAME_REQUEST = "FindEvents - ";
     private static final String TEST_CASE_NAME_RESPONSE = "GetFindEventsResponse - ";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractFindEventsReads.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractFindEventsReads.class);
     private static final Map<String, String> PROPERTIES_MAP = new HashMap<>();
 
     @Autowired
@@ -70,7 +70,7 @@ public abstract class AbstractFindEventsReads extends SmartMetering {
     }
 
     private void checkResponse() throws XPathExpressionException, ParserConfigurationException, SAXException,
-            IOException {
+    IOException {
         final NodeList nodeList = this.runXpathResult.getNodeList(this.response, PATH_RESULT_EVENTS);
         if (nodeList.getLength() > 0) {
             for (int i = 0; i < nodeList.getLength(); i++) {
