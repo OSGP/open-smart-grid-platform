@@ -53,6 +53,8 @@ class DeviceConverterHelper<T extends com.alliander.osgp.domain.core.entities.De
 
         destination.setActivated(source.isActivated());
 
+        destination.updateRegistrationData(destination.getNetworkAddress(), source.getDeviceType());
+
         if (source.getTechnicalInstallationDate() != null) {
             destination.setTechnicalInstallationDate(source.getTechnicalInstallationDate().toGregorianCalendar()
                     .getTime());
@@ -84,7 +86,7 @@ class DeviceConverterHelper<T extends com.alliander.osgp.domain.core.entities.De
         }
 
         destination
-                .setNetworkAddress(source.getNetworkAddress() == null ? null : source.getNetworkAddress().toString());
+        .setNetworkAddress(source.getNetworkAddress() == null ? null : source.getNetworkAddress().toString());
         destination.setOwner(source.getOwner() == null ? "" : source.getOwner().getName());
         destination.getOrganisations().addAll(source.getOrganisations());
 
