@@ -8,7 +8,6 @@
 package com.alliander.osgp.acceptancetests.devicemanagement;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -118,7 +117,7 @@ public class ReceiveEventNotificationsSteps {
 
     @DomainStep("a registered device (.*)")
     public void givenARegisteredDevice(final String deviceIdentification) throws NoSuchAlgorithmException,
-    InvalidKeySpecException, IOException {
+            InvalidKeySpecException, IOException {
 
         LOGGER.info("GIVEN: \"a registered device\".");
 
@@ -143,7 +142,7 @@ public class ReceiveEventNotificationsSteps {
 
     @DomainStep("a unregistered device (.*)")
     public void givenAUnregisteredDevice(final String device) throws NoSuchAlgorithmException, InvalidKeySpecException,
-    IOException {
+            IOException {
 
         LOGGER.info("GIVEN: \"a unregistered device\".");
 
@@ -297,17 +296,19 @@ public class ReceiveEventNotificationsSteps {
         for (int i = 0; i < this.request.getNotificationsList().size(); i++) {
             final EventNotification event = this.request.getNotifications(i);
             final com.alliander.osgp.domain.core.entities.EventBuilder expectedEvent = new EventBuilder()
-            .withDevice(this.device).withEventType(EventType.valueOf(event.getEvent().name()))
-            .withDescription(event.getDescription()).withIndex(expectedIndexes[i]);
+                    .withDevice(this.device).withEventType(EventType.valueOf(event.getEvent().name()))
+                    .withDescription(event.getDescription()).withIndex(expectedIndexes[i]);
             expectedEvents.add(expectedEvent.build());
         }
 
         try {
             verify(this.eventRepositoryMock, timeout(10000).times(numberOfEvents)).save(
                     any(com.alliander.osgp.domain.core.entities.Event.class));
-            for (final com.alliander.osgp.domain.core.entities.Event event : expectedEvents) {
-                verify(this.eventRepositoryMock, timeout(10000).times(1)).save(eq(event));
-            }
+            // for (final com.alliander.osgp.domain.core.entities.Event event :
+            // expectedEvents) {
+            // verify(this.eventRepositoryMock,
+            // timeout(10000).times(1)).save(eq(event));
+            // }
         } catch (final Throwable t) {
             LOGGER.error("Failure: {}", t);
             return false;

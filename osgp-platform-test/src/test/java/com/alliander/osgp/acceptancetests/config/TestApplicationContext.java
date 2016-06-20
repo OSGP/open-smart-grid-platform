@@ -36,7 +36,9 @@ import com.alliander.osgp.domain.core.services.SecurityService;
 import com.alliander.osgp.shared.application.config.PagingSettings;
 
 @Configuration
-@ComponentScan(basePackages = { "com.alliander.osgp" }, excludeFilters = { @Filter(type = FilterType.ANNOTATION, value = Configuration.class) })
+@ComponentScan(basePackages = { "com.alliander.osgp" }, excludeFilters = {
+        @Filter(type = FilterType.ANNOTATION, value = Configuration.class),
+        @Filter(type = FilterType.ASSIGNABLE_TYPE, value = com.alliander.osgp.shared.security.EncryptionService.class) })
 @Import({ OslpConfig.class, PersistenceConfig.class, MessagingConfig.class })
 public class TestApplicationContext {
 
