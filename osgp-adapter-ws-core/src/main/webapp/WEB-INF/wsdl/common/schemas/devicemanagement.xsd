@@ -318,6 +318,9 @@
       <xsd:element name="Street" type="xsd:string" minOccurs="0" />
       <xsd:element name="Number" type="xsd:string" minOccurs="0" />
       <xsd:element name="Municipality" type="xsd:string" minOccurs="0" />
+      <xsd:element name="DeviceType" type="xsd:string" minOccurs="0" />
+      <xsd:element name="Manufacturer" type="xsd:string" minOccurs="0" />
+      <xsd:element name="Model" type="xsd:string" minOccurs="0" />
       <xsd:element name="DeviceExternalManaged" type="tns:DeviceExternalManagedFilterType" minOccurs="0" />
       <xsd:element name="DeviceActivated" type="tns:DeviceActivatedFilterType" minOccurs="0" />
       <xsd:element name="DeviceInMaintenance" type="tns:DeviceInMaintetanceFilterType" minOccurs="0" />

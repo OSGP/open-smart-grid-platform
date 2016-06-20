@@ -332,16 +332,19 @@ public class DeviceManagementService {
                     specifications = specifications.and(this.deviceSpecifications.hasMunicipality(deviceFilter
                             .getMunicipality() + "%"));
                 }
-                if (!DeviceExternalManagedFilterType.BOTH.equals(deviceFilter.getDeviceExternalManaged())) {
+                if (deviceFilter.getDeviceExternalManaged() != null
+                        && !DeviceExternalManagedFilterType.BOTH.equals(deviceFilter.getDeviceExternalManaged())) {
                     specifications = specifications.and(this.deviceSpecifications.isManagedExternally(deviceFilter
                             .getDeviceExternalManaged().getValue()));
                 }
-                if (!DeviceActivatedFilterType.BOTH.equals(deviceFilter.getDeviceActivated())) {
+                if (deviceFilter.getDeviceActivated() != null
+                        && !DeviceActivatedFilterType.BOTH.equals(deviceFilter.getDeviceActivated())) {
                     specifications = specifications.and(this.deviceSpecifications.isActived(deviceFilter
                             .getDeviceActivated().getValue()));
                 }
 
-                if (!DeviceInMaintenanceFilterType.BOTH.equals(deviceFilter.getDeviceInMaintenance())) {
+                if (deviceFilter.getDeviceInMaintenance() != null
+                        && !DeviceInMaintenanceFilterType.BOTH.equals(deviceFilter.getDeviceInMaintenance())) {
                     specifications = specifications.and(this.deviceSpecifications.isInMaintetance(deviceFilter
                             .getDeviceInMaintenance().getValue()));
                 }
