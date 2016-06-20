@@ -7,78 +7,41 @@
  */
 package com.alliander.osgp.platform.cucumber.dbsupport;
 
-import java.util.Properties;
-
-import javax.annotation.Resource;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
-import org.hibernate.ejb.HibernatePersistence;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
 
-//import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
-
-/**
- * An application context Java configuration class. The usage of Java
- * configuration requires Spring Framework 3.0
- */
 @EnableJpaRepositories(entityManagerFactoryRef = "entityMgrRespData", 
     transactionManagerRef = "txMgrRespData",
     basePackageClasses = { MeterResponseDataRepository.class })
-@Configuration
-@EnableTransactionManagement()
-@Primary
-@PropertySource("file:/etc/osp/osgp-cucumber-response-data-smart-metering.properties")
-public class PersistenceConfigResponseData {
-
-    @Value("${cucumber.dbs.driver}")
-    private String databaseDriver;
+public class PersistenceConfigResponseData extends AbstractPersistenceConfig {
 
     @Value("${cucumber.osgpadapterwssmartmeteringdbs.url}")
     private String databaseUrl;
 
-    @Value("${cucumber.dbs.username}")
-    private String databaseUsername;
-
-    @Value("${cucumber.dbs.password}")
-    private String databasePassword;
-    private static final String PROPERTY_NAME_HIBERNATE_DIALECT = "hibernate.dialect";
-    @Value("${hibernate.dialect}")
-    private String hibernateDialect;
-
-    private static final String PROPERTY_NAME_HIBERNATE_FORMAT_SQL = "hibernate.format_sql";
-    @Value("${hibernate.format_sql}")
-    private String hibernateFormatSql;
-
-    private static final String PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY = "hibernate.ejb.naming_strategy";
-    @Value("${hibernate.ejb.naming_strategy}")
-    private String hibernateNamingStrategy;
-
-    private static final String PROPERTY_NAME_HIBERNATE_SHOW_SQL = "hibernate.show_sql";
-    @Value("${hibernate.show_sql}")
-    private String hibernateShowSql;
-
     @Value("${entitymanager.packages.to.scan}")
     private String entitymanagerPackagesToScan;
 
-    @Resource
-    private Environment environment;
-
-  
+ 
     public PersistenceConfigResponseData() {
+    }
+
+    @Override
+    protected String getDatabaseUrl() {
+        return databaseUrl;
+    }
+
+    @Override
+    protected String getEntitymanagerPackagesToScan() {
+        return entitymanagerPackagesToScan;
     }
 
     /**
@@ -86,19 +49,9 @@ public class PersistenceConfigResponseData {
      *
      * @return DataSource
      */
-    @Bean(name = "edsRespData")    
+    @Bean(name = "dsRespData")    
     public DataSource dataSource() {
-        final SingleConnectionDataSource singleConnectionDataSource = new SingleConnectionDataSource();
-        singleConnectionDataSource.setAutoCommit(false);
-        final Properties properties = new Properties();
-        properties.setProperty("socketTimeout", "0");
-        properties.setProperty("tcpKeepAlive", "true");
-        singleConnectionDataSource.setDriverClassName(this.databaseDriver);
-        singleConnectionDataSource.setUrl(this.databaseUrl);
-        singleConnectionDataSource.setUsername(this.databaseUsername);
-        singleConnectionDataSource.setPassword(this.databasePassword);
-        singleConnectionDataSource.setSuppressClose(true);
-        return singleConnectionDataSource;
+        return makeDataSource();
     }
 
     /**
@@ -110,24 +63,9 @@ public class PersistenceConfigResponseData {
      */
     @Bean(name = "entityMgrRespData")
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(
-            @Qualifier("edsRespData") DataSource barDataSource) throws ClassNotFoundException {
+            @Qualifier("dsRespData") DataSource dataSource) throws ClassNotFoundException {
 
-        final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
-
-        entityManagerFactoryBean.setPersistenceUnitName("OSGP_CUCUMBER");
-        entityManagerFactoryBean.setDataSource(this.dataSource());
-        entityManagerFactoryBean.setPackagesToScan(this.entitymanagerPackagesToScan);
-        entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistence.class);
-
-        final Properties jpaProperties = new Properties();
-        jpaProperties.put(PROPERTY_NAME_HIBERNATE_DIALECT, this.hibernateDialect);
-        jpaProperties.put(PROPERTY_NAME_HIBERNATE_FORMAT_SQL, this.hibernateFormatSql);
-        jpaProperties.put(PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY, this.hibernateNamingStrategy);
-        jpaProperties.put(PROPERTY_NAME_HIBERNATE_SHOW_SQL, this.hibernateShowSql);
-
-        entityManagerFactoryBean.setJpaProperties(jpaProperties);
-
-        return entityManagerFactoryBean;
+        return makeEntityManager("OSGP_CUCUMBER_RESPDATA", dataSource);
     }
 
     /**

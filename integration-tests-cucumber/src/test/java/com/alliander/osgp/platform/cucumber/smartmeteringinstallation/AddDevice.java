@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.platform.cucumber.SmartMetering;
-import com.alliander.osgp.platform.cucumber.hooks.SetupDatabaseHooks;
+import com.alliander.osgp.platform.cucumber.hooks.AddDeviceHooks;
 import com.alliander.osgp.platform.cucumber.smartmeteringmonitoring.ActualMeterReadsGas;
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
 import com.alliander.osgp.platform.cucumber.support.OrganisationId;
@@ -46,7 +46,7 @@ public class AddDevice extends SmartMetering {
     private OrganisationId organisationId;
     
     @Autowired
-    private SetupDatabaseHooks dbshooks;
+    private AddDeviceHooks dbshooks;
 
     @When("^the add device request is received$")
     public void theAddDeviceRequestIsReceived() throws Throwable {
@@ -69,12 +69,16 @@ public class AddDevice extends SmartMetering {
 
     @And("^the device should be added in the core database$")    
     public void theDeviceShouldBeAddedInTheCoreDatabase() throws Throwable {
-        System.out.println("test code db");
+        Assert.assertTrue(dbshooks.testCoreDevice(getDeviceId()));
     }
     
     @And("^the device should be added in the dlms database$")    
     public void theDeviceShouldBeAddedInTheDlmsDatabase() throws Throwable {
-        System.out.println("test dlms db");
+        Assert.assertTrue(dbshooks.testDlmsDevice(getDeviceId()));
     }
 
+    private String getDeviceId() {
+        return PROPERTIES_MAP.get(DEVICE_IDENTIFICATION_E_LABEL);
+
+    }
 }

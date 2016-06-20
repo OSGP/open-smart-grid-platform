@@ -3,7 +3,7 @@ Feature:
   I want to be able to perform SmartMeteringInstallation operations on a device
     
 Background:
-    Given a device with DeviceID "SLIM2180000000001" 
+    Given a device with DeviceID "E0026000059790003" 
     Given a gas device with DeviceID "G00XX561204926013"
     And an organisation with OrganisationID "LianderNetManagement"
     

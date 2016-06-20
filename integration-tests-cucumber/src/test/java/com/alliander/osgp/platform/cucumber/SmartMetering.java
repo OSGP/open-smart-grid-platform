@@ -35,11 +35,9 @@ public class SmartMetering {
     public final static String CORRELATION_UID_LABEL = "CorrelationUid";
 
     /**
-     * TIME_OUT represents the time in milliseconds before there will be started
-     * with polling the database for a response. MAX_TIME represents the maximum
-     * allowed polling time in milliseconds within the response should be
-     * returned. When this time is over, the polling will stop and return the
-     * result when available.
+     * TIME_OUT represents the time in milliseconds between each moment polling the database for a response. 
+     * MAX_TIME represents the maximum allowed polling time in milliseconds within the response should be returned. 
+     * When this time is over, the polling will stop and return the result when available.
      */
 
     public static final String TIME_OUT = "TimeOut";

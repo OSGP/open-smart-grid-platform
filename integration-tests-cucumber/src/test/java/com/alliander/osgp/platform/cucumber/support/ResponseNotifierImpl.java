@@ -27,8 +27,10 @@ import org.springframework.stereotype.Component;
 @PropertySource("file:/etc/osp/osgp-cucumber-response-data-smart-metering.properties")
 public class ResponseNotifierImpl implements ResponseNotifier {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(ResponseNotifierImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ResponseNotifierImpl.class);
 
+    private static final int FIRST_WAIT_TIME = 1000;
+    
     private Connection connection;
 
     @Value("${cucumber.osgpadapterwssmartmeteringdbs.url}")
@@ -44,16 +46,20 @@ public class ResponseNotifierImpl implements ResponseNotifier {
     public boolean waitForResponse(final String correlid, final int timeout, final int maxtime) {
         Statement statement = null;
         try {
-            Thread.sleep(timeout);
-
             statement = this.conn().createStatement();
-            final int interval = 3000;
+            
+            //check if we have (almost) immediate response
+            Thread.sleep(FIRST_WAIT_TIME);
+            PollResult pollres = this.pollDatabase(statement, correlid);
+            if (pollres.equals(PollResult.OK)) {
+                return true;
+            }
+            
             int delayedtime = 0;
-
             while (true) {
-                Thread.sleep(interval);
-                if ((delayedtime += interval) < maxtime) {
-                    final PollResult pollres = this.pollDatabase(statement, correlid);
+                Thread.sleep(timeout);
+                if ((delayedtime += timeout) < maxtime) {
+                    pollres = this.pollDatabase(statement, correlid);
                     if (pollres.equals(PollResult.OK)) {
                         return true;
                     } else if (pollres.equals(PollResult.ERROR)) {
@@ -64,10 +70,10 @@ public class ResponseNotifierImpl implements ResponseNotifier {
                 }
             }
         } catch (final SQLException se) {
-            this.LOGGER.error(se.getMessage());
+            LOGGER.error(se.getMessage());
             return false;
         } catch (final InterruptedException intex) {
-            this.LOGGER.error(intex.getMessage());
+            LOGGER.error(intex.getMessage());
             return false;
         } finally {
             this.closeStatement(statement);
@@ -87,7 +93,7 @@ public class ResponseNotifierImpl implements ResponseNotifier {
             }
             return result;
         } catch (final SQLException se) {
-            this.LOGGER.error(se.getMessage());
+            LOGGER.error(se.getMessage());
             return PollResult.ERROR;
         } finally {
             this.closeResultSet(rs);
@@ -99,7 +105,7 @@ public class ResponseNotifierImpl implements ResponseNotifier {
             try {
                 statement.close();
             } catch (final SQLException e) {
-                this.LOGGER.error(e.getMessage());
+                LOGGER.error(e.getMessage());
             }
         }
     }
@@ -111,7 +117,7 @@ public class ResponseNotifierImpl implements ResponseNotifier {
         try {
             rs.close();
         } catch (final SQLException e) {
-            this.LOGGER.error(e.getMessage());
+            LOGGER.error(e.getMessage());
         }
     }
 
@@ -127,12 +133,10 @@ public class ResponseNotifierImpl implements ResponseNotifier {
             Class.forName("org.postgresql.Driver");
             this.connection = DriverManager.getConnection(this.jdbcUrl, this.username, this.password);
         } catch (final ClassNotFoundException e) {
-            this.LOGGER.error(e.getMessage());
-            ;
+            LOGGER.error(e.getMessage());
             System.exit(1);
         } catch (final SQLException e) {
-            this.LOGGER.error(e.getMessage());
-            ;
+            LOGGER.error(e.getMessage());
             System.exit(2);
         }
         return this.connection;
