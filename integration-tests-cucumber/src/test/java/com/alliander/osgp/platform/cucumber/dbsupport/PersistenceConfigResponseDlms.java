@@ -68,7 +68,6 @@ public class PersistenceConfigResponseDlms extends AbstractPersistenceConfig {
      *             when class not found
      */
     @Bean(name = "entityMgrFactDlms")
-    // @DependsOn("flyway")
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(
             @Qualifier("dsDlms") DataSource dataSource) throws ClassNotFoundException {
 
