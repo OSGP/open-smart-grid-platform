@@ -183,6 +183,7 @@
       <xsd:sequence>
         <xsd:element name="DeviceIdentification" type="common:Identification" />
         <xsd:element name="PublicKey" type="xsd:string" />
+        <xsd:element type="xsd:long" name="ProtocolInfoId" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -231,6 +232,7 @@
 
   <xsd:complexType name="ProtocolInfo">
     <xsd:sequence>
+      <xsd:element type="xsd:long" name="Id" />
       <xsd:element name="Protocol" type="tns:ProtocolType" />
       <xsd:element name="ProtocolVersion" type="tns:ProtocolVersionType" />
     </xsd:sequence>

@@ -115,12 +115,6 @@ public class DeviceManagementService {
     private AdminResponseMessageFinder adminResponseMessageFinder;
 
     @Autowired
-    private String defaultProtocol;
-
-    @Autowired
-    private String defaultProtocolVersion;
-
-    @Autowired
     private ProtocolInfoRepository protocolRepository;
 
     /**
@@ -365,7 +359,7 @@ public class DeviceManagementService {
 
     public Page<DeviceLogItem> findOslpMessages(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Min(value = 0) final int pageNumber)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.debug("findOslpMessage called with organisation {}, device {} and pagenumber {}", new Object[] {
                 organisationIdentification, deviceIdentification, pageNumber });
@@ -438,7 +432,7 @@ public class DeviceManagementService {
      */
     public void setOwner(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Identification final String newOwner)
-            throws FunctionalException {
+                    throws FunctionalException {
         Organisation organisation = this.findOrganisation(organisationIdentification);
         final Device device = this.findDevice(deviceIdentification);
         this.isAllowed(organisation, PlatformFunction.SET_OWNER);
@@ -463,7 +457,7 @@ public class DeviceManagementService {
     // === UPDATE KEY ===
 
     public void updateKey(final String organisationIdentification, @Identification final String deviceIdentification,
-            @PublicKey final String publicKey) throws FunctionalException {
+            @PublicKey final String publicKey, final Long protocolInfoId) throws FunctionalException {
 
         LOGGER.debug("Updating key for device [{}] on behalf of organisation [{}]", deviceIdentification,
                 organisationIdentification);
@@ -482,8 +476,7 @@ public class DeviceManagementService {
 
             final DeviceAuthorization authorization = ssld.addAuthorization(organisation, DeviceFunctionGroup.OWNER);
 
-            final ProtocolInfo protocolInfo = this.protocolRepository.findByProtocolAndProtocolVersion(
-                    this.defaultProtocol, this.defaultProtocolVersion);
+            final ProtocolInfo protocolInfo = this.protocolRepository.findOne(protocolInfoId);
             ssld.updateProtocol(protocolInfo);
 
             this.authorizationRepository.save(authorization);
@@ -563,7 +556,7 @@ public class DeviceManagementService {
 
     public void updateDeviceProtocol(final String organisationIdentification,
             @Identification final String deviceIdentification, final String protocol, final String protocolVersion)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.debug("Updating protocol for device [{}] on behalf of organisation [{}] to protocol: {}, version: {}",
                 deviceIdentification, organisationIdentification, protocol, protocolVersion);
