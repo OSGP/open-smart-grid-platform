@@ -15,6 +15,7 @@ import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRe
 import com.alliander.osgp.adapter.ws.infra.specifications.JpaDeviceSpecifications;
 import com.alliander.osgp.adapter.ws.infra.specifications.JpaEventSpecifications;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceAuthorizationRepository;
+import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceModelRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableManufacturerRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableSsldRepository;
@@ -132,6 +133,11 @@ public class PersistenceConfig {
     @Bean
     public WritableManufacturerRepository writableManufacturerRepositoryMock() {
         return mock(WritableManufacturerRepository.class);
+    }
+
+    @Bean
+    public WritableDeviceModelRepository writableDeviceModelRepositoryMock() {
+        return mock(WritableDeviceModelRepository.class);
     }
 
     // OSLP
