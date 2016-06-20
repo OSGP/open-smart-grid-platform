@@ -7,21 +7,11 @@
  */
 package com.alliander.osgp.platform.cucumber.dbsupport;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
-import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
-
-import com.alliander.osgp.adapter.ws.infra.specifications.JpaEventSpecifications;
-import com.alliander.osgp.domain.core.specifications.EventSpecifications;
 
 /**
  * An application context Java configuration class. The usage of Java
@@ -34,45 +24,7 @@ import com.alliander.osgp.domain.core.specifications.EventSpecifications;
         "com.alliander.osgp.domain.core.entities" })
         
 @EnableTransactionManagement()
-//@ImportResource("classpath:applicationContext.xml")
 @Import({ PersistenceConfigCore.class , PersistenceConfigResponseData.class , PersistenceConfigResponseDlms.class })
 @PropertySource("file:/etc/osp/osgp-cucumber-response-data-smart-metering.properties")
 public class ApplicationContext {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);
-
-    /**
-     * @return
-     */
-    @Bean
-    public LocalValidatorFactoryBean validator() {
-        LOGGER.debug("Initializing Local Validator Factory Bean");
-        final LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
-        final org.springframework.core.io.Resource[] resources = { new ClassPathResource("constraint-mappings.xml") };
-        localValidatorFactoryBean.setMappingLocations(resources);
-        return localValidatorFactoryBean;
-    }
-
-    /**
-     * @return
-     */
-    @Bean
-    public MethodValidationPostProcessor methodValidationPostProcessor() {
-        LOGGER.debug("Initializing Method Validation Post Processor Bean");
-
-        final MethodValidationPostProcessor m = new MethodValidationPostProcessor();
-        m.setValidatorFactory(this.validator());
-        return m;
-    }
-
-    @Bean
-    public EventSpecifications eventSpecifications() {
-        return new JpaEventSpecifications();
-    }
-
-    @Bean
-    public PropertySourcesPlaceholderConfigurer placeholderConfigurer() {
-        final PropertySourcesPlaceholderConfigurer propertySource = new PropertySourcesPlaceholderConfigurer();
-        propertySource.setIgnoreUnresolvablePlaceholders(true);
-        return propertySource;
-    }
 }

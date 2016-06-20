@@ -24,8 +24,10 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.platform.cucumber.SmartMetering;
 import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCase;
 import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCaseRunner;
+import com.eviware.soapui.impl.wsdl.teststeps.WsdlTestRequestStep;
 import com.eviware.soapui.model.support.PropertiesMap;
 import com.eviware.soapui.model.testsuite.TestCase;
+import com.eviware.soapui.model.testsuite.TestStepResult;
 import com.eviware.soapui.support.SoapUIException;
 
 @Component
@@ -57,7 +59,17 @@ public class TestCaseRunner {
             }
         }
 
-        return new TestCaseResult(wsdlTestCaseRunner.runTestStepByName(testCaseNameRequest), wsdlTestCaseRunner);
+        LOGGER.debug(makeDebugInfo(testCaseNameRequest, wsdlTestCaseRunner));
+        final TestStepResult teststep = wsdlTestCaseRunner.runTestStepByName(testCaseNameRequest);
+        return new TestCaseResult(teststep, wsdlTestCaseRunner);
+    }
+
+    private String makeDebugInfo(final String testCaseNameRequest, final WsdlTestCaseRunner wsdlTestCaseRunner) {
+        final StringBuffer sb = new StringBuffer();
+        sb.append("request " + testCaseNameRequest + "\n");
+        WsdlTestRequestStep reqstep = (WsdlTestRequestStep) wsdlTestCaseRunner.getRunContext().getCurrentStep();
+        sb.append(reqstep.getConfig());
+        return sb.toString();
     }
 
     private String getCorrelId(final Map<String, String> propertiesMap) {
