@@ -10,6 +10,7 @@ package com.alliander.osgp.domain.core.entities;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
@@ -53,8 +54,15 @@ public class DeviceModelFirmware extends AbstractEntity {
     @Column(length = 100)
     private String moduleVersionSec;
 
+    //    @Lob
+    //@Type(type="org.hibernate.type.BinaryType")
+    //    private byte[] file;
+    //    @Type(type = "org.hibernate.type.BinaryType")
+
+
+    @Lob
     @Column()
-    private byte[] file;
+    private byte file[];
 
     @Column()
     private String hash;
@@ -121,10 +129,6 @@ public class DeviceModelFirmware extends AbstractEntity {
         return this.moduleVersionMbus;
     }
 
-    public byte[] getFile() {
-        return this.file;
-    }
-
     public void setDeviceModel(final DeviceModel deviceModel) {
         this.deviceModel = deviceModel;
     }
@@ -165,16 +169,21 @@ public class DeviceModelFirmware extends AbstractEntity {
         this.moduleVersionSec = moduleVersionSec;
     }
 
-    public void setFile(final byte[] file) {
-        this.file = file;
-    }
-
     public String getHash() {
         return this.hash;
     }
 
     public void setHash(final String hash) {
         this.hash = hash;
+    }
+
+    @Lob
+    public byte[] getFile() {
+        return this.file;
+    }
+
+    public void setFile(final byte[] file) {
+        this.file = file;
     }
 
 }

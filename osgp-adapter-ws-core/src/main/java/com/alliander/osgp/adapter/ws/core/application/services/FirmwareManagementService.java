@@ -322,11 +322,11 @@ public class FirmwareManagementService {
         final List<DeviceModelFirmware> deviceModelFirmwares = this.deviceModelFirmwareRepository.findByDeviceModel(databaseDeviceModel);
 
         // performance issue, clean list with firmware files for front-end admin app.
-        for (final DeviceModelFirmware deviceModelFirmware : deviceModelFirmwares) {
-            if (deviceModelFirmware.getFile() != null) {
-                deviceModelFirmware.setFile(null);
-            }
-        }
+        //        for (final DeviceModelFirmware deviceModelFirmware : deviceModelFirmwares) {
+        //            if (deviceModelFirmware.getFile() != null) {
+        //                deviceModelFirmware.setFile(null);
+        //            }
+        //        }
 
         return deviceModelFirmwares;
     }
@@ -339,7 +339,7 @@ public class FirmwareManagementService {
     public void addDeviceModelFirmware(@Identification final String organisationIdentification,
             final String description,
             final byte[] file,
-            final String filename,
+            final String fileName,
             final String manufacturer,
             final String modelCode,
             final String moduleVersionComm,
@@ -367,23 +367,27 @@ public class FirmwareManagementService {
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICEMODEL, ComponentType.WS_CORE,
                     new UnknownEntityException(DeviceModel.class, modelCode));
         } else {
-            String md5Hash;
-            try {
-                final MessageDigest md = MessageDigest.getInstance("MD5");
-                final byte[] messageDigest = md.digest(file);
-                final BigInteger number = new BigInteger(1, messageDigest);
-                md5Hash = number.toString(16);
-                while (md5Hash.length() < 32) {
-                    md5Hash = "0" + md5Hash;
-                }
-            } catch (final NoSuchAlgorithmException e) {
-                LOGGER.error("RuntimeException while creating MD5 hash for device model firmware.", e);
-                throw new RuntimeException(e);
-            }
 
-            final DeviceModelFirmware deviceModelFirmware = new DeviceModelFirmware(databaseDeviceModel, filename, modelCode,
-                    description, pushToNewDevices, moduleVersionComm, moduleVersionFunc, moduleVersionMa, moduleVersionMbus,
-                    moduleVersionSec, file, md5Hash);
+            DeviceModelFirmware savedDeviceModelFirmware = null;
+
+            // file == null, user selected an existing firmware file
+            if (file == null) {
+                final List<DeviceModelFirmware> databaseDeviceModelFirmwares = this.deviceModelFirmwareRepository.findByDeviceModelAndFilename(databaseDeviceModel, fileName);
+
+                if (databaseDeviceModelFirmwares.size() > 0) {
+                    savedDeviceModelFirmware = new DeviceModelFirmware(databaseDeviceModel, fileName, modelCode,
+                            description, pushToNewDevices, moduleVersionComm, moduleVersionFunc, moduleVersionMa, moduleVersionMbus,
+                            moduleVersionSec, databaseDeviceModelFirmwares.get(0).getFile(), this.getMd5Hash(databaseDeviceModelFirmwares.get(0).getFile()));
+                } else {
+                    LOGGER.error("DeviceModelFirmware file doesn't exixts.");
+                    throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICEMODEL_FIRMWARE, ComponentType.WS_CORE,
+                            new UnknownEntityException(DeviceModel.class, fileName));
+                }
+            } else {
+                savedDeviceModelFirmware = new DeviceModelFirmware(databaseDeviceModel, fileName, modelCode,
+                        description, pushToNewDevices, moduleVersionComm, moduleVersionFunc, moduleVersionMa, moduleVersionMbus,
+                        moduleVersionSec, file, this.getMd5Hash(file));
+            }
 
             if (pushToNewDevices) {
                 final List<DeviceModelFirmware> deviceModelFirmwares = this.deviceModelFirmwareRepository.findByDeviceModel(databaseDeviceModel);
@@ -395,7 +399,7 @@ public class FirmwareManagementService {
                 this.deviceModelFirmwareRepository.save(deviceModelFirmwares);
             }
 
-            this.deviceModelFirmwareRepository.save(deviceModelFirmware);
+            this.deviceModelFirmwareRepository.save(savedDeviceModelFirmware);
         }
     }
 
@@ -524,6 +528,24 @@ public class FirmwareManagementService {
 
     public ResponseMessage dequeueSwitchFirmwareResponse(final String correlationUid) throws OsgpException {
         return this.commonResponseMessageFinder.findMessage(correlationUid);
+    }
+
+    private String getMd5Hash(final byte[] file) {
+        String md5Hash;
+        try {
+            final MessageDigest md = MessageDigest.getInstance("MD5");
+            final byte[] messageDigest = md.digest(file);
+            final BigInteger number = new BigInteger(1, messageDigest);
+            md5Hash = number.toString(16);
+            while (md5Hash.length() < 32) {
+                md5Hash = "0" + md5Hash;
+            }
+        } catch (final NoSuchAlgorithmException e) {
+            LOGGER.error("RuntimeException while creating MD5 hash for device model firmware.", e);
+            throw new RuntimeException(e);
+        }
+
+        return md5Hash;
     }
 
 }
