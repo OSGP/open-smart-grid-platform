@@ -13,7 +13,11 @@ This behaviour driven test suite uses Cucumber, FitNesse and mock frameworks.
 - osgp-platform-test, The domain steps for the test suite
 - Shared, Platform and Protocol-Adapter-*, The components under test
 
-The Cucumber integration normally runs against the server and database. 
+##### Running Cucumber integration tests
+The Cucumber integration tests use the SoapUI xml file, defined by the following symlink:
+- /etc/osp/soapui/SmartMetering-soapui-project.xml
+
+The Cucumber integration tests normally runs against the server and database. 
 If you (as a developer) want to run Cucumber integration againts your local Tomcat server and local database, you have to the following.
 1) Make a copy of this file: cp /etc/osp/SmartMetering-soapui-project.xml  <yourfolder>/
 2) Reasign the symlink (in /etc/osp/soapui) : ln -s <yourfolder>SmartMetering-soapui-project.xml 
