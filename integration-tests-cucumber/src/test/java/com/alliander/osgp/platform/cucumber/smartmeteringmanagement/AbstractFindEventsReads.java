@@ -67,7 +67,7 @@ public abstract class AbstractFindEventsReads extends SmartMetering {
 
     /**
      * Return the types of events allowed in a reponse, an assert will be done.
-     * 
+     *
      * @return
      */
     protected abstract List<EventType> getAllowedEventTypes();
@@ -83,15 +83,21 @@ public abstract class AbstractFindEventsReads extends SmartMetering {
      * @throws IOException
      */
     private final void checkResponse(final List<EventType> allowed) throws XPathExpressionException,
-    ParserConfigurationException, SAXException, IOException {
+            ParserConfigurationException, SAXException, IOException {
         final NodeList nodeList = this.runXpathResult.getNodeList(this.response, PATH_RESULT_EVENTS);
         if (nodeList.getLength() > 0) {
             for (int i = 0; i < nodeList.getLength(); i++) {
                 final Node node = nodeList.item(i);
                 if (node.getNodeType() == Node.ELEMENT_NODE) {
                     final Element e = (Element) node;
-                    if (e.getLocalName() == "Events") {
-                        final String type = e.getElementsByTagName("eventType").item(0).getTextContent();
+                    String name = e.getNodeName();
+                    String prefix = "";
+                    if (name.indexOf(':') != -1) {
+                        prefix = name.substring(0, name.indexOf(':') + 1);
+                        name = name.substring(name.indexOf(':') + 1);
+                    }
+                    if ("Events".equals(name)) {
+                        final String type = e.getElementsByTagName(prefix + "eventType").item(0).getTextContent();
                         Assert.assertTrue("Type not allowed " + type, allowed.contains(EventType.fromValue(type)));
                     }
                 }
