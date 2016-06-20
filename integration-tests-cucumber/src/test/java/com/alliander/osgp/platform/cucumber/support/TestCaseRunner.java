@@ -81,7 +81,7 @@ public class TestCaseRunner {
         if (propertiesMap.containsKey(SmartMetering.TIME_OUT)) {
             return new Integer(propertiesMap.get(SmartMetering.TIME_OUT));
         } else {
-            return 10000;
+            return 3000;
         }
     }
 
