@@ -8,12 +8,25 @@
  */
 package com.alliander.osgp.platform.cucumber.smartmeteringmanagement;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.EventLogCategory;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.management.EventType;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 public class FindStandardEventsReads extends AbstractFindEventsReads {
+
+    private static final List<EventType> allowed = Collections.unmodifiableList(Arrays.asList(new EventType[] {
+            EventType.EVENTLOG_CLEARED, EventType.POWER_FAILURE, EventType.POWER_RETURNED,
+            EventType.CLOCK_ADJUSTED_OLD_TIME, EventType.CLOCK_ADJUSTED_NEW_TIME, EventType.CLOCK_INVALID,
+            EventType.REPLACE_BATTERY, EventType.BATTERY_VOLTAGE_LOW, EventType.TARIFF_ACTIVATED,
+            EventType.ERROR_REGISTER_CLEARED, EventType.ALARM_REGISTER_CLEARED, EventType.WATCHDOG_ERROR,
+            EventType.FIRMWARE_READY_FOR_ACTIVATION, EventType.FIRMWARE_ACTIVATED,
+            EventType.SUCCESSFUL_SELFCHECK_AFTER_FIRMWARE_UPDATE }));
 
     @Override
     protected String getEventLogCategory() {
@@ -31,6 +44,11 @@ public class FindStandardEventsReads extends AbstractFindEventsReads {
     @Override
     public void eventsShouldBeReturned() throws Throwable {
         super.eventsShouldBeReturned();
+    }
+
+    @Override
+    protected List<EventType> getAllowedEventTypes() {
+        return allowed;
     }
 
 }
