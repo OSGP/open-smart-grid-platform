@@ -99,6 +99,7 @@
         <xsd:element name="PageSize" type="xsd:int" minOccurs="0" />
         <xsd:element name="Page" type="xsd:int" minOccurs="0" />
         <xsd:element name="DeviceFilter" type="tns:DeviceFilter" minOccurs="0" />
+        <xsd:element name="UsePages" type="xsd:boolean" minOccurs="0" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
