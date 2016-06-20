@@ -4,5 +4,18 @@ Feature:
     
 Background:
     Given a device with DeviceID "E9998000014123414" 
-    Given a gas device with DeviceID "G00XX561204926013"
     And an organisation with OrganisationID "LianderNetManagement"
+    
+@SLIM-150
+  Scenario: find event information from a meter
+    When the find standard events request is received
+    Then standard events should be returned
+
+    When the find fraud events request is received
+    Then fraud events should be returned
+
+    When the find communication events request is received
+    Then communication events should be returned
+
+    When the find mbus events request is received
+    Then mbus events should be returned        
