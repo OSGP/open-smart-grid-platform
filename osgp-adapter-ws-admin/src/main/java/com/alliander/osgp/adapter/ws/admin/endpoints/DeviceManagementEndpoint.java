@@ -249,10 +249,9 @@ public class DeviceManagementEndpoint {
             @RequestPayload final UpdateDeviceAuthorisationsRequest request) throws OsgpException {
 
         LOGGER.info("Update device autorisations for organisation: {}.", organisationIdentification);
-
         try {
             for (final DeviceAuthorisation authorization : request.getDeviceAuthorisations()) {
-                if (authorization.isRevoked()) {
+                if (authorization.isRevoked() != null && authorization.isRevoked()) {
                     this.deviceManagementService
                             .removeDeviceAuthorization(organisationIdentification, authorization
                                     .getOrganisationIdentification(), authorization.getDeviceIdentification(),
