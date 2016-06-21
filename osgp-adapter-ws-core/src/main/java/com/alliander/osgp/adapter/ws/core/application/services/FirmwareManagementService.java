@@ -543,7 +543,6 @@ public class FirmwareManagementService {
             LOGGER.error("RuntimeException while creating MD5 hash for device model firmware.", e);
             throw new RuntimeException(e);
         }
-
         return md5Hash;
     }
 
