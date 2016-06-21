@@ -14,6 +14,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -28,12 +29,14 @@ public class MellonTokenProcessingFilter extends GenericFilterBean {
 
     private final boolean useMellonForUserIdentity;
     private final String httpHeaderForUsername;
+    private final String httpHeaderForFrontendToken;
     private final KeycloakAuthenticationManager authenticationManager;
 
     public MellonTokenProcessingFilter(final boolean useMellonForUserIdentity, final String httpHeaderForUsername,
-            final KeycloakAuthenticationManager authenticationManager) {
+            final String httpHeaderForFrontendToken, final KeycloakAuthenticationManager authenticationManager) {
         this.useMellonForUserIdentity = useMellonForUserIdentity;
         this.httpHeaderForUsername = httpHeaderForUsername;
+        this.httpHeaderForFrontendToken = httpHeaderForFrontendToken;
         this.authenticationManager = authenticationManager;
     }
 
@@ -68,9 +71,15 @@ public class MellonTokenProcessingFilter extends GenericFilterBean {
 
         final String username = httpRequest.getHeader(this.httpHeaderForUsername);
 
-        if (StringUtils.isEmpty(username)) {
+        if (StringUtils.isEmpty(username) || "(null)".equals(username)) {
             LOGGER.error("MellonTokenProcessingFilter with mellon configured, no HTTP header \""
                     + this.httpHeaderForUsername + "\" for Mellon with a username.");
+            chain.doFilter(request, response);
+            return;
+        }
+
+        if (this.isLogoutRequest(httpRequest)) {
+            this.logoutMellon(httpRequest, (HttpServletResponse) response, username);
             chain.doFilter(request, response);
             return;
         }
@@ -84,6 +93,7 @@ public class MellonTokenProcessingFilter extends GenericFilterBean {
                 LOGGER.info(
                         "SecurityContext already has an authentication for user {}, stop further Mellon authentication",
                         username);
+                this.includeFrontendHeader(response, existingAuthentication);
                 chain.doFilter(request, response);
                 return;
             }
@@ -92,21 +102,37 @@ public class MellonTokenProcessingFilter extends GenericFilterBean {
             SecurityContextHolder.getContext().setAuthentication(null);
         }
 
-        // TODO If the request is for /logout, logout in Keycloak?
-        LOGGER.info(
-                "Check if this is a request for logout (contextPath: {}, servletContextName: {}, pathInfo: {}, pathTranslated: {})",
-                httpRequest.getServletContext().getContextPath(), httpRequest.getServletContext()
-                        .getServletContextName(), httpRequest.getPathInfo(), httpRequest.getPathTranslated());
-
         final CustomAuthentication mellonAuthentication = new CustomAuthentication();
         mellonAuthentication.setUserName(username);
         try {
             final Authentication authentication = this.authenticationManager.authenticate(mellonAuthentication);
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            this.includeFrontendHeader(response, authentication);
         } catch (final Exception e) {
             LOGGER.warn("Failed to login based on mellon username: '{}'", username, e);
         }
 
         chain.doFilter(request, response);
+    }
+
+    private void includeFrontendHeader(final ServletResponse response, final Authentication authentication) {
+        if (StringUtils.isBlank(this.httpHeaderForFrontendToken) || !(authentication instanceof CustomAuthentication)
+                || !(response instanceof HttpServletResponse)) {
+            return;
+        }
+        ((HttpServletResponse) response).setHeader(this.httpHeaderForFrontendToken,
+                ((CustomAuthentication) authentication).getToken());
+    }
+
+    private void logoutMellon(final HttpServletRequest httpRequest, final HttpServletResponse httpResponse,
+            final String username) {
+
+        this.authenticationManager.logout(username);
+
+        LOGGER.info("TODO make sure mellon-cookie disappears");
+    }
+
+    private boolean isLogoutRequest(final HttpServletRequest httpRequest) {
+        return httpRequest.getRequestURI().equals(httpRequest.getServletContext().getContextPath() + "/logout");
     }
 }

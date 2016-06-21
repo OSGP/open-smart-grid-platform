@@ -73,6 +73,10 @@ public class KeycloakAuthenticationManager implements AuthenticationManager {
         return this.createCustomAuthenticationInstance(username, loginResponse);
     }
 
+    public void logout(final String mellonusername) {
+        // TODO use Keycloak API to logout
+    }
+
     private CustomAuthentication createCustomAuthenticationInstance(final String username,
             final LoginResponse loginResponse) {
 
