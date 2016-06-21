@@ -16,7 +16,4 @@ public class GetFirmwareVersion implements Serializable {
 
     private static final long serialVersionUID = 5678485081091889477L;
 
-    public GetFirmwareVersion() {
-    }
-
 }
