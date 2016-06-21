@@ -129,8 +129,6 @@
         </wsdl:part>
     </wsdl:message>
 
-
-
     <wsdl:message name="FindAllDeviceModelFirmwaresResponse">
         <wsdl:part element="fman:FindAllDeviceModelFirmwaresResponse" name="FindAllDeviceModelFirmwaresResponse">
         </wsdl:part>
@@ -183,10 +181,6 @@
         <wsdl:part element="fman:ChangeDeviceModelFirmwareRequest" name="ChangeDeviceModelFirmwareRequest">
         </wsdl:part>
     </wsdl:message>
-
-
-
-
 
     <wsdl:message name="FindAllManufacturersResponse">
         <wsdl:part element="fman:FindAllManufacturersResponse" name="FindAllManufacturersResponse">
@@ -361,8 +355,6 @@
             </wsdl:output>
         </wsdl:operation>
         
-        
-        
         <wsdl:operation name="FindAllDeviceModelFirmwares">
             <wsdl:input message="tns:FindAllDeviceModelFirmwaresRequest"
                 name="FindAllDeviceModelFirmwaresRequest">
@@ -389,9 +381,6 @@
             <wsdl:output message="tns:RemoveDeviceModelFirmwareResponse" name="RemoveDeviceModelFirmwareResponse">
             </wsdl:output>
         </wsdl:operation>
-        
-        
-        
     </wsdl:portType>
 
     <wsdl:binding name="FirmwareManagementPortSoap11" type="tns:FirmwareManagementPort">
@@ -576,9 +565,6 @@
             </wsdl:output>
         </wsdl:operation>
         
-        
-        
-        
         <wsdl:operation name="FindAllDeviceModelFirmwares">
             <soap:operation soapAction="" />
             <wsdl:input name="FindAllDeviceModelFirmwaresRequest">
@@ -631,9 +617,6 @@
             </wsdl:output>
         </wsdl:operation>
         
-        
-        
-        
         <wsdl:operation name="FindAllManufacturers">
             <soap:operation soapAction="" />
             <wsdl:input name="FindAllManufacturersRequest">
@@ -685,8 +668,6 @@
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>
-        
-        
     </wsdl:binding>
 
     <wsdl:service name="FirmwareManagementPortService">
