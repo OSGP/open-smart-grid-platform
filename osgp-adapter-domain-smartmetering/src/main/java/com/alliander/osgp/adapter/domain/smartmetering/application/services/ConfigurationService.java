@@ -9,6 +9,8 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.application.services;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,15 +26,19 @@ import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersion;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetKeysRequestData;
+import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotificationsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfoDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SetKeysRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarmDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetKeysRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -455,5 +461,70 @@ public class ConfigurationService {
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 result, exception, null, deviceMessageMetadata.getMessagePriority()), deviceMessageMetadata
                 .getMessageType());
+    }
+
+    /**
+     * Deligates the requests of the retrieval of the firmware version(s) from
+     * the protocol adapter layer to the core layer
+     *
+     * @param deviceMessageMetadata
+     *            contains the message meta data
+     * @param getFirmwareVersion
+     *            marker object to request the firmware version(s)
+     * @throws FunctionalException
+     *             is thrown when the device cannot be found in the database
+     */
+    public void requestFirmwareVersion(DeviceMessageMetadata deviceMessageMetadata,
+            com.alliander.osgp.domain.core.valueobjects.smartmetering.GetFirmwareVersion getFirmwareVersion)
+            throws FunctionalException {
+
+        LOGGER.info("requestFirmwareVersion for organisationIdentification: {} for deviceIdentification: {}",
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
+
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceMessageMetadata
+                .getDeviceIdentification());
+
+        LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
+
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                smartMeteringDevice.getIpAddress(), new GetFirmwareVersionRequestDto()), deviceMessageMetadata
+                .getMessageType(), deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+    }
+
+    /**
+     *
+     * Maps the firmware Dto's to value objects and sends it back to the
+     * ws-adapter layer
+     *
+     * @param deviceMessageMetadata
+     *            contains the message meta data
+     * @param result
+     *            indicates whether the execution was succesfull
+     * @param exception
+     *            contains the exception if one was thrown
+     * @param firmwareVersionList
+     *            contains the firmware result list
+     */
+    public void handleGetFirmwareVersionResponse(DeviceMessageMetadata deviceMessageMetadata,
+            ResponseMessageResultType result, OsgpException exception, List<FirmwareVersionDto> firmwareVersionList) {
+
+        LOGGER.info("handleGetFirmwareVersionResponse for MessageType: {}", deviceMessageMetadata.getMessageType());
+
+        if (exception != null) {
+            LOGGER.error("Replace Keys Response not ok. Unexpected Exception", exception);
+            result = ResponseMessageResultType.NOT_OK;
+        }
+
+        final List<FirmwareVersion> firmwareVersions = this.configurationMapper.mapAsList(firmwareVersionList,
+                FirmwareVersion.class);
+
+        final FirmwareVersionResponse firmwareVersionResponse = new FirmwareVersionResponse(firmwareVersions);
+
+        this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                result, exception, firmwareVersionResponse, deviceMessageMetadata.getMessagePriority()),
+                deviceMessageMetadata.getMessageType());
+
     }
 }
