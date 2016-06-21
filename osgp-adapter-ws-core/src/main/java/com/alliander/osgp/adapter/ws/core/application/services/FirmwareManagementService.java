@@ -310,7 +310,6 @@ public class FirmwareManagementService {
     /**
      * Returns a list of all DeviceModelFirmwares in the Platform
      */
-    @Transactional(value = "writableTransactionManager")
     public List<DeviceModelFirmware> findAllDeviceModelFirmwares(final String organisationIdentification, final String manufacturer, final String modelCode) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
@@ -322,11 +321,11 @@ public class FirmwareManagementService {
         final List<DeviceModelFirmware> deviceModelFirmwares = this.deviceModelFirmwareRepository.findByDeviceModel(databaseDeviceModel);
 
         // performance issue, clean list with firmware files for front-end admin app.
-        //        for (final DeviceModelFirmware deviceModelFirmware : deviceModelFirmwares) {
-        //            if (deviceModelFirmware.getFile() != null) {
-        //                deviceModelFirmware.setFile(null);
-        //            }
-        //        }
+        for (final DeviceModelFirmware deviceModelFirmware : deviceModelFirmwares) {
+            if (deviceModelFirmware.getFile() != null) {
+                deviceModelFirmware.setFile(null);
+            }
+        }
 
         return deviceModelFirmwares;
     }
