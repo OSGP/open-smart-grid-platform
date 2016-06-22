@@ -23,6 +23,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
 
+import com.alliander.osgp.shared.usermanagement.KeycloakClientException;
+
 public class MellonTokenProcessingFilter extends GenericFilterBean {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MellonTokenProcessingFilter.class);
@@ -127,7 +129,11 @@ public class MellonTokenProcessingFilter extends GenericFilterBean {
     private void logoutMellon(final HttpServletRequest httpRequest, final HttpServletResponse httpResponse,
             final String username) {
 
-        this.authenticationManager.logout(username);
+        try {
+            this.authenticationManager.logout(username);
+        } catch (final KeycloakClientException e) {
+            LOGGER.error("Error logging user '{}' out with the Keycloak API.", username, e);
+        }
 
         LOGGER.info("TODO make sure mellon-cookie disappears");
     }

@@ -17,6 +17,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import com.alliander.osgp.shared.usermanagement.AuthenticationClient;
+import com.alliander.osgp.shared.usermanagement.KeycloakClient;
+import com.alliander.osgp.shared.usermanagement.KeycloakClientException;
 import com.alliander.osgp.shared.usermanagement.LoginRequest;
 import com.alliander.osgp.shared.usermanagement.LoginResponse;
 
@@ -33,10 +35,12 @@ public class KeycloakAuthenticationManager implements AuthenticationManager {
     private final String application;
     private final String mellonSharedSecret;
     private final AuthenticationClient authenticationClient;
+    private final KeycloakClient keycloakClient;
 
     public KeycloakAuthenticationManager(final AuthenticationClient authenticationClient,
-            final String mellonSharedSecret, final String application) {
+            final KeycloakClient keycloakClient, final String mellonSharedSecret, final String application) {
         this.authenticationClient = authenticationClient;
+        this.keycloakClient = keycloakClient;
         this.mellonSharedSecret = mellonSharedSecret;
         this.application = application;
     }
@@ -73,8 +77,9 @@ public class KeycloakAuthenticationManager implements AuthenticationManager {
         return this.createCustomAuthenticationInstance(username, loginResponse);
     }
 
-    public void logout(final String mellonusername) {
-        // TODO use Keycloak API to logout
+    public void logout(final String mellonusername) throws KeycloakClientException {
+        LOGGER.info("TODO complete logout using user session id: {}",
+                this.keycloakClient.getUserSessionIdByUsername(mellonusername));
     }
 
     private CustomAuthentication createCustomAuthenticationInstance(final String username,
