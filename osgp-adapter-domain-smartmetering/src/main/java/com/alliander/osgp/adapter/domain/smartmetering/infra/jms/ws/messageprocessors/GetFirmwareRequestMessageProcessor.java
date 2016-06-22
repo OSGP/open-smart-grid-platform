@@ -20,9 +20,6 @@ import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
 /**
  * Class for processing common get firmware request messages
- *
- * @author CGI
- *
  */
 @Component
 public class GetFirmwareRequestMessageProcessor extends WebServiceRequestMessageProcessor {

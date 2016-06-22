@@ -17,6 +17,9 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.services.Conf
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -39,7 +42,7 @@ public class GetFirmwareVersionResponseMessageProcessor extends OsgpCoreResponse
 
     @Override
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
-            final ResponseMessage responseMessage, final OsgpException osgpException) {
+            final ResponseMessage responseMessage, final OsgpException osgpException) throws FunctionalException {
 
         if (responseMessage.getDataObject() instanceof ArrayList) {
             final List<FirmwareVersionDto> firmwareVersionList = (List<FirmwareVersionDto>) responseMessage
@@ -47,6 +50,10 @@ public class GetFirmwareVersionResponseMessageProcessor extends OsgpCoreResponse
 
             this.configurationService.handleGetFirmwareVersionResponse(deviceMessageMetadata,
                     responseMessage.getResult(), osgpException, firmwareVersionList);
+        } else {
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+                    ComponentType.DOMAIN_SMART_METERING, new OsgpException(ComponentType.DOMAIN_SMART_METERING,
+                            "DataObject for response message should be of type ArrayList"));
         }
     }
 }
