@@ -570,7 +570,6 @@ public class FirmwareManagementEndpoint {
         } catch (final Exception e) {
             LOGGER.error("Exception: {} while adding devicemodelfirmware: {} for organisation {}",
                     new Object[] { e.getMessage(), request.getDeviceModelFirmware().getFilename(), organisationIdentification }, e);
-
             this.handleException(e);
         }
 
@@ -592,7 +591,6 @@ public class FirmwareManagementEndpoint {
             this.firmwareManagementService.changeDeviceModelFirmware(organisationIdentification,
                     request.getId(),
                     request.getDeviceModelFirmware().getDescription(),
-                    request.getDeviceModelFirmware().getFile(),
                     request.getDeviceModelFirmware().getFilename(),
                     request.getDeviceModelFirmware().getManufacturer(),
                     request.getDeviceModelFirmware().getModelCode(),

@@ -322,9 +322,7 @@ public class FirmwareManagementService {
 
         // performance issue, clean list with firmware files for front-end admin app.
         for (final DeviceModelFirmware deviceModelFirmware : deviceModelFirmwares) {
-            if (deviceModelFirmware.getFile() != null) {
-                deviceModelFirmware.setFile(null);
-            }
+            deviceModelFirmware.setFile(null);
         }
 
         return deviceModelFirmwares;
@@ -365,41 +363,39 @@ public class FirmwareManagementService {
             LOGGER.info("DeviceModel already exixts.");
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICEMODEL, ComponentType.WS_CORE,
                     new UnknownEntityException(DeviceModel.class, modelCode));
-        } else {
+        }
 
-            DeviceModelFirmware savedDeviceModelFirmware = null;
+        DeviceModelFirmware savedDeviceModelFirmware = null;
 
-            // file == null, user selected an existing firmware file
-            if (file == null) {
-                final List<DeviceModelFirmware> databaseDeviceModelFirmwares = this.deviceModelFirmwareRepository.findByDeviceModelAndFilename(databaseDeviceModel, fileName);
+        // file == null, user selected an existing firmware file
+        if (file == null) {
+            final List<DeviceModelFirmware> databaseDeviceModelFirmwares = this.deviceModelFirmwareRepository.findByDeviceModelAndFilename(databaseDeviceModel, fileName);
 
-                if (databaseDeviceModelFirmwares.size() > 0) {
-                    savedDeviceModelFirmware = new DeviceModelFirmware(databaseDeviceModel, fileName, modelCode,
-                            description, pushToNewDevices, moduleVersionComm, moduleVersionFunc, moduleVersionMa, moduleVersionMbus,
-                            moduleVersionSec, databaseDeviceModelFirmwares.get(0).getFile(), this.getMd5Hash(databaseDeviceModelFirmwares.get(0).getFile()));
-                } else {
-                    LOGGER.error("DeviceModelFirmware file doesn't exixts.");
-                    throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICEMODEL_FIRMWARE, ComponentType.WS_CORE,
-                            new UnknownEntityException(DeviceModel.class, fileName));
-                }
-            } else {
+            if (databaseDeviceModelFirmwares.size() > 0) {
                 savedDeviceModelFirmware = new DeviceModelFirmware(databaseDeviceModel, fileName, modelCode,
                         description, pushToNewDevices, moduleVersionComm, moduleVersionFunc, moduleVersionMa, moduleVersionMbus,
-                        moduleVersionSec, file, this.getMd5Hash(file));
+                        moduleVersionSec, databaseDeviceModelFirmwares.get(0).getFile(), this.getMd5Hash(databaseDeviceModelFirmwares.get(0).getFile()));
+            } else {
+                LOGGER.error("DeviceModelFirmware file doesn't exixts.");
+                throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICEMODEL_FIRMWARE, ComponentType.WS_CORE,
+                        new UnknownEntityException(DeviceModel.class, fileName));
             }
-
-            if (pushToNewDevices) {
-                final List<DeviceModelFirmware> deviceModelFirmwares = this.deviceModelFirmwareRepository.findByDeviceModel(databaseDeviceModel);
-                for (final DeviceModelFirmware dbDeviceModelFirmware : deviceModelFirmwares) {
-                    if (dbDeviceModelFirmware.getPushToNewDevices()) {
-                        dbDeviceModelFirmware.setPushToNewDevices(false);
-                    }
-                }
-                this.deviceModelFirmwareRepository.save(deviceModelFirmwares);
-            }
-
-            this.deviceModelFirmwareRepository.save(savedDeviceModelFirmware);
+        } else {
+            savedDeviceModelFirmware = new DeviceModelFirmware(databaseDeviceModel, fileName, modelCode,
+                    description, pushToNewDevices, moduleVersionComm, moduleVersionFunc, moduleVersionMa, moduleVersionMbus,
+                    moduleVersionSec, file, this.getMd5Hash(file));
         }
+
+        if (pushToNewDevices) {
+            final List<DeviceModelFirmware> deviceModelFirmwares = this.deviceModelFirmwareRepository.findByDeviceModel(databaseDeviceModel);
+            for (final DeviceModelFirmware dbDeviceModelFirmware : deviceModelFirmwares) {
+                if (dbDeviceModelFirmware.getPushToNewDevices()) {
+                    dbDeviceModelFirmware.setPushToNewDevices(false);
+                }
+            }
+            this.deviceModelFirmwareRepository.save(deviceModelFirmwares);
+        }
+        this.deviceModelFirmwareRepository.save(savedDeviceModelFirmware);
     }
 
     /**
@@ -410,7 +406,6 @@ public class FirmwareManagementService {
     public void changeDeviceModelFirmware(@Identification final String organisationIdentification,
             final int id,
             final String description,
-            final byte[] file,
             final String filename,
             final String manufacturer,
             final String modelCode,
@@ -424,57 +419,53 @@ public class FirmwareManagementService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.CHANGE_DEVICE_MODEL_FIRMWARE);
 
-        final Manufacturer dataseManufacturer = this.manufacturerRepository.findByManufacturerId(manufacturer);
+        final Manufacturer databaseManufacturer = this.manufacturerRepository.findByManufacturerId(manufacturer);
 
-        if (dataseManufacturer == null) {
+        if (databaseManufacturer == null) {
             LOGGER.info("Manufacturer doesn't exixts.");
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_MANUFACTURER, ComponentType.WS_CORE,
                     new UnknownEntityException(Manufacturer.class, manufacturer));
         }
 
-        final DeviceModel databaseDeviceModel = this.deviceModelRepository.findByManufacturerIdAndModelCode(dataseManufacturer, modelCode);
+        final DeviceModel databaseDeviceModel = this.deviceModelRepository.findByManufacturerIdAndModelCode(databaseManufacturer, modelCode);
 
         if (databaseDeviceModel == null) {
             LOGGER.info("DeviceModel already exixts.");
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICEMODEL, ComponentType.WS_CORE,
                     new UnknownEntityException(DeviceModel.class, modelCode));
-        } else {
-
-            final DeviceModelFirmware changedDeviceModelFirmware = this.deviceModelFirmwareRepository.findById(Long.valueOf(id));
-
-            if (changedDeviceModelFirmware == null) {
-                LOGGER.info("DeviceModelFirmware not found.");
-                throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICEMODEL_FIRMWARE, ComponentType.WS_CORE,
-                        new UnknownEntityException(DeviceModelFirmware.class, filename));
-            } else {
-                changedDeviceModelFirmware.setDescription(description);
-                changedDeviceModelFirmware.setDeviceModel(databaseDeviceModel);
-
-                //this property can not be saved by a changing devicemodelfirmware call
-                //changedDeviceModelFirmware.setFile(file);
-                changedDeviceModelFirmware.setFilename(filename);
-                changedDeviceModelFirmware.setModelCode(modelCode);
-                changedDeviceModelFirmware.setModuleVersionComm(moduleVersionComm);
-                changedDeviceModelFirmware.setModuleVersionFunc(moduleVersionFunc);
-                changedDeviceModelFirmware.setModuleVersionMa(moduleVersionMa);
-                changedDeviceModelFirmware.setModuleVersionMbus(moduleVersionMbus);
-                changedDeviceModelFirmware.setModuleVersionSec(moduleVersionSec);
-                changedDeviceModelFirmware.setPushToNewDevices(pushToNewDevices);
-
-                // set all devicefirmwares.pushToNewDevices on false
-                if (pushToNewDevices) {
-                    final List<DeviceModelFirmware> deviceModelFirmwares = this.deviceModelFirmwareRepository.findByDeviceModel(databaseDeviceModel);
-                    for (final DeviceModelFirmware deviceModelFirmware : deviceModelFirmwares) {
-                        if (deviceModelFirmware.getPushToNewDevices() && (deviceModelFirmware.getId() != Long.valueOf(id))) {
-                            deviceModelFirmware.setPushToNewDevices(false);
-                        }
-                    }
-                    this.deviceModelFirmwareRepository.save(deviceModelFirmwares);
-                }
-
-                this.deviceModelFirmwareRepository.save(changedDeviceModelFirmware);
-            }
         }
+
+        final DeviceModelFirmware changedDeviceModelFirmware = this.deviceModelFirmwareRepository.findById(Long.valueOf(id));
+
+        if (changedDeviceModelFirmware == null) {
+            LOGGER.info("DeviceModelFirmware not found.");
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICEMODEL_FIRMWARE, ComponentType.WS_CORE,
+                    new UnknownEntityException(DeviceModelFirmware.class, filename));
+        }
+
+        changedDeviceModelFirmware.setDescription(description);
+        changedDeviceModelFirmware.setDeviceModel(databaseDeviceModel);
+        changedDeviceModelFirmware.setFilename(filename);
+        changedDeviceModelFirmware.setModelCode(modelCode);
+        changedDeviceModelFirmware.setModuleVersionComm(moduleVersionComm);
+        changedDeviceModelFirmware.setModuleVersionFunc(moduleVersionFunc);
+        changedDeviceModelFirmware.setModuleVersionMa(moduleVersionMa);
+        changedDeviceModelFirmware.setModuleVersionMbus(moduleVersionMbus);
+        changedDeviceModelFirmware.setModuleVersionSec(moduleVersionSec);
+        changedDeviceModelFirmware.setPushToNewDevices(pushToNewDevices);
+
+        // set all devicefirmwares.pushToNewDevices on false
+        if (pushToNewDevices) {
+            final List<DeviceModelFirmware> deviceModelFirmwares = this.deviceModelFirmwareRepository.findByDeviceModel(databaseDeviceModel);
+            for (final DeviceModelFirmware deviceModelFirmware : deviceModelFirmwares) {
+                if (deviceModelFirmware.getPushToNewDevices() && (deviceModelFirmware.getId() != Long.valueOf(id))) {
+                    deviceModelFirmware.setPushToNewDevices(false);
+                }
+            }
+            this.deviceModelFirmwareRepository.save(deviceModelFirmwares);
+        }
+
+        this.deviceModelFirmwareRepository.save(changedDeviceModelFirmware);
     }
 
     /**
@@ -494,9 +485,9 @@ public class FirmwareManagementService {
             LOGGER.info("DeviceModelFirmware not found.");
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICEMODEL_FIRMWARE, ComponentType.WS_CORE,
                     new UnknownEntityException(DeviceModelFirmware.class, String.valueOf(firmwareIdentification)));
-        } else {
-            this.deviceModelFirmwareRepository.delete(removedDeviceModelFirmware);
         }
+
+        this.deviceModelFirmwareRepository.delete(removedDeviceModelFirmware);
     }
 
     public ResponseMessage dequeueGetFirmwareResponse(final String correlationUid) throws OsgpException {
