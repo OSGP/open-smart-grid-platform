@@ -24,6 +24,7 @@ public class DeviceFilter {
     private String sortDir;
     private String sortedBy;
     private boolean hasTechnicalInstallation;
+    private String owner;
 
     public DeviceFilter() {
 
@@ -33,7 +34,7 @@ public class DeviceFilter {
             final String street, final String city, final String postalCode, final String alias, final String number,
             final String municipality, final DeviceExternalManagedFilterType deviceExternalManaged,
             final DeviceActivatedFilterType deviceActivated,
-            final DeviceInMaintenanceFilterType deviceInMaintenance, final String sortDir, final String sortedBy, final boolean hasTechnicalInstallation) {
+            final DeviceInMaintenanceFilterType deviceInMaintenance, final String sortDir, final String sortedBy, final boolean hasTechnicalInstallation, final String owner) {
         this.organisationIdentification = organisationIdentification;
         this.deviceIdentification = deviceIdentification;
         this.alias = alias;
@@ -48,6 +49,7 @@ public class DeviceFilter {
         this.sortDir = sortDir;
         this.sortedBy = sortedBy;
         this.hasTechnicalInstallation = hasTechnicalInstallation;
+        this.owner = owner;
     }
 
     public String getOrganisationIdentification() {
@@ -116,6 +118,14 @@ public class DeviceFilter {
 
     public void setHasTechnicalInstallation(final boolean hasTechnicalInstallation) {
         this.hasTechnicalInstallation = hasTechnicalInstallation;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 
 }

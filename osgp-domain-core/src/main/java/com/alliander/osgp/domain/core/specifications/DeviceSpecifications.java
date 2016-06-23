@@ -39,4 +39,6 @@ public interface DeviceSpecifications {
 
     Specification<Device> hasTechnicalInstallationDate() throws ArgumentNullOrEmptyException;
 
+    Specification<Device> forOwner(final Organisation organisation) throws ArgumentNullOrEmptyException;
+
 }

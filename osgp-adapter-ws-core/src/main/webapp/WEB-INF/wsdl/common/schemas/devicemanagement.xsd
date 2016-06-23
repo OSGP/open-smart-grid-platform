@@ -328,6 +328,7 @@
       <xsd:element name="SortDir" type="xsd:string" minOccurs="0" />
       <xsd:element name="SortedBy" type="xsd:string" minOccurs="0" />
       <xsd:element name="HasTechnicalInstallation" type="xsd:boolean" />
+      <xsd:element name="Owner" type="xsd:string" minOccurs="0" />
     </xsd:sequence>
   </xsd:complexType>
 

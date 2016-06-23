@@ -263,7 +263,7 @@ public class DeviceManagementService {
             if (deviceFilter == null) {
                 final DeviceFilter df = new DeviceFilter(organisationIdentification, null, null, null, null, null,
                         null, null, DeviceExternalManagedFilterType.BOTH, DeviceActivatedFilterType.BOTH,
-                        DeviceInMaintenanceFilterType.BOTH, null, null, false);
+                        DeviceInMaintenanceFilterType.BOTH, null, null, false, null);
                 devices = this.applyFilter(df, organisation, request);
             } else {
                 deviceFilter.updateOrganisationIdentification(organisationIdentification);
@@ -353,6 +353,11 @@ public class DeviceManagementService {
                     specifications = specifications.and(this.deviceSpecifications.hasTechnicalInstallationDate());
                 }
 
+                if (!StringUtils.isEmpty(deviceFilter.getOwner())) {
+                    final Organisation ownerOrg = this.domainHelperService.findOrganisation(deviceFilter
+                            .getOwner());
+                    specifications = specifications.and(this.deviceSpecifications.forOwner(ownerOrg));
+                }
                 devices = this.deviceRepository.findAll(specifications, request);
             } else {
                 devices = this.deviceRepository.findAll(request);
