@@ -15,10 +15,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 
+import com.alliander.osgp.domain.core.valueobjects.FirmwareModuleData;
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
 /**
- * DeviceModelFirmware entity class holds information about the device model or type
+ * DeviceModelFirmware entity class holds information about the device model or
+ * type
  */
 @Entity
 public class DeviceModelFirmware extends AbstractEntity {
@@ -67,22 +69,30 @@ public class DeviceModelFirmware extends AbstractEntity {
         // Default constructor
     }
 
-    public DeviceModelFirmware(final DeviceModel deviceModel, final String filename, final String modelCode, final String description,
-            final boolean pushToNewDevices, final String moduleVersionComm, final String moduleVersionFunc,
-            final String moduleVersionMa, final String moduleVersionMbus, final String moduleVersionSec, final byte[] file, final String hash) {
-
+    public DeviceModelFirmware(final DeviceModel deviceModel, final String filename, final String modelCode,
+            final String description, final boolean pushToNewDevices, final FirmwareModuleData firmwareModuleData) {
         this.deviceModel = deviceModel;
         this.filename = filename;
         this.modelCode = modelCode;
         this.description = description;
         this.pushToNewDevices = pushToNewDevices;
-        this.moduleVersionComm = moduleVersionComm;
-        this.moduleVersionFunc = moduleVersionFunc;
-        this.moduleVersionMa = moduleVersionMa;
-        this.moduleVersionMbus = moduleVersionMbus;
-        this.moduleVersionSec = moduleVersionSec;
+        this.updateFirmwareModuleData(firmwareModuleData);
+    }
+
+    public DeviceModelFirmware(final DeviceModel deviceModel, final String filename, final String modelCode,
+            final String description, final boolean pushToNewDevices, final FirmwareModuleData firmwareModuleData,
+            final byte[] file, final String hash) {
+        this(deviceModel, filename, modelCode, description, pushToNewDevices, firmwareModuleData);
         this.file = file;
         this.hash = hash;
+    }
+
+    public void updateFirmwareModuleData(final FirmwareModuleData firmwareModuleData) {
+        this.moduleVersionComm = firmwareModuleData.getComm();
+        this.moduleVersionFunc = firmwareModuleData.getFunc();
+        this.moduleVersionMa = firmwareModuleData.getMa();
+        this.moduleVersionMbus = firmwareModuleData.getMbus();
+        this.moduleVersionSec = firmwareModuleData.getSec();
     }
 
     public DeviceModel getDeviceModel() {
@@ -182,5 +192,4 @@ public class DeviceModelFirmware extends AbstractEntity {
     public void setFile(final byte[] file) {
         this.file = file;
     }
-
 }
