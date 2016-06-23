@@ -7,7 +7,6 @@
  */
 package com.alliander.osgp.domain.core.valueobjects;
 
-
 public class DeviceFilter {
 
     private String organisationIdentification;
@@ -25,6 +24,10 @@ public class DeviceFilter {
     private String sortedBy;
     private boolean hasTechnicalInstallation;
     private String owner;
+    private String deviceType;
+    private String manufacturer;
+    private String model;
+    private String firmwareModuleVersion;
 
     public DeviceFilter() {
 
@@ -33,8 +36,9 @@ public class DeviceFilter {
     public DeviceFilter(final String organisationIdentification, final String deviceIdentification,
             final String street, final String city, final String postalCode, final String alias, final String number,
             final String municipality, final DeviceExternalManagedFilterType deviceExternalManaged,
-            final DeviceActivatedFilterType deviceActivated,
-            final DeviceInMaintenanceFilterType deviceInMaintenance, final String sortDir, final String sortedBy, final boolean hasTechnicalInstallation, final String owner) {
+            final DeviceActivatedFilterType deviceActivated, final DeviceInMaintenanceFilterType deviceInMaintenance,
+            final String sortDir, final String sortedBy, final boolean hasTechnicalInstallation, final String owner,
+            final String deviceType, final String manufacturer, final String model, final String firmwareModuleVersion) {
         this.organisationIdentification = organisationIdentification;
         this.deviceIdentification = deviceIdentification;
         this.alias = alias;
@@ -50,6 +54,10 @@ public class DeviceFilter {
         this.sortedBy = sortedBy;
         this.hasTechnicalInstallation = hasTechnicalInstallation;
         this.owner = owner;
+        this.deviceType = deviceType;
+        this.manufacturer = manufacturer;
+        this.model = model;
+        this.firmwareModuleVersion = firmwareModuleVersion;
     }
 
     public String getOrganisationIdentification() {
@@ -126,6 +134,38 @@ public class DeviceFilter {
 
     public void setOwner(String owner) {
         this.owner = owner;
+    }
+
+    public String getDeviceType() {
+        return deviceType;
+    }
+
+    public void setDeviceType(String deviceType) {
+        this.deviceType = deviceType;
+    }
+
+    public String getManufacturer() {
+        return manufacturer;
+    }
+
+    public void setManufacturer(String manufacturer) {
+        this.manufacturer = manufacturer;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    public String getFirmwareModuleVersion() {
+        return firmwareModuleVersion;
+    }
+
+    public void setFirmwareModuleVersion(String firmwareModuleVersion) {
+        this.firmwareModuleVersion = firmwareModuleVersion;
     }
 
 }

@@ -98,6 +98,9 @@ public class DeviceManagementService {
     private DeviceSpecifications deviceSpecifications;
 
     @Autowired
+    private FirmwareManagementService firmwareManagementService;
+
+    @Autowired
     private DeviceLogItemRepository logItemRepository;
 
     @Autowired
@@ -263,7 +266,7 @@ public class DeviceManagementService {
             if (deviceFilter == null) {
                 final DeviceFilter df = new DeviceFilter(organisationIdentification, null, null, null, null, null,
                         null, null, DeviceExternalManagedFilterType.BOTH, DeviceActivatedFilterType.BOTH,
-                        DeviceInMaintenanceFilterType.BOTH, null, null, false, null);
+                        DeviceInMaintenanceFilterType.BOTH, null, null, false, null, null, null, null, null);
                 devices = this.applyFilter(df, organisation, request);
             } else {
                 deviceFilter.updateOrganisationIdentification(organisationIdentification);
@@ -357,6 +360,29 @@ public class DeviceManagementService {
                     final Organisation ownerOrg = this.domainHelperService.findOrganisation(deviceFilter
                             .getOwner());
                     specifications = specifications.and(this.deviceSpecifications.forOwner(ownerOrg));
+                }
+
+                if (!StringUtils.isEmpty(deviceFilter.getDeviceType())) {
+                    specifications = specifications.and(this.deviceSpecifications.forDeviceType(deviceFilter.getDeviceType()));
+                }
+
+                if (!StringUtils.isEmpty(deviceFilter.getManufacturer())) {
+                    /*final Organisation ownerOrg = this.domainHelperService.findOrganisation(deviceFilter
+                            .getOwner());
+                    specifications = specifications.and(this.deviceSpecifications.forOwner(ownerOrg));*/
+                }
+
+                if (!StringUtils.isEmpty(deviceFilter.getModel())) {
+                    /*final Organisation ownerOrg = this.domainHelperService.findOrganisation(deviceFilter
+                            .getOwner());
+                    specifications = specifications.and(this.deviceSpecifications.forOwner(ownerOrg));*/
+                }
+
+                if (!StringUtils.isEmpty(deviceFilter.getFirmwareModuleVersion())) {
+                   // final Firmware firmware = this.firmwareManagementService.f
+                    /*final Organisation ownerOrg = this.domainHelperService.findOrganisation(deviceFilter
+                            .getOwner());
+                    specifications = specifications.and(this.deviceSpecifications.forOwner(ownerOrg));*/
                 }
                 devices = this.deviceRepository.findAll(specifications, request);
             } else {

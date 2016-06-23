@@ -41,4 +41,5 @@ public interface DeviceSpecifications {
 
     Specification<Device> forOwner(final Organisation organisation) throws ArgumentNullOrEmptyException;
 
+    Specification<Device> forDeviceType(String deviceType) throws ArgumentNullOrEmptyException;
 }

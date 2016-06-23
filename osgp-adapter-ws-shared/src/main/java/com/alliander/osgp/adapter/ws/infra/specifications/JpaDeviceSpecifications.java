@@ -266,4 +266,38 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             }
         };
     }
+
+    @Override
+    public Specification<Device> forDeviceType (final String deviceType) throws ArgumentNullOrEmptyException {
+
+        if (deviceType == null) {
+            throw new ArgumentNullOrEmptyException("deviceType");
+        }
+
+        return new Specification<Device>() {
+            @Override
+            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
+                    final CriteriaBuilder cb) {
+
+                return cb.like(cb.upper(deviceRoot.<String> get("deviceType")), deviceType.toUpperCase());
+            }
+        };
+    }
+
+   /* @Override
+    public Specification<Device> forFirmwareVersion (final String firmwareVersion) throws ArgumentNullOrEmptyException {
+
+        if (firmwareVersion == null) {
+            throw new ArgumentNullOrEmptyException("firmwareVersion");
+        }
+
+        return new Specification<Device>() {
+            @Override
+            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
+                    final CriteriaBuilder cb) {
+
+                return cb.like(cb.upper(deviceRoot.<String> get("device_type")), deviceType.toUpperCase());
+            }
+        };
+    }*/
 }
