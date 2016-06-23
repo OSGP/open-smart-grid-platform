@@ -1013,9 +1013,9 @@ public class Iec61850DeviceService implements DeviceService {
         configuration.setTimeSyncFrequency(timeSyncFrequency);
         configuration.setAutomaticSummerTimingEnabled(automaticSummerTimingEnabled);
         configuration.setSummerTimeDetails(new DaylightSavingTimeTransition(TIME_ZONE_AMSTERDAM, summerTimeDetails)
-        .getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
+                .getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
         configuration.setWinterTimeDetails(new DaylightSavingTimeTransition(TIME_ZONE_AMSTERDAM, winterTimeDetails)
-        .getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
+                .getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
 
         return configuration;
     }
@@ -1143,8 +1143,8 @@ public class Iec61850DeviceService implements DeviceService {
 
                     if (configuration.getTimeSyncFrequency() != null) {
                         LOGGER.info("Updating TimeSyncFrequency to {}", configuration.getTimeSyncFrequency());
-                        clock.writeShort(SubDataAttribute.TIME_SYNC_FREQUENCY, configuration.getTimeSyncFrequency()
-                                .shortValue());
+                        clock.writeUnsignedShort(SubDataAttribute.TIME_SYNC_FREQUENCY,
+                                configuration.getTimeSyncFrequency());
                     }
 
                     if (configuration.isAutomaticSummerTimingEnabled() != null) {
