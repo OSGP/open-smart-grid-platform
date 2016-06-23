@@ -53,7 +53,6 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 @Transactional(value = "transactionManager")
 public class ConfigurationService {
 
-    private static final String GET_FIRMWARE_VERSION_RESPONSE_NOT_OK = "Get firmware versions response not ok. Unexpected Exception";
     private static final String SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG = "Sending request message to core.";
     private static final String DEVICE_RESPONSE_NOT_OK_LOG_MSG = "Device Response not ok. Unexpected Exception";
 
@@ -454,7 +453,7 @@ public class ConfigurationService {
 
         ResponseMessageResultType result = deviceResult;
         if (exception != null) {
-            LOGGER.error(GET_FIRMWARE_VERSION_RESPONSE_NOT_OK, exception);
+            LOGGER.error("Replace Keys Response not ok. Unexpected Exception", exception);
             result = ResponseMessageResultType.NOT_OK;
         }
 
@@ -515,7 +514,7 @@ public class ConfigurationService {
 
         ResponseMessageResultType result = deviceResult;
         if (exception != null) {
-            LOGGER.error(GET_FIRMWARE_VERSION_RESPONSE_NOT_OK, exception);
+            LOGGER.error("Get firmware version response not ok. Unexpected Exception", exception);
             result = ResponseMessageResultType.NOT_OK;
         }
 
