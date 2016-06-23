@@ -141,7 +141,7 @@ public class Device extends AbstractEntity {
     private final SecureRandom random = new SecureRandom();
 
     @Transient
-    private static final Integer sequenceNumberMaximum = 65535;
+    private static final Integer SEQUENCE_NUMBER_MAXIMUM = 65535;
 
     public Device() {
         // Default constructor
@@ -327,7 +327,7 @@ public class Device extends AbstractEntity {
 
     public int doGetNextSequence() {
         int next = this.sequenceNumber + 1;
-        if (next > this.sequenceNumberMaximum) {
+        if (next > SEQUENCE_NUMBER_MAXIMUM) {
             next = 0;
         }
 
@@ -340,7 +340,7 @@ public class Device extends AbstractEntity {
      * @return The random number.
      */
     public Integer doGenerateRandomNumber() {
-        return this.random.nextInt(this.sequenceNumberMaximum + 1);
+        return this.random.nextInt(SEQUENCE_NUMBER_MAXIMUM + 1);
     }
 
     /**
