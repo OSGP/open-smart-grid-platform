@@ -30,10 +30,13 @@ import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessageType;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceModelFirmwareRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceModelRepository;
+import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceRepository;
+import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableFirmwareRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableManufacturerRepository;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.DeviceModelFirmware;
+import com.alliander.osgp.domain.core.entities.Firmware;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.exceptions.ExistingEntityException;
@@ -41,6 +44,7 @@ import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
+import com.alliander.osgp.domain.core.valueobjects.FirmwareHistory;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunction;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -74,6 +78,12 @@ public class FirmwareManagementService {
 
     @Autowired
     private WritableDeviceModelFirmwareRepository deviceModelFirmwareRepository;
+
+    @Autowired
+    private WritableFirmwareRepository writableFirmwareRepository;
+
+    @Autowired
+    private WritableDeviceRepository writableDeviceRepository;
 
     public String enqueueUpdateFirmwareRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @NotBlank final String firmwareIdentification,
@@ -489,6 +499,30 @@ public class FirmwareManagementService {
 
         this.deviceModelFirmwareRepository.delete(removedDeviceModelFirmware);
     }
+
+
+
+
+    /**
+     * Returns a firmwareHistory in the Platform
+     */
+    public FirmwareHistory getFirmwareHistory(final String organisationIdentification, final String deviceIdentification) throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_DEVICE_MODEL_FIRMWARE);
+
+        final Device device = this.writableDeviceRepository.findByDeviceIdentification(deviceIdentification);
+        final List<Firmware> firmwares = this.writableFirmwareRepository.findByDevice(device);
+
+        final DeviceModel deviceModel = device.getDeviceModel();
+
+        // todo: map objects to one FirmwareHistory object
+        // return FirmwareHistory
+        return null;
+    }
+
+
+
 
     public ResponseMessage dequeueGetFirmwareResponse(final String correlationUid) throws OsgpException {
         return this.commonResponseMessageFinder.findMessage(correlationUid);

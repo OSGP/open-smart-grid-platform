@@ -45,6 +45,8 @@ import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllDevic
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllManufacturersRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllManufacturersResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FirmwareVersion;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareHistoryRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareHistoryResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionRequest;
@@ -67,6 +69,7 @@ import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.DeviceModelFirmware;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
+import com.alliander.osgp.domain.core.valueobjects.FirmwareHistory;
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -641,6 +644,39 @@ public class FirmwareManagementEndpoint {
 
         return removeDeviceModelFirmwareResponse;
     }
+
+
+    // === FIRMWARE HISTORY LOGIC ===
+
+    @PayloadRoot(localPart = "GetFirmwareHistoryRequest", namespace = NAMESPACE)
+    @ResponsePayload
+    public GetFirmwareHistoryResponse getFirmwareHistory(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final GetFirmwareHistoryRequest request) throws OsgpException {
+
+        LOGGER.info("Get the firmware history for organisation {} from the device {} .", organisationIdentification,
+                request.getDeviceIdentification());
+
+        final GetFirmwareHistoryResponse response = new GetFirmwareHistoryResponse();
+
+        try {
+
+            final FirmwareHistory firmwareHistory = this.firmwareManagementService.getFirmwareHistory(organisationIdentification, request.getDeviceIdentification());
+
+            response.setDeviceModelFirmwareHistory(this.firmwareManagementMapper.map(firmwareHistory, com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.DeviceModelFirmwareHistory.class));
+
+        } catch (final MethodConstraintViolationException e) {
+            LOGGER.error("Exception get firmware history {}: ", e);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+
+        return response;
+    }
+
+
 
     private void handleException(final Exception e) throws OsgpException {
         // Rethrow exception if it already is a functional or technical

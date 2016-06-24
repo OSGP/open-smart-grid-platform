@@ -60,6 +60,9 @@ public class Firmware extends AbstractEntity {
     @JoinColumn()
     private DeviceModelFirmware deviceModelFirmware;
 
+    @ManyToOne()
+    @JoinColumn()
+    private Device device;
 
 
     public Firmware(final DeviceModel deviceModel, final int firmwareVersion, final String description) {

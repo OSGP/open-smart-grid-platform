@@ -205,6 +205,7 @@ public class Device implements Serializable {
     //    @JoinTable(name = "firmware_history", joinColumns = { @JoinColumn(name = "device") }, inverseJoinColumns = { @JoinColumn(name = "firmware") })
     //    protected List<Firmware> firmwareHistory;
 
+
     @ManyToOne()
     @JoinColumn()
     private DeviceModel deviceModel;
@@ -459,6 +460,10 @@ public class Device implements Serializable {
 
     public void setTechnicalInstallationDate(final Date technicalInstallationDate) {
         this.technicalInstallationDate = technicalInstallationDate;
+    }
+
+    public DeviceModel getDeviceModel() {
+        return this.deviceModel;
     }
 
 }
