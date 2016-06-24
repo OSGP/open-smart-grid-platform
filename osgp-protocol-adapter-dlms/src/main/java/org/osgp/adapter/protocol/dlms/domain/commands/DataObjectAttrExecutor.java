@@ -81,7 +81,7 @@ public class DataObjectAttrExecutor {
      *         caller
      */
     public String createRequestAndResultCodeInfo() {
-        return String.format("\n%s: Result(%s), request(%s), classId(%d), obisCode(%s), attributeId(%d)", this.name,
+        return String.format("%n%s: Result(%s), request(%s), classId(%d), obisCode(%s), attributeId(%d)", this.name,
                 this.resultCode, this.value, this.classId, this.obisCode, this.attributeId);
     }
 

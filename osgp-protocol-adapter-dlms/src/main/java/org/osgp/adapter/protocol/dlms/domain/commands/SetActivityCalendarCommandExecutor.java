@@ -74,11 +74,9 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
         dataObjectAttrExecutorList.add(dayProfileTablePassiveExecutor);
 
         try {
-
             for (final DataObjectAttrExecutor dataObjectAttrExecutor : dataObjectAttrExecutorList) {
                 dataObjectAttrExecutor.executeSet(conn);
             }
-
         } catch (final IOException e) {
             throw new ConnectionException(e);
         }
