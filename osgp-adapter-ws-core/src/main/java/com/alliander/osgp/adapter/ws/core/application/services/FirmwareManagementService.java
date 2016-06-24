@@ -44,7 +44,6 @@ import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.domain.core.valueobjects.FirmwareHistory;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunction;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -500,13 +499,10 @@ public class FirmwareManagementService {
         this.deviceModelFirmwareRepository.delete(removedDeviceModelFirmware);
     }
 
-
-
-
     /**
-     * Returns a firmwareHistory in the Platform
+     * Returns the firmwares from the Platform
      */
-    public FirmwareHistory getFirmwareHistory(final String organisationIdentification, final String deviceIdentification) throws FunctionalException {
+    public List<Firmware> getFirmwares(final String organisationIdentification, final String deviceIdentification) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_DEVICE_MODEL_FIRMWARE);
@@ -514,15 +510,8 @@ public class FirmwareManagementService {
         final Device device = this.writableDeviceRepository.findByDeviceIdentification(deviceIdentification);
         final List<Firmware> firmwares = this.writableFirmwareRepository.findByDevice(device);
 
-        final DeviceModel deviceModel = device.getDeviceModel();
-
-        // todo: map objects to one FirmwareHistory object
-        // return FirmwareHistory
-        return null;
+        return firmwares;
     }
-
-
-
 
     public ResponseMessage dequeueGetFirmwareResponse(final String correlationUid) throws OsgpException {
         return this.commonResponseMessageFinder.findMessage(correlationUid);

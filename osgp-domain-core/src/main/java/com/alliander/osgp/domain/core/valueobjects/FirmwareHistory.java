@@ -15,6 +15,11 @@ public class FirmwareHistory {
         // Default constructor
     }
 
+    public FirmwareHistory(final List<Firmware> firmwares, final String deviceIdentification) {
+        this.deviceIdentification = deviceIdentification;
+        this.firmwares = firmwares;
+    }
+
     public String getDeviceIdentification() {
         return this.deviceIdentification;
     }

@@ -67,6 +67,7 @@ import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwa
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareResponse;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.DeviceModelFirmware;
+import com.alliander.osgp.domain.core.entities.Firmware;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.valueobjects.FirmwareHistory;
@@ -660,8 +661,9 @@ public class FirmwareManagementEndpoint {
         final GetFirmwareHistoryResponse response = new GetFirmwareHistoryResponse();
 
         try {
+            final List<Firmware> firmwares = this.firmwareManagementService.getFirmwares(organisationIdentification, request.getDeviceIdentification());
 
-            final FirmwareHistory firmwareHistory = this.firmwareManagementService.getFirmwareHistory(organisationIdentification, request.getDeviceIdentification());
+            final FirmwareHistory firmwareHistory = new FirmwareHistory(this.firmwareManagementMapper.mapAsList(firmwares, com.alliander.osgp.domain.core.valueobjects.Firmware.class), request.getDeviceIdentification());
 
             response.setDeviceModelFirmwareHistory(this.firmwareManagementMapper.map(firmwareHistory, com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.DeviceModelFirmwareHistory.class));
 
