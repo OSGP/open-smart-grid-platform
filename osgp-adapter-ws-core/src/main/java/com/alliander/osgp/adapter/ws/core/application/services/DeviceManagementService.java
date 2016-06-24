@@ -39,8 +39,10 @@ import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.Writ
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableSsldRepository;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
+import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Ean;
 import com.alliander.osgp.domain.core.entities.Event;
+import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.ScheduledTask;
 import com.alliander.osgp.domain.core.entities.Ssld;
@@ -366,16 +368,14 @@ public class DeviceManagementService {
                     specifications = specifications.and(this.deviceSpecifications.forDeviceType(deviceFilter.getDeviceType()));
                 }
 
-                if (!StringUtils.isEmpty(deviceFilter.getManufacturer())) {
-                    /*final Organisation ownerOrg = this.domainHelperService.findOrganisation(deviceFilter
-                            .getOwner());
-                    specifications = specifications.and(this.deviceSpecifications.forOwner(ownerOrg));*/
+                if (!StringUtils.isEmpty(deviceFilter.getModel())) {
+                    DeviceModel deviceModel = this.firmwareManagementService.findDeviceModel(deviceFilter.getModel());
+                    specifications = specifications.and(this.deviceSpecifications.forDeviceModel(deviceModel));
                 }
 
-                if (!StringUtils.isEmpty(deviceFilter.getModel())) {
-                    /*final Organisation ownerOrg = this.domainHelperService.findOrganisation(deviceFilter
-                            .getOwner());
-                    specifications = specifications.and(this.deviceSpecifications.forOwner(ownerOrg));*/
+                if (!StringUtils.isEmpty(deviceFilter.getManufacturer())) {
+                    final Manufacturer manufacturer = this.firmwareManagementService.findManufacturer(deviceFilter.getManufacturer());
+                    specifications = specifications.and(this.deviceSpecifications.forManufacturer(manufacturer));
                 }
 
                 if (!StringUtils.isEmpty(deviceFilter.getFirmwareModuleVersion())) {

@@ -137,6 +137,14 @@ public class FirmwareManagementService {
     }
 
     /**
+     * Returns a manufacturers in the Platform
+     */
+    @Transactional(value = "writableTransactionManager")
+    public Manufacturer findManufacturer(final String manufacturerName) throws FunctionalException {
+        return this.manufacturerRepository.findByName(manufacturerName);
+    }
+
+    /**
      * Adds new Manufacturer to the platform. Throws exception if
      * {@link Manufacturer} already exists
      */
@@ -226,6 +234,14 @@ public class FirmwareManagementService {
         deviceModels = this.deviceModelRepository.findAll();
 
         return deviceModels;
+    }
+
+    /**
+     * Returns a devicemodel in the Platform
+     */
+    @Transactional(value = "writableTransactionManager")
+    public DeviceModel findDeviceModel(final String deviceModelName) throws FunctionalException {
+        return this.deviceModelRepository.findByModelCode(deviceModelName);
     }
 
     /**

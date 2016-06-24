@@ -10,6 +10,8 @@ package com.alliander.osgp.domain.core.specifications;
 import org.springframework.data.jpa.domain.Specification;
 
 import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.DeviceModel;
+import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.exceptions.ArgumentNullOrEmptyException;
 
@@ -42,4 +44,8 @@ public interface DeviceSpecifications {
     Specification<Device> forOwner(final Organisation organisation) throws ArgumentNullOrEmptyException;
 
     Specification<Device> forDeviceType(String deviceType) throws ArgumentNullOrEmptyException;
+
+    Specification<Device> forDeviceModel(DeviceModel deviceModel) throws ArgumentNullOrEmptyException;
+
+    Specification<Device> forManufacturer(Manufacturer manufacturer) throws ArgumentNullOrEmptyException;
 }

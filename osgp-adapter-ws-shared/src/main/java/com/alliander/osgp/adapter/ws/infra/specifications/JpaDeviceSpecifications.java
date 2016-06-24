@@ -20,6 +20,8 @@ import org.springframework.data.jpa.domain.Specification;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
+import com.alliander.osgp.domain.core.entities.DeviceModel;
+import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.exceptions.ArgumentNullOrEmptyException;
 import com.alliander.osgp.domain.core.specifications.DeviceSpecifications;
@@ -280,6 +282,42 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
                     final CriteriaBuilder cb) {
 
                 return cb.like(cb.upper(deviceRoot.<String> get("deviceType")), deviceType.toUpperCase());
+            }
+        };
+    }
+
+    @Override
+    public Specification<Device> forDeviceModel(final DeviceModel deviceModel) throws ArgumentNullOrEmptyException {
+        if (deviceModel == null) {
+            throw new ArgumentNullOrEmptyException("deviceModel");
+        }
+
+        return new Specification<Device>() {
+            @Override
+            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
+                    final CriteriaBuilder cb) {
+
+                return cb.and(cb.equal(deviceRoot.get("deviceModel").get("id").as(Long.class), deviceModel.getId()));
+            }
+        };
+    }
+
+    @Override
+    public Specification<Device> forManufacturer(final Manufacturer manufacturer) throws ArgumentNullOrEmptyException {
+        if (manufacturer == null) {
+            throw new ArgumentNullOrEmptyException("manufacturer");
+        }
+
+        return new Specification<Device>() {
+            @Override
+            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
+                    final CriteriaBuilder cb) {
+
+                final Subquery<Long> subquery = query.subquery(Long.class);
+                final Root<DeviceModel> deviceModelRoot = subquery.from(DeviceModel.class);
+                subquery.select(deviceModelRoot.get("id").as(Long.class));
+                subquery.where(cb.equal(deviceModelRoot.get("manufacturerId"), manufacturer.getManufacturerId()));
+                return cb.in(deviceRoot.get("deviceModel").get("id").as(Long.class)).value(subquery);
             }
         };
     }
