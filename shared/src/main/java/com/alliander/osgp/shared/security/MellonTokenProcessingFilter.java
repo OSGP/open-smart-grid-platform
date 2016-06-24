@@ -32,13 +32,16 @@ public class MellonTokenProcessingFilter extends GenericFilterBean {
     private final boolean useMellonForUserIdentity;
     private final String httpHeaderForUsername;
     private final String httpHeaderForFrontendToken;
+    private final String logoutUrl;
     private final KeycloakAuthenticationManager authenticationManager;
 
     public MellonTokenProcessingFilter(final boolean useMellonForUserIdentity, final String httpHeaderForUsername,
-            final String httpHeaderForFrontendToken, final KeycloakAuthenticationManager authenticationManager) {
+            final String httpHeaderForFrontendToken, final String logoutUrl,
+            final KeycloakAuthenticationManager authenticationManager) {
         this.useMellonForUserIdentity = useMellonForUserIdentity;
         this.httpHeaderForUsername = httpHeaderForUsername;
         this.httpHeaderForFrontendToken = httpHeaderForFrontendToken;
+        this.logoutUrl = logoutUrl;
         this.authenticationManager = authenticationManager;
     }
 
@@ -82,7 +85,6 @@ public class MellonTokenProcessingFilter extends GenericFilterBean {
 
         if (this.isLogoutRequest(httpRequest)) {
             this.logoutMellon(httpRequest, (HttpServletResponse) response, username);
-            chain.doFilter(request, response);
             return;
         }
 
@@ -127,7 +129,7 @@ public class MellonTokenProcessingFilter extends GenericFilterBean {
     }
 
     private void logoutMellon(final HttpServletRequest httpRequest, final HttpServletResponse httpResponse,
-            final String username) {
+            final String username) throws ServletException, IOException {
 
         try {
             this.authenticationManager.logout(username);
@@ -135,7 +137,7 @@ public class MellonTokenProcessingFilter extends GenericFilterBean {
             LOGGER.error("Error logging user '{}' out with the Keycloak API.", username, e);
         }
 
-        LOGGER.info("TODO make sure mellon-cookie disappears");
+        httpResponse.sendRedirect(this.logoutUrl);
     }
 
     private boolean isLogoutRequest(final HttpServletRequest httpRequest) {

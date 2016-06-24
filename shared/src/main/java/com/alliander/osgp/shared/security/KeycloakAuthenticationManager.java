@@ -77,9 +77,17 @@ public class KeycloakAuthenticationManager implements AuthenticationManager {
         return this.createCustomAuthenticationInstance(username, loginResponse);
     }
 
-    public void logout(final String mellonusername) throws KeycloakClientException {
-        LOGGER.info("TODO complete logout using user session id: {}",
-                this.keycloakClient.getUserSessionIdByUsername(mellonusername));
+    /**
+     * Logout the Keycloak user session with the login client for a user with
+     * the given username.
+     *
+     * @param mellonUsername
+     *            a username obtained from Mellon, which should be an existing
+     *            Keycloak username.
+     * @throws KeycloakClientException
+     */
+    public void logout(final String mellonUsername) throws KeycloakClientException {
+        this.keycloakClient.removeUserSessionByUsername(mellonUsername);
     }
 
     private CustomAuthentication createCustomAuthenticationInstance(final String username,
