@@ -182,6 +182,26 @@
         </wsdl:part>
     </wsdl:message>
 
+
+
+    <wsdl:message name="GetFirmwareHistoryResponse">
+        <wsdl:part element="fman:GetFirmwareHistoryResponse" name="GetFirmwareHistoryResponse">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="GetFirmwareHistoryHeader">
+        <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+        <wsdl:part element="common:UserName" name="UserName" />
+        <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+    </wsdl:message>
+    <wsdl:message name="GetFirmwareHistoryRequest">
+        <wsdl:part element="fman:GetFirmwareHistoryRequest" name="GetFirmwareHistoryRequest">
+        </wsdl:part>
+    </wsdl:message>
+
+
+
+
+
     <wsdl:message name="FindAllManufacturersResponse">
         <wsdl:part element="fman:FindAllManufacturersResponse" name="FindAllManufacturersResponse">
         </wsdl:part>
@@ -209,7 +229,6 @@
         <wsdl:part element="fman:AddManufacturerRequest" name="AddManufacturerRequest">
         </wsdl:part>
     </wsdl:message>
-
     <wsdl:message name="RemoveManufacturerHeader">
         <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
         <wsdl:part element="common:UserName" name="UserName" />
@@ -223,7 +242,6 @@
         <wsdl:part element="fman:RemoveManufacturerRequest" name="RemoveManufacturerRequest">
         </wsdl:part>
     </wsdl:message>
-
     <wsdl:message name="ChangeManufacturerHeader">
         <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
         <wsdl:part element="common:UserName" name="UserName" />
@@ -381,6 +399,16 @@
             <wsdl:output message="tns:RemoveDeviceModelFirmwareResponse" name="RemoveDeviceModelFirmwareResponse">
             </wsdl:output>
         </wsdl:operation>
+        
+        <wsdl:operation name="GetFirmwareHistory">
+            <wsdl:input message="tns:GetFirmwareHistoryRequest"
+                name="GetFirmwareHistoryRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:GetFirmwareHistoryResponse"
+                name="GetFirmwareHistoryResponse">
+            </wsdl:output>
+        </wsdl:operation>
+        
     </wsdl:portType>
 
     <wsdl:binding name="FirmwareManagementPortSoap11" type="tns:FirmwareManagementPort">
@@ -668,6 +696,22 @@
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>
+        
+        
+        <wsdl:operation name="GetFirmwareHistory">
+            <soap:operation soapAction="" />
+            <wsdl:input name="GetFirmwareHistoryRequest">
+                <soap:header message="tns:GetFirmwareHistoryHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:GetFirmwareHistoryHeader" part="UserName" use="literal" />
+                <soap:header message="tns:GetFirmwareHistoryHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="GetFirmwareHistoryResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        
+        
     </wsdl:binding>
 
     <wsdl:service name="FirmwareManagementPortService">

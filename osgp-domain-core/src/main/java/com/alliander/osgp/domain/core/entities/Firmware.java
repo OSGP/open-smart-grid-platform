@@ -8,6 +8,8 @@
 
 package com.alliander.osgp.domain.core.entities;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -42,6 +44,23 @@ public class Firmware extends AbstractEntity {
     @Fetch(FetchMode.SELECT)
     @Type(type = "org.hibernate.type.PrimitiveByteArrayBlobType")
     byte[] installationFile;
+
+
+
+    @Column()
+    private Date installationDate;
+
+    @Column()
+    private String installedBy;
+
+    @Column()
+    private boolean active;
+
+    @ManyToOne()
+    @JoinColumn()
+    private DeviceModelFirmware deviceModelFirmware;
+
+
 
     public Firmware(final DeviceModel deviceModel, final int firmwareVersion, final String description) {
         this.deviceModel = deviceModel;
