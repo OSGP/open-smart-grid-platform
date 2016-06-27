@@ -24,8 +24,8 @@ public class FindStandardEventsReads extends AbstractFindEventsReads {
             EventType.EVENTLOG_CLEARED, EventType.POWER_FAILURE, EventType.POWER_RETURNED,
             EventType.CLOCK_ADJUSTED_OLD_TIME, EventType.CLOCK_ADJUSTED_NEW_TIME, EventType.CLOCK_INVALID,
             EventType.REPLACE_BATTERY, EventType.BATTERY_VOLTAGE_LOW, EventType.TARIFF_ACTIVATED,
-            EventType.ERROR_REGISTER_CLEARED, EventType.ALARM_REGISTER_CLEARED, EventType.WATCHDOG_ERROR,
-            EventType.FIRMWARE_READY_FOR_ACTIVATION, EventType.FIRMWARE_ACTIVATED,
+            EventType.PASSIVE_TARIFF_UPDATED, EventType.ERROR_REGISTER_CLEARED, EventType.ALARM_REGISTER_CLEARED,
+            EventType.WATCHDOG_ERROR, EventType.FIRMWARE_READY_FOR_ACTIVATION, EventType.FIRMWARE_ACTIVATED,
             EventType.SUCCESSFUL_SELFCHECK_AFTER_FIRMWARE_UPDATE }));
 
     @Override

@@ -36,13 +36,11 @@ public class FindCommunicationEventsReads extends AbstractFindEventsReads {
     public void theFindEventsRequestIsReceived() throws Throwable {
         LOGGER.warn("{} disabled, because it genrates a soap-fault with OBJECT_UNDEFINED",
                 FindCommunicationEventsReads.class.getSimpleName());
-        // super.theFindEventsRequestIsReceived();
     }
 
     @Then("^communication events should be returned$")
     @Override
     public void eventsShouldBeReturned() throws Throwable {
-        // super.eventsShouldBeReturned();
     }
 
     @Override
