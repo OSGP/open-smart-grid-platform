@@ -21,8 +21,6 @@ public class Firmware {
 
     private DeviceModelFirmware deviceModelFirmware;
 
-    private DeviceModel deviceModel;
-
     public Firmware() {
         // Default constructor
     }
@@ -81,14 +79,6 @@ public class Firmware {
 
     public void setDeviceModelFirmware(final DeviceModelFirmware deviceModelFirmware) {
         this.deviceModelFirmware = deviceModelFirmware;
-    }
-
-    public DeviceModel getDeviceModel() {
-        return this.deviceModel;
-    }
-
-    public void setDeviceModel(final DeviceModel deviceModel) {
-        this.deviceModel = deviceModel;
     }
 
 }

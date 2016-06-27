@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.adapter.ws.core.endpoints;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.validator.method.MethodConstraintViolationException;
@@ -44,6 +45,7 @@ import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllDevic
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllDeviceModelsResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllManufacturersRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllManufacturersResponse;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FirmwareHistory;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FirmwareVersion;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareHistoryRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareHistoryResponse;
@@ -65,12 +67,13 @@ import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwa
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareResponse;
+import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.DeviceModelFirmware;
 import com.alliander.osgp.domain.core.entities.Firmware;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
-import com.alliander.osgp.domain.core.valueobjects.FirmwareHistory;
+import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -92,6 +95,9 @@ public class FirmwareManagementEndpoint {
 
     private final FirmwareManagementService firmwareManagementService;
     private final FirmwareManagementMapper firmwareManagementMapper;
+
+    @Autowired
+    private DeviceRepository deviceRepository;
 
     @Autowired
     public FirmwareManagementEndpoint(
@@ -660,15 +666,32 @@ public class FirmwareManagementEndpoint {
         final GetFirmwareHistoryResponse response = new GetFirmwareHistoryResponse();
 
         try {
-            final List<Firmware> firmwares = this.firmwareManagementService.getFirmwares(organisationIdentification,
-                    request.getDeviceIdentification());
 
-            final FirmwareHistory firmwareHistory = new FirmwareHistory(this.firmwareManagementMapper.mapAsList(
-                    firmwares, com.alliander.osgp.domain.core.valueobjects.Firmware.class),
-                    request.getDeviceIdentification());
+            final Device device = this.deviceRepository.findByDeviceIdentification(request.getDeviceIdentification());
 
-            response.setDeviceModelFirmwareHistory(this.firmwareManagementMapper.map(firmwareHistory,
-                    com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.DeviceModelFirmwareHistory.class));
+            final FirmwareHistory output = new FirmwareHistory();
+            output.setDeviceIdentification(request.getDeviceIdentification());
+            output.setDeviceModel(this.firmwareManagementMapper.map(device.getDeviceModel(),
+                    com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.DeviceModel.class));
+
+            final List<com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.Firmware> firmwares = new ArrayList<>();
+
+            // Doing this like this, so we don;t have to make a whole custom
+            // mapper, just to null the DeviceModelFirmware's file
+            for (final Firmware firmware : this.firmwareManagementService.getFirmwares(organisationIdentification,
+                    request.getDeviceIdentification())) {
+
+                final com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.Firmware temp = this.firmwareManagementMapper
+                        .map(firmware, com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.Firmware.class);
+                temp.getDeviceModelFirmware().setFile(null);
+                firmwares.add(temp);
+            }
+
+            output.getFirmwares().addAll(
+                    this.firmwareManagementMapper.mapAsList(firmwares,
+                            com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.Firmware.class));
+
+            response.setFirmwareHistory(output);
 
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("Exception get firmware history {}: ", e);
