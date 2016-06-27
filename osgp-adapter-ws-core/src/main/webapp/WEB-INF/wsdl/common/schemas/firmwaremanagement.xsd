@@ -349,9 +349,6 @@
       </xsd:complexType>
    </xsd:element>
 
- 
-
-
    <xsd:complexType name="Manufacturer">
       <xsd:sequence>
          <xsd:element name="Name" minOccurs="1" maxOccurs="1">
@@ -434,8 +431,6 @@
       </xsd:sequence>
    </xsd:complexType>
 
-
-
    <xsd:complexType name="DeviceModelFirmwareHistory">
       <xsd:sequence>
          <xsd:element name="DeviceIdentification" type="common:Identification" />
@@ -467,10 +462,7 @@
          </xsd:sequence>
       </xsd:sequence>
    </xsd:complexType>
-   
-   
-   
-   
+  
    <xsd:complexType name="FirmwareVersion">
       <xsd:sequence>
         <xsd:element name="Type" type="xsd:string"  minOccurs="1" maxOccurs="1"/>

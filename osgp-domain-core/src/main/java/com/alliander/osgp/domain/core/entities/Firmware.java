@@ -45,8 +45,6 @@ public class Firmware extends AbstractEntity {
     @Type(type = "org.hibernate.type.PrimitiveByteArrayBlobType")
     byte[] installationFile;
 
-
-
     @Column()
     private Date installationDate;
 
@@ -63,7 +61,6 @@ public class Firmware extends AbstractEntity {
     @ManyToOne()
     @JoinColumn()
     private Device device;
-
 
     public Firmware(final DeviceModel deviceModel, final int firmwareVersion, final String description) {
         this.deviceModel = deviceModel;
