@@ -54,16 +54,16 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
             final ActivityCalendarDto activityCalendar) throws ProtocolAdapterException {
         LOGGER.debug("SetActivityCalendarCommandExecutor.execute {} called", activityCalendar.getCalendarName());
 
-        final DataObjectAttrExecutors dataObjectAttrExecutors = new DataObjectAttrExecutors(false);
+        final DataObjectAttrExecutors dataObjectAttrExecutors = new DataObjectAttrExecutors();
 
         final List<SeasonProfileDto> seasonProfileList = activityCalendar.getSeasonProfileList();
         final Set<WeekProfileDto> weekProfileSet = this.getWeekProfileSet(seasonProfileList);
         final Set<DayProfileDto> dayProfileSet = this.getDayProfileSet(weekProfileSet);
 
         dataObjectAttrExecutors.addExecutor(this.getCalendarNameExecutor(activityCalendar))
-        .addExecutor(this.getSeasonProfileExecutor(seasonProfileList))
-        .addExecutor(this.getWeekProfileTableExecutor(weekProfileSet))
-        .addExecutor(this.getDayProfileTablePassiveExecutor(dayProfileSet));
+                .addExecutor(this.getSeasonProfileExecutor(seasonProfileList))
+                .addExecutor(this.getWeekProfileTableExecutor(weekProfileSet))
+                .addExecutor(this.getDayProfileTablePassiveExecutor(dayProfileSet));
 
         try {
             dataObjectAttrExecutors.execute(conn);
