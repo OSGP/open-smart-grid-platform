@@ -15,6 +15,7 @@ import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.SetParameter;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
+import org.osgp.adapter.protocol.dlms.exceptions.DataObjectAttrExecutionCancellationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,25 +27,24 @@ import org.slf4j.LoggerFactory;
 public class DataObjectAttrExecutors {
     private static final Logger LOGGER = LoggerFactory.getLogger(DataObjectAttrExecutors.class);
 
-    private final List<DataObjectAttrExecutor> dataObjectAttrExecutorList;
+    private final List<DataObjectAttrExecutor> dataObjectAttrExecutorList = new ArrayList<DataObjectAttrExecutor>();
     private String errString = "";
     private boolean containsError;
-    private final boolean continueOnNoSuccess;
+    private final boolean stopOnNoSuccess;
 
     public DataObjectAttrExecutors() {
-        this(true);
+        this(false);
     }
 
     /**
-     * Creates a new {@link DataObjectAttrExecutors} object and sets if the
-     * execution should continue or stop in case of a non success return from a
+     * Creates the {@link DataObjectAttrExecutors} object and sets if the
+     * execution should continue or stop in case of a non success return from an
      * executor
      *
-     * @param continueOnNoSuccess
+     * @param stopOnNoSuccess
      */
-    public DataObjectAttrExecutors(boolean continueOnNoSuccess) {
-        this.continueOnNoSuccess = continueOnNoSuccess;
-        this.dataObjectAttrExecutorList = new ArrayList<DataObjectAttrExecutor>();
+    public DataObjectAttrExecutors(boolean stopOnNoSuccess) {
+        this.stopOnNoSuccess = stopOnNoSuccess;
     }
 
     /**
@@ -60,19 +60,25 @@ public class DataObjectAttrExecutors {
         try {
             for (final DataObjectAttrExecutor dataObjectAttrExecutor : this.dataObjectAttrExecutorList) {
                 if (AccessResultCode.SUCCESS != dataObjectAttrExecutor.executeSet(conn)) {
-                    this.errString += dataObjectAttrExecutor.createRequestAndResultCodeInfo();
-                    this.containsError = true;
-                    if (this.continueOnNoSuccess == false) {
-                        LOGGER.info(dataObjectAttrExecutor.getName()
-                                + " was unsuccesfull. Stopping execution after element: "
-                                + this.dataObjectAttrExecutorList.indexOf(dataObjectAttrExecutor)
-                                + " (total elements: " + this.dataObjectAttrExecutorList.size() + ")");
-                        break;
-                    }
+                    this.handleNoSuccess(dataObjectAttrExecutor);
                 }
             }
         } catch (final IOException e) {
             throw new ConnectionException(e);
+        } catch (final DataObjectAttrExecutionCancellationException e) {
+            LOGGER.warn(e.getMessage());
+        }
+    }
+
+    private void handleNoSuccess(final DataObjectAttrExecutor dataObjectAttrExecutor)
+            throws DataObjectAttrExecutionCancellationException {
+        this.errString += dataObjectAttrExecutor.createRequestAndResultCodeInfo();
+        this.containsError = true;
+        if (this.stopOnNoSuccess) {
+            throw new DataObjectAttrExecutionCancellationException(dataObjectAttrExecutor.getName()
+                    + " was unsuccesfull. Stopping execution after element: "
+                    + this.dataObjectAttrExecutorList.indexOf(dataObjectAttrExecutor) + " (total elements: "
+                    + this.dataObjectAttrExecutorList.size() + ")");
         }
     }
 
