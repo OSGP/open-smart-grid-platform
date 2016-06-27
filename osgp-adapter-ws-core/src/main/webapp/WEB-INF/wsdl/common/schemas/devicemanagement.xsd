@@ -109,6 +109,8 @@
       <xsd:sequence>
         <xsd:element name="Devices" type="tns:Device" maxOccurs="unbounded" />
         <xsd:element name="Page" type="common:Page" />
+        <xsd:element name="Message" type="xsd:string" />
+        <xsd:element name="Argument" type="xsd:string" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>

@@ -242,10 +242,11 @@ public class DeviceManagementService {
      * @return A page with devices
      *
      * @throws FunctionalException
+     * @throws ArgumentNullOrEmptyException 
      */
     @Transactional(value = "transactionManager")
     public Page<Device> findDevices(@Identification final String organisationIdentification, final Integer pageSize,
-            final Integer pageNumber, final DeviceFilter deviceFilter) throws FunctionalException {
+            final Integer pageNumber, final DeviceFilter deviceFilter) throws FunctionalException, ArgumentNullOrEmptyException {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.FIND_DEVICES);
         this.pagingSettings.updatePagingSettings(pageSize, pageNumber);
@@ -294,7 +295,7 @@ public class DeviceManagementService {
 
     @Transactional(value = "transactionManager")
     public Page<Device> applyFilter(final DeviceFilter deviceFilter, final Organisation organisation,
-            final PageRequest request) {
+            final PageRequest request) throws ArgumentNullOrEmptyException {
         Page<Device> devices = null;
 
         try {
@@ -387,8 +388,6 @@ public class DeviceManagementService {
             }
         } catch (final FunctionalException functionalException) {
             LOGGER.error("FunctionalException", functionalException);
-        } catch (final ArgumentNullOrEmptyException argumentNullOrEmptyException) {
-            LOGGER.error("ArgumentNullOrEmptyException", argumentNullOrEmptyException);
         } catch (final QueryException e) {
             LOGGER.error("QueryException", e);
         }
