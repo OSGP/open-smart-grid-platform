@@ -8,7 +8,6 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -55,23 +54,16 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
             final ActivityCalendarDto activityCalendar) throws ProtocolAdapterException {
         LOGGER.debug("SetActivityCalendarCommandExecutor.execute {} called", activityCalendar.getCalendarName());
 
-        final DataObjectAttrExecutors dataObjectAttrExecutors = new DataObjectAttrExecutors();
-
-        final DataObjectAttrExecutor calendarNameExecutor = this.getCalendarNameExecutor(activityCalendar);
+        final DataObjectAttrExecutors dataObjectAttrExecutors = new DataObjectAttrExecutors(false);
 
         final List<SeasonProfileDto> seasonProfileList = activityCalendar.getSeasonProfileList();
-        final DataObjectAttrExecutor seasonProfileExecutor = this.getSeasonProfileExecutor(seasonProfileList);
-
         final Set<WeekProfileDto> weekProfileSet = this.getWeekProfileSet(seasonProfileList);
-        final DataObjectAttrExecutor weekProfileTableExecutor = this.getWeekProfileTableExecutor(weekProfileSet);
-
         final Set<DayProfileDto> dayProfileSet = this.getDayProfileSet(weekProfileSet);
-        final DataObjectAttrExecutor dayProfileTablePassiveExecutor = this
-                .getDayProfileTablePassiveExecutor(dayProfileSet);
 
-        dataObjectAttrExecutors.getDataObjectAttrExecutorList().addAll(
-                Arrays.asList(calendarNameExecutor, seasonProfileExecutor, weekProfileTableExecutor,
-                        dayProfileTablePassiveExecutor));
+        dataObjectAttrExecutors.addExecutor(this.getCalendarNameExecutor(activityCalendar))
+        .addExecutor(this.getSeasonProfileExecutor(seasonProfileList))
+        .addExecutor(this.getWeekProfileTableExecutor(weekProfileSet))
+        .addExecutor(this.getDayProfileTablePassiveExecutor(dayProfileSet));
 
         try {
             dataObjectAttrExecutors.execute(conn);

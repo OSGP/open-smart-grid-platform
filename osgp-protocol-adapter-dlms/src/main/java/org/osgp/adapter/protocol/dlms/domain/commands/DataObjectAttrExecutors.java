@@ -27,13 +27,24 @@ public class DataObjectAttrExecutors {
     private static final Logger LOGGER = LoggerFactory.getLogger(DataObjectAttrExecutors.class);
 
     private final List<DataObjectAttrExecutor> dataObjectAttrExecutorList;
-    private String errString;
-    private boolean containsError = false;
+    private String errString = "";
+    private boolean containsError;
+    private final boolean continueOnNoSuccess;
 
     public DataObjectAttrExecutors() {
+        this(true);
+    }
 
+    /**
+     * Creates a new {@link DataObjectAttrExecutors} object and sets if the
+     * execution should continue or stop in case of a non success return from a
+     * executor
+     *
+     * @param continueOnNoSuccess
+     */
+    public DataObjectAttrExecutors(boolean continueOnNoSuccess) {
+        this.continueOnNoSuccess = continueOnNoSuccess;
         this.dataObjectAttrExecutorList = new ArrayList<DataObjectAttrExecutor>();
-
     }
 
     /**
@@ -51,6 +62,13 @@ public class DataObjectAttrExecutors {
                 if (AccessResultCode.SUCCESS != dataObjectAttrExecutor.executeSet(conn)) {
                     this.errString += dataObjectAttrExecutor.createRequestAndResultCodeInfo();
                     this.containsError = true;
+                    if (this.continueOnNoSuccess == false) {
+                        LOGGER.info(dataObjectAttrExecutor.getName()
+                                + " was unsuccesfull. Stopping execution after element: "
+                                + this.dataObjectAttrExecutorList.indexOf(dataObjectAttrExecutor)
+                                + " (total elements: " + this.dataObjectAttrExecutorList.size() + ")");
+                        break;
+                    }
                 }
             }
         } catch (final IOException e) {
@@ -58,10 +76,20 @@ public class DataObjectAttrExecutors {
         }
     }
 
-    public void addExecutor(DataObjectAttrExecutor executor) {
+    /**
+     * Adds an {@link DataObjectAttrExecutor} to the list of executors
+     *
+     * @param executor
+     *            the {@link DataObjectAttrExecutor}
+     */
+    public DataObjectAttrExecutors addExecutor(DataObjectAttrExecutor executor) {
         this.dataObjectAttrExecutorList.add(executor);
+        return this;
     }
 
+    /**
+     * @return the list of {@link DataObjectAttrExecutor}
+     */
     public List<DataObjectAttrExecutor> getDataObjectAttrExecutorList() {
         return this.dataObjectAttrExecutorList;
     }
