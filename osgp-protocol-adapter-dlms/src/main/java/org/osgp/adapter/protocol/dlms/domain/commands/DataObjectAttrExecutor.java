@@ -68,9 +68,10 @@ public class DataObjectAttrExecutor {
      *             is thrown when an error occurs with the connection to the
      *             dlms device
      */
-    public void executeSet(DlmsConnection conn) throws IOException {
+    public AccessResultCode executeSet(DlmsConnection conn) throws IOException {
         LOGGER.info("WRITING {}", this.name);
         this.resultCode = conn.set(new SetParameter(this.getAttrAddress(), this.getValue()));
+        return this.resultCode;
     }
 
     /**

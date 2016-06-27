@@ -8,7 +8,7 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -55,43 +55,35 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
             final ActivityCalendarDto activityCalendar) throws ProtocolAdapterException {
         LOGGER.debug("SetActivityCalendarCommandExecutor.execute {} called", activityCalendar.getCalendarName());
 
-        final List<DataObjectAttrExecutor> dataObjectAttrExecutorList = new ArrayList<>();
+        final DataObjectAttrExecutors dataObjectAttrExecutors = new DataObjectAttrExecutors();
 
         final DataObjectAttrExecutor calendarNameExecutor = this.getCalendarNameExecutor(activityCalendar);
-        dataObjectAttrExecutorList.add(calendarNameExecutor);
 
         final List<SeasonProfileDto> seasonProfileList = activityCalendar.getSeasonProfileList();
         final DataObjectAttrExecutor seasonProfileExecutor = this.getSeasonProfileExecutor(seasonProfileList);
-        dataObjectAttrExecutorList.add(seasonProfileExecutor);
 
         final Set<WeekProfileDto> weekProfileSet = this.getWeekProfileSet(seasonProfileList);
         final DataObjectAttrExecutor weekProfileTableExecutor = this.getWeekProfileTableExecutor(weekProfileSet);
-        dataObjectAttrExecutorList.add(weekProfileTableExecutor);
 
         final Set<DayProfileDto> dayProfileSet = this.getDayProfileSet(weekProfileSet);
         final DataObjectAttrExecutor dayProfileTablePassiveExecutor = this
                 .getDayProfileTablePassiveExecutor(dayProfileSet);
-        dataObjectAttrExecutorList.add(dayProfileTablePassiveExecutor);
+
+        dataObjectAttrExecutors.getDataObjectAttrExecutorList().addAll(
+                Arrays.asList(calendarNameExecutor, seasonProfileExecutor, weekProfileTableExecutor,
+                        dayProfileTablePassiveExecutor));
 
         try {
-            for (final DataObjectAttrExecutor dataObjectAttrExecutor : dataObjectAttrExecutorList) {
-                dataObjectAttrExecutor.executeSet(conn);
-            }
+            dataObjectAttrExecutors.execute(conn);
         } catch (final IOException e) {
             throw new ConnectionException(e);
         }
 
-        String errString = "";
+        if (dataObjectAttrExecutors.isContainsError()) {
+            LOGGER.error("SetActivityCalendar: Requests failed for: {}", dataObjectAttrExecutors.getErrString());
+            throw new ProtocolAdapterException("SetActivityCalendar: Requests failed for: "
+                    + dataObjectAttrExecutors.getErrString());
 
-        for (final DataObjectAttrExecutor dataObjectAttrExecutor : dataObjectAttrExecutorList) {
-            if (AccessResultCode.SUCCESS != dataObjectAttrExecutor.getResultCode()) {
-                errString += dataObjectAttrExecutor.createRequestAndResultCodeInfo();
-            }
-        }
-
-        if (!errString.isEmpty()) {
-            LOGGER.error("SetActivityCalendar: Requests failed for: {}", errString);
-            throw new ProtocolAdapterException("SetActivityCalendar: Requests failed for: " + errString);
         }
 
         LOGGER.info("Finished calling conn.set");
