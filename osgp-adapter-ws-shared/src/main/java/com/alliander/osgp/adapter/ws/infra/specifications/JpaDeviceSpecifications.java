@@ -264,7 +264,6 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
                                 cb.equal(deviceAuthorizationRoot.get("functionGroup"), DeviceFunctionGroup.OWNER.ordinal())));
 
                 return cb.in(deviceRoot.get("id")).value(subquery);
-                
             }
         };
     }
@@ -316,7 +315,9 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
                 final Subquery<Long> subquery = query.subquery(Long.class);
                 final Root<DeviceModel> deviceModelRoot = subquery.from(DeviceModel.class);
                 subquery.select(deviceModelRoot.get("id").as(Long.class));
-                subquery.where(cb.equal(deviceModelRoot.get("manufacturerId"), manufacturer.getManufacturerId()));
+                subquery.where(
+                        cb.equal(cb.upper(deviceModelRoot.get("manufacturerId").<String> get("name")), manufacturer.getName().toUpperCase())
+                );
                 return cb.in(deviceRoot.get("deviceModel").get("id").as(Long.class)).value(subquery);
             }
         };
