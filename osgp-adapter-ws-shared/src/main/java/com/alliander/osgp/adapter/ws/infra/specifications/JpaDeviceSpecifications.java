@@ -21,6 +21,8 @@ import org.springframework.data.jpa.domain.Specification;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
+import com.alliander.osgp.domain.core.entities.DeviceModelFirmware;
+import com.alliander.osgp.domain.core.entities.Firmware;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.exceptions.ArgumentNullOrEmptyException;
@@ -323,7 +325,7 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
         };
     }
 
-   /* @Override
+    @Override
     public Specification<Device> forFirmwareVersion (final String firmwareVersion) throws ArgumentNullOrEmptyException {
 
         if (firmwareVersion == null) {
@@ -335,8 +337,12 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
 
-                return cb.like(cb.upper(deviceRoot.<String> get("device_type")), deviceType.toUpperCase());
+                final Subquery<Long> subquery = query.subquery(Long.class);
+                final Root<DeviceModelFirmware> deviceModelFirmwareRoot = subquery.from(DeviceModelFirmware.class);
+                subquery.select(deviceModelFirmwareRoot.get("deviceModel").get("id").as(Long.class));
+                subquery.where(cb.equal(deviceModelFirmwareRoot.get("version"), firmwareVersion));
+                return cb.in(deviceRoot.get("deviceModel").get("id").as(Long.class)).value(subquery);
             }
         };
-    }*/
+    }
 }

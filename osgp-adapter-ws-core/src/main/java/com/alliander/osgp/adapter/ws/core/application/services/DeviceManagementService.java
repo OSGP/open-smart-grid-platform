@@ -379,10 +379,7 @@ public class DeviceManagementService {
                 }
 
                 if (!StringUtils.isEmpty(deviceFilter.getFirmwareModuleVersion())) {
-                   // final Firmware firmware = this.firmwareManagementService.f
-                    /*final Organisation ownerOrg = this.domainHelperService.findOrganisation(deviceFilter
-                            .getOwner());
-                    specifications = specifications.and(this.deviceSpecifications.forOwner(ownerOrg));*/
+                    specifications = specifications.and(this.deviceSpecifications.forFirmwareVersion(deviceFilter.getFirmwareModuleVersion()));
                 }
                 devices = this.deviceRepository.findAll(specifications, request);
             } else {
