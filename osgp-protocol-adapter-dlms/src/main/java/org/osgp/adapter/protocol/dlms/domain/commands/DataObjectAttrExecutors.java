@@ -66,7 +66,7 @@ public class DataObjectAttrExecutors {
         } catch (final IOException e) {
             throw new ConnectionException(e);
         } catch (final DataObjectAttrExecutionCancellationException e) {
-            LOGGER.warn(e.getMessage());
+            LOGGER.warn(e.getMessage(), e);
         }
     }
 
