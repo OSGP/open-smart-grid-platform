@@ -15,7 +15,7 @@ import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.SetParameter;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
-import org.osgp.adapter.protocol.dlms.exceptions.DataObjectAttrExecutionCancellationException;
+import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,15 +25,18 @@ import org.slf4j.LoggerFactory;
  * {@link DlmsConnection}, will do the actual call to the device.
  */
 public class DataObjectAttrExecutors {
+    private static final String REQUESTS_FAILED_FOR = ": Requests failed for: {}";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(DataObjectAttrExecutors.class);
 
     private final List<DataObjectAttrExecutor> dataObjectAttrExecutorList = new ArrayList<DataObjectAttrExecutor>();
     private String errString = "";
     private boolean containsError;
     private final boolean stopOnNoSuccess;
+    private final String executor;
 
-    public DataObjectAttrExecutors() {
-        this(false);
+    public DataObjectAttrExecutors(final String executor) {
+        this(executor, false);
     }
 
     /**
@@ -43,8 +46,9 @@ public class DataObjectAttrExecutors {
      *
      * @param stopOnNoSuccess
      */
-    public DataObjectAttrExecutors(boolean stopOnNoSuccess) {
+    public DataObjectAttrExecutors(final String executor, final boolean stopOnNoSuccess) {
         this.stopOnNoSuccess = stopOnNoSuccess;
+        this.executor = executor;
     }
 
     /**
@@ -54,8 +58,10 @@ public class DataObjectAttrExecutors {
      * @throws IOException
      *             is thrown when an error occurs with the connection to the
      *             dlms device
+     * @throws ProtocolAdapterException
+     *             when one or more of the set commands fail
      */
-    public void execute(DlmsConnection conn) throws IOException {
+    public void execute(final DlmsConnection conn) throws ProtocolAdapterException {
 
         try {
             for (final DataObjectAttrExecutor dataObjectAttrExecutor : this.dataObjectAttrExecutorList) {
@@ -64,19 +70,21 @@ public class DataObjectAttrExecutors {
                 }
             }
         } catch (final IOException e) {
+            LOGGER.error(this.executor + REQUESTS_FAILED_FOR, this.errString);
             throw new ConnectionException(e);
-        } catch (final DataObjectAttrExecutionCancellationException e) {
-            LOGGER.warn(e.getMessage(), e);
+        }
+        if (this.containsError) {
+            LOGGER.error(this.executor + REQUESTS_FAILED_FOR, this.errString);
+            throw new ProtocolAdapterException(this.errString);
         }
     }
 
-    private void handleNoSuccess(final DataObjectAttrExecutor dataObjectAttrExecutor)
-            throws DataObjectAttrExecutionCancellationException {
+    private void handleNoSuccess(final DataObjectAttrExecutor dataObjectAttrExecutor) throws ProtocolAdapterException {
         this.errString += dataObjectAttrExecutor.createRequestAndResultCodeInfo();
         this.containsError = true;
         if (this.stopOnNoSuccess) {
-            throw new DataObjectAttrExecutionCancellationException(dataObjectAttrExecutor.getName()
-                    + " was unsuccesfull. Stopping execution after element: "
+            LOGGER.error(this.executor + REQUESTS_FAILED_FOR, this.errString);
+            throw new ProtocolAdapterException(this.errString + ". Stopping execution after element: "
                     + this.dataObjectAttrExecutorList.indexOf(dataObjectAttrExecutor) + " (total elements: "
                     + this.dataObjectAttrExecutorList.size() + ")");
         }
@@ -88,7 +96,7 @@ public class DataObjectAttrExecutors {
      * @param executor
      *            the {@link DataObjectAttrExecutor}
      */
-    public DataObjectAttrExecutors addExecutor(DataObjectAttrExecutor executor) {
+    public DataObjectAttrExecutors addExecutor(final DataObjectAttrExecutor executor) {
         this.dataObjectAttrExecutorList.add(executor);
         return this;
     }

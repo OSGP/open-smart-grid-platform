@@ -7,7 +7,6 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -19,7 +18,6 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.application.mapping.ConfigurationMapper;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,29 +52,14 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
             final ActivityCalendarDto activityCalendar) throws ProtocolAdapterException {
         LOGGER.debug("SetActivityCalendarCommandExecutor.execute {} called", activityCalendar.getCalendarName());
 
-        final DataObjectAttrExecutors dataObjectAttrExecutors = new DataObjectAttrExecutors();
-
         final List<SeasonProfileDto> seasonProfileList = activityCalendar.getSeasonProfileList();
         final Set<WeekProfileDto> weekProfileSet = this.getWeekProfileSet(seasonProfileList);
         final Set<DayProfileDto> dayProfileSet = this.getDayProfileSet(weekProfileSet);
 
-        dataObjectAttrExecutors.addExecutor(this.getCalendarNameExecutor(activityCalendar))
+        new DataObjectAttrExecutors("SetActivityCalendar").addExecutor(this.getCalendarNameExecutor(activityCalendar))
                 .addExecutor(this.getSeasonProfileExecutor(seasonProfileList))
                 .addExecutor(this.getWeekProfileTableExecutor(weekProfileSet))
-                .addExecutor(this.getDayProfileTablePassiveExecutor(dayProfileSet));
-
-        try {
-            dataObjectAttrExecutors.execute(conn);
-        } catch (final IOException e) {
-            throw new ConnectionException(e);
-        }
-
-        if (dataObjectAttrExecutors.isContainsError()) {
-            LOGGER.error("SetActivityCalendar: Requests failed for: {}", dataObjectAttrExecutors.getErrString());
-            throw new ProtocolAdapterException("SetActivityCalendar: Requests failed for: "
-                    + dataObjectAttrExecutors.getErrString());
-
-        }
+                .addExecutor(this.getDayProfileTablePassiveExecutor(dayProfileSet)).execute(conn);
 
         LOGGER.info("Finished calling conn.set");
 
