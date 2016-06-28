@@ -19,6 +19,7 @@ import javax.net.ssl.TrustManagerFactory;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.StatusType;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
@@ -31,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 
 /**
@@ -58,8 +60,8 @@ public class KeycloakClient extends AbstractClient {
     private static final String TOKEN_PATH_TEMPLATE = PATH_ELEMENT_REALMS
             + "/protocol/openid-connect/token";
     private static final String USERS_PATH_TEMPLATE = PATH_ELEMENT_ADMIN_REALMS + "/users";
-    private static final String USER_SESSIONS_PATH_TEMPLATE = USERS_PATH_TEMPLATE + "/" + PATH_ELEMENT_USER_ID
-            + "/sessions";
+    private static final String USER_PATH_TEMPLATE = USERS_PATH_TEMPLATE + "/" + PATH_ELEMENT_USER_ID;
+    private static final String USER_SESSIONS_PATH_TEMPLATE = USER_PATH_TEMPLATE + "/sessions";
     private static final String SESSION_PATH_TEMPLATE = PATH_ELEMENT_ADMIN_REALMS + "/sessions/"
             + PATH_ELEMENT_SESSION_ID;
 
@@ -72,6 +74,7 @@ public class KeycloakClient extends AbstractClient {
 
     private final String tokenPath;
     private final String usersPath;
+    private final String userPath;
     private final String userSessionsPath;
     private final String sessionPath;
 
@@ -121,6 +124,7 @@ public class KeycloakClient extends AbstractClient {
 
         this.tokenPath = TOKEN_PATH_TEMPLATE.replace(PATH_ELEMENT_REALM, realm);
         this.usersPath = USERS_PATH_TEMPLATE.replace(PATH_ELEMENT_REALM, realm);
+        this.userPath = USER_PATH_TEMPLATE.replace(PATH_ELEMENT_REALM, realm);
         this.userSessionsPath = USER_SESSIONS_PATH_TEMPLATE.replace(PATH_ELEMENT_REALM, realm);
         this.sessionPath = SESSION_PATH_TEMPLATE.replace(PATH_ELEMENT_REALM, realm);
 
@@ -380,7 +384,7 @@ public class KeycloakClient extends AbstractClient {
      * @return a session ID for the user with the given username with the login
      *         client, or {@code null}, if such a session can not be found.
      * @throws KeycloakClientException
-     *             if anything goes wrong in the proces of the session ID
+     *             if anything goes wrong in the process of the session ID
      *             lookup.
      */
     public String getUserSessionIdByUsername(final String username) throws KeycloakClientException {
@@ -425,11 +429,182 @@ public class KeycloakClient extends AbstractClient {
      * @param username
      *            an existing Keycloak username for the configured realm.
      * @throws KeycloakClientException
-     *             if anything goes wrong in the proces of removing the user
+     *             if anything goes wrong in the process of removing the user
      *             session.
      */
     public void removeUserSessionByUsername(final String username) throws KeycloakClientException {
         this.removeUserSession(this.getUserSessionIdByUsername(username));
+    }
+
+    /**
+     * Creates a new user in the configured realm with the given username and
+     * password. The username must not already exist.
+     *
+     * @param username
+     *            a new username with the configured realm.
+     * @param password
+     *            the password for the new user.
+     * @throws KeycloakClientException
+     *             if creating the user fails.
+     */
+    public void addNewUser(final String username, final String password) throws KeycloakClientException {
+
+        LOGGER.info("Adding new user '{}' to Keycloak realm '{}'.", username, this.realm);
+
+        final WebClient createUserWebClient = this.getWebClientInstance().path(this.usersPath);
+
+        final ObjectNode newUserRepresentation = this.jacksonObjectMapper.createObjectNode();
+        newUserRepresentation.put("username", username);
+        newUserRepresentation.put("enabled", true);
+
+        Response response = this.withBearerToken(createUserWebClient).post(newUserRepresentation);
+        try {
+            this.checkEmptyResponseBody(response);
+        } catch (final KeycloakBearerException e) {
+            response = this.withBearerToken(createUserWebClient).post(newUserRepresentation);
+            this.checkEmptyResponseBody(response);
+        }
+
+        /*
+         * At the time this code was written, the user credential (password) had
+         * to be updated after creating the user, in order for the user to be
+         * able to login (credential.temparary=false did not work when creating
+         * a user).
+         *
+         * The keycloak mailing list mentions the possibility of this behavior
+         * being fixed in a future release:
+         *
+         * https://lists.jboss.org/pipermail/keycloak-user/2016-March/005311.html
+         *
+         * Quote:
+         *
+         * We'll fix this in the future so you can do a single post with new
+         * user, including credentials and role mappings. For now you'll have to
+         * do the two separate requests though.
+         *
+         * https://lists.jboss.org/pipermail/keycloak-user/2014-July/000498.html
+         *
+         * Quote:
+         *
+         * - Use the endpoint to setup temporary password of user (It will
+         * automatically add requiredAction for UPDATE_PASSWORD
+         *
+         * - Then use the endpoint for update user and send the empty array of
+         * requiredActions in it. This will ensure that UPDATE_PASSWORD required
+         * action will be deleted and user won't need to update password again.
+         */
+        this.updatePasswordByUsername(username, password);
+    }
+
+    /**
+     * Updates the password of the user with the given user ID.
+     *
+     * @param userId
+     *            an existing Keycloak user ID with the configured realm.
+     * @param password
+     *            the new password for the user with the given user ID.
+     * @throws KeycloakClientException
+     *             if updating the user password fails.
+     */
+    public void updatePassword(final String userId, final String password) throws KeycloakClientException {
+
+        /*
+         * Update the password by setting a temporary password and clearing the
+         * required actions (do not require the user to update the password in
+         * Keycloak before a new password can be used).
+         *
+         * See the comments near the bottom of addNewUser(String, String) for
+         * more details on the reasons behind this approach.
+         */
+
+        LOGGER.info("Updating password for user '{}' for Keycloak realm '{}'.", userId, this.realm);
+
+        final ObjectNode credentialRepresentation = this.jacksonObjectMapper.createObjectNode();
+        credentialRepresentation.put("type", "password");
+        credentialRepresentation.put("value", password);
+
+        final WebClient resetPasswordWebClient = this.getWebClientInstance().path(
+                this.userPath.replace(PATH_ELEMENT_USER_ID, userId) + "/reset-password");
+
+        Response response = this.withBearerToken(resetPasswordWebClient).put(credentialRepresentation);
+        try {
+            this.checkEmptyResponseBody(response);
+        } catch (final KeycloakBearerException e) {
+            response = this.withBearerToken(resetPasswordWebClient).put(credentialRepresentation);
+            this.checkEmptyResponseBody(response);
+        }
+
+        final ObjectNode updateUserRequiredActionsRepresentation = this.jacksonObjectMapper.createObjectNode();
+        final ArrayNode requiredActionsRepresentation = this.jacksonObjectMapper.createArrayNode();
+        updateUserRequiredActionsRepresentation.set("requiredActions", requiredActionsRepresentation);
+
+        final WebClient updateUserWebClient = this.getWebClientInstance().path(
+                this.userPath.replace(PATH_ELEMENT_USER_ID, userId));
+
+        response = this.withBearerToken(updateUserWebClient).put(updateUserRequiredActionsRepresentation);
+        try {
+            this.checkEmptyResponseBody(response);
+        } catch (final KeycloakBearerException e) {
+            response = this.withBearerToken(updateUserWebClient).put(updateUserRequiredActionsRepresentation);
+            this.checkEmptyResponseBody(response);
+        }
+    }
+
+    /**
+     * Convenience method as a shortcut for retrieving the user ID by the
+     * username, then updating the password credential for this user.
+     *
+     * @see #getUserId(String)
+     * @see #updatePassword(String, String)
+     * @param username
+     *            an existing Keycloak username for the configured realm.
+     * @param password
+     *            the new password for the user with the given username.
+     * @throws KeycloakClientException
+     *             if anything goes wrong in the process of updating the
+     *             password.
+     */
+    public void updatePasswordByUsername(final String username, final String password) throws KeycloakClientException {
+        this.updatePassword(this.getUserId(username), password);
+    }
+
+    /**
+     * Deletes the user with the given user ID.
+     *
+     * @param userId
+     *            an existing Keycloak user ID for the configured realm.
+     * @throws KeycloakClientException
+     *             if anything goes wrong in the process of removing the user.
+     */
+    public void removeUser(final String userId) throws KeycloakClientException {
+
+        LOGGER.info("Removing user '{}' from Keycloak realm '{}'.", userId, this.realm);
+
+        final WebClient deleteUserWebClient = this.getWebClientInstance().path(
+                this.userPath.replace(PATH_ELEMENT_USER_ID, userId));
+
+        Response response = this.withBearerToken(deleteUserWebClient).delete();
+        try {
+            this.checkEmptyResponseBody(response);
+        } catch (final KeycloakBearerException e) {
+            response = this.withBearerToken(deleteUserWebClient).delete();
+            this.checkEmptyResponseBody(response);
+        }
+    }
+
+    /**
+     * Convenience method as a shortcut for retrieving the user ID by the
+     * username, then removing the user.
+     *
+     * @see #getUserId(String)
+     * @see #removeUser(String)
+     * @param username
+     *            an existing Keycloak username for the configured realm.
+     * @throws KeycloakClientException
+     *             if anything goes wrong in the process of removing the user.
+     */
+    public void removeUserByUsername(final String username) throws KeycloakClientException {
+        this.removeUser(this.getUserId(username));
     }
 
     private WebClient withBearerToken(final WebClient webClient) throws KeycloakClientException {
@@ -442,6 +617,10 @@ public class KeycloakClient extends AbstractClient {
         if (response == null) {
             throw new KeycloakClientException(RESPONSE_IS_NULL);
         }
+
+        final StatusType statusInfo = response.getStatusInfo();
+        LOGGER.info("Received response with status: {} - {} ({})", statusInfo.getStatusCode(),
+                statusInfo.getReasonPhrase(), statusInfo.getFamily());
 
         final String responseBody = response.readEntity(String.class);
 
@@ -467,6 +646,10 @@ public class KeycloakClient extends AbstractClient {
         if (response == null) {
             throw new KeycloakClientException(RESPONSE_IS_NULL);
         }
+
+        final StatusType statusInfo = response.getStatusInfo();
+        LOGGER.info("Received response with status: {} - {} ({})", statusInfo.getStatusCode(),
+                statusInfo.getReasonPhrase(), statusInfo.getFamily());
 
         final String responseBody = response.readEntity(String.class);
 
