@@ -191,20 +191,6 @@ public class Device implements Serializable {
     @Transient
     protected final List<String> organisations = new ArrayList<String>();
 
-    //    /**
-    //     * Firmware information indicates which firmware this device is using.
-    //     */
-    //    @ManyToOne()
-    //    @JoinColumn(name = "firmware")
-    //    protected Firmware firmware;
-
-    //    /**
-    //     * Firmware history information
-    //     */
-    //    @ManyToMany()
-    //    @JoinTable(name = "firmware_history", joinColumns = { @JoinColumn(name = "device") }, inverseJoinColumns = { @JoinColumn(name = "firmware") })
-    //    protected List<Firmware> firmwareHistory;
-
     @ManyToOne()
     @JoinColumn()
     private DeviceModel deviceModel;
@@ -459,6 +445,10 @@ public class Device implements Serializable {
 
     public void setTechnicalInstallationDate(final Date technicalInstallationDate) {
         this.technicalInstallationDate = technicalInstallationDate;
+    }
+
+    public DeviceModel getDeviceModel() {
+        return this.deviceModel;
     }
 
 }

@@ -228,7 +228,7 @@
    <xsd:element name="ChangeDeviceModelResponse">
       <xsd:complexType>
          <xsd:sequence>
-            <xsd:element name="Result" type="common:OsgpResultType" />
+            <xsd:element name="Result" type="common:OsgpResultType" minOccurs="1" maxOccurs="1" />
          </xsd:sequence>
       </xsd:complexType>
    </xsd:element>
@@ -331,8 +331,6 @@
         </xsd:complexType>
     </xsd:element>
 
-
-
    <xsd:element name="GetFirmwareHistoryRequest">
       <xsd:complexType>
          <xsd:sequence>
@@ -344,13 +342,10 @@
    <xsd:element name="GetFirmwareHistoryResponse">
       <xsd:complexType>
       	 <xsd:sequence>
-            <xsd:element name="DeviceModelFirmwareHistory" type="tns:DeviceModelFirmwareHistory" />
+            <xsd:element name="FirmwareHistory" type="tns:FirmwareHistory" />
          </xsd:sequence>
       </xsd:complexType>
    </xsd:element>
-
- 
-
 
    <xsd:complexType name="Manufacturer">
       <xsd:sequence>
@@ -434,14 +429,11 @@
       </xsd:sequence>
    </xsd:complexType>
 
-
-
-   <xsd:complexType name="DeviceModelFirmwareHistory">
+   <xsd:complexType name="FirmwareHistory">
       <xsd:sequence>
          <xsd:element name="DeviceIdentification" type="common:Identification" />
-         <xsd:sequence>
-           <xsd:element name="Firmwares" type="tns:Firmware" minOccurs="0" maxOccurs="unbounded" />
-         </xsd:sequence>
+          <xsd:element name="Firmwares" type="tns:Firmware" minOccurs="0" maxOccurs="unbounded" />
+          <xsd:element name="DeviceModel" type="tns:DeviceModel" minOccurs="0" maxOccurs="1" />
       </xsd:sequence>
    </xsd:complexType>
 
@@ -462,15 +454,9 @@
          <xsd:sequence>
             <xsd:element name="DeviceModelFirmware" type="tns:DeviceModelFirmware" />
          </xsd:sequence>
-         <xsd:sequence>
-            <xsd:element name="DeviceModel" type="tns:DeviceModel" />
-         </xsd:sequence>
       </xsd:sequence>
    </xsd:complexType>
-   
-   
-   
-   
+
    <xsd:complexType name="FirmwareVersion">
       <xsd:sequence>
         <xsd:element name="Type" type="xsd:string"  minOccurs="1" maxOccurs="1"/>

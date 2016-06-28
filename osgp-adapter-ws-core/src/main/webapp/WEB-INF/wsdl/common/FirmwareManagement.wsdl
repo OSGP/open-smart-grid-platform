@@ -182,8 +182,6 @@
         </wsdl:part>
     </wsdl:message>
 
-
-
     <wsdl:message name="GetFirmwareHistoryResponse">
         <wsdl:part element="fman:GetFirmwareHistoryResponse" name="GetFirmwareHistoryResponse">
         </wsdl:part>
@@ -197,10 +195,6 @@
         <wsdl:part element="fman:GetFirmwareHistoryRequest" name="GetFirmwareHistoryRequest">
         </wsdl:part>
     </wsdl:message>
-
-
-
-
 
     <wsdl:message name="FindAllManufacturersResponse">
         <wsdl:part element="fman:FindAllManufacturersResponse" name="FindAllManufacturersResponse">
@@ -697,7 +691,6 @@
             </wsdl:output>
         </wsdl:operation>
         
-        
         <wsdl:operation name="GetFirmwareHistory">
             <soap:operation soapAction="" />
             <wsdl:input name="GetFirmwareHistoryRequest">
@@ -710,7 +703,6 @@
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>
-        
         
     </wsdl:binding>
 
