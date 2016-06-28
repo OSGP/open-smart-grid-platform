@@ -99,6 +99,7 @@
         <xsd:element name="PageSize" type="xsd:int" minOccurs="0" />
         <xsd:element name="Page" type="xsd:int" minOccurs="0" />
         <xsd:element name="DeviceFilter" type="tns:DeviceFilter" minOccurs="0" />
+        <xsd:element name="UsePages" type="xsd:boolean" minOccurs="0" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -108,6 +109,8 @@
       <xsd:sequence>
         <xsd:element name="Devices" type="tns:Device" maxOccurs="unbounded" />
         <xsd:element name="Page" type="common:Page" />
+        <xsd:element name="Message" type="xsd:string" />
+        <xsd:element name="Argument" type="xsd:string" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -318,12 +321,17 @@
       <xsd:element name="Street" type="xsd:string" minOccurs="0" />
       <xsd:element name="Number" type="xsd:string" minOccurs="0" />
       <xsd:element name="Municipality" type="xsd:string" minOccurs="0" />
+      <xsd:element name="DeviceType" type="xsd:string" minOccurs="0" />
+      <xsd:element name="Manufacturer" type="xsd:string" minOccurs="0" />
+      <xsd:element name="Model" type="xsd:string" minOccurs="0" />
       <xsd:element name="DeviceExternalManaged" type="tns:DeviceExternalManagedFilterType" minOccurs="0" />
       <xsd:element name="DeviceActivated" type="tns:DeviceActivatedFilterType" minOccurs="0" />
       <xsd:element name="DeviceInMaintenance" type="tns:DeviceInMaintetanceFilterType" minOccurs="0" />
       <xsd:element name="SortDir" type="xsd:string" minOccurs="0" />
       <xsd:element name="SortedBy" type="xsd:string" minOccurs="0" />
       <xsd:element name="HasTechnicalInstallation" type="xsd:boolean" />
+      <xsd:element name="Owner" type="xsd:string" minOccurs="0" />
+      <xsd:element name="FirmwareModuleVersion" type="xsd:string" minOccurs="0" />
     </xsd:sequence>
   </xsd:complexType>
 

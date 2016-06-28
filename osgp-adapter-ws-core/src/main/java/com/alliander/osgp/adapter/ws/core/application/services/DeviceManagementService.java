@@ -39,8 +39,10 @@ import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.Writ
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableSsldRepository;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
+import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Ean;
 import com.alliander.osgp.domain.core.entities.Event;
+import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.ScheduledTask;
 import com.alliander.osgp.domain.core.entities.Ssld;
@@ -96,6 +98,9 @@ public class DeviceManagementService {
 
     @Autowired
     private DeviceSpecifications deviceSpecifications;
+
+    @Autowired
+    private FirmwareManagementService firmwareManagementService;
 
     @Autowired
     private DeviceLogItemRepository logItemRepository;
@@ -237,10 +242,11 @@ public class DeviceManagementService {
      * @return A page with devices
      *
      * @throws FunctionalException
+     * @throws ArgumentNullOrEmptyException 
      */
     @Transactional(value = "transactionManager")
     public Page<Device> findDevices(@Identification final String organisationIdentification, final Integer pageSize,
-            final Integer pageNumber, final DeviceFilter deviceFilter) throws FunctionalException {
+            final Integer pageNumber, final DeviceFilter deviceFilter) throws FunctionalException, ArgumentNullOrEmptyException {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.FIND_DEVICES);
         this.pagingSettings.updatePagingSettings(pageSize, pageNumber);
@@ -263,7 +269,7 @@ public class DeviceManagementService {
             if (deviceFilter == null) {
                 final DeviceFilter df = new DeviceFilter(organisationIdentification, null, null, null, null, null,
                         null, null, DeviceExternalManagedFilterType.BOTH, DeviceActivatedFilterType.BOTH,
-                        DeviceInMaintenanceFilterType.BOTH, null, null, false);
+                        DeviceInMaintenanceFilterType.BOTH, null, null, false, null, null, null, null, null);
                 devices = this.applyFilter(df, organisation, request);
             } else {
                 deviceFilter.updateOrganisationIdentification(organisationIdentification);
@@ -289,7 +295,7 @@ public class DeviceManagementService {
 
     @Transactional(value = "transactionManager")
     public Page<Device> applyFilter(final DeviceFilter deviceFilter, final Organisation organisation,
-            final PageRequest request) {
+            final PageRequest request) throws ArgumentNullOrEmptyException {
         Page<Device> devices = null;
 
         try {
@@ -332,16 +338,19 @@ public class DeviceManagementService {
                     specifications = specifications.and(this.deviceSpecifications.hasMunicipality(deviceFilter
                             .getMunicipality() + "%"));
                 }
-                if (!DeviceExternalManagedFilterType.BOTH.equals(deviceFilter.getDeviceExternalManaged())) {
+                if (deviceFilter.getDeviceExternalManaged() != null
+                        && !DeviceExternalManagedFilterType.BOTH.equals(deviceFilter.getDeviceExternalManaged())) {
                     specifications = specifications.and(this.deviceSpecifications.isManagedExternally(deviceFilter
                             .getDeviceExternalManaged().getValue()));
                 }
-                if (!DeviceActivatedFilterType.BOTH.equals(deviceFilter.getDeviceActivated())) {
+                if (deviceFilter.getDeviceActivated() != null
+                        && !DeviceActivatedFilterType.BOTH.equals(deviceFilter.getDeviceActivated())) {
                     specifications = specifications.and(this.deviceSpecifications.isActived(deviceFilter
                             .getDeviceActivated().getValue()));
                 }
 
-                if (!DeviceInMaintenanceFilterType.BOTH.equals(deviceFilter.getDeviceInMaintenance())) {
+                if (deviceFilter.getDeviceInMaintenance() != null
+                        && !DeviceInMaintenanceFilterType.BOTH.equals(deviceFilter.getDeviceInMaintenance())) {
                     specifications = specifications.and(this.deviceSpecifications.isInMaintetance(deviceFilter
                             .getDeviceInMaintenance().getValue()));
                 }
@@ -350,14 +359,35 @@ public class DeviceManagementService {
                     specifications = specifications.and(this.deviceSpecifications.hasTechnicalInstallationDate());
                 }
 
+                if (!StringUtils.isEmpty(deviceFilter.getOwner())) {
+                    final Organisation ownerOrg = this.domainHelperService.findOrganisation(deviceFilter
+                            .getOwner());
+                    specifications = specifications.and(this.deviceSpecifications.forOwner(ownerOrg));
+                }
+
+                if (!StringUtils.isEmpty(deviceFilter.getDeviceType())) {
+                    specifications = specifications.and(this.deviceSpecifications.forDeviceType(deviceFilter.getDeviceType()));
+                }
+
+                if (!StringUtils.isEmpty(deviceFilter.getModel())) {
+                    DeviceModel deviceModel = this.firmwareManagementService.findDeviceModel(deviceFilter.getModel());
+                    specifications = specifications.and(this.deviceSpecifications.forDeviceModel(deviceModel));
+                }
+
+                if (!StringUtils.isEmpty(deviceFilter.getManufacturer())) {
+                    final Manufacturer manufacturer = this.firmwareManagementService.findManufacturer(deviceFilter.getManufacturer());
+                    specifications = specifications.and(this.deviceSpecifications.forManufacturer(manufacturer));
+                }
+
+                if (!StringUtils.isEmpty(deviceFilter.getFirmwareModuleVersion())) {
+                    specifications = specifications.and(this.deviceSpecifications.forFirmwareVersion(deviceFilter.getFirmwareModuleVersion()));
+                }
                 devices = this.deviceRepository.findAll(specifications, request);
             } else {
                 devices = this.deviceRepository.findAll(request);
             }
         } catch (final FunctionalException functionalException) {
             LOGGER.error("FunctionalException", functionalException);
-        } catch (final ArgumentNullOrEmptyException argumentNullOrEmptyException) {
-            LOGGER.error("ArgumentNullOrEmptyException", argumentNullOrEmptyException);
         } catch (final QueryException e) {
             LOGGER.error("QueryException", e);
         }
