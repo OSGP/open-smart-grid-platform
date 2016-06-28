@@ -32,6 +32,9 @@ public class DeviceModel extends AbstractEntity {
     @Column(length = 255)
     private String description;
 
+    @Column()
+    private boolean fileStorage;
+
     public DeviceModel() {
         // Default constructor
     }
@@ -40,6 +43,14 @@ public class DeviceModel extends AbstractEntity {
         this.manufacturerId = manufacturerId;
         this.modelCode = modelCode;
         this.description = description;
+        // default behaviour is true
+        this.fileStorage = true;
+    }
+
+    public DeviceModel(final Manufacturer manufacturerId, final String modelCode, final String description,
+            final boolean fileStorage) {
+        this(manufacturerId, modelCode, description);
+        this.fileStorage = fileStorage;
     }
 
     public Manufacturer getManufacturerId() {
@@ -58,4 +69,7 @@ public class DeviceModel extends AbstractEntity {
         this.description = description;
     }
 
+    public boolean isFileStorage() {
+        return this.fileStorage;
+    }
 }

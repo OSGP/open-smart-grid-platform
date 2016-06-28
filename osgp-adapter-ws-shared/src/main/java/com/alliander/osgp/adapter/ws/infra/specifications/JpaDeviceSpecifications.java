@@ -20,9 +20,13 @@ import org.springframework.data.jpa.domain.Specification;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
+import com.alliander.osgp.domain.core.entities.DeviceModel;
+import com.alliander.osgp.domain.core.entities.DeviceModelFirmware;
+import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.exceptions.ArgumentNullOrEmptyException;
 import com.alliander.osgp.domain.core.specifications.DeviceSpecifications;
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 
 public class JpaDeviceSpecifications implements DeviceSpecifications {
 
@@ -236,6 +240,107 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
                     final CriteriaBuilder cb) {
 
                 return cb.and(cb.equal(deviceRoot.<Boolean> get("inMaintenance"), inMaintenance));
+            }
+        };
+    }
+
+    @Override
+    public Specification<Device> forOwner(final Organisation organisation) throws ArgumentNullOrEmptyException {
+
+        if (organisation == null) {
+            throw new ArgumentNullOrEmptyException("owner");
+        }
+
+        return new Specification<Device>() {
+            @Override
+            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
+                    final CriteriaBuilder cb) {
+
+                final Subquery<Long> subquery = query.subquery(Long.class);
+                final Root<DeviceAuthorization> deviceAuthorizationRoot = subquery.from(DeviceAuthorization.class);
+                subquery.select(deviceAuthorizationRoot.get("device").get("id").as(Long.class));
+                subquery.where(
+                        cb.and(
+                                cb.equal(deviceAuthorizationRoot.get("organisation"), organisation.getId()),
+                                cb.equal(deviceAuthorizationRoot.get("functionGroup"), DeviceFunctionGroup.OWNER.ordinal())));
+
+                return cb.in(deviceRoot.get("id")).value(subquery);
+            }
+        };
+    }
+
+    @Override
+    public Specification<Device> forDeviceType (final String deviceType) throws ArgumentNullOrEmptyException {
+
+        if (deviceType == null) {
+            throw new ArgumentNullOrEmptyException("deviceType");
+        }
+
+        return new Specification<Device>() {
+            @Override
+            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
+                    final CriteriaBuilder cb) {
+
+                return cb.like(cb.upper(deviceRoot.<String> get("deviceType")), deviceType.toUpperCase());
+            }
+        };
+    }
+
+    @Override
+    public Specification<Device> forDeviceModel(final DeviceModel deviceModel) throws ArgumentNullOrEmptyException {
+        if (deviceModel == null) {
+            throw new ArgumentNullOrEmptyException("deviceModel");
+        }
+
+        return new Specification<Device>() {
+            @Override
+            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
+                    final CriteriaBuilder cb) {
+
+                return cb.and(cb.equal(deviceRoot.get("deviceModel").get("id").as(Long.class), deviceModel.getId()));
+            }
+        };
+    }
+
+    @Override
+    public Specification<Device> forManufacturer(final Manufacturer manufacturer) throws ArgumentNullOrEmptyException {
+        if (manufacturer == null) {
+            throw new ArgumentNullOrEmptyException("manufacturer");
+        }
+
+        return new Specification<Device>() {
+            @Override
+            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
+                    final CriteriaBuilder cb) {
+
+                final Subquery<Long> subquery = query.subquery(Long.class);
+                final Root<DeviceModel> deviceModelRoot = subquery.from(DeviceModel.class);
+                subquery.select(deviceModelRoot.get("id").as(Long.class));
+                subquery.where(
+                        cb.equal(cb.upper(deviceModelRoot.get("manufacturerId").<String> get("name")), manufacturer.getName().toUpperCase())
+                );
+                return cb.in(deviceRoot.get("deviceModel").get("id").as(Long.class)).value(subquery);
+            }
+        };
+    }
+
+    @Override
+    public Specification<Device> forFirmwareVersion (final String firmwareVersion) throws ArgumentNullOrEmptyException {
+
+        if (firmwareVersion == null) {
+            throw new ArgumentNullOrEmptyException("firmwareVersion");
+        }
+
+        return new Specification<Device>() {
+            @Override
+            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
+                    final CriteriaBuilder cb) {
+
+                final Subquery<Long> subquery = query.subquery(Long.class);
+                final Root<DeviceModelFirmware> deviceModelFirmwareRoot = subquery.from(DeviceModelFirmware.class);
+                subquery.select(deviceModelFirmwareRoot.get("deviceModel").get("id").as(Long.class));
+                subquery.where(cb.equal(deviceModelFirmwareRoot.get("version"), firmwareVersion));
+                return cb.in(deviceRoot.get("deviceModel").get("id").as(Long.class)).value(subquery);
             }
         };
     }

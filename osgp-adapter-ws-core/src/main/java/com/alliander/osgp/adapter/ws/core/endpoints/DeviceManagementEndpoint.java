@@ -56,6 +56,7 @@ import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.UpdateDeviceSs
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.UpdateDeviceSslCertificationResponse;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.ScheduledTask;
+import com.alliander.osgp.domain.core.exceptions.ArgumentNullOrEmptyException;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.valueobjects.Certification;
@@ -235,7 +236,7 @@ public class DeviceManagementEndpoint {
         final FindDevicesResponse response = new FindDevicesResponse();
 
         try {
-            final Page<com.alliander.osgp.domain.core.entities.Device> result = this.deviceManagementService
+            Page<com.alliander.osgp.domain.core.entities.Device> result = this.deviceManagementService
                     .findDevices(organisationIdentification, request.getPageSize(), request.getPage(),
                             this.deviceManagementMapper.map(request.getDeviceFilter(),
                                     com.alliander.osgp.domain.core.valueobjects.DeviceFilter.class));
@@ -247,6 +248,24 @@ public class DeviceManagementEndpoint {
                 response.getPage().setTotalPages(result.getTotalPages());
                 response.getPage().setCurrentPage(result.getNumber());
             }
+
+            if (!request.isUsePages()) {
+                // We don't have to fetch the first page again
+                int calls = 1;
+
+                while ((calls += 1) <= result.getTotalPages()) {
+                    request.setPage(calls);
+                    result = this.deviceManagementService.findDevices(organisationIdentification,  request.getPageSize(), request.getPage(),
+                            this.deviceManagementMapper.map(request.getDeviceFilter(),
+                                    com.alliander.osgp.domain.core.valueobjects.DeviceFilter.class));
+                    response.getDevices().addAll(this.deviceManagementMapper.mapAsList(result.getContent(), Device.class));
+                }
+            }
+        } catch (final ArgumentNullOrEmptyException ane) {
+            //TODO: Instead of using this exception, a different solution should be found to avoid using Exceptions.
+            LOGGER.error("No results found when finding devices");
+            response.setArgument(ane.getArgument());
+            response.setMessage(ane.getMessage());
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error(EXCEPTION, e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
