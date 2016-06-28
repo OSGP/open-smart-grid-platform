@@ -262,6 +262,8 @@ public class DeviceManagementEndpoint {
                 }
             }
         } catch (final ArgumentNullOrEmptyException ane) {
+            //TODO: Instead of using this exception, a different solution should be found to avoid using Exceptions.
+            LOGGER.error("No results found when finding devices");
             response.setArgument(ane.getArgument());
             response.setMessage(ane.getMessage());
         } catch (final MethodConstraintViolationException e) {

@@ -22,7 +22,6 @@ import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.DeviceModelFirmware;
-import com.alliander.osgp.domain.core.entities.Firmware;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.exceptions.ArgumentNullOrEmptyException;
