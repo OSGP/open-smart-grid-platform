@@ -9,6 +9,8 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.endpoints;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +25,15 @@ import com.alliander.osgp.adapter.ws.endpointinterceptors.ScheduleTime;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.FirmwareVersion;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysRequest;
@@ -72,6 +79,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.application.services.Configur
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
@@ -89,6 +97,103 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
     public SmartMeteringConfigurationEndpoint() {
         // Default constructor
+    }
+
+    /**
+     *
+     * Starts the proces of retrieving the firmware version(s) of the device
+     * specified in the {@link GetFirmwareVersionRequest}
+     *
+     * @param organisationIdentification
+     *            {@link String} containing the identification of the
+     *            organization
+     * @param request
+     *            the {@link GetFirmwareVersionRequest}
+     * @param messagePriority
+     *            the message priority
+     * @param scheduleTime
+     *            the time the message is scheduled
+     * @return the {@link GetFirmwareVersionAsyncResponse} containing the
+     *         correlation id
+     * @throws OsgpException
+     */
+    @PayloadRoot(localPart = "GetFirmwareVersionRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public GetFirmwareVersionAsyncResponse getFirmwareVersion(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final GetFirmwareVersionRequest request, @MessagePriority final String messagePriority,
+            @ScheduleTime final String scheduleTime) throws OsgpException {
+
+        LOGGER.info("GetFirmwareVersion Request received from organisation {} for device {}.",
+                organisationIdentification, request.getDeviceIdentification());
+
+        final GetFirmwareVersionAsyncResponse response = new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ObjectFactory()
+        .createGetFirmwareVersionAsyncResponse();
+
+        try {
+            final String correlationUid = this.configurationService.enqueueGetFirmwareRequest(
+                    organisationIdentification, request.getDeviceIdentification(),
+                    MessagePriorityEnum.getMessagePriority(messagePriority),
+                    this.configurationMapper.map(scheduleTime, Long.class));
+            response.setCorrelationUid(correlationUid);
+            response.setDeviceIdentification(request.getDeviceIdentification());
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+
+        return response;
+    }
+
+    /**
+     * Gets the Firmware version response from the database (if it is there) and
+     * returns {@link GetFirmwareVersionResponse} containing those firmware
+     * versions.
+     *
+     * @param organisationIdentification
+     *            {@link String} containing the identification of the
+     *            organization
+     * @param request
+     *            {@link GetFirmwareVersionAsyncRequest} containing the
+     *            correlation id as the response identifier
+     * @return {@link GetFirmwareVersionResponse} containing the firmware
+     *         version(s) for the device.
+     * @throws OsgpException
+     *             is thrown when the correlationId cannot be found in the
+     *             database
+     */
+    @PayloadRoot(localPart = "GetFirmwareVersionAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public GetFirmwareVersionResponse getGetFirmwareVersionResponse(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final GetFirmwareVersionAsyncRequest request) throws OsgpException {
+
+        LOGGER.info("GetFirmwareVersionResponse Request received from organisation {} for device: {}.",
+                organisationIdentification, request.getDeviceIdentification());
+
+        final GetFirmwareVersionResponse response = new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ObjectFactory()
+                .createGetFirmwareVersionResponse();
+
+        try {
+            final MeterResponseData meterResponseData = this.configurationService.dequeueGetFirmwareResponse(request
+                    .getCorrelationUid());
+            if (meterResponseData != null) {
+                response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+
+                if (meterResponseData.getMessageData() != null) {
+                    final List<FirmwareVersion> target = response.getFirmwareVersion();
+                    final FirmwareVersionResponse firmwareVersionResponse = (FirmwareVersionResponse) meterResponseData
+                            .getMessageData();
+                    target.addAll(this.configurationMapper.mapAsList(firmwareVersionResponse.getFirmwareVersions(),
+                            FirmwareVersion.class));
+                } else {
+                    LOGGER.info("Get Firmware Version firmware is null");
+                }
+            }
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+
+        return response;
     }
 
     @PayloadRoot(localPart = "SetAdministrativeStatusRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)

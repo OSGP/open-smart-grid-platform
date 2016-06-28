@@ -35,10 +35,13 @@ import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessageType;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceModelFirmwareRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceModelRepository;
+import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceRepository;
+import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableFirmwareRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableManufacturerRepository;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.DeviceModelFirmware;
+import com.alliander.osgp.domain.core.entities.Firmware;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.exceptions.ExistingEntityException;
@@ -60,6 +63,8 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 @Validated
 public class FirmwareManagementService {
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementService.class);
+
+    private static final String SPACE_REPLACER = "_";
 
     @Autowired
     private DomainHelperService domainHelperService;
@@ -84,6 +89,12 @@ public class FirmwareManagementService {
 
     @Resource
     private String firmwareDirectory;
+
+    @Autowired
+    private WritableFirmwareRepository writableFirmwareRepository;
+
+    @Autowired
+    private WritableDeviceRepository writableDeviceRepository;
 
     public String enqueueUpdateFirmwareRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @NotBlank final String firmwareIdentification,
@@ -402,11 +413,8 @@ public class FirmwareManagementService {
                         description, pushToNewDevices, firmwareModuleData, databaseDeviceModelFirmwares.get(0)
                         .getFile(), this.getMd5Hash(databaseDeviceModelFirmwares.get(0).getFile()));
             }
-
         } else {
-
             if (databaseDeviceModel.isFileStorage()) {
-
                 // Saving the file to the file system
                 this.writeToFilesystem(file, fileName, databaseDeviceModel.getModelCode());
                 savedDeviceModelFirmware = new DeviceModelFirmware(databaseDeviceModel, fileName, modelCode,
@@ -416,7 +424,6 @@ public class FirmwareManagementService {
                 savedDeviceModelFirmware = new DeviceModelFirmware(databaseDeviceModel, fileName, modelCode,
                         description, pushToNewDevices, firmwareModuleData, file, this.getMd5Hash(file));
             }
-
         }
 
         if (pushToNewDevices) {
@@ -512,9 +519,28 @@ public class FirmwareManagementService {
                     new UnknownEntityException(DeviceModelFirmware.class, String.valueOf(firmwareIdentification)));
         }
 
-        this.removeFirmwareFile(removedDeviceModelFirmware.getFilename(), removedDeviceModelFirmware.getModelCode());
-        this.deviceModelFirmwareRepository.delete(removedDeviceModelFirmware);
+        // Only remove the file if no other deviceModelfirmware is using it.
+        if (this.deviceModelFirmwareRepository.findByDeviceModelAndFilename(
+                removedDeviceModelFirmware.getDeviceModel(), removedDeviceModelFirmware.getFilename()).size() == 1) {
+            this.removeFirmwareFile(this.createFirmwarePath(removedDeviceModelFirmware.getModelCode(),
+                    removedDeviceModelFirmware.getFilename()));
+        }
 
+        this.deviceModelFirmwareRepository.delete(removedDeviceModelFirmware);
+    }
+
+    /**
+     * Returns the firmwares from the Platform
+     */
+    public List<Firmware> getFirmwares(final String organisationIdentification, final String deviceIdentification)
+            throws FunctionalException {
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_DEVICE_MODEL_FIRMWARE);
+
+        final Device device = this.writableDeviceRepository.findByDeviceIdentification(deviceIdentification);
+        final List<Firmware> firmwares = this.writableFirmwareRepository.findByDevice(device);
+
+        return firmwares;
     }
 
     public ResponseMessage dequeueGetFirmwareResponse(final String correlationUid) throws OsgpException {
@@ -550,7 +576,6 @@ public class FirmwareManagementService {
     // HELPER METHODS
 
     private String getMd5Hash(final byte[] file) {
-
         String md5Hash;
         try {
             final MessageDigest md = MessageDigest.getInstance("MD5");
@@ -570,8 +595,7 @@ public class FirmwareManagementService {
     private void writeToFilesystem(final byte[] file, final String fileName, final String modelCode)
             throws TechnicalException {
 
-        final File path = new File(this.firmwareDirectory.concat(File.separator).concat(modelCode)
-                .concat(File.separator).concat(fileName));
+        final File path = this.createFirmwarePath(modelCode, fileName);
 
         // Creating the dir, if needed
         this.createModelDirectory(path.getParentFile(), modelCode);
@@ -585,13 +609,10 @@ public class FirmwareManagementService {
         }
     }
 
-    private void removeFirmwareFile(final String fileName, final String modelcode) throws TechnicalException {
-
-        final File path = new File(this.firmwareDirectory.concat(File.separator).concat(modelcode)
-                .concat(File.separator).concat(fileName));
+    private void removeFirmwareFile(final File directory) throws TechnicalException {
 
         try {
-            Files.deleteIfExists(path.toPath());
+            Files.deleteIfExists(directory.toPath());
         } catch (final IOException e) {
             LOGGER.error("Could not remove firmware file from directory", e);
             throw new TechnicalException(ComponentType.WS_CORE,
@@ -603,8 +624,6 @@ public class FirmwareManagementService {
      * Creates a directory for the given modelCode, if it doesn't exist yet.
      */
     private void createModelDirectory(final File directory, final String modelCode) throws TechnicalException {
-        // This has to be done outside of the try-catch, or you wouldn's be able
-        // to create the FileOutputStream if the directory does not exist
         if (!directory.isDirectory()) {
             LOGGER.info("Creating directory for devicemodel {}", modelCode);
             if (!directory.mkdir()) {
@@ -612,6 +631,11 @@ public class FirmwareManagementService {
                         "Could not create directory for devicemodel ".concat(modelCode));
             }
         }
+    }
+
+    private File createFirmwarePath(final String modelCode, final String fileName) {
+        return new File(this.firmwareDirectory.concat(File.separator).concat(modelCode.replaceAll(" ", SPACE_REPLACER))
+                .concat(File.separator).concat(fileName));
     }
 
 }

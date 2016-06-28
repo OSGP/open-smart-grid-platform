@@ -19,6 +19,26 @@
                 schemaLocation="schemas/sm-configuration.xsd" />
         </xsd:schema>
     </wsdl:types>    
+    
+    
+    <wsdl:message name="GetFirmwareVersionRequest">
+        <wsdl:part element="smconf:GetFirmwareVersionRequest" name="GetFirmwareVersionRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="GetFirmwareVersionAsyncResponse">
+        <wsdl:part element="smconf:GetFirmwareVersionAsyncResponse" name="GetFirmwareVersionAsyncResponse">
+        </wsdl:part>
+    </wsdl:message>
+
+    <wsdl:message name="GetFirmwareVersionAsyncRequest">
+        <wsdl:part element="smconf:GetFirmwareVersionAsyncRequest" name="GetFirmwareVersionAsyncRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="GetFirmwareVersionResponse">
+        <wsdl:part element="smconf:GetFirmwareVersionResponse" name="GetFirmwareVersionResponse">
+        </wsdl:part>
+    </wsdl:message>
+    
 
     <wsdl:message name="ActionHeader">
         <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
@@ -198,6 +218,23 @@
     </wsdl:message>
 
     <wsdl:portType name="SmartmeterconfigurationPort">
+
+        <wsdl:operation name="GetGetFirmwareVersionResponse">
+            <wsdl:input message="tns:GetFirmwareVersionAsyncRequest" name="GetFirmwareVersionAsyncRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:GetFirmwareVersionResponse" name="GetFirmwareVersionResponse">
+            </wsdl:output>
+        </wsdl:operation>
+
+
+        <wsdl:operation name="GetFirmwareVersion">
+            <wsdl:input message="tns:GetFirmwareVersionRequest" name="GetFirmwareVersionRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:GetFirmwareVersionAsyncResponse" name="GetFirmwareVersionAsyncResponse">
+            </wsdl:output>
+        </wsdl:operation>
+        
+
         <wsdl:operation name="SetSpecialDays">
             <wsdl:input message="tns:SetSpecialDaysRequest" name="SetSpecialDaysRequest">
             </wsdl:input>
@@ -336,6 +373,33 @@
 
     <wsdl:binding name="SmartmeterconfigurationPortSoap11" type="tns:SmartmeterconfigurationPort">
         <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+
+        <wsdl:operation name="GetGetFirmwareVersionResponse">
+            <soap:operation soapAction="" />
+            <wsdl:input name="GetFirmwareVersionAsyncRequest">
+                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
+                <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="GetFirmwareVersionResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="GetFirmwareVersion">
+            <soap:operation soapAction="" />
+            <wsdl:input name="GetFirmwareVersionRequest">
+                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
+                <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="GetFirmwareVersionAsyncResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+   
         <wsdl:operation name="SetSpecialDays">
             <soap:operation soapAction="" />
             <wsdl:input name="SetSpecialDaysRequest">
