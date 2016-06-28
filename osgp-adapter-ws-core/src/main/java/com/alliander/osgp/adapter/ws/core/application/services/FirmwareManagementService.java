@@ -383,7 +383,7 @@ public class FirmwareManagementService {
     public void addDeviceModelFirmware(@Identification final String organisationIdentification,
             final String description, final byte[] file, final String fileName, final String manufacturer,
             final String modelCode, final FirmwareModuleData firmwareModuleData, final boolean pushToNewDevices)
-                    throws Exception {
+            throws Exception {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.CREATE_DEVICE_MODEL_FIRMWARE);
@@ -427,7 +427,7 @@ public class FirmwareManagementService {
                 // Storing the file in the database
                 savedDeviceModelFirmware = new DeviceModelFirmware(databaseDeviceModel, fileName, modelCode,
                         description, pushToNewDevices, firmwareModuleData, databaseDeviceModelFirmwares.get(0)
-                        .getFile(), this.getMd5Hash(databaseDeviceModelFirmwares.get(0).getFile()));
+                                .getFile(), this.getMd5Hash(databaseDeviceModelFirmwares.get(0).getFile()));
             }
         } else {
             if (databaseDeviceModel.isFileStorage()) {
@@ -536,8 +536,9 @@ public class FirmwareManagementService {
         }
 
         // Only remove the file if no other deviceModelfirmware is using it.
-        if (this.deviceModelFirmwareRepository.findByDeviceModelAndFilename(
-                removedDeviceModelFirmware.getDeviceModel(), removedDeviceModelFirmware.getFilename()).size() == 1) {
+        if (removedDeviceModelFirmware.getDeviceModel().isFileStorage()
+                && this.deviceModelFirmwareRepository.findByDeviceModelAndFilename(
+                        removedDeviceModelFirmware.getDeviceModel(), removedDeviceModelFirmware.getFilename()).size() == 1) {
             this.removeFirmwareFile(this.createFirmwarePath(removedDeviceModelFirmware.getModelCode(),
                     removedDeviceModelFirmware.getFilename()));
         }
