@@ -34,14 +34,17 @@ import com.alliander.osgp.shared.security.EncryptionService;
 
 /**
  * This is the command executor that corresponds with UpdateFirmwareRequest.
- * Some code may look odd, specifically in the execute() method. 
- * The reason is that the device may (sometimes) return NOT_OK after a replacekeys request but was in fact successful!
- * Actually the situation is that (sometimes) the device returns NOT_OK but does replace the keys. 
- * So the key that was sent to the device that received the status NOT_OK should be saved, 
- * so in case the supposedly valid key (the key that was on the device before replace keys was executed) does not work anymore 
- * the new (but supposedly NOT_OK) key can be tried. This key is recognized because both: valid_to=null and valid_from=null !
- * If that key works we know the device gave the wrong response and this key should be made valid. 
- * See also DlmsDevice: discardInvalidKeys, promoteInvalidKeys, het/hasNewSecurityKey.
+ * Some code may look odd, specifically in the execute() method. The reason is
+ * that the device may (sometimes) return NOT_OK after a replacekeys request but
+ * was in fact successful! Actually the situation is that (sometimes) the device
+ * returns NOT_OK but does replace the keys. So the key that was sent to the
+ * device that received the status NOT_OK should be saved, so in case the
+ * supposedly valid key (the key that was on the device before replace keys was
+ * executed) does not work anymore the new (but supposedly NOT_OK) key can be
+ * tried. This key is recognized because both: valid_to=null and valid_from=null
+ * ! If that key works we know the device gave the wrong response and this key
+ * should be made valid. See also DlmsDevice: discardInvalidKeys,
+ * promoteInvalidKeys, het/hasNewSecurityKey.
  *
  */
 @Component
@@ -116,7 +119,7 @@ public class ReplaceKeyCommandExecutor implements CommandExecutor<ReplaceKeyComm
         try {
             // Decrypt the cipher text using the private key.
             byte[] decryptedKey = this.encryptionService.decrypt(keyWrapper.getBytes());
-            decryptedKey =  Arrays.copyOfRange(decryptedKey, 16, decryptedKey.length);
+            decryptedKey = Arrays.copyOfRange(decryptedKey, 16, decryptedKey.length);
 
             byte[] decryptedMasterKey = this.encryptionService.decrypt(this.getMasterKey(device));
             decryptedMasterKey = Arrays.copyOfRange(decryptedMasterKey, 16, decryptedMasterKey.length);
@@ -128,6 +131,13 @@ public class ReplaceKeyCommandExecutor implements CommandExecutor<ReplaceKeyComm
             if (!MethodResultCode.SUCCESS.equals(methodResultCode)) {
                 throw new ProtocolAdapterException("AccessResultCode for replace keys was not SUCCESS: "
                         + methodResultCode);
+            }
+
+            // Update key of current connection
+            if (keyWrapper.securityKeyType == SecurityKeyType.E_METER_AUTHENTICATION) {
+                conn.changeClientGlobalAuthenticationKey(decryptedKey);
+            } else if (keyWrapper.securityKeyType == SecurityKeyType.E_METER_ENCRYPTION) {
+                conn.changeClientGlobalEncryptionKey(decryptedKey);
             }
         } catch (final IOException e) {
             throw new ConnectionException(e);
@@ -197,4 +207,3 @@ public class ReplaceKeyCommandExecutor implements CommandExecutor<ReplaceKeyComm
         return this.dlmsDeviceRepository.save(device);
     }
 }
-
