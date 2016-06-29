@@ -108,7 +108,8 @@ public class EncryptionService {
         try {
             final Cipher cipher = Cipher.getInstance(ALGORITHM, PROVIDER);
             cipher.init(Cipher.DECRYPT_MODE, this.key, new IvParameterSpec(IVBYTES));
-            return cipher.doFinal(inputData);
+            final byte[] decryptedKey = cipher.doFinal(inputData);
+            return Arrays.copyOfRange(decryptedKey, IVBYTES.length, decryptedKey.length);
         } catch (final NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
                 | IllegalBlockSizeException | BadPaddingException | NoSuchProviderException
                 | InvalidAlgorithmParameterException ex) {
