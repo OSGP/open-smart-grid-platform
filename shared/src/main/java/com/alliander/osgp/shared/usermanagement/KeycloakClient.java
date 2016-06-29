@@ -7,10 +7,7 @@
  */
 package com.alliander.osgp.shared.usermanagement;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -83,25 +80,10 @@ public class KeycloakClient extends AbstractClient {
     /**
      * Construct an AuthenticationClient instance.
      *
-     * @param keystoreLocation
-     *            The location of the key store.
-     * @param keystorePassword
-     *            The password for the key store.
-     * @param keystoreType
-     *            The type of the key store.
-     * @param baseAddress
-     *            The base address or URL for the AuthenticationClient.
-     * @param apiClient
-     *            The name of the keycloak client used for API calls.
-     * @param apiClientSecret
-     *            The configured secret of the keycloak client used for API
-     *            calls.
-     * @param apiUser
-     *            The username that is to be used with the keycloak client for
-     *            API calls.
-     * @param apiPassword
-     *            The password for the user that is to be used with the keycloak
-     *            client for API calls.
+     * @param keyStoreSettings
+     *            Settings to determine a KeyStore and TrustManagerFactory.
+     * @param KeycloakApiSettings
+     *            Settings used accessing the Keycloak API.
      * @param loginClient
      *            The keycloak client used for application logins.
      * @param realm
@@ -110,15 +92,13 @@ public class KeycloakClient extends AbstractClient {
      * @throws KeycloakClientException
      *             In case the construction fails.
      */
-    public KeycloakClient(final String keystoreLocation, final String keystorePassword, final String keystoreType,
-            final String baseAddress, final String apiClient, final String apiClientSecret, final String apiUser,
-            final String apiPassword, final String loginClient, final String realm)
-                    throws KeycloakClientException {
+    public KeycloakClient(final KeyStoreSettings keyStoreSettings, final KeycloakApiSettings keycloakApiSettings,
+            final String loginClient, final String realm) throws KeycloakClientException {
 
-        this.apiClient = apiClient;
-        this.apiClientSecret = apiClientSecret;
-        this.apiUser = apiUser;
-        this.apiPassword = apiPassword;
+        this.apiClient = keycloakApiSettings.getApiClient();
+        this.apiClientSecret = keycloakApiSettings.getApiClientSecret();
+        this.apiUser = keycloakApiSettings.getApiUser();
+        this.apiPassword = keycloakApiSettings.getApiPassword();
         this.loginClient = loginClient;
         this.realm = realm;
 
@@ -128,26 +108,16 @@ public class KeycloakClient extends AbstractClient {
         this.userSessionsPath = USER_SESSIONS_PATH_TEMPLATE.replace(PATH_ELEMENT_REALM, realm);
         this.sessionPath = SESSION_PATH_TEMPLATE.replace(PATH_ELEMENT_REALM, realm);
 
-        InputStream stream = null;
-        boolean isClosed = false;
-        Exception exception = null;
-
         try {
 
-            final KeyStore keystore = KeyStore.getInstance(keystoreType.toUpperCase());
-
-            stream = new FileInputStream(keystoreLocation);
-            keystore.load(stream, keystorePassword.toCharArray());
-
-            final TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            tmf.init(keystore);
+            final TrustManagerFactory tmf = keyStoreSettings.getTrustManagerFactory();
 
             final List<Object> providers = new ArrayList<Object>();
             providers.add(new JacksonJaxbJsonProvider());
 
-            this.webClient = WebClient.create(baseAddress, providers, true);
+            this.webClient = WebClient.create(keycloakApiSettings.getBaseAddress(), providers, true);
             if (this.webClient == null) {
-                throw new AuthenticationClientException("webclient is null");
+                throw new IllegalStateException("webclient is null");
             }
 
             final ClientConfiguration config = WebClient.getConfig(this.webClient);
@@ -160,18 +130,6 @@ public class KeycloakClient extends AbstractClient {
         } catch (final Exception e) {
             LOGGER.error(CONSTRUCTION_FAILED, e);
             throw new KeycloakClientException(CONSTRUCTION_FAILED, e);
-        } finally {
-            try {
-                stream.close();
-                isClosed = true;
-            } catch (final Exception streamCloseException) {
-                LOGGER.error(CONSTRUCTION_FAILED, streamCloseException);
-                exception = streamCloseException;
-            }
-        }
-
-        if (!isClosed) {
-            throw new KeycloakClientException(CONSTRUCTION_FAILED, exception);
         }
     }
 
