@@ -76,9 +76,7 @@ public class MellonTokenProcessingFilter extends GenericFilterBean {
 
         final String username = httpRequest.getHeader(this.httpHeaderForUsername);
 
-        if (StringUtils.isEmpty(username) || "(null)".equals(username)) {
-            LOGGER.error("MellonTokenProcessingFilter with mellon configured, no HTTP header \""
-                    + this.httpHeaderForUsername + "\" for Mellon with a username.");
+        if (this.noValidUsernamePresent(username)) {
             chain.doFilter(request, response);
             return;
         }
@@ -91,32 +89,65 @@ public class MellonTokenProcessingFilter extends GenericFilterBean {
         LOGGER.info("Validating login for user {} based on input via Mellon", username);
 
         final Authentication authenticationFromSecurityContext = SecurityContextHolder.getContext().getAuthentication();
-        if (authenticationFromSecurityContext instanceof CustomAuthentication) {
-            final CustomAuthentication existingAuthentication = (CustomAuthentication) authenticationFromSecurityContext;
-            if (username.equals(existingAuthentication.getName())) {
-                LOGGER.info(
-                        "SecurityContext already has an authentication for user {}, stop further Mellon authentication",
-                        username);
-                this.includeFrontendHeader(response, existingAuthentication);
-                chain.doFilter(request, response);
-                return;
-            }
-            LOGGER.warn("Remove authentication for user {} from SecurityContext, continue authenticating user {}",
-                    existingAuthentication.getName(), username);
-            SecurityContextHolder.getContext().setAuthentication(null);
+
+        if (this.authenticationExistsForUsername(authenticationFromSecurityContext, username)) {
+            this.includeFrontendHeader(response, authenticationFromSecurityContext);
+            chain.doFilter(request, response);
+            return;
         }
+
+        final Authentication authentication = this.authenticateUser(authenticationFromSecurityContext, username);
+        if (authentication != null) {
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            this.includeFrontendHeader(response, authentication);
+        }
+
+        chain.doFilter(request, response);
+    }
+
+    private Authentication authenticateUser(final Authentication authenticationFromSecurityContext,
+            final String username) {
 
         final CustomAuthentication mellonAuthentication = new CustomAuthentication();
         mellonAuthentication.setUserName(username);
+
         try {
             final Authentication authentication = this.authenticationManager.authenticate(mellonAuthentication);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            this.includeFrontendHeader(response, authentication);
+            if (authenticationFromSecurityContext != null) {
+                LOGGER.warn("Replacing authentication for user {} from SecurityContext by authentication for user {}",
+                        authenticationFromSecurityContext.getName(), username);
+            }
+            return authentication;
         } catch (final Exception e) {
             LOGGER.warn("Failed to login based on mellon username: '{}'", username, e);
         }
 
-        chain.doFilter(request, response);
+        return null;
+    }
+
+    private boolean noValidUsernamePresent(final String username) {
+
+        final boolean noUsername = StringUtils.isEmpty(username) || "(null)".equals(username);
+
+        if (noUsername) {
+            LOGGER.error("MellonTokenProcessingFilter with mellon configured, no HTTP header \""
+                    + this.httpHeaderForUsername + "\" for Mellon with a username.");
+        }
+
+        return noUsername;
+    }
+
+    private boolean authenticationExistsForUsername(final Authentication authentication, final String username) {
+
+        final boolean userIsAuthenticated = username.equals(authentication.getName());
+
+        if (userIsAuthenticated) {
+            LOGGER.info(
+                    "SecurityContext already has an authentication for user {}, stop further Mellon authentication",
+                    username);
+        }
+
+        return userIsAuthenticated;
     }
 
     private void includeFrontendHeader(final ServletResponse response, final Authentication authentication) {
