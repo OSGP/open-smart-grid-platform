@@ -101,7 +101,8 @@ public class EncryptionService {
     }
 
     /**
-     * Decrypts the data using the key
+     * Decrypts the data using the key. Strips off iv bytes when they are there
+     * (first 16 0 bytes)
      */
     public byte[] decrypt(final byte[] inputData) {
 
