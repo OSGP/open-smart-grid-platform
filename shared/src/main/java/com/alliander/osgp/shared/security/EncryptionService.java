@@ -109,12 +109,29 @@ public class EncryptionService {
             final Cipher cipher = Cipher.getInstance(ALGORITHM, PROVIDER);
             cipher.init(Cipher.DECRYPT_MODE, this.key, new IvParameterSpec(IVBYTES));
             final byte[] decryptedKey = cipher.doFinal(inputData);
-            return Arrays.copyOfRange(decryptedKey, IVBYTES.length, decryptedKey.length);
+            if (this.checkIvBytesPrepended(decryptedKey)) {
+                return Arrays.copyOfRange(decryptedKey, IVBYTES.length, decryptedKey.length);
+            } else {
+                return decryptedKey;
+            }
         } catch (final NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
                 | IllegalBlockSizeException | BadPaddingException | NoSuchProviderException
                 | InvalidAlgorithmParameterException ex) {
             LOGGER.error(UNEXPECTED_EXCEPTION_DURING_DECRYPTION, ex);
             throw new EncrypterException("Unexpected exception during decryption!", ex);
+        }
+    }
+
+    private boolean checkIvBytesPrepended(final byte[] bytes) {
+        if (bytes.length > IVBYTES.length) {
+            for (short s = 0; s < IVBYTES.length; s++) {
+                if (bytes[s] != IVBYTES[s]) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            return false;
         }
     }
 
