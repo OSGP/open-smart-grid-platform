@@ -125,7 +125,7 @@ public class EncryptionService {
     private boolean checkIvBytesPrepended(final byte[] bytes) {
         if (bytes.length > IVBYTES.length) {
             for (short s = 0; s < IVBYTES.length; s++) {
-                if (bytes[s] != IVBYTES[s]) {
+                if (bytes[s] != 0) {
                     return false;
                 }
             }
