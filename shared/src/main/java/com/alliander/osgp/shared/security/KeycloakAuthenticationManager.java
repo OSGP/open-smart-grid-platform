@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -46,7 +45,7 @@ public class KeycloakAuthenticationManager implements AuthenticationManager {
     }
 
     @Override
-    public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
+    public Authentication authenticate(final Authentication authentication) {
         if (authentication == null) {
             LOGGER.debug(NULL_AUTHENTICATION);
             throw new BadCredentialsException(NULL_AUTHENTICATION);

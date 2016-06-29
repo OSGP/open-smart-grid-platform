@@ -84,7 +84,7 @@ public class MellonTokenProcessingFilter extends GenericFilterBean {
         }
 
         if (this.isLogoutRequest(httpRequest)) {
-            this.logoutMellon(httpRequest, (HttpServletResponse) response, username);
+            this.logoutMellon((HttpServletResponse) response, username);
             return;
         }
 
@@ -128,8 +128,8 @@ public class MellonTokenProcessingFilter extends GenericFilterBean {
                 ((CustomAuthentication) authentication).getToken());
     }
 
-    private void logoutMellon(final HttpServletRequest httpRequest, final HttpServletResponse httpResponse,
-            final String username) throws ServletException, IOException {
+    private void logoutMellon(final HttpServletResponse httpResponse, final String username) throws ServletException,
+            IOException {
 
         try {
             this.authenticationManager.logout(username);

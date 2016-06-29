@@ -262,6 +262,7 @@ public class KeycloakClient extends AbstractClient {
         try {
             jsonNode = this.getJsonResponseBody(response);
         } catch (final KeycloakBearerException e) {
+            LOGGER.debug("It looks like the bearer token expired, retry API call to the user lookup.", e);
             response = this.withBearerToken(getUserIdWebClient).get();
             jsonNode = this.getJsonResponseBody(response);
         }
@@ -320,15 +321,12 @@ public class KeycloakClient extends AbstractClient {
         try {
             jsonNode = this.getJsonResponseBody(response);
         } catch (final KeycloakBearerException e) {
+            LOGGER.debug("It looks like the bearer token expired, retry API call to get the session ID.", e);
             response = this.withBearerToken(getUserSessionIdWebClient).get();
             jsonNode = this.getJsonResponseBody(response);
         }
 
-        if (!jsonNode.isArray()) {
-            throw new KeycloakClientException("Expected array result from Keycloak API user lookup, got: "
-                    + jsonNode.getNodeType().name());
-        }
-        final ArrayNode jsonArray = (ArrayNode) jsonNode;
+        final ArrayNode jsonArray = this.asArrayNode(jsonNode, "from Keycloak API user lookup");
 
         if (jsonArray.size() == 0) {
             /*
@@ -341,7 +339,18 @@ public class KeycloakClient extends AbstractClient {
             return null;
         }
 
-        final Iterator<JsonNode> elements = jsonArray.elements();
+        final String sessionId = this.determineSessionIdWithLoginClient(jsonArray);
+
+        if (sessionId == null) {
+            LOGGER.info("No active Keycloak sessions for user ID '{}' with client '{}' for realm '{}'.", userId,
+                    this.loginClient, this.realm);
+        }
+
+        return sessionId;
+    }
+
+    private String determineSessionIdWithLoginClient(final ArrayNode sessionRepresentationArray) {
+        final Iterator<JsonNode> elements = sessionRepresentationArray.elements();
         final boolean sessionFound = false;
         while (!sessionFound && elements.hasNext()) {
             final JsonNode sessionRepresentation = elements.next();
@@ -355,21 +364,26 @@ public class KeycloakClient extends AbstractClient {
                 LOGGER.warn("clients is not a JSON object node for a user session");
                 continue;
             }
-            final Iterator<JsonNode> clientNameNodeIterator = clients.elements();
-            while (clientNameNodeIterator.hasNext()) {
-                final JsonNode clientName = clientNameNodeIterator.next();
-                if (clientName == null || !clientName.isTextual()) {
-                    LOGGER.warn("value in clients is not a JSON text node with a client name");
-                    continue;
-                }
-                if (clientName.textValue().equals(this.loginClient)) {
-                    return sessionId.textValue();
-                }
+            if (this.useSessionIdForClients(clients)) {
+                return sessionId.textValue();
             }
         }
-        LOGGER.info("No active Keycloak sessions for user ID '{}' with client '{}' for realm '{}'.", userId,
-                this.loginClient, this.realm);
         return null;
+    }
+
+    private boolean useSessionIdForClients(final JsonNode clientsObject) {
+        final Iterator<JsonNode> clientNameNodeIterator = clientsObject.elements();
+        while (clientNameNodeIterator.hasNext()) {
+            final JsonNode clientName = clientNameNodeIterator.next();
+            if (clientName == null || !clientName.isTextual()) {
+                LOGGER.warn("value in clients is not a JSON text node with a client name");
+                continue;
+            }
+            if (clientName.textValue().equals(this.loginClient)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -412,6 +426,7 @@ public class KeycloakClient extends AbstractClient {
         try {
             this.checkEmptyResponseBody(response);
         } catch (final KeycloakBearerException e) {
+            LOGGER.debug("It looks like the bearer token expired, retry API call to remove the session.", e);
             response = this.withBearerToken(removeUserSessionWebClient).delete();
             this.checkEmptyResponseBody(response);
         }
@@ -461,6 +476,7 @@ public class KeycloakClient extends AbstractClient {
         try {
             this.checkEmptyResponseBody(response);
         } catch (final KeycloakBearerException e) {
+            LOGGER.debug("It looks like the bearer token expired, retry API call to add new user.", e);
             response = this.withBearerToken(createUserWebClient).post(newUserRepresentation);
             this.checkEmptyResponseBody(response);
         }
@@ -530,6 +546,7 @@ public class KeycloakClient extends AbstractClient {
         try {
             this.checkEmptyResponseBody(response);
         } catch (final KeycloakBearerException e) {
+            LOGGER.debug("It looks like the bearer token expired, retry API call to reset the user password.", e);
             response = this.withBearerToken(resetPasswordWebClient).put(credentialRepresentation);
             this.checkEmptyResponseBody(response);
         }
@@ -545,6 +562,7 @@ public class KeycloakClient extends AbstractClient {
         try {
             this.checkEmptyResponseBody(response);
         } catch (final KeycloakBearerException e) {
+            LOGGER.debug("It looks like the bearer token expired, retry API call to update the required actions.", e);
             response = this.withBearerToken(updateUserWebClient).put(updateUserRequiredActionsRepresentation);
             this.checkEmptyResponseBody(response);
         }
@@ -587,6 +605,7 @@ public class KeycloakClient extends AbstractClient {
         try {
             this.checkEmptyResponseBody(response);
         } catch (final KeycloakBearerException e) {
+            LOGGER.debug("It looks like the bearer token expired, retry API call to delete the user.", e);
             response = this.withBearerToken(deleteUserWebClient).delete();
             this.checkEmptyResponseBody(response);
         }
@@ -686,5 +705,15 @@ public class KeycloakClient extends AbstractClient {
             throw new KeycloakClientException("Keycloak API call returned "
                     + (errorBuilder.length() == 0 ? "error" : errorBuilder));
         }
+    }
+
+    private ArrayNode asArrayNode(final JsonNode jsonNode, final String detail) throws KeycloakClientException {
+
+        if (jsonNode == null || !jsonNode.isArray()) {
+            throw new KeycloakClientException("Expected array result " + detail + ", got: "
+                    + (jsonNode == null ? "null" : jsonNode.getNodeType().name()));
+        }
+
+        return (ArrayNode) jsonNode;
     }
 }
