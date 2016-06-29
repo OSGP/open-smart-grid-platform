@@ -7,7 +7,7 @@
  */
 package com.alliander.osgp.shared.usermanagement;
 
-public class AuthenticationClientException extends Exception {
+public class AuthenticationClientException extends WebClientException {
 
     /**
      * Serial Verion UID.

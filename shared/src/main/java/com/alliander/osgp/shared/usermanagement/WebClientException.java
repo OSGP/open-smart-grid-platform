@@ -7,18 +7,22 @@
  */
 package com.alliander.osgp.shared.usermanagement;
 
-public class KeycloakClientException extends WebClientException {
+/**
+ * Generic exception class for exceptions constructing or using web clients.
+ * Specific clients may subclass this to provide more precise exceptions.
+ */
+public class WebClientException extends Exception {
 
     /**
      * Serial Version UID.
      */
-    private static final long serialVersionUID = -287959971211054459L;
+    private static final long serialVersionUID = 1214838735315997572L;
 
-    public KeycloakClientException(final String message) {
+    public WebClientException(final String message) {
         super(message);
     }
 
-    public KeycloakClientException(final String message, final Throwable t) {
+    public WebClientException(final String message, final Throwable t) {
         super(message, t);
     }
 }
