@@ -13,7 +13,6 @@ import java.net.UnknownHostException;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
-import org.bouncycastle.util.Arrays;
 import org.openmuc.jdlms.Authentication;
 import org.openmuc.jdlms.Authentication.CryptographicAlgorithm;
 import org.openmuc.jdlms.DlmsConnection;
@@ -138,10 +137,8 @@ public class Hls5Connector {
         }
 
         // Decrypt the key, discard ivBytes
-        byte[] decryptedAuthentication = this.encryptionService.decrypt(authenticationKey);
-        byte[] decryptedEncryption = this.encryptionService.decrypt(encryptionKey);
-        decryptedAuthentication = Arrays.copyOfRange(decryptedAuthentication, 16, decryptedAuthentication.length);
-        decryptedEncryption = Arrays.copyOfRange(decryptedEncryption, 16, decryptedEncryption.length);
+        final byte[] decryptedAuthentication = this.encryptionService.decrypt(authenticationKey);
+        final byte[] decryptedEncryption = this.encryptionService.decrypt(encryptionKey);
 
         final Authentication auth = Authentication.newGmacAuthentication(decryptedAuthentication, decryptedEncryption,
                 CryptographicAlgorithm.AES_GMC_128);

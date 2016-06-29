@@ -8,7 +8,6 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Date;
 
 import org.apache.commons.codec.DecoderException;
@@ -118,11 +117,9 @@ public class ReplaceKeyCommandExecutor implements CommandExecutor<ReplaceKeyComm
             final ReplaceKeyCommandExecutor.KeyWrapper keyWrapper) throws ProtocolAdapterException {
         try {
             // Decrypt the cipher text using the private key.
-            byte[] decryptedKey = this.encryptionService.decrypt(keyWrapper.getBytes());
-            decryptedKey = Arrays.copyOfRange(decryptedKey, 16, decryptedKey.length);
+            final byte[] decryptedKey = this.encryptionService.decrypt(keyWrapper.getBytes());
 
-            byte[] decryptedMasterKey = this.encryptionService.decrypt(this.getMasterKey(device));
-            decryptedMasterKey = Arrays.copyOfRange(decryptedMasterKey, 16, decryptedMasterKey.length);
+            final byte[] decryptedMasterKey = this.encryptionService.decrypt(this.getMasterKey(device));
 
             final MethodParameter methodParameterAuth = SecurityUtils.globalKeyTransfer(decryptedMasterKey,
                     decryptedKey, keyWrapper.getKeyId());
