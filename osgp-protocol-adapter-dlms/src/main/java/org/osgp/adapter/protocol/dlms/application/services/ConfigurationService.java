@@ -11,7 +11,6 @@ import java.util.List;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.DlmsConnection;
-import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.SecurityUtils.KeyId;
 import org.osgp.adapter.protocol.dlms.application.models.ProtocolMeterInfo;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAdministrativeStatusCommandExecutor;
@@ -217,13 +216,6 @@ public class ConfigurationService {
         LOGGER.info("Device for Activity Calendar is: {}", device);
 
         this.setActivityCalendarCommandExecutor.execute(conn, device, activityCalendar);
-
-        final MethodResultCode methodResult = this.setActivityCalendarCommandActivationExecutor.execute(conn, device,
-                null);
-
-        if (!MethodResultCode.SUCCESS.equals(methodResult)) {
-            throw new ProtocolAdapterException("AccessResultCode for set Activity Calendar: " + methodResult);
-        }
 
         return "Set Activity Calendar Result is OK for device id: " + device.getDeviceIdentification()
                 + " calendar name: " + activityCalendar.getCalendarName();
