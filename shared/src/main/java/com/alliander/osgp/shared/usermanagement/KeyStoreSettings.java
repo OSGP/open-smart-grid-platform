@@ -29,10 +29,10 @@ public class KeyStoreSettings {
 
     private KeyStore initializeKeyStore(final String keyStoreLocation, final String keyStorePassword,
             final String keyStoreType) throws WebClientException {
-        try (InputStream stream = new FileInputStream(this.keyStoreLocation)) {
-            final KeyStore keyStore = KeyStore.getInstance(keyStoreType.toUpperCase());
-            keyStore.load(stream, keyStorePassword.toCharArray());
-            return keyStore;
+        try (InputStream stream = new FileInputStream(keyStoreLocation)) {
+            final KeyStore ks = KeyStore.getInstance(keyStoreType.toUpperCase());
+            ks.load(stream, keyStorePassword.toCharArray());
+            return ks;
         } catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e) {
             throw new WebClientException("Error initializing KeyStore", e);
         }
@@ -50,7 +50,7 @@ public class KeyStoreSettings {
 
     @Override
     public String toString() {
-        return "KeystoreSettings[location=" + this.keyStoreLocation + ", type=" + this.keyStoreType + "]";
+        return "KeyStoreSettings[location=" + this.keyStoreLocation + ", type=" + this.keyStoreType + "]";
     }
 
     public KeyStore getKeyStore() {
