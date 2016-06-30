@@ -517,11 +517,11 @@ public class OslpChannelHandler extends SimpleChannelHandler {
         } else if (request.hasGetActualPowerUsageRequest()) {
             this.handleGetActualPowerUsageRequest(device, request.getGetActualPowerUsageRequest());
 
-            response = createGetActualPowerUsageResponse(device);
+            response = createGetActualPowerUsageResponse();
         } else if (request.hasGetPowerUsageHistoryRequest()) {
             this.handleGetPowerUsageHistoryRequest(device, request.getGetPowerUsageHistoryRequest());
 
-            response = createGetPowerUsageHistoryWithDatesResponse(device, request.getGetPowerUsageHistoryRequest());
+            response = createGetPowerUsageHistoryWithDatesResponse(request.getGetPowerUsageHistoryRequest());
         } else if (request.hasGetStatusRequest()) {
             response = createGetStatusResponse(device);
         } else if (request.hasResumeScheduleRequest()) {
@@ -555,7 +555,7 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                 .newBuilder()
                 .setConfirmRegisterDeviceResponse(
                         ConfirmRegisterDeviceResponse.newBuilder().setRandomDevice(randomDevice)
-                        .setRandomPlatform(randomPlatform).setStatus(Oslp.Status.FAILURE)).build();
+                        .setRandomPlatform(randomPlatform).setStatus(Oslp.Status.OK)).build();
     }
 
     private void handleSetScheduleRequest(final Device device, final SetScheduleRequest setScheduleRequest) {
@@ -564,32 +564,31 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
     private static Message createStartSelfTestResponse() throws IOException {
         return Oslp.Message.newBuilder()
-                .setStartSelfTestResponse(StartSelfTestResponse.newBuilder().setStatus(Oslp.Status.FAILURE)).build();
+                .setStartSelfTestResponse(StartSelfTestResponse.newBuilder().setStatus(Oslp.Status.OK)).build();
     }
 
     private static Message createStopSelfTestResponse() throws IOException {
         return Oslp.Message
                 .newBuilder()
                 .setStopSelfTestResponse(
-                        StopSelfTestResponse.newBuilder().setStatus(Oslp.Status.FAILURE)
+                        StopSelfTestResponse.newBuilder().setStatus(Oslp.Status.OK)
                         .setSelfTestResult(ByteString.copyFrom(new byte[] { 0 }))).build();
     }
 
     private static Message createSetLightResponse() throws IOException {
-        return Oslp.Message.newBuilder()
-                .setSetLightResponse(SetLightResponse.newBuilder().setStatus(Oslp.Status.FAILURE)).build();
+        return Oslp.Message.newBuilder().setSetLightResponse(SetLightResponse.newBuilder().setStatus(Oslp.Status.OK))
+                .build();
     }
 
     private static Message createSetEventNotificationsResponse() {
-        return Oslp.Message
-                .newBuilder()
-                .setSetEventNotificationsResponse(
-                        SetEventNotificationsResponse.newBuilder().setStatus(Oslp.Status.FAILURE)).build();
+        return Oslp.Message.newBuilder()
+                .setSetEventNotificationsResponse(SetEventNotificationsResponse.newBuilder().setStatus(Oslp.Status.OK))
+                .build();
     }
 
     private static Message createUpdateFirmwareResponse() {
         return Oslp.Message.newBuilder()
-                .setUpdateFirmwareResponse(UpdateFirmwareResponse.newBuilder().setStatus(Oslp.Status.FAILURE)).build();
+                .setUpdateFirmwareResponse(UpdateFirmwareResponse.newBuilder().setStatus(Oslp.Status.OK)).build();
     }
 
     private static Message createGetFirmwareVersionResponse() {
@@ -600,30 +599,29 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
     private static Message createSwitchFirmwareResponse() {
         return Oslp.Message.newBuilder()
-                .setSwitchFirmwareResponse(Oslp.SwitchFirmwareResponse.newBuilder().setStatus(Oslp.Status.FAILURE))
-                .build();
+                .setSwitchFirmwareResponse(Oslp.SwitchFirmwareResponse.newBuilder().setStatus(Oslp.Status.OK)).build();
     }
 
     private static Message createSetDeviceVerificationKeyResponse() {
         return Oslp.Message
                 .newBuilder()
                 .setSetDeviceVerificationKeyResponse(
-                        Oslp.SetDeviceVerificationKeyResponse.newBuilder().setStatus(Oslp.Status.FAILURE)).build();
+                        Oslp.SetDeviceVerificationKeyResponse.newBuilder().setStatus(Oslp.Status.OK)).build();
     }
 
     private static Message createUpdateDeviceSslCertificationResponse() {
         return Oslp.Message
                 .newBuilder()
                 .setUpdateDeviceSslCertificationResponse(
-                        Oslp.UpdateDeviceSslCertificationResponse.newBuilder().setStatus(Oslp.Status.FAILURE)).build();
+                        Oslp.UpdateDeviceSslCertificationResponse.newBuilder().setStatus(Oslp.Status.OK)).build();
     }
 
     private static Message createSetScheduleResponse() {
         return Oslp.Message.newBuilder()
-                .setSetScheduleResponse(SetScheduleResponse.newBuilder().setStatus(Oslp.Status.FAILURE)).build();
+                .setSetScheduleResponse(SetScheduleResponse.newBuilder().setStatus(Oslp.Status.OK)).build();
     }
 
-    private static Message createGetActualPowerUsageResponse(final Device device) {
+    private static Message createGetActualPowerUsageResponse() {
         // yyyyMMddhhmmss z
         final SimpleDateFormat utcTimeFormat = new SimpleDateFormat("yyyyMMddHHmmss");
         utcTimeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -688,10 +686,10 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                                                                                                                         ByteString
                                                                                                                         .copyFrom(new byte[] { 4 }))
                                                                                                                         .setTotalLightingMinutes(480))))
-                                                                                                                        .setStatus(Oslp.Status.FAILURE)).build();
+                                                                                                                        .setStatus(Oslp.Status.OK)).build();
     }
 
-    private static Message createGetPowerUsageHistoryWithDatesResponse(final Device device,
+    private static Message createGetPowerUsageHistoryWithDatesResponse(
             final GetPowerUsageHistoryRequest powerUsageHistoryRequest) throws ParseException {
 
         final DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyyMMddHHmmss").withZoneUTC();
@@ -828,13 +826,13 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                         .setPageInfo(
                                 PageInfo.newBuilder().setCurrentPage(currentPageNumber)
                                 .setPageSize(itemsPerPage).setTotalPages(numberOfPages))
-                                .setStatus(Oslp.Status.FAILURE)).build();
+                                .setStatus(Oslp.Status.OK)).build();
 
     }
 
     private Message createSetConfigurationResponse() {
         return Oslp.Message.newBuilder()
-                .setSetConfigurationResponse(Oslp.SetConfigurationResponse.newBuilder().setStatus(Oslp.Status.FAILURE))
+                .setSetConfigurationResponse(Oslp.SetConfigurationResponse.newBuilder().setStatus(Oslp.Status.OK))
                 .build();
     }
 
@@ -848,7 +846,7 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
         final Oslp.GetConfigurationResponse.Builder configuration = Oslp.GetConfigurationResponse.newBuilder();
         try {
-            configuration.setStatus(Oslp.Status.FAILURE)
+            configuration.setStatus(Oslp.Status.OK)
                     .setPreferredLinkType(Enum.valueOf(Oslp.LinkType.class, device.getPreferredLinkType().name()))
                     .setLightType(Enum.valueOf(Oslp.LightType.class, device.getLightType().name()))
                     .setShortTermHistoryIntervalMinutes(15);
@@ -907,8 +905,8 @@ public class OslpChannelHandler extends SimpleChannelHandler {
     private static Message createSwitchConfigurationResponse() {
         return Oslp.Message
                 .newBuilder()
-                .setSwitchConfigurationResponse(
-                        Oslp.SwitchConfigurationResponse.newBuilder().setStatus(Oslp.Status.FAILURE)).build();
+                .setSwitchConfigurationResponse(Oslp.SwitchConfigurationResponse.newBuilder().setStatus(Oslp.Status.OK))
+                .build();
     }
 
     /**
@@ -981,7 +979,7 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
         final Oslp.GetStatusResponse.Builder builder = GetStatusResponse.newBuilder();
 
-        builder.setStatus(Oslp.Status.FAILURE);
+        builder.setStatus(Oslp.Status.OK);
         builder.addAllValue(outputValues);
         builder.setPreferredLinktype(Enum.valueOf(Oslp.LinkType.class, device.getPreferredLinkType().name()));
         builder.setActualLinktype(Enum.valueOf(Oslp.LinkType.class, device.getActualLinkType().name()));
@@ -1012,19 +1010,17 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
     private static Message createResumeScheduleResponse() {
         return Oslp.Message.newBuilder()
-                .setResumeScheduleResponse(Oslp.ResumeScheduleResponse.newBuilder().setStatus(Oslp.Status.FAILURE))
-                .build();
+                .setResumeScheduleResponse(Oslp.ResumeScheduleResponse.newBuilder().setStatus(Oslp.Status.OK)).build();
     }
 
     private static Message createSetRebootResponse() {
         return Oslp.Message.newBuilder()
-                .setSetRebootResponse(Oslp.SetRebootResponse.newBuilder().setStatus(Oslp.Status.FAILURE)).build();
+                .setSetRebootResponse(Oslp.SetRebootResponse.newBuilder().setStatus(Oslp.Status.OK)).build();
     }
 
     private static Message createSetTransitionResponse() {
         return Oslp.Message.newBuilder()
-                .setSetTransitionResponse(Oslp.SetTransitionResponse.newBuilder().setStatus(Oslp.Status.FAILURE))
-                .build();
+                .setSetTransitionResponse(Oslp.SetTransitionResponse.newBuilder().setStatus(Oslp.Status.OK)).build();
     }
 
     private static void handleSetLightRequest(final Device device, final SetLightRequest request) {
