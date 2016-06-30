@@ -66,7 +66,7 @@ public class AdHocManagementService extends AbstractService {
 
     public void setLight(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final List<LightValue> lightValues, final String messageType)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.debug("setLight called for device {} with organisation {}", deviceIdentification,
                 organisationIdentification);
@@ -102,7 +102,7 @@ public class AdHocManagementService extends AbstractService {
      */
     public void getStatus(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final DomainType allowedDomainType, final String messageType)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
@@ -152,15 +152,13 @@ public class AdHocManagementService extends AbstractService {
                 osgpException = new TechnicalException(ComponentType.DOMAIN_PUBLIC_LIGHTING,
                         "Device was not able to report status", new NoDeviceResponseException());
             }
+        } catch (final OsgpException ex) {
+            osgpException = ex;
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            if (e instanceof OsgpException) {
-                osgpException = (OsgpException) e;
-            } else {
-                osgpException = new TechnicalException(ComponentType.DOMAIN_PUBLIC_LIGHTING,
-                        "Exception occurred while getting device status", e);
-            }
+            osgpException = new TechnicalException(ComponentType.DOMAIN_PUBLIC_LIGHTING,
+                    "Exception occurred while getting device status", e);
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
@@ -171,7 +169,7 @@ public class AdHocManagementService extends AbstractService {
 
     public void resumeSchedule(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final Integer index, final boolean isImmediate, final String messageType)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
