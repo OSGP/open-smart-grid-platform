@@ -28,7 +28,6 @@ public abstract class BaseMessageProcessorMap implements MessageProcessorMap {
     protected final String messageProcessorMapName;
 
     public BaseMessageProcessorMap(final String messageProcessorMapName) {
-        super();
         this.messageProcessorMapName = messageProcessorMapName;
     }
 
