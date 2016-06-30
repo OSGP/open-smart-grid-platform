@@ -146,5 +146,4 @@ public class CommonGetConfigurationRequestMessageProcessor extends DeviceRequest
 
         responseMessageSender.send(responseMessage);
     }
-
 }

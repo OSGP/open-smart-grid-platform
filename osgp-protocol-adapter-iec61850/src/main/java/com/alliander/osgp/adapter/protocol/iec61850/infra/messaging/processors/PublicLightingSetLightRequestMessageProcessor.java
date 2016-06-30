@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.processors;
 
+import java.util.List;
+
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
@@ -20,6 +22,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetLightDevi
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
+import com.alliander.osgp.dto.valueobjects.LightValueDto;
 import com.alliander.osgp.dto.valueobjects.LightValueMessageDataContainerDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.ConnectionFailureException;
@@ -65,9 +68,7 @@ public class PublicLightingSetLightRequestMessageProcessor extends DeviceRequest
             retryCount = message.getIntProperty(Constants.RETRY_COUNT);
             isScheduled = message.propertyExists(Constants.IS_SCHEDULED) ? message
                     .getBooleanProperty(Constants.IS_SCHEDULED) : false;
-
                     lightValueMessageDataContainer = (LightValueMessageDataContainerDto) message.getObject();
-
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -113,6 +114,16 @@ public class PublicLightingSetLightRequestMessageProcessor extends DeviceRequest
         };
 
         LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
+
+        final List<LightValueDto> lightValues = lightValueMessageDataContainer.getLightValues();
+        for (int i = 0; i < lightValues.size(); i++) {
+            final LightValueDto lightValue = lightValues.get(i);
+            if (lightValue.getIndex() == null) {
+                final LightValueDto newLightValue = new LightValueDto(0, lightValue.isOn(), lightValue.getDimValue());
+                lightValues.remove(i);
+                lightValues.add(i, newLightValue);
+            }
+        }
 
         final SetLightDeviceRequest deviceRequest = new SetLightDeviceRequest(organisationIdentification,
                 deviceIdentification, correlationUid, lightValueMessageDataContainer, domain, domainVersion,

@@ -112,7 +112,5 @@ public class TariffSwitchingGetStatusRequestMessageProcessor extends DeviceReque
                 correlationUid, domain, domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
         this.deviceService.getStatus(deviceRequest, deviceResponseHandler);
-
     }
-
 }

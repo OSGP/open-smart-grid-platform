@@ -121,5 +121,4 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
 
         this.deviceService.setSchedule(deviceRequest, deviceResponseHandler);
     }
-
 }

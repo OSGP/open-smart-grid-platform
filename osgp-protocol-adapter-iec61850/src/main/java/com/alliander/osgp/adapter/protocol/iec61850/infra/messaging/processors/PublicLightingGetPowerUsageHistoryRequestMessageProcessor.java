@@ -78,7 +78,7 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends D
             messagePriority = message.getJMSPriority();
             scheduleTime = message.propertyExists(Constants.SCHEDULE_TIME) ? message
                     .getLongProperty(Constants.SCHEDULE_TIME) : null;
-                    powerUsageHistoryMessageDataContainerDto = (PowerUsageHistoryMessageDataContainerDto) message.getObject();
+            powerUsageHistoryMessageDataContainerDto = (PowerUsageHistoryMessageDataContainerDto) message.getObject();
 
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
@@ -102,11 +102,11 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends D
             @Override
             public void handleResponse(final DeviceResponse deviceResponse) {
                 PublicLightingGetPowerUsageHistoryRequestMessageProcessor.this
-                .handleGetPowerUsageHistoryDeviceResponse((GetPowerUsageHistoryDeviceResponse) deviceResponse,
-                        PublicLightingGetPowerUsageHistoryRequestMessageProcessor.this.responseMessageSender,
-                        requestMessageData.getDomain(), requestMessageData.getDomainVersion(),
-                        requestMessageData.getMessageType(), requestMessageData.getRetryCount(),
-                        messagePriority, scheduleTime);
+                        .handleGetPowerUsageHistoryDeviceResponse((GetPowerUsageHistoryDeviceResponse) deviceResponse,
+                                PublicLightingGetPowerUsageHistoryRequestMessageProcessor.this.responseMessageSender,
+                                requestMessageData.getDomain(), requestMessageData.getDomainVersion(),
+                                requestMessageData.getMessageType(), requestMessageData.getRetryCount(),
+                                messagePriority, scheduleTime);
             }
 
             @Override
@@ -165,5 +165,4 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends D
 
         responseMessageSender.send(responseMessage);
     }
-
 }

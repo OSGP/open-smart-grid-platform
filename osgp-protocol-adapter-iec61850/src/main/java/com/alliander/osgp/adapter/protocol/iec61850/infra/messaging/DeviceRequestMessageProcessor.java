@@ -82,9 +82,6 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
                 this.deviceRequestMessageType.name(), this);
     }
 
-    // IDEA: change these two methods handleEmptyDeviceResponse and
-    // handleScheduledEmptyDeviceResponse to have less double code
-
     protected void handleEmptyDeviceResponse(final DeviceResponse deviceResponse,
             final ResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
             final String messageType, final int retryCount) {
@@ -95,10 +92,10 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         try {
             final EmptyDeviceResponse response = (EmptyDeviceResponse) deviceResponse;
             this.deviceResponseService.handleDeviceMessageStatus(response.getStatus());
-        } catch (final Exception e) {
+        } catch (final OsgpException e) {
             LOGGER.error("Device Response Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            ex = new TechnicalException(ComponentType.PROTOCOL_IEC61850, UNEXPECTED_EXCEPTION, e);
+            ex = e;
         }
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
@@ -113,19 +110,11 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             final ResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
             final String messageType, final int retryCount) {
 
-        ResponseMessageResultType result = ResponseMessageResultType.OK;
-        OsgpException osgpException = null;
-        DeviceStatusDto status = null;
+        final ResponseMessageResultType result = ResponseMessageResultType.OK;
+        final OsgpException osgpException = null;
 
-        try {
-            final GetStatusDeviceResponse response = (GetStatusDeviceResponse) deviceResponse;
-            status = response.getDeviceStatus();
-        } catch (final Exception e) {
-            LOGGER.error("Device Response Exception", e);
-            result = ResponseMessageResultType.NOT_OK;
-            osgpException = new TechnicalException(ComponentType.PROTOCOL_IEC61850,
-                    "Unexpected exception while retrieving response message", e);
-        }
+        final GetStatusDeviceResponse response = (GetStatusDeviceResponse) deviceResponse;
+        final DeviceStatusDto status = response.getDeviceStatus();
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
                 deviceResponse.getCorrelationUid(), deviceResponse.getOrganisationIdentification(),

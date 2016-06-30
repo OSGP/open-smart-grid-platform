@@ -96,8 +96,8 @@ public class CommonGetStatusRequestMessageProcessor extends DeviceRequestMessage
                     CommonGetStatusRequestMessageProcessor.this.handleExpectedError(new ConnectionFailureException(
                             ComponentType.PROTOCOL_IEC61850, t.getMessage()), requestMessageData.getCorrelationUid(),
                             requestMessageData.getOrganisationIdentification(), requestMessageData
-                            .getDeviceIdentification(), requestMessageData.getDomain(), requestMessageData
-                            .getDomainVersion(), requestMessageData.getMessageType());
+                                    .getDeviceIdentification(), requestMessageData.getDomain(), requestMessageData
+                                    .getDomainVersion(), requestMessageData.getMessageType());
                 } else {
                     CommonGetStatusRequestMessageProcessor.this.handleUnExpectedError(deviceResponse, t,
                             requestMessageData.getMessageData(), requestMessageData.getDomain(),
@@ -112,7 +112,5 @@ public class CommonGetStatusRequestMessageProcessor extends DeviceRequestMessage
                 correlationUid, domain, domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
         this.deviceService.getStatus(deviceRequest, deviceResponseHandler);
-
     }
-
 }
