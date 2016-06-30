@@ -36,16 +36,17 @@ public class SetActivityCalendarCommandActivationExecutor implements CommandExec
 
         LOGGER.info("ACTIVATING PASSIVE CALENDAR");
         final MethodParameter method = new MethodParameter(CLASS_ID, OBIS_CODE, METHOD_ID_ACTIVATE_PASSIVE_CALENDAR);
-        MethodResult methodResultCode=null;
+        MethodResult methodResultCode = null;
         try {
             methodResultCode = conn.action(method);
         } catch (final IOException e) {
             throw new ConnectionException(e);
         }
-        if (methodResultCode == null) {
-            throw new ProtocolAdapterException(
-                    "action method for DlmsConnection should return a list with one MethodResult");
+        if (!MethodResultCode.SUCCESS.equals(methodResultCode)) {
+            throw new ProtocolAdapterException("Activating the activity calendar failed. MethodResult is: "
+                    + methodResultCode.getResultCode() + " ClassId: " + CLASS_ID + " obisCode: " + OBIS_CODE
+                    + " method id: " + METHOD_ID_ACTIVATE_PASSIVE_CALENDAR);
         }
-        return methodResultCode.getResultCode();
+        return MethodResultCode.SUCCESS;
     }
 }

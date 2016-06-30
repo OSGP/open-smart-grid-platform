@@ -8,7 +8,6 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import org.openmuc.jdlms.DlmsConnection;
-import org.openmuc.jdlms.MethodResultCode;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -29,8 +28,9 @@ public class SetActivityCalendarBundleCommandExecutorImpl extends
     @Autowired
     private SetActivityCalendarCommandExecutor setActivityCalendarCommandExecutor;
 
-    @Autowired
-    private SetActivityCalendarCommandActivationExecutor setActivityCalendarCommandActivationExecutor;
+    // @Autowired
+    // private SetActivityCalendarCommandActivationExecutor
+    // setActivityCalendarCommandActivationExecutor;
 
     public SetActivityCalendarBundleCommandExecutorImpl() {
         super(ActivityCalendarDataDto.class);
@@ -40,19 +40,11 @@ public class SetActivityCalendarBundleCommandExecutorImpl extends
     public ActionResponseDto execute(final DlmsConnection conn, final DlmsDevice device,
             final ActivityCalendarDataDto activityCalendar) {
 
-        MethodResultCode methodResult = null;
-
         try {
             this.setActivityCalendarCommandExecutor.execute(conn, device, activityCalendar.getActivityCalendar());
-
-            methodResult = this.setActivityCalendarCommandActivationExecutor.execute(conn, device, null);
         } catch (final ProtocolAdapterException e) {
             LOGGER.error("Error while setting new activity calendar", e);
             return new ActionResponseDto(e, "Error while setting new activity calendar");
-        }
-
-        if (!MethodResultCode.SUCCESS.equals(methodResult)) {
-            return new ActionResponseDto("AccessResultCode for set Activity Calendar: " + methodResult);
         }
 
         return new ActionResponseDto("Set Activity Calendar Result is OK for device id: "
@@ -69,12 +61,4 @@ public class SetActivityCalendarBundleCommandExecutorImpl extends
         this.setActivityCalendarCommandExecutor = setActivityCalendarCommandExecutor;
     }
 
-    public SetActivityCalendarCommandActivationExecutor getSetActivityCalendarCommandActivationExecutor() {
-        return this.setActivityCalendarCommandActivationExecutor;
-    }
-
-    public void setSetActivityCalendarCommandActivationExecutor(
-            final SetActivityCalendarCommandActivationExecutor setActivityCalendarCommandActivationExecutor) {
-        this.setActivityCalendarCommandActivationExecutor = setActivityCalendarCommandActivationExecutor;
-    }
 }

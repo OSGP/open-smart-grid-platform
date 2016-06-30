@@ -45,6 +45,9 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
     private ConfigurationMapper configurationMapper;
 
     @Autowired
+    private SetActivityCalendarCommandActivationExecutor setActivityCalendarCommandActivationExecutor;
+
+    @Autowired
     private DlmsHelperService dlmsHelperService;
 
     @Override
@@ -56,12 +59,30 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
         final Set<WeekProfileDto> weekProfileSet = this.getWeekProfileSet(seasonProfileList);
         final Set<DayProfileDto> dayProfileSet = this.getDayProfileSet(weekProfileSet);
 
-        new DataObjectAttrExecutors("SetActivityCalendar").addExecutor(this.getCalendarNameExecutor(activityCalendar))
+        final DataObjectAttrExecutors dataObjectExecutors = new DataObjectAttrExecutors("SetActivityCalendar")
+                .addExecutor(this.getCalendarNameExecutor(activityCalendar))
                 .addExecutor(this.getSeasonProfileExecutor(seasonProfileList))
                 .addExecutor(this.getWeekProfileTableExecutor(weekProfileSet))
-                .addExecutor(this.getDayProfileTablePassiveExecutor(dayProfileSet)).execute(conn);
+                .addExecutor(this.getDayProfileTablePassiveExecutor(dayProfileSet));
+        dataObjectExecutors.execute(conn);
 
-        LOGGER.info("Finished calling conn.set");
+        LOGGER.info("Finished setting the passive activity calendar");
+
+        // Now activate the newly set activity calendar
+        // In case of an exception include the activity calendar set here above
+        // in the exception to throw
+        try {
+            this.setActivityCalendarCommandActivationExecutor.execute(conn, device, null);
+            LOGGER.info("Finished activating the passive to the active activity calendar");
+
+        } catch (final ProtocolAdapterException e) {
+
+            String message = "";
+            for (final DataObjectAttrExecutor executor : dataObjectExecutors.getDataObjectAttrExecutorList()) {
+                message += executor.createRequestAndResultCodeInfo();
+            }
+            throw new ProtocolAdapterException(e.getMessage() + message, e);
+        }
 
         return AccessResultCode.SUCCESS;
     }
