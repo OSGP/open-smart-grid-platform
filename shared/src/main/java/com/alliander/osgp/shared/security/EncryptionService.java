@@ -110,7 +110,7 @@ public class EncryptionService {
             final Cipher cipher = Cipher.getInstance(ALGORITHM, PROVIDER);
             cipher.init(Cipher.DECRYPT_MODE, this.key, new IvParameterSpec(IVBYTES));
             final byte[] decryptedData = cipher.doFinal(inputData);
-            if (this.checkIvBytesPrepended(decryptedData)) {
+            if (this.checkNullBytesPrepended(decryptedData)) {
                 return Arrays.copyOfRange(decryptedData, IVBYTES.length, decryptedData.length);
             } else {
                 return decryptedData;
@@ -125,16 +125,16 @@ public class EncryptionService {
 
     /**
      * <pre>
-     *         - It looks like aes encrypten using openssl doesn't prefix 16 iv bytes anymore as it used to (see conversion script) and as it now is in the database
-     *         - Java / bouncy castle doesn't iv bytes when aes encrypting (seen in junit test)
-     *         - When iv bytes are present, a decrypted byte[] contains 16 0 bytes (java, also openssl), when this behaviour changes, this method fails to detect iv bytes
-     *         - makeSimulatorKey.sh (device simulator) assumes keys in the database are prefixed with iv bytes, at present this is correct
+     *         - When aes decrypting data (both Java / bouncy castle and openssl) sometimes 16 0 bytes are prepended.
+     *         - Possibly this has to do with padding during encryption
+     *         - openssl as well as Java / bouncy castle don't prefix iv bytes when aes encrypting data (seen in junit test and commandline)
+     *         - makeSimulatorKey.sh (device simulator) assumes decrypted data are prepended with 0 bytes, at present this is correct
      * </pre>
      *
      * @param bytes
      * @return
      */
-    private boolean checkIvBytesPrepended(final byte[] bytes) {
+    private boolean checkNullBytesPrepended(final byte[] bytes) {
         if (bytes.length > IVBYTES.length) {
             boolean ivPrepended = false;
             for (short s = 0; s < IVBYTES.length; s++) {
