@@ -102,18 +102,15 @@ public abstract class WebServiceRequestMessageProcessor implements MessageProces
      */
     protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final String messageType) {
-
-        LOGGER.error("Exception occurred for messageType: {}", messageType, e);
+        LOGGER.error("Handling error for message type: " + messageType, e);
+        OsgpException osgpException = null;
         if (e instanceof OsgpException) {
-            this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                    deviceIdentification, ResponseMessageResultType.NOT_OK, (OsgpException) e, null));
+            osgpException = (OsgpException) e;
         } else {
-            final OsgpException osgpException = new TechnicalException(ComponentType.UNKNOWN,
-                    "An unknown error occurred", e);
-
-            this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                    deviceIdentification, ResponseMessageResultType.NOT_OK, osgpException, e));
+            osgpException = new TechnicalException(ComponentType.DOMAIN_TARIFF_SWITCHING, "An unknown error occurred",
+                    e);
         }
-
+        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
+                deviceIdentification, ResponseMessageResultType.NOT_OK, osgpException, e));
     }
 }

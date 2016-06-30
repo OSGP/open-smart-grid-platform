@@ -145,15 +145,16 @@ public class WebServiceConfig {
 
     @Bean
     public DetailSoapFaultMappingExceptionResolver exceptionResolver() {
-
         LOGGER.debug("Creating Detail Soap Fault Mapping Exception Resolver Bean");
-
         final DetailSoapFaultMappingExceptionResolver exceptionResolver = new DetailSoapFaultMappingExceptionResolver(
                 new SoapFaultMapper());
         exceptionResolver.setOrder(1);
 
         final Properties props = new Properties();
+        props.put("com.alliander.osgp.shared.exceptionhandling.OsgpException", "SERVER");
         props.put("com.alliander.osgp.shared.exceptionhandling.FunctionalException", "SERVER");
+        props.put("com.alliander.osgp.shared.exceptionhandling.TechnicalException", "SERVER");
+        props.put("com.alliander.osgp.shared.exceptionhandling.ConnectionFailureException", "SERVER");
         exceptionResolver.setExceptionMappings(props);
         return exceptionResolver;
     }

@@ -76,7 +76,7 @@ public class WebServiceTemplateFactory {
             LOGGER.error("userName is empty or null");
         }
         if (StringUtils.isEmpty(this.applicationName)) {
-            LOGGER.error("applicatioName is empty or null");
+            LOGGER.error("applicationName is empty or null");
         }
 
         WebServiceTemplate webServiceTemplate = null;
@@ -122,9 +122,12 @@ public class WebServiceTemplateFactory {
     }
 
     /**
-     * @throws WebServiceSecurityException if an error occurs while attempting to create a secured connection. 
+     * @throws WebServiceSecurityException
+     *             if an error occurs while attempting to create a secured
+     *             connection.
      */
-    private HttpComponentsMessageSender webServiceMessageSender(final String keystore) throws WebServiceSecurityException{
+    private HttpComponentsMessageSender webServiceMessageSender(final String keystore)
+            throws WebServiceSecurityException {
 
         try {
             // Open keystore, assuming same identity

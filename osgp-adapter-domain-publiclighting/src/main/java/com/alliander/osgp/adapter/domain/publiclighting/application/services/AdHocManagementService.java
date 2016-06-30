@@ -39,6 +39,7 @@ import com.alliander.osgp.dto.valueobjects.TransitionMessageDataContainerDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
+import com.alliander.osgp.shared.exceptionhandling.NoDeviceResponseException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
@@ -65,7 +66,7 @@ public class AdHocManagementService extends AbstractService {
 
     public void setLight(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final List<LightValue> lightValues, final String messageType)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.debug("setLight called for device {} with organisation {}", deviceIdentification,
                 organisationIdentification);
@@ -101,7 +102,7 @@ public class AdHocManagementService extends AbstractService {
      */
     public void getStatus(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final DomainType allowedDomainType, final String messageType)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
@@ -141,16 +142,25 @@ public class AdHocManagementService extends AbstractService {
                 dosMap.put(dos.getExternalId(), dos);
             }
 
-            deviceStatusMapped = new DeviceStatusMapped(filterTariffValues(status.getLightValues(), dosMap,
-                    allowedDomainType), filterLightValues(status.getLightValues(), dosMap, allowedDomainType),
-                    status.getPreferredLinkType(), status.getActualLinkType(), status.getLightType(),
-                    status.getEventNotificationsMask());
-
+            if (status != null) {
+                deviceStatusMapped = new DeviceStatusMapped(filterTariffValues(status.getLightValues(), dosMap,
+                        allowedDomainType), filterLightValues(status.getLightValues(), dosMap, allowedDomainType),
+                        status.getPreferredLinkType(), status.getActualLinkType(), status.getLightType(),
+                        status.getEventNotificationsMask());
+            } else {
+                result = ResponseMessageResultType.NOT_OK;
+                osgpException = new TechnicalException(ComponentType.DOMAIN_PUBLIC_LIGHTING,
+                        "Device was not able to report status", new NoDeviceResponseException());
+            }
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            osgpException = new TechnicalException(ComponentType.UNKNOWN,
-                    "Exception occurred while getting device status", e);
+            if (e instanceof OsgpException) {
+                osgpException = (OsgpException) e;
+            } else {
+                osgpException = new TechnicalException(ComponentType.DOMAIN_PUBLIC_LIGHTING,
+                        "Exception occurred while getting device status", e);
+            }
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
@@ -161,7 +171,7 @@ public class AdHocManagementService extends AbstractService {
 
     public void resumeSchedule(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final Integer index, final boolean isImmediate, final String messageType)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
