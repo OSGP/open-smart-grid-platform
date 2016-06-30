@@ -101,19 +101,19 @@ public class EncryptionService {
     }
 
     /**
-     * Decrypts the data using the key. Strips off iv bytes when they are there
-     * (first 16 0 bytes)
+     * Decrypts the data using the key, Strips off iv bytes when they are there
+     * (first 16 0 bytes).
      */
     public byte[] decrypt(final byte[] inputData) {
 
         try {
             final Cipher cipher = Cipher.getInstance(ALGORITHM, PROVIDER);
             cipher.init(Cipher.DECRYPT_MODE, this.key, new IvParameterSpec(IVBYTES));
-            final byte[] decryptedKey = cipher.doFinal(inputData);
-            if (this.checkIvBytesPrepended(decryptedKey)) {
-                return Arrays.copyOfRange(decryptedKey, IVBYTES.length, decryptedKey.length);
+            final byte[] decryptedData = cipher.doFinal(inputData);
+            if (this.checkIvBytesPrepended(decryptedData)) {
+                return Arrays.copyOfRange(decryptedData, IVBYTES.length, decryptedData.length);
             } else {
-                return decryptedKey;
+                return decryptedData;
             }
         } catch (final NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
                 | IllegalBlockSizeException | BadPaddingException | NoSuchProviderException
@@ -123,6 +123,17 @@ public class EncryptionService {
         }
     }
 
+    /**
+     * <pre>
+     *         - It looks like aes encrypten using openssl doesn't prefix 16 iv bytes anymore as it used to (see conversion script) and as it now is in the database
+     *         - Java / bouncy castle doesn't iv bytes when aes encrypting (seen in junit test)
+     *         - When iv bytes are present, a decrypted byte[] contains 16 0 bytes (java, also openssl), when this behaviour changes, this method fails to detect iv bytes
+     *         - makeSimulatorKey.sh (device simulator) assumes keys in the database are prefixed with iv bytes, at present this is correct
+     * </pre>
+     *
+     * @param bytes
+     * @return
+     */
     private boolean checkIvBytesPrepended(final byte[] bytes) {
         if (bytes.length > IVBYTES.length) {
             boolean ivPrepended = false;
