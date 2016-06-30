@@ -29,22 +29,12 @@ public class KeyStoreSettings {
 
     private KeyStore initializeKeyStore(final String keyStoreLocation, final String keyStorePassword,
             final String keyStoreType) throws WebClientException {
-        InputStream stream = null;
-        try {
+        try (InputStream stream = new FileInputStream(this.keyStoreLocation)) {
             final KeyStore keyStore = KeyStore.getInstance(keyStoreType.toUpperCase());
-            stream = new FileInputStream(this.keyStoreLocation);
             keyStore.load(stream, keyStorePassword.toCharArray());
             return keyStore;
         } catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e) {
             throw new WebClientException("Error initializing KeyStore", e);
-        } finally {
-            if (stream != null) {
-                try {
-                    stream.close();
-                } catch (final IOException e) {
-                    throw new WebClientException("Error closing stream after initializing KeyStore", e);
-                }
-            }
         }
     }
 
