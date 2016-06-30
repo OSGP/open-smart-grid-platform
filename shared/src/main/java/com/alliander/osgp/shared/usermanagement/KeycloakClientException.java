@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -7,18 +7,18 @@
  */
 package com.alliander.osgp.shared.usermanagement;
 
-public class OrganisationManagementClientException extends WebClientException {
+public class KeycloakClientException extends WebClientException {
 
     /**
      * Serial Version UID.
      */
-    private static final long serialVersionUID = -1123314377879408972L;
+    private static final long serialVersionUID = -287959971211054459L;
 
-    public OrganisationManagementClientException(final String message) {
+    public KeycloakClientException(final String message) {
         super(message);
     }
 
-    public OrganisationManagementClientException(final String message, final Throwable t) {
+    public KeycloakClientException(final String message, final Throwable t) {
         super(message, t);
     }
 }
