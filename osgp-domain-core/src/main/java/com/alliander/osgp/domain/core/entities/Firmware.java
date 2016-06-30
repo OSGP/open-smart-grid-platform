@@ -8,15 +8,12 @@
 
 package com.alliander.osgp.domain.core.entities;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.Type;
 
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
@@ -28,29 +25,36 @@ public class Firmware extends AbstractEntity {
 
     private static final long serialVersionUID = 5003530514434626119L;
 
-    @ManyToOne()
-    @JoinColumn
-    private DeviceModel deviceModel;
-
     @Column(nullable = false)
     private int firmwareVersion;
 
     @Column(length = 255)
     private String description;
 
-    @Lob
-    @Fetch(FetchMode.SELECT)
-    @Type(type = "org.hibernate.type.PrimitiveByteArrayBlobType")
-    byte[] installationFile;
+    @Column()
+    private Date installationDate;
 
-    public Firmware(final DeviceModel deviceModel, final int firmwareVersion, final String description) {
-        this.deviceModel = deviceModel;
-        this.firmwareVersion = firmwareVersion;
-        this.description = description;
+    @Column()
+    private String installedBy;
+
+    @Column()
+    private boolean active;
+
+    @ManyToOne()
+    @JoinColumn()
+    private DeviceModelFirmware deviceModelFirmware;
+
+    @ManyToOne()
+    @JoinColumn()
+    private Device device;
+
+    public Firmware() {
+        // Default constructor for hibernate
     }
 
-    public DeviceModel getDeviceModel() {
-        return this.deviceModel;
+    public Firmware(final int firmwareVersion, final String description) {
+        this.firmwareVersion = firmwareVersion;
+        this.description = description;
     }
 
     public int getFirmwareVersion() {
@@ -65,12 +69,24 @@ public class Firmware extends AbstractEntity {
         this.description = description;
     }
 
-    public byte[] getInstallationFile() {
-        return this.installationFile;
+    public Date getInstallationDate() {
+        return this.installationDate;
     }
 
-    public void setInstallationFile(final byte[] installationFile) {
-        this.installationFile = installationFile;
+    public String getInstalledBy() {
+        return this.installedBy;
+    }
+
+    public boolean isActive() {
+        return this.active;
+    }
+
+    public DeviceModelFirmware getDeviceModelFirmware() {
+        return this.deviceModelFirmware;
+    }
+
+    public Device getDevice() {
+        return this.device;
     }
 
 }
