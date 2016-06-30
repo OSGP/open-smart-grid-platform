@@ -93,10 +93,10 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         try {
             final EmptyDeviceResponse response = (EmptyDeviceResponse) deviceResponse;
             this.deviceResponseService.handleDeviceMessageStatus(response.getStatus());
-        } catch (final Exception e) {
+        } catch (final OsgpException e) {
             LOGGER.error("Device Response Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            ex = new TechnicalException(ComponentType.UNKNOWN, UNEXPECTED_EXCEPTION, e);
+            ex = e;
         }
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
@@ -116,10 +116,10 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         try {
             final EmptyDeviceResponse response = (EmptyDeviceResponse) deviceResponse;
             this.deviceResponseService.handleDeviceMessageStatus(response.getStatus());
-        } catch (final Exception e) {
+        } catch (final OsgpException e) {
             LOGGER.error("Device Response Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            ex = new TechnicalException(ComponentType.UNKNOWN, UNEXPECTED_EXCEPTION, e);
+            ex = e;
         }
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
@@ -133,7 +133,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             final String deviceIdentification, final String domain, final String domainVersion,
             final String messageType, final int retryCount) {
         LOGGER.error("Error while processing message", e);
-        final OsgpException ex = new TechnicalException(ComponentType.UNKNOWN, UNEXPECTED_EXCEPTION, e);
+        final OsgpException ex = new TechnicalException(ComponentType.PROTOCOL_OSLP, UNEXPECTED_EXCEPTION, e);
 
         final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage(domain, domainVersion,
                 messageType, correlationUid, organisationIdentification, deviceIdentification,
@@ -145,7 +145,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
     protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final String domain, final String domainVersion, final String messageType) {
         LOGGER.error("Error while processing message", e);
-        final OsgpException ex = new TechnicalException(ComponentType.UNKNOWN, UNEXPECTED_EXCEPTION, e);
+        final OsgpException ex = new TechnicalException(ComponentType.PROTOCOL_OSLP, UNEXPECTED_EXCEPTION, e);
 
         final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage(domain, domainVersion,
                 messageType, correlationUid, organisationIdentification, deviceIdentification,
@@ -160,7 +160,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             final String messageType, final boolean isScheduled, final int retryCount) {
 
         final ResponseMessageResultType result = ResponseMessageResultType.NOT_OK;
-        final OsgpException ex = new TechnicalException(ComponentType.UNKNOWN, UNEXPECTED_EXCEPTION, t);
+        final OsgpException ex = new TechnicalException(ComponentType.PROTOCOL_OSLP, UNEXPECTED_EXCEPTION, t);
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
                 deviceResponse.getCorrelationUid(), deviceResponse.getOrganisationIdentification(),

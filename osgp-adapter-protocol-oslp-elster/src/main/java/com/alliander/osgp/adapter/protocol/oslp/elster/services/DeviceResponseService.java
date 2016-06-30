@@ -12,23 +12,22 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.adapter.protocol.oslp.elster.device.DeviceMessageStatus;
-import com.alliander.osgp.adapter.protocol.oslp.elster.exceptions.DeviceMessageFailedException;
-import com.alliander.osgp.adapter.protocol.oslp.elster.exceptions.DeviceMessageRejectedException;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
 @Service
 public class DeviceResponseService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceResponseService.class);
 
-    public void handleDeviceMessageStatus(final DeviceMessageStatus status) throws DeviceMessageRejectedException,
-            DeviceMessageFailedException {
+    public void handleDeviceMessageStatus(final DeviceMessageStatus status) throws TechnicalException {
         switch (status) {
         case FAILURE:
             LOGGER.info("Failure device message status received: {}", status);
-            throw new DeviceMessageFailedException();
+            throw new TechnicalException(ComponentType.PROTOCOL_OSLP, "Device reports failure");
         case REJECTED:
             LOGGER.info("Rejected device message status received: {}", status);
-            throw new DeviceMessageRejectedException();
+            throw new TechnicalException(ComponentType.PROTOCOL_OSLP, "Device reports rejected");
         case OK:
             LOGGER.info("OK device message status received: {}", status);
             break;

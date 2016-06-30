@@ -33,11 +33,12 @@ import com.alliander.osgp.shared.infra.jms.Constants;
  */
 @Component("oslpCommonUpdateDeviceSslCertificationRequestMessageProcessor")
 public class CommonUpdateDeviceSslCertificationRequestMessageProcessor extends DeviceRequestMessageProcessor implements
-OslpEnvelopeProcessor {
+        OslpEnvelopeProcessor {
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(CommonUpdateDeviceSslCertificationRequestMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(CommonUpdateDeviceSslCertificationRequestMessageProcessor.class);
 
     public CommonUpdateDeviceSslCertificationRequestMessageProcessor() {
         super(DeviceRequestMessageType.UPDATE_DEVICE_SSL_CERTIFICATION);
@@ -67,7 +68,7 @@ OslpEnvelopeProcessor {
             ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
             isScheduled = message.propertyExists(Constants.IS_SCHEDULED) ? message
                     .getBooleanProperty(Constants.IS_SCHEDULED) : false;
-                    retryCount = message.getIntProperty(Constants.RETRY_COUNT);
+            retryCount = message.getIntProperty(Constants.RETRY_COUNT);
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -118,16 +119,18 @@ OslpEnvelopeProcessor {
 
             @Override
             public void handleResponse(final DeviceResponse deviceResponse) {
-                CommonUpdateDeviceSslCertificationRequestMessageProcessor.this.handleEmptyDeviceResponse(deviceResponse,
-                        CommonUpdateDeviceSslCertificationRequestMessageProcessor.this.responseMessageSender, domain, domainVersion,
-                        messageType, retryCount);
+                CommonUpdateDeviceSslCertificationRequestMessageProcessor.this.handleEmptyDeviceResponse(
+                        deviceResponse,
+                        CommonUpdateDeviceSslCertificationRequestMessageProcessor.this.responseMessageSender, domain,
+                        domainVersion, messageType, retryCount);
             }
 
             @Override
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
-                CommonUpdateDeviceSslCertificationRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(deviceResponse, t,
-                        null, CommonUpdateDeviceSslCertificationRequestMessageProcessor.this.responseMessageSender, deviceResponse,
-                        domain, domainVersion, messageType, isScheduled, retryCount);
+                CommonUpdateDeviceSslCertificationRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(
+                        deviceResponse, t, null,
+                        CommonUpdateDeviceSslCertificationRequestMessageProcessor.this.responseMessageSender,
+                        deviceResponse, domain, domainVersion, messageType, isScheduled, retryCount);
             }
 
         };
@@ -136,8 +139,8 @@ OslpEnvelopeProcessor {
                 correlationUid);
 
         try {
-            this.deviceService.doUpdateDeviceSslCertification(oslpEnvelope, deviceRequest, deviceResponseHandler, ipAddress);
-
+            this.deviceService.doUpdateDeviceSslCertification(oslpEnvelope, deviceRequest, deviceResponseHandler,
+                    ipAddress);
         } catch (final IOException e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
                     domainVersion, messageType, retryCount);
