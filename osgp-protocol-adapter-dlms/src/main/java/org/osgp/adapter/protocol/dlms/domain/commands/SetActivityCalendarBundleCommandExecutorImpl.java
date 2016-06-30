@@ -20,17 +20,13 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDataDto
 
 @Component()
 public class SetActivityCalendarBundleCommandExecutorImpl extends
-        BundleCommandExecutor<ActivityCalendarDataDto, ActionResponseDto> implements
-        SetActivityCalendarBundleCommandExecutor {
+BundleCommandExecutor<ActivityCalendarDataDto, ActionResponseDto> implements
+SetActivityCalendarBundleCommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetActivityCalendarBundleCommandExecutorImpl.class);
 
     @Autowired
     private SetActivityCalendarCommandExecutor setActivityCalendarCommandExecutor;
-
-    // @Autowired
-    // private SetActivityCalendarCommandActivationExecutor
-    // setActivityCalendarCommandActivationExecutor;
 
     public SetActivityCalendarBundleCommandExecutorImpl() {
         super(ActivityCalendarDataDto.class);
