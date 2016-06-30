@@ -139,7 +139,8 @@ public class MellonTokenProcessingFilter extends GenericFilterBean {
 
     private boolean authenticationExistsForUsername(final Authentication authentication, final String username) {
 
-        final boolean userIsAuthenticated = username.equals(authentication.getName());
+        final boolean userIsAuthenticated = authentication != null && username != null
+                && username.equals(authentication.getName());
 
         if (userIsAuthenticated) {
             LOGGER.info(
@@ -160,7 +161,7 @@ public class MellonTokenProcessingFilter extends GenericFilterBean {
     }
 
     private void logoutMellon(final HttpServletResponse httpResponse, final String username) throws ServletException,
-            IOException {
+    IOException {
 
         try {
             this.authenticationManager.logout(username);
