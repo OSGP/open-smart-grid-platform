@@ -451,4 +451,8 @@ public class Device implements Serializable {
         return this.deviceModel;
     }
 
+    public void setDeviceModel(DeviceModel deviceModel) {
+        this.deviceModel = deviceModel;
+    }
+
 }

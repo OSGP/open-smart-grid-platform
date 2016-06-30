@@ -359,12 +359,20 @@ public class FirmwareManagementService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_DEVICE_MODEL_FIRMWARE);
 
-        final Manufacturer databaseManufacturer = this.manufacturerRepository.findByManufacturerId(manufacturer);
-        final DeviceModel databaseDeviceModel = this.deviceModelRepository.findByManufacturerIdAndModelCode(
-                databaseManufacturer, modelCode);
-
-        final List<DeviceModelFirmware> deviceModelFirmwares = this.deviceModelFirmwareRepository
-                .findByDeviceModel(databaseDeviceModel);
+        List<DeviceModelFirmware> deviceModelFirmwares = new ArrayList<DeviceModelFirmware>();
+        if (manufacturer != null) {
+            final Manufacturer databaseManufacturer = this.manufacturerRepository.findByManufacturerId(manufacturer);
+            final DeviceModel databaseDeviceModel = this.deviceModelRepository.findByManufacturerIdAndModelCode(
+                    databaseManufacturer, modelCode);
+    
+            deviceModelFirmwares = this.deviceModelFirmwareRepository
+                    .findByDeviceModel(databaseDeviceModel);
+        } else {
+            final DeviceModel databaseDeviceModel = this.deviceModelRepository.findByModelCode(modelCode);
+    
+            deviceModelFirmwares = this.deviceModelFirmwareRepository
+                    .findByDeviceModel(databaseDeviceModel);
+        }
 
         // performance issue, clean list with firmware files for front-end admin
         // app.

@@ -276,23 +276,14 @@
       <xsd:element name="Activated" type="xsd:boolean" minOccurs="0" />
       <xsd:element name="HasSchedule" type="xsd:boolean" minOccurs="0" />
       <xsd:element name="PublicKeyPresent" type="xsd:boolean" minOccurs="0" />
-      <xsd:sequence>
-        <xsd:element name="Organisations" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
-      </xsd:sequence>
-      <xsd:sequence>
-        <xsd:element name="OutputSettings" type="tns:DeviceOutputSetting" minOccurs="0" maxOccurs="unbounded" />
-      </xsd:sequence>
-      <xsd:sequence>
-        <xsd:element name="Eans" type="tns:Ean" minOccurs="0" maxOccurs="unbounded" />
-      </xsd:sequence>
-      <xsd:sequence>
-        <xsd:element name="RelayStatuses" type="tns:RelayStatus" minOccurs="0" maxOccurs="unbounded" />
-      </xsd:sequence>
-      <xsd:sequence>
-        <xsd:element name="DeviceAuthorizations" type="tns:DeviceAuthorization" minOccurs="0" maxOccurs="unbounded" />
-      </xsd:sequence>
+      <xsd:element name="Organisations" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="OutputSettings" type="tns:DeviceOutputSetting" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="Eans" type="tns:Ean" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="RelayStatuses" type="tns:RelayStatus" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="DeviceAuthorizations" type="tns:DeviceAuthorization" minOccurs="0" maxOccurs="unbounded" />
       <xsd:element name="InMaintenance" type="xsd:boolean" minOccurs="0" />
       <xsd:element name="TechnicalInstallationDate" type="xsd:dateTime"  minOccurs="0" />
+      <xsd:element name="DeviceModel" type="tns:DeviceModel" minOccurs="0" />
     </xsd:sequence>
   </xsd:complexType>
 
@@ -506,6 +497,23 @@
     <xsd:sequence>
       <xsd:element name="functionGroup" type="xsd:string" minOccurs="0" />
       <xsd:element name="organisation" type="xsd:string" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="DeviceModel">
+    <xsd:sequence>
+      <xsd:element name="manufacturerId" type="tns:Manufacturer" />
+      <xsd:element name="modelCode" type="xsd:string" />
+      <xsd:element name="description" type="xsd:string" />
+      <xsd:element name="fileStorage" type="xsd:boolean" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Manufacturer">
+    <xsd:sequence>
+      <xsd:element name="manufacturerId" type="xsd:string" />
+      <xsd:element name="name" type="xsd:string" />
+      <xsd:element name="usePrefix" type="xsd:boolean" />
     </xsd:sequence>
   </xsd:complexType>
 

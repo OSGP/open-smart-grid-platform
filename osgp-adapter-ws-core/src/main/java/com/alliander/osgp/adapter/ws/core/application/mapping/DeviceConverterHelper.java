@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceModel;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.entities.Ssld;
@@ -58,6 +59,11 @@ class DeviceConverterHelper<T extends com.alliander.osgp.domain.core.entities.De
         if (source.getTechnicalInstallationDate() != null) {
             destination.setTechnicalInstallationDate(source.getTechnicalInstallationDate().toGregorianCalendar()
                     .getTime());
+        }
+
+        if (source.getDeviceModel() != null) {
+            DeviceModel deviceModel = new DeviceModel();
+            deviceModel.setModelCode(source.getDeviceModel().getModelCode());
         }
 
         return destination;
@@ -101,7 +107,13 @@ class DeviceConverterHelper<T extends com.alliander.osgp.domain.core.entities.De
                     .getOrganisationIdentification());
             deviceAuthorizations.add(newDeviceAuthorization);
         }
+
         destination.getDeviceAuthorizations().addAll(deviceAuthorizations);
+        if (source.getDeviceModel() != null) {
+            DeviceModel deviceModel = new DeviceModel();
+            deviceModel.setModelCode(source.getDeviceModel().getModelCode());
+            destination.setDeviceModel(deviceModel);
+        }
 
         return destination;
     }
