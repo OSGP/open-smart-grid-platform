@@ -48,6 +48,10 @@ public class ApiResponse {
 
     public void setApiResponseToError(final Exception e) {
         this.setFeedbackMessage(StringUtils.EMPTY);
-        this.setErrorMessage(e.getMessage() + " | " + e.getCause());
+        if (e.getCause() != null) {
+            this.setErrorMessage(e.getMessage() + " | " + e.getCause());
+        } else {
+            this.setErrorMessage(e.getMessage());
+        }
     }
 }
