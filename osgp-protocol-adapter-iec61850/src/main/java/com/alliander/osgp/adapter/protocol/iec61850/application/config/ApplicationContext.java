@@ -68,8 +68,8 @@ public class ApplicationContext {
     @Bean
     public FirmwareLocation firmwareLocation(@Value("${firmware.protocol}") final String protocol,
             @Value("${firmware.domain}") final String domain, @Value("${firmware.port}") final int port,
-            @Value("${firmware.path}") final String path, @Value("${firmware.fileExtension}") final String fileExtension) {
-        return new FirmwareLocation(protocol, domain, port, path, fileExtension);
+            @Value("${firmware.path}") final String path) {
+        return new FirmwareLocation(protocol, domain, port, path);
     }
 
     @Bean
