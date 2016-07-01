@@ -36,6 +36,8 @@ public class OslpSigningService {
 
     private static final String SIGNING_REQUEST_MESSAGE_TYPE = "SIGNING_REQUEST";
 
+    private static final String LINES = "-----------------------------------------------------------------------------";
+
     @Autowired
     private SigningServerRequestMessageSender signingServerRequestMessageSender;
 
@@ -114,23 +116,24 @@ public class OslpSigningService {
         final UnsignedOslpEnvelopeDto unsignedOslpEnvelopeDto = signedOslpEnvelopeDto.getUnsignedOslpEnvelopeDto();
 
         // Handle OSLP request message.
-        LOGGER.info("-----------------------------------------------------------------------------");
-        LOGGER.info("oslpEnvelope.size: {}", oslpEnvelope.getSize());
-        LOGGER.info("-----------------------------------------------------------------------------");
-        LOGGER.info("unsignedOslpEnvelopeDto.getCorrelationUid() : {}", unsignedOslpEnvelopeDto.getCorrelationUid());
-        LOGGER.info("unsignedOslpEnvelopeDto.getDeviceId() : {}", unsignedOslpEnvelopeDto.getDeviceId());
-        LOGGER.info("unsignedOslpEnvelopeDto.getDomain() : {}", unsignedOslpEnvelopeDto.getDomain());
-        LOGGER.info("unsignedOslpEnvelopeDto.getDomainVersion() : {}", unsignedOslpEnvelopeDto.getDomainVersion());
-        LOGGER.info("unsignedOslpEnvelopeDto.getIpAddress() : {}", unsignedOslpEnvelopeDto.getIpAddress());
-        LOGGER.info("unsignedOslpEnvelopeDto.getMessageType() : {}", unsignedOslpEnvelopeDto.getMessageType());
-        LOGGER.info("unsignedOslpEnvelopeDto.getOrganisationIdentification() : {}",
+        LOGGER.debug(LINES);
+        LOGGER.info("oslpEnvelope.size: {} for message type: {}", oslpEnvelope.getSize(),
+                unsignedOslpEnvelopeDto.getMessageType());
+        LOGGER.debug(LINES);
+        LOGGER.debug("unsignedOslpEnvelopeDto.getCorrelationUid() : {}", unsignedOslpEnvelopeDto.getCorrelationUid());
+        LOGGER.debug("unsignedOslpEnvelopeDto.getDeviceId() : {}", unsignedOslpEnvelopeDto.getDeviceId());
+        LOGGER.debug("unsignedOslpEnvelopeDto.getDomain() : {}", unsignedOslpEnvelopeDto.getDomain());
+        LOGGER.debug("unsignedOslpEnvelopeDto.getDomainVersion() : {}", unsignedOslpEnvelopeDto.getDomainVersion());
+        LOGGER.debug("unsignedOslpEnvelopeDto.getIpAddress() : {}", unsignedOslpEnvelopeDto.getIpAddress());
+        LOGGER.debug("unsignedOslpEnvelopeDto.getMessageType() : {}", unsignedOslpEnvelopeDto.getMessageType());
+        LOGGER.debug("unsignedOslpEnvelopeDto.getOrganisationIdentification() : {}",
                 unsignedOslpEnvelopeDto.getOrganisationIdentification());
-        LOGGER.info("unsignedOslpEnvelopeDto.getPayloadMessage() : {}", unsignedOslpEnvelopeDto.getPayloadMessage()
+        LOGGER.debug("unsignedOslpEnvelopeDto.getPayloadMessage() : {}", unsignedOslpEnvelopeDto.getPayloadMessage()
                 .toString());
-        LOGGER.info("unsignedOslpEnvelopeDto.getRetryCount() : {}", unsignedOslpEnvelopeDto.getRetryCount());
-        LOGGER.info("unsignedOslpEnvelopeDto.getSequenceNumber() : {}", unsignedOslpEnvelopeDto.getSequenceNumber());
-        LOGGER.info("unsignedOslpEnvelopeDto.isScheduled() : {}", unsignedOslpEnvelopeDto.isScheduled());
-        LOGGER.info("-----------------------------------------------------------------------------");
+        LOGGER.debug("unsignedOslpEnvelopeDto.getRetryCount() : {}", unsignedOslpEnvelopeDto.getRetryCount());
+        LOGGER.debug("unsignedOslpEnvelopeDto.getSequenceNumber() : {}", unsignedOslpEnvelopeDto.getSequenceNumber());
+        LOGGER.debug("unsignedOslpEnvelopeDto.isScheduled() : {}", unsignedOslpEnvelopeDto.isScheduled());
+        LOGGER.debug(LINES);
 
         // Try to convert message type to DeviceRequestMessageType member.
         final DeviceRequestMessageType deviceRequestMessageType = DeviceRequestMessageType
@@ -152,13 +155,14 @@ public class OslpSigningService {
         final UnsignedOslpEnvelopeDto unsignedOslpEnvelopeDto = signedOslpEnvelopeDto.getUnsignedOslpEnvelopeDto();
 
         // Handle OSLP response message.
-        LOGGER.info("-----------------------------------------------------------------------------");
-        LOGGER.info("oslpEnvelope.size: {}", oslpEnvelope.getSize());
-        LOGGER.info("-----------------------------------------------------------------------------");
-        LOGGER.info("unsignedOslpEnvelopeDto.getCorrelationUid() : {}", unsignedOslpEnvelopeDto.getCorrelationUid());
-        LOGGER.info("unsignedOslpEnvelopeDto.getDeviceId() : {}", unsignedOslpEnvelopeDto.getDeviceId());
-        LOGGER.info("unsignedOslpEnvelopeDto.getSequenceNumber() : {}", unsignedOslpEnvelopeDto.getSequenceNumber());
-        LOGGER.info("unsignedOslpEnvelopeDto.getPayloadMessage() : {}", unsignedOslpEnvelopeDto.getPayloadMessage()
+        LOGGER.debug(LINES);
+        LOGGER.info("oslpEnvelope.size: {} for message type: {}", oslpEnvelope.getSize(),
+                unsignedOslpEnvelopeDto.getMessageType());
+        LOGGER.debug(LINES);
+        LOGGER.debug("unsignedOslpEnvelopeDto.getCorrelationUid() : {}", unsignedOslpEnvelopeDto.getCorrelationUid());
+        LOGGER.debug("unsignedOslpEnvelopeDto.getDeviceId() : {}", unsignedOslpEnvelopeDto.getDeviceId());
+        LOGGER.debug("unsignedOslpEnvelopeDto.getSequenceNumber() : {}", unsignedOslpEnvelopeDto.getSequenceNumber());
+        LOGGER.debug("unsignedOslpEnvelopeDto.getPayloadMessage() : {}", unsignedOslpEnvelopeDto.getPayloadMessage()
                 .toString());
 
         // Send the signed OSLP envelope to the channel handler server.

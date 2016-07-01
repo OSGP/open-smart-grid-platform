@@ -560,6 +560,8 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
     private void handleSetScheduleRequest(final Device device, final SetScheduleRequest setScheduleRequest) {
         // Not yet implemented.
+        LOGGER.info("handleSetScheduleRequest not yet implemented. Device: {}, number of schedule entries: {}",
+                device.getDeviceIdentification(), setScheduleRequest.getSchedulesCount());
     }
 
     private static Message createStartSelfTestResponse() throws IOException {

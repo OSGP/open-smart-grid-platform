@@ -47,21 +47,23 @@ public class SigningServerRequestMessageListener implements MessageListener {
             LOGGER.info("Received message of type: {}, for device: {} with correlationId: {} and replyToQueue: {}",
                     objectMessage.getJMSType(), deviceIdentification, correlationUid, replyToQueue.toString());
 
-            LOGGER.info("-----------------------------------------------------------------------------");
-            LOGGER.info("unsignedOslpEnvelopeDto.getCorrelationUid() : {}", unsignedOslpEnvelopeDto.getCorrelationUid());
-            LOGGER.info("unsignedOslpEnvelopeDto.getDeviceId() : {}", unsignedOslpEnvelopeDto.getDeviceId());
-            LOGGER.info("unsignedOslpEnvelopeDto.getDomain() : {}", unsignedOslpEnvelopeDto.getDomain());
-            LOGGER.info("unsignedOslpEnvelopeDto.getDomainVersion() : {}", unsignedOslpEnvelopeDto.getDomainVersion());
-            LOGGER.info("unsignedOslpEnvelopeDto.getIpAddress() : {}", unsignedOslpEnvelopeDto.getIpAddress());
-            LOGGER.info("unsignedOslpEnvelopeDto.getMessageType() : {}", unsignedOslpEnvelopeDto.getMessageType());
-            LOGGER.info("unsignedOslpEnvelopeDto.getOrganisationIdentification() : {}",
+            LOGGER.debug("-----------------------------------------------------------------------------");
+            LOGGER.debug("unsignedOslpEnvelopeDto.getCorrelationUid() : {}",
+                    unsignedOslpEnvelopeDto.getCorrelationUid());
+            LOGGER.debug("unsignedOslpEnvelopeDto.getDeviceId() : {}", unsignedOslpEnvelopeDto.getDeviceId());
+            LOGGER.debug("unsignedOslpEnvelopeDto.getDomain() : {}", unsignedOslpEnvelopeDto.getDomain());
+            LOGGER.debug("unsignedOslpEnvelopeDto.getDomainVersion() : {}", unsignedOslpEnvelopeDto.getDomainVersion());
+            LOGGER.debug("unsignedOslpEnvelopeDto.getIpAddress() : {}", unsignedOslpEnvelopeDto.getIpAddress());
+            LOGGER.debug("unsignedOslpEnvelopeDto.getMessageType() : {}", unsignedOslpEnvelopeDto.getMessageType());
+            LOGGER.debug("unsignedOslpEnvelopeDto.getOrganisationIdentification() : {}",
                     unsignedOslpEnvelopeDto.getOrganisationIdentification());
-            LOGGER.info("unsignedOslpEnvelopeDto.getPayloadMessage() : {}", unsignedOslpEnvelopeDto.getPayloadMessage()
-                    .toString());
-            LOGGER.info("unsignedOslpEnvelopeDto.getRetryCount() : {}", unsignedOslpEnvelopeDto.getRetryCount());
-            LOGGER.info("unsignedOslpEnvelopeDto.getSequenceNumber() : {}", unsignedOslpEnvelopeDto.getSequenceNumber());
-            LOGGER.info("unsignedOslpEnvelopeDto.isScheduled() : {}", unsignedOslpEnvelopeDto.isScheduled());
-            LOGGER.info("-----------------------------------------------------------------------------");
+            LOGGER.debug("unsignedOslpEnvelopeDto.getPayloadMessage() : {}", unsignedOslpEnvelopeDto
+                    .getPayloadMessage().toString());
+            LOGGER.debug("unsignedOslpEnvelopeDto.getRetryCount() : {}", unsignedOslpEnvelopeDto.getRetryCount());
+            LOGGER.debug("unsignedOslpEnvelopeDto.getSequenceNumber() : {}",
+                    unsignedOslpEnvelopeDto.getSequenceNumber());
+            LOGGER.debug("unsignedOslpEnvelopeDto.isScheduled() : {}", unsignedOslpEnvelopeDto.isScheduled());
+            LOGGER.debug("-----------------------------------------------------------------------------");
 
             this.signingService.sign(unsignedOslpEnvelopeDto, correlationUid, deviceIdentification, replyToQueue);
 
