@@ -16,11 +16,10 @@ public class FirmwareLocation {
 
     private String domain;
     private String path;
-    private String fileExtension;
 
     /**
      * Create a new instance of {@link FirmwareLocation}.
-     * 
+     *
      * @param domain
      *            the domain on which the firmware is located.
      * @param path
@@ -28,19 +27,18 @@ public class FirmwareLocation {
      * @param fileExtension
      *            the file extension of the firmware.
      */
-    public FirmwareLocation(final String domain, final String path, final String fileExtension) {
+    public FirmwareLocation(final String domain, final String path) {
         if (StringUtils.isBlank(domain)) {
             throw new IllegalArgumentException("Domain is empty or null.");
         }
 
         this.domain = cleanUpDomain(domain);
         this.path = cleanUpPath(path);
-        this.fileExtension = cleanUpFileExtension(fileExtension);
     }
 
     /**
      * Gets the domain on which the firmware is located.
-     * 
+     *
      * @return the domain on which the firmware is located.
      */
     public String getDomain() {
@@ -49,10 +47,10 @@ public class FirmwareLocation {
 
     /**
      * Gets the full path on which the firmware is located.
-     * 
+     *
      * @return the full path on which the firmware is located.
      */
-    public String getFullPath(final String firmwareIdentification) {
+    public String getFullPath(final String filename) {
         final StringBuilder pathBuilder = new StringBuilder();
 
         if (!StringUtils.isBlank(this.path)) {
@@ -61,12 +59,7 @@ public class FirmwareLocation {
         }
 
         pathBuilder.append("/");
-        pathBuilder.append(firmwareIdentification);
-
-        if (!StringUtils.isBlank(this.fileExtension)) {
-            pathBuilder.append(".");
-            pathBuilder.append(this.fileExtension);
-        }
+        pathBuilder.append(filename);
 
         return pathBuilder.toString();
     }
@@ -97,15 +90,5 @@ public class FirmwareLocation {
         }
 
         return cleanPath;
-    }
-
-    private static String cleanUpFileExtension(final String fileExtension) {
-        String cleanFileExtension = fileExtension;
-
-        if (cleanFileExtension.startsWith(".")) {
-            cleanFileExtension = cleanFileExtension.substring(1);
-        }
-
-        return cleanFileExtension;
     }
 }
