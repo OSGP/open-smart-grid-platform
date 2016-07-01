@@ -121,6 +121,5 @@ public class CommonUpdateFirmwareRequestMessageProcessor extends DeviceRequestMe
                 ipAddress, retryCount, isScheduled);
 
         this.deviceService.updateFirmware(deviceRequest, deviceResponseHandler);
-
     }
 }

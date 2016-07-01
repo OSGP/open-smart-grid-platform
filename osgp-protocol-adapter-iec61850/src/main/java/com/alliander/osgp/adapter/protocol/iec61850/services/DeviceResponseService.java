@@ -12,8 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceMessageStatus;
-import com.alliander.osgp.adapter.protocol.iec61850.exceptions.DeviceMessageFailedException;
-import com.alliander.osgp.adapter.protocol.iec61850.exceptions.DeviceMessageRejectedException;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
 @Service
 public class DeviceResponseService {
@@ -24,15 +24,14 @@ public class DeviceResponseService {
      * Processes the given {@link DeviceMessageStatus} and throws appropriate
      * exceptions if the status is not OK.
      */
-    public void handleDeviceMessageStatus(final DeviceMessageStatus status) throws DeviceMessageRejectedException,
-            DeviceMessageFailedException {
+    public void handleDeviceMessageStatus(final DeviceMessageStatus status) throws TechnicalException {
         switch (status) {
         case FAILURE:
             LOGGER.info("Failure device message status received: {}", status);
-            throw new DeviceMessageFailedException();
+            throw new TechnicalException(ComponentType.PROTOCOL_IEC61850, "Device reports failure.");
         case REJECTED:
             LOGGER.info("Rejected device message status received: {}", status);
-            throw new DeviceMessageRejectedException();
+            throw new TechnicalException(ComponentType.PROTOCOL_IEC61850, "Device reports rejected.");
         case OK:
             LOGGER.info("OK device message status received: {}", status);
             break;

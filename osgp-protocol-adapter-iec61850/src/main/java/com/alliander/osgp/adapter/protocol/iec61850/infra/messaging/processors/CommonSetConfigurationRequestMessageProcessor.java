@@ -116,7 +116,5 @@ public class CommonSetConfigurationRequestMessageProcessor extends DeviceRequest
                 messageType, ipAddress, retryCount, isScheduled);
 
         this.deviceService.setConfiguration(deviceRequest, deviceResponseHandler);
-
     }
-
 }

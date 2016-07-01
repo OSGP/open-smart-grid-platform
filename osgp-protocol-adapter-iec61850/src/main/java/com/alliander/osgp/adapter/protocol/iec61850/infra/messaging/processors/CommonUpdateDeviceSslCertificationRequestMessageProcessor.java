@@ -117,7 +117,5 @@ public class CommonUpdateDeviceSslCertificationRequestMessageProcessor extends D
                 messageType, ipAddress, retryCount, isScheduled);
 
         this.deviceService.updateDeviceSslCertification(deviceRequest, deviceResponseHandler);
-
     }
-
 }

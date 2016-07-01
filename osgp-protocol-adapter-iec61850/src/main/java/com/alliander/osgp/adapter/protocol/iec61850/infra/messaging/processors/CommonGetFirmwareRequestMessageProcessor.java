@@ -106,8 +106,8 @@ public class CommonGetFirmwareRequestMessageProcessor extends DeviceRequestMessa
                     CommonGetFirmwareRequestMessageProcessor.this.handleExpectedError(new ConnectionFailureException(
                             ComponentType.PROTOCOL_IEC61850, t.getMessage()), requestMessageData.getCorrelationUid(),
                             requestMessageData.getOrganisationIdentification(), requestMessageData
-                            .getDeviceIdentification(), requestMessageData.getDomain(), requestMessageData
-                            .getDomainVersion(), requestMessageData.getMessageType());
+                                    .getDeviceIdentification(), requestMessageData.getDomain(), requestMessageData
+                                    .getDomainVersion(), requestMessageData.getMessageType());
                 } else {
                     CommonGetFirmwareRequestMessageProcessor.this.handleUnExpectedError(deviceResponse, t,
                             requestMessageData.getMessageData(), requestMessageData.getDomain(),
@@ -151,5 +151,4 @@ public class CommonGetFirmwareRequestMessageProcessor extends DeviceRequestMessa
 
         responseMessageSender.send(responseMessage);
     }
-
 }

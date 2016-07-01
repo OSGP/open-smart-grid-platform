@@ -113,5 +113,4 @@ public class PublicLightingGetStatusRequestMessageProcessor extends DeviceReques
 
         this.deviceService.getStatus(deviceRequest, deviceResponseHandler);
     }
-
 }
