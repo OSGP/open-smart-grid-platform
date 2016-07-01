@@ -136,15 +136,15 @@ public class EncryptionService {
      */
     private boolean checkNullBytesPrepended(final byte[] bytes) {
         if (bytes.length > IVBYTES.length) {
-            boolean ivPrepended = false;
+            boolean nullBytesPrepended = false;
             for (short s = 0; s < IVBYTES.length; s++) {
                 if (bytes[s] == 0) {
-                    ivPrepended = true;
+                    nullBytesPrepended = true;
                 } else {
                     return false;
                 }
             }
-            return ivPrepended;
+            return nullBytesPrepended;
         } else {
             return false;
         }
