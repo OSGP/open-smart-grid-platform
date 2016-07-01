@@ -42,7 +42,7 @@ public class SetActivityCalendarCommandActivationExecutor implements CommandExec
         } catch (final IOException e) {
             throw new ConnectionException(e);
         }
-        if (!MethodResultCode.SUCCESS.equals(methodResultCode)) {
+        if (!MethodResultCode.SUCCESS.equals(methodResultCode.getResultCode())) {
             throw new ProtocolAdapterException("Activating the activity calendar failed. MethodResult is: "
                     + methodResultCode.getResultCode() + " ClassId: " + CLASS_ID + " obisCode: " + OBIS_CODE
                     + " method id: " + METHOD_ID_ACTIVATE_PASSIVE_CALENDAR);
