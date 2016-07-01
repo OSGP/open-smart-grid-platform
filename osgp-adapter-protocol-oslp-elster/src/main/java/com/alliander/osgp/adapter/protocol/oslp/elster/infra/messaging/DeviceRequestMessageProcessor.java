@@ -23,7 +23,6 @@ import com.alliander.osgp.adapter.protocol.oslp.elster.services.DeviceResponseSe
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
-import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
 import com.alliander.osgp.shared.infra.jms.MessageProcessorMap;
@@ -82,23 +81,20 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
                 this.deviceRequestMessageType.name(), this);
     }
 
-    // IDEA: change these two methods handleEmptyDeviceResponse and
-    // handleScheduledEmptyDeviceResponse to have less double code
-
     protected void handleEmptyDeviceResponse(final DeviceResponse deviceResponse,
             final ResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
             final String messageType, final int retryCount) {
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
-        OsgpException ex = null;
+        TechnicalException ex = null;
 
         try {
             final EmptyDeviceResponse response = (EmptyDeviceResponse) deviceResponse;
             this.deviceResponseService.handleDeviceMessageStatus(response.getStatus());
-        } catch (final Exception e) {
+        } catch (final TechnicalException e) {
             LOGGER.error("Device Response Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            ex = new TechnicalException(ComponentType.UNKNOWN, UNEXPECTED_EXCEPTION, e);
+            ex = e;
         }
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
@@ -113,15 +109,15 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             final String messageType, final boolean isScheduled, final int retryCount) {
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
-        OsgpException ex = null;
+        TechnicalException ex = null;
 
         try {
             final EmptyDeviceResponse response = (EmptyDeviceResponse) deviceResponse;
             this.deviceResponseService.handleDeviceMessageStatus(response.getStatus());
-        } catch (final Exception e) {
+        } catch (final TechnicalException e) {
             LOGGER.error("Device Response Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            ex = new TechnicalException(ComponentType.UNKNOWN, UNEXPECTED_EXCEPTION, e);
+            ex = e;
         }
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
@@ -135,7 +131,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             final String deviceIdentification, final String domain, final String domainVersion,
             final String messageType, final int retryCount) {
         LOGGER.error("Error while processing message", e);
-        final OsgpException ex = new TechnicalException(ComponentType.UNKNOWN, UNEXPECTED_EXCEPTION, e);
+        final TechnicalException ex = new TechnicalException(ComponentType.PROTOCOL_OSLP, UNEXPECTED_EXCEPTION, e);
 
         final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage(domain, domainVersion,
                 messageType, correlationUid, organisationIdentification, deviceIdentification,
@@ -147,7 +143,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
     protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final String domain, final String domainVersion, final String messageType) {
         LOGGER.error("Error while processing message", e);
-        final OsgpException ex = new TechnicalException(ComponentType.UNKNOWN, UNEXPECTED_EXCEPTION, e);
+        final TechnicalException ex = new TechnicalException(ComponentType.PROTOCOL_OSLP, UNEXPECTED_EXCEPTION, e);
 
         final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage(domain, domainVersion,
                 messageType, correlationUid, organisationIdentification, deviceIdentification,
@@ -160,7 +156,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             final String organisationIdentification, final String deviceIdentification, final String domain,
             final String domainVersion, final String messageType) {
         LOGGER.error("Expected error while processing message", e);
-        final OsgpException ex = new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+        final FunctionalException ex = new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
                 ComponentType.PROTOCOL_OSLP, e);
 
         final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage(domain, domainVersion,
@@ -176,7 +172,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             final String messageType, final boolean isScheduled, final int retryCount) {
 
         final ResponseMessageResultType result = ResponseMessageResultType.NOT_OK;
-        final OsgpException ex = new TechnicalException(ComponentType.UNKNOWN, UNEXPECTED_EXCEPTION, t);
+        final TechnicalException ex = new TechnicalException(ComponentType.PROTOCOL_OSLP, UNEXPECTED_EXCEPTION, t);
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
                 deviceResponse.getCorrelationUid(), deviceResponse.getOrganisationIdentification(),

@@ -517,11 +517,11 @@ public class OslpChannelHandler extends SimpleChannelHandler {
         } else if (request.hasGetActualPowerUsageRequest()) {
             this.handleGetActualPowerUsageRequest(device, request.getGetActualPowerUsageRequest());
 
-            response = createGetActualPowerUsageResponse(device);
+            response = createGetActualPowerUsageResponse();
         } else if (request.hasGetPowerUsageHistoryRequest()) {
             this.handleGetPowerUsageHistoryRequest(device, request.getGetPowerUsageHistoryRequest());
 
-            response = createGetPowerUsageHistoryWithDatesResponse(device, request.getGetPowerUsageHistoryRequest());
+            response = createGetPowerUsageHistoryWithDatesResponse(request.getGetPowerUsageHistoryRequest());
         } else if (request.hasGetStatusRequest()) {
             response = createGetStatusResponse(device);
         } else if (request.hasResumeScheduleRequest()) {
@@ -621,7 +621,7 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                 .setSetScheduleResponse(SetScheduleResponse.newBuilder().setStatus(Oslp.Status.OK)).build();
     }
 
-    private static Message createGetActualPowerUsageResponse(final Device device) {
+    private static Message createGetActualPowerUsageResponse() {
         // yyyyMMddhhmmss z
         final SimpleDateFormat utcTimeFormat = new SimpleDateFormat("yyyyMMddHHmmss");
         utcTimeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -689,7 +689,7 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                                                                                                                         .setStatus(Oslp.Status.OK)).build();
     }
 
-    private static Message createGetPowerUsageHistoryWithDatesResponse(final Device device,
+    private static Message createGetPowerUsageHistoryWithDatesResponse(
             final GetPowerUsageHistoryRequest powerUsageHistoryRequest) throws ParseException {
 
         final DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyyMMddHHmmss").withZoneUTC();
