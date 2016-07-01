@@ -285,7 +285,7 @@ public class FirmwareManagementEndpoint {
         } catch (final Exception e) {
             LOGGER.error("Exception: {} while adding manufacturer: {} for organisation {}",
                     new Object[] { e.getMessage(), request.getManufacturer().getManufacturerId(),
-                            organisationIdentification }, e);
+                    organisationIdentification }, e);
             this.handleException(e);
         }
 
@@ -314,7 +314,7 @@ public class FirmwareManagementEndpoint {
         } catch (final Exception e) {
             LOGGER.error("Exception: {} while Changeing manufacturer: {} for organisation {}",
                     new Object[] { e.getMessage(), request.getManufacturer().getManufacturerId(),
-                            organisationIdentification }, e);
+                    organisationIdentification }, e);
             this.handleException(e);
         }
 
@@ -713,8 +713,7 @@ public class FirmwareManagementEndpoint {
 
     private void handleException(final Exception e) throws OsgpException {
         // Rethrow exception if it already is a functional or technical
-        // exception,
-        // otherwise throw new technical exception.
+        // exception, otherwise throw new technical exception.
         if (e instanceof OsgpException) {
             throw (OsgpException) e;
         } else {

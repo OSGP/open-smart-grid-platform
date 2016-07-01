@@ -41,7 +41,7 @@ import com.alliander.osgp.shared.application.config.PagingSettings;
 @ComponentScan(basePackages = { "com.alliander.osgp.domain.core", "com.alliander.osgp.adapter.ws.core",
 "com.alliander.osgp.domain.logging" })
 @ImportResource("classpath:applicationContext.xml")
-@Import({ PersistenceConfig.class, WritablePersistenceConfig.class, ReadOnlyLoggingConfig.class })
+@Import({ PersistenceConfig.class, WritablePersistenceConfig.class, ReadOnlyLoggingConfig.class, WebServiceConfig.class })
 @PropertySource("file:${osp/osgpAdapterWsCore/config}")
 public class ApplicationContext {
 
