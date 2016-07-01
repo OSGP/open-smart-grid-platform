@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.adapter.domain.core.infra.jms.ws.WebServiceResponseMessageSender;
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -33,18 +32,18 @@ public class DefaultDeviceResponseService {
 
         LOGGER.info("handleDefaultDeviceResponse for MessageType: {}", messageType);
 
-        ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = exception;
+        ResponseMessageResultType result = ResponseMessageResultType.OK;
 
         try {
             if (deviceResult == ResponseMessageResultType.NOT_OK || osgpException != null) {
                 LOGGER.error("Device Response not ok.", osgpException);
                 throw osgpException;
             }
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected Exception", e);
+        } catch (final OsgpException e) {
+            LOGGER.error("Unexpected OsgpException", e);
+            osgpException = new TechnicalException(e.getComponentType(), e.getMessage(), e);
             result = ResponseMessageResultType.NOT_OK;
-            osgpException = new TechnicalException(ComponentType.UNKNOWN, "An unknown error occurred", e);
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,

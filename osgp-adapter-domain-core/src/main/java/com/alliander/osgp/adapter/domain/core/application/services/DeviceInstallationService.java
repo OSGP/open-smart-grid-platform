@@ -31,6 +31,7 @@ import com.alliander.osgp.domain.core.valueobjects.RelayType;
 import com.alliander.osgp.domain.core.valueobjects.TariffValue;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.NoDeviceResponseException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
@@ -92,30 +93,35 @@ public class DeviceInstallationService extends AbstractService {
                 dosMap.put(dos.getExternalId(), dos);
             }
 
-            deviceStatusMapped = new DeviceStatusMapped(filterTariffValues(status.getLightValues(), dosMap,
-                    DomainType.TARIFF_SWITCHING), filterLightValues(status.getLightValues(), dosMap,
-                    DomainType.PUBLIC_LIGHTING), status.getPreferredLinkType(), status.getActualLinkType(),
-                    status.getLightType(), status.getEventNotificationsMask());
+            if (status != null) {
+                deviceStatusMapped = new DeviceStatusMapped(filterTariffValues(status.getLightValues(), dosMap,
+                        DomainType.TARIFF_SWITCHING), filterLightValues(status.getLightValues(), dosMap,
+                                DomainType.PUBLIC_LIGHTING), status.getPreferredLinkType(), status.getActualLinkType(),
+                                status.getLightType(), status.getEventNotificationsMask());
 
-            deviceStatusMapped.setBootLoaderVersion(status.getBootLoaderVersion());
-            deviceStatusMapped.setCurrentConfigurationBackUsed(status.getCurrentConfigurationBackUsed());
-            deviceStatusMapped.setCurrentIp(status.getCurrentIp());
-            deviceStatusMapped.setCurrentTime(status.getCurrentTime());
-            deviceStatusMapped.setDcOutputVoltageCurrent(status.getDcOutputVoltageCurrent());
-            deviceStatusMapped.setDcOutputVoltageMaximum(status.getDcOutputVoltageMaximum());
-            deviceStatusMapped.setEventNotificationsMask(status.getEventNotificationsMask());
-            deviceStatusMapped.setExternalFlashMemSize(status.getExternalFlashMemSize());
-            deviceStatusMapped.setFirmwareVersion(status.getFirmwareVersion());
-            deviceStatusMapped.setHardwareId(status.getHardwareId());
-            deviceStatusMapped.setInternalFlashMemSize(status.getInternalFlashMemSize());
-            deviceStatusMapped.setLastInternalTestResultCode(status.getLastInternalTestResultCode());
-            deviceStatusMapped.setMacAddress(status.getMacAddress());
-            deviceStatusMapped.setMaximumOutputPowerOnDcOutput(status.getMaximumOutputPowerOnDcOutput());
-            deviceStatusMapped.setName(status.getName());
-            deviceStatusMapped.setNumberOfOutputs(status.getNumberOfOutputs());
-            deviceStatusMapped.setSerialNumber(status.getSerialNumber());
-            deviceStatusMapped.setStartupCounter(status.getStartupCounter());
-
+                deviceStatusMapped.setBootLoaderVersion(status.getBootLoaderVersion());
+                deviceStatusMapped.setCurrentConfigurationBackUsed(status.getCurrentConfigurationBackUsed());
+                deviceStatusMapped.setCurrentIp(status.getCurrentIp());
+                deviceStatusMapped.setCurrentTime(status.getCurrentTime());
+                deviceStatusMapped.setDcOutputVoltageCurrent(status.getDcOutputVoltageCurrent());
+                deviceStatusMapped.setDcOutputVoltageMaximum(status.getDcOutputVoltageMaximum());
+                deviceStatusMapped.setEventNotificationsMask(status.getEventNotificationsMask());
+                deviceStatusMapped.setExternalFlashMemSize(status.getExternalFlashMemSize());
+                deviceStatusMapped.setFirmwareVersion(status.getFirmwareVersion());
+                deviceStatusMapped.setHardwareId(status.getHardwareId());
+                deviceStatusMapped.setInternalFlashMemSize(status.getInternalFlashMemSize());
+                deviceStatusMapped.setLastInternalTestResultCode(status.getLastInternalTestResultCode());
+                deviceStatusMapped.setMacAddress(status.getMacAddress());
+                deviceStatusMapped.setMaximumOutputPowerOnDcOutput(status.getMaximumOutputPowerOnDcOutput());
+                deviceStatusMapped.setName(status.getName());
+                deviceStatusMapped.setNumberOfOutputs(status.getNumberOfOutputs());
+                deviceStatusMapped.setSerialNumber(status.getSerialNumber());
+                deviceStatusMapped.setStartupCounter(status.getStartupCounter());
+            } else {
+                result = ResponseMessageResultType.NOT_OK;
+                osgpException = new TechnicalException(ComponentType.DOMAIN_CORE,
+                        "Device was not able to report status", new NoDeviceResponseException());
+            }
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception", e);
             result = ResponseMessageResultType.NOT_OK;
