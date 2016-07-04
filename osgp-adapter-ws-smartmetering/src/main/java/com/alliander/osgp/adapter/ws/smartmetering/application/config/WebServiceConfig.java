@@ -42,6 +42,8 @@ import com.alliander.osgp.adapter.ws.endpointinterceptors.X509CertificateRdnAttr
 import com.alliander.osgp.adapter.ws.smartmetering.application.exceptionhandling.DetailSoapFaultMappingExceptionResolver;
 import com.alliander.osgp.adapter.ws.smartmetering.application.exceptionhandling.SoapFaultMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationService;
+import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationServiceBlackHole;
+import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationServiceWs;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.SendNotificationServiceClient;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.WebServiceTemplateFactory;
 
@@ -78,7 +80,7 @@ public class WebServiceConfig {
     @Value("${web.service.keystore.type}")
     private String webserviceKeystoreType;
 
-    @Value("${web.service.notification.url}")
+    @Value("${web.service.notification.url:#{null}}")
     private String webserviceNotificationUrl;
     @Value("${application.name}")
     private String applicationName;
@@ -141,7 +143,11 @@ public class WebServiceConfig {
 
     @Bean
     public NotificationService wsSmartMeteringNotificationService() throws GeneralSecurityException {
-        return new NotificationService(this.sendNotificationServiceClient(), this.notificationUrl());
+        if (this.notificationUrl() != null) {
+            return new NotificationServiceWs(this.sendNotificationServiceClient(), this.notificationUrl());
+        } else {
+            return new NotificationServiceBlackHole();
+        }
     }
 
     // Client WS code
