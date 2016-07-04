@@ -223,7 +223,7 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
 
-                return cb.and(cb.equal(deviceRoot.<Boolean> get("isActivated"), activated));
+                return cb.equal(deviceRoot.<Boolean> get("isActivated"), activated);
             }
         };
     }
@@ -239,7 +239,7 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
 
-                return cb.and(cb.equal(deviceRoot.<Boolean> get("inMaintenance"), inMaintenance));
+                return cb.equal(deviceRoot.<Boolean> get("inMaintenance"), inMaintenance);
             }
         };
     }
@@ -297,7 +297,7 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
 
-                return cb.and(cb.equal(deviceRoot.get("deviceModel").get("id").as(Long.class), deviceModel.getId()));
+                return cb.equal(deviceRoot.get("deviceModel").get("id").as(Long.class), deviceModel.getId());
             }
         };
     }
