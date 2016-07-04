@@ -360,9 +360,17 @@ public class DeviceManagementService {
                 }
 
                 if (!StringUtils.isEmpty(deviceFilter.getOwner())) {
-                    final Organisation ownerOrg = this.domainHelperService.findOrganisation(deviceFilter
-                            .getOwner());
-                    specifications = specifications.and(this.deviceSpecifications.forOwner(ownerOrg));
+                    try {
+                        final Organisation ownerOrg = this.domainHelperService.findOrganisation(deviceFilter
+                                .getOwner());
+                        specifications = specifications.and(this.deviceSpecifications.forOwner(ownerOrg));
+                    } catch (FunctionalException e) {
+                        LOGGER.error("FunctionalException", e);
+                        if (e.getExceptionType().equals(FunctionalExceptionType.UNKNOWN_ORGANISATION)) {
+                            throw new ArgumentNullOrEmptyException("organisation");
+                        } 
+                        throw e;
+                    }
                 }
 
                 if (!StringUtils.isEmpty(deviceFilter.getDeviceType())) {
