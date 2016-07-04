@@ -16,7 +16,6 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.Notificat
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
 import com.alliander.osgp.adapter.ws.smartmetering.exceptions.WebServiceSecurityException;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.SendNotificationServiceClient;
-import com.alliander.osgp.domain.core.validation.Identification;
 
 @Transactional(value = "transactionManager")
 @Validated
@@ -33,12 +32,18 @@ public class NotificationServiceWs implements NotificationService {
         this.notificationUrl = notificationUrl;
     }
 
-    /* (non-Javadoc)
-     * @see com.alliander.osgp.adapter.ws.smartmetering.application.services.INotificationService#sendNotification(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.alliander.osgp.adapter.ws.smartmetering.application.services.
+     * INotificationService#sendNotification(java.lang.String, java.lang.String,
+     * java.lang.String, java.lang.String, java.lang.String,
+     * com.alliander.osgp.adapter
+     * .ws.schema.smartmetering.notification.NotificationType)
      */
     @Override
-    public void sendNotification(@Identification final String organisationIdentification,
-            final String deviceIdentification, final String result, final String correlationUid, final String message,
+    public void sendNotification(final String organisationIdentification, final String deviceIdentification,
+            final String result, final String correlationUid, final String message,
             final NotificationType notificationType) {
 
         LOGGER.info("sendNotification called with organisation: {}, correlationUid: {}, type: {}",
