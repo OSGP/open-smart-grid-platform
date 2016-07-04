@@ -34,7 +34,7 @@ public class NotificationServiceWs implements NotificationService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.alliander.osgp.adapter.ws.smartmetering.application.services.
      * INotificationService#sendNotification(java.lang.String, java.lang.String,
      * java.lang.String, java.lang.String, java.lang.String,
@@ -50,7 +50,7 @@ public class NotificationServiceWs implements NotificationService {
                 organisationIdentification, correlationUid, notificationType);
 
         final Notification notification = new Notification();
-        // TODO message is null, unless an error occurred
+        // message is null, unless an error occurred
         notification.setMessage(message);
         notification.setResult(result);
         notification.setDeviceIdentification(deviceIdentification);
