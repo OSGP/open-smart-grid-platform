@@ -9,8 +9,6 @@ package com.alliander.osgp.adapter.ws.smartmetering.application.services;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
@@ -20,21 +18,19 @@ import com.alliander.osgp.adapter.ws.smartmetering.exceptions.WebServiceSecurity
 import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.SendNotificationServiceClient;
 import com.alliander.osgp.domain.core.validation.Identification;
 
-@Service(value = "wsSmartMeteringNotificationService")
 @Transactional(value = "transactionManager")
 @Validated
 public class NotificationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NotificationService.class);
 
-    @Autowired
     private SendNotificationServiceClient sendNotificationServiceClient;
 
-    @Autowired
-    private String notificationURL;
+    private String notificationUrl;
 
-    public NotificationService() {
-        // Parameterless constructor required for transactions
+    public NotificationService(final SendNotificationServiceClient client, final String notificationUrl) {
+        this.sendNotificationServiceClient = client;
+        this.notificationUrl = notificationUrl;
     }
 
     public void sendNotification(@Identification final String organisationIdentification,
@@ -54,10 +50,9 @@ public class NotificationService {
 
         try {
             this.sendNotificationServiceClient.sendNotification(organisationIdentification, notification,
-                    this.notificationURL);
-        } catch (final WebServiceSecurityException e){
+                    this.notificationUrl);
+        } catch (final WebServiceSecurityException e) {
             LOGGER.error(e.getMessage(), e);
         }
-
     }
 }

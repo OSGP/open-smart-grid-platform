@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.application.config;
 
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -40,6 +41,7 @@ import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderScheduleTime
 import com.alliander.osgp.adapter.ws.endpointinterceptors.X509CertificateRdnAttributeValueEndpointInterceptor;
 import com.alliander.osgp.adapter.ws.smartmetering.application.exceptionhandling.DetailSoapFaultMappingExceptionResolver;
 import com.alliander.osgp.adapter.ws.smartmetering.application.exceptionhandling.SoapFaultMapper;
+import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationService;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.SendNotificationServiceClient;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.WebServiceTemplateFactory;
 
@@ -133,8 +135,13 @@ public class WebServiceConfig {
     }
 
     @Bean
-    public String notificationURL() {
+    public String notificationUrl() {
         return this.webserviceNotificationUrl;
+    }
+
+    @Bean
+    public NotificationService wsSmartMeteringNotificationService() throws GeneralSecurityException {
+        return new NotificationService(this.sendNotificationServiceClient(), this.notificationUrl());
     }
 
     // Client WS code
