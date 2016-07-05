@@ -348,51 +348,41 @@ public class DeviceManagementService {
                     specifications = specifications.and(this.deviceSpecifications.isActived(deviceFilter
                             .getDeviceActivated().getValue()));
                 }
-
                 if (deviceFilter.getDeviceInMaintenance() != null
                         && !DeviceInMaintenanceFilterType.BOTH.equals(deviceFilter.getDeviceInMaintenance())) {
                     specifications = specifications.and(this.deviceSpecifications.isInMaintetance(deviceFilter
                             .getDeviceInMaintenance().getValue()));
                 }
-
                 if (deviceFilter.isHasTechnicalInstallation()) {
                     specifications = specifications.and(this.deviceSpecifications.hasTechnicalInstallationDate());
                 }
-
                 if (!StringUtils.isEmpty(deviceFilter.getOwner())) {
-                    try {
-                        final Organisation ownerOrg = this.domainHelperService.findOrganisation(deviceFilter
-                                .getOwner());
-                        specifications = specifications.and(this.deviceSpecifications.forOwner(ownerOrg));
-                    } catch (FunctionalException e) {
-                        LOGGER.error("FunctionalException", e);
-                        if (e.getExceptionType().equals(FunctionalExceptionType.UNKNOWN_ORGANISATION)) {
-                            throw new ArgumentNullOrEmptyException("organisation");
-                        } 
-                        throw e;
-                    }
+                    specifications = specifications.and(this.deviceSpecifications.forOwner(deviceFilter
+                            .getOwner() + "%"));
                 }
-
                 if (!StringUtils.isEmpty(deviceFilter.getDeviceType())) {
-                    specifications = specifications.and(this.deviceSpecifications.forDeviceType(deviceFilter.getDeviceType()));
+                    specifications = specifications.and(this.deviceSpecifications.forDeviceType(deviceFilter
+                            .getDeviceType() + "%"));
                 }
-
                 if (!StringUtils.isEmpty(deviceFilter.getModel())) {
-                    DeviceModel deviceModel = this.firmwareManagementService.findDeviceModel(deviceFilter.getModel());
-                    specifications = specifications.and(this.deviceSpecifications.forDeviceModel(deviceModel));
+                    specifications = specifications.and(this.deviceSpecifications.forDeviceModel(deviceFilter
+                            .getModel() + "%"));
                 }
-
                 if (!StringUtils.isEmpty(deviceFilter.getManufacturer())) {
                     final Manufacturer manufacturer = this.firmwareManagementService.findManufacturer(deviceFilter.getManufacturer());
                     specifications = specifications.and(this.deviceSpecifications.forManufacturer(manufacturer));
                 }
-
                 if (!StringUtils.isEmpty(deviceFilter.getFirmwareModuleVersion())) {
                     specifications = specifications.and(this.deviceSpecifications.forFirmwareVersion(deviceFilter.getFirmwareModuleVersion()));
                 }
                 devices = this.deviceRepository.findAll(specifications, request);
             } else {
-                devices = this.deviceRepository.findAll(request);
+                if (organisation != null) {
+                    Specifications<Device> specifications = where(this.deviceSpecifications.forOrganisation(organisation));
+                    devices = this.deviceRepository.findAll(specifications, request);
+                } else {
+                    devices = this.deviceRepository.findAll(request);
+                }
             }
         } catch (final FunctionalException functionalException) {
             LOGGER.error("FunctionalException", functionalException);

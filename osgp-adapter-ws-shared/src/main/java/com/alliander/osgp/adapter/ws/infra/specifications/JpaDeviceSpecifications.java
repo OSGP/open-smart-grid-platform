@@ -32,7 +32,6 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
 
     @Override
     public Specification<Device> hasTechnicalInstallationDate() throws ArgumentNullOrEmptyException {
-
         return new Specification<Device>() {
             @Override
             public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
@@ -45,7 +44,6 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
 
     @Override
     public Specification<Device> forOrganisation(final Organisation organisation) throws ArgumentNullOrEmptyException {
-
         if (organisation == null) {
             throw new ArgumentNullOrEmptyException("organisation");
         }
@@ -68,7 +66,6 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
     @Override
     public Specification<Device> hasDeviceIdentification(final String deviceIdentification)
             throws ArgumentNullOrEmptyException {
-
         if (StringUtils.isEmpty(deviceIdentification)) {
             throw new ArgumentNullOrEmptyException("deviceIdentification");
         }
@@ -86,7 +83,6 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
 
     @Override
     public Specification<Device> hasCity(final String city) throws ArgumentNullOrEmptyException {
-
         if (StringUtils.isEmpty(city)) {
             throw new ArgumentNullOrEmptyException("city");
         }
@@ -103,7 +99,6 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
 
     @Override
     public Specification<Device> hasPostalCode(final String postalCode) throws ArgumentNullOrEmptyException {
-
         if (StringUtils.isEmpty(postalCode)) {
             throw new ArgumentNullOrEmptyException("postalCode");
         }
@@ -120,7 +115,6 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
 
     @Override
     public Specification<Device> hasStreet(final String street) throws ArgumentNullOrEmptyException {
-
         if (StringUtils.isEmpty(street)) {
             throw new ArgumentNullOrEmptyException("street");
         }
@@ -137,7 +131,6 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
 
     @Override
     public Specification<Device> hasNumber(final String number) throws ArgumentNullOrEmptyException {
-
         if (StringUtils.isEmpty(number)) {
             throw new ArgumentNullOrEmptyException("number");
         }
@@ -154,7 +147,6 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
 
     @Override
     public Specification<Device> hasMunicipality(final String municipality) throws ArgumentNullOrEmptyException {
-
         if (StringUtils.isEmpty(municipality)) {
             throw new ArgumentNullOrEmptyException("municipality");
         }
@@ -171,7 +163,6 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
 
     @Override
     public Specification<Device> hasAlias(final String alias) throws ArgumentNullOrEmptyException {
-
         if (StringUtils.isEmpty(alias)) {
             throw new ArgumentNullOrEmptyException("alias");
         }
@@ -213,7 +204,6 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
 
     @Override
     public Specification<Device> isActived(final Boolean activated) throws ArgumentNullOrEmptyException {
-
         if (activated == null) {
             throw new ArgumentNullOrEmptyException("activated");
         }
@@ -245,8 +235,7 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
     }
 
     @Override
-    public Specification<Device> forOwner(final Organisation organisation) throws ArgumentNullOrEmptyException {
-
+    public Specification<Device> forOwner(final String organisation) throws ArgumentNullOrEmptyException {
         if (organisation == null) {
             throw new ArgumentNullOrEmptyException("owner");
         }
@@ -261,9 +250,8 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
                 subquery.select(deviceAuthorizationRoot.get("device").get("id").as(Long.class));
                 subquery.where(
                         cb.and(
-                                cb.equal(deviceAuthorizationRoot.get("organisation"), organisation.getId()),
+                                cb.like(cb.upper(deviceAuthorizationRoot.get("organisation").<String> get("name")), organisation.toUpperCase()),
                                 cb.equal(deviceAuthorizationRoot.get("functionGroup"), DeviceFunctionGroup.OWNER.ordinal())));
-
                 return cb.in(deviceRoot.get("id")).value(subquery);
             }
         };
@@ -271,7 +259,6 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
 
     @Override
     public Specification<Device> forDeviceType (final String deviceType) throws ArgumentNullOrEmptyException {
-
         if (deviceType == null) {
             throw new ArgumentNullOrEmptyException("deviceType");
         }
@@ -287,7 +274,7 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
     }
 
     @Override
-    public Specification<Device> forDeviceModel(final DeviceModel deviceModel) throws ArgumentNullOrEmptyException {
+    public Specification<Device> forDeviceModel(final String deviceModel) throws ArgumentNullOrEmptyException {
         if (deviceModel == null) {
             throw new ArgumentNullOrEmptyException("deviceModel");
         }
@@ -296,8 +283,7 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             @Override
             public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
-
-                return cb.equal(deviceRoot.get("deviceModel").get("id").as(Long.class), deviceModel.getId());
+                return cb.like(cb.upper(deviceRoot.<String> get("deviceModel").get("modelCode").as(String.class)), deviceModel.toUpperCase());
             }
         };
     }
@@ -326,7 +312,6 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
 
     @Override
     public Specification<Device> forFirmwareVersion (final String firmwareVersion) throws ArgumentNullOrEmptyException {
-
         if (firmwareVersion == null) {
             throw new ArgumentNullOrEmptyException("firmwareVersion");
         }
