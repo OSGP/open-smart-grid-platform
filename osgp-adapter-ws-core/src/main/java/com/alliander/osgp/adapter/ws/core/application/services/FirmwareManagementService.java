@@ -364,11 +364,9 @@ public class FirmwareManagementService {
             final Manufacturer databaseManufacturer = this.manufacturerRepository.findByManufacturerId(manufacturer);
             final DeviceModel databaseDeviceModel = this.deviceModelRepository.findByManufacturerIdAndModelCode(
                     databaseManufacturer, modelCode);
-
             deviceModelFirmwares = this.deviceModelFirmwareRepository.findByDeviceModel(databaseDeviceModel);
         } else {
             final DeviceModel databaseDeviceModel = this.deviceModelRepository.findByModelCode(modelCode);
-
             deviceModelFirmwares = this.deviceModelFirmwareRepository.findByDeviceModel(databaseDeviceModel);
         }
 
