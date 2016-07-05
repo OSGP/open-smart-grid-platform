@@ -51,6 +51,8 @@ public class WebServiceConfig {
     private static final String X509_RDN_ATTRIBUTE_ID = "cn";
     private static final String X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME = "CommonNameSet";
 
+    private static final String SERVER = "SERVER";
+
     @Resource
     private Environment environment;
 
@@ -115,7 +117,10 @@ public class WebServiceConfig {
         exceptionResolver.setOrder(1);
 
         final Properties props = new Properties();
-        props.put("com.alliander.osgp.shared.exceptionhandling.FunctionalException", "SERVER");
+        props.put("com.alliander.osgp.shared.exceptionhandling.OsgpException", SERVER);
+        props.put("com.alliander.osgp.shared.exceptionhandling.FunctionalException", SERVER);
+        props.put("com.alliander.osgp.shared.exceptionhandling.TechnicalException", SERVER);
+        props.put("com.alliander.osgp.shared.exceptionhandling.ConnectionFailureException", SERVER);
         exceptionResolver.setExceptionMappings(props);
         return exceptionResolver;
     }

@@ -114,9 +114,12 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
     protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final String messageType) {
         LOGGER.info("handeling error: {} for message type: {}", e.getMessage(), messageType);
-        final OsgpException osgpException = new TechnicalException(ComponentType.UNKNOWN, "An unknown error occurred",
-                e);
-
+        OsgpException osgpException = null;
+        if (e instanceof OsgpException) {
+            osgpException = (OsgpException) e;
+        } else {
+            osgpException = new TechnicalException(ComponentType.DOMAIN_CORE, "An unknown error occurred", e);
+        }
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
                 deviceIdentification, ResponseMessageResultType.NOT_OK, osgpException, e));
     }
