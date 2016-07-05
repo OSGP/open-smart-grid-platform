@@ -309,24 +309,4 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             }
         };
     }
-
-    @Override
-    public Specification<Device> forFirmwareVersion (final String firmwareVersion) throws ArgumentNullOrEmptyException {
-        if (firmwareVersion == null) {
-            throw new ArgumentNullOrEmptyException("firmwareVersion");
-        }
-
-        return new Specification<Device>() {
-            @Override
-            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
-                    final CriteriaBuilder cb) {
-
-                final Subquery<Long> subquery = query.subquery(Long.class);
-                final Root<DeviceModelFirmware> deviceModelFirmwareRoot = subquery.from(DeviceModelFirmware.class);
-                subquery.select(deviceModelFirmwareRoot.get("deviceModel").get("id").as(Long.class));
-                subquery.where(cb.equal(deviceModelFirmwareRoot.get("version"), firmwareVersion));
-                return cb.in(deviceRoot.get("deviceModel").get("id").as(Long.class)).value(subquery);
-            }
-        };
-    }
 }

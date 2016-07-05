@@ -512,13 +512,7 @@
 
    <xsd:complexType name="DeviceModel">
       <xsd:sequence>
-         <xsd:element name="Manufacturer" minOccurs="1" maxOccurs="1">
-            <xsd:simpleType>
-               <xsd:restriction base="xsd:string">
-                  <xsd:maxLength value="4" />
-               </xsd:restriction>
-            </xsd:simpleType>
-         </xsd:element>
+         <xsd:element name="Manufacturer" type="tns:Manufacturer" minOccurs="0" />
          <xsd:element name="ModelCode" minOccurs="0" maxOccurs="1">
             <xsd:simpleType>
                <xsd:restriction base="xsd:string">

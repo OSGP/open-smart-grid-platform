@@ -27,7 +27,6 @@ public class DeviceFilter {
     private String deviceType;
     private String manufacturer;
     private String model;
-    private String firmwareModuleVersion;
 
     public DeviceFilter() {
 
@@ -38,7 +37,7 @@ public class DeviceFilter {
             final String municipality, final DeviceExternalManagedFilterType deviceExternalManaged,
             final DeviceActivatedFilterType deviceActivated, final DeviceInMaintenanceFilterType deviceInMaintenance,
             final String sortDir, final String sortedBy, final boolean hasTechnicalInstallation, final String owner,
-            final String deviceType, final String manufacturer, final String model, final String firmwareModuleVersion) {
+            final String deviceType, final String manufacturer, final String model) {
         this.organisationIdentification = organisationIdentification;
         this.deviceIdentification = deviceIdentification;
         this.alias = alias;
@@ -57,7 +56,6 @@ public class DeviceFilter {
         this.deviceType = deviceType;
         this.manufacturer = manufacturer;
         this.model = model;
-        this.firmwareModuleVersion = firmwareModuleVersion;
     }
 
     public String getOrganisationIdentification() {
@@ -159,13 +157,4 @@ public class DeviceFilter {
     public void setModel(String model) {
         this.model = model;
     }
-
-    public String getFirmwareModuleVersion() {
-        return firmwareModuleVersion;
-    }
-
-    public void setFirmwareModuleVersion(String firmwareModuleVersion) {
-        this.firmwareModuleVersion = firmwareModuleVersion;
-    }
-
 }

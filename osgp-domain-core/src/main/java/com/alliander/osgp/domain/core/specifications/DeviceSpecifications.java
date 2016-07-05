@@ -48,6 +48,4 @@ public interface DeviceSpecifications {
     Specification<Device> forDeviceModel(final String deviceModel) throws ArgumentNullOrEmptyException;
 
     Specification<Device> forManufacturer(final Manufacturer manufacturer) throws ArgumentNullOrEmptyException;
-
-    Specification<Device> forFirmwareVersion(final String firmwareVersion) throws ArgumentNullOrEmptyException;
 }

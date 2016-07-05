@@ -269,7 +269,7 @@ public class DeviceManagementService {
             if (deviceFilter == null) {
                 final DeviceFilter df = new DeviceFilter(organisationIdentification, null, null, null, null, null,
                         null, null, DeviceExternalManagedFilterType.BOTH, DeviceActivatedFilterType.BOTH,
-                        DeviceInMaintenanceFilterType.BOTH, null, null, false, null, null, null, null, null);
+                        DeviceInMaintenanceFilterType.BOTH, null, null, false, null, null, null, null);
                 devices = this.applyFilter(df, organisation, request);
             } else {
                 deviceFilter.updateOrganisationIdentification(organisationIdentification);
@@ -371,9 +371,6 @@ public class DeviceManagementService {
                 if (!StringUtils.isEmpty(deviceFilter.getManufacturer())) {
                     final Manufacturer manufacturer = this.firmwareManagementService.findManufacturer(deviceFilter.getManufacturer());
                     specifications = specifications.and(this.deviceSpecifications.forManufacturer(manufacturer));
-                }
-                if (!StringUtils.isEmpty(deviceFilter.getFirmwareModuleVersion())) {
-                    specifications = specifications.and(this.deviceSpecifications.forFirmwareVersion(deviceFilter.getFirmwareModuleVersion()));
                 }
                 devices = this.deviceRepository.findAll(specifications, request);
             } else {
