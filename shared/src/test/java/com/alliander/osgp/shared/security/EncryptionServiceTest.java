@@ -75,9 +75,22 @@ public class EncryptionServiceTest {
     public void testOpenSslEncrypted() throws NoSuchAlgorithmException, IOException, NoSuchProviderException {
         final byte[] encrypted = Files.readAllBytes(new File("src/test/resources/plain.enc").toPath());
         final SecretKeySpec secretKey = this.createSecretKeySpec(new File(SRC_TEST_RESOURCES_SECRET).getPath());
-        final byte[] decrypted = new EncryptionService(secretKey).decrypt(encrypted);
+        final byte[] decrypted = new TestableEncService(secretKey).decrypt(encrypted);
 
         Assert.assertEquals("hallo", new String(decrypted));
+    }
+
+    @Test
+    public void testPrepended() throws NoSuchAlgorithmException, IOException, NoSuchProviderException {
+        final byte[] encrypted_prepended = Files.readAllBytes(new File("src/test/resources/prepended").toPath());
+
+        final SecretKeySpec secretKey = this.createSecretKeySpec(new File(SRC_TEST_RESOURCES_SECRET).getPath());
+        final byte[] decrypted_prepended = new TestableEncService(secretKey).decrypt(encrypted_prepended);
+
+        // in this specific case the length of the decrypted bytes should become
+        // 16, after 0 bytes are stripped of
+        Assert.assertEquals(16, decrypted_prepended.length);
+
     }
 
     private SecretKeySpec createSecretKeySpec(final byte[] bytes) throws IOException {

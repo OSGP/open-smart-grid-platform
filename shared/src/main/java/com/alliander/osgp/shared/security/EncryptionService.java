@@ -101,19 +101,52 @@ public class EncryptionService {
     }
 
     /**
-     * Decrypts the data using the key
+     * Decrypts the data using the key, Strips off iv bytes when they are there
+     * (first 16 0 bytes).
      */
     public byte[] decrypt(final byte[] inputData) {
 
         try {
             final Cipher cipher = Cipher.getInstance(ALGORITHM, PROVIDER);
             cipher.init(Cipher.DECRYPT_MODE, this.key, new IvParameterSpec(IVBYTES));
-            return cipher.doFinal(inputData);
+            final byte[] decryptedData = cipher.doFinal(inputData);
+            if (this.checkNullBytesPrepended(decryptedData)) {
+                return Arrays.copyOfRange(decryptedData, IVBYTES.length, decryptedData.length);
+            } else {
+                return decryptedData;
+            }
         } catch (final NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
                 | IllegalBlockSizeException | BadPaddingException | NoSuchProviderException
                 | InvalidAlgorithmParameterException ex) {
             LOGGER.error(UNEXPECTED_EXCEPTION_DURING_DECRYPTION, ex);
             throw new EncrypterException("Unexpected exception during decryption!", ex);
+        }
+    }
+
+    /**
+     * <pre>
+     *         - When aes decrypting data (both Java / bouncy castle and openssl) sometimes 16 0 bytes are prepended.
+     *         - Possibly this has to do with padding during encryption
+     *         - openssl as well as Java / bouncy castle don't prefix iv bytes when aes encrypting data (seen in junit test and commandline)
+     *         - makeSimulatorKey.sh (device simulator) assumes decrypted data are prepended with 0 bytes, at present this is correct
+     * </pre>
+     *
+     * @param bytes
+     * @return
+     */
+    private boolean checkNullBytesPrepended(final byte[] bytes) {
+        if (bytes.length > IVBYTES.length) {
+            boolean nullBytesPrepended = false;
+            for (short s = 0; s < IVBYTES.length; s++) {
+                if (bytes[s] == 0) {
+                    nullBytesPrepended = true;
+                } else {
+                    return false;
+                }
+            }
+            return nullBytesPrepended;
+        } else {
+            return false;
         }
     }
 
