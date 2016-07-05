@@ -203,7 +203,7 @@ public class ConfigurationService {
         final ProtocolMeterInfo protocolMeterInfo = new ProtocolMeterInfo(gMeterInfo.getChannel(),
                 gMeterInfo.getDeviceIdentification(), gMeterDevice.getValidSecurityKey(
                         SecurityKeyType.G_METER_ENCRYPTION).getKey(), gMeterDevice.getValidSecurityKey(
-                        SecurityKeyType.G_METER_MASTER).getKey());
+                                SecurityKeyType.G_METER_MASTER).getKey());
 
         this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, protocolMeterInfo);
 
@@ -272,13 +272,11 @@ public class ConfigurationService {
             DlmsDevice devicePostSave = this.replaceKeyCommandExecutor.execute(conn, device, ReplaceKeyCommandExecutor
                     .wrap(keySet.getAuthenticationKey(), KeyId.AUTHENTICATION_KEY,
                             SecurityKeyType.E_METER_AUTHENTICATION));
-            conn.changeClientGlobalAuthenticationKey(keySet.getAuthenticationKey());
 
             // Change ENCRYPTION key
             devicePostSave = this.replaceKeyCommandExecutor.execute(conn, devicePostSave, ReplaceKeyCommandExecutor
                     .wrap(keySet.getEncryptionKey(), KeyId.GLOBAL_UNICAST_ENCRYPTION_KEY,
                             SecurityKeyType.E_METER_ENCRYPTION));
-            conn.changeClientGlobalEncryptionKey(keySet.getEncryptionKey());
         } catch (final ProtocolAdapterException e) {
             LOGGER.error("Unexpected exception during replaceKeys.", e);
             throw e;
