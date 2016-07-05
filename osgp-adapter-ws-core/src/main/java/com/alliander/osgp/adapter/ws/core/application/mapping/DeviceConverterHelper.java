@@ -18,6 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceModel;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Manufacturer;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.entities.Ssld;
@@ -102,6 +104,20 @@ class DeviceConverterHelper<T extends com.alliander.osgp.domain.core.entities.De
             deviceAuthorizations.add(newDeviceAuthorization);
         }
         destination.getDeviceAuthorizations().addAll(deviceAuthorizations);
+
+        if (source.getDeviceModel() != null) {
+            DeviceModel deviceModel = new DeviceModel();
+            deviceModel.setDescription(source.getDeviceModel().getDescription());
+            if (source.getDeviceModel().getManufacturerId() != null) {
+                Manufacturer manufacturer = new Manufacturer();
+                manufacturer.setManufacturerId(source.getDeviceModel().getManufacturerId().getManufacturerId());
+                manufacturer.setName(source.getDeviceModel().getManufacturerId().getName());
+                manufacturer.setUsePrefix(source.getDeviceModel().getManufacturerId().isUsePrefix());
+                deviceModel.setManufacturer(manufacturer);
+            }
+            deviceModel.setModelCode(source.getDeviceModel().getModelCode());
+            destination.setDeviceModel(deviceModel);
+        }
 
         return destination;
     }

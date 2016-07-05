@@ -41,13 +41,11 @@ public interface DeviceSpecifications {
 
     Specification<Device> hasTechnicalInstallationDate() throws ArgumentNullOrEmptyException;
 
-    Specification<Device> forOwner(final Organisation organisation) throws ArgumentNullOrEmptyException;
+    Specification<Device> forOwner(final String organisation) throws ArgumentNullOrEmptyException;
 
-    Specification<Device> forDeviceType(String deviceType) throws ArgumentNullOrEmptyException;
+    Specification<Device> forDeviceType(final String deviceType) throws ArgumentNullOrEmptyException;
 
-    Specification<Device> forDeviceModel(DeviceModel deviceModel) throws ArgumentNullOrEmptyException;
+    Specification<Device> forDeviceModel(final String deviceModel) throws ArgumentNullOrEmptyException;
 
-    Specification<Device> forManufacturer(Manufacturer manufacturer) throws ArgumentNullOrEmptyException;
-
-    Specification<Device> forFirmwareVersion(String firmwareVersion) throws ArgumentNullOrEmptyException;
+    Specification<Device> forManufacturer(final Manufacturer manufacturer) throws ArgumentNullOrEmptyException;
 }
