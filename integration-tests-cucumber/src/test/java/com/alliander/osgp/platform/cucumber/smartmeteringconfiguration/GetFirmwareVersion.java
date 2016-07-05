@@ -27,8 +27,12 @@ import cucumber.api.java.en.When;
 
 public class GetFirmwareVersion extends SmartMetering {
     private static final String PATH_RESULT_STATUS = "/Envelope/Body/GetFirmwareVersionResponse/Result/text()";
+    private static final String PATH_RESULT_FIRMWAREVERSION_TYPE = "/Envelope/Body/GetFirmwareVersionResponse/FirmwareVersion/type";
+    private static final String PATH_RESULT_FIRMWAREVERSION_VERSION = "/Envelope/Body/GetFirmwareVersionResponse/FirmwareVersion/version";
 
     private static final String XPATH_MATCHER_RESULT_STATUS = "OK";
+    private static final String XPATH_MATCHER_FIRMWAREVERSION_TYPE = "(ACTIVE|MODULE_ACTIVE|COMMUNICATION_MODULE_ACTIVE)_FIRMWARE";
+    private static final String XPATH_MATCHER_FIRMWAREVERSION_VERSION = ".+";
 
     private static final String TEST_SUITE_XML = "SmartmeterConfiguration";
     private static final String TEST_CASE_XML = "261 Retrieve firmware version";
@@ -59,6 +63,11 @@ public class GetFirmwareVersion extends SmartMetering {
         this.ResponseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
 
         assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_STATUS, XPATH_MATCHER_RESULT_STATUS));
+
+        this.runXpathResult.assertXpathList(this.response, PATH_RESULT_FIRMWAREVERSION_TYPE,
+                XPATH_MATCHER_FIRMWAREVERSION_TYPE, 3);
+        this.runXpathResult.assertXpathList(this.response, PATH_RESULT_FIRMWAREVERSION_VERSION,
+                XPATH_MATCHER_FIRMWAREVERSION_VERSION, 3);
     }
 
 }
