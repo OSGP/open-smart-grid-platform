@@ -2928,13 +2928,25 @@
          <ns:CorrelationUid>?</ns:CorrelationUid>\r
       </ns1:SpecificConfigurationObjectAsyncRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-adhoc-v1.0/SmartmeteradhocPort/SpecificConfigurationObjectAsyncRequest"/></con:call></con:operation></con:interface><con:interface xsi:type="con:WsdlInterface" id="9de10c54-0330-48dd-bd25-459e916be438" wsaVersion="NONE" name="SmartmeterconfigurationPortSoap11" type="wsdl" bindingName="{http://www.alliander.com/definitions/osgp/smartmetering/sm-configuration-v1.0}SmartmeterconfigurationPortSoap11" soapVersion="1_1" anonymous="optional" definition="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringConfiguration.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringConfiguration.wsdl"><con:part><con:url>https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringConfiguration.wsdl</con:url><con:content><![CDATA[<!--Platform version: 3.7.0-SNAPSHOT-jenkins-OSGP_Platform_development-610-->
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-adhoc-v1.0/SmartmeteradhocPort/SpecificConfigurationObjectAsyncRequest"/></con:call></con:operation></con:interface><con:interface xsi:type="con:WsdlInterface" id="9de10c54-0330-48dd-bd25-459e916be438" wsaVersion="NONE" name="SmartmeterconfigurationPortSoap11" type="wsdl" bindingName="{http://www.alliander.com/definitions/osgp/smartmetering/sm-configuration-v1.0}SmartmeterconfigurationPortSoap11" soapVersion="1_1" anonymous="optional" definition="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringConfiguration.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringConfiguration.wsdl"><con:part><con:url>https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringConfiguration.wsdl</con:url><con:content><![CDATA[<!--Platform version: 3.7.0-SNAPSHOT-jenkins-OSGP_Platform_development-623-->
 <wsdl:definitions targetNamespace="http://www.alliander.com/definitions/osgp/smartmetering/sm-configuration-v1.0" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:smconf="http://www.alliander.com/schemas/osgp/smartmetering/sm-configuration/2014/10" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.alliander.com/definitions/osgp/smartmetering/sm-configuration-v1.0">
   <wsdl:types>
     <xsd:schema targetNamespace="http://www.alliander.com/definitions/osgp/smartmetering/sm-configuration/imports" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
       <xsd:import namespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-configuration/2014/10" schemaLocation="schemas/sm-configuration.xsd"/>
     </xsd:schema>
   </wsdl:types>
+  <wsdl:message name="GetFirmwareVersionRequest">
+    <wsdl:part element="smconf:GetFirmwareVersionRequest" name="GetFirmwareVersionRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetFirmwareVersionAsyncResponse">
+    <wsdl:part element="smconf:GetFirmwareVersionAsyncResponse" name="GetFirmwareVersionAsyncResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetFirmwareVersionAsyncRequest">
+    <wsdl:part element="smconf:GetFirmwareVersionAsyncRequest" name="GetFirmwareVersionAsyncRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetFirmwareVersionResponse">
+    <wsdl:part element="smconf:GetFirmwareVersionResponse" name="GetFirmwareVersionResponse"></wsdl:part>
+  </wsdl:message>
   <wsdl:message name="ActionHeader">
     <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification"/>
     <wsdl:part element="common:UserName" name="UserName"/>
@@ -3061,6 +3073,14 @@
     <wsdl:part element="smconf:ReplaceKeysResponse" name="ReplaceKeysResponse"></wsdl:part>
   </wsdl:message>
   <wsdl:portType name="SmartmeterconfigurationPort">
+    <wsdl:operation name="GetGetFirmwareVersionResponse">
+      <wsdl:input message="tns:GetFirmwareVersionAsyncRequest" name="GetFirmwareVersionAsyncRequest"></wsdl:input>
+      <wsdl:output message="tns:GetFirmwareVersionResponse" name="GetFirmwareVersionResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetFirmwareVersion">
+      <wsdl:input message="tns:GetFirmwareVersionRequest" name="GetFirmwareVersionRequest"></wsdl:input>
+      <wsdl:output message="tns:GetFirmwareVersionAsyncResponse" name="GetFirmwareVersionAsyncResponse"></wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="SetSpecialDays">
       <wsdl:input message="tns:SetSpecialDaysRequest" name="SetSpecialDaysRequest"></wsdl:input>
       <wsdl:output message="tns:SetSpecialDaysAsyncResponse" name="SetSpecialDaysAsyncResponse"></wsdl:output>
@@ -3144,6 +3164,30 @@
   </wsdl:portType>
   <wsdl:binding name="SmartmeterconfigurationPortSoap11" type="tns:SmartmeterconfigurationPort">
     <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="GetGetFirmwareVersionResponse">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="GetFirmwareVersionAsyncRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal"/>
+        <soap:header message="tns:ActionHeader" part="UserName" use="literal"/>
+        <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal"/>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="GetFirmwareVersionResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetFirmwareVersion">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="GetFirmwareVersionRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal"/>
+        <soap:header message="tns:ActionHeader" part="UserName" use="literal"/>
+        <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal"/>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="GetFirmwareVersionAsyncResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="SetSpecialDays">
       <soap:operation soapAction=""/>
       <wsdl:input name="SetSpecialDaysRequest">
@@ -3442,6 +3486,38 @@
       <xsd:element name="type" type="xsd:string"/>
     </xsd:sequence>
   </xsd:complexType>
+  <!--For the support of single GetFirmwareVersion support-->
+  <xsd:element name="GetFirmwareVersionRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:Identification"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetFirmwareVersionAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetFirmwareVersionAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetFirmwareVersionResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element minOccurs="1" name="Result" type="common:OsgpResultType"/>
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" minOccurs="1" name="FirmwareVersion" type="tns:FirmwareVersion"/>
+        </xsd:sequence>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
   <xsd:element name="SetConfigurationObjectRequest">
     <xsd:complexType>
       <xsd:sequence>
@@ -4907,7 +4983,30 @@
          <ns:CorrelationUid>?</ns:CorrelationUid>\r
       </ns1:SetPushSetupSmsAsyncRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-configuration-v1.0/SmartmeterconfigurationPort/SetPushSetupSmsAsyncRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:interface xsi:type="con:WsdlInterface" id="70927072-18e0-482f-a6e3-71833d8eeb5c" wsaVersion="NONE" name="FirmwareManagementPortSoap11" type="wsdl" bindingName="{http://www.alliander.com/definitions/osgp/common/firmwaremanagement-v1.0}FirmwareManagementPortSoap11" soapVersion="1_1" anonymous="optional" definition="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-core/wsdl/common/FirmwareManagement.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-core/wsdl/common/FirmwareManagement.wsdl"><con:part><con:url>https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-core/wsdl/common/FirmwareManagement.wsdl</con:url><con:content><![CDATA[<!--Platform version: 3.7.0-SNAPSHOT-jenkins-OSGP_Platform_development-610-->
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-configuration-v1.0/SmartmeterconfigurationPort/SetPushSetupSmsAsyncRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="8fc762eb-08f4-4360-922f-85149b8f3dd7" isOneWay="false" action="" name="GetGetFirmwareVersionResponse" bindingOperationName="GetGetFirmwareVersionResponse" type="Request-Response" outputName="GetFirmwareVersionResponse" inputName="GetFirmwareVersionAsyncRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="69e989bc-0259-42e1-a084-d79bb9e7e669" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/smartMetering/configurationService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/smartmetering/sm-configuration/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>?</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:GetFirmwareVersionAsyncRequest>
+         <ns:DeviceIdentification>?</ns:DeviceIdentification>
+         <ns:CorrelationUid>?</ns:CorrelationUid>
+      </ns1:GetFirmwareVersionAsyncRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-configuration-v1.0/SmartmeterconfigurationPort/GetFirmwareVersionAsyncRequest"/></con:call></con:operation><con:operation id="9afc7dbc-7597-4152-b377-694bb7a94e03" isOneWay="false" action="" name="GetFirmwareVersion" bindingOperationName="GetFirmwareVersion" type="Request-Response" outputName="GetFirmwareVersionAsyncResponse" inputName="GetFirmwareVersionRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="5760a39e-d516-40c0-ae24-cfeaddddb428" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/smartMetering/configurationService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/smartmetering/sm-configuration/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>?</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:GetFirmwareVersionRequest>
+         <ns1:DeviceIdentification>?</ns1:DeviceIdentification>
+      </ns1:GetFirmwareVersionRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-configuration-v1.0/SmartmeterconfigurationPort/GetFirmwareVersionRequest"/></con:call></con:operation></con:interface><con:interface xsi:type="con:WsdlInterface" id="70927072-18e0-482f-a6e3-71833d8eeb5c" wsaVersion="NONE" name="FirmwareManagementPortSoap11" type="wsdl" bindingName="{http://www.alliander.com/definitions/osgp/common/firmwaremanagement-v1.0}FirmwareManagementPortSoap11" soapVersion="1_1" anonymous="optional" definition="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-core/wsdl/common/FirmwareManagement.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-core/wsdl/common/FirmwareManagement.wsdl"><con:part><con:url>https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-core/wsdl/common/FirmwareManagement.wsdl</con:url><con:content><![CDATA[<!--Platform version: 3.7.0-SNAPSHOT-jenkins-OSGP_Platform_development-610-->
 <wsdl:definitions targetNamespace="http://www.alliander.com/definitions/osgp/common/firmwaremanagement-v1.0" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:fman="http://www.alliander.com/schemas/osgp/common/firmwaremanagement/2014/10" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.alliander.com/definitions/osgp/common/firmwaremanagement-v1.0">
   <wsdl:types>
     <xsd:schema targetNamespace="http://www.alliander.com/definitions/osgp/common/firmwaremanagement/imports" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
@@ -10714,45 +10813,36 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
 declare namespace ns3='http://www.alliander.com/schemas/osgp/common/2014/10';
 declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
 
-//SOAP-ENV:Body/ns2:SetAlarmNotificationsResponse/ns2:Result</path><content>OK</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-configuration-v1.0/SmartmeterconfigurationPort/SetAlarmNotificationsAsyncRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties><con:property><con:name>DeviceIdentificationE</con:name><con:value>EXXXX001692675614</con:value></con:property><con:property><con:name>OrganisationIdentification</con:name><con:value>LianderNetManagement</con:value></con:property><con:property><con:name>CorrelationUid</con:name><con:value>LianderNetManagement|||EXXXX001692675614|||20160531072544385</con:value></con:property></con:properties></con:testCase><con:testCase id="09a7d07a-1e46-464d-a8bd-9fed6b16af39" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="261 Retrieve firmware version" searchProperties="true"><con:settings/><con:testStep type="request" id="28fcdeb5-ae34-4afc-ad1a-2f1b1df1af81" name="GetFirmwareVersion - Request 1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>FirmwareManagementPortSoap11</con:interface><con:operation>GetFirmwareVersion</con:operation><con:request name="GetFirmwareVersion - Request 1" outgoingWss="" incomingWss="" timeout="" sslKeystore="LianderNetManagement.pfx" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="ab410053-5111-4258-a5bf-a1976870b28f"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-core/common/firmwareManagementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/common/firmwaremanagement/2014/10">\r
-   <soapenv:Header>\r
-      <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
-      <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>LianderNetManagement</ns:OrganisationIdentification>\r
-   </soapenv:Header>\r  
-   <soapenv:Body>\r
-      <ns1:GetFirmwareVersionRequest>\r
-         <ns1:DeviceIdentification>${=testCase.testSuite.project.getPropertyValue( "DeviceIdentificationE" )}</ns1:DeviceIdentification>\r
-      </ns1:GetFirmwareVersionRequest>\r
-   </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response" id="493168c7-1d12-4f5d-a4cb-7e78974c9cca" name="SOAP Response"/><con:assertion type="Schema Compliance" id="0a082ec3-8ef0-410f-afa7-042cfed4816b" name="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion" id="404bdb3d-6a50-48b1-9d2e-5dde5ce0799d" name="Not SOAP Fault"/><con:credentials><con:selectedAuthProfile>No Authorization</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/common/firmwaremanagement-v1.0/FirmwareManagementPort/GetFirmwareVersionRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="transfer" name="Property Transfer" id="5ea287c0-a161-4b16-8597-f8c5c73701bb"><con:settings/><con:config xsi:type="con:PropertyTransfersStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" ignoreEmpty="false" transferToAll="false" entitize="false" transferChildNodes="false"><con:name>CorrelationUid</con:name><con:sourceType>Response</con:sourceType><con:sourceStep>GetFirmwareVersion - Request 1</con:sourceStep><con:sourcePath>declare namespace ns2='http://www.alliander.com/schemas/osgp/common/firmwaremanagement/2014/10';
-declare namespace ns3='http://www.alliander.com/schemas/osgp/common/2014/10';
+//SOAP-ENV:Body/ns2:SetAlarmNotificationsResponse/ns2:Result</path><content>OK</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-configuration-v1.0/SmartmeterconfigurationPort/SetAlarmNotificationsAsyncRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties><con:property><con:name>DeviceIdentificationE</con:name><con:value>EXXXX001692675614</con:value></con:property><con:property><con:name>OrganisationIdentification</con:name><con:value>LianderNetManagement</con:value></con:property><con:property><con:name>CorrelationUid</con:name><con:value>LianderNetManagement|||EXXXX001692675614|||20160531072544385</con:value></con:property></con:properties></con:testCase><con:testCase id="09a7d07a-1e46-464d-a8bd-9fed6b16af39" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="261 Retrieve firmware version" searchProperties="true"><con:settings/><con:testStep type="request" id="2aedfe2d-cf64-4286-a539-18e968199032" name="GetFirmwareVersion - Request 1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>SmartmeterconfigurationPortSoap11</con:interface><con:operation>GetFirmwareVersion</con:operation><con:request name="GetFirmwareVersion - Request 1" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="f7fb18b8-52a3-48b8-a6f7-74303ef0a46c"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/smartMetering/configurationService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/smartmetering/sm-configuration/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>SoapUI</ns:ApplicationName>
+      <ns:UserName>carlogeenen</ns:UserName>
+      <ns:OrganisationIdentification>LianderNetManagement</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:GetFirmwareVersionRequest>
+         <ns1:DeviceIdentification>${=testCase.getPropertyValue( "DeviceIdentificationE" )}</ns1:DeviceIdentification>
+      </ns1:GetFirmwareVersionRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response" id="91f90344-2539-4783-863c-f7f60418ddb4" name="SOAP Response"/><con:assertion type="Schema Compliance" id="c387658d-6e54-4a8b-81bf-faf1e3a0a679" name="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion" id="cd857189-0e53-4b0e-a119-80c6f299ee14" name="Not SOAP Fault"/><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-configuration-v1.0/SmartmeterconfigurationPort/GetFirmwareVersionRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="transfer" name="Property Transfer" id="5ea287c0-a161-4b16-8597-f8c5c73701bb"><con:settings/><con:config xsi:type="con:PropertyTransfersStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" ignoreEmpty="false" transferToAll="false" entitize="false" transferChildNodes="false"><con:name>CorrelationUid</con:name><con:sourceType>Response</con:sourceType><con:sourceStep>GetFirmwareVersion - Request 1</con:sourceStep><con:sourcePath>declare namespace ns2='http://www.alliander.com/schemas/osgp/common/2014/10';
+declare namespace ns3='http://www.alliander.com/schemas/osgp/smartmetering/sm-configuration/2014/10';
 declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
 
-//SOAP-ENV:Body/ns2:GetFirmwareVersionAsyncResponse/ns2:AsyncResponse/ns3:CorrelationUid
+//SOAP-ENV:Body/ns3:GetFirmwareVersionAsyncResponse/ns2:CorrelationUid
 
-</con:sourcePath><con:targetType>CorrelationUid</con:targetType><con:targetStep>#TestCase#</con:targetStep><con:upgraded>true</con:upgraded></con:transfers></con:config></con:testStep><con:testStep type="delay" name="Delay" id="ff6250c2-8c96-44d0-a8e9-ad5a299e2935"><con:settings/><con:config><delay>15000</delay></con:config></con:testStep><con:testStep type="request" id="c6b79d7a-3728-442c-96af-5ea60d1dfb77" name="GetGetFirmwareVersionResponse - Request 1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>FirmwareManagementPortSoap11</con:interface><con:operation>GetGetFirmwareVersionResponse</con:operation><con:request name="GetGetFirmwareVersionResponse - Request 1" outgoingWss="" incomingWss="" timeout="" sslKeystore="LianderNetManagement.pfx" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="04ef93e4-658a-4ce0-bf5d-b4d8310c21be"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-core/common/firmwareManagementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/common/firmwaremanagement/2014/10">\r
-   <soapenv:Header>\r
-      <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
-      <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>LianderNetManagement</ns:OrganisationIdentification>\r
-   </soapenv:Header>\r
-   <soapenv:Body>\r
-      <ns1:GetFirmwareVersionAsyncRequest>\r
-         <ns1:AsyncRequest>\r
-            <ns:CorrelationUid>${=testCase.getPropertyValue( "CorrelationUid" )}</ns:CorrelationUid>\r
-            <ns:DeviceId>${=testCase.getPropertyValue( "DeviceIdentificationE" )}</ns:DeviceId>\r
-         </ns1:AsyncRequest>\r
-      </ns1:GetFirmwareVersionAsyncRequest>\r
-   </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response" id="266a293e-afd1-420c-871c-3c5cf2ddb000" name="SOAP Response"/><con:assertion type="Schema Compliance" id="0d470f11-2202-4b4a-b3b6-4f84c384fea7" name="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion" id="6ed4064a-b263-45d4-afe5-d3e1b2bd64d2" name="Not SOAP Fault"/><con:assertion type="XPath Match" id="05e4ebac-f1df-4fb0-a4d1-95b004781239" name="XPath Match"><con:configuration><path>declare namespace ns2='http://www.alliander.com/schemas/osgp/common/firmwaremanagement/2014/10';
-declare namespace ns3='http://www.alliander.com/schemas/osgp/common/2014/10';
-declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
-
-//SOAP-ENV:Body/ns2:GetFirmwareVersionResponse/ns2:Result</path><content>OK</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="Simple Contains" id="9b6240ed-98ef-4fae-bb43-728babbde962" name="Contains"><con:configuration><token>(?s).*(ACTIVE_FIRMWARE).*
-(?s).*(MODULE_ACTIVE_FIRMWARE).*
-(?s).*(COMMUNICATION_MODULE_ACTIVE_FIRMWARE).*
-(?s).*(\d+).*</token><ignoreCase>false</ignoreCase><useRegEx>true</useRegEx></con:configuration></con:assertion><con:credentials><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/common/firmwaremanagement-v1.0/FirmwareManagementPort/GetFirmwareVersionAsyncRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties><con:property><con:name>DeviceIdentificationE</con:name><con:value>E9998000014123414</con:value></con:property><con:property><con:name>OrganisationIdentification</con:name><con:value>LianderNetManagement</con:value></con:property><con:property><con:name>CorrelationUid</con:name><con:value>LianderNetManagement|||E0025000059790116|||20160517122912616</con:value></con:property></con:properties></con:testCase><con:properties><con:property><con:name>CorrelationUid</con:name><con:value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">LianderNetManagement|||EXXXX001692675614|||20160606125210391</con:value></con:property><con:property><con:name>smsMsgId</con:name><con:value>5633725404</con:value></con:property></con:properties></con:testSuite><con:testSuite id="54d19256-b97e-4eec-b4ae-2d17a8b215ad" name="SmartmeterMonitoring"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase id="b6464ade-84a9-476e-a9b2-2b1b0f8208c6" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="247 Converting meter reads into uniform unit" searchProperties="true"><con:settings/><con:testStep type="request" id="9887ee8f-d1e0-44d6-b800-eba4f11b1060" name="GetActualMeterReads - Request 1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>SmartmetermonitoringPortSoap11</con:interface><con:operation>GetActualMeterReads</con:operation><con:request name="GetActualMeterReads - Request 1" outgoingWss="" incomingWss="" timeout="" sslKeystore="LianderNetManagement.pfx" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="0924cad0-90a1-486c-b2a9-cba918d81333"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/smartMetering/monitoringService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/smartmetering/sm-monitoring/2014/10">
+</con:sourcePath><con:targetType>CorrelationUid</con:targetType><con:targetStep>#TestCase#</con:targetStep><con:upgraded>true</con:upgraded></con:transfers></con:config></con:testStep><con:testStep type="delay" name="Delay" id="ff6250c2-8c96-44d0-a8e9-ad5a299e2935"><con:settings/><con:config><delay>15000</delay></con:config></con:testStep><con:testStep type="request" id="918ee467-c266-400f-92a7-d173049ea86b" name="GetGetFirmwareVersionResponse - Request 1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>SmartmeterconfigurationPortSoap11</con:interface><con:operation>GetGetFirmwareVersionResponse</con:operation><con:request name="GetGetFirmwareVersionResponse - Request 1" outgoingWss="" incomingWss="" timeout="" sslKeystore="" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="83013335-23e4-45ff-a4ad-f1ca84af9be9"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/smartMetering/configurationService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/smartmetering/sm-configuration/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>SoapUI</ns:ApplicationName>
+      <ns:UserName>carlogeenen</ns:UserName>
+      <ns:OrganisationIdentification>LianderNetManagement</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:GetFirmwareVersionAsyncRequest>
+         <ns:DeviceIdentification>${=testCase.getPropertyValue( "DeviceIdentificationE" )}</ns:DeviceIdentification>
+         <ns:CorrelationUid>${=testCase.getPropertyValue( "CorrelationUid" )}</ns:CorrelationUid>
+      </ns1:GetFirmwareVersionAsyncRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response" id="a9f55b5f-74ff-433f-a48c-7c01033b03de" name="SOAP Response"/><con:assertion type="Schema Compliance" id="6328dc0a-c0fc-4630-acb2-fb4fc544b621" name="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion" id="6006d391-0633-499b-92b6-bb9542c73c92" name="Not SOAP Fault"/><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-configuration-v1.0/SmartmeterconfigurationPort/GetFirmwareVersionAsyncRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties><con:property><con:name>DeviceIdentificationE</con:name><con:value>EXXXX001692675614</con:value></con:property><con:property><con:name>OrganisationIdentification</con:name><con:value>LianderNetManagement</con:value></con:property><con:property><con:name>CorrelationUid</con:name><con:value>LianderNetManagement|||EXXXX001692675614|||20160705083002194</con:value></con:property></con:properties></con:testCase><con:properties><con:property><con:name>CorrelationUid</con:name><con:value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">LianderNetManagement|||EXXXX001692675614|||20160606125210391</con:value></con:property><con:property><con:name>smsMsgId</con:name><con:value>5633725404</con:value></con:property></con:properties></con:testSuite><con:testSuite id="54d19256-b97e-4eec-b4ae-2d17a8b215ad" name="SmartmeterMonitoring"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase id="b6464ade-84a9-476e-a9b2-2b1b0f8208c6" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="247 Converting meter reads into uniform unit" searchProperties="true"><con:settings/><con:testStep type="request" id="9887ee8f-d1e0-44d6-b800-eba4f11b1060" name="GetActualMeterReads - Request 1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>SmartmetermonitoringPortSoap11</con:interface><con:operation>GetActualMeterReads</con:operation><con:request name="GetActualMeterReads - Request 1" outgoingWss="" incomingWss="" timeout="" sslKeystore="LianderNetManagement.pfx" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="0924cad0-90a1-486c-b2a9-cba918d81333"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/smartMetering/monitoringService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/smartmetering/sm-monitoring/2014/10">
    <soapenv:Header>
       <ns:ApplicationName>SoapUI</ns:ApplicationName>
       <ns:UserName>carlogeenen</ns:UserName>
@@ -11435,7 +11525,7 @@ for(int j=0;j&lt;10000;j++) {
 		log.error "response NOK for " + (testRunner.testCase.getPropertyValue( "CorrelationUid" ));
 	}
 }
-</script></con:config></con:testStep><con:loadTest id="fd25b73d-39e8-40d7-8648-3bb6af0d7181" name="LoadTest 1"><con:settings/><con:threadCount>5</con:threadCount><con:startDelay>0</con:startDelay><con:sampleInterval>250</con:sampleInterval><con:calculateTPSOnTimePassed>true</con:calculateTPSOnTimePassed><con:resetStatisticsOnThreadCountChange>true</con:resetStatisticsOnThreadCountChange><con:historyLimit>-1</con:historyLimit><con:testLimit>60</con:testLimit><con:limitType>TIME</con:limitType><con:loadStrategy><con:type>Simple</con:type><con:config><testDelay>1000</testDelay><randomFactor>0.5</randomFactor></con:config></con:loadStrategy><con:assertion type="Step Status" name="Step Status"/><con:maxAssertionErrors>100</con:maxAssertionErrors><con:cancelExcessiveThreads>true</con:cancelExcessiveThreads><con:strategyInterval>500</con:strategyInterval></con:loadTest><con:properties><con:property><con:name>DeviceIdentificationE</con:name><con:value>E9998000014123414</con:value></con:property><con:property><con:name>OrganisationIdentification</con:name><con:value>LianderNetManagement</con:value></con:property><con:property><con:name>CorrelationUid</con:name><con:value>LianderNetManagement|||E9998000014123414|||20160617112446809</con:value></con:property><con:property><con:name>DeviceIdentificationE0</con:name><con:value>E001692675614SIM1</con:value></con:property><con:property><con:name>DeviceIdentificationE1</con:name><con:value>E001692675614SIM2</con:value></con:property></con:properties></con:testCase><con:testCase id="0c523480-b54d-4435-98c2-9cec5a3028ce" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="Bundle" searchProperties="true"><con:settings/><con:testStep type="request" id="52922ca1-a4bb-47ad-a9ca-7f1cefbb353b" name="Bundle - Request 1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>SmartMeteringBundlePortSoap11</con:interface><con:operation>Bundle</con:operation><con:request name="Bundle - Request 1" outgoingWss="" incomingWss="" timeout="" sslKeystore="LianderNetManagement.pfx" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="d52adb3a-ea4f-4fa7-ad79-8ef151950df0"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/smartMetering/bundleService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/smartmetering/sm-bundle/2014/10" xmlns:ns2="http://www.alliander.com/schemas/osgp/smartmetering/sm-management/2014/10" xmlns:ns3="http://www.alliander.com/schemas/osgp/smartmetering/sm-configuration/2014/10" xmlns:ns4="http://www.alliander.com/schemas/osgp/smartmetering/sm-monitoring/2014/10">\r
+</script></con:config></con:testStep><con:loadTest id="fd25b73d-39e8-40d7-8648-3bb6af0d7181" name="LoadTest 1"><con:settings/><con:threadCount>5</con:threadCount><con:startDelay>0</con:startDelay><con:sampleInterval>250</con:sampleInterval><con:calculateTPSOnTimePassed>true</con:calculateTPSOnTimePassed><con:resetStatisticsOnThreadCountChange>true</con:resetStatisticsOnThreadCountChange><con:historyLimit>-1</con:historyLimit><con:testLimit>60</con:testLimit><con:limitType>TIME</con:limitType><con:loadStrategy><con:type>Simple</con:type><con:config><testDelay>1000</testDelay><randomFactor>0.5</randomFactor></con:config></con:loadStrategy><con:assertion type="Step Status" name="Step Status"/><con:maxAssertionErrors>100</con:maxAssertionErrors><con:cancelExcessiveThreads>true</con:cancelExcessiveThreads><con:strategyInterval>500</con:strategyInterval></con:loadTest><con:properties><con:property><con:name>DeviceIdentificationE</con:name><con:value>E9998000014123414</con:value></con:property><con:property><con:name>OrganisationIdentification</con:name><con:value>LianderNetManagement</con:value></con:property><con:property><con:name>CorrelationUid</con:name><con:value>LianderNetManagement|||E9998000014123414|||20160705072805132</con:value></con:property><con:property><con:name>DeviceIdentificationE0</con:name><con:value>E001692675614SIM1</con:value></con:property><con:property><con:name>DeviceIdentificationE1</con:name><con:value>E001692675614SIM2</con:value></con:property></con:properties></con:testCase><con:testCase id="0c523480-b54d-4435-98c2-9cec5a3028ce" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="Bundle" searchProperties="true"><con:settings/><con:testStep type="request" id="52922ca1-a4bb-47ad-a9ca-7f1cefbb353b" name="Bundle - Request 1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>SmartMeteringBundlePortSoap11</con:interface><con:operation>Bundle</con:operation><con:request name="Bundle - Request 1" outgoingWss="" incomingWss="" timeout="" sslKeystore="LianderNetManagement.pfx" useWsAddressing="false" useWsReliableMessaging="false" wssPasswordType="" id="d52adb3a-ea4f-4fa7-ad79-8ef151950df0"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/smartMetering/bundleService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/smartmetering/sm-bundle/2014/10" xmlns:ns2="http://www.alliander.com/schemas/osgp/smartmetering/sm-management/2014/10" xmlns:ns3="http://www.alliander.com/schemas/osgp/smartmetering/sm-configuration/2014/10" xmlns:ns4="http://www.alliander.com/schemas/osgp/smartmetering/sm-monitoring/2014/10">\r
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
