@@ -29,7 +29,7 @@ public class DeviceFilter {
     private String model;
 
     public DeviceFilter() {
-
+        // Default constructor.
     }
 
     public DeviceFilter(final String organisationIdentification, final String deviceIdentification,
