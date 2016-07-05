@@ -31,7 +31,7 @@ public class GetFirmwareVersion extends SmartMetering {
     private static final String PATH_RESULT_FIRMWAREVERSION_VERSION = "/Envelope/Body/GetFirmwareVersionResponse/FirmwareVersion/version";
 
     private static final String XPATH_MATCHER_RESULT_STATUS = "OK";
-    private static final String XPATH_MATCHER_FIRMWAREVERSION_TYPE = "(ACTIVE|MODULE_ACTIVE|COMMUNICATION_MODULE_ACTIVE)_FIRMWARE";
+    private static final String XPATH_MATCHER_FIRMWAREVERSION_TYPE = "(MODULE_|COMMUNICATION_MODULE_)?ACTIVE_FIRMWARE";
     private static final String XPATH_MATCHER_FIRMWAREVERSION_VERSION = ".+";
 
     private static final String TEST_SUITE_XML = "SmartmeterConfiguration";
