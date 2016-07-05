@@ -57,3 +57,7 @@ Background:
     Then the new keys are set on the device
     And the new keys are stored in the osgp_adapter_protocol_dlms database security_key table
     
+@SLIM-615
+  Scenario: Get the firmware version from device
+    When the get firmware version request is received
+    Then the firmware version result should be returned
