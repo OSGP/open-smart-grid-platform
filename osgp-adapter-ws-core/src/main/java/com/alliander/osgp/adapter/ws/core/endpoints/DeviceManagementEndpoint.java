@@ -250,10 +250,8 @@ public class DeviceManagementEndpoint {
             }
 
             if (!request.isUsePages()) {
-                // We don't have to fetch the first page again
-                int calls = 1;
-
-                while ((calls += 1) <= result.getTotalPages()) {
+                int calls = 0;
+                while ((calls += 1) < result.getTotalPages()) {
                     request.setPage(calls);
                     result = this.deviceManagementService.findDevices(organisationIdentification,  request.getPageSize(), request.getPage(),
                             this.deviceManagementMapper.map(request.getDeviceFilter(),
