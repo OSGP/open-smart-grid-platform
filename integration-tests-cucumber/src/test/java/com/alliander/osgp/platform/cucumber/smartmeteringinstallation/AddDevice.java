@@ -44,37 +44,35 @@ public class AddDevice extends SmartMetering {
 
     @Autowired
     private OrganisationId organisationId;
-    
+
     @Autowired
-    private AddDeviceHooks dbshooks;
+    private AddDeviceHooks addDeviceHooks;
 
     @When("^the add device request is received$")
     public void theAddDeviceRequestIsReceived() throws Throwable {
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_E_LABEL, this.deviceId.getDeviceIdE());
         PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, this.organisationId.getOrganisationId());
 
-        dbshooks.deleteCoreAndDlmsDevice(this.deviceId.getDeviceIdE());
-        
         this.RequestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }
-    
+
     @Then("^the device request response should be ok$")
     public void theDeviceRequestResponseShouldBeOk() throws Throwable {
         PROPERTIES_MAP.put(CORRELATION_UID_LABEL, this.correlationUid);
 
         this.ResponseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
-        
+
         Assert.assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT, XPATH_MATCHER_RESULT));
     }
 
-    @And("^the device should be added in the core database$")    
+    @And("^the device should be added in the core database$")
     public void theDeviceShouldBeAddedInTheCoreDatabase() throws Throwable {
-        Assert.assertTrue(dbshooks.testCoreDevice(getDeviceId()));
+        Assert.assertTrue(this.addDeviceHooks.testCoreDevice(this.getDeviceId()));
     }
-    
-    @And("^the device should be added in the dlms database$")    
+
+    @And("^the device should be added in the dlms database$")
     public void theDeviceShouldBeAddedInTheDlmsDatabase() throws Throwable {
-        Assert.assertTrue(dbshooks.testDlmsDevice(getDeviceId()));
+        Assert.assertTrue(this.addDeviceHooks.testDlmsDevice(this.getDeviceId()));
     }
 
     private String getDeviceId() {
