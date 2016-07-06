@@ -62,6 +62,11 @@ class DeviceConverterHelper<T extends com.alliander.osgp.domain.core.entities.De
                     .getTime());
         }
 
+        if (source.getDeviceModel() != null) {
+            DeviceModel deviceModel = new DeviceModel();
+            deviceModel.setModelCode(source.getDeviceModel().getModelCode());
+        }
+
         return destination;
     }
 

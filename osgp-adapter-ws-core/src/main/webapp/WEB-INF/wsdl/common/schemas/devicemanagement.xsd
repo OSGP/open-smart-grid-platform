@@ -276,21 +276,11 @@
       <xsd:element name="Activated" type="xsd:boolean" minOccurs="0" />
       <xsd:element name="HasSchedule" type="xsd:boolean" minOccurs="0" />
       <xsd:element name="PublicKeyPresent" type="xsd:boolean" minOccurs="0" />
-      <xsd:sequence>
-        <xsd:element name="Organisations" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
-      </xsd:sequence>
-      <xsd:sequence>
-        <xsd:element name="OutputSettings" type="tns:DeviceOutputSetting" minOccurs="0" maxOccurs="unbounded" />
-      </xsd:sequence>
-      <xsd:sequence>
-        <xsd:element name="Eans" type="tns:Ean" minOccurs="0" maxOccurs="unbounded" />
-      </xsd:sequence>
-      <xsd:sequence>
-        <xsd:element name="RelayStatuses" type="tns:RelayStatus" minOccurs="0" maxOccurs="unbounded" />
-      </xsd:sequence>
-      <xsd:sequence>
-        <xsd:element name="DeviceAuthorizations" type="tns:DeviceAuthorization" minOccurs="0" maxOccurs="unbounded" />
-      </xsd:sequence>
+      <xsd:element name="Organisations" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="OutputSettings" type="tns:DeviceOutputSetting" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="Eans" type="tns:Ean" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="RelayStatuses" type="tns:RelayStatus" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="DeviceAuthorizations" type="tns:DeviceAuthorization" minOccurs="0" maxOccurs="unbounded" />
       <xsd:element name="InMaintenance" type="xsd:boolean" minOccurs="0" />
       <xsd:element name="TechnicalInstallationDate" type="xsd:dateTime"  minOccurs="0" />
       <xsd:element name="DeviceModel" type="tns:DeviceModel" minOccurs="0" />

@@ -236,7 +236,7 @@
    <xsd:element name="FindAllDeviceModelFirmwaresRequest">
       <xsd:complexType>
          <xsd:sequence>
-         	<xsd:element name="Manufacturer" type="xsd:string" />
+         	<xsd:element name="Manufacturer" type="xsd:string" minOccurs="0" />
          	<xsd:element name="ModelCode" type="xsd:string" />
          </xsd:sequence>
       </xsd:complexType>

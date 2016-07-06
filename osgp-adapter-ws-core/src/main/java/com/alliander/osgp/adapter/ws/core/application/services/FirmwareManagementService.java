@@ -359,12 +359,16 @@ public class FirmwareManagementService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_DEVICE_MODEL_FIRMWARE);
 
-        final Manufacturer databaseManufacturer = this.manufacturerRepository.findByManufacturerId(manufacturer);
-        final DeviceModel databaseDeviceModel = this.deviceModelRepository.findByManufacturerIdAndModelCode(
-                databaseManufacturer, modelCode);
-
-        final List<DeviceModelFirmware> deviceModelFirmwares = this.deviceModelFirmwareRepository
-                .findByDeviceModel(databaseDeviceModel);
+        List<DeviceModelFirmware> deviceModelFirmwares = new ArrayList<DeviceModelFirmware>();
+        if (manufacturer != null) {
+            final Manufacturer databaseManufacturer = this.manufacturerRepository.findByManufacturerId(manufacturer);
+            final DeviceModel databaseDeviceModel = this.deviceModelRepository.findByManufacturerIdAndModelCode(
+                    databaseManufacturer, modelCode);
+            deviceModelFirmwares = this.deviceModelFirmwareRepository.findByDeviceModel(databaseDeviceModel);
+        } else {
+            final DeviceModel databaseDeviceModel = this.deviceModelRepository.findByModelCode(modelCode);
+            deviceModelFirmwares = this.deviceModelFirmwareRepository.findByDeviceModel(databaseDeviceModel);
+        }
 
         // performance issue, clean list with firmware files for front-end admin
         // app.
@@ -383,7 +387,7 @@ public class FirmwareManagementService {
     public void addDeviceModelFirmware(@Identification final String organisationIdentification,
             final String description, final byte[] file, final String fileName, final String manufacturer,
             final String modelCode, final FirmwareModuleData firmwareModuleData, final boolean pushToNewDevices)
-            throws Exception {
+                    throws Exception {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.CREATE_DEVICE_MODEL_FIRMWARE);
@@ -427,7 +431,7 @@ public class FirmwareManagementService {
                 // Storing the file in the database
                 savedDeviceModelFirmware = new DeviceModelFirmware(databaseDeviceModel, fileName, modelCode,
                         description, pushToNewDevices, firmwareModuleData, databaseDeviceModelFirmwares.get(0)
-                                .getFile(), this.getMd5Hash(databaseDeviceModelFirmwares.get(0).getFile()));
+                        .getFile(), this.getMd5Hash(databaseDeviceModelFirmwares.get(0).getFile()));
             }
         } else {
             if (databaseDeviceModel.isFileStorage()) {
@@ -616,6 +620,9 @@ public class FirmwareManagementService {
 
         // Creating the dir, if needed
         this.createModelDirectory(path.getParentFile(), modelCode);
+
+        // Replacing spaces by SPACE_REPLACER
+        fileName.replaceAll(" ", SPACE_REPLACER);
 
         try (final FileOutputStream fos = new FileOutputStream(path)) {
             fos.write(file);
