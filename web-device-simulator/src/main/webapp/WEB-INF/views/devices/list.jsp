@@ -29,7 +29,7 @@ body {
 <body>
 	<div class="container">
 		<div style="margin-bottom: 10px">
-			<img src="/web-device-simulator/static/img/liander_beeldmerk_logo.png" style="height:50px;" />
+			<img src="/web-device-simulator/static/img/opensmartgridplatform_logo.png" style="height:50px;" />
 			<div class="pull-right">${project.version}-${BUILD_TAG}</div>
 		</div>
 
