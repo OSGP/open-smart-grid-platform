@@ -21,10 +21,10 @@ Background:
   Scenario: Handle a received alarm notification from a device
     When an alarm notification is received from a known device
     Then the alarm should be pushed to OSGP
-    And the alarm should be pushed to the osgp_logging database "device_log_item" table
+    And the alarm should be pushed to the osgp_logging database device_log_item table
     
     When an alarm notification is received from an unknown device
-    Then the alarm should be pushed to the osgp_logging database "device_log_item" table
+    Then the alarm should be pushed to the osgp_logging database device_log_item table
     
 @SLIM-266
   Scenario: Set alarm notifications on a device
