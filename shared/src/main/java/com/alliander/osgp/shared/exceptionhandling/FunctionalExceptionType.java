@@ -46,10 +46,12 @@ public enum FunctionalExceptionType {
     // DeviceModel exceptions
     UNKNOWN_DEVICEMODEL(601, "DeviceModel does not exist."),
     EXISTING_DEVICEMODEL(602, "DeviceModel already exists."),
+    EXISTING_DEVICE_DEVICEMODEL(603, "DeviceModel is linked to a device."),
 
     // DeviceModelFirmware exceptions
     UNKNOWN_DEVICEMODEL_FIRMWARE(701, "DeviceModelFirmware does not exist."),
-    EXISTING_DEVICEMODEL_FIRMWARE(702, "DeviceModelFirmware already exists.");
+    EXISTING_DEVICEMODEL_FIRMWARE(702, "DeviceModelFirmware already exists."),
+    EXISTING_DEVICEMODELFIRMWARE_FIRMWARE(703, "DeviceModelFirmware is linked to firmware.");
 
     private int code;
     private String message;
