@@ -8,19 +8,17 @@
 package org.osgp.adapter.protocol.dlms.domain.commands.stub;
 
 import org.openmuc.jdlms.DlmsConnection;
-import org.osgp.adapter.protocol.dlms.domain.commands.GetFirmwareVersionsBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDto;
 
-public class GetFirmwareVersionsBundleCommandExecutorStub extends AbstractCommandExecutorStub implements
-        GetFirmwareVersionsBundleCommandExecutor {
+public class GetFirmwareVersionsBundleCommandExecutorStub extends AbstractCommandExecutorStub {
 
     @Override
-    public ActionResponseDto execute(final DlmsConnection conn, final DlmsDevice device,
-            final GetFirmwareVersionRequestDto object) throws ProtocolAdapterException {
+    public ActionResponseDto executeBundleAction(final DlmsConnection conn, final DlmsDevice device,
+            final ActionRequestDto object) throws ProtocolAdapterException {
         return this.doExecute(conn, device, object);
     }
 

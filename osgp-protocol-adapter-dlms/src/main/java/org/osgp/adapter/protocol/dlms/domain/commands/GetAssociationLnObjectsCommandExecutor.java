@@ -25,17 +25,21 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.AccessRightDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AccessSelectorListDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AssociationLnListElementDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AssociationLnListTypeDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AssociationLnObjectsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AttributeAccessDescriptorDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AttributeAccessItemDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AttributeAccessModeTypeDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetAssociationLnObjectsRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MethodAccessDescriptorDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MethodAccessItemDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MethodAccessModeTypeDto;
 
 @Component
-public class GetAssociationLnObjectsCommandExecutor implements CommandExecutor<Void, AssociationLnListTypeDto> {
+public class GetAssociationLnObjectsCommandExecutor extends AbstractCommandExecutor<Void, AssociationLnListTypeDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetAssociationLnObjectsCommandExecutor.class);
 
@@ -59,6 +63,25 @@ public class GetAssociationLnObjectsCommandExecutor implements CommandExecutor<V
 
     @Autowired
     private DlmsHelperService dlmsHelperService;
+
+    public GetAssociationLnObjectsCommandExecutor() {
+        super(GetAssociationLnObjectsRequestDto.class);
+    }
+
+    @Override
+    public Void fromBundleRequestInput(final ActionRequestDto bundleInput) throws ProtocolAdapterException {
+
+        this.checkActionRequestType(bundleInput);
+
+        return null;
+    }
+
+    @Override
+    public ActionResponseDto asBundleResponse(final AssociationLnListTypeDto executionResult)
+            throws ProtocolAdapterException {
+
+        return new AssociationLnObjectsResponseDto(executionResult);
+    }
 
     @Override
     public AssociationLnListTypeDto execute(final DlmsConnection conn, final DlmsDevice device, final Void object)

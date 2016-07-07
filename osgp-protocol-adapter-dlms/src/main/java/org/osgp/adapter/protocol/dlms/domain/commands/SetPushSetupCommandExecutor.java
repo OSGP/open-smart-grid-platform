@@ -15,11 +15,12 @@ import java.util.Map;
 
 import org.openmuc.jdlms.datatypes.DataObject;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MessageTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SendDestinationAndMethodDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.TransportServiceTypeDto;
 
-public class SetPushSetupCommandExecutor {
+public abstract class SetPushSetupCommandExecutor<T, R> extends AbstractCommandExecutor<T, R> {
 
     protected static final int CLASS_ID = 40;
     protected static final int ATTRIBUTE_ID_SEND_DESTINATION_AND_METHOD = 3;
@@ -51,6 +52,18 @@ public class SetPushSetupCommandExecutor {
          * available.
          */
         ENUM_VALUE_PER_MESSAGE_TYPE.put(MessageTypeDto.MANUFACTURER_SPECIFIC, 128);
+    }
+
+    protected SetPushSetupCommandExecutor() {
+        /*
+         * No argument constructor for subclasses that do not act in a bundle
+         * context, so they do not need to be looked up by ActionRequestDto
+         * class.
+         */
+    }
+
+    protected SetPushSetupCommandExecutor(final Class<? extends ActionRequestDto> clazz) {
+        super(clazz);
     }
 
     protected DataObject buildSendDestinationAndMethodObject(final SendDestinationAndMethodDto sendDestinationAndMethod) {

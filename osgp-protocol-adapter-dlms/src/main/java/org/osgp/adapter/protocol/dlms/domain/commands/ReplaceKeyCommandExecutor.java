@@ -28,11 +28,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetKeysRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.EncrypterException;
 import com.alliander.osgp.shared.security.EncryptionService;
 
 /**
- * This is the command executor that corresponds with UpdateFirmwareRequest.
  * Some code may look odd, specifically in the execute() method. The reason is
  * that the device may (sometimes) return NOT_OK after a replacekeys request but
  * was in fact successful! Actually the situation is that (sometimes) the device
@@ -43,13 +45,17 @@ import com.alliander.osgp.shared.security.EncryptionService;
  * tried. This key is recognized because both: valid_to=null and valid_from=null
  * ! If that key works we know the device gave the wrong response and this key
  * should be made valid. See also DlmsDevice: discardInvalidKeys,
- * promoteInvalidKeys, het/hasNewSecurityKey.
+ * promoteInvalidKeys, get/hasNewSecurityKey.
  *
  */
 @Component
-public class ReplaceKeyCommandExecutor implements CommandExecutor<ReplaceKeyCommandExecutor.KeyWrapper, DlmsDevice> {
+public class ReplaceKeyCommandExecutor extends
+        AbstractCommandExecutor<ReplaceKeyCommandExecutor.KeyWrapper, DlmsDevice> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReplaceKeyCommandExecutor.class);
+
+    private static final String REPLACE_KEYS = "Replace keys for device: ";
+    private static final String WAS_SUCCESFULL = " was successful";
 
     @Autowired
     private EncryptionService encryptionService;
@@ -83,6 +89,30 @@ public class ReplaceKeyCommandExecutor implements CommandExecutor<ReplaceKeyComm
 
     public static KeyWrapper wrap(final byte[] bytes, final KeyId keyId, final SecurityKeyType securityKeyType) {
         return new KeyWrapper(bytes, keyId, securityKeyType);
+    }
+
+    public ReplaceKeyCommandExecutor() {
+        super(SetKeysRequestDto.class);
+    }
+
+    @Override
+    public ActionResponseDto executeBundleAction(final DlmsConnection conn, final DlmsDevice device,
+            final ActionRequestDto actionRequestDto) throws ProtocolAdapterException {
+
+        this.checkActionRequestType(actionRequestDto);
+        final SetKeysRequestDto setKeysRequestDto = (SetKeysRequestDto) actionRequestDto;
+
+        LOGGER.info("Keys to set on the device {}: {}", device.getDeviceIdentification(), setKeysRequestDto);
+
+        DlmsDevice devicePostSave = this.execute(conn, device, ReplaceKeyCommandExecutor.wrap(
+                setKeysRequestDto.getAuthenticationKey(), KeyId.AUTHENTICATION_KEY,
+                SecurityKeyType.E_METER_AUTHENTICATION));
+
+        devicePostSave = this.execute(conn, devicePostSave, ReplaceKeyCommandExecutor.wrap(
+                setKeysRequestDto.getEncryptionKey(), KeyId.GLOBAL_UNICAST_ENCRYPTION_KEY,
+                SecurityKeyType.E_METER_ENCRYPTION));
+
+        return new ActionResponseDto(REPLACE_KEYS + device.getDeviceIdentification() + WAS_SUCCESFULL);
     }
 
     @Override

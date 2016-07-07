@@ -24,13 +24,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DayProfileDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SeasonProfileDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.WeekProfileDto;
 
 @Component()
-public class SetActivityCalendarCommandExecutor implements CommandExecutor<ActivityCalendarDto, AccessResultCode> {
+public class SetActivityCalendarCommandExecutor extends AbstractCommandExecutor<ActivityCalendarDto, AccessResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetActivityCalendarCommandExecutor.class);
 
@@ -49,6 +52,28 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
 
     @Autowired
     private DlmsHelperService dlmsHelperService;
+
+    public SetActivityCalendarCommandExecutor() {
+        super(ActivityCalendarDataDto.class);
+    }
+
+    @Override
+    public ActivityCalendarDto fromBundleRequestInput(final ActionRequestDto bundleInput)
+            throws ProtocolAdapterException {
+
+        this.checkActionRequestType(bundleInput);
+        final ActivityCalendarDataDto activityCalendarDataDto = (ActivityCalendarDataDto) bundleInput;
+
+        return activityCalendarDataDto.getActivityCalendar();
+    }
+
+    @Override
+    public ActionResponseDto asBundleResponse(final AccessResultCode executionResult) throws ProtocolAdapterException {
+
+        this.checkAccessResultCode(executionResult);
+
+        return new ActionResponseDto("Set Activity Calendar Result is OK");
+    }
 
     @Override
     public AccessResultCode execute(final DlmsConnection conn, final DlmsDevice device,

@@ -21,13 +21,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQueryDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValueDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsResponseDto;
 
 @Component()
-public class GetActualMeterReadsCommandExecutor implements CommandExecutor<ActualMeterReadsQueryDto, MeterReadsResponseDto> {
+public class GetActualMeterReadsCommandExecutor extends
+        AbstractCommandExecutor<ActualMeterReadsQueryDto, MeterReadsResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetActualMeterReadsCommandExecutor.class);
 
@@ -77,6 +80,24 @@ public class GetActualMeterReadsCommandExecutor implements CommandExecutor<Actua
 
     @Autowired
     private DlmsHelperService dlmsHelperService;
+
+    public GetActualMeterReadsCommandExecutor() {
+        super(ActualMeterReadsDataDto.class);
+    }
+
+    @Override
+    public ActualMeterReadsQueryDto fromBundleRequestInput(final ActionRequestDto bundleInput)
+            throws ProtocolAdapterException {
+
+        this.checkActionRequestType(bundleInput);
+
+        /*
+         * The ActionRequestDto, which is an ActualMeterReadsDataDto does not
+         * contain any data, so no further configuration of the
+         * ActualMeterReadsQueryDto is necessary.
+         */
+        return new ActualMeterReadsQueryDto();
+    }
 
     @Override
     public MeterReadsResponseDto execute(final DlmsConnection conn, final DlmsDevice device,

@@ -25,8 +25,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationResponseDto;
+
 @Component
-public class RetrieveConfigurationObjectsCommandExecutor implements CommandExecutor<DataObject, String> {
+public class RetrieveConfigurationObjectsCommandExecutor extends AbstractCommandExecutor<DataObject, String> {
 
     private static final int OBIS_CODE_BYTE_ARRAY_LENGTH = 6;
     /* 0 is the index of the class number */
@@ -43,6 +48,25 @@ public class RetrieveConfigurationObjectsCommandExecutor implements CommandExecu
     private DlmsHelperService dlmsHelper;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RetrieveConfigurationObjectsCommandExecutor.class);
+
+    public RetrieveConfigurationObjectsCommandExecutor() {
+        super(GetConfigurationRequestDto.class);
+    }
+
+    @Override
+    public DataObject fromBundleRequestInput(final ActionRequestDto bundleInput) throws ProtocolAdapterException {
+        /*
+         * GetConfigurationRequestDto does not contain any values to pass on,
+         * and the RetrieveConfigurationObjectsCommandExecutor takes a
+         * DataObject as input that is ignored.
+         */
+        return null;
+    }
+
+    @Override
+    public ActionResponseDto asBundleResponse(final String executionResult) throws ProtocolAdapterException {
+        return new GetConfigurationResponseDto(executionResult);
+    }
 
     @Override
     public String execute(final DlmsConnection conn, final DlmsDevice device, final DataObject object)
@@ -138,8 +162,8 @@ public class RetrieveConfigurationObjectsCommandExecutor implements CommandExecu
     }
 
     private ObisCode createObisCode(final byte[] obisCodeByteArray) {
-        return new ObisCode(toInt(obisCodeByteArray[0]), toInt(obisCodeByteArray[1]), toInt(obisCodeByteArray[2]), 
-                toInt(obisCodeByteArray[3]), toInt(obisCodeByteArray[4]), toInt(obisCodeByteArray[5]));
+        return new ObisCode(this.toInt(obisCodeByteArray[0]), this.toInt(obisCodeByteArray[1]), this.toInt(obisCodeByteArray[2]),
+                this.toInt(obisCodeByteArray[3]), this.toInt(obisCodeByteArray[4]), this.toInt(obisCodeByteArray[5]));
     }
 
     private int toInt(final byte aByte) {

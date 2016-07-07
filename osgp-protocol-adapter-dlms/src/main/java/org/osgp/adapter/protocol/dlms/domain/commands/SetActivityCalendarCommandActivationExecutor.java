@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component()
-public class SetActivityCalendarCommandActivationExecutor implements CommandExecutor<Void, MethodResultCode> {
+public class SetActivityCalendarCommandActivationExecutor extends AbstractCommandExecutor<Void, MethodResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetActivityCalendarCommandActivationExecutor.class);
 

@@ -13,7 +13,9 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
-public class GetPushSetupCommandExecutor {
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
+
+public abstract class GetPushSetupCommandExecutor<T, R> extends AbstractCommandExecutor<T, R> {
 
     protected static final int CLASS_ID = 40;
     protected static final int ATTRIBUTE_ID_PUSH_OBJECT_LIST = 2;
@@ -32,6 +34,10 @@ public class GetPushSetupCommandExecutor {
 
     protected GetPushSetupCommandExecutor() {
         // hide public constructor, but keep this accessible by subclasses
+    }
+
+    protected GetPushSetupCommandExecutor(final Class<? extends ActionRequestDto> clazz) {
+        super(clazz);
     }
 
     protected static void checkResultList(final List<GetResult> getResultList,

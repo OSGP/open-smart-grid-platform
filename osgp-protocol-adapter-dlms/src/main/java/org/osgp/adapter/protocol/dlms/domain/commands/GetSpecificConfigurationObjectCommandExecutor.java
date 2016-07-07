@@ -21,24 +21,34 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecificConfigurationObjectRequestDto;
 
 @Component
-public class GetSpecificConfigurationObjectCommandExecutor implements
-CommandExecutor<SpecificConfigurationObjectRequestDto, String> {
+public class GetSpecificConfigurationObjectCommandExecutor extends
+        AbstractCommandExecutor<SpecificConfigurationObjectRequestDto, String> {
 
     @Autowired
     private DlmsHelperService dlmsHelper;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetSpecificConfigurationObjectCommandExecutor.class);
 
+    public GetSpecificConfigurationObjectCommandExecutor() {
+        super(SpecificConfigurationObjectRequestDto.class);
+    }
+
+    @Override
+    public ActionResponseDto asBundleResponse(final String executionResult) throws ProtocolAdapterException {
+        return new ActionResponseDto(executionResult);
+    }
+
     @Override
     public String execute(final DlmsConnection conn, final DlmsDevice device,
             final SpecificConfigurationObjectRequestDto requestData) throws ProtocolAdapterException {
 
-        final ObisCode obisCode = new ObisCode(toInt(requestData.getObisCode().getA()), toInt(requestData.getObisCode().getB()),
-                toInt(requestData.getObisCode().getC()), toInt(requestData.getObisCode().getD()), 
-                toInt(requestData.getObisCode().getE()), toInt(requestData.getObisCode().getF()));
+        final ObisCode obisCode = new ObisCode(this.toInt(requestData.getObisCode().getA()), this.toInt(requestData.getObisCode().getB()),
+                this.toInt(requestData.getObisCode().getC()), this.toInt(requestData.getObisCode().getD()),
+                this.toInt(requestData.getObisCode().getE()), this.toInt(requestData.getObisCode().getF()));
 
         LOGGER.debug("Get specific configuration object for class id: {}, obis code: {}, attribute id: {}",
                 requestData.getClassId(), obisCode, requestData.getAttribute());

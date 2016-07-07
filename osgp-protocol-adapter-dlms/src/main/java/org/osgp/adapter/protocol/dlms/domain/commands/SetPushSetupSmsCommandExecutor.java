@@ -22,14 +22,37 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupSmsRequestDto;
 
 @Component()
-public class SetPushSetupSmsCommandExecutor extends SetPushSetupCommandExecutor implements
-        CommandExecutor<PushSetupSmsDto, AccessResultCode> {
+public class SetPushSetupSmsCommandExecutor extends SetPushSetupCommandExecutor<PushSetupSmsDto, AccessResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetPushSetupSmsCommandExecutor.class);
     private static final ObisCode OBIS_CODE = new ObisCode("0.2.25.9.0.255");
+
+    public SetPushSetupSmsCommandExecutor() {
+        super(SetPushSetupSmsRequestDto.class);
+    }
+
+    @Override
+    public PushSetupSmsDto fromBundleRequestInput(final ActionRequestDto bundleInput) throws ProtocolAdapterException {
+
+        this.checkActionRequestType(bundleInput);
+        final SetPushSetupSmsRequestDto setPushSetupSmsRequestDto = (SetPushSetupSmsRequestDto) bundleInput;
+
+        return setPushSetupSmsRequestDto.getPushSetupSms();
+    }
+
+    @Override
+    public ActionResponseDto asBundleResponse(final AccessResultCode executionResult) throws ProtocolAdapterException {
+
+        this.checkAccessResultCode(executionResult);
+
+        return new ActionResponseDto("Setting push setup SMS was successful");
+    }
 
     @Override
     public AccessResultCode execute(final DlmsConnection conn, final DlmsDevice device,

@@ -11,6 +11,9 @@ import org.openmuc.jdlms.DlmsConnection;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
+
 /**
  * Interface for executing a command on a smart meter over a client connection,
  * taking input of type <T>.
@@ -24,4 +27,18 @@ public interface CommandExecutor<T, R> {
 
     R execute(DlmsConnection conn, DlmsDevice device, T object) throws ProtocolAdapterException;
 
+    /**
+     * If a CommandExecutor gets called from an action that is part of a bundle,
+     * the result should always be returned as an object that is assignable to
+     * ActionResponseDto from an input that is an ActionRequestDto.
+     *
+     * @see #fromBundleRequestInput(ActionRequestDto)
+     * @see #asBundleResponse(Object)
+     */
+    ActionResponseDto executeBundleAction(DlmsConnection conn, DlmsDevice device, ActionRequestDto actionRequestDto)
+            throws ProtocolAdapterException;
+
+    T fromBundleRequestInput(ActionRequestDto bundleInput) throws ProtocolAdapterException;
+
+    ActionResponseDto asBundleResponse(R executionResult) throws ProtocolAdapterException;
 }

@@ -23,10 +23,13 @@ import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDayDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
 
 @Component()
-public class SetSpecialDaysCommandExecutor implements CommandExecutor<List<SpecialDayDto>, AccessResultCode> {
+public class SetSpecialDaysCommandExecutor extends AbstractCommandExecutor<List<SpecialDayDto>, AccessResultCode> {
 
     private static final int CLASS_ID = 11;
     private static final ObisCode OBIS_CODE = new ObisCode("0.0.11.0.0.255");
@@ -34,6 +37,28 @@ public class SetSpecialDaysCommandExecutor implements CommandExecutor<List<Speci
 
     @Autowired
     private DlmsHelperService dlmsHelperService;
+
+    public SetSpecialDaysCommandExecutor() {
+        super(SpecialDaysRequestDataDto.class);
+    }
+
+    @Override
+    public List<SpecialDayDto> fromBundleRequestInput(final ActionRequestDto bundleInput)
+            throws ProtocolAdapterException {
+
+        this.checkActionRequestType(bundleInput);
+        final SpecialDaysRequestDataDto specialDaysRequestDataDto = (SpecialDaysRequestDataDto) bundleInput;
+
+        return specialDaysRequestDataDto.getSpecialDays();
+    }
+
+    @Override
+    public ActionResponseDto asBundleResponse(final AccessResultCode executionResult) throws ProtocolAdapterException {
+
+        this.checkAccessResultCode(executionResult);
+
+        return new ActionResponseDto("Set special days was successful");
+    }
 
     @Override
     public AccessResultCode execute(final DlmsConnection conn, final DlmsDevice device,

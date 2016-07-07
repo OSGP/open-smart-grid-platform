@@ -27,12 +27,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotificationDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotificationsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmTypeDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetAlarmNotificationsRequestDto;
 
 @Component()
-public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<AlarmNotificationsDto, AccessResultCode> {
+public class SetAlarmNotificationsCommandExecutor extends
+        AbstractCommandExecutor<AlarmNotificationsDto, AccessResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetAlarmNotificationsCommandExecutor.class);
 
@@ -43,6 +47,28 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
     private static final int NUMBER_OF_BITS_IN_ALARM_FILTER = 32;
 
     private final AlarmHelperService alarmHelperService = new AlarmHelperService();
+
+    public SetAlarmNotificationsCommandExecutor() {
+        super(SetAlarmNotificationsRequestDto.class);
+    }
+
+    @Override
+    public AlarmNotificationsDto fromBundleRequestInput(final ActionRequestDto bundleInput)
+            throws ProtocolAdapterException {
+
+        this.checkActionRequestType(bundleInput);
+        final SetAlarmNotificationsRequestDto setAlarmNotificationsRequestDto = (SetAlarmNotificationsRequestDto) bundleInput;
+
+        return setAlarmNotificationsRequestDto.getAlarmNotifications();
+    }
+
+    @Override
+    public ActionResponseDto asBundleResponse(final AccessResultCode executionResult) throws ProtocolAdapterException {
+
+        this.checkAccessResultCode(executionResult);
+
+        return new ActionResponseDto("Set alarm notifications was successful");
+    }
 
     @Override
     public AccessResultCode execute(final DlmsConnection conn, final DlmsDevice device,

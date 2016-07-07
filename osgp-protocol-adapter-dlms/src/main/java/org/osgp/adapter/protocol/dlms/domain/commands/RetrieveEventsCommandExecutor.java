@@ -30,12 +30,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventLogCategoryDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequestDto;
 
 @Component()
-public class RetrieveEventsCommandExecutor implements CommandExecutor<FindEventsRequestDto, List<EventDto>> {
+public class RetrieveEventsCommandExecutor extends AbstractCommandExecutor<FindEventsRequestDto, List<EventDto>> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RetrieveEventsCommandExecutor.class);
 
@@ -65,6 +67,15 @@ public class RetrieveEventsCommandExecutor implements CommandExecutor<FindEvents
     }
     // @formatter:on
 
+    public RetrieveEventsCommandExecutor() {
+        super(FindEventsRequestDto.class);
+    }
+
+    @Override
+    public ActionResponseDto asBundleResponse(final List<EventDto> executionResult) throws ProtocolAdapterException {
+        return new EventMessageDataResponseDto(executionResult);
+    }
+
     @Override
     public List<EventDto> execute(final DlmsConnection conn, final DlmsDevice device,
             final FindEventsRequestDto findEventsQuery) throws ProtocolAdapterException {
@@ -79,7 +90,7 @@ public class RetrieveEventsCommandExecutor implements CommandExecutor<FindEvents
         GetResult getResult;
         try {
             getResult = conn.get(eventLogBuffer);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new ConnectionException(e);
         }
 

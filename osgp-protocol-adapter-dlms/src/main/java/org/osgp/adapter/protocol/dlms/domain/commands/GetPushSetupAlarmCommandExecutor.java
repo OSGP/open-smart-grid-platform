@@ -24,8 +24,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.CosemObisCodeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarmDto;
 
 @Component()
-public class GetPushSetupAlarmCommandExecutor extends GetPushSetupCommandExecutor implements
-CommandExecutor<Void, PushSetupAlarmDto> {
+public class GetPushSetupAlarmCommandExecutor extends GetPushSetupCommandExecutor<Void, PushSetupAlarmDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPushSetupAlarmCommandExecutor.class);
     private static final ObisCode OBIS_CODE = new ObisCode("0.1.25.9.0.255");

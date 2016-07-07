@@ -8,19 +8,17 @@
 package org.osgp.adapter.protocol.dlms.domain.commands.stub;
 
 import org.openmuc.jdlms.DlmsConnection;
-import org.osgp.adapter.protocol.dlms.domain.commands.SynchronizeTimeBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
 
-public class SynchronizeTimeBundleCommandExecutorStub extends AbstractCommandExecutorStub implements
-        SynchronizeTimeBundleCommandExecutor {
+public class SynchronizeTimeBundleCommandExecutorStub extends AbstractCommandExecutorStub {
 
     @Override
-    public ActionResponseDto execute(final DlmsConnection conn, final DlmsDevice device,
-            final SynchronizeTimeRequestDto object) throws ProtocolAdapterException {
+    public ActionResponseDto executeBundleAction(final DlmsConnection conn, final DlmsDevice device,
+            final ActionRequestDto object) throws ProtocolAdapterException {
         return this.doExecute(conn, device, object);
     }
 }

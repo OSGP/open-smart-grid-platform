@@ -27,7 +27,9 @@ import org.openmuc.jdlms.SecurityUtils;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.interfaceclass.method.MBusClientMethod;
 import org.osgp.adapter.protocol.dlms.application.models.ProtocolMeterInfo;
+import org.osgp.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -35,12 +37,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfoDto;
 import com.alliander.osgp.shared.exceptionhandling.EncrypterException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.security.EncryptionService;
 
 @Component()
-public class SetEncryptionKeyExchangeOnGMeterCommandExecutor implements
-        CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
+public class SetEncryptionKeyExchangeOnGMeterCommandExecutor extends
+        AbstractCommandExecutor<ProtocolMeterInfo, MethodResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetEncryptionKeyExchangeOnGMeterCommandExecutor.class);
 
@@ -60,6 +66,42 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor implements
 
     @Autowired
     private EncryptionService encryptionService;
+
+    @Autowired
+    private DomainHelperService domainHelperService;
+
+    public SetEncryptionKeyExchangeOnGMeterCommandExecutor() {
+        super(GMeterInfoDto.class);
+    }
+
+    @Override
+    public ProtocolMeterInfo fromBundleRequestInput(final ActionRequestDto bundleInput) throws ProtocolAdapterException {
+
+        this.checkActionRequestType(bundleInput);
+        final GMeterInfoDto gMeterInfoDto = (GMeterInfoDto) bundleInput;
+
+        try {
+            final DlmsDevice gMeterDevice = this.domainHelperService
+                    .findDlmsDevice(gMeterInfoDto.getDeviceIdentification());
+
+            return new ProtocolMeterInfo(gMeterInfoDto.getChannel(),
+                    gMeterInfoDto.getDeviceIdentification(), gMeterDevice.getValidSecurityKey(
+                            SecurityKeyType.G_METER_ENCRYPTION).getKey(), gMeterDevice.getValidSecurityKey(
+                                    SecurityKeyType.G_METER_MASTER).getKey());
+
+        } catch (final FunctionalException e) {
+            LOGGER.error("Error looking up G-Meter " + gMeterInfoDto.getDeviceIdentification(), e);
+            throw new ProtocolAdapterException("Error looking up G-Meter " + gMeterInfoDto.getDeviceIdentification(), e);
+        }
+    }
+
+    @Override
+    public ActionResponseDto asBundleResponse(final MethodResultCode executionResult) throws ProtocolAdapterException {
+
+        this.checkMethodResultCode(executionResult);
+
+        return new ActionResponseDto("Setting encryption key exchange on Gas meter was successful");
+    }
 
     @Override
     public MethodResultCode execute(final DlmsConnection conn, final DlmsDevice device,

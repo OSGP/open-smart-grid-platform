@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesRequestDto;
 
@@ -42,14 +41,14 @@ public class BundleService {
             // Because it could be a retry.
             if (actionDto.getResponse() == null) {
 
-                final CommandExecutor<ActionRequestDto, ActionResponseDto> executor = this.bundleCommandExecutorMap
+                final CommandExecutor<?, ?> executor = this.bundleCommandExecutorMap
                         .getCommandExecutor(actionDto.getRequest().getClass());
 
                 try {
                     LOGGER.debug("**************************************************");
                     LOGGER.info("Calling executor in bundle {}", executor.getClass().getSimpleName());
                     LOGGER.debug("**************************************************");
-                    actionDto.setResponse(executor.execute(conn, device, actionDto.getRequest()));
+                    actionDto.setResponse(executor.executeBundleAction(conn, device, actionDto.getRequest()));
                 } catch (final ConnectionException connectionException) {
                     LOGGER.error("Warning: A connection exception occurred while executing "
                             + executor.getClass().getSimpleName(), connectionException);
