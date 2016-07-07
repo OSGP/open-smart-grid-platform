@@ -30,7 +30,7 @@ public class AssociationLnObjects extends SmartMetering {
     private static final String XPATH_MATCHER_RESULT_ACCESS_MODE = "\\w+\\_\\w+";
 
     private static final String TEST_SUITE_XML = "SmartmeterAdhoc";
-    private static final String TEST_CASE_XML = "505 Store association LN objectlist";
+    private static final String TEST_CASE_XML = "517 Retrieve association objectlist";
     private static final String TEST_CASE_NAME_REQUEST = "GetAssociationLnObjects - Request 1";
     private static final String TEST_CASE_NAME_RESPONSE = "GetGetAssociationLnObjectsResponse - Request 1";
 
