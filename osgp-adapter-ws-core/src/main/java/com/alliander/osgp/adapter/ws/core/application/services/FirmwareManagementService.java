@@ -87,6 +87,9 @@ public class FirmwareManagementService {
     @Autowired
     private WritableDeviceModelFirmwareRepository deviceModelFirmwareRepository;
 
+    @Autowired
+    private WritableDeviceRepository deviceRepository;
+
     @Resource
     private String firmwareDirectory;
 
@@ -320,6 +323,13 @@ public class FirmwareManagementService {
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICEMODEL, ComponentType.WS_CORE,
                     new ExistingEntityException(Manufacturer.class, modelCode));
         } else {
+            final List<Device> devices = this.deviceRepository.findByDeviceModel(removedDeviceModel);
+            if (devices.size() > 0) {
+                LOGGER.info("DeviceModel is linked to a device.");
+                throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICE_DEVICEMODEL,
+                        ComponentType.WS_CORE, new ExistingEntityException(Device.class, devices.get(0)
+                                .getDeviceIdentification()));
+            }
             this.deviceModelRepository.delete(removedDeviceModel);
         }
     }
