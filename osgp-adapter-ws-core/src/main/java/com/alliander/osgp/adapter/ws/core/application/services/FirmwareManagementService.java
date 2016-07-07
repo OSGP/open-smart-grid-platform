@@ -85,7 +85,13 @@ public class FirmwareManagementService {
     private WritableDeviceModelRepository deviceModelRepository;
 
     @Autowired
+    private WritableFirmwareRepository firmwareRepository;
+
+    @Autowired
     private WritableDeviceModelFirmwareRepository deviceModelFirmwareRepository;
+
+    @Autowired
+    private WritableDeviceRepository deviceRepository;
 
     @Resource
     private String firmwareDirectory;
@@ -229,7 +235,7 @@ public class FirmwareManagementService {
         final Manufacturer dataseManufacturer = this.manufacturerRepository.findByManufacturerId(manufacturerId);
         final List<DeviceModel> deviceModels = this.deviceModelRepository.findByManufacturerId(dataseManufacturer);
 
-        if (deviceModels.size() > 0) {
+        if (!deviceModels.isEmpty()) {
             LOGGER.info("Manufacturer is linked to a Model.");
             throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICEMODEL_MANUFACTURER,
                     ComponentType.WS_CORE, new ExistingEntityException(DeviceModel.class, deviceModels.get(0)
@@ -320,6 +326,13 @@ public class FirmwareManagementService {
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICEMODEL, ComponentType.WS_CORE,
                     new ExistingEntityException(Manufacturer.class, modelCode));
         } else {
+            final List<Device> devices = this.deviceRepository.findByDeviceModel(removedDeviceModel);
+            if (!devices.isEmpty()) {
+                LOGGER.info("DeviceModel is linked to a device.");
+                throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICE_DEVICEMODEL,
+                        ComponentType.WS_CORE, new ExistingEntityException(Device.class, devices.get(0)
+                                .getDeviceIdentification()));
+            }
             this.deviceModelRepository.delete(removedDeviceModel);
         }
     }
@@ -537,6 +550,14 @@ public class FirmwareManagementService {
             LOGGER.info("DeviceModelFirmware not found.");
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICEMODEL_FIRMWARE, ComponentType.WS_CORE,
                     new UnknownEntityException(DeviceModelFirmware.class, String.valueOf(firmwareIdentification)));
+        }
+
+        final List<Firmware> firmwares = this.firmwareRepository.findByDeviceModelFirmware(removedDeviceModelFirmware);
+        if (!firmwares.isEmpty()) {
+            LOGGER.info("DeviceModelFirmware is linked to firmware.");
+            throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICEMODELFIRMWARE_FIRMWARE,
+                    ComponentType.WS_CORE, new ExistingEntityException(Firmware.class, firmwares.get(0)
+                            .getDescription()));
         }
 
         // Only remove the file if no other deviceModelfirmware is using it.

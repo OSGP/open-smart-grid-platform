@@ -7,12 +7,17 @@
  */
 package com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.DeviceModel;
 
 @Repository
 public interface WritableDeviceRepository extends JpaRepository<Device, Long> {
     Device findByDeviceIdentification(String deviceIdentification);
+
+    List<Device> findByDeviceModel(DeviceModel removedDeviceModel);
 }

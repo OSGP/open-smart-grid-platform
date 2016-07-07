@@ -93,6 +93,9 @@ public class FirmwareManagementEndpoint {
     private static final Logger LOGGER = LoggerFactory.getLogger(FirmwareManagementEndpoint.class);
     private static final String NAMESPACE = "http://www.alliander.com/schemas/osgp/common/firmwaremanagement/2014/10";
     private static final ComponentType COMPONENT_WS_CORE = ComponentType.WS_CORE;
+    private static final String REMOVE_MANUFACTURER_EXISTING_DEVICEMODEL = "feedback.message.manufacturer.removalnotpermitted.devicemodel";
+    private static final String REMOVE_DEVICEMODEL_EXISTING_DEVICE = "feedback.message.devicemodel.removalnotpermitted.device";
+    private static final String REMOVE_DEVICEMODELFIRMWARE_EXISTING_FIRMWARE = "feedback.message.devicemodelfirmware.removalnotpermitted.firmware";
 
     private final FirmwareManagementService firmwareManagementService;
     private final FirmwareManagementMapper firmwareManagementMapper;
@@ -331,20 +334,28 @@ public class FirmwareManagementEndpoint {
             @RequestPayload final RemoveManufacturerRequest request) throws OsgpException {
 
         LOGGER.info("Removing manufacturer:{}.", request.getManufacturerId());
+        final RemoveManufacturerResponse removeManufacturerResponse = new RemoveManufacturerResponse();
 
         try {
             this.firmwareManagementService.removeManufacturer(organisationIdentification, request.getManufacturerId());
         } catch (final MethodConstraintViolationException e) {
-            LOGGER.error("Exception Removeing manufacturer: {} ", e.getMessage(), e);
+            LOGGER.error("Exception removing manufacturer: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
+        } catch (final FunctionalException e) {
+            LOGGER.error("Exception removing manufacturer: {} ", e.getMessage(), e);
+            if (e.getExceptionType().equals(FunctionalExceptionType.EXISTING_DEVICEMODEL_MANUFACTURER)) {
+                removeManufacturerResponse.setResult(OsgpResultType.NOT_OK);
+                removeManufacturerResponse.setDescription(REMOVE_MANUFACTURER_EXISTING_DEVICEMODEL);
+                return removeManufacturerResponse;
+            }
+            this.handleException(e);
         } catch (final Exception e) {
-            LOGGER.error("Exception: {} while Removeing manufacturer: {} for organisation {}",
+            LOGGER.error("Exception: {} while removing manufacturer: {} for organisation {}",
                     new Object[] { e.getMessage(), request.getManufacturerId(), organisationIdentification }, e);
             this.handleException(e);
         }
 
-        final RemoveManufacturerResponse removeManufacturerResponse = new RemoveManufacturerResponse();
         removeManufacturerResponse.setResult(OsgpResultType.OK);
 
         return removeManufacturerResponse;
@@ -475,6 +486,8 @@ public class FirmwareManagementEndpoint {
             @RequestPayload final RemoveDeviceModelRequest request) throws OsgpException {
 
         LOGGER.info("Removing devicemodel:{}.", request.getDeviceModelId());
+        final RemoveDeviceModelResponse removeDeviceModelResponse = new RemoveDeviceModelResponse();
+
 
         try {
             this.firmwareManagementService.removeDeviceModel(organisationIdentification,
@@ -483,15 +496,21 @@ public class FirmwareManagementEndpoint {
             LOGGER.error("Exception removing deviceModel: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
+        } catch (final FunctionalException e) {
+            LOGGER.error("Exception removing deviceModel: {} ", e.getMessage(), e);
+            if (e.getExceptionType().equals(FunctionalExceptionType.EXISTING_DEVICE_DEVICEMODEL)) {
+                removeDeviceModelResponse.setResult(OsgpResultType.NOT_OK);
+                removeDeviceModelResponse.setDescription(REMOVE_DEVICEMODEL_EXISTING_DEVICE);
+                return removeDeviceModelResponse;
+            }
+            this.handleException(e);
         } catch (final Exception e) {
             LOGGER.error("Exception: {} while removing deviceModel: {} for organisation {}",
                     new Object[] { e.getMessage(), request.getDeviceModelId(), organisationIdentification }, e);
             this.handleException(e);
         }
 
-        final RemoveDeviceModelResponse removeDeviceModelResponse = new RemoveDeviceModelResponse();
         removeDeviceModelResponse.setResult(OsgpResultType.OK);
-
         return removeDeviceModelResponse;
     }
 
@@ -608,7 +627,7 @@ public class FirmwareManagementEndpoint {
                 .getModuleVersionComm(), request.getDeviceModelFirmware().getModuleVersionFunc(), request
                 .getDeviceModelFirmware().getModuleVersionMa(),
                 request.getDeviceModelFirmware().getModuleVersionMbus(), request.getDeviceModelFirmware()
-                        .getModuleVersionSec());
+                .getModuleVersionSec());
 
         try {
             this.firmwareManagementService.changeDeviceModelFirmware(organisationIdentification, request.getId(),
@@ -640,6 +659,7 @@ public class FirmwareManagementEndpoint {
             @RequestPayload final RemoveDeviceModelFirmwareRequest request) throws OsgpException {
 
         LOGGER.info("Removing devicemodelfirmware with id:{}.", request.getId());
+        final RemoveDeviceModelFirmwareResponse removeDeviceModelFirmwareResponse = new RemoveDeviceModelFirmwareResponse();
 
         try {
             this.firmwareManagementService.removeDeviceModelFirmware(organisationIdentification, request.getId());
@@ -647,13 +667,20 @@ public class FirmwareManagementEndpoint {
             LOGGER.error("Exception removing deviceModelfirmware: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
+        } catch (final FunctionalException e) {
+            LOGGER.error("Exception removing deviceModelfirmware: {} ", e.getMessage(), e);
+            if (e.getExceptionType().equals(FunctionalExceptionType.EXISTING_DEVICEMODELFIRMWARE_FIRMWARE)) {
+                removeDeviceModelFirmwareResponse.setResult(OsgpResultType.NOT_OK);
+                removeDeviceModelFirmwareResponse.setDescription(REMOVE_DEVICEMODELFIRMWARE_EXISTING_FIRMWARE);
+                return removeDeviceModelFirmwareResponse;
+            }
+            this.handleException(e);
         } catch (final Exception e) {
             LOGGER.error("Exception: {} while removing deviceModelfirmware: {} for organisation {}",
                     new Object[] { e.getMessage(), request.getId(), organisationIdentification }, e);
             this.handleException(e);
         }
 
-        final RemoveDeviceModelFirmwareResponse removeDeviceModelFirmwareResponse = new RemoveDeviceModelFirmwareResponse();
         removeDeviceModelFirmwareResponse.setResult(OsgpResultType.OK);
 
         return removeDeviceModelFirmwareResponse;
