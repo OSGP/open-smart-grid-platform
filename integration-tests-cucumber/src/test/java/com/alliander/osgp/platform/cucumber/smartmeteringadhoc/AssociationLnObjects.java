@@ -13,7 +13,6 @@ import com.alliander.osgp.platform.cucumber.SmartMetering;
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
 import com.alliander.osgp.platform.cucumber.support.OrganisationId;
 
-import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
@@ -66,10 +65,5 @@ public class AssociationLnObjects extends SmartMetering {
                 XPATH_MATCHER_RESULT_DECIMAL));
         assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_ACCESS_MODE,
                 XPATH_MATCHER_RESULT_ACCESS_MODE));
-    }
-
-    @And("^the objeclist should be stored in the integration layer database$")
-    public void theObjeclistShouldBeStoredInTheIntegrationLayerDatabase() throws Throwable {
-
     }
 }
