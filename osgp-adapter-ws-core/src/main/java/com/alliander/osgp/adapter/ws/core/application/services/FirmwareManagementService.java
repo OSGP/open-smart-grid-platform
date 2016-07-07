@@ -87,6 +87,9 @@ public class FirmwareManagementService {
     @Autowired
     private WritableDeviceModelFirmwareRepository deviceModelFirmwareRepository;
 
+    @Autowired
+    private WritableDeviceRepository deviceRepository;
+
     @Resource
     private String firmwareDirectory;
 
@@ -229,7 +232,7 @@ public class FirmwareManagementService {
         final Manufacturer dataseManufacturer = this.manufacturerRepository.findByManufacturerId(manufacturerId);
         final List<DeviceModel> deviceModels = this.deviceModelRepository.findByManufacturerId(dataseManufacturer);
 
-        if (deviceModels.size() > 0) {
+        if (!deviceModels.isEmpty()) {
             LOGGER.info("Manufacturer is linked to a Model.");
             throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICEMODEL_MANUFACTURER,
                     ComponentType.WS_CORE, new ExistingEntityException(DeviceModel.class, deviceModels.get(0)
@@ -320,6 +323,13 @@ public class FirmwareManagementService {
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICEMODEL, ComponentType.WS_CORE,
                     new ExistingEntityException(Manufacturer.class, modelCode));
         } else {
+            final List<Device> devices = this.deviceRepository.findByDeviceModel(removedDeviceModel);
+            if (!devices.isEmpty()) {
+                LOGGER.info("DeviceModel is linked to a device.");
+                throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICE_DEVICEMODEL,
+                        ComponentType.WS_CORE, new ExistingEntityException(Device.class, devices.get(0)
+                                .getDeviceIdentification()));
+            }
             this.deviceModelRepository.delete(removedDeviceModel);
         }
     }
@@ -387,7 +397,7 @@ public class FirmwareManagementService {
     public void addDeviceModelFirmware(@Identification final String organisationIdentification,
             final String description, final byte[] file, final String fileName, final String manufacturer,
             final String modelCode, final FirmwareModuleData firmwareModuleData, final boolean pushToNewDevices)
-                    throws Exception {
+            throws Exception {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.CREATE_DEVICE_MODEL_FIRMWARE);
@@ -431,7 +441,7 @@ public class FirmwareManagementService {
                 // Storing the file in the database
                 savedDeviceModelFirmware = new DeviceModelFirmware(databaseDeviceModel, fileName, modelCode,
                         description, pushToNewDevices, firmwareModuleData, databaseDeviceModelFirmwares.get(0)
-                        .getFile(), this.getMd5Hash(databaseDeviceModelFirmwares.get(0).getFile()));
+                                .getFile(), this.getMd5Hash(databaseDeviceModelFirmwares.get(0).getFile()));
             }
         } else {
             if (databaseDeviceModel.isFileStorage()) {
@@ -537,6 +547,15 @@ public class FirmwareManagementService {
             LOGGER.info("DeviceModelFirmware not found.");
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICEMODEL_FIRMWARE, ComponentType.WS_CORE,
                     new UnknownEntityException(DeviceModelFirmware.class, String.valueOf(firmwareIdentification)));
+        }
+
+        final List<DeviceFirmware> deviceFirmwares = this.writableDeviceFirmwareRepository
+                .findByDeviceModelFirmware(removedDeviceModelFirmware);
+        if (!deviceFirmwares.isEmpty()) {
+            LOGGER.info("DeviceModelFirmware is linked to firmware.");
+            throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICEMODELFIRMWARE_FIRMWARE,
+                    ComponentType.WS_CORE, new ExistingEntityException(DeviceFirmware.class, deviceFirmwares.get(0)
+                            .getDeviceModelFirmware().getDescription()));
         }
 
         // Only remove the file if no other deviceModelfirmware is using it.
