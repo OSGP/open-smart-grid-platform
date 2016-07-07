@@ -331,7 +331,7 @@
         </xsd:complexType>
     </xsd:element>
 
-   <xsd:element name="GetFirmwareHistoryRequest">
+   <xsd:element name="GetDeviceFirmwareHistoryRequest">
       <xsd:complexType>
          <xsd:sequence>
             <xsd:element name="DeviceIdentification" type="common:Identification" />
@@ -339,10 +339,10 @@
       </xsd:complexType>
    </xsd:element>
 
-   <xsd:element name="GetFirmwareHistoryResponse">
+   <xsd:element name="GetDeviceFirmwareHistoryResponse">
       <xsd:complexType>
       	 <xsd:sequence>
-            <xsd:element name="FirmwareHistory" type="tns:FirmwareHistory" />
+            <xsd:element name="DeviceFirmwareHistory" type="tns:DeviceFirmwareHistory" />
          </xsd:sequence>
       </xsd:complexType>
    </xsd:element>
@@ -429,31 +429,21 @@
       </xsd:sequence>
    </xsd:complexType>
 
-   <xsd:complexType name="FirmwareHistory">
+   <xsd:complexType name="DeviceFirmwareHistory">
       <xsd:sequence>
          <xsd:element name="DeviceIdentification" type="common:Identification" />
-          <xsd:element name="Firmwares" type="tns:Firmware" minOccurs="0" maxOccurs="unbounded" />
+          <xsd:element name="DeviceFirmwares" type="tns:DeviceFirmware" minOccurs="0" maxOccurs="unbounded" />
           <xsd:element name="DeviceModel" type="tns:DeviceModel" minOccurs="0" maxOccurs="1" />
       </xsd:sequence>
    </xsd:complexType>
 
-   <xsd:complexType name="Firmware">
+   <xsd:complexType name="DeviceFirmware">
       <xsd:sequence>
          <xsd:element name="DeviceIdentification" type="common:Identification" />
-         <xsd:element name="FirmwareVersion" type="xsd:string" minOccurs="0" />
-         <xsd:element name="Description" minOccurs="0" maxOccurs="1">
-            <xsd:simpleType>
-               <xsd:restriction base="xsd:string">
-                  <xsd:maxLength value="255" />
-               </xsd:restriction>
-            </xsd:simpleType>
-         </xsd:element>
          <xsd:element name="InstallationDate" type="xsd:dateTime" minOccurs="0" maxOccurs="1" />
          <xsd:element name="InstalledBy" type="xsd:string" minOccurs="0" />
          <xsd:element name="Active" type="xsd:boolean" />
-         <xsd:sequence>
-            <xsd:element name="DeviceModelFirmware" type="tns:DeviceModelFirmware" />
-         </xsd:sequence>
+         <xsd:element name="DeviceModelFirmware" type="tns:DeviceModelFirmware" />
       </xsd:sequence>
    </xsd:complexType>
 

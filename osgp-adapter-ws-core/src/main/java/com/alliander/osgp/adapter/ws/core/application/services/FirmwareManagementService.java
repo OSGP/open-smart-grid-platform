@@ -33,15 +33,15 @@ import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessage;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessageSender;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessageType;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
+import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceFirmwareRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceModelFirmwareRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceModelRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceRepository;
-import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableFirmwareRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableManufacturerRepository;
 import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.DeviceFirmware;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.DeviceModelFirmware;
-import com.alliander.osgp.domain.core.entities.Firmware;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.exceptions.ExistingEntityException;
@@ -91,7 +91,7 @@ public class FirmwareManagementService {
     private String firmwareDirectory;
 
     @Autowired
-    private WritableFirmwareRepository writableFirmwareRepository;
+    private WritableDeviceFirmwareRepository writableDeviceFirmwareRepository;
 
     @Autowired
     private WritableDeviceRepository writableDeviceRepository;
@@ -551,17 +551,16 @@ public class FirmwareManagementService {
     }
 
     /**
-     * Returns the firmwares from the Platform
+     * Returns a list of all {@link DeviceFirmware}s in the Platform
      */
-    public List<Firmware> getFirmwares(final String organisationIdentification, final String deviceIdentification)
-            throws FunctionalException {
+    public List<DeviceFirmware> getDeviceFirmwares(final String organisationIdentification,
+            final String deviceIdentification) throws FunctionalException {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_DEVICE_MODEL_FIRMWARE);
 
         final Device device = this.writableDeviceRepository.findByDeviceIdentification(deviceIdentification);
-        final List<Firmware> firmwares = this.writableFirmwareRepository.findByDevice(device);
 
-        return firmwares;
+        return this.writableDeviceFirmwareRepository.findByDevice(device);
     }
 
     public ResponseMessage dequeueGetFirmwareResponse(final String correlationUid) throws OsgpException {

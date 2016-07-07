@@ -1,5 +1,5 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2014-2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -18,18 +18,12 @@ import javax.persistence.ManyToOne;
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
 /**
- * Firmware entity class
+ * DeviceFirmware entity class
  */
 @Entity
-public class Firmware extends AbstractEntity {
+public class DeviceFirmware extends AbstractEntity {
 
     private static final long serialVersionUID = 5003530514434626119L;
-
-    @Column(nullable = false)
-    private int firmwareVersion;
-
-    @Column(length = 255)
-    private String description;
 
     @Column()
     private Date installationDate;
@@ -41,32 +35,15 @@ public class Firmware extends AbstractEntity {
     private boolean active;
 
     @ManyToOne()
-    @JoinColumn()
+    @JoinColumn(name = "device_model_firmware_id")
     private DeviceModelFirmware deviceModelFirmware;
 
     @ManyToOne()
-    @JoinColumn()
+    @JoinColumn(name = "device_id")
     private Device device;
 
-    public Firmware() {
+    public DeviceFirmware() {
         // Default constructor for hibernate
-    }
-
-    public Firmware(final int firmwareVersion, final String description) {
-        this.firmwareVersion = firmwareVersion;
-        this.description = description;
-    }
-
-    public int getFirmwareVersion() {
-        return this.firmwareVersion;
-    }
-
-    public String getDescription() {
-        return this.description;
-    }
-
-    public void setDescription(final String description) {
-        this.description = description;
     }
 
     public Date getInstallationDate() {

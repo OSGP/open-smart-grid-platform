@@ -5,17 +5,16 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable;
 
-import java.util.List;
+package com.alliander.osgp.domain.core.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
-import com.alliander.osgp.domain.core.entities.Device;
-import com.alliander.osgp.domain.core.entities.Firmware;
+import com.alliander.osgp.domain.core.entities.DeviceFirmware;
 
 @Repository
-public interface WritableFirmwareRepository extends JpaRepository<Firmware, Long> {
-    List<Firmware> findByDevice(Device device);
+public interface DeviceFirmwareRepository extends JpaRepository<DeviceFirmware, Long>,
+        JpaSpecificationExecutor<DeviceFirmware> {
 }

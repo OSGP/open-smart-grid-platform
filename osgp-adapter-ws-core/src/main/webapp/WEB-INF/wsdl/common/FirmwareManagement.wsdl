@@ -182,17 +182,17 @@
         </wsdl:part>
     </wsdl:message>
 
-    <wsdl:message name="GetFirmwareHistoryResponse">
-        <wsdl:part element="fman:GetFirmwareHistoryResponse" name="GetFirmwareHistoryResponse">
+    <wsdl:message name="GetDeviceFirmwareHistoryResponse">
+        <wsdl:part element="fman:GetDeviceFirmwareHistoryResponse" name="GetDeviceFirmwareHistoryResponse">
         </wsdl:part>
     </wsdl:message>
-    <wsdl:message name="GetFirmwareHistoryHeader">
+    <wsdl:message name="GetDeviceFirmwareHistoryHeader">
         <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
         <wsdl:part element="common:UserName" name="UserName" />
         <wsdl:part element="common:ApplicationName" name="ApplicationName" />
     </wsdl:message>
-    <wsdl:message name="GetFirmwareHistoryRequest">
-        <wsdl:part element="fman:GetFirmwareHistoryRequest" name="GetFirmwareHistoryRequest">
+    <wsdl:message name="GetDeviceFirmwareHistoryRequest">
+        <wsdl:part element="fman:GetDeviceFirmwareHistoryRequest" name="GetDeviceFirmwareHistoryRequest">
         </wsdl:part>
     </wsdl:message>
 
@@ -394,12 +394,12 @@
             </wsdl:output>
         </wsdl:operation>
         
-        <wsdl:operation name="GetFirmwareHistory">
-            <wsdl:input message="tns:GetFirmwareHistoryRequest"
-                name="GetFirmwareHistoryRequest">
+        <wsdl:operation name="GetDeviceFirmwareHistory">
+            <wsdl:input message="tns:GetDeviceFirmwareHistoryRequest"
+                name="GetDeviceFirmwareHistoryRequest">
             </wsdl:input>
-            <wsdl:output message="tns:GetFirmwareHistoryResponse"
-                name="GetFirmwareHistoryResponse">
+            <wsdl:output message="tns:GetDeviceFirmwareHistoryResponse"
+                name="GetDeviceFirmwareHistoryResponse">
             </wsdl:output>
         </wsdl:operation>
         
@@ -691,15 +691,15 @@
             </wsdl:output>
         </wsdl:operation>
         
-        <wsdl:operation name="GetFirmwareHistory">
+        <wsdl:operation name="GetDeviceFirmwareHistory">
             <soap:operation soapAction="" />
-            <wsdl:input name="GetFirmwareHistoryRequest">
-                <soap:header message="tns:GetFirmwareHistoryHeader" part="OrganisationIdentification" use="literal" />
-                <soap:header message="tns:GetFirmwareHistoryHeader" part="UserName" use="literal" />
-                <soap:header message="tns:GetFirmwareHistoryHeader" part="ApplicationName" use="literal" />
+            <wsdl:input name="GetDeviceFirmwareHistoryRequest">
+                <soap:header message="tns:GetDeviceFirmwareHistoryHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:GetDeviceFirmwareHistoryHeader" part="UserName" use="literal" />
+                <soap:header message="tns:GetDeviceFirmwareHistoryHeader" part="ApplicationName" use="literal" />
                 <soap:body use="literal" />
             </wsdl:input>
-            <wsdl:output name="GetFirmwareHistoryResponse">
+            <wsdl:output name="GetDeviceFirmwareHistoryResponse">
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>
