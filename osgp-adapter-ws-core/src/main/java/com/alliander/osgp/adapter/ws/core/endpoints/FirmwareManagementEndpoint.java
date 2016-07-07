@@ -95,6 +95,7 @@ public class FirmwareManagementEndpoint {
     private static final ComponentType COMPONENT_WS_CORE = ComponentType.WS_CORE;
     private static final String REMOVE_MANUFACTURER_EXISTING_DEVICEMODEL = "feedback.message.manufacturer.removalnotpermitted.devicemodel";
     private static final String REMOVE_DEVICEMODEL_EXISTING_DEVICE = "feedback.message.devicemodel.removalnotpermitted.device";
+    private static final String REMOVE_DEVICEMODELFIRMWARE_EXISTING_FIRMWARE = "feedback.message.devicemodelfirmware.removalnotpermitted.firmware";
 
     private final FirmwareManagementService firmwareManagementService;
     private final FirmwareManagementMapper firmwareManagementMapper;
@@ -342,6 +343,7 @@ public class FirmwareManagementEndpoint {
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final FunctionalException e) {
+            LOGGER.error("Exception removing manufacturer: {} ", e.getMessage(), e);
             if (e.getExceptionType().equals(FunctionalExceptionType.EXISTING_DEVICEMODEL_MANUFACTURER)) {
                 removeManufacturerResponse.setResult(OsgpResultType.NOT_OK);
                 removeManufacturerResponse.setDescription(REMOVE_MANUFACTURER_EXISTING_DEVICEMODEL);
@@ -495,6 +497,7 @@ public class FirmwareManagementEndpoint {
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final FunctionalException e) {
+            LOGGER.error("Exception removing deviceModel: {} ", e.getMessage(), e);
             if (e.getExceptionType().equals(FunctionalExceptionType.EXISTING_DEVICE_DEVICEMODEL)) {
                 removeDeviceModelResponse.setResult(OsgpResultType.NOT_OK);
                 removeDeviceModelResponse.setDescription(REMOVE_DEVICEMODEL_EXISTING_DEVICE);
@@ -656,6 +659,7 @@ public class FirmwareManagementEndpoint {
             @RequestPayload final RemoveDeviceModelFirmwareRequest request) throws OsgpException {
 
         LOGGER.info("Removing devicemodelfirmware with id:{}.", request.getId());
+        final RemoveDeviceModelFirmwareResponse removeDeviceModelFirmwareResponse = new RemoveDeviceModelFirmwareResponse();
 
         try {
             this.firmwareManagementService.removeDeviceModelFirmware(organisationIdentification, request.getId());
@@ -663,13 +667,20 @@ public class FirmwareManagementEndpoint {
             LOGGER.error("Exception removing deviceModelfirmware: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
+        } catch (final FunctionalException e) {
+            LOGGER.error("Exception removing deviceModelfirmware: {} ", e.getMessage(), e);
+            if (e.getExceptionType().equals(FunctionalExceptionType.EXISTING_DEVICEMODELFIRMWARE_FIRMWARE)) {
+                removeDeviceModelFirmwareResponse.setResult(OsgpResultType.NOT_OK);
+                removeDeviceModelFirmwareResponse.setDescription(REMOVE_DEVICEMODELFIRMWARE_EXISTING_FIRMWARE);
+                return removeDeviceModelFirmwareResponse;
+            }
+            this.handleException(e);
         } catch (final Exception e) {
             LOGGER.error("Exception: {} while removing deviceModelfirmware: {} for organisation {}",
                     new Object[] { e.getMessage(), request.getId(), organisationIdentification }, e);
             this.handleException(e);
         }
 
-        final RemoveDeviceModelFirmwareResponse removeDeviceModelFirmwareResponse = new RemoveDeviceModelFirmwareResponse();
         removeDeviceModelFirmwareResponse.setResult(OsgpResultType.OK);
 
         return removeDeviceModelFirmwareResponse;
