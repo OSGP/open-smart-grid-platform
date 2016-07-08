@@ -23,10 +23,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetAdministrativeStatusDataDto;
 
 @Component()
-public class GetAdministrativeStatusCommandExecutor implements CommandExecutor<Void, AdministrativeStatusTypeDto> {
+public class GetAdministrativeStatusCommandExecutor extends AbstractCommandExecutor<Void, AdministrativeStatusTypeDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetAdministrativeStatusCommandExecutor.class);
 
@@ -36,6 +40,25 @@ public class GetAdministrativeStatusCommandExecutor implements CommandExecutor<V
 
     @Autowired
     private ConfigurationMapper configurationMapper;
+
+    public GetAdministrativeStatusCommandExecutor() {
+        super(GetAdministrativeStatusDataDto.class);
+    }
+
+    @Override
+    public Void fromBundleRequestInput(final ActionRequestDto bundleInput) throws ProtocolAdapterException {
+
+        this.checkActionRequestType(bundleInput);
+
+        return null;
+    }
+
+    @Override
+    public ActionResponseDto asBundleResponse(final AdministrativeStatusTypeDto executionResult)
+            throws ProtocolAdapterException {
+
+        return new AdministrativeStatusTypeResponseDto(executionResult);
+    }
 
     @Override
     public AdministrativeStatusTypeDto execute(final DlmsConnection conn, final DlmsDevice device, final Void useless)
@@ -50,7 +73,7 @@ public class GetAdministrativeStatusCommandExecutor implements CommandExecutor<V
         GetResult getResult=null;
         try {
             getResult = conn.get(getParameter);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new ConnectionException(e);
         }
 

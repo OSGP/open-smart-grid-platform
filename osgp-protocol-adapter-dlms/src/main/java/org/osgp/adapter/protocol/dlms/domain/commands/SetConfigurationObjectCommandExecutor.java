@@ -30,14 +30,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeTypeDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDataDto;
 
 @Component()
-public class SetConfigurationObjectCommandExecutor implements CommandExecutor<ConfigurationObjectDto, AccessResultCode> {
+public class SetConfigurationObjectCommandExecutor extends
+        AbstractCommandExecutor<ConfigurationObjectDto, AccessResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetConfigurationObjectCommandExecutor.class);
 
@@ -61,6 +65,28 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
 
     @Autowired
     private DlmsHelperService dlmsHelperService;
+
+    public SetConfigurationObjectCommandExecutor() {
+        super(SetConfigurationObjectRequestDataDto.class);
+    }
+
+    @Override
+    public ConfigurationObjectDto fromBundleRequestInput(final ActionRequestDto bundleInput)
+            throws ProtocolAdapterException {
+
+        this.checkActionRequestType(bundleInput);
+        final SetConfigurationObjectRequestDataDto setConfigurationObjectRequestDataDto = (SetConfigurationObjectRequestDataDto) bundleInput;
+
+        return setConfigurationObjectRequestDataDto.getConfigurationObject();
+    }
+
+    @Override
+    public ActionResponseDto asBundleResponse(final AccessResultCode executionResult) throws ProtocolAdapterException {
+
+        this.checkAccessResultCode(executionResult);
+
+        return new ActionResponseDto("Set configuration object was successful");
+    }
 
     @Override
     public AccessResultCode execute(final DlmsConnection conn, final DlmsDevice device,

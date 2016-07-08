@@ -11,7 +11,6 @@ import java.util.List;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.DlmsConnection;
-import org.openmuc.jdlms.SecurityUtils.KeyId;
 import org.osgp.adapter.protocol.dlms.application.models.ProtocolMeterInfo;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAdministrativeStatusCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetFirmwareVersionsCommandExecutor;
@@ -260,23 +259,13 @@ public class ConfigurationService {
     public void replaceKeys(final DlmsConnection conn, final DlmsDevice device, final SetKeysRequestDto keySet)
             throws ProtocolAdapterException {
 
-        this.replaceKeySet(conn, device, keySet);
-    }
-
-    private void replaceKeySet(final DlmsConnection conn, final DlmsDevice device, final SetKeysRequestDto keySet)
-            throws ProtocolAdapterException {
-
         try {
-            // Change AUTHENTICATION key.
-            LOGGER.info("Keys to set on the device {}: {}", device.getDeviceIdentification(), keySet);
-            DlmsDevice devicePostSave = this.replaceKeyCommandExecutor.execute(conn, device, ReplaceKeyCommandExecutor
-                    .wrap(keySet.getAuthenticationKey(), KeyId.AUTHENTICATION_KEY,
-                            SecurityKeyType.E_METER_AUTHENTICATION));
-
-            // Change ENCRYPTION key
-            devicePostSave = this.replaceKeyCommandExecutor.execute(conn, devicePostSave, ReplaceKeyCommandExecutor
-                    .wrap(keySet.getEncryptionKey(), KeyId.GLOBAL_UNICAST_ENCRYPTION_KEY,
-                            SecurityKeyType.E_METER_ENCRYPTION));
+            /*
+             * Call executeBundleAction, since it knows to deal with the
+             * SetKeysRequestDto containing authentication and encryption key,
+             * while execute deals with a single key only.
+             */
+            this.replaceKeyCommandExecutor.executeBundleAction(conn, device, keySet);
         } catch (final ProtocolAdapterException e) {
             LOGGER.error("Unexpected exception during replaceKeys.", e);
             throw e;

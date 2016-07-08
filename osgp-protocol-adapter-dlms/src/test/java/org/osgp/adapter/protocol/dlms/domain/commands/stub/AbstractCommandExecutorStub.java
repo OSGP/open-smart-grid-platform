@@ -8,13 +8,14 @@
 package org.osgp.adapter.protocol.dlms.domain.commands.stub;
 
 import org.openmuc.jdlms.DlmsConnection;
+import org.osgp.adapter.protocol.dlms.domain.commands.CommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 
-public abstract class AbstractCommandExecutorStub {
+public abstract class AbstractCommandExecutorStub implements CommandExecutor<Object, Object> {
 
     private ActionResponseDto actionResponse;
     private ProtocolAdapterException protocolAdapterException;
@@ -58,4 +59,19 @@ public abstract class AbstractCommandExecutorStub {
         this.protocolAdapterException = protocolAdapterException;
     }
 
+    @Override
+    public Object fromBundleRequestInput(final ActionRequestDto bundleInput) throws ProtocolAdapterException {
+        throw new AssertionError("fromBundleRequestInput(ActionRequestDto) called by " + this.getClass().getName());
+    }
+
+    @Override
+    public ActionResponseDto asBundleResponse(final Object executionResult) throws ProtocolAdapterException {
+        throw new AssertionError("asBundleResponse(Object) called by " + this.getClass().getName());
+    }
+
+    @Override
+    public Object execute(final DlmsConnection conn, final DlmsDevice device, final Object object)
+            throws ProtocolAdapterException {
+        throw new AssertionError("execute(DlmsConnection, DlmsDevice, Object) called by " + this.getClass().getName());
+    }
 }

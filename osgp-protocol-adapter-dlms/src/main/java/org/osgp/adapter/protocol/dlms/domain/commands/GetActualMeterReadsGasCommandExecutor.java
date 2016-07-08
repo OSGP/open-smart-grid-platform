@@ -21,6 +21,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsDataGasDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQueryDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto;
@@ -28,7 +30,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValueDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGasResponseDto;
 
 @Component()
-public class GetActualMeterReadsGasCommandExecutor implements CommandExecutor<ActualMeterReadsQueryDto, MeterReadsGasResponseDto> {
+public class GetActualMeterReadsGasCommandExecutor extends
+        AbstractCommandExecutor<ActualMeterReadsQueryDto, MeterReadsGasResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetActualMeterReadsGasCommandExecutor.class);
 
@@ -43,6 +46,20 @@ public class GetActualMeterReadsGasCommandExecutor implements CommandExecutor<Ac
 
     @Autowired
     private DlmsHelperService dlmsHelperService;
+
+    public GetActualMeterReadsGasCommandExecutor() {
+        super(ActualMeterReadsDataGasDto.class);
+    }
+
+    @Override
+    public ActualMeterReadsQueryDto fromBundleRequestInput(final ActionRequestDto bundleInput)
+            throws ProtocolAdapterException {
+
+        this.checkActionRequestType(bundleInput);
+        final ActualMeterReadsDataGasDto actualMeterReadsDataGasDto = (ActualMeterReadsDataGasDto) bundleInput;
+
+        return new ActualMeterReadsQueryDto(actualMeterReadsDataGasDto.getChannel());
+    }
 
     @Override
     public MeterReadsGasResponseDto execute(final DlmsConnection conn, final DlmsDevice device,

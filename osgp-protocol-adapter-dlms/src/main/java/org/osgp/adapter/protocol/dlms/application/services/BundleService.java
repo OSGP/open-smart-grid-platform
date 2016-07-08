@@ -14,6 +14,7 @@ import org.osgp.adapter.protocol.dlms.domain.commands.CommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.CommandExecutorMap;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
+import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,17 +43,23 @@ public class BundleService {
             // Because it could be a retry.
             if (actionDto.getResponse() == null) {
 
-                final CommandExecutor<ActionRequestDto, ActionResponseDto> executor = this.bundleCommandExecutorMap
-                        .getCommandExecutor(actionDto.getRequest().getClass());
+                final Class<? extends ActionRequestDto> actionRequestClass = actionDto.getRequest().getClass();
+
+                final CommandExecutor<?, ?> executor = this.bundleCommandExecutorMap
+                        .getCommandExecutor(actionRequestClass);
+
+                final String executorName = executor == null ? "null" : executor.getClass().getSimpleName();
 
                 try {
+
+                    this.checkIfExecutorExists(actionRequestClass, executor);
+
                     LOGGER.debug("**************************************************");
-                    LOGGER.info("Calling executor in bundle {}", executor.getClass().getSimpleName());
+                    LOGGER.info("Calling executor in bundle {}", executorName);
                     LOGGER.debug("**************************************************");
-                    actionDto.setResponse(executor.execute(conn, device, actionDto.getRequest()));
+                    actionDto.setResponse(executor.executeBundleAction(conn, device, actionDto.getRequest()));
                 } catch (final ConnectionException connectionException) {
-                    LOGGER.error("Warning: A connection exception occurred while executing "
-                            + executor.getClass().getSimpleName(), connectionException);
+                    LOGGER.warn("A connection exception occurred while executing {}", executorName, connectionException);
 
                     final List<ActionDto> remainingActionDtoList = actionList.subList(actionList.indexOf(actionDto),
                             actionList.size());
@@ -65,18 +72,26 @@ public class BundleService {
                     throw connectionException;
                 } catch (final Exception exception) {
 
-                    final String strexec = (executor == null) ? " = null " : executor.getClass().getSimpleName();
-
-                    LOGGER.error("Error while executing bundle action "
-                            + actionDto.getRequest().getClass().getSimpleName() + " for class "
-                            + actionDto.getRequest().getClass().getSimpleName() + " and executor " + strexec, exception);
-                    actionDto.setResponse(new ActionResponseDto(exception,
-                            "Error while executing bundle action for class "
-                                    + actionDto.getRequest().getClass().getSimpleName() + " and executor " + strexec));
+                    LOGGER.error("Error while executing bundle action for {} with {}", actionRequestClass.getName(),
+                            executorName, exception);
+                    final String responseMessage = executor == null ? "Unable to handle request"
+                            : "Error handling request with " + executorName;
+                    actionDto.setResponse(new ActionResponseDto(exception, responseMessage));
                 }
             }
         }
 
         return bundleMessagesRequest;
+    }
+
+    private void checkIfExecutorExists(final Class<? extends ActionRequestDto> actionRequestClass,
+            final CommandExecutor<?, ?> executor) throws ProtocolAdapterException {
+        if (executor == null) {
+            LOGGER.error("bundleCommandExecutorMap in " + this.getClass().getName()
+                    + " does not have a CommandExecutor registered for action: "
+                    + actionRequestClass.getName());
+            throw new ProtocolAdapterException("No CommandExecutor available to handle "
+                    + actionRequestClass.getSimpleName());
+        }
     }
 }

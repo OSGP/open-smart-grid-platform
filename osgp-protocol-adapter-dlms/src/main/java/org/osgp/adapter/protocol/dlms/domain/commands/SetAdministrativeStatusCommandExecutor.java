@@ -24,11 +24,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto;
 
 @Component()
-public class SetAdministrativeStatusCommandExecutor implements
-        CommandExecutor<AdministrativeStatusTypeDto, AccessResultCode> {
+public class SetAdministrativeStatusCommandExecutor extends
+        AbstractCommandExecutor<AdministrativeStatusTypeDto, AccessResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetAdministrativeStatusCommandExecutor.class);
 
@@ -38,6 +41,28 @@ public class SetAdministrativeStatusCommandExecutor implements
 
     @Autowired
     private ConfigurationMapper configurationMapper;
+
+    public SetAdministrativeStatusCommandExecutor() {
+        super(AdministrativeStatusTypeDataDto.class);
+    }
+
+    @Override
+    public AdministrativeStatusTypeDto fromBundleRequestInput(final ActionRequestDto bundleInput)
+            throws ProtocolAdapterException {
+
+        this.checkActionRequestType(bundleInput);
+        final AdministrativeStatusTypeDataDto administrativeStatusTypeDataDto = (AdministrativeStatusTypeDataDto) bundleInput;
+
+        return administrativeStatusTypeDataDto.getAdministrativeStatusType();
+    }
+
+    @Override
+    public ActionResponseDto asBundleResponse(final AccessResultCode executionResult) throws ProtocolAdapterException {
+
+        this.checkAccessResultCode(executionResult);
+
+        return new ActionResponseDto("Set administrative status was successful");
+    }
 
     @Override
     public AccessResultCode execute(final DlmsConnection conn, final DlmsDevice device,

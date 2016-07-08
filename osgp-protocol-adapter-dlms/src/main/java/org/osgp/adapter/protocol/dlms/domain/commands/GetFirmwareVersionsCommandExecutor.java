@@ -20,9 +20,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.FirmwareVersionResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDto;
 
 @Component
-public class GetFirmwareVersionsCommandExecutor implements CommandExecutor<Void, List<FirmwareVersionDto>> {
+public class GetFirmwareVersionsCommandExecutor extends AbstractCommandExecutor<Void, List<FirmwareVersionDto>> {
 
     private static final int CLASS_ID = 1;
     private static final int ATTRIBUTE_ID = 2;
@@ -46,6 +50,25 @@ public class GetFirmwareVersionsCommandExecutor implements CommandExecutor<Void,
 
     @Autowired
     private DlmsHelperService dlmsHelperService;
+
+    public GetFirmwareVersionsCommandExecutor() {
+        super(GetFirmwareVersionRequestDto.class);
+    }
+
+    @Override
+    public Void fromBundleRequestInput(final ActionRequestDto bundleInput) throws ProtocolAdapterException {
+
+        this.checkActionRequestType(bundleInput);
+
+        return null;
+    }
+
+    @Override
+    public ActionResponseDto asBundleResponse(final List<FirmwareVersionDto> executionResult)
+            throws ProtocolAdapterException {
+
+        return new FirmwareVersionResponseDto(executionResult);
+    }
 
     @Override
     public List<FirmwareVersionDto> execute(final DlmsConnection conn, final DlmsDevice device, final Void useless)

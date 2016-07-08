@@ -23,12 +23,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmTypeDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequestDto;
 
 @Component
-public class ReadAlarmRegisterCommandExecutor implements CommandExecutor<ReadAlarmRegisterRequestDto, AlarmRegisterResponseDto> {
+public class ReadAlarmRegisterCommandExecutor extends
+        AbstractCommandExecutor<ReadAlarmRegisterRequestDto, AlarmRegisterResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReadAlarmRegisterCommandExecutor.class);
 
@@ -38,6 +41,25 @@ public class ReadAlarmRegisterCommandExecutor implements CommandExecutor<ReadAla
 
     @Autowired
     private AlarmHelperService alarmHelperService;
+
+    public ReadAlarmRegisterCommandExecutor() {
+        super(ReadAlarmRegisterDataDto.class);
+    }
+
+    @Override
+    public ReadAlarmRegisterRequestDto fromBundleRequestInput(final ActionRequestDto bundleInput)
+            throws ProtocolAdapterException {
+
+        this.checkActionRequestType(bundleInput);
+
+        /*
+         * ReadAlarmRegisterDataDto does not have a deviceIdentification. Since
+         * the device identification is not used by the executor anyway, it is
+         * given the value "not relevant", as long as the XSD for the WS input
+         * still specifies a device identification for the non-bundled call.
+         */
+        return new ReadAlarmRegisterRequestDto("not relevant");
+    }
 
     @Override
     public AlarmRegisterResponseDto execute(final DlmsConnection conn, final DlmsDevice device,
@@ -52,7 +74,7 @@ public class ReadAlarmRegisterCommandExecutor implements CommandExecutor<ReadAla
         GetResult getResult=null;
         try {
             getResult = conn.get(alarmRegisterValue);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new ConnectionException(e);
         }
 

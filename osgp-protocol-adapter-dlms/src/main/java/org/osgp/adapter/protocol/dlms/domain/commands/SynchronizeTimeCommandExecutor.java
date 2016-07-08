@@ -22,8 +22,12 @@ import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
+
 @Component()
-public class SynchronizeTimeCommandExecutor implements CommandExecutor<DataObject, AccessResultCode> {
+public class SynchronizeTimeCommandExecutor extends AbstractCommandExecutor<DataObject, AccessResultCode> {
 
     private static final int CLASS_ID = 8;
     private static final ObisCode OBIS_CODE = new ObisCode("0.0.1.0.0.255");
@@ -31,6 +35,31 @@ public class SynchronizeTimeCommandExecutor implements CommandExecutor<DataObjec
 
     @Autowired
     private DlmsHelperService dlmsHelperService;
+
+    public SynchronizeTimeCommandExecutor() {
+        super(SynchronizeTimeRequestDto.class);
+    }
+
+    @Override
+    public DataObject fromBundleRequestInput(final ActionRequestDto bundleInput) throws ProtocolAdapterException {
+
+        this.checkActionRequestType(bundleInput);
+
+        /*
+         * SynchronizeTimeRequestDto does not contain relevant input for the
+         * execute method. It does not appear to need anything as DataObject
+         * either, so for now return null here.
+         */
+        return null;
+    }
+
+    @Override
+    public ActionResponseDto asBundleResponse(final AccessResultCode executionResult) throws ProtocolAdapterException {
+
+        this.checkAccessResultCode(executionResult);
+
+        return new ActionResponseDto("Synchronizing time was successful");
+    }
 
     @Override
     public AccessResultCode execute(final DlmsConnection conn, final DlmsDevice device, final DataObject object)

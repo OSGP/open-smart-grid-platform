@@ -22,14 +22,37 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarmDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupAlarmRequestDto;
 
 @Component()
-public class SetPushSetupAlarmCommandExecutor extends SetPushSetupCommandExecutor implements
-CommandExecutor<PushSetupAlarmDto, AccessResultCode> {
+public class SetPushSetupAlarmCommandExecutor extends SetPushSetupCommandExecutor<PushSetupAlarmDto, AccessResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetPushSetupAlarmCommandExecutor.class);
     private static final ObisCode OBIS_CODE = new ObisCode("0.1.25.9.0.255");
+
+    public SetPushSetupAlarmCommandExecutor() {
+        super(SetPushSetupAlarmRequestDto.class);
+    }
+
+    @Override
+    public PushSetupAlarmDto fromBundleRequestInput(final ActionRequestDto bundleInput) throws ProtocolAdapterException {
+
+        this.checkActionRequestType(bundleInput);
+        final SetPushSetupAlarmRequestDto setPushSetupAlarmRequestDto = (SetPushSetupAlarmRequestDto) bundleInput;
+
+        return setPushSetupAlarmRequestDto.getPushSetupAlarm();
+    }
+
+    @Override
+    public ActionResponseDto asBundleResponse(final AccessResultCode executionResult) throws ProtocolAdapterException {
+
+        this.checkAccessResultCode(executionResult);
+
+        return new ActionResponseDto("Setting push setup alarm was successful");
+    }
 
     @Override
     public AccessResultCode execute(final DlmsConnection conn, final DlmsDevice device,
