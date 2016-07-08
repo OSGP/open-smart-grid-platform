@@ -83,15 +83,14 @@ public abstract class AbstractCommandExecutor<T, R> implements CommandExecutor<T
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public T fromBundleRequestInput(final ActionRequestDto bundleInput) throws ProtocolAdapterException {
         if (bundleInput == null) {
             return null;
         }
         try {
-            @SuppressWarnings("unchecked")
-            final T commandInput = (T) bundleInput;
-            return commandInput;
+            return (T) bundleInput;
         } catch (final ClassCastException e) {
             throw new ProtocolAdapterException("Translation from bundle ActionRequestDto to CommandExecutor input for "
                     + this.getClass().getName() + " is not implemented.", e);

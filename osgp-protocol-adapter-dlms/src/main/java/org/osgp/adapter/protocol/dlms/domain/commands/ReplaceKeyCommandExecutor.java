@@ -87,12 +87,12 @@ public class ReplaceKeyCommandExecutor extends
         }
     }
 
-    public static KeyWrapper wrap(final byte[] bytes, final KeyId keyId, final SecurityKeyType securityKeyType) {
-        return new KeyWrapper(bytes, keyId, securityKeyType);
-    }
-
     public ReplaceKeyCommandExecutor() {
         super(SetKeysRequestDto.class);
+    }
+
+    public static KeyWrapper wrap(final byte[] bytes, final KeyId keyId, final SecurityKeyType securityKeyType) {
+        return new KeyWrapper(bytes, keyId, securityKeyType);
     }
 
     @Override

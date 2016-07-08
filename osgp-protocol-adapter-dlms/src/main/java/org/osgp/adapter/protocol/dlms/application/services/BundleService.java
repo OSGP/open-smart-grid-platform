@@ -52,13 +52,7 @@ public class BundleService {
 
                 try {
 
-                    if (executor == null) {
-                        LOGGER.error("bundleCommandExecutorMap in " + this.getClass().getName()
-                                + " does not have a CommandExecutor registered for action: "
-                                + actionRequestClass.getName());
-                        throw new ProtocolAdapterException("No CommandExecutor available to handle "
-                                + actionRequestClass.getSimpleName());
-                    }
+                    this.checkIfExecutorExists(actionRequestClass, executor);
 
                     LOGGER.debug("**************************************************");
                     LOGGER.info("Calling executor in bundle {}", executorName);
@@ -88,5 +82,16 @@ public class BundleService {
         }
 
         return bundleMessagesRequest;
+    }
+
+    private void checkIfExecutorExists(final Class<? extends ActionRequestDto> actionRequestClass,
+            final CommandExecutor<?, ?> executor) throws ProtocolAdapterException {
+        if (executor == null) {
+            LOGGER.error("bundleCommandExecutorMap in " + this.getClass().getName()
+                    + " does not have a CommandExecutor registered for action: "
+                    + actionRequestClass.getName());
+            throw new ProtocolAdapterException("No CommandExecutor available to handle "
+                    + actionRequestClass.getSimpleName());
+        }
     }
 }
