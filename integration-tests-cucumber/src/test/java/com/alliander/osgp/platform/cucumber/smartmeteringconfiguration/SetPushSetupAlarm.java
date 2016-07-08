@@ -10,18 +10,22 @@ package com.alliander.osgp.platform.cucumber.smartmeteringconfiguration;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 
+import com.alliander.osgp.logging.domain.entities.DeviceLogItem;
+import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import com.alliander.osgp.platform.cucumber.SmartMetering;
 import com.alliander.osgp.platform.cucumber.hooks.SimulatePushedAlarmsHooks;
-import com.alliander.osgp.platform.cucumber.smartmeteringmonitoring.ActualMeterReadsGas;
-import com.alliander.osgp.platform.cucumber.support.DatabaseReader;
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
 import com.alliander.osgp.platform.cucumber.support.OrganisationId;
 
@@ -33,13 +37,14 @@ public class SetPushSetupAlarm extends SmartMetering {
     private static final String PATH_RESULT = "/Envelope/Body/SetPushSetupAlarmResponse/Result/text()";
 
     private static final String XPATH_MATCHER_RESULT = "OK";
+    private static final String XPATH_MATCHER_PUSH_NOTIFICATION = "DlmsPushNotification \\[device = \\w*, trigger type = Push alarm monitor, alarms=\\[(\\w*(, )?)+\\]\\]";
 
     private static final String TEST_SUITE_XML = "SmartmeterConfiguration";
     private static final String TEST_CASE_XML = "125 Receive Alarm Notifications";
     private static final String TEST_CASE_NAME_REQUEST = "SetPushSetupAlarm - Request 1";
     private static final String TEST_CASE_NAME_RESPONSE = "GetSetPushSetupAlarmResponse - Request 1";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ActualMeterReadsGas.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SetPushSetupAlarm.class);
     private static final Map<String, String> PROPERTIES_MAP = new HashMap<>();
 
     private static final String KnownDevice = "E9998000014123414";
@@ -52,7 +57,7 @@ public class SetPushSetupAlarm extends SmartMetering {
     private OrganisationId organisationId;
 
     @Autowired
-    private DatabaseReader databaseReader;
+    private DeviceLogItemRepository deviceLogItemRepository;
 
     @When("^an alarm notification is received from a known device$")
     public void anAlarmNotificationIsReceivedFromAKnownDevice() throws Throwable {
@@ -78,11 +83,21 @@ public class SetPushSetupAlarm extends SmartMetering {
         assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT, XPATH_MATCHER_RESULT));
     }
 
-    @And("^the alarm should be pushed to the osgp_logging database \"([^\"]*)\" table$")
-    public void theAlarmShouldBePushedToTheOsgpLoggingDatabaseTable(final String table) throws Throwable {
-        final List<String> result = this.databaseReader.readDevideLogItem(table, KnownDevice, UnknownDevice);
-        for (int i = 0; i < 4; i++) {
-            LOGGER.info(result.get(i));
+    @And("^the alarm should be pushed to the osgp_logging database device_log_item table$")
+    public void theAlarmShouldBePushedToTheOsgpLoggingDatabaseTable() throws Throwable {
+        final Pattern responsePattern = Pattern.compile(XPATH_MATCHER_PUSH_NOTIFICATION);
+
+        final List<DeviceLogItem> deviceLogItems = this.deviceLogItemRepository
+                .findByDeviceIdentificationInOrderByCreationTimeDesc(Arrays.asList(KnownDevice, UnknownDevice),
+                        new PageRequest(0, 2)).getContent();
+        for (int i = 0; i < 2; i++) {
+            final DeviceLogItem item = deviceLogItems.get(i);
+            LOGGER.info("CreationTime: {}", item.getCreationTime().toString());
+            LOGGER.info("DecodedMessage: {}", item.getDecodedMessage());
+
+            // Assert a matching DlmsPushNotification is logged.
+            final Matcher responseMatcher = responsePattern.matcher(item.getDecodedMessage());
+            assertTrue(responseMatcher.find());
         }
     }
 
