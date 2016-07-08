@@ -35,8 +35,8 @@ public class DeviceFirmware extends AbstractEntity {
     private boolean active;
 
     @ManyToOne()
-    @JoinColumn(name = "device_model_firmware_id")
-    private DeviceModelFirmware deviceModelFirmware;
+    @JoinColumn(name = "firmware_id")
+    private Firmware firmware;
 
     @ManyToOne()
     @JoinColumn(name = "device_id")
@@ -58,8 +58,8 @@ public class DeviceFirmware extends AbstractEntity {
         return this.active;
     }
 
-    public DeviceModelFirmware getDeviceModelFirmware() {
-        return this.deviceModelFirmware;
+    public Firmware getFirmware() {
+        return this.firmware;
     }
 
     public Device getDevice() {

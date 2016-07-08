@@ -14,11 +14,11 @@ import org.springframework.stereotype.Repository;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceFirmware;
-import com.alliander.osgp.domain.core.entities.DeviceModelFirmware;
+import com.alliander.osgp.domain.core.entities.Firmware;
 
 @Repository
 public interface WritableDeviceFirmwareRepository extends JpaRepository<DeviceFirmware, Long> {
     List<DeviceFirmware> findByDevice(Device device);
 
-    List<DeviceFirmware> findByDeviceModelFirmware(DeviceModelFirmware deviceModelFirmware);
+    List<DeviceFirmware> findByFirmware(Firmware firmware);
 }

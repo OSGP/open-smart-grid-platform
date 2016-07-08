@@ -235,7 +235,7 @@
       </xsd:complexType>
    </xsd:element>
    
-   <xsd:element name="FindAllDeviceModelFirmwaresRequest">
+   <xsd:element name="FindAllFirmwaresRequest">
       <xsd:complexType>
          <xsd:sequence>
          	<xsd:element name="Manufacturer" type="xsd:string" minOccurs="0" />
@@ -244,24 +244,24 @@
       </xsd:complexType>
    </xsd:element>
 
-   <xsd:element name="FindAllDeviceModelFirmwaresResponse">
+   <xsd:element name="FindAllFirmwaresResponse">
       <xsd:complexType>
          <xsd:sequence>
-            <xsd:element maxOccurs="unbounded" name="DeviceModelFirmwares"
-               type="tns:DeviceModelFirmware" />
+            <xsd:element maxOccurs="unbounded" name="Firmwares"
+               type="tns:Firmware" />
          </xsd:sequence>
       </xsd:complexType>
    </xsd:element>
 
-   <xsd:element name="AddDeviceModelFirmwareRequest">
+   <xsd:element name="AddFirmwareRequest">
       <xsd:complexType>
          <xsd:sequence>
-            <xsd:element name="DeviceModelFirmware" type="tns:DeviceModelFirmware" />
+            <xsd:element name="Firmware" type="tns:Firmware" />
          </xsd:sequence>
       </xsd:complexType>
    </xsd:element>
 
-   <xsd:element name="AddDeviceModelFirmwareResponse">
+   <xsd:element name="AddFirmwareResponse">
       <xsd:complexType>
          <xsd:sequence>
             <xsd:element name="Result" type="common:OsgpResultType" />
@@ -269,7 +269,7 @@
       </xsd:complexType>
    </xsd:element>
 
-   <xsd:element name="RemoveDeviceModelFirmwareRequest">
+   <xsd:element name="RemoveFirmwareRequest">
       <xsd:complexType>
          <xsd:sequence>
          <xsd:element name="Id" type="xsd:int" />
@@ -277,7 +277,7 @@
       </xsd:complexType>
    </xsd:element>
 
-   <xsd:element name="RemoveDeviceModelFirmwareResponse">
+   <xsd:element name="RemoveFirmwareResponse">
       <xsd:complexType>
          <xsd:sequence>
             <xsd:element name="Result" type="common:OsgpResultType" />
@@ -286,16 +286,16 @@
       </xsd:complexType>
    </xsd:element>
 
-   <xsd:element name="ChangeDeviceModelFirmwareRequest">
+   <xsd:element name="ChangeFirmwareRequest">
       <xsd:complexType>
          <xsd:sequence>
-            <xsd:element name="DeviceModelFirmware" type="tns:DeviceModelFirmware" />
+            <xsd:element name="Firmware" type="tns:Firmware" />
             <xsd:element name="Id" type="xsd:int" />
          </xsd:sequence>
       </xsd:complexType>
    </xsd:element>
 
-   <xsd:element name="ChangeDeviceModelFirmwareResponse">
+   <xsd:element name="ChangeFirmwareResponse">
       <xsd:complexType>
          <xsd:sequence>
             <xsd:element name="Result" type="common:OsgpResultType" />
@@ -396,7 +396,7 @@
       </xsd:sequence>
    </xsd:complexType>
 
-   <xsd:complexType name="DeviceModelFirmware">
+   <xsd:complexType name="Firmware">
       <xsd:sequence>
          <xsd:element name="Id" type="xsd:int" />
          <xsd:element name="Filename" type="xsd:string" minOccurs="0" />
@@ -446,7 +446,7 @@
          <xsd:element name="InstallationDate" type="xsd:dateTime" minOccurs="0" maxOccurs="1" />
          <xsd:element name="InstalledBy" type="xsd:string" minOccurs="0" />
          <xsd:element name="Active" type="xsd:boolean" />
-         <xsd:element name="DeviceModelFirmware" type="tns:DeviceModelFirmware" />
+         <xsd:element name="Firmware" type="tns:Firmware" />
       </xsd:sequence>
    </xsd:complexType>
 

@@ -21,7 +21,6 @@ import org.springframework.data.jpa.domain.Specification;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
-import com.alliander.osgp.domain.core.entities.DeviceModelFirmware;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.exceptions.ArgumentNullOrEmptyException;
@@ -248,17 +247,17 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
                 final Subquery<Long> subquery = query.subquery(Long.class);
                 final Root<DeviceAuthorization> deviceAuthorizationRoot = subquery.from(DeviceAuthorization.class);
                 subquery.select(deviceAuthorizationRoot.get("device").get("id").as(Long.class));
-                subquery.where(
-                        cb.and(
-                                cb.like(cb.upper(deviceAuthorizationRoot.get("organisation").<String> get("name")), organisation.toUpperCase()),
-                                cb.equal(deviceAuthorizationRoot.get("functionGroup"), DeviceFunctionGroup.OWNER.ordinal())));
+                subquery.where(cb.and(cb.like(
+                        cb.upper(deviceAuthorizationRoot.get("organisation").<String> get("name")),
+                        organisation.toUpperCase()), cb.equal(deviceAuthorizationRoot.get("functionGroup"),
+                        DeviceFunctionGroup.OWNER.ordinal())));
                 return cb.in(deviceRoot.get("id")).value(subquery);
             }
         };
     }
 
     @Override
-    public Specification<Device> forDeviceType (final String deviceType) throws ArgumentNullOrEmptyException {
+    public Specification<Device> forDeviceType(final String deviceType) throws ArgumentNullOrEmptyException {
         if (deviceType == null) {
             throw new ArgumentNullOrEmptyException("deviceType");
         }
@@ -283,7 +282,8 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             @Override
             public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
-                return cb.like(cb.upper(deviceRoot.<String> get("deviceModel").get("modelCode").as(String.class)), deviceModel.toUpperCase());
+                return cb.like(cb.upper(deviceRoot.<String> get("deviceModel").get("modelCode").as(String.class)),
+                        deviceModel.toUpperCase());
             }
         };
     }
@@ -302,9 +302,8 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
                 final Subquery<Long> subquery = query.subquery(Long.class);
                 final Root<DeviceModel> deviceModelRoot = subquery.from(DeviceModel.class);
                 subquery.select(deviceModelRoot.get("id").as(Long.class));
-                subquery.where(
-                        cb.equal(cb.upper(deviceModelRoot.get("manufacturerId").<String> get("name")), manufacturer.getName().toUpperCase())
-                );
+                subquery.where(cb.equal(cb.upper(deviceModelRoot.get("manufacturerId").<String> get("name")),
+                        manufacturer.getName().toUpperCase()));
                 return cb.in(deviceRoot.get("deviceModel").get("id").as(Long.class)).value(subquery);
             }
         };
