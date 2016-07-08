@@ -65,18 +65,14 @@ public class AddDevice extends SmartMetering {
         Assert.assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT, XPATH_MATCHER_RESULT));
     }
 
-    @And("^the device should be added in the core database$")
-    public void theDeviceShouldBeAddedInTheCoreDatabase() throws Throwable {
-        Assert.assertTrue(this.addDeviceHooks.testCoreDevice(this.getDeviceId()));
+    @And("^the device with id \"([^\"]*)\"$\" should be added in the core database$")
+    public void theDeviceShouldBeAddedInTheCoreDatabase(String deviceId) throws Throwable {
+        Assert.assertTrue(this.addDeviceHooks.testCoreDevice(deviceId));
     }
 
-    @And("^the device should be added in the dlms database$")
-    public void theDeviceShouldBeAddedInTheDlmsDatabase() throws Throwable {
-        Assert.assertTrue(this.addDeviceHooks.testDlmsDevice(this.getDeviceId()));
+    @And("^the device with id \"([^\"]*)\"$\" should be added in the dlms database$")
+    public void theDeviceShouldBeAddedInTheDlmsDatabase(String deviceId) throws Throwable {
+        Assert.assertTrue(this.addDeviceHooks.testDlmsDevice(deviceId));
     }
 
-    private String getDeviceId() {
-        return PROPERTIES_MAP.get(DEVICE_IDENTIFICATION_E_LABEL);
-
-    }
 }

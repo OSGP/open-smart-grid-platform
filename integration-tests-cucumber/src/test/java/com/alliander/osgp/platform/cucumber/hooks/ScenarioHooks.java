@@ -41,6 +41,8 @@ public class ScenarioHooks {
 
         LOGGER.info("Preparing scenario for @SLIM-218");
 
+        LOGGER.info("Scenario name: {}", scenario.getName());
+
         final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("cucumber.xml");
         this.deviceRepository = context.getBean(DeviceRepository.class);
         this.dlmsDeviceRepository = context.getBean(DlmsDeviceRepository.class);
