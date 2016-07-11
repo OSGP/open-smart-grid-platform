@@ -9,6 +9,9 @@
  */
 package com.alliander.osgp.platform.cucumber.support;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.regex.Matcher;
@@ -31,11 +34,9 @@ import org.xml.sax.SAXException;
 
 @Component
 public class RunXpathResult {
-    private Pattern responsePattern;
-    private Matcher responseMatcher;
 
     public XpathResult runXPathExpression(final String xml, final String path) throws ParserConfigurationException,
-            SAXException, IOException, XPathExpressionException {
+    SAXException, IOException, XPathExpressionException {
 
         final Document doc = this.getDocument(xml);
         final XPath xpath = this.getXpath();
@@ -58,20 +59,37 @@ public class RunXpathResult {
     }
 
     public NodeList getNodeList(final String xml, final String path) throws ParserConfigurationException, SAXException,
-            IOException, XPathExpressionException {
+    IOException, XPathExpressionException {
         final Document doc = this.getDocument(xml);
         final XPath xpath = this.getXpath();
         final XPathExpression expr = xpath.compile(path);
         return (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
     }
 
-    public boolean assertXpath(final String xml, final String pathResultLogtime, final String xpathMatcherResultLogtime)
+    public boolean assertXpath(final String xml, final String nodeXPath, final String nodeRegex)
             throws XPathExpressionException, ParserConfigurationException, SAXException, IOException {
-        final XpathResult xpathResult = this.runXPathExpression(xml, pathResultLogtime);
+        final XpathResult xpathResult = this.runXPathExpression(xml, nodeXPath);
         final XPathExpression expr = xpathResult.getXpathExpression();
-        this.responsePattern = Pattern.compile(xpathMatcherResultLogtime);
-        this.responseMatcher = this.responsePattern.matcher(expr.evaluate(xpathResult.getDocument()));
+        final Pattern responsePattern = Pattern.compile(nodeRegex);
+        final Matcher responseMatcher = responsePattern.matcher(expr.evaluate(xpathResult.getDocument()));
 
-        return this.responseMatcher.find();
+        return responseMatcher.find();
+    }
+
+    public void assertXpathList(final String xml, final String nodeXPath, final String nodeRegex,
+            final int expectedNodes) throws XPathExpressionException, ParserConfigurationException, SAXException,
+            IOException {
+        final XpathResult xpathResult = this.runXPathExpression(xml, nodeXPath);
+        final XPathExpression expr = xpathResult.getXpathExpression();
+        final Pattern responsePattern = Pattern.compile(nodeRegex);
+
+        final NodeList list = (NodeList) expr.evaluate(xpathResult.getDocument(), XPathConstants.NODESET);
+
+        assertEquals("Expected number of nodes does not match.", expectedNodes, list.getLength());
+
+        for (int i = 0; i < list.getLength(); i++) {
+            final Matcher responseMatcher = responsePattern.matcher(list.item(i).getTextContent());
+            assertTrue(responseMatcher.find());
+        }
     }
 }
