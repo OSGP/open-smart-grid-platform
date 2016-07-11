@@ -9,4 +9,4 @@
 [submodule "Platform"]
 	path = Platform
 	url = https://github.com/OSGP/Platform.git
-	branch = feat-fix-fitnesse
+	branch = SLIM-633-use_hibernate
