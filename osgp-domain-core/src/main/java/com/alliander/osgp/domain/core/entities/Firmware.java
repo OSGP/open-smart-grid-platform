@@ -5,88 +5,178 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-
 package com.alliander.osgp.domain.core.entities;
 
-import java.util.Date;
-
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 
+import com.alliander.osgp.domain.core.valueobjects.FirmwareModuleData;
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
 /**
- * Firmware entity class
+ * Firmware entity class holds information about the device model or type
  */
 @Entity
 public class Firmware extends AbstractEntity {
 
-    private static final long serialVersionUID = 5003530514434626119L;
+    private static final long serialVersionUID = 3479817855083883103L;
 
-    @Column(nullable = false)
-    private int firmwareVersion;
+    @ManyToOne()
+    @JoinColumn(name = "device_model_id")
+    private DeviceModel deviceModel;
 
-    @Column(length = 255)
+    @Column()
+    private String filename;
+
+    @Column(length = 100)
     private String description;
 
     @Column()
-    private Date installationDate;
+    private boolean pushToNewDevices;
+
+    @Column(length = 100)
+    private String moduleVersionComm;
+
+    @Column(length = 100)
+    private String moduleVersionFunc;
+
+    @Column(length = 100)
+    private String moduleVersionMa;
+
+    @Column(length = 100)
+    private String moduleVersionMbus;
+
+    @Column(length = 100)
+    private String moduleVersionSec;
+
+    @Lob
+    @Column()
+    private byte file[];
 
     @Column()
-    private String installedBy;
-
-    @Column()
-    private boolean active;
-
-    @ManyToOne()
-    @JoinColumn()
-    private DeviceModelFirmware deviceModelFirmware;
-
-    @ManyToOne()
-    @JoinColumn()
-    private Device device;
+    private String hash;
 
     public Firmware() {
-        // Default constructor for hibernate
+        // Default constructor
     }
 
-    public Firmware(final int firmwareVersion, final String description) {
-        this.firmwareVersion = firmwareVersion;
+    public Firmware(final DeviceModel deviceModel, final String filename, final String description,
+            final boolean pushToNewDevices, final FirmwareModuleData firmwareModuleData) {
+        this.deviceModel = deviceModel;
+        this.filename = filename;
         this.description = description;
+        this.pushToNewDevices = pushToNewDevices;
+        this.updateFirmwareModuleData(firmwareModuleData);
     }
 
-    public int getFirmwareVersion() {
-        return this.firmwareVersion;
+    public Firmware(final DeviceModel deviceModel, final String filename, final String description,
+            final boolean pushToNewDevices, final FirmwareModuleData firmwareModuleData, final byte[] file,
+            final String hash) {
+        this(deviceModel, filename, description, pushToNewDevices, firmwareModuleData);
+        this.file = file;
+        this.hash = hash;
+    }
+
+    public void updateFirmwareModuleData(final FirmwareModuleData firmwareModuleData) {
+        this.moduleVersionComm = firmwareModuleData.getComm();
+        this.moduleVersionFunc = firmwareModuleData.getFunc();
+        this.moduleVersionMa = firmwareModuleData.getMa();
+        this.moduleVersionMbus = firmwareModuleData.getMbus();
+        this.moduleVersionSec = firmwareModuleData.getSec();
+    }
+
+    public DeviceModel getDeviceModel() {
+        return this.deviceModel;
+    }
+
+    public String getFilename() {
+        return this.filename;
     }
 
     public String getDescription() {
         return this.description;
     }
 
+    public boolean getPushToNewDevices() {
+        return this.pushToNewDevices;
+    }
+
+    public String getModuleVersionComm() {
+        return this.moduleVersionComm;
+    }
+
+    public String getModuleVersionFunc() {
+        return this.moduleVersionFunc;
+    }
+
+    public String getModuleVersionSec() {
+        return this.moduleVersionSec;
+    }
+
+    public String getModuleVersionMa() {
+        return this.moduleVersionMa;
+    }
+
+    public String getModuleVersionMbus() {
+        return this.moduleVersionMbus;
+    }
+
+    public void setDeviceModel(final DeviceModel deviceModel) {
+        this.deviceModel = deviceModel;
+    }
+
+    public void setFilename(final String filename) {
+        this.filename = filename;
+    }
+
     public void setDescription(final String description) {
         this.description = description;
     }
 
-    public Date getInstallationDate() {
-        return this.installationDate;
+    public void setPushToNewDevices(final boolean pushToNewDevices) {
+        this.pushToNewDevices = pushToNewDevices;
     }
 
-    public String getInstalledBy() {
-        return this.installedBy;
+    public void setModuleVersionComm(final String moduleVersionComm) {
+        this.moduleVersionComm = moduleVersionComm;
     }
 
-    public boolean isActive() {
-        return this.active;
+    public void setModuleVersionFunc(final String moduleVersionFunc) {
+        this.moduleVersionFunc = moduleVersionFunc;
     }
 
-    public DeviceModelFirmware getDeviceModelFirmware() {
-        return this.deviceModelFirmware;
+    public void setModuleVersionMa(final String moduleVersionMa) {
+        this.moduleVersionMa = moduleVersionMa;
     }
 
-    public Device getDevice() {
-        return this.device;
+    public void setModuleVersionMbus(final String moduleVersionMbus) {
+        this.moduleVersionMbus = moduleVersionMbus;
     }
 
+    public void setModuleVersionSec(final String moduleVersionSec) {
+        this.moduleVersionSec = moduleVersionSec;
+    }
+
+    public String getHash() {
+        return this.hash;
+    }
+
+    public void setHash(final String hash) {
+        this.hash = hash;
+    }
+
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    public byte[] getFile() {
+        return this.file;
+    }
+
+    public void setFile(final byte[] file) {
+        this.file = file;
+    }
 }

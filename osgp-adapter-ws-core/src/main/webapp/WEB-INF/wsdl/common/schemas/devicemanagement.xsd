@@ -520,7 +520,7 @@
       </xsd:sequence>
    </xsd:complexType>
 
-   <xsd:complexType name="DeviceModelFirmware">
+   <xsd:complexType name="Firmware">
       <xsd:sequence>
          <xsd:element name="Id" type="xsd:int" />
          <xsd:element name="Filename" type="xsd:string" minOccurs="0" />
@@ -532,13 +532,7 @@
                </xsd:restriction>
             </xsd:simpleType>
          </xsd:element>
-         <xsd:element name="ModelCode" minOccurs="0">
-            <xsd:simpleType>
-               <xsd:restriction base="xsd:string">
-                  <xsd:maxLength value="15" />
-               </xsd:restriction>
-            </xsd:simpleType>
-         </xsd:element>
+         <xsd:element name="DeviceModel" type="tns:DeviceModel" minOccurs="0" />
          <xsd:element name="Description" minOccurs="0" maxOccurs="1">
             <xsd:simpleType>
                <xsd:restriction base="xsd:string">
