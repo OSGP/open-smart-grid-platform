@@ -106,7 +106,7 @@ public class UpdateFirmwareSteps {
 
     @Autowired
     @Qualifier("wsCoreFirmwareManagementService")
-    FirmwareManagementService wsFirmwareManagementService;
+    private FirmwareManagementService wsFirmwareManagementService;
 
     @Autowired
     @Qualifier("wsCoreIncomingResponsesMessageFinder")
@@ -184,8 +184,7 @@ public class UpdateFirmwareSteps {
                 firmwareDomainConfig, firmwarePathConfig, firmwareExtensionConfig });
 
         try {
-            final FirmwareLocation firmwareLocation = new FirmwareLocation(firmwareDomainConfig, firmwarePathConfig,
-                    firmwareExtensionConfig);
+            final FirmwareLocation firmwareLocation = new FirmwareLocation(firmwareDomainConfig, firmwarePathConfig);
             this.messageProcessor.setFirmwareLocation(firmwareLocation);
         } catch (final IllegalArgumentException e) {
             // this.firmwareLocation = null;

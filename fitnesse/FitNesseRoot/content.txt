@@ -4,10 +4,10 @@
 
 !define CM_SYSTEM {fitnesse.wiki.cmSystems.TfsCmSystem}
 
-!define SHARED_VERSION {3.7.0-SNAPSHOT}
-!define PLATFORM_VERSION {3.7.0-SNAPSHOT}
-!define PROTOCOL_ADAPTER_OSLP_VERSION {3.7.0-SNAPSHOT}
-!define OSGP_VERSION {3.7.0-SNAPSHOT}
+!define SHARED_VERSION {3.8.0-SNAPSHOT}
+!define PLATFORM_VERSION {3.8.0-SNAPSHOT}
+!define PROTOCOL_ADAPTER_OSLP_VERSION {3.8.0-SNAPSHOT}
+!define OSGP_VERSION {3.8.0-SNAPSHOT}
 
 !path plugins/junit-4.5.jar
 !path plugins/commons-logging.jar
