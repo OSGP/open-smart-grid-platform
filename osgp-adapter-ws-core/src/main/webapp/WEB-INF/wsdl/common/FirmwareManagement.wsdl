@@ -142,6 +142,19 @@
         <wsdl:part element="fman:FindAllFirmwaresRequest" name="FindAllFirmwaresRequest">
         </wsdl:part>
     </wsdl:message>
+    <wsdl:message name="FindFirmwareResponse">
+        <wsdl:part element="fman:FindFirmwareResponse" name="FindFirmwareResponse">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="FindFirmwareHeader">
+        <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+        <wsdl:part element="common:UserName" name="UserName" />
+        <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+    </wsdl:message>
+    <wsdl:message name="FindFirmwareRequest">
+        <wsdl:part element="fman:FindFirmwareRequest" name="FindFirmwareRequest">
+        </wsdl:part>
+    </wsdl:message>
     <wsdl:message name="AddFirmwareHeader">
         <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
         <wsdl:part element="common:UserName" name="UserName" />
@@ -375,6 +388,14 @@
                 name="FindAllFirmwaresResponse">
             </wsdl:output>
         </wsdl:operation>
+        <wsdl:operation name="FindFirmware">
+            <wsdl:input message="tns:FindFirmwareRequest"
+                name="FindFirmwareRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:FindFirmwareResponse"
+                name="FindFirmwareResponse">
+            </wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="AddFirmware">
             <wsdl:input message="tns:AddFirmwareRequest" name="AddFirmwareRequest">
             </wsdl:input>
@@ -535,7 +556,6 @@
                   <soap:body use="literal"/>
               </wsdl:output>
         </wsdl:operation>
-        
         <wsdl:operation name="FindAllDeviceModels">
             <soap:operation soapAction="" />
             <wsdl:input name="FindAllDeviceModelsRequest">
@@ -596,6 +616,19 @@
                 <soap:body use="literal" />
             </wsdl:input>
             <wsdl:output name="FindAllFirmwaresResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="FindFirmware">
+            <soap:operation soapAction="" />
+            <wsdl:input name="FindFirmwareRequest">
+                <soap:header message="tns:FindFirmwareHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:FindFirmwareHeader" part="UserName" use="literal" />
+                <soap:header message="tns:FindFirmwareHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="FindFirmwareResponse">
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>

@@ -19,7 +19,5 @@ import com.alliander.osgp.domain.core.entities.Firmware;
 public interface WritableFirmwareRepository extends JpaRepository<Firmware, Long> {
     List<Firmware> findByDeviceModel(DeviceModel deviceModel);
 
-    Firmware findById(Long id);
-
     List<Firmware> findByDeviceModelAndFilename(DeviceModel deviceModel, String fileName);
 }

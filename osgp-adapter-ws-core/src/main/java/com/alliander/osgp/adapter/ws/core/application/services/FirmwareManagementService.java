@@ -392,6 +392,18 @@ public class FirmwareManagementService {
     }
 
     /**
+     * Returns the {@link Firmware} of the given id, if it exists
+     */
+    public Firmware findFirmware(final String organisationIdentification, final int firmwareId)
+            throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_FIRMWARE);
+
+        return this.firmwareRepository.findOne(Long.valueOf(firmwareId));
+    }
+
+    /**
      * Adds new {@link Firmware} to the platform. Throws exception if
      * {@link Firmware} already exists
      */
@@ -498,7 +510,7 @@ public class FirmwareManagementService {
                     new UnknownEntityException(DeviceModel.class, modelCode));
         }
 
-        final Firmware changedFirmware = this.firmwareRepository.findById(Long.valueOf(id));
+        final Firmware changedFirmware = this.firmwareRepository.findOne(Long.valueOf(id));
 
         if (changedFirmware == null) {
             LOGGER.info("Firmware not found.");
@@ -537,7 +549,7 @@ public class FirmwareManagementService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.REMOVE_FIRMWARE);
 
-        final Firmware removedFirmware = this.firmwareRepository.findById(Long.valueOf(firmwareIdentification));
+        final Firmware removedFirmware = this.firmwareRepository.findOne(Long.valueOf(firmwareIdentification));
 
         if (removedFirmware == null) {
             LOGGER.info("Firmware not found.");

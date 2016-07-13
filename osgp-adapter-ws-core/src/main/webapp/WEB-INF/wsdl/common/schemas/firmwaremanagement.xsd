@@ -253,6 +253,22 @@
       </xsd:complexType>
    </xsd:element>
 
+   <xsd:element name="FindFirmwareRequest">
+      <xsd:complexType>
+         <xsd:sequence>
+                <xsd:element name="FirmwareId" type="xsd:int" />
+         </xsd:sequence>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:element name="FindFirmwareResponse">
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element name="Firmware" type="tns:Firmware"   minOccurs="0" maxOccurs="1"/>
+         </xsd:sequence>
+      </xsd:complexType>
+   </xsd:element>
+
    <xsd:element name="AddFirmwareRequest">
       <xsd:complexType>
          <xsd:sequence>

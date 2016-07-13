@@ -46,6 +46,8 @@ import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllFirmw
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllFirmwaresResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllManufacturersRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllManufacturersResponse;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindFirmwareRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindFirmwareResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FirmwareVersion;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetDeviceFirmwareHistoryRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetDeviceFirmwareHistoryResponse;
@@ -566,6 +568,35 @@ public class FirmwareManagementEndpoint {
 
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("Exception find all firmwares {}: ", e);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+
+        return response;
+    }
+
+    @PayloadRoot(localPart = "FindFirmwareRequest", namespace = NAMESPACE)
+    @ResponsePayload
+    public FindFirmwareResponse findFirmware(@OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final FindFirmwareRequest request) throws OsgpException {
+
+        LOGGER.info("Find Firmware with id {} for organisation {}.", request.getFirmwareId(),
+                organisationIdentification);
+
+        final FindFirmwareResponse response = new FindFirmwareResponse();
+
+        try {
+
+            final Firmware firmware = this.firmwareManagementService.findFirmware(organisationIdentification,
+                    request.getFirmwareId());
+
+            response.setFirmware(this.firmwareManagementMapper.map(firmware,
+                    com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.Firmware.class));
+
+        } catch (final MethodConstraintViolationException e) {
+            LOGGER.error("Exception find firmware {}: ", e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
