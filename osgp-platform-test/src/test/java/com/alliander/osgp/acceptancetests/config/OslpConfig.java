@@ -55,23 +55,29 @@ public class OslpConfig {
 
     private static final String FIRMWARE_DOMAIN = "flexovltest.cloudapp.net";
     private static final String FIRMWARE_PATH = "firmware";
-    private static final String FIRMWARE_FILE_EXTENSION = "zip";
+    private static final String FIRMWARE_DIRECTORY = "/var/www/html/firmware/";
 
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     public FirmwareLocation firmwareLocation() {
-        return new FirmwareLocation(FIRMWARE_DOMAIN, FIRMWARE_PATH, FIRMWARE_FILE_EXTENSION);
+        return new FirmwareLocation(FIRMWARE_DOMAIN, FIRMWARE_PATH);
+    }
+
+    @Bean
+    @Qualifier("wsCoreFirmwareManagementFirmwareDirectory")
+    private String firmwareDirectory() {
+        return FIRMWARE_DIRECTORY;
     }
 
     @Bean
     public OslpDecoder oslpDecoder() throws InvalidKeySpecException, NoSuchAlgorithmException, IOException,
-    NoSuchProviderException {
+            NoSuchProviderException {
         return new OslpDecoder(this.oslpSignature(), this.oslpSignatureProvider());
     }
 
     @Bean
     public PublicKey publicKey() throws NoSuchAlgorithmException, IOException, InvalidKeySpecException,
-    NoSuchProviderException {
+            NoSuchProviderException {
         return CertificateHelper.createPublicKeyFromBase64(OslpTestUtils.PUBLIC_KEY_BASE_64, OslpTestUtils.KEY_TYPE,
                 OslpTestUtils.provider());
     }
@@ -79,7 +85,7 @@ public class OslpConfig {
     @Bean
     @Qualifier("signingServerPrivateKey")
     public PrivateKey privateKey() throws IOException, InvalidKeySpecException, NoSuchAlgorithmException,
-    NoSuchProviderException {
+            NoSuchProviderException {
         return CertificateHelper.createPrivateKeyFromBase64(OslpTestUtils.PRIVATE_KEY_BASE_64, OslpTestUtils.KEY_TYPE,
                 OslpTestUtils.provider());
     }
@@ -150,7 +156,7 @@ public class OslpConfig {
         final ChannelPipelineFactory pipelineFactory = new ChannelPipelineFactory() {
             @Override
             public ChannelPipeline getPipeline() throws InvalidKeySpecException, NoSuchAlgorithmException, IOException,
-            NoSuchProviderException {
+                    NoSuchProviderException {
                 final ChannelPipeline pipeline = Channels.pipeline();
 
                 pipeline.addLast("oslpEncoder", new OslpEncoder());
@@ -185,7 +191,7 @@ public class OslpConfig {
         bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
             @Override
             public ChannelPipeline getPipeline() throws InvalidKeySpecException, NoSuchAlgorithmException, IOException,
-            NoSuchProviderException {
+                    NoSuchProviderException {
                 final ChannelPipeline pipeline = Channels.pipeline();
 
                 pipeline.addLast("oslpEncoder", new OslpEncoder());
