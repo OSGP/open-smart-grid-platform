@@ -53,14 +53,14 @@ public abstract class AbstractFindEventsReads extends SmartMetering {
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_E_LABEL, this.deviceId.getDeviceIdE());
         PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, this.organisationId.getOrganisationId());
 
-        this.RequestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST + this.getEventLogCategory(), TEST_CASE_XML,
+        this.requestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST + this.getEventLogCategory(), TEST_CASE_XML,
                 TEST_SUITE_XML);
     }
 
     public void eventsShouldBeReturned() throws Throwable {
         PROPERTIES_MAP.put(CORRELATION_UID_LABEL, this.correlationUid);
 
-        this.ResponseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE + this.getEventLogCategory(), LOGGER);
+        this.responseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE + this.getEventLogCategory(), LOGGER);
 
         this.checkResponse(this.getAllowedEventTypes());
     }
