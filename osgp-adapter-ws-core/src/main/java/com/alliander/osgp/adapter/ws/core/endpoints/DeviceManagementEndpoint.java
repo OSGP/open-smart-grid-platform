@@ -249,7 +249,7 @@ public class DeviceManagementEndpoint {
                 response.getPage().setCurrentPage(result.getNumber());
             }
 
-            if (!request.isUsePages()) {
+            if (request.isUsePages() != null && !request.isUsePages()) {
                 int calls = 0;
                 while ((calls += 1) < result.getTotalPages()) {
                     request.setPage(calls);
