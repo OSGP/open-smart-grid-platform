@@ -9,50 +9,50 @@ package com.alliander.osgp.shared.exceptionhandling;
 
 public enum FunctionalExceptionType {
     // Organisation exceptions
-    UNKNOWN_ORGANISATION(101, "Organisation does not exist."),
-    EXISTING_ORGANISATION(102, "Organisation already exists."),
-    EXISTING_ORGANISATION_WITH_SAME_IDENTIFICATION(103, "Another organisation with the same identification already exists."),
+    UNKNOWN_ORGANISATION(101, "UNKNOWN_ORGANISATION"),
+    EXISTING_ORGANISATION(102, "EXISTING_ORGANISATION"),
+    EXISTING_ORGANISATION_WITH_SAME_IDENTIFICATION(103, "EXISTING_ORGANISATION_WITH_SAME_IDENTIFICATION"),
 
     // Device exceptions
-    UNKNOWN_DEVICE(201, "Device does not exist."),
-    UNREGISTERED_DEVICE(202, "Device is not registered."),
-    UNSCHEDULED_DEVICE(203, "Device does not have a schedule."),
-    EXISTING_DEVICE(204, "Device already exists."),
-    PROTOCOL_UNKNOWN_FOR_DEVICE(205, "Device has no protocol defined."),
-    UNKNOWN_PROTOCOL_NAME_OR_VERSION(206, "Device has an unknown protocol name or version."),
+    UNKNOWN_DEVICE(201, "UNKNOWN_DEVICE"),
+    UNREGISTERED_DEVICE(202, "UNREGISTERED_DEVICE"),
+    UNSCHEDULED_DEVICE(203, "UNSCHEDULED_DEVICE"),
+    EXISTING_DEVICE(204, "EXISTING_DEVICE"),
+    PROTOCOL_UNKNOWN_FOR_DEVICE(205, "PROTOCOL_UNKNOWN_FOR_DEVICE"),
+    UNKNOWN_PROTOCOL_NAME_OR_VERSION(206, "UNKNOWN_PROTOCOL_NAME_OR_VERSION"),
 
     // Authorization exceptions
-    UNAUTHORIZED(301, "Not authorized to perform this action."),
-    EXISTING_DEVICE_AUTHORIZATIONS(302, "Device authorizations are still present for the current organisation."),
-    METHOD_NOT_ALLOWED_FOR_OWNER(303, "Not allowed to set owner via this method."),
-    DEVICE_IN_MAINTENANCE(304, "Device currently disabled for maintenance."),
+    UNAUTHORIZED(301, "UNAUTHORIZED"),
+    EXISTING_DEVICE_AUTHORIZATIONS(302, "EXISTING_DEVICE_AUTHORIZATIONS"),
+    METHOD_NOT_ALLOWED_FOR_OWNER(303, "METHOD_NOT_ALLOWED_FOR_OWNER"),
+    DEVICE_IN_MAINTENANCE(304, "DEVICE_IN_MAINTENANCE"),
 
     // Other exceptions
-    VALIDATION_ERROR(401, "Validation error."),
-    TARIFF_SCHEDULE_NOT_ALLOWED_FOR_PSLD(402, "Set tariff schedule is not allowed for PSLD."),
-    ARGUMENT_NULL(403, "Argument null."),
-    JMS_TEMPLATE_NULL(404, "JSM template was null. Restart server."),
-    UNKNOWN_CORRELATION_UID(405, "No results found for the given correlation uid."),
-    LIGHT_SWITCHING_NOT_ALLOWED_FOR_RELAY(406, "This relay is not configured for light switching"),
-    UNSUPPORTED_DEVICE_ACTION(407, "No handling implemented for the specified device action."),
-    ACTION_NOT_ALLOWED_FOR_LIGHT_RELAY(406, "This relay is not configured for light switching"),
-    ACTION_NOT_ALLOWED_FOR_TARIFF_RELAY(407, "This relay is not configured for tariff switching"),
+    VALIDATION_ERROR(401, "VALIDATION_ERROR"),
+    TARIFF_SCHEDULE_NOT_ALLOWED_FOR_PSLD(402, "TARIFF_SCHEDULE_NOT_ALLOWED_FOR_PSLD"),
+    ARGUMENT_NULL(403, "ARGUMENT_NULL"),
+    JMS_TEMPLATE_NULL(404, "JMS_TEMPLATE_NULL"),
+    UNKNOWN_CORRELATION_UID(405, "UNKNOWN_CORRELATION_UID"),
+    LIGHT_SWITCHING_NOT_ALLOWED_FOR_RELAY(406, "LIGHT_SWITCHING_NOT_ALLOWED_FOR_RELAY"),
+    UNSUPPORTED_DEVICE_ACTION(407, "UNSUPPORTED_DEVICE_ACTION"),
+    ACTION_NOT_ALLOWED_FOR_LIGHT_RELAY(406, "ACTION_NOT_ALLOWED_FOR_LIGHT_RELAY"),
+    ACTION_NOT_ALLOWED_FOR_TARIFF_RELAY(407, "ACTION_NOT_ALLOWED_FOR_TARIFF_RELAY"),
 
     // Manufacturer exceptions
-    UNKNOWN_MANUFACTURER(501, "Manufacturer does not exist."),
-    EXISTING_MANUFACTURER(502, "Manufacturer already exists."),
-    EXISTING_DEVICEMODEL_MANUFACTURER(503, "Manufacturer is linked to a Model."),
+    UNKNOWN_MANUFACTURER(501, "UNKNOWN_MANUFACTURER"),
+    EXISTING_MANUFACTURER(502, "EXISTING_MANUFACTURER"),
+    EXISTING_DEVICEMODEL_MANUFACTURER(503, "EXISTING_DEVICEMODEL_MANUFACTURER"),
 
     // DeviceModel exceptions
-    UNKNOWN_DEVICEMODEL(601, "DeviceModel does not exist."),
-    EXISTING_DEVICEMODEL(602, "DeviceModel already exists."),
-    EXISTING_DEVICE_DEVICEMODEL(603, "DeviceModel is linked to a device."),
-    EXISTING_DEVICEMODEL_FIRMWARE(604, "DeviceModel is linked to a firmware."),
+    UNKNOWN_DEVICEMODEL(601, "UNKNOWN_DEVICEMODEL"),
+    EXISTING_DEVICEMODEL(602, "EXISTING_DEVICEMODEL"),
+    EXISTING_DEVICE_DEVICEMODEL(603, "EXISTING_DEVICE_DEVICEMODEL"),
+    EXISTING_DEVICEMODEL_FIRMWARE(604, "EXISTING_DEVICEMODEL_FIRMWARE"),
 
     // Firmware exceptions
-    UNKNOWN_FIRMWARE(701, "Firmware does not exist."),
-    EXISTING_FIRMWARE(702, "Firmware already exists."),
-    EXISTING_FIRMWARE_DEVICEFIRMWARE(703, "Firmware is linked to Device firmware.");
+    UNKNOWN_FIRMWARE(701, "UNKNOWN_FIRMWARE"),
+    EXISTING_FIRMWARE(702, "EXISTING_FIRMWARE"),
+    EXISTING_FIRMWARE_DEVICEFIRMWARE(703, "EXISTING_FIRMWARE_DEVICEFIRMWARE");
 
     private int code;
     private String message;
