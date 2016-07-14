@@ -65,12 +65,12 @@ public class AddDevice extends SmartMetering {
         Assert.assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT, XPATH_MATCHER_RESULT));
     }
 
-    @And("^the device with id \"([^\"]*)\"$\" should be added in the core database$")
+    @And("^the device with id \"([^\"]*)\" should be added in the core database$")
     public void theDeviceShouldBeAddedInTheCoreDatabase(String deviceId) throws Throwable {
         Assert.assertTrue(this.addDeviceHooks.testCoreDevice(deviceId));
     }
 
-    @And("^the device with id \"([^\"]*)\"$\" should be added in the dlms database$")
+    @And("^the device with id \"([^\"]*)\" should be added in the dlms database$")
     public void theDeviceShouldBeAddedInTheDlmsDatabase(String deviceId) throws Throwable {
         Assert.assertTrue(this.addDeviceHooks.testDlmsDevice(deviceId));
     }
