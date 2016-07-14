@@ -155,6 +155,19 @@
         <wsdl:part element="fman:FindFirmwareRequest" name="FindFirmwareRequest">
         </wsdl:part>
     </wsdl:message>
+    <wsdl:message name="SaveCurrentDeviceFirmwareHeader">
+        <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+        <wsdl:part element="common:UserName" name="UserName" />
+        <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+    </wsdl:message>
+    <wsdl:message name="SaveCurrentDeviceFirmwareResponse">
+        <wsdl:part element="fman:SaveCurrentDeviceFirmwareResponse" name="SaveCurrentDeviceFirmwareResponse">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="SaveCurrentDeviceFirmwareRequest">
+        <wsdl:part element="fman:SaveCurrentDeviceFirmwareRequest" name="SaveCurrentDeviceFirmwareRequest">
+        </wsdl:part>
+    </wsdl:message>
     <wsdl:message name="AddFirmwareHeader">
         <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
         <wsdl:part element="common:UserName" name="UserName" />
@@ -396,6 +409,12 @@
                 name="FindFirmwareResponse">
             </wsdl:output>
         </wsdl:operation>
+        <wsdl:operation name="SaveCurrentDeviceFirmware">
+            <wsdl:input message="tns:SaveCurrentDeviceFirmwareRequest" name="SaveCurrentDeviceFirmwareRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:SaveCurrentDeviceFirmwareResponse" name="SaveCurrentDeviceFirmwareResponse">
+            </wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="AddFirmware">
             <wsdl:input message="tns:AddFirmwareRequest" name="AddFirmwareRequest">
             </wsdl:input>
@@ -606,7 +625,7 @@
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>
-        
+
         <wsdl:operation name="FindAllFirmwares">
             <soap:operation soapAction="" />
             <wsdl:input name="FindAllFirmwaresRequest">
@@ -629,6 +648,19 @@
                 <soap:body use="literal" />
             </wsdl:input>
             <wsdl:output name="FindFirmwareResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="SaveCurrentDeviceFirmware">
+            <soap:operation soapAction="" />
+            <wsdl:input name="SaveCurrentDeviceFirmwareRequest">
+                <soap:header message="tns:SaveCurrentDeviceFirmwareHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:SaveCurrentDeviceFirmwareHeader" part="UserName" use="literal" />
+                <soap:header message="tns:SaveCurrentDeviceFirmwareHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="SaveCurrentDeviceFirmwareResponse">
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>

@@ -91,6 +91,9 @@ public class FirmwareManagementService {
     @Autowired
     private WritableDeviceRepository deviceRepository;
 
+    @Autowired
+    private WritableDeviceFirmwareRepository deviceFirmwareRepository;
+
     @Resource
     @Qualifier("wsCoreFirmwareManagementFirmwareDirectory")
     private String firmwareDirectory;
@@ -479,6 +482,21 @@ public class FirmwareManagementService {
             this.firmwareRepository.save(firmwares);
         }
         this.firmwareRepository.save(savedFirmware);
+    }
+
+    /**
+     * Links a {@link DeviceFirmware} instance to a {@link Device}, and sets it
+     * as the active one.
+     */
+    @Transactional(value = "writableTransactionManager")
+    public void saveCurrentDeviceFirmware(final DeviceFirmware deviceFirmware) throws Exception {
+
+        // Setting other devicefirmwares for this device on inactive
+        this.deviceFirmwareRepository.updateDeviceFirmwareSetActiveFalseWhereDevice(deviceFirmware.getDevice());
+
+        // Setting active to true, just to be sure and saving it.
+        deviceFirmware.setActive(true);
+        this.deviceFirmwareRepository.save(deviceFirmware);
     }
 
     /**

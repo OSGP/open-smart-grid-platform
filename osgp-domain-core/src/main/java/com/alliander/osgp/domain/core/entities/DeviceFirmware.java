@@ -66,4 +66,24 @@ public class DeviceFirmware extends AbstractEntity {
         return this.device;
     }
 
+    public void setFirmware(final Firmware firmware) {
+        this.firmware = firmware;
+    }
+
+    public void setDevice(final Device device) {
+        this.device = device;
+    }
+
+    public void setInstallationDate(final Date installationDate) {
+        this.installationDate = installationDate;
+    }
+
+    public void setInstalledBy(final String installedBy) {
+        this.installedBy = installedBy;
+    }
+
+    public void setActive(final boolean active) {
+        this.active = active;
+    }
+
 }

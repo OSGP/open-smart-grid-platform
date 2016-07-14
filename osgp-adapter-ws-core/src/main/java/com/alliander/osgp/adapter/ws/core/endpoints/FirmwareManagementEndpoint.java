@@ -61,6 +61,8 @@ import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.RemoveFirmwa
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.RemoveFirmwareResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.RemoveManufacturerRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.RemoveManufacturerResponse;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.SaveCurrentDeviceFirmwareRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.SaveCurrentDeviceFirmwareResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.SwitchFirmwareAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.SwitchFirmwareAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.SwitchFirmwareRequest;
@@ -604,6 +606,36 @@ public class FirmwareManagementEndpoint {
         }
 
         return response;
+    }
+
+    @PayloadRoot(localPart = "SaveCurrentDeviceFirmwareRequest", namespace = NAMESPACE)
+    @ResponsePayload
+    public SaveCurrentDeviceFirmwareResponse saveCurrentDeviceFirmware(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SaveCurrentDeviceFirmwareRequest request) throws OsgpException {
+
+        LOGGER.info("Saving new device firmware {} to device {}", request.getDeviceFirmware().getFirmware()
+                .getDescription());
+
+        try {
+            this.firmwareManagementService.saveCurrentDeviceFirmware(this.firmwareManagementMapper.map(
+                    request.getDeviceFirmware(), DeviceFirmware.class));
+
+        } catch (final MethodConstraintViolationException e) {
+            LOGGER.error("Exception while saving current devicefirmware: {} ", e.getMessage(), e);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
+        } catch (final Exception e) {
+            LOGGER.error("Exception: {} while saving device firmware: {} to device: {} for organisation {}",
+                    new Object[] { e.getMessage(), request.getDeviceFirmware().getFirmware().getDescription(),
+                    request.getDeviceFirmware().getDeviceIdentification(), organisationIdentification }, e);
+            this.handleException(e);
+        }
+
+        final SaveCurrentDeviceFirmwareResponse resoponse = new SaveCurrentDeviceFirmwareResponse();
+        resoponse.setResult(OsgpResultType.OK);
+
+        return resoponse;
     }
 
     @PayloadRoot(localPart = "AddFirmwareRequest", namespace = NAMESPACE)

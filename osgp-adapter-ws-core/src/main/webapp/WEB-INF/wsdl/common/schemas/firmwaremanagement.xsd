@@ -285,6 +285,22 @@
       </xsd:complexType>
    </xsd:element>
 
+   <xsd:element name="SaveCurrentDeviceFirmwareRequest">
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element name="DeviceFirmware" type="tns:DeviceFirmware" />
+         </xsd:sequence>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:element name="SaveCurrentDeviceFirmwareResponse">
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element name="Result" type="common:OsgpResultType" />
+         </xsd:sequence>
+      </xsd:complexType>
+   </xsd:element>
+
    <xsd:element name="RemoveFirmwareRequest">
       <xsd:complexType>
          <xsd:sequence>
