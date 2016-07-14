@@ -93,6 +93,9 @@ public class FirmwareManagementEndpoint {
     private static final Logger LOGGER = LoggerFactory.getLogger(FirmwareManagementEndpoint.class);
     private static final String NAMESPACE = "http://www.alliander.com/schemas/osgp/common/firmwaremanagement/2014/10";
     private static final ComponentType COMPONENT_WS_CORE = ComponentType.WS_CORE;
+    private static final String ADD_DEVICEMODEL_EXISTING_DEVICEMODEL = "EXISTING_DEVICEMODEL";
+    private static final String ADD_FIRMWARE_EXISTING_FIRMWARE = "EXISTING_FIRMWARE";
+    private static final String ADD_MANUFACTURER_EXISTING_MANUFACTURER = "EXISTING_MANUFACTURER";
     private static final String REMOVE_MANUFACTURER_EXISTING_DEVICEMODEL = "feedback.message.manufacturer.removalnotpermitted.devicemodel";
     private static final String REMOVE_DEVICEMODEL_EXISTING_DEVICE = "feedback.message.devicemodel.removalnotpermitted.device";
     private static final String REMOVE_DEVICEMODEL_EXISTING_FIRMWARE = "feedback.message.devicemodel.removalnotpermitted.firmware";
@@ -272,11 +275,11 @@ public class FirmwareManagementEndpoint {
 
     @PayloadRoot(localPart = "AddManufacturerRequest", namespace = NAMESPACE)
     @ResponsePayload
-    public AddManufacturerResponse adddManufacturer(
-            @OrganisationIdentification final String organisationIdentification,
+    public AddManufacturerResponse addManufacturer(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final AddManufacturerRequest request) throws OsgpException {
 
         LOGGER.info("Adding manufacturer:{}.", request.getManufacturer().getName());
+        final AddManufacturerResponse addManufacturerResponse = new AddManufacturerResponse();
 
         try {
             this.firmwareManagementService.addManufacturer(organisationIdentification, new Manufacturer(request
@@ -286,6 +289,14 @@ public class FirmwareManagementEndpoint {
             LOGGER.error("Exception adding manufacturer: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
+        } catch (final FunctionalException e) {
+            LOGGER.error("Exception adding manufacturer: {} ", e.getMessage(), e);
+            if (FunctionalExceptionType.EXISTING_MANUFACTURER == e.getExceptionType()) {
+                addManufacturerResponse.setResult(OsgpResultType.NOT_OK);
+                addManufacturerResponse.setDescription(ADD_MANUFACTURER_EXISTING_MANUFACTURER);
+                return addManufacturerResponse;
+            }
+            this.handleException(e);
         } catch (final Exception e) {
             LOGGER.error("Exception: {} while adding manufacturer: {} for organisation {}",
                     new Object[] { e.getMessage(), request.getManufacturer().getManufacturerId(),
@@ -293,7 +304,6 @@ public class FirmwareManagementEndpoint {
             this.handleException(e);
         }
 
-        final AddManufacturerResponse addManufacturerResponse = new AddManufacturerResponse();
         addManufacturerResponse.setResult(OsgpResultType.OK);
 
         return addManufacturerResponse;
@@ -456,6 +466,7 @@ public class FirmwareManagementEndpoint {
             @RequestPayload final AddDeviceModelRequest request) throws OsgpException {
 
         LOGGER.info("Adding deviceModel:{}.", request.getDeviceModel().getModelCode());
+        final AddDeviceModelResponse addDeviceModelResponse = new AddDeviceModelResponse();
 
         try {
             this.firmwareManagementService.addDeviceModel(organisationIdentification, request.getDeviceModel()
@@ -465,6 +476,14 @@ public class FirmwareManagementEndpoint {
             LOGGER.error("Exception adding devicemodel: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
+        } catch (final FunctionalException e) {
+            LOGGER.error("Exception adding devicemodel: {} ", e.getMessage(), e);
+            if (FunctionalExceptionType.EXISTING_DEVICEMODEL == e.getExceptionType()) {
+                addDeviceModelResponse.setResult(OsgpResultType.NOT_OK);
+                addDeviceModelResponse.setDescription(ADD_DEVICEMODEL_EXISTING_DEVICEMODEL);
+                return addDeviceModelResponse;
+            }
+            this.handleException(e);
         } catch (final Exception e) {
             LOGGER.error(
                     "Exception: {} while adding devicemodel: {} for organisation {}",
@@ -474,7 +493,6 @@ public class FirmwareManagementEndpoint {
             this.handleException(e);
         }
 
-        final AddDeviceModelResponse addDeviceModelResponse = new AddDeviceModelResponse();
         addDeviceModelResponse.setResult(OsgpResultType.OK);
 
         return addDeviceModelResponse;
@@ -587,6 +605,7 @@ public class FirmwareManagementEndpoint {
             @RequestPayload final AddFirmwareRequest request) throws OsgpException {
 
         LOGGER.info("Adding firmware:{}.", request.getFirmware().getFilename());
+        final AddFirmwareResponse addFirmwareResponse = new AddFirmwareResponse();
 
         try {
 
@@ -604,13 +623,20 @@ public class FirmwareManagementEndpoint {
             LOGGER.error("Exception adding firmware: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
+        } catch (final FunctionalException e) {
+            LOGGER.error("Exception adding firmware: {} ", e.getMessage(), e);
+            if (FunctionalExceptionType.EXISTING_FIRMWARE == e.getExceptionType()) {
+                addFirmwareResponse.setResult(OsgpResultType.NOT_OK);
+                addFirmwareResponse.setDescription(ADD_FIRMWARE_EXISTING_FIRMWARE);
+                return addFirmwareResponse;
+            }
+            this.handleException(e);
         } catch (final Exception e) {
             LOGGER.error("Exception: {} while adding firmware: {} for organisation {}", new Object[] { e.getMessage(),
                     request.getFirmware().getFilename(), organisationIdentification }, e);
             this.handleException(e);
         }
 
-        final AddFirmwareResponse addFirmwareResponse = new AddFirmwareResponse();
         addFirmwareResponse.setResult(OsgpResultType.OK);
 
         return addFirmwareResponse;

@@ -115,6 +115,7 @@
       <xsd:complexType>
          <xsd:sequence>
             <xsd:element name="Result" type="common:OsgpResultType" minOccurs="1" maxOccurs="1" />
+            <xsd:element name="Description" type="xsd:string" minOccurs="0" />
          </xsd:sequence>
       </xsd:complexType>
    </xsd:element>
@@ -154,6 +155,7 @@
       <xsd:complexType>
          <xsd:sequence>
             <xsd:element name="Result" type="common:OsgpResultType" minOccurs="1" maxOccurs="1" />
+            <xsd:element name="Description" type="xsd:string" minOccurs="0" />
          </xsd:sequence>
       </xsd:complexType>
    </xsd:element>
@@ -185,6 +187,7 @@
       <xsd:complexType>
          <xsd:sequence>
             <xsd:element name="Result" type="common:OsgpResultType" minOccurs="1" maxOccurs="1" />
+            <xsd:element name="Description" type="xsd:string" minOccurs="0" />
          </xsd:sequence>
       </xsd:complexType>
    </xsd:element>
@@ -231,6 +234,7 @@
       <xsd:complexType>
          <xsd:sequence>
             <xsd:element name="Result" type="common:OsgpResultType" minOccurs="1" maxOccurs="1" />
+            <xsd:element name="Description" type="xsd:string" minOccurs="0" />
          </xsd:sequence>
       </xsd:complexType>
    </xsd:element>
@@ -265,6 +269,7 @@
       <xsd:complexType>
          <xsd:sequence>
             <xsd:element name="Result" type="common:OsgpResultType" />
+            <xsd:element name="Description" type="xsd:string" minOccurs="0" />
          </xsd:sequence>
       </xsd:complexType>
    </xsd:element>
@@ -299,6 +304,7 @@
       <xsd:complexType>
          <xsd:sequence>
             <xsd:element name="Result" type="common:OsgpResultType" />
+            <xsd:element name="Description" type="xsd:string" minOccurs="0" />
          </xsd:sequence>
       </xsd:complexType>
    </xsd:element>
