@@ -8,9 +8,8 @@ Background:
     And an organisation with OrganisationID "LianderNetManagement"
     
 @SLIM-218
-  Scenario: Add a new device
+  Scenario: Add a new device "E0026000059790003"
     When the add device request is received
     Then the device request response should be ok
-    And the device should be added in the core database
-    And the device should be added in the dlms database
-            
+    And the device with id "E0026000059790003" should be added in the core database
+    And the device with id "E0026000059790003" should be added in the dlms database
