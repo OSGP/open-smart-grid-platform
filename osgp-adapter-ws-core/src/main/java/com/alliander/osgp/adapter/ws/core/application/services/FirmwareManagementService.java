@@ -25,6 +25,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -33,14 +34,14 @@ import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessage;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessageSender;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessageType;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
-import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceModelFirmwareRepository;
+import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceFirmwareRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceModelRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableFirmwareRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableManufacturerRepository;
 import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.DeviceFirmware;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
-import com.alliander.osgp.domain.core.entities.DeviceModelFirmware;
 import com.alliander.osgp.domain.core.entities.Firmware;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
@@ -88,16 +89,14 @@ public class FirmwareManagementService {
     private WritableFirmwareRepository firmwareRepository;
 
     @Autowired
-    private WritableDeviceModelFirmwareRepository deviceModelFirmwareRepository;
-
-    @Autowired
     private WritableDeviceRepository deviceRepository;
 
     @Resource
+    @Qualifier("wsCoreFirmwareManagementFirmwareDirectory")
     private String firmwareDirectory;
 
     @Autowired
-    private WritableFirmwareRepository writableFirmwareRepository;
+    private WritableDeviceFirmwareRepository writableDeviceFirmwareRepository;
 
     @Autowired
     private WritableDeviceRepository writableDeviceRepository;
@@ -333,6 +332,13 @@ public class FirmwareManagementService {
                         ComponentType.WS_CORE, new ExistingEntityException(Device.class, devices.get(0)
                                 .getDeviceIdentification()));
             }
+            final List<Firmware> firmwares = this.firmwareRepository.findByDeviceModel(removedDeviceModel);
+            if (!firmwares.isEmpty()) {
+                LOGGER.info("DeviceModel is linked to a firmware.");
+                throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICEMODEL_FIRMWARE,
+                        ComponentType.WS_CORE, new ExistingEntityException(Firmware.class, firmwares.get(0)
+                                .getFilename()));
+            }
             this.deviceModelRepository.delete(removedDeviceModel);
         }
     }
@@ -364,46 +370,45 @@ public class FirmwareManagementService {
     }
 
     /**
-     * Returns a list of all DeviceModelFirmwares in the Platform
+     * Returns a list of all {@link Firmware} in the Platform
      */
-    public List<DeviceModelFirmware> findAllDeviceModelFirmwares(final String organisationIdentification,
-            final String manufacturer, final String modelCode) throws FunctionalException {
+    public List<Firmware> findAllFirmwares(final String organisationIdentification, final String manufacturer,
+            final String modelCode) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
-        this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_DEVICE_MODEL_FIRMWARE);
+        this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_FIRMWARE);
 
-        List<DeviceModelFirmware> deviceModelFirmwares = new ArrayList<DeviceModelFirmware>();
+        List<Firmware> firmwares = new ArrayList<Firmware>();
         if (manufacturer != null) {
             final Manufacturer databaseManufacturer = this.manufacturerRepository.findByManufacturerId(manufacturer);
             final DeviceModel databaseDeviceModel = this.deviceModelRepository.findByManufacturerIdAndModelCode(
                     databaseManufacturer, modelCode);
-            deviceModelFirmwares = this.deviceModelFirmwareRepository.findByDeviceModel(databaseDeviceModel);
+            firmwares = this.firmwareRepository.findByDeviceModel(databaseDeviceModel);
         } else {
             final DeviceModel databaseDeviceModel = this.deviceModelRepository.findByModelCode(modelCode);
-            deviceModelFirmwares = this.deviceModelFirmwareRepository.findByDeviceModel(databaseDeviceModel);
+            firmwares = this.firmwareRepository.findByDeviceModel(databaseDeviceModel);
         }
 
         // performance issue, clean list with firmware files for front-end admin
         // app.
-        for (final DeviceModelFirmware deviceModelFirmware : deviceModelFirmwares) {
-            deviceModelFirmware.setFile(null);
+        for (final Firmware firmware : firmwares) {
+            firmware.setFile(null);
         }
 
-        return deviceModelFirmwares;
+        return firmwares;
     }
 
     /**
-     * Adds new deviceModelFirmware to the platform. Throws exception if
-     * {@link DeviceModelFirmware} already exists
+     * Adds new {@link Firmware} to the platform. Throws exception if
+     * {@link Firmware} already exists
      */
     @Transactional(value = "writableTransactionManager")
-    public void addDeviceModelFirmware(@Identification final String organisationIdentification,
-            final String description, final byte[] file, final String fileName, final String manufacturer,
-            final String modelCode, final FirmwareModuleData firmwareModuleData, final boolean pushToNewDevices)
-                    throws Exception {
+    public void addFirmware(@Identification final String organisationIdentification, final String description,
+            final byte[] file, final String fileName, final String manufacturer, final String modelCode,
+            final FirmwareModuleData firmwareModuleData, final boolean pushToNewDevices) throws Exception {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
-        this.domainHelperService.isAllowed(organisation, PlatformFunction.CREATE_DEVICE_MODEL_FIRMWARE);
+        this.domainHelperService.isAllowed(organisation, PlatformFunction.CREATE_FIRMWARE);
 
         final Manufacturer dataseManufacturer = this.manufacturerRepository.findByManufacturerId(manufacturer);
 
@@ -422,67 +427,66 @@ public class FirmwareManagementService {
                     new UnknownEntityException(DeviceModel.class, modelCode));
         }
 
-        DeviceModelFirmware savedDeviceModelFirmware = null;
+        Firmware savedFirmware = null;
 
         // file == null, user selected an existing firmware file
         if (file == null) {
-            final List<DeviceModelFirmware> databaseDeviceModelFirmwares = this.deviceModelFirmwareRepository
-                    .findByDeviceModelAndFilename(databaseDeviceModel, fileName);
+            final List<Firmware> databaseFirmwares = this.firmwareRepository.findByDeviceModelAndFilename(
+                    databaseDeviceModel, fileName);
 
-            if (databaseDeviceModelFirmwares.isEmpty()) {
-                LOGGER.error("DeviceModelFirmware file doesn't exixts.");
-                throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICEMODEL_FIRMWARE,
-                        ComponentType.WS_CORE, new UnknownEntityException(DeviceModel.class, fileName));
+            if (databaseFirmwares.isEmpty()) {
+                LOGGER.error("Firmware file doesn't exixts.");
+                throw new FunctionalException(FunctionalExceptionType.UNKNOWN_FIRMWARE, ComponentType.WS_CORE,
+                        new UnknownEntityException(DeviceModel.class, fileName));
             }
 
             if (databaseDeviceModel.isFileStorage()) {
                 // The file is already in the directory, so nothing else has to
                 // happen
-                savedDeviceModelFirmware = new DeviceModelFirmware(databaseDeviceModel, fileName, modelCode,
-                        description, pushToNewDevices, firmwareModuleData);
+                savedFirmware = new Firmware(databaseDeviceModel, fileName, description, pushToNewDevices,
+                        firmwareModuleData);
             } else {
                 // Storing the file in the database
-                savedDeviceModelFirmware = new DeviceModelFirmware(databaseDeviceModel, fileName, modelCode,
-                        description, pushToNewDevices, firmwareModuleData, databaseDeviceModelFirmwares.get(0)
-                        .getFile(), this.getMd5Hash(databaseDeviceModelFirmwares.get(0).getFile()));
+                savedFirmware = new Firmware(databaseDeviceModel, fileName, description, pushToNewDevices,
+                        firmwareModuleData, databaseFirmwares.get(0).getFile(), this.getMd5Hash(databaseFirmwares
+                                .get(0).getFile()));
             }
         } else {
             if (databaseDeviceModel.isFileStorage()) {
                 // Saving the file to the file system
                 this.writeToFilesystem(file, fileName, databaseDeviceModel.getModelCode());
-                savedDeviceModelFirmware = new DeviceModelFirmware(databaseDeviceModel, fileName, modelCode,
-                        description, pushToNewDevices, firmwareModuleData);
+                savedFirmware = new Firmware(databaseDeviceModel, fileName, description, pushToNewDevices,
+                        firmwareModuleData);
             } else {
                 // Storing the file in the database
-                savedDeviceModelFirmware = new DeviceModelFirmware(databaseDeviceModel, fileName, modelCode,
-                        description, pushToNewDevices, firmwareModuleData, file, this.getMd5Hash(file));
+                savedFirmware = new Firmware(databaseDeviceModel, fileName, description, pushToNewDevices,
+                        firmwareModuleData, file, this.getMd5Hash(file));
             }
         }
 
         if (pushToNewDevices) {
-            final List<DeviceModelFirmware> deviceModelFirmwares = this.deviceModelFirmwareRepository
-                    .findByDeviceModel(databaseDeviceModel);
-            for (final DeviceModelFirmware dbDeviceModelFirmware : deviceModelFirmwares) {
-                if (dbDeviceModelFirmware.getPushToNewDevices()) {
-                    dbDeviceModelFirmware.setPushToNewDevices(false);
+            final List<Firmware> firmwares = this.firmwareRepository.findByDeviceModel(databaseDeviceModel);
+            for (final Firmware dbFirmware : firmwares) {
+                if (dbFirmware.getPushToNewDevices()) {
+                    dbFirmware.setPushToNewDevices(false);
                 }
             }
-            this.deviceModelFirmwareRepository.save(deviceModelFirmwares);
+            this.firmwareRepository.save(firmwares);
         }
-        this.deviceModelFirmwareRepository.save(savedDeviceModelFirmware);
+        this.firmwareRepository.save(savedFirmware);
     }
 
     /**
-     * Updates a DeviceModelFirmware to the platform. Throws exception if
-     * {@link DeviceModelFirmware} doesn't exists.
+     * Updates a Firmware to the platform. Throws exception if {@link Firmware}
+     * doesn't exists.
      */
     @Transactional(value = "writableTransactionManager")
-    public void changeDeviceModelFirmware(@Identification final String organisationIdentification, final int id,
+    public void changeFirmware(@Identification final String organisationIdentification, final int id,
             final String description, final String filename, final String manufacturer, final String modelCode,
             final FirmwareModuleData firmwareModuleData, final boolean pushToNewDevices) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
-        this.domainHelperService.isAllowed(organisation, PlatformFunction.CHANGE_DEVICE_MODEL_FIRMWARE);
+        this.domainHelperService.isAllowed(organisation, PlatformFunction.CHANGE_FIRMWARE);
 
         final Manufacturer databaseManufacturer = this.manufacturerRepository.findByManufacturerId(manufacturer);
 
@@ -501,88 +505,84 @@ public class FirmwareManagementService {
                     new UnknownEntityException(DeviceModel.class, modelCode));
         }
 
-        final DeviceModelFirmware changedDeviceModelFirmware = this.deviceModelFirmwareRepository.findById(Long
-                .valueOf(id));
+        final Firmware changedFirmware = this.firmwareRepository.findById(Long.valueOf(id));
 
-        if (changedDeviceModelFirmware == null) {
-            LOGGER.info("DeviceModelFirmware not found.");
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICEMODEL_FIRMWARE, ComponentType.WS_CORE,
-                    new UnknownEntityException(DeviceModelFirmware.class, filename));
+        if (changedFirmware == null) {
+            LOGGER.info("Firmware not found.");
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_FIRMWARE, ComponentType.WS_CORE,
+                    new UnknownEntityException(Firmware.class, filename));
         }
 
-        changedDeviceModelFirmware.setDescription(description);
-        changedDeviceModelFirmware.setDeviceModel(databaseDeviceModel);
-        changedDeviceModelFirmware.setFilename(filename);
-        changedDeviceModelFirmware.setModelCode(modelCode);
-        changedDeviceModelFirmware.updateFirmwareModuleData(firmwareModuleData);
-        changedDeviceModelFirmware.setPushToNewDevices(pushToNewDevices);
+        changedFirmware.setDescription(description);
+        changedFirmware.setDeviceModel(databaseDeviceModel);
+        changedFirmware.setFilename(filename);
+        changedFirmware.updateFirmwareModuleData(firmwareModuleData);
+        changedFirmware.setPushToNewDevices(pushToNewDevices);
 
         // set all devicefirmwares.pushToNewDevices on false
         if (pushToNewDevices) {
-            final List<DeviceModelFirmware> deviceModelFirmwares = this.deviceModelFirmwareRepository
-                    .findByDeviceModel(databaseDeviceModel);
-            for (final DeviceModelFirmware deviceModelFirmware : deviceModelFirmwares) {
-                if (deviceModelFirmware.getPushToNewDevices() && (deviceModelFirmware.getId() != Long.valueOf(id))) {
-                    deviceModelFirmware.setPushToNewDevices(false);
+            final List<Firmware> firmwares = this.firmwareRepository.findByDeviceModel(databaseDeviceModel);
+            for (final Firmware firmware : firmwares) {
+                if (firmware.getPushToNewDevices() && (firmware.getId() != Long.valueOf(id))) {
+                    firmware.setPushToNewDevices(false);
                 }
             }
-            this.deviceModelFirmwareRepository.save(deviceModelFirmwares);
+            this.firmwareRepository.save(firmwares);
         }
 
-        this.deviceModelFirmwareRepository.save(changedDeviceModelFirmware);
+        this.firmwareRepository.save(changedFirmware);
     }
 
     /**
-     * Removes a DeviceModelFirmware from the platform. Throws exception if
-     * {@link DeviceModelFirmware} doesn't exists
+     * Removes a {@link Firmware} from the platform. Throws exception if
+     * {@link Firmware} doesn't exists
      */
     @Transactional(value = "writableTransactionManager")
-    public void removeDeviceModelFirmware(@Identification final String organisationIdentification,
+    public void removeFirmware(@Identification final String organisationIdentification,
             @Valid final int firmwareIdentification) throws Exception {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
-        this.domainHelperService.isAllowed(organisation, PlatformFunction.REMOVE_DEVICE_MODEL_FIRMWARE);
+        this.domainHelperService.isAllowed(organisation, PlatformFunction.REMOVE_FIRMWARE);
 
-        final DeviceModelFirmware removedDeviceModelFirmware = this.deviceModelFirmwareRepository.findById(Long
-                .valueOf(firmwareIdentification));
+        final Firmware removedFirmware = this.firmwareRepository.findById(Long.valueOf(firmwareIdentification));
 
-        if (removedDeviceModelFirmware == null) {
-            LOGGER.info("DeviceModelFirmware not found.");
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICEMODEL_FIRMWARE, ComponentType.WS_CORE,
-                    new UnknownEntityException(DeviceModelFirmware.class, String.valueOf(firmwareIdentification)));
+        if (removedFirmware == null) {
+            LOGGER.info("Firmware not found.");
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_FIRMWARE, ComponentType.WS_CORE,
+                    new UnknownEntityException(Firmware.class, String.valueOf(firmwareIdentification)));
         }
 
-        final List<Firmware> firmwares = this.firmwareRepository.findByDeviceModelFirmware(removedDeviceModelFirmware);
-        if (!firmwares.isEmpty()) {
-            LOGGER.info("DeviceModelFirmware is linked to firmware.");
-            throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICEMODELFIRMWARE_FIRMWARE,
-                    ComponentType.WS_CORE, new ExistingEntityException(Firmware.class, firmwares.get(0)
-                            .getDescription()));
+        final List<DeviceFirmware> deviceFirmwares = this.writableDeviceFirmwareRepository
+                .findByFirmware(removedFirmware);
+        if (!deviceFirmwares.isEmpty()) {
+            LOGGER.info("Firmware is linked to firmware.");
+            throw new FunctionalException(FunctionalExceptionType.EXISTING_FIRMWARE_DEVICEFIRMWARE,
+                    ComponentType.WS_CORE, new ExistingEntityException(DeviceFirmware.class, deviceFirmwares.get(0)
+                            .getFirmware().getDescription()));
         }
 
-        // Only remove the file if no other deviceModelfirmware is using it.
-        if (removedDeviceModelFirmware.getDeviceModel().isFileStorage()
-                && this.deviceModelFirmwareRepository.findByDeviceModelAndFilename(
-                        removedDeviceModelFirmware.getDeviceModel(), removedDeviceModelFirmware.getFilename()).size() == 1) {
-            this.removeFirmwareFile(this.createFirmwarePath(removedDeviceModelFirmware.getModelCode(),
-                    removedDeviceModelFirmware.getFilename()));
+        // Only remove the file if no other firmware is using it.
+        if (removedFirmware.getDeviceModel().isFileStorage()
+                && this.firmwareRepository.findByDeviceModelAndFilename(removedFirmware.getDeviceModel(),
+                        removedFirmware.getFilename()).size() == 1) {
+            this.removeFirmwareFile(this.createFirmwarePath(removedFirmware.getDeviceModel().getModelCode(),
+                    removedFirmware.getFilename()));
         }
 
-        this.deviceModelFirmwareRepository.delete(removedDeviceModelFirmware);
+        this.firmwareRepository.delete(removedFirmware);
     }
 
     /**
-     * Returns the firmwares from the Platform
+     * Returns a list of all {@link DeviceFirmware}s in the Platform
      */
-    public List<Firmware> getFirmwares(final String organisationIdentification, final String deviceIdentification)
-            throws FunctionalException {
+    public List<DeviceFirmware> getDeviceFirmwares(final String organisationIdentification,
+            final String deviceIdentification) throws FunctionalException {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
-        this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_DEVICE_MODEL_FIRMWARE);
+        this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_FIRMWARE);
 
         final Device device = this.writableDeviceRepository.findByDeviceIdentification(deviceIdentification);
-        final List<Firmware> firmwares = this.writableFirmwareRepository.findByDevice(device);
 
-        return firmwares;
+        return this.writableDeviceFirmwareRepository.findByDevice(device);
     }
 
     public ResponseMessage dequeueGetFirmwareResponse(final String correlationUid) throws OsgpException {
@@ -628,7 +628,7 @@ public class FirmwareManagementService {
                 md5Hash = "0" + md5Hash;
             }
         } catch (final NoSuchAlgorithmException e) {
-            LOGGER.error("RuntimeException while creating MD5 hash for device model firmware.", e);
+            LOGGER.error("RuntimeException while creating MD5 hash for firmware file.", e);
             throw new RuntimeException(e);
         }
         return md5Hash;
@@ -649,7 +649,7 @@ public class FirmwareManagementService {
             fos.write(file);
         } catch (final IOException e) {
             LOGGER.error("Could not write firmware to system", e);
-            throw new TechnicalException(ComponentType.WS_CORE, "Could not write firmware to system".concat(e
+            throw new TechnicalException(ComponentType.WS_CORE, "Could not write firmware file to system".concat(e
                     .getMessage()));
         }
     }

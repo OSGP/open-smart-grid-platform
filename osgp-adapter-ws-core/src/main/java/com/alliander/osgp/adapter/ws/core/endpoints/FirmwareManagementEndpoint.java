@@ -27,36 +27,36 @@ import com.alliander.osgp.adapter.ws.core.application.services.FirmwareManagemen
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.core.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.common.OsgpResultType;
-import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.AddDeviceModelFirmwareRequest;
-import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.AddDeviceModelFirmwareResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.AddDeviceModelRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.AddDeviceModelResponse;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.AddFirmwareRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.AddFirmwareResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.AddManufacturerRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.AddManufacturerResponse;
-import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.ChangeDeviceModelFirmwareRequest;
-import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.ChangeDeviceModelFirmwareResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.ChangeDeviceModelRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.ChangeDeviceModelResponse;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.ChangeFirmwareRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.ChangeFirmwareResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.ChangeManufacturerRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.ChangeManufacturerResponse;
-import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllDeviceModelFirmwaresRequest;
-import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllDeviceModelFirmwaresResponse;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.DeviceFirmwareHistory;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllDeviceModelsRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllDeviceModelsResponse;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllFirmwaresRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllFirmwaresResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllManufacturersRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllManufacturersResponse;
-import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FirmwareHistory;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FirmwareVersion;
-import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareHistoryRequest;
-import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareHistoryResponse;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetDeviceFirmwareHistoryRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetDeviceFirmwareHistoryResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionResponse;
-import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.RemoveDeviceModelFirmwareRequest;
-import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.RemoveDeviceModelFirmwareResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.RemoveDeviceModelRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.RemoveDeviceModelResponse;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.RemoveFirmwareRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.RemoveFirmwareResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.RemoveManufacturerRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.RemoveManufacturerResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.SwitchFirmwareAsyncRequest;
@@ -68,8 +68,8 @@ import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwa
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareResponse;
 import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.DeviceFirmware;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
-import com.alliander.osgp.domain.core.entities.DeviceModelFirmware;
 import com.alliander.osgp.domain.core.entities.Firmware;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
@@ -95,7 +95,8 @@ public class FirmwareManagementEndpoint {
     private static final ComponentType COMPONENT_WS_CORE = ComponentType.WS_CORE;
     private static final String REMOVE_MANUFACTURER_EXISTING_DEVICEMODEL = "feedback.message.manufacturer.removalnotpermitted.devicemodel";
     private static final String REMOVE_DEVICEMODEL_EXISTING_DEVICE = "feedback.message.devicemodel.removalnotpermitted.device";
-    private static final String REMOVE_DEVICEMODELFIRMWARE_EXISTING_FIRMWARE = "feedback.message.devicemodelfirmware.removalnotpermitted.firmware";
+    private static final String REMOVE_DEVICEMODEL_EXISTING_FIRMWARE = "feedback.message.devicemodel.removalnotpermitted.firmware";
+    private static final String REMOVE_FIRMWARE_EXISTING_FIRMWARE = "feedback.message.firmware.removalnotpermitted.firmware";
 
     private final FirmwareManagementService firmwareManagementService;
     private final FirmwareManagementMapper firmwareManagementMapper;
@@ -488,7 +489,6 @@ public class FirmwareManagementEndpoint {
         LOGGER.info("Removing devicemodel:{}.", request.getDeviceModelId());
         final RemoveDeviceModelResponse removeDeviceModelResponse = new RemoveDeviceModelResponse();
 
-
         try {
             this.firmwareManagementService.removeDeviceModel(organisationIdentification,
                     request.getDeviceManufacturerId(), request.getDeviceModelId());
@@ -498,9 +498,14 @@ public class FirmwareManagementEndpoint {
                     new ValidationException(e.getConstraintViolations()));
         } catch (final FunctionalException e) {
             LOGGER.error("Exception removing deviceModel: {} ", e.getMessage(), e);
-            if (e.getExceptionType().equals(FunctionalExceptionType.EXISTING_DEVICE_DEVICEMODEL)) {
+            if (FunctionalExceptionType.EXISTING_DEVICE_DEVICEMODEL == e.getExceptionType()) {
                 removeDeviceModelResponse.setResult(OsgpResultType.NOT_OK);
                 removeDeviceModelResponse.setDescription(REMOVE_DEVICEMODEL_EXISTING_DEVICE);
+                return removeDeviceModelResponse;
+            }
+            if (FunctionalExceptionType.EXISTING_DEVICEMODEL_FIRMWARE == e.getExceptionType()) {
+                removeDeviceModelResponse.setResult(OsgpResultType.NOT_OK);
+                removeDeviceModelResponse.setDescription(REMOVE_DEVICEMODEL_EXISTING_FIRMWARE);
                 return removeDeviceModelResponse;
             }
             this.handleException(e);
@@ -544,30 +549,29 @@ public class FirmwareManagementEndpoint {
         return changeDeviceModelResponse;
     }
 
-    // === DEVICEMODELFIRMWARES LOGIC ===
+    // === FIRMWARE LOGIC ===
 
-    @PayloadRoot(localPart = "FindAllDeviceModelFirmwaresRequest", namespace = NAMESPACE)
+    @PayloadRoot(localPart = "FindAllFirmwaresRequest", namespace = NAMESPACE)
     @ResponsePayload
-    public FindAllDeviceModelFirmwaresResponse findAllDeviceModelFirmwares(
+    public FindAllFirmwaresResponse findAllFirmwares(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final FindAllDeviceModelFirmwaresRequest request) throws OsgpException {
+            @RequestPayload final FindAllFirmwaresRequest request) throws OsgpException {
 
-        LOGGER.info("Find all DeviceModelFirmwares for organisation {} from manufacturer {} with model code {}.",
+        LOGGER.info("Find all Firmwares for organisation {} from manufacturer {} with model code {}.",
                 organisationIdentification, request.getManufacturer(), request.getModelCode());
 
-        final FindAllDeviceModelFirmwaresResponse response = new FindAllDeviceModelFirmwaresResponse();
+        final FindAllFirmwaresResponse response = new FindAllFirmwaresResponse();
 
         try {
-            final List<DeviceModelFirmware> deviceModelFirmwares = this.firmwareManagementService
-                    .findAllDeviceModelFirmwares(organisationIdentification, request.getManufacturer(),
-                            request.getModelCode());
+            final List<Firmware> firmwares = this.firmwareManagementService.findAllFirmwares(
+                    organisationIdentification, request.getManufacturer(), request.getModelCode());
 
-            response.getDeviceModelFirmwares().addAll(
-                    this.firmwareManagementMapper.mapAsList(deviceModelFirmwares,
-                            com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.DeviceModelFirmware.class));
+            response.getFirmwares().addAll(
+                    this.firmwareManagementMapper.mapAsList(firmwares,
+                            com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.Firmware.class));
 
         } catch (final MethodConstraintViolationException e) {
-            LOGGER.error("Exception find all devicemodelfirmwares {}: ", e);
+            LOGGER.error("Exception find all firmwares {}: ", e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -577,155 +581,148 @@ public class FirmwareManagementEndpoint {
         return response;
     }
 
-    @PayloadRoot(localPart = "AddDeviceModelFirmwareRequest", namespace = NAMESPACE)
+    @PayloadRoot(localPart = "AddFirmwareRequest", namespace = NAMESPACE)
     @ResponsePayload
-    public AddDeviceModelFirmwareResponse addDeviceModelFirmware(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final AddDeviceModelFirmwareRequest request) throws OsgpException {
+    public AddFirmwareResponse addFirmware(@OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final AddFirmwareRequest request) throws OsgpException {
 
-        LOGGER.info("Adding deviceModelFirmware:{}.", request.getDeviceModelFirmware().getFilename());
+        LOGGER.info("Adding firmware:{}.", request.getFirmware().getFilename());
 
         try {
 
-            final FirmwareModuleData firmwareModuleData = new FirmwareModuleData(request.getDeviceModelFirmware()
-                    .getModuleVersionComm(), request.getDeviceModelFirmware().getModuleVersionFunc(), request
-                    .getDeviceModelFirmware().getModuleVersionMa(), request.getDeviceModelFirmware()
-                    .getModuleVersionMbus(), request.getDeviceModelFirmware().getModuleVersionSec());
+            final FirmwareModuleData firmwareModuleData = new FirmwareModuleData(request.getFirmware()
+                    .getModuleVersionComm(), request.getFirmware().getModuleVersionFunc(), request.getFirmware()
+                    .getModuleVersionMa(), request.getFirmware().getModuleVersionMbus(), request.getFirmware()
+                    .getModuleVersionSec());
 
-            this.firmwareManagementService.addDeviceModelFirmware(organisationIdentification, request
-                    .getDeviceModelFirmware().getDescription(), request.getDeviceModelFirmware().getFile(), request
-                    .getDeviceModelFirmware().getFilename(), request.getDeviceModelFirmware().getManufacturer(),
-                    request.getDeviceModelFirmware().getModelCode(), firmwareModuleData, request
-                    .getDeviceModelFirmware().isPushToNewDevices());
+            this.firmwareManagementService.addFirmware(organisationIdentification, request.getFirmware()
+                    .getDescription(), request.getFirmware().getFile(), request.getFirmware().getFilename(), request
+                    .getFirmware().getManufacturer(), request.getFirmware().getModelCode(), firmwareModuleData, request
+                    .getFirmware().isPushToNewDevices());
 
         } catch (final MethodConstraintViolationException e) {
-            LOGGER.error("Exception adding devicemodelfirmware: {} ", e.getMessage(), e);
+            LOGGER.error("Exception adding firmware: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
-            LOGGER.error("Exception: {} while adding devicemodelfirmware: {} for organisation {}",
-                    new Object[] { e.getMessage(), request.getDeviceModelFirmware().getFilename(),
-                    organisationIdentification }, e);
+            LOGGER.error("Exception: {} while adding firmware: {} for organisation {}", new Object[] { e.getMessage(),
+                    request.getFirmware().getFilename(), organisationIdentification }, e);
             this.handleException(e);
         }
 
-        final AddDeviceModelFirmwareResponse addDeviceModelFirmwareResponse = new AddDeviceModelFirmwareResponse();
-        addDeviceModelFirmwareResponse.setResult(OsgpResultType.OK);
+        final AddFirmwareResponse addFirmwareResponse = new AddFirmwareResponse();
+        addFirmwareResponse.setResult(OsgpResultType.OK);
 
-        return addDeviceModelFirmwareResponse;
+        return addFirmwareResponse;
     }
 
-    @PayloadRoot(localPart = "ChangeDeviceModelFirmwareRequest", namespace = NAMESPACE)
+    @PayloadRoot(localPart = "ChangeFirmwareRequest", namespace = NAMESPACE)
     @ResponsePayload
-    public ChangeDeviceModelFirmwareResponse changeDeviceModelFirmware(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final ChangeDeviceModelFirmwareRequest request) throws OsgpException {
+    public ChangeFirmwareResponse changeFirmware(@OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final ChangeFirmwareRequest request) throws OsgpException {
 
-        LOGGER.info("Changing devicemodelfirmware:{}.", request.getDeviceModelFirmware().getFilename());
+        LOGGER.info("Changing firmware:{}.", request.getFirmware().getFilename());
 
-        final FirmwareModuleData firmwareModuleData = new FirmwareModuleData(request.getDeviceModelFirmware()
-                .getModuleVersionComm(), request.getDeviceModelFirmware().getModuleVersionFunc(), request
-                .getDeviceModelFirmware().getModuleVersionMa(),
-                request.getDeviceModelFirmware().getModuleVersionMbus(), request.getDeviceModelFirmware()
+        final FirmwareModuleData firmwareModuleData = new FirmwareModuleData(request.getFirmware()
+                .getModuleVersionComm(), request.getFirmware().getModuleVersionFunc(), request.getFirmware()
+                .getModuleVersionMa(), request.getFirmware().getModuleVersionMbus(), request.getFirmware()
                 .getModuleVersionSec());
 
         try {
-            this.firmwareManagementService.changeDeviceModelFirmware(organisationIdentification, request.getId(),
-                    request.getDeviceModelFirmware().getDescription(), request.getDeviceModelFirmware().getFilename(),
-                    request.getDeviceModelFirmware().getManufacturer(),
-                    request.getDeviceModelFirmware().getModelCode(), firmwareModuleData, request
-                    .getDeviceModelFirmware().isPushToNewDevices());
+            this.firmwareManagementService.changeFirmware(organisationIdentification, request.getId(), request
+                    .getFirmware().getDescription(), request.getFirmware().getFilename(), request.getFirmware()
+                    .getManufacturer(), request.getFirmware().getModelCode(), firmwareModuleData, request.getFirmware()
+                    .isPushToNewDevices());
         } catch (final MethodConstraintViolationException e) {
-            LOGGER.error("Exception Changing devicemodelfirmware: {} ", e.getMessage(), e);
+            LOGGER.error("Exception Changing firmware: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
-            LOGGER.error("Exception: {} while Changing devicemodelfirmware: {} for organisation {}",
-                    new Object[] { e.getMessage(), request.getDeviceModelFirmware().getFilename(),
-                    organisationIdentification }, e);
+            LOGGER.error("Exception: {} while Changing firmware: {} for organisation {}", new Object[] {
+                    e.getMessage(), request.getFirmware().getFilename(), organisationIdentification }, e);
             this.handleException(e);
         }
 
-        final ChangeDeviceModelFirmwareResponse changeDeviceModelFirmwareResponse = new ChangeDeviceModelFirmwareResponse();
-        changeDeviceModelFirmwareResponse.setResult(OsgpResultType.OK);
+        final ChangeFirmwareResponse changeFirmwareResponse = new ChangeFirmwareResponse();
+        changeFirmwareResponse.setResult(OsgpResultType.OK);
 
-        return changeDeviceModelFirmwareResponse;
+        return changeFirmwareResponse;
     }
 
-    @PayloadRoot(localPart = "RemoveDeviceModelFirmwareRequest", namespace = NAMESPACE)
+    @PayloadRoot(localPart = "RemoveFirmwareRequest", namespace = NAMESPACE)
     @ResponsePayload
-    public RemoveDeviceModelFirmwareResponse removedDeviceModelFirmware(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final RemoveDeviceModelFirmwareRequest request) throws OsgpException {
+    public RemoveFirmwareResponse removedFirmware(@OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final RemoveFirmwareRequest request) throws OsgpException {
 
-        LOGGER.info("Removing devicemodelfirmware with id:{}.", request.getId());
-        final RemoveDeviceModelFirmwareResponse removeDeviceModelFirmwareResponse = new RemoveDeviceModelFirmwareResponse();
+        LOGGER.info("Removing firmware with id:{}.", request.getId());
+        final RemoveFirmwareResponse removeFirmwareResponse = new RemoveFirmwareResponse();
 
         try {
-            this.firmwareManagementService.removeDeviceModelFirmware(organisationIdentification, request.getId());
+            this.firmwareManagementService.removeFirmware(organisationIdentification, request.getId());
         } catch (final MethodConstraintViolationException e) {
-            LOGGER.error("Exception removing deviceModelfirmware: {} ", e.getMessage(), e);
+            LOGGER.error("Exception removing firmware: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final FunctionalException e) {
-            LOGGER.error("Exception removing deviceModelfirmware: {} ", e.getMessage(), e);
-            if (e.getExceptionType().equals(FunctionalExceptionType.EXISTING_DEVICEMODELFIRMWARE_FIRMWARE)) {
-                removeDeviceModelFirmwareResponse.setResult(OsgpResultType.NOT_OK);
-                removeDeviceModelFirmwareResponse.setDescription(REMOVE_DEVICEMODELFIRMWARE_EXISTING_FIRMWARE);
-                return removeDeviceModelFirmwareResponse;
+            LOGGER.error("Exception removing firmware: {} ", e.getMessage(), e);
+            if (e.getExceptionType().equals(FunctionalExceptionType.EXISTING_FIRMWARE_DEVICEFIRMWARE)) {
+                removeFirmwareResponse.setResult(OsgpResultType.NOT_OK);
+                removeFirmwareResponse.setDescription(REMOVE_FIRMWARE_EXISTING_FIRMWARE);
+                return removeFirmwareResponse;
             }
             this.handleException(e);
         } catch (final Exception e) {
-            LOGGER.error("Exception: {} while removing deviceModelfirmware: {} for organisation {}",
-                    new Object[] { e.getMessage(), request.getId(), organisationIdentification }, e);
+            LOGGER.error("Exception: {} while removing firmware: {} for organisation {}", new Object[] {
+                    e.getMessage(), request.getId(), organisationIdentification }, e);
             this.handleException(e);
         }
 
-        removeDeviceModelFirmwareResponse.setResult(OsgpResultType.OK);
+        removeFirmwareResponse.setResult(OsgpResultType.OK);
 
-        return removeDeviceModelFirmwareResponse;
+        return removeFirmwareResponse;
     }
 
     // === FIRMWARE HISTORY LOGIC ===
 
-    @PayloadRoot(localPart = "GetFirmwareHistoryRequest", namespace = NAMESPACE)
+    @PayloadRoot(localPart = "GetDeviceFirmwareHistoryRequest", namespace = NAMESPACE)
     @ResponsePayload
-    public GetFirmwareHistoryResponse getFirmwareHistory(
+    public GetDeviceFirmwareHistoryResponse getDeviceFirmwareHistory(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetFirmwareHistoryRequest request) throws OsgpException {
+            @RequestPayload final GetDeviceFirmwareHistoryRequest request) throws OsgpException {
 
         LOGGER.info("Get the firmware history for organisation {} from the device {} .", organisationIdentification,
                 request.getDeviceIdentification());
 
-        final GetFirmwareHistoryResponse response = new GetFirmwareHistoryResponse();
+        final GetDeviceFirmwareHistoryResponse response = new GetDeviceFirmwareHistoryResponse();
 
         try {
 
             final Device device = this.deviceRepository.findByDeviceIdentification(request.getDeviceIdentification());
 
-            final FirmwareHistory output = new FirmwareHistory();
+            final DeviceFirmwareHistory output = new DeviceFirmwareHistory();
             output.setDeviceIdentification(request.getDeviceIdentification());
             output.setDeviceModel(this.firmwareManagementMapper.map(device.getDeviceModel(),
                     com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.DeviceModel.class));
 
-            final List<com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.Firmware> firmwares = new ArrayList<>();
+            final List<com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.DeviceFirmware> deviceFirmwares = new ArrayList<>();
 
-            // Doing this like this, so we don;t have to make a whole custom
-            // mapper, just to null the DeviceModelFirmware's file
-            for (final Firmware firmware : this.firmwareManagementService.getFirmwares(organisationIdentification,
-                    request.getDeviceIdentification())) {
+            // Doing it like this, so we don't have to make a whole custom
+            // mapper, just to null the Firmware's file
+            for (final DeviceFirmware deviceFirmware : this.firmwareManagementService.getDeviceFirmwares(
+                    organisationIdentification, request.getDeviceIdentification())) {
 
-                final com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.Firmware temp = this.firmwareManagementMapper
-                        .map(firmware, com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.Firmware.class);
-                temp.getDeviceModelFirmware().setFile(null);
-                firmwares.add(temp);
+                final com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.DeviceFirmware temp = this.firmwareManagementMapper
+                        .map(deviceFirmware,
+                                com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.DeviceFirmware.class);
+                temp.getFirmware().setFile(null);
+                deviceFirmwares.add(temp);
             }
 
-            output.getFirmwares().addAll(
-                    this.firmwareManagementMapper.mapAsList(firmwares,
-                            com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.Firmware.class));
+            output.getDeviceFirmwares().addAll(
+                    this.firmwareManagementMapper.mapAsList(deviceFirmwares,
+                            com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.DeviceFirmware.class));
 
-            response.setFirmwareHistory(output);
+            response.setDeviceFirmwareHistory(output);
 
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("Exception get firmware history {}: ", e);
