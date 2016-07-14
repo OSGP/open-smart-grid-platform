@@ -15,8 +15,10 @@ import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRe
 import com.alliander.osgp.adapter.ws.infra.specifications.JpaDeviceSpecifications;
 import com.alliander.osgp.adapter.ws.infra.specifications.JpaEventSpecifications;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceAuthorizationRepository;
+import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceFirmwareRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceModelRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceRepository;
+import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableFirmwareRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableManufacturerRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableSsldRepository;
 import com.alliander.osgp.core.db.api.repositories.DeviceDataRepository;
@@ -138,6 +140,16 @@ public class PersistenceConfig {
     @Bean
     public WritableDeviceModelRepository writableDeviceModelRepositoryMock() {
         return mock(WritableDeviceModelRepository.class);
+    }
+
+    @Bean
+    public WritableDeviceFirmwareRepository writableDeviceFirmwareRepositoryyMock() {
+        return mock(WritableDeviceFirmwareRepository.class);
+    }
+
+    @Bean
+    public WritableFirmwareRepository writableFirmwareRepository() {
+        return mock(WritableFirmwareRepository.class);
     }
 
     // OSLP
