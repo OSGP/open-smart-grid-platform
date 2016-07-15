@@ -28,6 +28,7 @@ public class ConfigurationObject extends SmartMetering {
 
     private static final String TEST_SUITE_XML = "SmartmeterAdhoc";
     private static final String TEST_CASE_XML_501 = "501 Retrieve specific configuration object bundle";
+    private static final String TEST_CASE_XML_526 = "526 Retrieve association objectlist bundle";
 
     private static final String TEST_CASE_NAME_REQUEST = "Bundle - Request 1";
     private static final String TEST_CASE_NAME_RESPONSE = "GetBundleResponse - Request 1";
@@ -44,7 +45,7 @@ public class ConfigurationObject extends SmartMetering {
     @When("^a retrieve configuration request for OBIS code (\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+) is received as part of a bundled request$")
     public void aRetrieveConfigurationRequestForOBISCodeIsReceivedAsPartOfABundledRequest(final int obisCodeA,
             final int obisCodeB, final int obisCodeC, final int obisCodeD, final int obisCodeE, final int obisCodeF)
-                    throws Throwable {
+            throws Throwable {
         this.setDeviceAndOrganisationProperties();
         PROPERTIES_MAP.put("ObisCodeA", Integer.toString(obisCodeA));
         PROPERTIES_MAP.put("ObisCodeB", Integer.toString(obisCodeB));
@@ -54,6 +55,12 @@ public class ConfigurationObject extends SmartMetering {
         PROPERTIES_MAP.put("ObisCodeF", Integer.toString(obisCodeF));
 
         this.requestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML_501, TEST_SUITE_XML);
+    }
+
+    @When("^the get associationLnObjects request is received as part of a bundled request$")
+    public void theGetAssociationLnObjectsRequestIsReceivedAsPartOfABundledRequest() throws Throwable {
+        this.setDeviceAndOrganisationProperties();
+        this.requestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML_526, TEST_SUITE_XML);
     }
 
     private void setDeviceAndOrganisationProperties() {
