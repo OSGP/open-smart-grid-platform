@@ -33,6 +33,12 @@ public class Iec61850ChannelHandlerServer extends Iec61850ChannelHandler {
     @Autowired
     private Iec61850Client iec61850Client;
 
+    @Autowired
+    private String testDeviceId;
+
+    @Autowired
+    private String testDeviceIp;
+
     public Iec61850ChannelHandlerServer() {
         super(LOGGER);
     }
@@ -51,9 +57,15 @@ public class Iec61850ChannelHandlerServer extends Iec61850ChannelHandler {
 
         this.logMessage(message);
 
-        final String deviceIdentification = message.getDeviceIdentification();
-        final String deviceType = Ssld.SSLD_TYPE;
-        final String ipAddress = message.getIpAddress();
+        String deviceIdentification = message.getDeviceIdentification();
+        String deviceType = Ssld.SSLD_TYPE;
+        String ipAddress = message.getIpAddress();
+        if (this.testDeviceId != null && this.testDeviceIp != null) {
+            LOGGER.info("Using testDeviceId: {} and testDeviceIp: {}", this.testDeviceId, this.testDeviceIp);
+            deviceIdentification = this.testDeviceId;
+            deviceType = Ssld.SSLD_TYPE;
+            ipAddress = this.testDeviceIp;
+        }
 
         final DeviceRegistrationDataDto deviceRegistrationData = new DeviceRegistrationDataDto(ipAddress, deviceType,
                 true);

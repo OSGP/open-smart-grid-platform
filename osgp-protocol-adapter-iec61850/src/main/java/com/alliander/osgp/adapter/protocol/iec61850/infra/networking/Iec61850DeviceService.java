@@ -1013,9 +1013,9 @@ public class Iec61850DeviceService implements DeviceService {
         configuration.setTimeSyncFrequency(timeSyncFrequency);
         configuration.setAutomaticSummerTimingEnabled(automaticSummerTimingEnabled);
         configuration.setSummerTimeDetails(new DaylightSavingTimeTransition(TIME_ZONE_AMSTERDAM, summerTimeDetails)
-                .getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
+        .getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
         configuration.setWinterTimeDetails(new DaylightSavingTimeTransition(TIME_ZONE_AMSTERDAM, winterTimeDetails)
-                .getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
+        .getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
 
         return configuration;
     }
@@ -1353,7 +1353,7 @@ public class Iec61850DeviceService implements DeviceService {
                         }
 
                         final Integer minimumTimeOn = scheduleNode.getUnsignedShort(SubDataAttribute.MINIMUM_TIME_ON)
-                                .getValue();
+                                .getValue() / 60;
                         if (minimumTimeOn != scheduleEntry.getMinimumLightsOn()) {
                             scheduleNode.writeUnsignedShort(SubDataAttribute.MINIMUM_TIME_ON,
                                     scheduleEntry.getMinimumLightsOn());
