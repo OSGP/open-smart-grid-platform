@@ -292,7 +292,7 @@ public class FirmwareManagementEndpoint {
         } catch (final Exception e) {
             LOGGER.error("Exception: {} while adding manufacturer: {} for organisation {}",
                     new Object[] { e.getMessage(), request.getManufacturer().getManufacturerId(),
-                    organisationIdentification }, e);
+                            organisationIdentification }, e);
             this.handleException(e);
         }
 
@@ -321,7 +321,7 @@ public class FirmwareManagementEndpoint {
         } catch (final Exception e) {
             LOGGER.error("Exception: {} while Changeing manufacturer: {} for organisation {}",
                     new Object[] { e.getMessage(), request.getManufacturer().getManufacturerId(),
-                    organisationIdentification }, e);
+                            organisationIdentification }, e);
             this.handleException(e);
         }
 
@@ -628,7 +628,7 @@ public class FirmwareManagementEndpoint {
         } catch (final Exception e) {
             LOGGER.error("Exception: {} while saving device firmware: {} to device: {} for organisation {}",
                     new Object[] { e.getMessage(), request.getDeviceFirmware().getFirmware().getDescription(),
-                    request.getDeviceFirmware().getDeviceIdentification(), organisationIdentification }, e);
+                            request.getDeviceFirmware().getDeviceIdentification(), organisationIdentification }, e);
             this.handleException(e);
         }
 
@@ -646,11 +646,8 @@ public class FirmwareManagementEndpoint {
         LOGGER.info("Adding firmware:{}.", request.getFirmware().getFilename());
 
         try {
-
-            final FirmwareModuleData firmwareModuleData = new FirmwareModuleData(request.getFirmware()
-                    .getModuleVersionComm(), request.getFirmware().getModuleVersionFunc(), request.getFirmware()
-                    .getModuleVersionMa(), request.getFirmware().getModuleVersionMbus(), request.getFirmware()
-                    .getModuleVersionSec());
+            final FirmwareModuleData firmwareModuleData = this.firmwareManagementMapper.map(request.getFirmware()
+                    .getFirmwareModuleData(), FirmwareModuleData.class);
 
             this.firmwareManagementService.addFirmware(organisationIdentification, request.getFirmware()
                     .getDescription(), request.getFirmware().getFile(), request.getFirmware().getFilename(), request
@@ -680,10 +677,8 @@ public class FirmwareManagementEndpoint {
 
         LOGGER.info("Changing firmware:{}.", request.getFirmware().getFilename());
 
-        final FirmwareModuleData firmwareModuleData = new FirmwareModuleData(request.getFirmware()
-                .getModuleVersionComm(), request.getFirmware().getModuleVersionFunc(), request.getFirmware()
-                .getModuleVersionMa(), request.getFirmware().getModuleVersionMbus(), request.getFirmware()
-                .getModuleVersionSec());
+        final FirmwareModuleData firmwareModuleData = this.firmwareManagementMapper.map(request.getFirmware()
+                .getFirmwareModuleData(), FirmwareModuleData.class);
 
         try {
             this.firmwareManagementService.changeFirmware(organisationIdentification, request.getId(), request

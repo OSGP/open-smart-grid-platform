@@ -455,11 +455,7 @@
             </xsd:simpleType>
          </xsd:element>
          <xsd:element name="PushToNewDevices" type="xsd:boolean" />
-         <xsd:element name="ModuleVersionComm" type="xsd:string" />
-         <xsd:element name="ModuleVersionFunc" type="xsd:string" />
-         <xsd:element name="ModuleVersionMa" type="xsd:string" />
-         <xsd:element name="ModuleVersionMbus" type="xsd:string" />
-         <xsd:element name="ModuleVersionSec" type="xsd:string" />
+         <xsd:element name="FirmwareModuleData" type="tns:FirmwareModuleData" />
          <xsd:element name="File" minOccurs="0" type="xsd:base64Binary"/>
       </xsd:sequence>
    </xsd:complexType>
@@ -484,9 +480,29 @@
 
    <xsd:complexType name="FirmwareVersion">
       <xsd:sequence>
-        <xsd:element name="Type" type="xsd:string"  minOccurs="1" maxOccurs="1"/>
-        <xsd:element name="Version" type="xsd:string" />
+        <xsd:element name="FirmwareModuleType" type="tns:FirmwareModuleType" minOccurs="1" maxOccurs="1"/>
+        <xsd:element name="Version" type="xsd:string" minOccurs="1" maxOccurs="1"/>
       </xsd:sequence>
    </xsd:complexType>
+   
+   <xsd:complexType name="FirmwareModuleData">
+      <xsd:sequence>
+         <xsd:element name="ModuleVersionComm" type="xsd:string" />
+         <xsd:element name="ModuleVersionFunc" type="xsd:string" />
+         <xsd:element name="ModuleVersionMa" type="xsd:string" />
+         <xsd:element name="ModuleVersionMbus" type="xsd:string" />
+         <xsd:element name="ModuleVersionSec" type="xsd:string" />
+      </xsd:sequence>
+   </xsd:complexType>
+
+  <xsd:simpleType name="FirmwareModuleType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="COMMUNICATION" />
+      <xsd:enumeration value="FUNCTIONAL" />
+      <xsd:enumeration value="SECURITY" />
+      <xsd:enumeration value="M_BUS" />
+      <xsd:enumeration value="MODULE_ACTIVE" />
+    </xsd:restriction>
+  </xsd:simpleType>
 
 </xsd:schema>
