@@ -12,15 +12,15 @@ import java.io.Serializable;
 public class FirmwareVersionDto implements Serializable {
     private static final long serialVersionUID = 4842058824665590962L;
 
-    private String type;
+    private FirmwareModuleType type;
     private String version;
 
-    public FirmwareVersionDto(final String type, final String version) {
+    public FirmwareVersionDto(final FirmwareModuleType type, final String version) {
         this.type = type;
         this.version = version;
     }
 
-    public String getType() {
+    public FirmwareModuleType getType() {
         return this.type;
     }
 
