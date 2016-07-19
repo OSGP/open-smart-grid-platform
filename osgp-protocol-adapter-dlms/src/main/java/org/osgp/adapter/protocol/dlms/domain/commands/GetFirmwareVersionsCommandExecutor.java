@@ -19,6 +19,7 @@ import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.dto.valueobjects.FirmwareModuleType;
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
@@ -30,10 +31,6 @@ public class GetFirmwareVersionsCommandExecutor extends AbstractCommandExecutor<
 
     private static final int CLASS_ID = 1;
     private static final int ATTRIBUTE_ID = 2;
-
-    private static final String ACTIVE_FIRMWARE = "ACTIVE_FIRMWARE";
-    private static final String MODULE_ACTIVE_FIRMWARE = "MODULE_ACTIVE_FIRMWARE";
-    private static final String COMMUNICATION_MODULE_ACTIVE_FIRMWARE = "COMMUNICATION_MODULE_ACTIVE_FIRMWARE";
 
     private static final ObisCode OBIS_CODE_ACTIVE_FIRMWARE_VERSION = new ObisCode("1.0.0.2.0.255");
     private static final ObisCode OBIS_CODE_MODULE_ACTIVE_FIRMWARE_VERSION = new ObisCode("1.1.0.2.0.255");
@@ -79,13 +76,15 @@ public class GetFirmwareVersionsCommandExecutor extends AbstractCommandExecutor<
         final List<GetResult> getResultList = this.dlmsHelperService.getAndCheck(conn, device,
                 "retrieve firmware versions", ATTRIBUTE_ADDRESSES);
 
-        resultList.add(new FirmwareVersionDto(ACTIVE_FIRMWARE, this.dlmsHelperService.readString(
-                getResultList.get(INDEX_ACTIVE_FIRMWARE_VERSION).getResultData(), ACTIVE_FIRMWARE)));
-        resultList.add(new FirmwareVersionDto(MODULE_ACTIVE_FIRMWARE, this.dlmsHelperService.readString(getResultList
-                .get(INDEX_MODULE_ACTIVE_FIRMWARE_VERSION).getResultData(), MODULE_ACTIVE_FIRMWARE)));
-        resultList.add(new FirmwareVersionDto(COMMUNICATION_MODULE_ACTIVE_FIRMWARE, this.dlmsHelperService.readString(
+        resultList.add(new FirmwareVersionDto(FirmwareModuleType.ACTIVE_FIRMWARE, this.dlmsHelperService.readString(
+                getResultList.get(INDEX_ACTIVE_FIRMWARE_VERSION).getResultData(),
+                FirmwareModuleType.ACTIVE_FIRMWARE.getDescription())));
+        resultList.add(new FirmwareVersionDto(FirmwareModuleType.MODULE_ACTIVE, this.dlmsHelperService.readString(
+                getResultList.get(INDEX_MODULE_ACTIVE_FIRMWARE_VERSION).getResultData(),
+                FirmwareModuleType.MODULE_ACTIVE.getDescription())));
+        resultList.add(new FirmwareVersionDto(FirmwareModuleType.COMMUNICATION, this.dlmsHelperService.readString(
                 getResultList.get(INDEX_COMMUNICATION_MODULE_ACTIVE_FIRMWARE_VERSION).getResultData(),
-                COMMUNICATION_MODULE_ACTIVE_FIRMWARE)));
+                FirmwareModuleType.COMMUNICATION.getDescription())));
 
         return resultList;
     }
