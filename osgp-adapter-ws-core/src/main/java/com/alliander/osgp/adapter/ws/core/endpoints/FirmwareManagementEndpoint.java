@@ -590,7 +590,6 @@ public class FirmwareManagementEndpoint {
         final FindFirmwareResponse response = new FindFirmwareResponse();
 
         try {
-
             final Firmware firmware = this.firmwareManagementService.findFirmware(organisationIdentification,
                     request.getFirmwareId());
 
@@ -653,7 +652,6 @@ public class FirmwareManagementEndpoint {
                     .getDescription(), request.getFirmware().getFile(), request.getFirmware().getFilename(), request
                     .getFirmware().getManufacturer(), request.getFirmware().getModelCode(), firmwareModuleData, request
                     .getFirmware().isPushToNewDevices());
-
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("Exception adding firmware: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,

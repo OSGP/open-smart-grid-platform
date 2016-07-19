@@ -34,19 +34,16 @@ class FirmwareConverter extends CustomConverter<com.alliander.osgp.domain.core.e
 
         output.setDescription(source.getDescription());
         output.setFilename(source.getFilename());
-
         output.setId(source.getId().intValue());
         output.setModelCode(source.getDeviceModel().getModelCode());
         output.setPushToNewDevices(source.getPushToNewDevices());
 
         final FirmwareModuleData firmwareModuleData = new FirmwareModuleData();
-
         firmwareModuleData.setModuleVersionComm(source.getModuleVersionComm());
         firmwareModuleData.setModuleVersionFunc(source.getModuleVersionFunc());
         firmwareModuleData.setModuleVersionMa(source.getModuleVersionMa());
         firmwareModuleData.setModuleVersionMbus(source.getModuleVersionMbus());
         firmwareModuleData.setModuleVersionSec(source.getModuleVersionSec());
-
         output.setFirmwareModuleData(firmwareModuleData);
 
         final GregorianCalendar gCalendar = new GregorianCalendar();
@@ -56,7 +53,7 @@ class FirmwareConverter extends CustomConverter<com.alliander.osgp.domain.core.e
             output.setCreationTime(DatatypeFactory.newInstance().newXMLGregorianCalendar(gCalendar));
         } catch (final DatatypeConfigurationException e) {
             // This won't happen, so no further action is needed.
-            LOGGER.error("Bad date format in one of theRelay Status dates", e);
+            LOGGER.error("Bad date format in one of Firmare installation dates", e);
         }
 
         return output;

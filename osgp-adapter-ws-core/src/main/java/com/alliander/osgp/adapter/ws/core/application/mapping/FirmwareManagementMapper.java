@@ -32,7 +32,6 @@ public class FirmwareManagementMapper extends ConfigurableMapper {
 
     public FirmwareManagementMapper() {
         // Setting auto init to false, to make sure the repo
-
         super(false);
     }
 
@@ -53,7 +52,7 @@ public class FirmwareManagementMapper extends ConfigurableMapper {
         mapperFactory.registerClassMap(mapperFactory
                 .classMap(com.alliander.osgp.domain.core.entities.DeviceModel.class,
                         com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.DeviceModel.class)
-                .field("manufacturerId.manufacturerId", "manufacturer").byDefault().toClassMap());
+                        .field("manufacturerId.manufacturerId", "manufacturer").byDefault().toClassMap());
 
         mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
     }

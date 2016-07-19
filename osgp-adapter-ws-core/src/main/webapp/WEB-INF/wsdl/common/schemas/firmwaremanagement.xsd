@@ -264,7 +264,7 @@
    <xsd:element name="FindFirmwareResponse">
       <xsd:complexType>
          <xsd:sequence>
-            <xsd:element name="Firmware" type="tns:Firmware"   minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="Firmware" type="tns:Firmware"   minOccurs="0" />
          </xsd:sequence>
       </xsd:complexType>
    </xsd:element>
@@ -471,7 +471,7 @@
    <xsd:complexType name="DeviceFirmware">
       <xsd:sequence>
          <xsd:element name="DeviceIdentification" type="common:Identification" />
-         <xsd:element name="InstallationDate" type="xsd:dateTime" minOccurs="0" maxOccurs="1" />
+         <xsd:element name="InstallationDate" type="xsd:dateTime" minOccurs="0" />
          <xsd:element name="InstalledBy" type="xsd:string" minOccurs="0" />
          <xsd:element name="Active" type="xsd:boolean" />
          <xsd:element name="Firmware" type="tns:Firmware" />
@@ -480,8 +480,8 @@
 
    <xsd:complexType name="FirmwareVersion">
       <xsd:sequence>
-        <xsd:element name="FirmwareModuleType" type="tns:FirmwareModuleType" minOccurs="1" maxOccurs="1"/>
-        <xsd:element name="Version" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+        <xsd:element name="FirmwareModuleType" type="tns:FirmwareModuleType"/>
+        <xsd:element name="Version" type="xsd:string"/>
       </xsd:sequence>
    </xsd:complexType>
    
@@ -501,6 +501,7 @@
       <xsd:enumeration value="FUNCTIONAL" />
       <xsd:enumeration value="SECURITY" />
       <xsd:enumeration value="M_BUS" />
+      <xsd:enumeration value="MODULE_ACTIVE" />
       <xsd:enumeration value="ACTIVE_FIRMWARE" />
     </xsd:restriction>
   </xsd:simpleType>
