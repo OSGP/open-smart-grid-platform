@@ -9,11 +9,12 @@ package com.alliander.osgp.dto.valueobjects;
 
 public enum FirmwareModuleType {
 
-    COMMUNICATION("Communication"),
+    COMMUNICATION("COMMUNICATION_MODULE_ACTIVE_FIRMWARE"),
     FUNCTIONAL("Functional"),
     SECURITY("Security"),
     M_BUS("M-bus"),
-    MODULE_ACTIVE("Module active");
+    MODULE_ACTIVE("MODULE_ACTIVE_FIRMWARE"),
+    ACTIVE_FIRMWARE("ACTIVE_FIRMWARE");
 
     private final String description;
 
