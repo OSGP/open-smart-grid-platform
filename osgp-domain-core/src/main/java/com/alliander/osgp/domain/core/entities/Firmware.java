@@ -83,11 +83,11 @@ public class Firmware extends AbstractEntity {
     }
 
     public void updateFirmwareModuleData(final FirmwareModuleData firmwareModuleData) {
-        this.moduleVersionComm = firmwareModuleData.getComm();
-        this.moduleVersionFunc = firmwareModuleData.getFunc();
-        this.moduleVersionMa = firmwareModuleData.getMa();
-        this.moduleVersionMbus = firmwareModuleData.getMbus();
-        this.moduleVersionSec = firmwareModuleData.getSec();
+        this.moduleVersionComm = firmwareModuleData.getModuleVersionComm();
+        this.moduleVersionFunc = firmwareModuleData.getModuleVersionFunc();
+        this.moduleVersionMa = firmwareModuleData.getModuleVersionMa();
+        this.moduleVersionMbus = firmwareModuleData.getModuleVersionMbus();
+        this.moduleVersionSec = firmwareModuleData.getModuleVersionSec();
     }
 
     public DeviceModel getDeviceModel() {
