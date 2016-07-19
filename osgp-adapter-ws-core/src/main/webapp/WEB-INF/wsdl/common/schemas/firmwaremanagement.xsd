@@ -501,7 +501,7 @@
       <xsd:enumeration value="FUNCTIONAL" />
       <xsd:enumeration value="SECURITY" />
       <xsd:enumeration value="M_BUS" />
-      <xsd:enumeration value="MODULE_ACTIVE" />
+      <xsd:enumeration value="ACTIVE_FIRMWARE" />
     </xsd:restriction>
   </xsd:simpleType>
 
