@@ -19,6 +19,7 @@ import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FirmwareVers
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableFirmwareRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
+import com.alliander.osgp.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
 
 @Component(value = "coreFirmwareManagementMapper")
 public class FirmwareManagementMapper extends ConfigurableMapper {
@@ -30,7 +31,7 @@ public class FirmwareManagementMapper extends ConfigurableMapper {
     private WritableFirmwareRepository firmwareRepository;
 
     public FirmwareManagementMapper() {
-        //Setting auto init to faqlse, to make sure the repo
+        // Setting auto init to false, to make sure the repo
 
         super(false);
     }
@@ -43,6 +44,8 @@ public class FirmwareManagementMapper extends ConfigurableMapper {
     @Override
     public void configure(final MapperFactory mapperFactory) {
 
+        mapperFactory.getConverterFactory().registerConverter(new FirmwareConverter());
+
         mapperFactory.getConverterFactory().registerConverter(
                 new DeviceFirmwareConverter(this.deviceRepository, this.firmwareRepository));
         mapperFactory.classMap(FirmwareVersion.class, FirmwareVersionDto.class).byDefault().register();
@@ -50,7 +53,9 @@ public class FirmwareManagementMapper extends ConfigurableMapper {
         mapperFactory.registerClassMap(mapperFactory
                 .classMap(com.alliander.osgp.domain.core.entities.DeviceModel.class,
                         com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.DeviceModel.class)
-                        .field("manufacturerId.manufacturerId", "manufacturer").byDefault().toClassMap());
+                .field("manufacturerId.manufacturerId", "manufacturer").byDefault().toClassMap());
+
+        mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
     }
 
 }
