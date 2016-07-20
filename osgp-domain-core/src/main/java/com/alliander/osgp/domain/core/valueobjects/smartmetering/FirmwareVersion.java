@@ -25,7 +25,15 @@ public class FirmwareVersion implements Serializable {
         return this.type;
     }
 
+    public void setType(final String type) {
+        this.type = type;
+    }
+
     public String getVersion() {
         return this.version;
+    }
+
+    public void setVersion(final String version) {
+        this.version = version;
     }
 }

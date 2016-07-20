@@ -10,6 +10,8 @@ package com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.alliander.osgp.domain.core.entities.Device;
@@ -21,4 +23,8 @@ public interface WritableDeviceFirmwareRepository extends JpaRepository<DeviceFi
     List<DeviceFirmware> findByDevice(Device device);
 
     List<DeviceFirmware> findByFirmware(Firmware firmware);
+
+    @Modifying
+    @Query("update DeviceFirmware df set df.active = false where df.device = ?1")
+    void updateDeviceFirmwareSetActiveFalseWhereDevice(final Device device);
 }

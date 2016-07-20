@@ -91,6 +91,9 @@ public class FirmwareManagementService {
     @Autowired
     private WritableDeviceRepository deviceRepository;
 
+    @Autowired
+    private WritableDeviceFirmwareRepository deviceFirmwareRepository;
+
     @Resource
     @Qualifier("wsCoreFirmwareManagementFirmwareDirectory")
     private String firmwareDirectory;
@@ -399,6 +402,18 @@ public class FirmwareManagementService {
     }
 
     /**
+     * Returns the {@link Firmware} of the given id, if it exists
+     */
+    public Firmware findFirmware(final String organisationIdentification, final int firmwareId)
+            throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_FIRMWARE);
+
+        return this.firmwareRepository.findOne(Long.valueOf(firmwareId));
+    }
+
+    /**
      * Adds new {@link Firmware} to the platform. Throws exception if
      * {@link Firmware} already exists
      */
@@ -477,6 +492,21 @@ public class FirmwareManagementService {
     }
 
     /**
+     * Links a {@link DeviceFirmware} instance to a {@link Device}, and sets it
+     * as the active one.
+     */
+    @Transactional(value = "writableTransactionManager")
+    public void saveCurrentDeviceFirmware(final DeviceFirmware deviceFirmware) throws Exception {
+
+        // Setting other devicefirmwares for this device on inactive
+        this.deviceFirmwareRepository.updateDeviceFirmwareSetActiveFalseWhereDevice(deviceFirmware.getDevice());
+
+        // Setting active to true, just to be sure and saving it.
+        deviceFirmware.setActive(true);
+        this.deviceFirmwareRepository.save(deviceFirmware);
+    }
+
+    /**
      * Updates a Firmware to the platform. Throws exception if {@link Firmware}
      * doesn't exists.
      */
@@ -505,7 +535,7 @@ public class FirmwareManagementService {
                     new UnknownEntityException(DeviceModel.class, modelCode));
         }
 
-        final Firmware changedFirmware = this.firmwareRepository.findById(Long.valueOf(id));
+        final Firmware changedFirmware = this.firmwareRepository.findOne(Long.valueOf(id));
 
         if (changedFirmware == null) {
             LOGGER.info("Firmware not found.");
@@ -544,7 +574,7 @@ public class FirmwareManagementService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.REMOVE_FIRMWARE);
 
-        final Firmware removedFirmware = this.firmwareRepository.findById(Long.valueOf(firmwareIdentification));
+        final Firmware removedFirmware = this.firmwareRepository.findOne(Long.valueOf(firmwareIdentification));
 
         if (removedFirmware == null) {
             LOGGER.info("Firmware not found.");

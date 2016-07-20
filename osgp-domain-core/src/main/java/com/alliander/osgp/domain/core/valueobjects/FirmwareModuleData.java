@@ -13,39 +13,39 @@ public class FirmwareModuleData implements Serializable {
 
     private static final long serialVersionUID = 3479817852183883103L;
 
-    private final String comm;
-    private final String func;
-    private final String ma;
-    private final String mbus;
-    private final String sec;
+    private final String moduleVersionComm;
+    private final String moduleVersionFunc;
+    private final String moduleVersionMa;
+    private final String moduleVersionMbus;
+    private final String moduleVersionSec;
 
-    public FirmwareModuleData(final String comm, final String func, final String ma, final String mbus,
-            final String sec) {
-        this.comm = comm;
-        this.func = func;
-        this.ma = ma;
-        this.mbus = mbus;
-        this.sec = sec;
+    public FirmwareModuleData(final String moduleVersionComm, final String moduleVersionFunc,
+            final String moduleVersionMa, final String moduleVersionMbus, final String moduleVersionSec) {
+        this.moduleVersionComm = moduleVersionComm;
+        this.moduleVersionFunc = moduleVersionFunc;
+        this.moduleVersionMa = moduleVersionMa;
+        this.moduleVersionMbus = moduleVersionMbus;
+        this.moduleVersionSec = moduleVersionSec;
     }
 
-    public String getComm() {
-        return this.comm;
+    public String getModuleVersionComm() {
+        return this.moduleVersionComm;
     }
 
-    public String getFunc() {
-        return this.func;
+    public String getModuleVersionFunc() {
+        return this.moduleVersionFunc;
     }
 
-    public String getMa() {
-        return this.ma;
+    public String getModuleVersionMa() {
+        return this.moduleVersionMa;
     }
 
-    public String getMbus() {
-        return this.mbus;
+    public String getModuleVersionMbus() {
+        return this.moduleVersionMbus;
     }
 
-    public String getSec() {
-        return this.sec;
+    public String getModuleVersionSec() {
+        return this.moduleVersionSec;
     }
 
 }
