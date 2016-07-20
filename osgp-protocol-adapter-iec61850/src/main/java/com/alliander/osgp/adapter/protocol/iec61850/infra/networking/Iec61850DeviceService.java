@@ -71,6 +71,7 @@ import com.alliander.osgp.dto.valueobjects.DaliConfigurationDto;
 import com.alliander.osgp.dto.valueobjects.DeviceFixedIpDto;
 import com.alliander.osgp.dto.valueobjects.DeviceStatusDto;
 import com.alliander.osgp.dto.valueobjects.EventNotificationTypeDto;
+import com.alliander.osgp.dto.valueobjects.FirmwareModuleType;
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 import com.alliander.osgp.dto.valueobjects.HistoryTermTypeDto;
 import com.alliander.osgp.dto.valueobjects.LightTypeDto;
@@ -124,11 +125,6 @@ public class Iec61850DeviceService implements DeviceService {
     private static final int DEFAULT_SCHEDULE_VALUE = -1;
     // The number of schedule entries available for a relay.
     private static final int MAX_NUMBER_OF_SCHEDULE_ENTRIES = 64;
-
-    // Used to keep the firmware version apart in the FirmwareVersionDto objects
-    // of getFirmwareVersion
-    private static final String FUNCTIONAL_FIRMWARE_TYPE_DESCRIPTION = "Functional firmware version";
-    private static final String SECURITY_FIRMWARE_TYPE_DESCRIPTION = "Security firmware version";
 
     private static final int SWITCH_TYPE_TARIFF = 0;
     private static final int SWITCH_TYPE_LIGHT = 1;
@@ -1395,8 +1391,7 @@ public class Iec61850DeviceService implements DeviceService {
         final String functionalFirmwareVersion = functionalFirmwareNode.getString(SubDataAttribute.CURRENT_VERSION);
 
         // Adding it to the list
-        output.add(new FirmwareVersionDto(Iec61850DeviceService.FUNCTIONAL_FIRMWARE_TYPE_DESCRIPTION,
-                functionalFirmwareVersion));
+        output.add(new FirmwareVersionDto(FirmwareModuleType.FUNCTIONAL, functionalFirmwareVersion));
 
         // Getting the security firmware version
         LOGGER.info("Reading the security firmware version");
@@ -1407,8 +1402,7 @@ public class Iec61850DeviceService implements DeviceService {
         final String securityFirmwareVersion = securityFirmwareNode.getString(SubDataAttribute.CURRENT_VERSION);
 
         // Adding it to the list
-        output.add(new FirmwareVersionDto(Iec61850DeviceService.SECURITY_FIRMWARE_TYPE_DESCRIPTION,
-                securityFirmwareVersion));
+        output.add(new FirmwareVersionDto(FirmwareModuleType.SECURITY, securityFirmwareVersion));
 
         return output;
     }
