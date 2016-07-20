@@ -173,6 +173,11 @@ public class Constants {
     public static final String RETRY_COUNT = "RetryCount";
 
     /**
+     * JMS constant for message field: RetryCount.
+     */
+    public static final String INNER_RETRY_COUNT = "InnerRetryCount";
+
+    /**
      * JMS constant for message field: MaxRetries.
      */
     public static final String MAX_RETRIES = "MaxRetries";
