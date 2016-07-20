@@ -66,6 +66,7 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.DeviceInMaintenanceFilterType;
 import com.alliander.osgp.domain.core.valueobjects.EventNotificationMessageDataContainer;
 import com.alliander.osgp.domain.core.valueobjects.EventNotificationType;
+import com.alliander.osgp.domain.core.valueobjects.EventType;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunction;
 import com.alliander.osgp.logging.domain.entities.DeviceLogItem;
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
@@ -184,7 +185,7 @@ public class DeviceManagementService {
     @Transactional(value = "transactionManager")
     public Page<Event> findEvents(@Identification final String organisationIdentification,
             final String deviceIdentification, final Integer pageSize, final Integer pageNumber, final DateTime from,
-            final DateTime until) throws FunctionalException {
+            final DateTime until, final List<EventType> eventTypes) throws FunctionalException {
 
         LOGGER.debug("findEvents called for organisation {} and device {}", organisationIdentification,
                 deviceIdentification);
@@ -214,6 +215,10 @@ public class DeviceManagementService {
 
             if (until != null) {
                 specifications = specifications.and(this.eventSpecifications.isCreatedBefore(until.toDate()));
+            }
+
+            if (eventTypes != null && !eventTypes.isEmpty()) {
+                specifications = specifications.and(this.eventSpecifications.hasEventTypes(eventTypes));
             }
         } catch (final ArgumentNullOrEmptyException e) {
             throw new FunctionalException(FunctionalExceptionType.ARGUMENT_NULL, ComponentType.WS_CORE, e);
