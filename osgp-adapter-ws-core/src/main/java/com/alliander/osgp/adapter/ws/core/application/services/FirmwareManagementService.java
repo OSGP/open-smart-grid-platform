@@ -335,6 +335,13 @@ public class FirmwareManagementService {
                         ComponentType.WS_CORE, new ExistingEntityException(Device.class, devices.get(0)
                                 .getDeviceIdentification()));
             }
+            final List<Firmware> firmwares = this.firmwareRepository.findByDeviceModel(removedDeviceModel);
+            if (!firmwares.isEmpty()) {
+                LOGGER.info("DeviceModel is linked to a firmware.");
+                throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICEMODEL_FIRMWARE,
+                        ComponentType.WS_CORE, new ExistingEntityException(Firmware.class, firmwares.get(0)
+                                .getFilename()));
+            }
             this.deviceModelRepository.delete(removedDeviceModel);
         }
     }
