@@ -49,6 +49,7 @@ import com.alliander.osgp.adapter.ws.core.application.services.FirmwareManagemen
 import com.alliander.osgp.adapter.ws.core.endpoints.FirmwareManagementEndpoint;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
 import com.alliander.osgp.adapter.ws.schema.core.common.AsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FirmwareModuleType;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FirmwareVersion;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionAsyncResponse;
@@ -196,7 +197,7 @@ public class GetFirmwareVersionSteps {
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.FIRMWARE).build());
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
-                .thenReturn(authorizations);
+        .thenReturn(authorizations);
 
         final List<DeviceFunction> deviceFunctions = new ArrayList<>();
         deviceFunctions.add(DeviceFunction.GET_FIRMWARE_VERSION);
@@ -269,7 +270,7 @@ public class GetFirmwareVersionSteps {
                 } else {
                     final List<FirmwareVersion> firmwareVersions = new ArrayList<FirmwareVersion>();
                     final FirmwareVersion fw = new FirmwareVersion();
-                    fw.setType("Firmware");
+                    fw.setFirmwareModuleType(FirmwareModuleType.FUNCTIONAL);
                     fw.setVersion(firmwareversion);
                     firmwareVersions.add(fw);
                     dataObject = (Serializable) firmwareVersions;
