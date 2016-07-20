@@ -183,8 +183,10 @@ public class Iec61850Client {
     public void disableRegistration(final String deviceIdentification, final InetAddress ipAddress)
             throws ProtocolAdapterException {
         final Iec61850ClientAssociation iec61850ClientAssociation;
+        final ServerModel serverModel;
         try {
             iec61850ClientAssociation = this.connect(deviceIdentification, ipAddress);
+            serverModel = this.readServerModelFromDevice(iec61850ClientAssociation.getClientAssociation());
         } catch (final ServiceError e) {
             throw new ProtocolAdapterException("Unexpected error connecting to device to disable registration.", e);
         }
@@ -197,7 +199,7 @@ public class Iec61850Client {
             @Override
             public Void apply() throws Exception {
                 final DeviceConnection deviceConnection = new DeviceConnection(new Iec61850Connection(
-                        iec61850ClientAssociation, null), deviceIdentification);
+                        iec61850ClientAssociation, serverModel), deviceIdentification);
                 final NodeContainer deviceRegistration = deviceConnection.getFcModelNode(
                         LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.REGISTRATION, Fc.CF);
                 deviceRegistration.writeBoolean(SubDataAttribute.DEVICE_REGISTRATION_ENABLED, false);

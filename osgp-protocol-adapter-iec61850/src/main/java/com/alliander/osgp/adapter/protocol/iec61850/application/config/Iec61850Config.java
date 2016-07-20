@@ -138,4 +138,18 @@ public class Iec61850Config {
     public Iec61850ChannelHandlerServer iec61850ChannelHandlerServer() {
         return new Iec61850ChannelHandlerServer();
     }
+
+    @Bean
+    public String testDeviceId() {
+        final String testDeviceId = this.environment.getProperty("test.device.id");
+        LOGGER.info("testDeviceId: {}", testDeviceId);
+        return testDeviceId;
+    }
+
+    @Bean
+    public String testDeviceIp() {
+        final String testDeviceIp = this.environment.getProperty("test.device.ip");
+        LOGGER.info("testDeviceIp: {}", testDeviceIp);
+        return testDeviceIp;
+    }
 }
