@@ -249,7 +249,8 @@ public class Iec61850DeviceService implements DeviceService {
                     if (deviceOutputSetting != null) {
 
                         // You can only switch LIGHT relays that are used
-                        this.checkRelay(deviceOutputSetting.getRelayType(), RelayType.LIGHT);
+                        this.checkRelay(deviceOutputSetting.getRelayType(), RelayType.LIGHT,
+                                deviceOutputSetting.getInternalId());
 
                         this.switchLightRelay(
                                 deviceOutputSetting.getInternalId(),
@@ -1349,10 +1350,10 @@ public class Iec61850DeviceService implements DeviceService {
                         }
 
                         final Integer minimumTimeOn = scheduleNode.getUnsignedShort(SubDataAttribute.MINIMUM_TIME_ON)
-                                .getValue() / 60;
-                        if (minimumTimeOn != scheduleEntry.getMinimumLightsOn()) {
-                            scheduleNode.writeUnsignedShort(SubDataAttribute.MINIMUM_TIME_ON,
-                                    scheduleEntry.getMinimumLightsOn());
+                                .getValue();
+                        final Integer newMinimumTimeOn = scheduleEntry.getMinimumLightsOn() / 60;
+                        if (minimumTimeOn != newMinimumTimeOn) {
+                            scheduleNode.writeUnsignedShort(SubDataAttribute.MINIMUM_TIME_ON, newMinimumTimeOn);
                         }
 
                         final Integer triggerMinutesBefore = scheduleNode.getUnsignedShort(
@@ -1565,12 +1566,15 @@ public class Iec61850DeviceService implements DeviceService {
      * Checks to see if the relay has the correct type, throws an exception when
      * that't not the case
      */
-    private void checkRelay(final RelayType actual, final RelayType expected) throws FunctionalException {
+    private void checkRelay(final RelayType actual, final RelayType expected, final Integer internalAddress)
+            throws FunctionalException {
         if (!actual.equals(expected)) {
             if (RelayType.LIGHT.equals(expected)) {
+                LOGGER.error("Relay with internal address: {} is not configured as light relay", internalAddress);
                 throw new FunctionalException(FunctionalExceptionType.ACTION_NOT_ALLOWED_FOR_LIGHT_RELAY,
                         ComponentType.PROTOCOL_IEC61850);
             } else {
+                LOGGER.error("Relay with internal address: {} is not configured as tariff relay", internalAddress);
                 throw new FunctionalException(FunctionalExceptionType.ACTION_NOT_ALLOWED_FOR_TARIFF_RELAY,
                         ComponentType.PROTOCOL_IEC61850);
             }
@@ -1706,7 +1710,8 @@ public class Iec61850DeviceService implements DeviceService {
                         // First time we come across this relay, checking its
                         // type
                         Iec61850DeviceService.this.checkRelay(Iec61850DeviceService.this.ssldDataService
-                                .getDeviceOutputSettingForInternalIndex(ssld, internalIndex).getRelayType(), relayType);
+                                .getDeviceOutputSettingForInternalIndex(ssld, internalIndex).getRelayType(), relayType,
+                                internalIndex);
 
                         // Adding it to scheduleEntries
                         final List<ScheduleEntry> scheduleEntries = new ArrayList<>();
