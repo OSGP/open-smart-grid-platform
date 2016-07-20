@@ -189,8 +189,8 @@
 
     <!-- Netty -->
     <dependency>
-        <groupId>io.netty</groupId>
-        <artifactId>netty</artifactId>
+      <groupId>io.netty</groupId>
+      <artifactId>netty</artifactId>
     </dependency>
 
     <!-- Apache ActiveMQ -->
