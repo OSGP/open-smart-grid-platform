@@ -1674,6 +1674,13 @@ public class OslpDeviceService implements DeviceService {
         deviceResponseHandler.handleResponse(deviceResponse);
 
         if (status.equals(DeviceMessageStatus.OK)) {
+            // Wait a second to prevent timing issues when connecting to the
+            // device for a second time.
+            try {
+                Thread.sleep(1000);
+            } catch (final InterruptedException e) {
+                LOGGER.error("InterruptedException", e);
+            }
             // Execute a ResumeSchedule call with 'immediate = false' and 'index
             // = 0' as arguments.
             final ResumeScheduleMessageDataContainerDto resumeScheduleMessageDataContainer = new ResumeScheduleMessageDataContainerDto(
