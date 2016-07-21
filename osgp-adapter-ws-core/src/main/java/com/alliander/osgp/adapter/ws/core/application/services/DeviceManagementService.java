@@ -39,7 +39,6 @@ import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.Writ
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableSsldRepository;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
-import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Ean;
 import com.alliander.osgp.domain.core.entities.Event;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
@@ -163,7 +162,7 @@ public class DeviceManagementService {
     @Transactional(value = "readableTransactionManager")
     public Page<DeviceLogItem> findDeviceMessages(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Min(value = 0) final int pageNumber)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.debug("findOslpMessage called with organisation {}, device {} and pagenumber {}", new Object[] {
                 organisationIdentification, deviceIdentification, pageNumber });
@@ -242,11 +241,12 @@ public class DeviceManagementService {
      * @return A page with devices
      *
      * @throws FunctionalException
-     * @throws ArgumentNullOrEmptyException 
+     * @throws ArgumentNullOrEmptyException
      */
     @Transactional(value = "transactionManager")
     public Page<Device> findDevices(@Identification final String organisationIdentification, final Integer pageSize,
-            final Integer pageNumber, final DeviceFilter deviceFilter) throws FunctionalException, ArgumentNullOrEmptyException {
+            final Integer pageNumber, final DeviceFilter deviceFilter) throws FunctionalException,
+            ArgumentNullOrEmptyException {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.FIND_DEVICES);
         this.pagingSettings.updatePagingSettings(pageSize, pageNumber);
@@ -269,7 +269,7 @@ public class DeviceManagementService {
             if (deviceFilter == null) {
                 final DeviceFilter df = new DeviceFilter(organisationIdentification, null, null, null, null, null,
                         null, null, DeviceExternalManagedFilterType.BOTH, DeviceActivatedFilterType.BOTH,
-                        DeviceInMaintenanceFilterType.BOTH, null, null, false, null, null, null, null);
+                        DeviceInMaintenanceFilterType.BOTH, null, null, false, null, null, null, null, null, null);
                 devices = this.applyFilter(df, organisation, request);
             } else {
                 deviceFilter.updateOrganisationIdentification(organisationIdentification);
@@ -357,8 +357,8 @@ public class DeviceManagementService {
                     specifications = specifications.and(this.deviceSpecifications.hasTechnicalInstallationDate());
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getOwner())) {
-                    specifications = specifications.and(this.deviceSpecifications.forOwner(deviceFilter
-                            .getOwner() + "%"));
+                    specifications = specifications.and(this.deviceSpecifications.forOwner(deviceFilter.getOwner()
+                            + "%"));
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getDeviceType())) {
                     specifications = specifications.and(this.deviceSpecifications.forDeviceType(deviceFilter
@@ -369,13 +369,19 @@ public class DeviceManagementService {
                             .getModel() + "%"));
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getManufacturer())) {
-                    final Manufacturer manufacturer = this.firmwareManagementService.findManufacturer(deviceFilter.getManufacturer());
+                    final Manufacturer manufacturer = this.firmwareManagementService.findManufacturer(deviceFilter
+                            .getManufacturer());
                     specifications = specifications.and(this.deviceSpecifications.forManufacturer(manufacturer));
+                }
+                if (!StringUtils.isEmpty(deviceFilter.getFirmwareModuleVersion())) {
+                    specifications = specifications.and(this.deviceSpecifications.forFirmwareModuleVersion(
+                            deviceFilter.getFirmwareModuleType(), deviceFilter.getFirmwareModuleVersion() + "%"));
                 }
                 devices = this.deviceRepository.findAll(specifications, request);
             } else {
                 if (organisation != null) {
-                    Specifications<Device> specifications = where(this.deviceSpecifications.forOrganisation(organisation));
+                    final Specifications<Device> specifications = where(this.deviceSpecifications
+                            .forOrganisation(organisation));
                     devices = this.deviceRepository.findAll(specifications, request);
                 } else {
                     devices = this.deviceRepository.findAll(request);
@@ -394,7 +400,7 @@ public class DeviceManagementService {
     @Transactional(value = "transactionManager")
     public String enqueueSetEventNotificationsRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final List<EventNotificationType> eventNotifications)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);

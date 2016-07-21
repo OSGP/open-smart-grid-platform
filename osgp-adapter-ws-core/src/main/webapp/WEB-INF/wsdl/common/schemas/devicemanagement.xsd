@@ -322,9 +322,21 @@
       <xsd:element name="SortedBy" type="xsd:string" minOccurs="0" />
       <xsd:element name="HasTechnicalInstallation" type="xsd:boolean" />
       <xsd:element name="Owner" type="xsd:string" minOccurs="0" />
+      <xsd:element name="FirmwareModuleType" type="tns:FirmwareModuleFilterType" minOccurs="0" />
       <xsd:element name="FirmwareModuleVersion" type="xsd:string" minOccurs="0" />
     </xsd:sequence>
   </xsd:complexType>
+
+  <xsd:simpleType name="FirmwareModuleFilterType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="COMMUNICATION" />
+      <xsd:enumeration value="FUNCTIONAL" />
+      <xsd:enumeration value="SECURITY" />
+      <xsd:enumeration value="M_BUS" />
+      <xsd:enumeration value="MODULE_ACTIVE" />
+      <xsd:enumeration value="ACTIVE_FIRMWARE" />
+    </xsd:restriction>
+  </xsd:simpleType>
 
   <xsd:simpleType name="DeviceExternalManagedFilterType">
     <xsd:restriction base="xsd:string">

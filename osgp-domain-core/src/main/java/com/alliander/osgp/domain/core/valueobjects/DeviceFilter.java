@@ -27,6 +27,8 @@ public class DeviceFilter {
     private String deviceType;
     private String manufacturer;
     private String model;
+    private FirmwareModuleFilterType firmwareModuleType;
+    private String firmwareModuleVersion;
 
     public DeviceFilter() {
         // Default constructor.
@@ -37,7 +39,8 @@ public class DeviceFilter {
             final String municipality, final DeviceExternalManagedFilterType deviceExternalManaged,
             final DeviceActivatedFilterType deviceActivated, final DeviceInMaintenanceFilterType deviceInMaintenance,
             final String sortDir, final String sortedBy, final boolean hasTechnicalInstallation, final String owner,
-            final String deviceType, final String manufacturer, final String model) {
+            final String deviceType, final String manufacturer, final String model,
+            final FirmwareModuleFilterType firmwareModuleType, final String firmwareModuleVersion) {
         this.organisationIdentification = organisationIdentification;
         this.deviceIdentification = deviceIdentification;
         this.alias = alias;
@@ -56,6 +59,8 @@ public class DeviceFilter {
         this.deviceType = deviceType;
         this.manufacturer = manufacturer;
         this.model = model;
+        this.firmwareModuleType = firmwareModuleType;
+        this.firmwareModuleVersion = firmwareModuleVersion;
     }
 
     public String getOrganisationIdentification() {
@@ -127,34 +132,50 @@ public class DeviceFilter {
     }
 
     public String getOwner() {
-        return owner;
+        return this.owner;
     }
 
-    public void setOwner(String owner) {
+    public void setOwner(final String owner) {
         this.owner = owner;
     }
 
     public String getDeviceType() {
-        return deviceType;
+        return this.deviceType;
     }
 
-    public void setDeviceType(String deviceType) {
+    public void setDeviceType(final String deviceType) {
         this.deviceType = deviceType;
     }
 
     public String getManufacturer() {
-        return manufacturer;
+        return this.manufacturer;
     }
 
-    public void setManufacturer(String manufacturer) {
+    public void setManufacturer(final String manufacturer) {
         this.manufacturer = manufacturer;
     }
 
     public String getModel() {
-        return model;
+        return this.model;
     }
 
-    public void setModel(String model) {
+    public void setModel(final String model) {
         this.model = model;
+    }
+
+    public FirmwareModuleFilterType getFirmwareModuleType() {
+        return this.firmwareModuleType;
+    }
+
+    public void setFirmwareModuleType(final FirmwareModuleFilterType firmwareModuleType) {
+        this.firmwareModuleType = firmwareModuleType;
+    }
+
+    public String getFirmwareModuleVersion() {
+        return this.firmwareModuleVersion;
+    }
+
+    public void setFirmwareModuleVersion(final String firmwareModuleVersion) {
+        this.firmwareModuleVersion = firmwareModuleVersion;
     }
 }
