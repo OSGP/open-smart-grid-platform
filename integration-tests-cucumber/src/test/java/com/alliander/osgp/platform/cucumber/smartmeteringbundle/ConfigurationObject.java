@@ -54,7 +54,13 @@ public class ConfigurationObject extends SmartMetering {
         PROPERTIES_MAP.put("ObisCodeE", Integer.toString(obisCodeE));
         PROPERTIES_MAP.put("ObisCodeF", Integer.toString(obisCodeF));
 
-        this.RequestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML_501, TEST_SUITE_XML);
+        this.requestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML_501, TEST_SUITE_XML);
+    }
+
+    @When("^the get associationLnObjects request is received as part of a bundled request$")
+    public void theGetAssociationLnObjectsRequestIsReceivedAsPartOfABundledRequest() throws Throwable {
+        this.setDeviceAndOrganisationProperties();
+        this.requestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML_526, TEST_SUITE_XML);
     }
 
     private void setDeviceAndOrganisationProperties() {
@@ -62,16 +68,10 @@ public class ConfigurationObject extends SmartMetering {
         PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, this.organisationId.getOrganisationId());
     }
 
-    @When("^the get associationLnObjects request is received as part of a bundled request$")
-    public void theGetAssociationLnObjectsRequestIsReceivedAsPartOfABundledRequest() throws Throwable {
-        this.setDeviceAndOrganisationProperties();
-        this.RequestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML_526, TEST_SUITE_XML);
-    }
-
     @Then("^\"([^\"]*)\" is part of the response$")
     public void isPartOfTheResponse(final String responsePart) throws Throwable {
         PROPERTIES_MAP.put(CORRELATION_UID_LABEL, this.correlationUid);
-        this.ResponseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
+        this.responseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
         assertTrue(this.response.contains(responsePart));
     }
 
