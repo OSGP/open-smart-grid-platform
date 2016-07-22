@@ -493,11 +493,11 @@
    
    <xsd:complexType name="FirmwareModuleData">
       <xsd:sequence>
-         <xsd:element name="ModuleVersionComm" type="xsd:string" />
-         <xsd:element name="ModuleVersionFunc" type="xsd:string" />
-         <xsd:element name="ModuleVersionMa" type="xsd:string" />
-         <xsd:element name="ModuleVersionMbus" type="xsd:string" />
-         <xsd:element name="ModuleVersionSec" type="xsd:string" />
+         <xsd:element name="ModuleVersionComm" type="xsd:string" minOccurs="0" />
+         <xsd:element name="ModuleVersionFunc" type="xsd:string" minOccurs="0" />
+         <xsd:element name="ModuleVersionMa" type="xsd:string" minOccurs="0" />
+         <xsd:element name="ModuleVersionMbus" type="xsd:string" minOccurs="0" />
+         <xsd:element name="ModuleVersionSec" type="xsd:string" minOccurs="0" />
       </xsd:sequence>
    </xsd:complexType>
 
