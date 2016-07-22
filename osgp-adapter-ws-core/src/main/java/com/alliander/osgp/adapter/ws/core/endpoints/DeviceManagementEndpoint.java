@@ -61,6 +61,7 @@ import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.valueobjects.Certification;
 import com.alliander.osgp.domain.core.valueobjects.EventNotificationType;
+import com.alliander.osgp.domain.core.valueobjects.EventType;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -208,7 +209,8 @@ public class DeviceManagementEndpoint {
             // Get all events matching the request.
             final Page<com.alliander.osgp.domain.core.entities.Event> result = this.deviceManagementService.findEvents(
                     organisationIdentification, request.getDeviceIdentification(), request.getPageSize(),
-                    request.getPage(), from, until);
+                    request.getPage(), from, until,
+                    this.deviceManagementMapper.mapAsList(request.getEventTypes(), EventType.class));
 
             response.getEvents().addAll(this.deviceManagementMapper.mapAsList(result.getContent(), Event.class));
             response.setPage(new com.alliander.osgp.adapter.ws.schema.core.common.Page());

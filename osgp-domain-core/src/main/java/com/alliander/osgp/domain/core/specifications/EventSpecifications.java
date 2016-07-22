@@ -8,6 +8,7 @@
 package com.alliander.osgp.domain.core.specifications;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.jpa.domain.Specification;
 
@@ -15,6 +16,7 @@ import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.Event;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.exceptions.ArgumentNullOrEmptyException;
+import com.alliander.osgp.domain.core.valueobjects.EventType;
 
 public interface EventSpecifications {
     Specification<Event> isCreatedAfter(final Date dateFrom) throws ArgumentNullOrEmptyException;
@@ -24,4 +26,7 @@ public interface EventSpecifications {
     Specification<Event> isFromDevice(final Device device) throws ArgumentNullOrEmptyException;
 
     Specification<Event> isAuthorized(final Organisation organisation) throws ArgumentNullOrEmptyException;
+
+    Specification<Event> hasEventTypes(final List<EventType> eventTypes) throws ArgumentNullOrEmptyException;
+
 }
