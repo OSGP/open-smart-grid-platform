@@ -352,8 +352,10 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
                 final Subquery<Long> subquery = query.subquery(Long.class);
                 final Root<DeviceFirmware> deviceFirmwareRoot = subquery.from(DeviceFirmware.class);
                 subquery.select(deviceFirmwareRoot.get("device").get("id").as(Long.class));
-                subquery.where(cb.like(cb.upper(deviceFirmwareRoot.get("firmware").<String> get(moduleFieldName)),
-                        firmwareModuleVersion.toUpperCase()));
+                subquery.where(cb.and(
+                        cb.like(cb.upper(deviceFirmwareRoot.get("firmware").<String> get(moduleFieldName)),
+                                firmwareModuleVersion.toUpperCase()), 
+                        cb.equal(deviceFirmwareRoot.<Boolean> get("active"), true)));
                 return cb.in(deviceRoot.get("id").as(Long.class)).value(subquery);
             }
         };
