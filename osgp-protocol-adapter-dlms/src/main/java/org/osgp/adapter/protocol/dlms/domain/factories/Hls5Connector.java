@@ -13,9 +13,9 @@ import java.net.UnknownHostException;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
-import org.openmuc.jdlms.Authentication;
-import org.openmuc.jdlms.Authentication.CryptographicAlgorithm;
 import org.openmuc.jdlms.DlmsConnection;
+import org.openmuc.jdlms.SecuritySuite;
+import org.openmuc.jdlms.SecuritySuite.EncryptionMechanism;
 import org.openmuc.jdlms.TcpConnectionBuilder;
 import org.osgp.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -140,12 +140,13 @@ public class Hls5Connector {
         final byte[] decryptedAuthentication = this.encryptionService.decrypt(authenticationKey);
         final byte[] decryptedEncryption = this.encryptionService.decrypt(encryptionKey);
 
-        final Authentication auth = Authentication.newGmacAuthentication(decryptedAuthentication, decryptedEncryption,
-                CryptographicAlgorithm.AES_GMC_128);
+        final SecuritySuite securitySuite = SecuritySuite.builder().setAuthenticationKey(decryptedAuthentication)
+                .setGlobalUnicastEncryptionKey(decryptedEncryption)
+                .setEncryptionMechanism(EncryptionMechanism.AES_GMC_128).build();
 
         // Setup connection to device
         final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(InetAddress.getByName(this.device
-                .getIpAddress())).setAuthentication(auth).setResponseTimeout(this.responseTimeout)
+                .getIpAddress())).setSecuritySuite(securitySuite).setResponseTimeout(this.responseTimeout)
                 .setLogicalDeviceId(this.logicalDeviceAddress).setClientId(this.clientAccessPoint);
 
         this.setOptionalValues(tcpConnectionBuilder);
@@ -155,7 +156,7 @@ public class Hls5Connector {
             tcpConnectionBuilder.setChallengeLength(challengeLength);
         }
 
-        return tcpConnectionBuilder.buildLnConnection();
+        return tcpConnectionBuilder.build();
     }
 
     private void setOptionalValues(final TcpConnectionBuilder tcpConnectionBuilder) {

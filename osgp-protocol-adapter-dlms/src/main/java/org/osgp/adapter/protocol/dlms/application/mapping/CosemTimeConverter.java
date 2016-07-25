@@ -31,10 +31,10 @@ public class CosemTimeConverter extends BidirectionalConverter<CosemTimeDto, org
             return null;
         }
 
-        final int hour = source.valueFor(CosemDateFormat.Field.HOUR);
-        final int minute = source.valueFor(CosemDateFormat.Field.MINUTE);
-        final int second = source.valueFor(CosemDateFormat.Field.SECOND);
-        final int hundredths = source.valueFor(CosemDateFormat.Field.HUNDREDTHS);
+        final int hour = source.get(CosemDateFormat.Field.HOUR);
+        final int minute = source.get(CosemDateFormat.Field.MINUTE);
+        final int second = source.get(CosemDateFormat.Field.SECOND);
+        final int hundredths = source.get(CosemDateFormat.Field.HUNDREDTHS);
         return new com.alliander.osgp.dto.valueobjects.smartmetering.CosemTimeDto(hour, minute, second, hundredths);
     }
 
