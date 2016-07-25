@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 
 import org.bouncycastle.util.encoders.Hex;
+import org.openmuc.jdlms.AuthenticationMechanism;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.SecuritySuite;
 import org.openmuc.jdlms.SecuritySuite.EncryptionMechanism;
@@ -139,6 +140,7 @@ public class RecoverKeyProcess implements Runnable {
         final byte[] encryptionKey = Hex.decode(this.getSecurityKey(SecurityKeyType.E_METER_ENCRYPTION).getKey());
 
         final SecuritySuite securitySuite = SecuritySuite.builder().setAuthenticationKey(authenticationKey)
+                .setAuthenticationMechanism(AuthenticationMechanism.HLS5_GMAC)
                 .setGlobalUnicastEncryptionKey(encryptionKey).setEncryptionMechanism(EncryptionMechanism.AES_GMC_128)
                 .build();
 

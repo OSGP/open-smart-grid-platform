@@ -13,6 +13,7 @@ import java.net.UnknownHostException;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
+import org.openmuc.jdlms.AuthenticationMechanism;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.SecuritySuite;
 import org.openmuc.jdlms.SecuritySuite.EncryptionMechanism;
@@ -141,6 +142,7 @@ public class Hls5Connector {
         final byte[] decryptedEncryption = this.encryptionService.decrypt(encryptionKey);
 
         final SecuritySuite securitySuite = SecuritySuite.builder().setAuthenticationKey(decryptedAuthentication)
+                .setAuthenticationMechanism(AuthenticationMechanism.HLS5_GMAC)
                 .setGlobalUnicastEncryptionKey(decryptedEncryption)
                 .setEncryptionMechanism(EncryptionMechanism.AES_GMC_128).build();
 
