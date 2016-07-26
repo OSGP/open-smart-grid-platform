@@ -49,7 +49,7 @@ public class Bundle extends SmartMetering {
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_E_LABEL, this.deviceId.getDeviceIdE());
         PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, this.organisationId.getOrganisationId());
 
-        this.RequestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
+        this.requestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
 
         final NodeList nodeList = this.runXpathResult.getNodeList(this.request, "//Actions/*");
         for (int nodeId = 0; nodeId < nodeList.getLength(); nodeId++) {
@@ -77,7 +77,7 @@ public class Bundle extends SmartMetering {
         PROPERTIES_MAP.put(TIME_OUT, "90000");
         PROPERTIES_MAP.put(MAX_TIME, "180000");
 
-        this.ResponseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
+        this.responseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
 
         LOGGER.debug("check if responses are in the correct order:");
         final NodeList nodeList = this.runXpathResult.getNodeList(this.response, "//AllResponses/*");

@@ -9,4 +9,9 @@
 [submodule "Platform"]
 	path = Platform
 	url = https://github.com/OSGP/Platform.git
-	branch = SLIM-633-use_hibernate
+	branch = development
+[submodule "Protocol-Adapter-DLMS"]
+	path = Protocol-Adapter-DLMS
+	url = https://github.com/OSGP/Protocol-Adapter-DLMS.git
+	branch = development
+

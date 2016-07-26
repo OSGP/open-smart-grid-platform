@@ -7,11 +7,10 @@ Background:
     Given a gas device with DeviceID "G00XX561204926013"
     And an organisation with OrganisationID "LianderNetManagement"
     
-@SLIM-517 @SLIM-505
-  Scenario: Store the association LN objectlist from a device in the integration layer database
+@SLIM-517
+  Scenario: Retrieve the association LN objectlist from a device
     When the retrieve association LN objectlist request is received
     Then the objectlist should be returned
-    And the objeclist should be stored in the integration layer database
     
 @SLIM-193
   Scenario: Retrieve all configuration objects from a device

@@ -85,7 +85,7 @@ public class SmartMetering {
      *            is the testsuite name which includes the testcase
      * @throws Throwable
      */
-    protected void RequestRunner(final Map<String, String> propertiesMap, final String testCaseNameRequest,
+    protected void requestRunner(final Map<String, String> propertiesMap, final String testCaseNameRequest,
             final String testCaseXml, final String testSuiteXml) throws Throwable {
 
         this.correlationUidPattern = Pattern
@@ -139,7 +139,7 @@ public class SmartMetering {
      *            saves the response message in a logger
      * @throws Throwable
      */
-    protected void ResponseRunner(final Map<String, String> propertiesMap, final String testCaseNameResponse,
+    protected void responseRunner(final Map<String, String> propertiesMap, final String testCaseNameResponse,
             final Logger logger) throws Throwable {
 
         final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase, propertiesMap,

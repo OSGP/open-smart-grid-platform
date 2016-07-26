@@ -13,7 +13,6 @@ import com.alliander.osgp.platform.cucumber.SmartMetering;
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
 import com.alliander.osgp.platform.cucumber.support.OrganisationId;
 
-import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
@@ -30,7 +29,7 @@ public class AssociationLnObjects extends SmartMetering {
     private static final String XPATH_MATCHER_RESULT_ACCESS_MODE = "\\w+\\_\\w+";
 
     private static final String TEST_SUITE_XML = "SmartmeterAdhoc";
-    private static final String TEST_CASE_XML = "505 Store association LN objectlist";
+    private static final String TEST_CASE_XML = "517 Retrieve association objectlist";
     private static final String TEST_CASE_NAME_REQUEST = "GetAssociationLnObjects - Request 1";
     private static final String TEST_CASE_NAME_RESPONSE = "GetGetAssociationLnObjectsResponse - Request 1";
 
@@ -48,14 +47,14 @@ public class AssociationLnObjects extends SmartMetering {
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_E_LABEL, this.deviceId.getDeviceIdE());
         PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, this.organisationId.getOrganisationId());
 
-        this.RequestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
+        this.requestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }
 
     @Then("^the objectlist should be returned$")
     public void theObjectlistShouldBeReturned() throws Throwable {
         PROPERTIES_MAP.put(CORRELATION_UID_LABEL, this.correlationUid);
 
-        this.ResponseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
+        this.responseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
 
         assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT, XPATH_MATCHER_RESULT));
         assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_CLASSID, XPATH_MATCHER_RESULT_DECIMAL));
@@ -66,10 +65,5 @@ public class AssociationLnObjects extends SmartMetering {
                 XPATH_MATCHER_RESULT_DECIMAL));
         assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_ACCESS_MODE,
                 XPATH_MATCHER_RESULT_ACCESS_MODE));
-    }
-
-    @And("^the objeclist should be stored in the integration layer database$")
-    public void theObjeclistShouldBeStoredInTheIntegrationLayerDatabase() throws Throwable {
-
     }
 }

@@ -53,25 +53,25 @@ public class AddDevice extends SmartMetering {
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_E_LABEL, this.deviceId.getDeviceIdE());
         PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, this.organisationId.getOrganisationId());
 
-        this.RequestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
+        this.requestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }
 
     @Then("^the device request response should be ok$")
     public void theDeviceRequestResponseShouldBeOk() throws Throwable {
         PROPERTIES_MAP.put(CORRELATION_UID_LABEL, this.correlationUid);
 
-        this.ResponseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
+        this.responseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
 
         Assert.assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT, XPATH_MATCHER_RESULT));
     }
 
     @And("^the device with id \"([^\"]*)\" should be added in the core database$")
-    public void theDeviceShouldBeAddedInTheCoreDatabase(String deviceId) throws Throwable {
+    public void theDeviceShouldBeAddedInTheCoreDatabase(final String deviceId) throws Throwable {
         Assert.assertTrue(this.addDeviceHooks.testCoreDevice(deviceId));
     }
 
     @And("^the device with id \"([^\"]*)\" should be added in the dlms database$")
-    public void theDeviceShouldBeAddedInTheDlmsDatabase(String deviceId) throws Throwable {
+    public void theDeviceShouldBeAddedInTheDlmsDatabase(final String deviceId) throws Throwable {
         Assert.assertTrue(this.addDeviceHooks.testDlmsDevice(deviceId));
     }
 
