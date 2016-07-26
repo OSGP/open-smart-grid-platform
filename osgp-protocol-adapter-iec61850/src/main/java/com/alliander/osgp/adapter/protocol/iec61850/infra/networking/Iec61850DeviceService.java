@@ -1581,6 +1581,18 @@ public class Iec61850DeviceService implements DeviceService {
         }
     }
 
+    /**
+     * Check specific for schedule setting.
+     */
+    private void checkRelayForSchedules(final RelayType actual, final RelayType expected, final Integer internalAddress)
+            throws FunctionalException {
+        // First check the special case.
+        if (expected.equals(RelayType.TARIFF) && actual.equals(RelayType.TARIFF_REVERSED)) {
+            return;
+        }
+        this.checkRelay(actual, expected, internalAddress);
+    }
+
     private ScheduleEntry convertToScheduleEntry(final ScheduleDto schedule, final LightValueDto lightValue)
             throws ProtocolAdapterException {
         final ScheduleEntry.Builder builder = new ScheduleEntry.Builder();
@@ -1709,7 +1721,7 @@ public class Iec61850DeviceService implements DeviceService {
 
                         // First time we come across this relay, checking its
                         // type
-                        Iec61850DeviceService.this.checkRelay(Iec61850DeviceService.this.ssldDataService
+                        Iec61850DeviceService.this.checkRelayForSchedules(Iec61850DeviceService.this.ssldDataService
                                 .getDeviceOutputSettingForInternalIndex(ssld, internalIndex).getRelayType(), relayType,
                                 internalIndex);
 
