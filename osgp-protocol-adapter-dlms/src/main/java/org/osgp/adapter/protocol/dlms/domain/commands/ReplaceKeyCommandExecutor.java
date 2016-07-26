@@ -50,7 +50,7 @@ import com.alliander.osgp.shared.security.EncryptionService;
  */
 @Component
 public class ReplaceKeyCommandExecutor extends
-        AbstractCommandExecutor<ReplaceKeyCommandExecutor.KeyWrapper, DlmsDevice> {
+AbstractCommandExecutor<ReplaceKeyCommandExecutor.KeyWrapper, DlmsDevice> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReplaceKeyCommandExecutor.class);
 
@@ -151,7 +151,7 @@ public class ReplaceKeyCommandExecutor extends
 
             final byte[] decryptedMasterKey = this.encryptionService.decrypt(this.getMasterKey(device));
 
-            final MethodParameter methodParameterAuth = SecurityUtils.globalKeyTransfer(decryptedMasterKey,
+            final MethodParameter methodParameterAuth = SecurityUtils.keyChangeMethodParamFor(decryptedMasterKey,
                     decryptedKey, keyWrapper.getKeyId());
             final MethodResultCode methodResultCode = conn.action(methodParameterAuth).getResultCode();
 

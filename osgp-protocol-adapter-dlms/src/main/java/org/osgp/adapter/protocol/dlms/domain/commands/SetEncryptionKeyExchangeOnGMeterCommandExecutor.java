@@ -8,14 +8,9 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
+import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 
 import org.bouncycastle.util.encoders.Hex;
 import org.openmuc.jdlms.DlmsConnection;
@@ -81,13 +76,12 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor extends
         final GMeterInfoDto gMeterInfoDto = (GMeterInfoDto) bundleInput;
 
         try {
-            final DlmsDevice gMeterDevice = this.domainHelperService
-                    .findDlmsDevice(gMeterInfoDto.getDeviceIdentification());
+            final DlmsDevice gMeterDevice = this.domainHelperService.findDlmsDevice(gMeterInfoDto
+                    .getDeviceIdentification());
 
-            return new ProtocolMeterInfo(gMeterInfoDto.getChannel(),
-                    gMeterInfoDto.getDeviceIdentification(), gMeterDevice.getValidSecurityKey(
-                            SecurityKeyType.G_METER_ENCRYPTION).getKey(), gMeterDevice.getValidSecurityKey(
-                                    SecurityKeyType.G_METER_MASTER).getKey());
+            return new ProtocolMeterInfo(gMeterInfoDto.getChannel(), gMeterInfoDto.getDeviceIdentification(),
+                    gMeterDevice.getValidSecurityKey(SecurityKeyType.G_METER_ENCRYPTION).getKey(), gMeterDevice
+                    .getValidSecurityKey(SecurityKeyType.G_METER_MASTER).getKey());
 
         } catch (final FunctionalException e) {
             LOGGER.error("Error looking up G-Meter " + gMeterInfoDto.getDeviceIdentification(), e);
@@ -154,9 +148,8 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor extends
             final byte[] encryptionKey) throws ProtocolAdapterException {
         byte[] encryptedEncryptionkey;
         try {
-            encryptedEncryptionkey = SecurityUtils.aes128Ciphering(defaultMBusKey, encryptionKey);
-        } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException
-                | BadPaddingException e) {
+            encryptedEncryptionkey = SecurityUtils.cipherWithAes128(defaultMBusKey, encryptionKey);
+        } catch (final GeneralSecurityException e) {
             LOGGER.error("Unexpected exception during getTransferKeyToMBusMethodParameter", e);
             throw new ProtocolAdapterException(e.getMessage());
         }

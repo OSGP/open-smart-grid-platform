@@ -7,7 +7,7 @@
  */
 package org.osgp.adapter.protocol.dlms.application.mapping;
 
-import java.util.List;
+import java.util.Set;
 
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
@@ -28,7 +28,7 @@ public class CosemDateTimeConverter extends
 
         final CosemTimeDto time = source.getTime();
         final CosemDateDto date = source.getDate();
-        final List<ClockStatus> clockStatus = ClockStatus.clockStatusFrom((byte) source.getClockStatus().getStatus());
+        final Set<ClockStatus> clockStatus = ClockStatus.clockStatusFrom((byte) source.getClockStatus().getStatus());
 
         return new org.openmuc.jdlms.datatypes.CosemDateTime(date.getYear(), date.getMonth(), date.getDayOfMonth(),
                 date.getDayOfWeek(), time.getHour(), time.getMinute(), time.getSecond(), time.getHundredths(),
@@ -42,27 +42,28 @@ public class CosemDateTimeConverter extends
             return null;
         }
 
-        final int year = source.valueFor(CosemDateFormat.Field.YEAR);
-        final int month = source.valueFor(CosemDateFormat.Field.MONTH);
-        final int dayOfMonth = source.valueFor(CosemDateFormat.Field.DAY_OF_MONTH);
-        final int dayOfWeek = source.valueFor(CosemDateFormat.Field.DAY_OF_WEEK);
+        final int year = source.get(CosemDateFormat.Field.YEAR);
+        final int month = source.get(CosemDateFormat.Field.MONTH);
+        final int dayOfMonth = source.get(CosemDateFormat.Field.DAY_OF_MONTH);
+        final int dayOfWeek = source.get(CosemDateFormat.Field.DAY_OF_WEEK);
         final com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateDto date = new com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateDto(
                 year, month, dayOfMonth, dayOfWeek);
 
-        final int hour = source.valueFor(CosemDateFormat.Field.HOUR);
-        final int minute = source.valueFor(CosemDateFormat.Field.MINUTE);
-        final int second = source.valueFor(CosemDateFormat.Field.SECOND);
-        final int hundredths = source.valueFor(CosemDateFormat.Field.HUNDREDTHS);
+        final int hour = source.get(CosemDateFormat.Field.HOUR);
+        final int minute = source.get(CosemDateFormat.Field.MINUTE);
+        final int second = source.get(CosemDateFormat.Field.SECOND);
+        final int hundredths = source.get(CosemDateFormat.Field.HUNDREDTHS);
         final com.alliander.osgp.dto.valueobjects.smartmetering.CosemTimeDto time = new com.alliander.osgp.dto.valueobjects.smartmetering.CosemTimeDto(
                 hour, minute, second, hundredths);
 
-        final int deviation = source.valueFor(CosemDateFormat.Field.DEVIATION);
+        final int deviation = source.get(CosemDateFormat.Field.DEVIATION);
 
-        final int clockStatusValue = source.valueFor(CosemDateFormat.Field.CLOCK_STATUS);
+        final int clockStatusValue = source.get(CosemDateFormat.Field.CLOCK_STATUS);
         final com.alliander.osgp.dto.valueobjects.smartmetering.ClockStatusDto clockStatus = new com.alliander.osgp.dto.valueobjects.smartmetering.ClockStatusDto(
                 clockStatusValue);
 
-        return new com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto(date, time, deviation, clockStatus);
+        return new com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto(date, time, deviation,
+                clockStatus);
     }
 
 }
