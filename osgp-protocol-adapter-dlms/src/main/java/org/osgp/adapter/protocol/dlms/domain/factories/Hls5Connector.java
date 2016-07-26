@@ -119,11 +119,8 @@ public class Hls5Connector {
      * @throws TechnicalException
      *             When there are problems reading the security and
      *             authorisation keys.
-     * @throws EncrypterException
-     *             When there are problems decrypting the encrypted security and
-     *             authorisation keys.
      */
-    private DlmsConnection createConnection() throws IOException, TechnicalException, EncrypterException {
+    private DlmsConnection createConnection() throws IOException, TechnicalException {
         final SecurityKey validAuthenticationKey = this.getSecurityKey(SecurityKeyType.E_METER_AUTHENTICATION);
         final SecurityKey validEncryptionKey = this.getSecurityKey(SecurityKeyType.E_METER_ENCRYPTION);
 
