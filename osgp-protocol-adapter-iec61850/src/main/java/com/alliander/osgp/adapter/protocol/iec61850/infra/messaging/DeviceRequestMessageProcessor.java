@@ -42,6 +42,8 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceRequestMessageProcessor.class);
 
+    protected final static String UNEXPECTED_EXCEPTION = "Unexpected exception while retrieving response message";
+
     @Autowired
     protected DeviceService deviceService;
 
@@ -56,8 +58,6 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
     protected MessageProcessorMap iec61850RequestMessageProcessorMap;
 
     protected final DeviceRequestMessageType deviceRequestMessageType;
-
-    protected final static String UNEXPECTED_EXCEPTION = "Unexpected exception while retrieving response message";
 
     /**
      * Each MessageProcessor should register it's MessageType at construction.
