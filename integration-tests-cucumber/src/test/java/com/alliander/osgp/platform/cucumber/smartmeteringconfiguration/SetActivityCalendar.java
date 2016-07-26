@@ -32,7 +32,7 @@ public class SetActivityCalendar extends SmartMetering {
 
     private static final String TEST_SUITE_XML = "SmartmeterConfiguration";
     private static final String TEST_CASE_XML = "414 Use wildcards for date fields for activity calendar";
-    private static final String TEST_CASE_NAME_REQUEST = "SetActivityCalendar - Request 2";
+    private static final String TEST_CASE_NAME_REQUEST = "SetActivityCalendar - Request 1";
     private static final String TEST_CASE_NAME_RESPONSE = "GetSetActivityCalendarResponse - Request 1";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ActualMeterReadsGas.class);
