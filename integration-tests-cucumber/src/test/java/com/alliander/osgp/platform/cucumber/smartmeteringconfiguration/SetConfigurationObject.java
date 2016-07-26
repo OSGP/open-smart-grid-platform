@@ -32,7 +32,7 @@ public class SetConfigurationObject extends SmartMetering {
 
     private static final String TEST_SUITE_XML = "SmartmeterConfiguration";
     private static final String TEST_CASE_XML = "216 Retrieve SetConfigurationObject result";
-    private static final String TEST_CASE_NAME_REQUEST = "SetConfigurationObject - 1-Setting";
+    private static final String TEST_CASE_NAME_REQUEST = "SetConfigurationObject - Request 1";
     private static final String TEST_CASE_NAME_RESPONSE = "GetSetConfigurationObjectResponse - Request 1";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ActualMeterReadsGas.class);
