@@ -4,7 +4,7 @@ Feature:
     
 Background:
     Given a device with DeviceID "E9998000014123414" 
-    And an organisation with OrganisationID "LianderNetManagement"
+    And an organisation with OrganisationID "Infostroom"
     
 @SLIM-150
   Scenario: find event information from a meter
