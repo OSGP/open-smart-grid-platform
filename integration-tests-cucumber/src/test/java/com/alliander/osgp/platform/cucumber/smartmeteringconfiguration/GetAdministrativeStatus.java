@@ -33,7 +33,7 @@ public class GetAdministrativeStatus extends SmartMetering {
     private static final String TEST_SUITE_XML = "SmartmeterConfiguration";
     private static final String TEST_CASE_XML = "190 Get administrative status";
     private static final String TEST_CASE_NAME_REQUEST = "GetAdministrativeStatus - Request 1";
-    private static final String TEST_CASE_NAME_RESPONSE = "Copy of GetGetAdministrativeStatusResponse - Request 1";
+    private static final String TEST_CASE_NAME_RESPONSE = "GetGetAdministrativeStatusResponse - Request 1";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ActualMeterReadsGas.class);
     private static final Map<String, String> PROPERTIES_MAP = new HashMap<>();
