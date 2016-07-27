@@ -43,6 +43,9 @@ public class Iec61850Client {
     private DeviceManagementService deviceManagementService;
 
     @Autowired
+    private Iec61850DeviceService iec61850DeviceService;
+
+    @Autowired
     private int iec61850PortClient;
 
     @Autowired
@@ -119,7 +122,7 @@ public class Iec61850Client {
     public void disconnect(final ClientAssociation clientAssociation, final String deviceIdentification) {
         LOGGER.info("disconnecting from device: {}...", deviceIdentification);
         clientAssociation.disconnect();
-        LOGGER.info("disconnected from device: {} !!!", deviceIdentification);
+        LOGGER.info("disconnected from device: {}", deviceIdentification);
     }
 
     /**
@@ -204,6 +207,8 @@ public class Iec61850Client {
                         LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.REGISTRATION, Fc.CF);
                 deviceRegistration.writeBoolean(SubDataAttribute.DEVICE_REGISTRATION_ENABLED, false);
 
+                Iec61850Client.this.iec61850DeviceService.enableReportingOnDevice(deviceConnection,
+                        deviceIdentification);
                 return null;
             }
         };

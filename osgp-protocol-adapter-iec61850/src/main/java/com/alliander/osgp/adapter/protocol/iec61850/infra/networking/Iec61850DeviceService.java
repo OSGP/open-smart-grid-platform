@@ -1010,9 +1010,9 @@ public class Iec61850DeviceService implements DeviceService {
         configuration.setTimeSyncFrequency(timeSyncFrequency);
         configuration.setAutomaticSummerTimingEnabled(automaticSummerTimingEnabled);
         configuration.setSummerTimeDetails(new DaylightSavingTimeTransition(TIME_ZONE_AMSTERDAM, summerTimeDetails)
-        .getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
+                .getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
         configuration.setWinterTimeDetails(new DaylightSavingTimeTransition(TIME_ZONE_AMSTERDAM, winterTimeDetails)
-        .getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
+                .getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
 
         return configuration;
     }
@@ -1538,7 +1538,7 @@ public class Iec61850DeviceService implements DeviceService {
         this.iec61850Client.sendCommandWithRetry(function);
     }
 
-    private void enableReportingOnDevice(final DeviceConnection deviceConnection, final String deviceIdentification)
+    public void enableReportingOnDevice(final DeviceConnection deviceConnection, final String deviceIdentification)
             throws ServiceError, IOException {
         final NodeContainer reporting = deviceConnection.getFcModelNode(LogicalNode.LOGICAL_NODE_ZERO,
                 DataAttribute.REPORTING, Fc.BR);
