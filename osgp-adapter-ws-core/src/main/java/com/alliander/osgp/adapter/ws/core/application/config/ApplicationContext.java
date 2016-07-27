@@ -96,7 +96,7 @@ public class ApplicationContext {
 
     @Bean
     public String firmwareDirectory() {
-        return this.environment.getProperty(PROPERTY_NAME_FIRMWARE_DIRECTORY);
+        return this.environment.getRequiredProperty(PROPERTY_NAME_FIRMWARE_DIRECTORY);
     }
 
     @Bean
