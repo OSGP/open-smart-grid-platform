@@ -317,31 +317,31 @@ public class DeviceManagementService {
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getDeviceIdentification())) {
                     specifications = specifications.and(this.deviceSpecifications.hasDeviceIdentification(deviceFilter
-                            .getDeviceIdentification() + "%"));
+                            .getDeviceIdentification().replaceAll("*", "%") + "%"));
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getAlias())) {
                     specifications = specifications.and(this.deviceSpecifications.hasAlias(deviceFilter.getAlias()
-                            + "%"));
+                            .replaceAll("*", "%") + "%"));
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getCity())) {
-                    specifications = specifications
-                            .and(this.deviceSpecifications.hasCity(deviceFilter.getCity() + "%"));
+                    specifications = specifications.and(this.deviceSpecifications.hasCity(deviceFilter.getCity()
+                            .replaceAll("*", "%") + "%"));
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getPostalCode())) {
                     specifications = specifications.and(this.deviceSpecifications.hasPostalCode(deviceFilter
-                            .getPostalCode() + "%"));
+                            .getPostalCode().replaceAll("*", "%") + "%"));
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getStreet())) {
                     specifications = specifications.and(this.deviceSpecifications.hasStreet(deviceFilter.getStreet()
-                            + "%"));
+                            .replaceAll("*", "%") + "%"));
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getNumber())) {
                     specifications = specifications.and(this.deviceSpecifications.hasNumber(deviceFilter.getNumber()
-                            + "%"));
+                            .replaceAll("*", "%") + "%"));
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getMunicipality())) {
                     specifications = specifications.and(this.deviceSpecifications.hasMunicipality(deviceFilter
-                            .getMunicipality() + "%"));
+                            .getMunicipality().replaceAll("*", "%") + "%"));
                 }
                 if (deviceFilter.getDeviceExternalManaged() != null
                         && !DeviceExternalManagedFilterType.BOTH.equals(deviceFilter.getDeviceExternalManaged())) {
@@ -363,15 +363,15 @@ public class DeviceManagementService {
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getOwner())) {
                     specifications = specifications.and(this.deviceSpecifications.forOwner(deviceFilter.getOwner()
-                            + "%"));
+                            .replaceAll("*", "%") + "%"));
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getDeviceType())) {
                     specifications = specifications.and(this.deviceSpecifications.forDeviceType(deviceFilter
-                            .getDeviceType() + "%"));
+                            .getDeviceType().replaceAll("*", "%") + "%"));
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getModel())) {
                     specifications = specifications.and(this.deviceSpecifications.forDeviceModel(deviceFilter
-                            .getModel() + "%"));
+                            .getModel().replaceAll("*", "%") + "%"));
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getManufacturer())) {
                     final Manufacturer manufacturer = this.firmwareManagementService.findManufacturer(deviceFilter
@@ -380,7 +380,8 @@ public class DeviceManagementService {
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getFirmwareModuleVersion())) {
                     specifications = specifications.and(this.deviceSpecifications.forFirmwareModuleVersion(
-                            deviceFilter.getFirmwareModuleType(), deviceFilter.getFirmwareModuleVersion() + "%"));
+                            deviceFilter.getFirmwareModuleType(),
+                            deviceFilter.getFirmwareModuleVersion().replaceAll("*", "%") + "%"));
                 }
                 devices = this.deviceRepository.findAll(specifications, request);
             } else {
