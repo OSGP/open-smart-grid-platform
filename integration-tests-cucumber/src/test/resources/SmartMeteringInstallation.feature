@@ -5,7 +5,7 @@ Feature:
 Background:
     Given a device with DeviceID "E0026000059790003" 
     Given a gas device with DeviceID "G00XX561204926013"
-    And an organisation with OrganisationID "LianderNetManagement"
+    And an organisation with OrganisationID "Infostroom"
     
 @SLIM-218
   Scenario: Add a new device "E0026000059790003"

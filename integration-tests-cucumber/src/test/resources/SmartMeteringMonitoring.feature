@@ -5,7 +5,7 @@ Feature:
 Background:
     Given a device with DeviceID "E9998000014123414" 
     Given a gas device with DeviceID "G00XX561204926013"
-    And an organisation with OrganisationID "LianderNetManagement"
+    And an organisation with OrganisationID "Infostroom"
   
 @SLIM-392
   Scenario: Get the actual meter reads from a device
