@@ -24,7 +24,7 @@ import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAssociationLnObjectsRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.RetrieveConfigurationObjectsRequest;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequest;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequestData;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.UnknownCorrelationUidException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
@@ -48,8 +48,8 @@ public class AdhocService {
     private MeterResponseDataService meterResponseDataService;
 
     public String enqueueSynchronizeTimeRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final SynchronizeTimeRequest synchronizeTimeRequest,
-            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+            @Identification final String deviceIdentification, final SynchronizeTimeRequestData utcOffset, final int messagePriority,
+            final Long scheduleTime) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -67,7 +67,7 @@ public class AdhocService {
                 SmartMeteringRequestMessageType.SYNCHRONIZE_TIME.toString(), messagePriority, scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata).request(synchronizeTimeRequest).build();
+        .deviceMessageMetadata(deviceMessageMetadata).request(utcOffset).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 

@@ -28,7 +28,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.GetAssociationLnObjects
 import com.alliander.osgp.dto.valueobjects.smartmetering.ObisCodeValuesDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.RetrieveConfigurationObjectsRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecificConfigurationObjectRequestDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
@@ -61,9 +61,8 @@ public class AdhocService {
         // Parameterless constructor required for transactions...
     }
 
-    public void synchronizeTime(
-            final DeviceMessageMetadata deviceMessageMetadata,
-            final com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequest synchronizeTimeRequestValueObject)
+    public void synchronizeTime(final DeviceMessageMetadata deviceMessageMetadata,
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequestData synchronizeTimeRequestDataValueObject)
             throws FunctionalException {
 
         LOGGER.debug("synchronizeTime for organisationIdentification: {} for deviceIdentification: {}",
@@ -72,12 +71,12 @@ public class AdhocService {
         final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceMessageMetadata
                 .getDeviceIdentification());
 
-        final SynchronizeTimeRequest synchronizeTimeRequestDto = new SynchronizeTimeRequest(
-                synchronizeTimeRequestValueObject.getDeviceIdentification());
+        final SynchronizeTimeRequestDto utcOffsetDto = this.mapperFactory.getMapperFacade().map(synchronizeTimeRequestDataValueObject,
+                SynchronizeTimeRequestDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                smartMeteringDevice.getIpAddress(), synchronizeTimeRequestDto), deviceMessageMetadata.getMessageType(),
+                smartMeteringDevice.getIpAddress(), utcOffsetDto), deviceMessageMetadata.getMessageType(),
                 deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
     }
 
@@ -138,7 +137,8 @@ public class AdhocService {
     }
 
     public void getAssociationLnObjects(final DeviceMessageMetadata deviceMessageMetadata,
-            final com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAssociationLnObjectsRequest request) throws FunctionalException {
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAssociationLnObjectsRequest request)
+                    throws FunctionalException {
         LOGGER.debug("getAssociationLnObjects for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
