@@ -64,7 +64,7 @@ AbstractCommandExecutor<SynchronizeTimeRequestDto, AccessResultCode> {
         final AttributeAddress clockTime = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
         final DateTime dt = DateTime.now();
-        final DataObject time = this.dlmsHelperService.asDataObject(dt, synchronizeTimeRequestDto.getOffset(),
+        final DataObject time = this.dlmsHelperService.asDataObject(dt, synchronizeTimeRequestDto.getDeviation(),
                 synchronizeTimeRequestDto.isDst());
 
         final SetParameter setParameter = new SetParameter(clockTime, time);
