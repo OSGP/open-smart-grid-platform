@@ -28,7 +28,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequestD
 
 @Component()
 public class SynchronizeTimeCommandExecutor extends
-        AbstractCommandExecutor<SynchronizeTimeRequestDto, AccessResultCode> {
+AbstractCommandExecutor<SynchronizeTimeRequestDto, AccessResultCode> {
 
     private static final int CLASS_ID = 8;
     private static final ObisCode OBIS_CODE = new ObisCode("0.0.1.0.0.255");
@@ -64,8 +64,8 @@ public class SynchronizeTimeCommandExecutor extends
         final AttributeAddress clockTime = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
         final DateTime dt = DateTime.now();
-        // TODO: include UtcOffset in Cosem data object.
-        final DataObject time = this.dlmsHelperService.asDataObject(dt);
+        final DataObject time = this.dlmsHelperService.asDataObject(dt, synchronizeTimeRequestDto.getOffset(),
+                synchronizeTimeRequestDto.isDst());
 
         final SetParameter setParameter = new SetParameter(clockTime, time);
 
