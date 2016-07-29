@@ -255,13 +255,27 @@
         <xsd:annotation>
             <xsd:documentation>
                 CosemDate followed by CosemTime followed by deviation and clock status.
-                deviation (minutes from GMT) high byte and low byte.
+                deviation (minutes of local time to UTC) high byte and low byte.
                 clock status: 0x80 (daylight savings active), 0x0 (no
                 status)
             </xsd:documentation>
         </xsd:annotation>
         <xsd:restriction base="xsd:hexBinary">
             <xsd:length value="12" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="DateTimeDeviation">
+        <xsd:annotation>
+            <xsd:documentation>
+                Integer value in the range -720...720 repesenting a specified
+                deviation value in minutes of local time to UTC for a COSEM
+                date-time.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:int">
+            <xsd:minInclusive value="-720" />
+            <xsd:maxInclusive value="720" />
         </xsd:restriction>
     </xsd:simpleType>
 

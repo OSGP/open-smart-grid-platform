@@ -15,17 +15,17 @@ public class SynchronizeTimeRequestData implements Serializable, ActionRequest {
 
     private static final long serialVersionUID = -4724182593235620894L;
 
-    private final int offset;
+    private final int deviation;
 
     private final boolean dst;
 
-    public SynchronizeTimeRequestData(final int offset, final boolean dst) {
-        this.offset = offset;
+    public SynchronizeTimeRequestData(final int deviation, final boolean dst) {
+        this.deviation = deviation;
         this.dst = dst;
     }
 
-    public int getOffset() {
-        return this.offset;
+    public int getDeviation() {
+        return this.deviation;
     }
 
     public boolean isDst() {

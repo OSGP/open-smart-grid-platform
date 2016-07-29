@@ -297,7 +297,7 @@
         <xsd:complexContent>
             <xsd:extension base="common:Command">
                 <xsd:sequence>
-                  <xsd:element type="xsd:integer" name="Offset" />
+                  <xsd:element type="common:DateTimeDeviation" name="Deviation" />
                   <xsd:element type="xsd:boolean" name="Dst" default="false" />
                 </xsd:sequence>
             </xsd:extension>
