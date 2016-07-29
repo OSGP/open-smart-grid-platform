@@ -12,17 +12,17 @@ public class SynchronizeTimeRequestDto implements ActionRequestDto {
 
     private static final long serialVersionUID = -4724182593235620894L;
 
-    private final int offset;
+    private final int deviation;
 
     private final boolean dst;
 
-    public SynchronizeTimeRequestDto(final int offset, final boolean dst) {
-        this.offset = offset;
+    public SynchronizeTimeRequestDto(final int deviation, final boolean dst) {
+        this.deviation = deviation;
         this.dst = dst;
     }
 
-    public int getOffset() {
-        return this.offset;
+    public int getDeviation() {
+        return this.deviation;
     }
 
     public boolean isDst() {
