@@ -81,6 +81,9 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 public class DeviceManagementService {
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementService.class);
 
+    // The wildcard, used for filtering
+    private static final String WILDCARD = "\\*";
+
     @Autowired
     private PagingSettings pagingSettings;
 
@@ -317,31 +320,31 @@ public class DeviceManagementService {
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getDeviceIdentification())) {
                     specifications = specifications.and(this.deviceSpecifications.hasDeviceIdentification(deviceFilter
-                            .getDeviceIdentification() + "%"));
+                            .getDeviceIdentification().replaceAll(WILDCARD, "%") + "%"));
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getAlias())) {
                     specifications = specifications.and(this.deviceSpecifications.hasAlias(deviceFilter.getAlias()
-                            + "%"));
+                            .replaceAll(WILDCARD, "%") + "%"));
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getCity())) {
-                    specifications = specifications
-                            .and(this.deviceSpecifications.hasCity(deviceFilter.getCity() + "%"));
+                    specifications = specifications.and(this.deviceSpecifications.hasCity(deviceFilter.getCity()
+                            .replaceAll(WILDCARD, "%") + "%"));
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getPostalCode())) {
                     specifications = specifications.and(this.deviceSpecifications.hasPostalCode(deviceFilter
-                            .getPostalCode() + "%"));
+                            .getPostalCode().replaceAll(WILDCARD, "%") + "%"));
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getStreet())) {
                     specifications = specifications.and(this.deviceSpecifications.hasStreet(deviceFilter.getStreet()
-                            + "%"));
+                            .replaceAll(WILDCARD, "%") + "%"));
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getNumber())) {
                     specifications = specifications.and(this.deviceSpecifications.hasNumber(deviceFilter.getNumber()
-                            + "%"));
+                            .replaceAll(WILDCARD, "%") + "%"));
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getMunicipality())) {
                     specifications = specifications.and(this.deviceSpecifications.hasMunicipality(deviceFilter
-                            .getMunicipality() + "%"));
+                            .getMunicipality().replaceAll(WILDCARD, "%") + "%"));
                 }
                 if (deviceFilter.getDeviceExternalManaged() != null
                         && !DeviceExternalManagedFilterType.BOTH.equals(deviceFilter.getDeviceExternalManaged())) {
@@ -363,15 +366,15 @@ public class DeviceManagementService {
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getOwner())) {
                     specifications = specifications.and(this.deviceSpecifications.forOwner(deviceFilter.getOwner()
-                            + "%"));
+                            .replaceAll(WILDCARD, "%") + "%"));
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getDeviceType())) {
                     specifications = specifications.and(this.deviceSpecifications.forDeviceType(deviceFilter
-                            .getDeviceType() + "%"));
+                            .getDeviceType().replaceAll(WILDCARD, "%") + "%"));
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getModel())) {
                     specifications = specifications.and(this.deviceSpecifications.forDeviceModel(deviceFilter
-                            .getModel() + "%"));
+                            .getModel().replaceAll(WILDCARD, "%") + "%"));
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getManufacturer())) {
                     final Manufacturer manufacturer = this.firmwareManagementService.findManufacturer(deviceFilter
@@ -380,7 +383,8 @@ public class DeviceManagementService {
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getFirmwareModuleVersion())) {
                     specifications = specifications.and(this.deviceSpecifications.forFirmwareModuleVersion(
-                            deviceFilter.getFirmwareModuleType(), deviceFilter.getFirmwareModuleVersion() + "%"));
+                            deviceFilter.getFirmwareModuleType(),
+                            deviceFilter.getFirmwareModuleVersion().replaceAll(WILDCARD, "%") + "%"));
                 }
                 devices = this.deviceRepository.findAll(specifications, request);
             } else {

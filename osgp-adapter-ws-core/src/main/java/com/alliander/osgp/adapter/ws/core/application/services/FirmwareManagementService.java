@@ -469,7 +469,7 @@ public class FirmwareManagementService {
         } else {
             if (databaseDeviceModel.isFileStorage()) {
                 // Saving the file to the file system
-                this.writeToFilesystem(file, fileName, databaseDeviceModel.getModelCode());
+                this.writeToFilesystem(file, fileName, databaseDeviceModel);
                 savedFirmware = new Firmware(databaseDeviceModel, fileName, description, pushToNewDevices,
                         firmwareModuleData);
             } else {
@@ -595,8 +595,9 @@ public class FirmwareManagementService {
         if (removedFirmware.getDeviceModel().isFileStorage()
                 && this.firmwareRepository.findByDeviceModelAndFilename(removedFirmware.getDeviceModel(),
                         removedFirmware.getFilename()).size() == 1) {
-            this.removeFirmwareFile(this.createFirmwarePath(removedFirmware.getDeviceModel().getModelCode(),
+            this.removeFirmwareFile(this.createFirmwarePath(removedFirmware.getDeviceModel(),
                     removedFirmware.getFilename()));
+
         }
 
         this.firmwareRepository.delete(removedFirmware);
@@ -664,13 +665,13 @@ public class FirmwareManagementService {
         return md5Hash;
     }
 
-    private void writeToFilesystem(final byte[] file, final String fileName, final String modelCode)
+    private void writeToFilesystem(final byte[] file, final String fileName, final DeviceModel deviceModel)
             throws TechnicalException {
 
-        final File path = this.createFirmwarePath(modelCode, fileName);
+        final File path = this.createFirmwarePath(deviceModel, fileName);
 
         // Creating the dir, if needed
-        this.createModelDirectory(path.getParentFile(), modelCode);
+        this.createModelDirectory(path.getParentFile(), deviceModel.getModelCode());
 
         // Replacing spaces by SPACE_REPLACER
         fileName.replaceAll(" ", SPACE_REPLACER);
@@ -682,12 +683,23 @@ public class FirmwareManagementService {
             throw new TechnicalException(ComponentType.WS_CORE, "Could not write firmware file to system".concat(e
                     .getMessage()));
         }
+
+        // Setting the file to readable to be downloadable
+        path.setReadable(true, false);
+
     }
 
-    private void removeFirmwareFile(final File directory) throws TechnicalException {
+    private void removeFirmwareFile(final File file) throws TechnicalException {
 
         try {
-            Files.deleteIfExists(directory.toPath());
+            // Delete file
+            Files.deleteIfExists(file.toPath());
+
+            // Delete directorty if it was the last file
+            if (file.getParentFile().list().length == 0) {
+                Files.deleteIfExists(file.toPath().getParent());
+            }
+
         } catch (final IOException e) {
             LOGGER.error("Could not remove firmware file from directory", e);
             throw new TechnicalException(ComponentType.WS_CORE,
@@ -696,20 +708,29 @@ public class FirmwareManagementService {
     }
 
     /*
-     * Creates a directory for the given modelCode, if it doesn't exist yet.
+     * Creates a directory for the given modelCode and manufacturer, if it
+     * doesn't exist yet.
      */
-    private void createModelDirectory(final File directory, final String modelCode) throws TechnicalException {
-        if (!directory.isDirectory()) {
+    private void createModelDirectory(final File file, final String modelCode) throws TechnicalException {
+        if (!file.isDirectory()) {
             LOGGER.info("Creating directory for devicemodel {}", modelCode);
-            if (!directory.mkdir()) {
+            if (!file.mkdirs()) {
                 throw new TechnicalException(ComponentType.WS_CORE,
                         "Could not create directory for devicemodel ".concat(modelCode));
             }
+            // Setting the correct permissions so that the directory can be read
+            // and displayed
+            file.setReadable(true, false);
+            file.setExecutable(true, false);
+            file.getParentFile().setReadable(true, false);
+            file.getParentFile().setExecutable(true, false);
         }
     }
 
-    private File createFirmwarePath(final String modelCode, final String fileName) {
-        return new File(this.firmwareDirectory.concat(File.separator).concat(modelCode.replaceAll(" ", SPACE_REPLACER))
+    private File createFirmwarePath(final DeviceModel deviceModel, final String fileName) {
+        return new File(this.firmwareDirectory.concat(File.separator)
+                .concat(deviceModel.getManufacturerId().getManufacturerId().replaceAll(" ", SPACE_REPLACER))
+                .concat(File.separator).concat(deviceModel.getModelCode().replaceAll(" ", SPACE_REPLACER))
                 .concat(File.separator).concat(fileName));
     }
 

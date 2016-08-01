@@ -37,6 +37,7 @@ class FirmwareConverter extends CustomConverter<com.alliander.osgp.domain.core.e
         output.setId(source.getId().intValue());
         output.setModelCode(source.getDeviceModel().getModelCode());
         output.setPushToNewDevices(source.getPushToNewDevices());
+        output.setManufacturer(source.getDeviceModel().getManufacturerId().getManufacturerId());
 
         final FirmwareModuleData firmwareModuleData = new FirmwareModuleData();
         firmwareModuleData.setModuleVersionComm(source.getModuleVersionComm());
