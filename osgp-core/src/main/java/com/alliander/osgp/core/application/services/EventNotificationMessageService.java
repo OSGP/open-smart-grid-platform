@@ -39,7 +39,7 @@ import com.alliander.osgp.dto.valueobjects.EventNotificationDto;
 @Transactional
 public class EventNotificationMessageService {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(EventNotificationMessageService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EventNotificationMessageService.class);
 
     @Autowired
     private DeviceRepository deviceRepository;
@@ -62,9 +62,11 @@ public class EventNotificationMessageService {
             // otherwise don't.
             this.eventRepository.save(new Event(device, dateTime, eventType, description, index));
 
-            // Checking to see if it was a light switching event
-            if (eventType.equals(EventType.LIGHT_EVENTS_LIGHT_ON) || eventType.equals(EventType.LIGHT_EVENTS_LIGHT_OFF)) {
-                this.handleLightSwitchingEvent(device, eventType, index);
+            // Checking to see if it was a switching event
+            if (eventType.equals(EventType.LIGHT_EVENTS_LIGHT_ON) || eventType.equals(EventType.LIGHT_EVENTS_LIGHT_OFF)
+                    || eventType.equals(EventType.TARIFF_EVENTS_TARIFF_ON)
+                    || eventType.equals(EventType.TARIFF_EVENTS_TARIFF_OFF)) {
+                this.handleSwitchingEvent(device, eventType, index);
             }
 
         } else {
@@ -144,7 +146,7 @@ public class EventNotificationMessageService {
         }
     }
 
-    private void handleLightSwitchingEvent(final Device device, final EventType eventType, final int index) {
+    private void handleSwitchingEvent(final Device device, final EventType eventType, final int index) {
 
         // if the index == 0 handle all LIGHT relays, otherwise just handle the
         // index
@@ -164,16 +166,18 @@ public class EventNotificationMessageService {
 
     private void updateRelayStatus(final int index, final Device device, final EventType eventType) {
 
-        final boolean lightsOn = EventType.LIGHT_EVENTS_LIGHT_ON.equals(eventType);
+        final boolean isRelayOn = EventType.LIGHT_EVENTS_LIGHT_ON.equals(eventType)
+                || EventType.TARIFF_EVENTS_TARIFF_ON.equals(eventType);
 
         // Only handle the event if the relay doesn't have a status yet, or
         // if the state changed
         final Ssld ssld = this.ssldRepository.findOne(device.getId());
         if ((ssld.getRelayStatusByIndex(index) == null)
-                || (ssld.getRelayStatusByIndex(index).isLastKnownState() != lightsOn)) {
-            LOGGER.info("Handling new {} for device {}.", eventType.name(), device.getDeviceIdentification());
+                || (ssld.getRelayStatusByIndex(index).isLastKnownState() != isRelayOn)) {
+            LOGGER.info("Handling new event {} for device {} to update the relay status for index {}.",
+                    eventType.name(), device.getDeviceIdentification(), index);
 
-            ssld.updateRelayStatusByIndex(index, new RelayStatus(device, index, lightsOn, DateTime.now().toDate()));
+            ssld.updateRelayStatusByIndex(index, new RelayStatus(device, index, isRelayOn, DateTime.now().toDate()));
         }
     }
 }
