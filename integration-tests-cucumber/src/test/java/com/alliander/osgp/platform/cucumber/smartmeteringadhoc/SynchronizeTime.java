@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,11 @@ public class SynchronizeTime extends SmartMetering {
     private static final Logger LOGGER = LoggerFactory.getLogger(SynchronizeTime.class);
     private static final Map<String, String> PROPERTIES_MAP = new HashMap<>();
 
+    private static final String DEVIATION_LABEL = "Deviation";
+    private static final String DST_LABEL = "DST";
+
+    private static final DateTimeZone DTZ_EUROPE_AMSTERDAM = DateTimeZone.forID("Europe/Amsterdam");
+
     @Autowired
     private DeviceId deviceId;
 
@@ -39,6 +45,30 @@ public class SynchronizeTime extends SmartMetering {
     public void theGetSynchronizeTimeRequestIsReceived() throws Throwable {
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_E_LABEL, this.deviceId.getDeviceIdE());
         PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, this.organisationId.getOrganisationId());
+
+        /*
+         * Setup of deviation and DST information, that will make
+         * SynchronizeTime configure a meter for time zone Europe/Amsterdam.
+         *
+         * This assumes the server time that will be synchronized is about the
+         * same as the system time where this test code is executed and
+         * configures deviation and DST according to the proper values for
+         * Europe/Amsterdam at the time of execution.
+         */
+        final String deviation;
+        final String dst;
+        if (DTZ_EUROPE_AMSTERDAM.isStandardOffset(System.currentTimeMillis())) {
+            // normal time / winter time, GMT+1
+            deviation = "-60";
+            dst = "false";
+        } else {
+            // summer time (DST), daylight savings active, GMT+2
+            deviation = "-120";
+            dst = "true";
+        }
+
+        PROPERTIES_MAP.put(DEVIATION_LABEL, deviation);
+        PROPERTIES_MAP.put(DST_LABEL, dst);
 
         this.requestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }

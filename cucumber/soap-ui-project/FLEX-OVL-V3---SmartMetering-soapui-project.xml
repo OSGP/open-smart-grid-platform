@@ -12102,6 +12102,10 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Body>\r
       <ns1:SynchronizeTimeRequest>\r
          <ns1:DeviceIdentification>${=testCase.getPropertyValue( "DeviceIdentificationE" )}</ns1:DeviceIdentification>\r
+         <ns1:SynchronizeTimeRequestData>\r
+            <ns1:Deviation>${=testCase.getPropertyValue( "Deviation" )}</ns1:Deviation>\r
+            <ns1:Dst>${=testCase.getPropertyValue( "DST" )}</ns1:Dst>\r
+         </ns1:SynchronizeTimeRequestData>\r
       </ns1:SynchronizeTimeRequest>\r
    </soapenv:Body>\r
 </soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response" id="3b9d1ada-efcb-4727-8636-016483320cb2" name="SOAP Response"/><con:assertion type="Schema Compliance" id="e68f638a-1800-46de-9ddc-5a7233260b87" name="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion" id="3500817c-44e0-46fc-a438-860d5ad4be93" name="Not SOAP Fault"/><con:credentials><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-adhoc-v1.0/SmartmeteradhocPort/SynchronizeTimeRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="transfer" name="Property Transfer" id="2b6fa28f-151d-42fa-8152-53276995b0a3"><con:settings/><con:config xsi:type="con:PropertyTransfersStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" ignoreEmpty="false" transferToAll="false" entitize="false" transferChildNodes="false"><con:name>CorrelationUid</con:name><con:sourceType>Response</con:sourceType><con:sourceStep>SynchronizeTime - Request 1</con:sourceStep><con:sourcePath>declare namespace ns2='http://www.alliander.com/schemas/osgp/smartmetering/sm-adhoc/2014/10';
