@@ -60,6 +60,12 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
     private Integer timeZoneOffsetMinutes;
 
     @Autowired
+    private String testDeviceId;
+
+    @Autowired
+    private String testDeviceIp;
+
+    @Autowired
     private OslpDeviceSettingsService oslpDeviceSettingsService;
 
     @Autowired
@@ -174,10 +180,16 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
     private Oslp.Message handleRegisterDeviceRequest(final byte[] deviceUid, final byte[] sequenceNumber,
             final Oslp.RegisterDeviceRequest registerRequest) throws UnknownHostException {
 
-        final InetAddress inetAddress = InetAddress.getByAddress(registerRequest.getIpAddress().toByteArray());
+        final String deviceIdentification = registerRequest.getDeviceIdentification();
+        InetAddress inetAddress = InetAddress.getByAddress(registerRequest.getIpAddress().toByteArray());
+        if (this.testDeviceId != null && this.testDeviceIp != null) {
+            if (deviceIdentification.equals(this.testDeviceId)) {
+                LOGGER.info("Using testDeviceId: {} and testDeviceIp: {}", this.testDeviceId, this.testDeviceIp);
+                inetAddress = InetAddress.getByName(this.testDeviceIp);
+            }
+        }
         final String deviceType = registerRequest.getDeviceType().toString();
         final boolean hasSchedule = registerRequest.getHasSchedule();
-        final String deviceIdentification = registerRequest.getDeviceIdentification();
 
         // Send message to OSGP-CORE to save IP Address, device type and has
         // schedule values in OSGP-CORE database.
@@ -204,7 +216,8 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
         locationInfo.setTimeOffset(this.timeZoneOffsetMinutes);
 
         // Get the GPS values from OSGP-CORE database.
-        final GpsCoordinatesDto gpsCoordinates = this.deviceDataService.getGpsCoordinatesForDevice(deviceIdentification);
+        final GpsCoordinatesDto gpsCoordinates = this.deviceDataService
+                .getGpsCoordinatesForDevice(deviceIdentification);
 
         // Add GPS information when available in meta data.
         if (gpsCoordinates != null && gpsCoordinates.getLatitude() != null && gpsCoordinates.getLongitude() != null) {
@@ -234,9 +247,9 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
                 .newBuilder()
                 .setConfirmRegisterDeviceResponse(
                         Oslp.ConfirmRegisterDeviceResponse.newBuilder().setStatus(Oslp.Status.OK)
-                        .setRandomDevice(confirmRegisterDeviceRequest.getRandomDevice())
-                        .setRandomPlatform(confirmRegisterDeviceRequest.getRandomPlatform())
-                        .setSequenceWindow(this.sequenceNumberWindow)).build();
+                                .setRandomDevice(confirmRegisterDeviceRequest.getRandomDevice())
+                                .setRandomPlatform(confirmRegisterDeviceRequest.getRandomPlatform())
+                                .setSequenceWindow(this.sequenceNumberWindow)).build();
     }
 
     private Oslp.Message handleEventNotificationRequest(final byte[] deviceId, final byte[] sequenceNumber,

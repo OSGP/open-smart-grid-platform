@@ -62,6 +62,9 @@ public class OslpConfig {
     private static final String PROPERTY_NAME_OSLP_SEQUENCE_NUMBER_WINDOW = "oslp.sequence.number.window";
     private static final String PROPERTY_NAME_OSLP_SEQUENCE_NUMBER_MAXIMUM = "oslp.sequence.number.maximum";
 
+    private static final String PROPERTY_NAME_OSLP_EXECUTE_RESUME_SCHEDULE_AFTER_SET_LIGHT = "oslp.execute.resume.schedule.after.set.light";
+    private static final String PROPERTY_NAME_OSLP_DELAY_BEFORE_EXECUTE_RESUME_SCHEDULE_AFTER_SET_LIGHT = "oslp.delay.before.execute.resume.schedule.after.set.light";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(OslpConfig.class);
 
     @Resource
@@ -153,37 +156,37 @@ public class OslpConfig {
 
     @Bean
     public String oslpKeyType() {
-        return this.environment.getProperty(PROPERTY_NAME_OSLP_SECURITY_KEYTYPE);
+        return this.environment.getRequiredProperty(PROPERTY_NAME_OSLP_SECURITY_KEYTYPE);
     }
 
     @Bean
     public String oslpSignatureProvider() {
-        return this.environment.getProperty(PROPERTY_NAME_OSLP_SECURITY_PROVIDER);
+        return this.environment.getRequiredProperty(PROPERTY_NAME_OSLP_SECURITY_PROVIDER);
     }
 
     @Bean
     public String oslpSignature() {
-        return this.environment.getProperty(PROPERTY_NAME_OSLP_SECURITY_SIGNATURE);
+        return this.environment.getRequiredProperty(PROPERTY_NAME_OSLP_SECURITY_SIGNATURE);
     }
 
     @Bean
     public int connectionTimeout() {
-        return Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_OSLP_TIMEOUT_CONNECT));
+        return Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_OSLP_TIMEOUT_CONNECT));
     }
 
     @Bean
     public int oslpPortClient() {
-        return Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_OSLP_PORT_CLIENT));
+        return Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_OSLP_PORT_CLIENT));
     }
 
     @Bean
     public int oslpPortClientLocal() {
-        return Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_OSLP_PORT_CLIENTLOCAL));
+        return Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_OSLP_PORT_CLIENTLOCAL));
     }
 
     @Bean
     public int oslpPortServer() {
-        return Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_OSLP_PORT_SERVER));
+        return Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_OSLP_PORT_SERVER));
     }
 
     @Bean
@@ -221,5 +224,54 @@ public class OslpConfig {
     @Qualifier("sequenceNumberMaximum")
     public Integer sequenceNumberMaximum() {
         return Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_OSLP_SEQUENCE_NUMBER_MAXIMUM));
+    }
+
+    @Bean
+    public boolean executeResumeScheduleAfterSetLight() {
+        final String property = this.environment
+                .getProperty(PROPERTY_NAME_OSLP_EXECUTE_RESUME_SCHEDULE_AFTER_SET_LIGHT);
+        if (property == null) {
+            return false;
+        }
+        try {
+            return Boolean.parseBoolean(property);
+        } catch (final Exception e) {
+            LOGGER.error(
+                    "Bean executeResumeScheduleAfterSetLight could not parse the property: {} with value: {}. valid values are 'true' and 'false'",
+                    PROPERTY_NAME_OSLP_EXECUTE_RESUME_SCHEDULE_AFTER_SET_LIGHT, property);
+            return false;
+        }
+    }
+
+    @Bean
+    public long delayBeforeExecuteResumeScheduleAfterSetLight() {
+        final long defaultValue = 0L;
+        final String property = this.environment
+                .getProperty(PROPERTY_NAME_OSLP_DELAY_BEFORE_EXECUTE_RESUME_SCHEDULE_AFTER_SET_LIGHT);
+        if (property == null) {
+            return defaultValue;
+        }
+        try {
+            return Long.parseLong(property);
+        } catch (final Exception e) {
+            LOGGER.error(
+                    "Bean delayBeforeExecuteResumeScheduleAfterSetLight could not parse the property: {} with value: {}. valid values should be all numbers",
+                    PROPERTY_NAME_OSLP_EXECUTE_RESUME_SCHEDULE_AFTER_SET_LIGHT, property);
+            return defaultValue;
+        }
+    }
+
+    @Bean
+    public String testDeviceId() {
+        final String testDeviceId = this.environment.getProperty("test.device.id");
+        LOGGER.info("testDeviceId: {}", testDeviceId);
+        return testDeviceId;
+    }
+
+    @Bean
+    public String testDeviceIp() {
+        final String testDeviceIp = this.environment.getProperty("test.device.ip");
+        LOGGER.info("testDeviceIp: {}", testDeviceIp);
+        return testDeviceIp;
     }
 }

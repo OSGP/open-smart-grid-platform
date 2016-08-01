@@ -58,7 +58,7 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
         final int channelId = e.getChannel().getId();
         if (this.callbackHandlers.containsKey(channelId)) {
             this.callbackHandlers.get(channelId).getDeviceResponseHandler()
-            .handleException(new NoDeviceResponseException());
+                    .handleException(new NoDeviceResponseException());
             this.callbackHandlers.remove(channelId);
         }
         super.channelDisconnected(ctx, e);
@@ -134,7 +134,7 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
         if (channel != null && channel.isConnected()) {
             LOGGER.info("{} Connection established to: {}", channelFuture.getChannel().getId(), address);
         } else {
-            LOGGER.info("The connection for device {} is not successfull", request.getDeviceId());
+            LOGGER.info("The connection for device {} is not successful", request.getDeviceId());
             LOGGER.warn("{} Unable to connect to: {}", channelFuture.getChannel().getId(), address);
             throw new IOException("Channel - Unable to connect");
         }
