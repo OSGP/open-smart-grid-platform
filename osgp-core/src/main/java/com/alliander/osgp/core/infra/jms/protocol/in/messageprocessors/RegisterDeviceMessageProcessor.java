@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.core.infra.jms.protocol.in.ProtocolRequestMessageProcessor;
 import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.dto.valueobjects.DeviceRegistrationDataDto;
@@ -103,12 +104,22 @@ public class RegisterDeviceMessageProcessor extends ProtocolRequestMessageProces
 
         if (device == null) {
             // Device does not exist yet, create without an owner.
-            device = new Device(deviceIdentification);
+            device = this.createNewDevice(deviceIdentification, deviceType);
         }
 
         // Device already exists, update registration data
         device.updateRegistrationData(address, deviceType);
         return this.deviceRepository.save(device);
+    }
+
+    private Device createNewDevice(final String deviceIdentification, final String deviceType) {
+        Device device;
+        if (Ssld.SSLD_TYPE.equalsIgnoreCase(deviceType) || Ssld.PSLD_TYPE.equalsIgnoreCase(deviceType)) {
+            device = new Ssld(deviceIdentification);
+        } else {
+            device = new Device(deviceIdentification);
+        }
+        return device;
     }
 
     private void clearDuplicateAddresses(final String deviceIdentification, final InetAddress address) {
