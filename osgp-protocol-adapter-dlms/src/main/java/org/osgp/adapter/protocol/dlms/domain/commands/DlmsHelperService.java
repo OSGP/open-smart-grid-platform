@@ -22,6 +22,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.DlmsConnection;
@@ -314,6 +315,21 @@ public class DlmsHelperService {
         return new CosemDateTimeDto(date, time, deviation, clockStatus);
     }
 
+    /**
+     * Creates a COSEM date-time object based on the given {@code dateTime}.
+     * <p>
+     * The deviation and clock status (is daylight saving active or not) are
+     * based on the zone of the given {@code dateTime}.
+     * <p>
+     * To use a DateTime as indication of the instant of time to be used with a
+     * specific deviation (that does not have to match the zone of the
+     * DateTime), use {@link #asDataObject(DateTime, int, boolean)} instead.
+     *
+     * @param dateTime
+     *            a DateTime to translate into COSEM date-time format.
+     * @return a DataObject having a CosemDateTime matching the given DateTime
+     *         as value.
+     */
     public DataObject asDataObject(final DateTime dateTime) {
 
         final CosemDate cosemDate = new CosemDate(dateTime.getYear(), dateTime.getMonthOfYear(),
@@ -332,11 +348,46 @@ public class DlmsHelperService {
         return DataObject.newDateTimeData(cosemDateTime);
     }
 
+    /**
+     * Creates a COSEM date-time object based on the given {@code dateTime}.
+     * This COSEM date-time will be for the same instant in time as the given
+     * {@code dateTime} but may be for another time zone.
+     * <p>
+     * Because the time zone with the {@code deviation} may be different than
+     * the one with the {@code dateTime}, and the {@code deviation} alone does
+     * not provide sufficient information on whether daylight savings is active
+     * for the given instant in time, {@code dst} has to be provided to indicate
+     * whether daylight savings are active.
+     * <p>
+     * If a DateTime for an instant in time is known with the correct time zone
+     * set, you can use {@link #asDataObject(DateTime)} as a simpler
+     * alternative.
+     *
+     * @param dateTime
+     *            a DateTime indicating an instant in time to be used for the
+     *            COSEM date-time.
+     * @param deviation
+     *            the deviation in minutes of local time to GMT to be included
+     *            in the COSEM date-time.
+     * @param dst
+     *            {@code true} if daylight savings are active for the instant of
+     *            the COSEM date-time, otherwise {@code false}.
+     * @return a DataObject having a CosemDateTime for the instant of the given
+     *         DateTime, with the given deviation and DST status information, as
+     *         value.
+     */
     public DataObject asDataObject(final DateTime dateTime, final int deviation, final boolean dst) {
-        final CosemDate cosemDate = new CosemDate(dateTime.getYear(), dateTime.getMonthOfYear(),
-                dateTime.getDayOfMonth());
-        final CosemTime cosemTime = new CosemTime(dateTime.getHourOfDay(), dateTime.getMinuteOfHour(),
-                dateTime.getSecondOfMinute(), dateTime.getMillisOfSecond() / 10);
+        /*
+         * Create a date time that may not point to the right instant in time,
+         * but that will give proper values getting the different fields for the
+         * COSEM date and time objects.
+         */
+        final DateTime dateTimeWithOffset = dateTime.toDateTime(DateTimeZone.UTC).minusMinutes(deviation);
+        final CosemDate cosemDate = new CosemDate(dateTimeWithOffset.getYear(), dateTimeWithOffset.getMonthOfYear(),
+                dateTimeWithOffset.getDayOfMonth());
+        final CosemTime cosemTime = new CosemTime(dateTimeWithOffset.getHourOfDay(),
+                dateTimeWithOffset.getMinuteOfHour(), dateTimeWithOffset.getSecondOfMinute(),
+                dateTimeWithOffset.getMillisOfSecond() / 10);
         final ClockStatus[] clockStatusBits;
 
         if (dst) {
