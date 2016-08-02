@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.Date;
 
 import org.openmuc.openiec61850.BdaBoolean;
+import org.openmuc.openiec61850.BdaFloat32;
 import org.openmuc.openiec61850.BdaInt16;
 import org.openmuc.openiec61850.BdaInt16U;
 import org.openmuc.openiec61850.BdaInt32;
@@ -153,6 +154,16 @@ public class NodeContainer {
         final BdaInt32 bdaInteger = (BdaInt32) this.parent.getChild(child.getDescription());
         bdaInteger.setValue(value);
         this.writeNode(bdaInteger);
+    }
+
+    public BdaFloat32 getFloat(final SubDataAttribute child) {
+        return (BdaFloat32) this.parent.getChild(child.getDescription());
+    }
+
+    public void writeFloat(final SubDataAttribute child, final Float value) {
+        final BdaFloat32 bdaFloat = (BdaFloat32) this.parent.getChild(child.getDescription());
+        bdaFloat.setFloat(value);
+        this.writeNode(bdaFloat);
     }
 
     /**

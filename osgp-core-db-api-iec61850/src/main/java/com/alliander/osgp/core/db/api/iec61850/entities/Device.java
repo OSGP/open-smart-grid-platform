@@ -70,6 +70,18 @@ public class Device implements Serializable {
     protected String deviceIdentification;
 
     /**
+     * GPS latitude.
+     */
+    @Column
+    private Float gpsLatitude;
+
+    /**
+     * GPS longitude.
+     */
+    @Column
+    private Float gpsLongitude;
+
+    /**
      * Indicates the type of the device. Example { @see Ssld.SSLD_TYPE }
      */
     @Column()
@@ -87,6 +99,8 @@ public class Device implements Serializable {
             final String containerPostalCode, final String containerStreet, final String containerNumber,
             final String containerMunicipality, final Float gpsLatitude, final Float gpsLongitude) {
         this.deviceIdentification = deviceIdentification;
+        this.gpsLatitude = gpsLatitude;
+        this.gpsLongitude = gpsLongitude;
     }
 
     @Override
@@ -107,6 +121,14 @@ public class Device implements Serializable {
 
     public String getDeviceIdentification() {
         return this.deviceIdentification;
+    }
+
+    public Float getGpsLatitude() {
+        return this.gpsLatitude;
+    }
+
+    public Float getGpsLongitude() {
+        return this.gpsLongitude;
     }
 
     public final Long getId() {
