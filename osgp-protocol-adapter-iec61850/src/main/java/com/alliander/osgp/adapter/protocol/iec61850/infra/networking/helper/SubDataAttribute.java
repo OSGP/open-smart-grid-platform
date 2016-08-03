@@ -44,6 +44,10 @@ public enum SubDataAttribute {
      */
     DAY("day"),
     /**
+     * Daylight saving time deviation in minutes.
+     */
+    DAYLIGHT_SAVING_TIME("dvt"),
+    /**
      * Attribute of Property Reg, used to enable or disable the device
      * registration.
      */
@@ -71,6 +75,14 @@ public enum SubDataAttribute {
      * gateway.
      */
     GATEWAY("gateway"),
+    /**
+     * Attribute of Property Atnm, latitude.
+     */
+    GPS_LATITUDE("lat"),
+    /**
+     * Attribute of Property Atnm, longitude.
+     */
+    GPS_LONGITUDE("lon"),
     /**
      * Attribute of Property OnItvB, itv (itv followed by an index from 1 ..
      * 60).

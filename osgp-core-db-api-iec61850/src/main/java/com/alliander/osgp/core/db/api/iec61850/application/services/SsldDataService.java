@@ -14,10 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alliander.osgp.core.db.api.iec61850.entities.Device;
 import com.alliander.osgp.core.db.api.iec61850.entities.DeviceOutputSetting;
 import com.alliander.osgp.core.db.api.iec61850.entities.Ssld;
 import com.alliander.osgp.core.db.api.iec61850.repositories.SsldDataRepository;
 import com.alliander.osgp.core.db.api.iec61850valueobjects.RelayType;
+import com.alliander.osgp.dto.valueobjects.GpsCoordinatesDto;
 
 @Service
 @Transactional(value = "iec61850OsgpCoreDbApiTransactionManager", readOnly = true)
@@ -108,6 +110,17 @@ public class SsldDataService {
             if (d.getInternalId() == index) {
                 return d;
             }
+        }
+
+        return null;
+    }
+
+    public GpsCoordinatesDto getGpsCoordinatesForDevice(final String deviceIdentification) {
+
+        final Device device = this.findDevice(deviceIdentification);
+
+        if (device != null) {
+            return new GpsCoordinatesDto(device.getGpsLatitude(), device.getGpsLongitude());
         }
 
         return null;

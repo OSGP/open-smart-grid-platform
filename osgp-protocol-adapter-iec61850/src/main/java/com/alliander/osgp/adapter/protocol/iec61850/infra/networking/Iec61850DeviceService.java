@@ -48,6 +48,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetFirmware
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetPowerUsageHistoryDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetStatusDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DaylightSavingTimeTransition;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DaylightSavingTimeTransition.DstTransitionFormat;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.EventType;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.ScheduleEntry;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.ScheduleWeekday;
@@ -1745,38 +1746,54 @@ public class Iec61850DeviceService implements DeviceService {
     private DateTime getLocalTimeForDevice(final DeviceConnection deviceConnection) {
         LOGGER.info("Converting local time to the device's local time");
 
-        // getting the clock configuration values
-        LOGGER.info("Reading the clock configuration values");
-
+        // Get the Clock node.
         final NodeContainer clock = deviceConnection.getFcModelNode(LogicalNode.STREET_LIGHT_CONFIGURATION,
                 DataAttribute.CLOCK, Fc.CF);
+        LOGGER.info("Trying to read automatic summer-timing enabled...");
         final boolean automaticSummerTimingEnabled = clock.getBoolean(SubDataAttribute.AUTOMATIC_SUMMER_TIMING_ENABLED)
                 .getValue();
+        LOGGER.info("Value of automaticSummerTimingEnabled: {}", automaticSummerTimingEnabled);
+
+        int daylightSavingTime = 0;
 
         if (automaticSummerTimingEnabled) {
-            // TODO figure out which time is used when daylight savings is
-            // disabled. For example, if you disable it when daylight savings is
-            // in effect, does it stay in daylight saving all year round or does
-            // it revert to regular time?
+            LOGGER.info("Automatic summer-timing is enabled, trying to read the begin and end of summer time...");
+            final String summerTimeDetails = clock.getString(SubDataAttribute.SUMMER_TIME_DETAILS);
+            final String winterTimeDetails = clock.getString(SubDataAttribute.WINTER_TIME_DETAILS);
+            LOGGER.info("Value of summerTimeDetails: {}", summerTimeDetails);
+            LOGGER.info("Value of winterTimeDetails: {}", winterTimeDetails);
 
-            // TODO use these once a better time format is introduced. Check to
-            // see if the current date is between the start and end time of the
-            // daylight saving. Also check to see if the current time is in
-            // daylight savings.
+            final DstTransitionFormat dstTransitionFormat = DstTransitionFormat.DAY_OF_WEEK_OF_MONTH;
+            final DateTime now = DateTime.now();
+            final int year = now.getYear();
+            final DateTime summerTime = dstTransitionFormat.getDateTime(TIME_ZONE_AMSTERDAM, summerTimeDetails, year);
+            final DateTime winterTime = dstTransitionFormat.getDateTime(TIME_ZONE_AMSTERDAM, winterTimeDetails, year);
+            LOGGER.info("Value of summerTime: {}", summerTime.toString());
+            LOGGER.info("Value of winterTime: {}", winterTime.toString());
 
-            // final BdaVisibleString summerTimeDetails = (BdaVisibleString)
-            // clockConfiguration.getChild("dstBegT");
-            // final BdaVisibleString winterTimeDetails = (BdaVisibleString)
-            // clockConfiguration.getChild("dstEndT");
+            if (now.isAfter(summerTime) && now.isBefore(winterTime)) {
+                LOGGER.info("It is summer time, trying to read summer time deviation...");
+                // Get the DST deviation from the data-attribute dvt from the
+                // Clock which is in minutes.
+                final Short deviation = clock.getShort(SubDataAttribute.DAYLIGHT_SAVING_TIME).getValue();
+                LOGGER.info("Value of deviation: {} minutes", deviation);
+                daylightSavingTime = deviation / 60;
+            } else {
+                LOGGER.info("It is winter time.");
+            }
         }
 
+        LOGGER.info("Trying to read timezone...");
         final Short timezone = clock.getShort(SubDataAttribute.TIME_ZONE).getValue();
+        LOGGER.info("Value of timezone: {} minutes", timezone);
 
-        // TODO Default value for time zone offset is 60, so I'm assuming that
-        // means 60 minutes / 1 hour. Verify this assumption.
+        // Default value for time zone offset is 60, that
+        // means 60 minutes / 60 = 1 hour.
         final int offset = timezone / 60;
+        final DateTime dateTime = DateTime.now().plusHours(offset + daylightSavingTime);
+        LOGGER.info("Value of dateTime: {}", dateTime);
 
-        return DateTime.now().withZone(DateTimeZone.forOffsetHours(offset));
+        return dateTime;
     }
 
     private List<PowerUsageDataDto> getPowerUsageHistoryDataFromRelay(final DeviceConnection deviceConnection,

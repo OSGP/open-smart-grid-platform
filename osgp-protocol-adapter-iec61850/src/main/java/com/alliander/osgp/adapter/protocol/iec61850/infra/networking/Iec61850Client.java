@@ -33,6 +33,8 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Func
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalNode;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.NodeContainer;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
+import com.alliander.osgp.core.db.api.iec61850.entities.Ssld;
+import com.alliander.osgp.core.db.api.iec61850.repositories.SsldDataRepository;
 
 @Component
 public class Iec61850Client {
@@ -44,6 +46,9 @@ public class Iec61850Client {
 
     @Autowired
     private Iec61850DeviceService iec61850DeviceService;
+
+    @Autowired
+    private SsldDataRepository ssldDataRepository;
 
     @Autowired
     private int iec61850PortClient;
@@ -203,10 +208,28 @@ public class Iec61850Client {
             public Void apply() throws Exception {
                 final DeviceConnection deviceConnection = new DeviceConnection(new Iec61850Connection(
                         iec61850ClientAssociation, serverModel), deviceIdentification);
+
+                // Set the location information for this device.
+                final Ssld ssld = Iec61850Client.this.ssldDataRepository
+                        .findByDeviceIdentification(deviceIdentification);
+                if (ssld != null) {
+                    final Float longitude = ssld.getGpsLongitude();
+                    final Float latitude = ssld.getGpsLatitude();
+                    if (longitude != null && latitude != null) {
+                        final NodeContainer astronomical = deviceConnection.getFcModelNode(
+                                LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.ASTRONOMICAL, Fc.CF);
+                        astronomical.writeFloat(SubDataAttribute.GPS_LONGITUDE, ssld.getGpsLongitude());
+                        astronomical.writeFloat(SubDataAttribute.GPS_LATITUDE, ssld.getGpsLatitude());
+                    }
+                }
+
+                // Disable the registration by the device by setting attribute
+                // of property Reg to false.
                 final NodeContainer deviceRegistration = deviceConnection.getFcModelNode(
                         LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.REGISTRATION, Fc.CF);
                 deviceRegistration.writeBoolean(SubDataAttribute.DEVICE_REGISTRATION_ENABLED, false);
 
+                // Make sure the device can send a report.
                 Iec61850Client.this.iec61850DeviceService.enableReportingOnDevice(deviceConnection,
                         deviceIdentification);
                 return null;
