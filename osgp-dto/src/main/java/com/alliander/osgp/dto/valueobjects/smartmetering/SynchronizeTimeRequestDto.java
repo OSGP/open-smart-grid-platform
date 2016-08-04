@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -10,16 +10,22 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 public class SynchronizeTimeRequestDto implements ActionRequestDto {
 
-    private static final long serialVersionUID = 2569975731784782614L;
+    private static final long serialVersionUID = -4724182593235620894L;
 
-    private String deviceIdentification;
+    private final int deviation;
 
-    public String getDeviceIdentification() {
-        return this.deviceIdentification;
+    private final boolean dst;
+
+    public SynchronizeTimeRequestDto(final int deviation, final boolean dst) {
+        this.deviation = deviation;
+        this.dst = dst;
     }
 
-    public void setDeviceIdentification(final String deviceIdentification) {
-        this.deviceIdentification = deviceIdentification;
+    public int getDeviation() {
+        return this.deviation;
     }
 
+    public boolean isDst() {
+        return this.dst;
+    }
 }
