@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.AdhocService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequest;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequestData;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
@@ -35,8 +35,8 @@ public class SynchronizeTimeRequestMessageProcessor extends WebServiceRequestMes
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
             throws FunctionalException {
 
-        final SynchronizeTimeRequest synchronizeTimeRequest = (SynchronizeTimeRequest) dataObject;
+        final SynchronizeTimeRequestData synchronizeTimeRequestData = (SynchronizeTimeRequestData) dataObject;
 
-        this.adhocService.synchronizeTime(deviceMessageMetadata, synchronizeTimeRequest);
+        this.adhocService.synchronizeTime(deviceMessageMetadata, synchronizeTimeRequestData);
     }
 }

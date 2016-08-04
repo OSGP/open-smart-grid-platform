@@ -10,21 +10,12 @@
     <xsd:import namespace="http://www.alliander.com/schemas/osgp/common/2014/10"
         schemaLocation="common.xsd" />
 
-
-    <xsd:complexType name="SynchronizeTimeRequestData">
-        <xsd:complexContent>
-            <xsd:extension base="common:Command">
-                <xsd:sequence>
-                </xsd:sequence>
-            </xsd:extension>
-        </xsd:complexContent>
-    </xsd:complexType>
-
     <xsd:element name="SynchronizeTimeRequest">
         <xsd:complexType>
             <xsd:sequence>
                 <xsd:element name="DeviceIdentification"
                     type="common:DeviceIdentification" />
+                <xsd:element name="SynchronizeTimeRequestData" type="tns:SynchronizeTimeRequestData" />
             </xsd:sequence>
         </xsd:complexType>
     </xsd:element>
@@ -301,5 +292,16 @@
             <xsd:enumeration value="AUTHENTICATED_ACCESS" />
         </xsd:restriction>
     </xsd:simpleType>
+    
+    <xsd:complexType name="SynchronizeTimeRequestData">
+        <xsd:complexContent>
+            <xsd:extension base="common:Command">
+                <xsd:sequence>
+                  <xsd:element type="common:DateTimeDeviation" name="Deviation" />
+                  <xsd:element type="xsd:boolean" name="Dst" default="false" />
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
 
 </xsd:schema>
