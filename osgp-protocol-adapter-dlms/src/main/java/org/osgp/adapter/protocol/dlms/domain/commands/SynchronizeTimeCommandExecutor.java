@@ -27,7 +27,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
 
 @Component()
-public class SynchronizeTimeCommandExecutor extends AbstractCommandExecutor<DataObject, AccessResultCode> {
+public class SynchronizeTimeCommandExecutor extends
+AbstractCommandExecutor<SynchronizeTimeRequestDto, AccessResultCode> {
 
     private static final int CLASS_ID = 8;
     private static final ObisCode OBIS_CODE = new ObisCode("0.0.1.0.0.255");
@@ -41,16 +42,12 @@ public class SynchronizeTimeCommandExecutor extends AbstractCommandExecutor<Data
     }
 
     @Override
-    public DataObject fromBundleRequestInput(final ActionRequestDto bundleInput) throws ProtocolAdapterException {
+    public SynchronizeTimeRequestDto fromBundleRequestInput(final ActionRequestDto bundleInput)
+            throws ProtocolAdapterException {
 
         this.checkActionRequestType(bundleInput);
 
-        /*
-         * SynchronizeTimeRequestDto does not contain relevant input for the
-         * execute method. It does not appear to need anything as DataObject
-         * either, so for now return null here.
-         */
-        return null;
+        return (SynchronizeTimeRequestDto) bundleInput;
     }
 
     @Override
@@ -62,12 +59,13 @@ public class SynchronizeTimeCommandExecutor extends AbstractCommandExecutor<Data
     }
 
     @Override
-    public AccessResultCode execute(final DlmsConnection conn, final DlmsDevice device, final DataObject object)
-            throws ProtocolAdapterException {
+    public AccessResultCode execute(final DlmsConnection conn, final DlmsDevice device,
+            final SynchronizeTimeRequestDto synchronizeTimeRequestDto) throws ProtocolAdapterException {
         final AttributeAddress clockTime = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
         final DateTime dt = DateTime.now();
-        final DataObject time = this.dlmsHelperService.asDataObject(dt);
+        final DataObject time = this.dlmsHelperService.asDataObject(dt, synchronizeTimeRequestDto.getDeviation(),
+                synchronizeTimeRequestDto.isDst());
 
         final SetParameter setParameter = new SetParameter(clockTime, time);
 

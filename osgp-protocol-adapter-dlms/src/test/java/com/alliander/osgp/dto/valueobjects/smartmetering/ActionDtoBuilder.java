@@ -109,7 +109,7 @@ public class ActionDtoBuilder {
     }
 
     public SynchronizeTimeRequestDto makeSynchronizeTimeRequestDataDto() {
-        return new SynchronizeTimeRequestDto();
+        return new SynchronizeTimeRequestDto(120, true);
     }
 
     public GetConfigurationRequestDto makeGetConfigurationRequestDataDto() {

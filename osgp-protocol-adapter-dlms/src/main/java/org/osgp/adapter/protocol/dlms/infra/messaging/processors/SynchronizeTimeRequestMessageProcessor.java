@@ -18,6 +18,8 @@ import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
+
 /**
  * Class for processing Synchronize Time Request messages
  */
@@ -34,7 +36,7 @@ public class SynchronizeTimeRequestMessageProcessor extends DeviceRequestMessage
     @Override
     protected Serializable handleMessage(final DlmsConnection conn, final DlmsDevice device,
             final Serializable requestObject) throws ProtocolAdapterException {
-        this.adhocService.synchronizeTime(conn, device);
+        this.adhocService.synchronizeTime(conn, device, (SynchronizeTimeRequestDto) requestObject);
         return null;
     }
 }
