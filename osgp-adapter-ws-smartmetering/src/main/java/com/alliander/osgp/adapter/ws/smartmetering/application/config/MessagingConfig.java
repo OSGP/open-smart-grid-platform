@@ -71,6 +71,9 @@ public class MessagingConfig {
     private static final String PROPERTY_NAME_JMS_SMART_METERING_RESPONSES_TIME_TO_LIVE = "jms.smartmetering.responses.time.to.live";
     private static final String PROPERTY_NAME_JMS_SMART_METERING_RESPONSES_RECEIVE_TIMEOUT = "jms.smartmetering.responses.receive.timeout";
 
+    private static final String PROPERTY_NAME_JMS_SMART_METERING_RESPONSES_CONCURRENT_CONSUMERS = "jms.smartmetering.responses.concurrent.consumers";
+    private static final String PROPERTY_NAME_JMS_SMART_METERING_RESPONSES_MAX_CONCURRENT_CONSUMERS = "jms.smartmetering.responses.max.concurrent.consumers";
+
     private static final String PROPERTY_NAME_JMS_SMART_METERING_RESPONSES_INITIAL_REDELIVERY_DELAY = "jms.smartmetering.responses.initial.redelivery.delay";
     private static final String PROPERTY_NAME_JMS_SMART_METERING_RESPONSES_MAXIMUM_REDELIVERIES = "jms.smartmetering.responses.maximum.redeliveries";
     private static final String PROPERTY_NAME_JMS_SMART_METERING_RESPONSES_MAXIMUM_REDELIVERY_DELAY = "jms.smartmetering.responses.maximum.redelivery.delay";
@@ -259,15 +262,10 @@ public class MessagingConfig {
         final DefaultMessageListenerContainer messageListenerContainer = new DefaultMessageListenerContainer();
         messageListenerContainer.setConnectionFactory(this.pooledConnectionFactory());
         messageListenerContainer.setDestination(this.smartMeteringResponsesQueue());
-
-        //
-        // TODO: add concurrent consumer properties.
-        //
-
-        // messageListenerContainer.setConcurrentConsumers(Integer.parseInt(this.environment
-        // .getRequiredProperty(PROPERTY_NAME_JMS_SMART_METERING_RESPONSES_CONCURRENT_CONSUMERS)));
-        // messageListenerContainer.setMaxConcurrentConsumers(Integer.parseInt(this.environment
-        // .getRequiredProperty(PROPERTY_NAME_JMS_SMART_METERING_RESPONSES_MAX_CONCURRENT_CONSUMERS)));
+        messageListenerContainer.setConcurrentConsumers(Integer.parseInt(
+                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_SMART_METERING_RESPONSES_CONCURRENT_CONSUMERS)));
+        messageListenerContainer.setMaxConcurrentConsumers(Integer.parseInt(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_SMART_METERING_RESPONSES_MAX_CONCURRENT_CONSUMERS)));
         messageListenerContainer.setMessageListener(this.smartMeteringResponseMessageListener);
         messageListenerContainer.setSessionTransacted(true);
         return messageListenerContainer;
