@@ -175,6 +175,28 @@
       </xsd:complexType>
    </xsd:element>
 
+   <xsd:element name="FindDeviceModelRequest">
+      <xsd:complexType>
+         <xsd:sequence>
+             <xsd:element name="ModelCode" minOccurs="0">
+               <xsd:simpleType>
+                     <xsd:restriction base="xsd:string">
+                    <xsd:maxLength value="15" />
+               </xsd:restriction>
+            </xsd:simpleType>
+         </xsd:element>
+         </xsd:sequence>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:element name="FindDeviceModelResponse">
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element name="DeviceModel" type="tns:DeviceModel" />
+         </xsd:sequence>
+      </xsd:complexType>
+   </xsd:element>
+
    <xsd:element name="AddDeviceModelRequest">
       <xsd:complexType>
          <xsd:sequence>

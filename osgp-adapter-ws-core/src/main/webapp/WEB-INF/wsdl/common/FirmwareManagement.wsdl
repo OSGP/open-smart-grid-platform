@@ -89,6 +89,21 @@
         <wsdl:part element="fman:FindAllDeviceModelsRequest" name="FindAllDeviceModelsRequest">
         </wsdl:part>
     </wsdl:message>
+
+    <wsdl:message name="FindDeviceModelResponse">
+        <wsdl:part element="fman:FindDeviceModelResponse" name="FindDeviceModelResponse">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="FindDeviceModelHeader">
+        <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+        <wsdl:part element="common:UserName" name="UserName" />
+        <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+    </wsdl:message>
+    <wsdl:message name="FindDeviceModelRequest">
+        <wsdl:part element="fman:FindDeviceModelRequest" name="FindDeviceModelRequest">
+        </wsdl:part>
+    </wsdl:message>
+
     <wsdl:message name="AddDeviceModelHeader">
         <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
         <wsdl:part element="common:UserName" name="UserName" />
@@ -374,7 +389,15 @@
                 name="FindAllDeviceModelsResponse">
             </wsdl:output>
         </wsdl:operation>
-                <wsdl:operation name="AddDeviceModel">
+        <wsdl:operation name="FindDeviceModel">
+            <wsdl:input message="tns:FindDeviceModelRequest"
+                name="FindDeviceModelRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:FindDeviceModelResponse"
+                name="FindDeviceModelResponse">
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="AddDeviceModel">
             <wsdl:input message="tns:AddDeviceModelRequest" name="AddDeviceModelRequest">
             </wsdl:input>
             <wsdl:output message="tns:AddDeviceModelResponse" name="AddDeviceModelResponse">
@@ -584,6 +607,18 @@
                 <soap:body use="literal" />
             </wsdl:input>
             <wsdl:output name="FindAllDeviceModelsResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="FindDeviceModel">
+            <soap:operation soapAction="" />
+            <wsdl:input name="FindDeviceModelRequest">
+                <soap:header message="tns:FindDeviceModelHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:FindDeviceModelHeader" part="UserName" use="literal" />
+                <soap:header message="tns:FindDeviceModelHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="FindDeviceModelResponse">
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>

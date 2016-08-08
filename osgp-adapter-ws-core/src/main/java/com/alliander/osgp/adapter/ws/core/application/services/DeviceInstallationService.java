@@ -25,12 +25,12 @@ import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessageSender;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessageType;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceAuthorizationRepository;
+import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceModelRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableSsldRepository;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.Organisation;
-import com.alliander.osgp.domain.core.entities.ProtocolInfo;
 import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.ExistingEntityException;
 import com.alliander.osgp.domain.core.exceptions.NotAuthorizedException;
@@ -74,6 +74,9 @@ public class DeviceInstallationService {
     private WritableSsldRepository writableSsldRepository;
 
     @Autowired
+    private WritableDeviceModelRepository deviceModelRepository;
+
+    @Autowired
     private CorrelationIdProviderService correlationIdProviderService;
 
     @Autowired
@@ -105,22 +108,15 @@ public class DeviceInstallationService {
         final Device existingDevice = this.writableDeviceRepository.findByDeviceIdentification(newDevice
                 .getDeviceIdentification());
 
-        final ProtocolInfo protocolInfo = this.protocolRepository.findByProtocolAndProtocolVersion(
-                this.defaultProtocol, this.defaultProtocolVersion);
-
         if (existingDevice == null) {
             final Ssld ssld = new Ssld(newDevice.getDeviceIdentification(), newDevice.getAlias(),
                     newDevice.getContainerCity(), newDevice.getContainerPostalCode(), newDevice.getContainerStreet(),
                     newDevice.getContainerNumber(), newDevice.getContainerMunicipality(), newDevice.getGpsLatitude(),
                     newDevice.getGpsLongitude());
             ssld.setHasSchedule(false);
+            ssld.setDeviceModel(newDevice.getDeviceModel());
             // device not created yet, add new device
             final DeviceAuthorization authorization = ssld.addAuthorization(organisation, DeviceFunctionGroup.OWNER);
-
-            // add default protocol if not set yet
-            if (newDevice.getProtocolInfo() == null) {
-                ssld.updateProtocol(protocolInfo);
-            }
 
             // Since the column device in device authorizations is cascaded,
             // this will also save the SSLD and device entities.
@@ -146,11 +142,6 @@ public class DeviceInstallationService {
             ssld.updateMetaData(null, newDevice.getContainerCity(), newDevice.getContainerPostalCode(),
                     newDevice.getContainerStreet(), newDevice.getContainerNumber(), null, newDevice.getGpsLatitude(),
                     newDevice.getGpsLongitude());
-
-            // add default protocol if not set yet
-            if (existingDevice.getProtocolInfo() == null) {
-                ssld.updateProtocol(protocolInfo);
-            }
 
             // Since the column device in device authorizations is cascaded,
             // this will also save the SSLD and device entities.

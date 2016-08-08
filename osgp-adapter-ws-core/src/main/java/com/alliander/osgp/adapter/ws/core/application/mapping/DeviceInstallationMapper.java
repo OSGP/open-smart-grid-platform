@@ -17,6 +17,7 @@ import ma.glasnost.orika.metadata.Type;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceModelRepository;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 
@@ -25,6 +26,9 @@ public class DeviceInstallationMapper extends ConfigurableMapper {
 
     @Autowired
     private SsldRepository ssldRepository;
+
+    @Autowired
+    private WritableDeviceModelRepository writableDeviceModelRepository;
 
     public DeviceInstallationMapper() {
         super(false);
@@ -37,16 +41,21 @@ public class DeviceInstallationMapper extends ConfigurableMapper {
 
     @Override
     public void configure(final MapperFactory mapperFactory) {
-        mapperFactory.getConverterFactory().registerConverter(new DeviceConverter(this.ssldRepository));
+        mapperFactory.getConverterFactory().registerConverter(
+                new DeviceConverter(this.ssldRepository, this.writableDeviceModelRepository));
     }
 
     private static class DeviceConverter extends
-    BidirectionalConverter<Device, com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device> {
+            BidirectionalConverter<Device, com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device> {
 
         private SsldRepository ssldRepository;
 
-        public DeviceConverter(final SsldRepository ssldRepository) {
+        private WritableDeviceModelRepository writableDeviceModelRepository;
+
+        public DeviceConverter(final SsldRepository ssldRepository,
+                final WritableDeviceModelRepository writableDeviceModelRepository) {
             this.ssldRepository = ssldRepository;
+            this.writableDeviceModelRepository = writableDeviceModelRepository;
         }
 
         @Override
@@ -60,6 +69,8 @@ public class DeviceInstallationMapper extends ConfigurableMapper {
                         source.getContainerCity(), source.getContainerPostalCode(), source.getContainerStreet(),
                         source.getContainerNumber(), source.getContainerMunicipality(), source.getGpsLatitude(),
                         source.getGpsLongitude());
+                destination.setDeviceModel(this.writableDeviceModelRepository.findByModelCode(source.getDeviceModel()
+                        .getModelCode()));
 
                 return destination;
             }

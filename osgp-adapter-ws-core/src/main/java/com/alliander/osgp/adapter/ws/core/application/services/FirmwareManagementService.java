@@ -262,10 +262,20 @@ public class FirmwareManagementService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_DEVICE_MODELS);
 
-        List<DeviceModel> deviceModels = new ArrayList<DeviceModel>();
-        deviceModels = this.deviceModelRepository.findAll();
+        return this.deviceModelRepository.findAll();
+    }
 
-        return deviceModels;
+    /**
+     * Returns a {@link DeviceModel}, it it exists
+     */
+    @Transactional(value = "writableTransactionManager")
+    public DeviceModel findDeviceModel(final String organisationIdentification, final String deviceModelCode)
+            throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_DEVICE_MODELS);
+
+        return this.deviceModelRepository.findByModelCode(deviceModelCode);
     }
 
     /**

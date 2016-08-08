@@ -181,6 +181,7 @@
       <xsd:element name="Activated" type="xsd:boolean" minOccurs="0" />
       <xsd:element name="HasSchedule" type="xsd:boolean" minOccurs="0" />
       <xsd:element name="PublicKeyPresent" type="xsd:boolean" minOccurs="0" />
+      <xsd:element name="DeviceModel" type="tns:DeviceModel" />
     </xsd:sequence>
   </xsd:complexType>
 
@@ -306,5 +307,31 @@
       <xsd:enumeration value="SECURITY_EVENTS" />
     </xsd:restriction>
   </xsd:simpleType>
+
+  <xsd:complexType name="DeviceModel">
+      <xsd:sequence>
+         <xsd:element name="Manufacturer" minOccurs="1" maxOccurs="1">
+            <xsd:simpleType>
+               <xsd:restriction base="xsd:string">
+                  <xsd:maxLength value="4" />
+               </xsd:restriction>
+            </xsd:simpleType>
+         </xsd:element>
+         <xsd:element name="ModelCode" minOccurs="0" maxOccurs="1">
+            <xsd:simpleType>
+               <xsd:restriction base="xsd:string">
+                  <xsd:maxLength value="15" />
+               </xsd:restriction>
+            </xsd:simpleType>
+         </xsd:element>
+         <xsd:element name="Description" minOccurs="0" maxOccurs="1">
+            <xsd:simpleType>
+               <xsd:restriction base="xsd:string">
+                  <xsd:maxLength value="255" />
+               </xsd:restriction>
+            </xsd:simpleType>
+         </xsd:element>
+      </xsd:sequence>
+   </xsd:complexType>
 
 </xsd:schema>

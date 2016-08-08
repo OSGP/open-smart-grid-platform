@@ -46,6 +46,8 @@ import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllFirmw
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllFirmwaresResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllManufacturersRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllManufacturersResponse;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindDeviceModelRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindDeviceModelResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindFirmwareRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindFirmwareResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FirmwareVersion;
@@ -453,6 +455,33 @@ public class FirmwareManagementEndpoint {
             response.getDeviceModels().addAll(
                     this.firmwareManagementMapper.mapAsList(deviceModels,
                             com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.DeviceModel.class));
+        } catch (final MethodConstraintViolationException e) {
+            LOGGER.error("Exception find all devicemodels {}: ", e);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+
+        return response;
+    }
+
+    @PayloadRoot(localPart = "FindDeviceModelRequest", namespace = NAMESPACE)
+    @ResponsePayload
+    public FindDeviceModelResponse findDeviceModel(@OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final FindDeviceModelRequest request) throws OsgpException {
+
+        LOGGER.info("Find DeviceModels for organisation: {} with Id {}.", organisationIdentification,
+                request.getModelCode());
+
+        final FindDeviceModelResponse response = new FindDeviceModelResponse();
+
+        try {
+            final DeviceModel deviceModel = this.firmwareManagementService.findDeviceModel(organisationIdentification,
+                    request.getModelCode());
+
+            response.setDeviceModel(this.firmwareManagementMapper.map(deviceModel,
+                    com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.DeviceModel.class));
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("Exception find all devicemodels {}: ", e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
