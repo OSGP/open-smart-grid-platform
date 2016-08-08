@@ -101,9 +101,9 @@
       </snapshots>
     </repository>
     <repository>
-      <id>givwenzen-repo</id>
-      <name>GivWenZen Repository</name>
-      <url>http://givwenzen.googlecode.com/svn/maven2</url>
+      <id>local-maven-repo</id>
+      <name>Local Repository</name>
+      <url>file:///${project.parent.basedir}/local-maven-repo</url>
       <releases>
         <enabled>true</enabled>
       </releases>
