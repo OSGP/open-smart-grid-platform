@@ -19,4 +19,10 @@ public class Device {
     public void aGasDeviceWithDeviceID(final String deviceId) throws Throwable {
         this.deviceId.setDeviceIdG(deviceId);
     }
+    
+    @Given("^a device$")
+    public void aDevice(final Table table) throw Throwable {
+    	
+    	// TODO: Create device in database.
+    }
 }

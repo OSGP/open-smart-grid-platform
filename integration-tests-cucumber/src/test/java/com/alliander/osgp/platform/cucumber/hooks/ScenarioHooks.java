@@ -25,66 +25,36 @@ import cucumber.api.Scenario;
 import cucumber.api.java.Before;
 
 /**
- * class for preparing specific scenarios
- *
+ * Class with all the scenario hooks when each scenario runs.
  */
 public class ScenarioHooks {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ScenarioHooks.class);
 
     private DeviceRepository deviceRepository;
     private DlmsDeviceRepository dlmsDeviceRepository;
     private DeviceAuthorizationRepository deviceAuthorizationRepository;
 
-    @Before("@SLIM-218")
-    public void beforeSlim218(Scenario scenario) {
-
-        LOGGER.info("Preparing scenario for @SLIM-218");
-
-        LOGGER.info("Scenario name: {}", scenario.getName());
+    /**
+     * Remove all stuff from the database before each test. Each test should stand on its own. Therefore
+     * you should garantee that the scenario is complete.
+     */
+    @Before
+    public void beforeScenario() {
 
         final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("cucumber.xml");
+
         this.deviceRepository = context.getBean(DeviceRepository.class);
         this.dlmsDeviceRepository = context.getBean(DlmsDeviceRepository.class);
         this.deviceAuthorizationRepository = context.getBean(DeviceAuthorizationRepository.class);
 
-        this.deleteDevicesFromPlatform(Arrays.asList("E0026000059790003", "G00XX561204926019"));
-
-        LOGGER.info("Ready preparing scenario for @SLIM-218");
+        this.deviceAuthorizationRepository.removeAll();
+        this.deviceRepository.removeAll();
+        this.dlmsDeviceRepository.removeAll();
 
         context.close();
     }
-
-    private void deleteDevicesFromPlatform(List<String> deviceIdList) {
-        for (final String deviceId : deviceIdList) {
-            this.deleteCoreRecords(deviceId);
-            this.deleteDlmsRecords(deviceId);
-        }
+    
+    @After
+    public void afterScenario() {
+    	
     }
-
-    private void deleteCoreRecords(String deviceId) {
-        Device device = this.deviceRepository.findByDeviceIdentification(deviceId);
-
-        if (device != null) {
-            LOGGER.info("deleting device and device_authorisations" + deviceId);
-            final List<DeviceAuthorization> devAuths = this.deviceAuthorizationRepository.findByDevice(device);
-            for (final DeviceAuthorization devauth : devAuths) {
-                this.deviceAuthorizationRepository.delete(devauth);
-            }
-
-            device = this.deviceRepository.findByDeviceIdentification(deviceId);
-            if (device != null) {
-                this.deviceRepository.delete(device);
-            }
-        }
-    }
-
-    private void deleteDlmsRecords(String deviceId) {
-        final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceId);
-        if (dlmsDevice != null) {
-            LOGGER.info("deleting dlmsDevice and securityKeys..." + deviceId);
-            this.dlmsDeviceRepository.delete(dlmsDevice);
-        }
-    }
-
 }
