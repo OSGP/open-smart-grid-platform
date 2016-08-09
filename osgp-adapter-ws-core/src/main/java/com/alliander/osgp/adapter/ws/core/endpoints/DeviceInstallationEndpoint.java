@@ -43,6 +43,7 @@ import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StopDeviceTe
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.UpdateDeviceRequest;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.UpdateDeviceResponse;
 import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.valueobjects.DeviceStatus;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -167,7 +168,7 @@ public class DeviceInstallationEndpoint {
                 .getUpdatedDevice().getDeviceIdentification());
 
         try {
-            final Device device = this.deviceInstallationMapper.map(request.getUpdatedDevice(), Device.class);
+            final Ssld device = this.deviceInstallationMapper.map(request.getUpdatedDevice(), Ssld.class);
 
             this.deviceInstallationService.updateDevice(organisationIdentification, device);
 
