@@ -14,6 +14,7 @@ import org.springframework.validation.annotation.Validated;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.Ssld;
+import com.alliander.osgp.domain.core.exceptions.InactiveDeviceException;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.exceptions.UnregisteredDeviceException;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
@@ -43,7 +44,7 @@ public class DeviceDomainService {
     }
 
     public Device searchActiveDevice(@Identification final String deviceIdentification)
-            throws UnregisteredDeviceException, UnknownEntityException {
+            throws UnregisteredDeviceException, InactiveDeviceException, UnknownEntityException {
 
         final Device device = this.searchDevice(deviceIdentification);
         final Ssld ssld = this.ssldRepository.findOne(device.getId());
@@ -57,7 +58,7 @@ public class DeviceDomainService {
         }
 
         if (!device.isActivated()) {
-            throw new UnregisteredDeviceException(deviceIdentification);
+            throw new InactiveDeviceException(deviceIdentification);
         }
         return device;
     }
