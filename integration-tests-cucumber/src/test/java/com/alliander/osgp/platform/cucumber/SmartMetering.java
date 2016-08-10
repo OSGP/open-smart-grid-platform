@@ -41,9 +41,11 @@ public class SmartMetering {
     private static final String ERRMSG = "The soapUi xml fragment: \n %s \ndoes not contain all three tags: \n %s, %s and/or %s";
 
     /**
-     * TIME_OUT represents the time in milliseconds between each moment polling the database for a response.
-     * MAX_TIME represents the maximum allowed polling time in milliseconds within the response should be returned.
-     * When this time is over, the polling will stop and return the result when available.
+     * TIME_OUT represents the time in milliseconds between each moment polling
+     * the database for a response. MAX_TIME represents the maximum allowed
+     * polling time in milliseconds within the response should be returned. When
+     * this time is over, the polling will stop and return the result when
+     * available.
      */
 
     public static final String TIME_OUT = "TimeOut";
@@ -62,7 +64,6 @@ public class SmartMetering {
 
     @Autowired
     protected TestCaseRunner testCaseRunner;
-
 
     @Autowired
     protected RunXpathResult runXpathResult;
@@ -88,8 +89,8 @@ public class SmartMetering {
     protected void requestRunner(final Map<String, String> propertiesMap, final String testCaseNameRequest,
             final String testCaseXml, final String testSuiteXml) throws Throwable {
 
-        this.correlationUidPattern = Pattern
-                .compile(this.organisationId.getOrganisationId() + XPATH_MATCHER_CORRELATIONUID);
+        this.correlationUidPattern = Pattern.compile(this.organisationId.getOrganisationId()
+                + XPATH_MATCHER_CORRELATIONUID);
         this.testCase = this.wsdlProjectFactory.createWsdlTestCase(SOAP_PROJECT_XML, testSuiteXml, testCaseXml);
         this.assertRequest(testCaseNameRequest, testCaseXml, testSuiteXml);
 
@@ -108,14 +109,14 @@ public class SmartMetering {
     }
 
     /**
-     * Here we check if the xml fragment does contain the tags to be used in the test.
-     * If not this is logged. Probably the test will fail later on.
+     * Here we check if the xml fragment does contain the tags to be used in the
+     * test. If not this is logged. Probably the test will fail later on.
+     *
      * @param testCaseNameRequest
      * @param testCaseXml
      * @param testSuiteXml
      */
-    private void assertRequest( final String testCaseNameRequest,
-            final String testCaseXml, final String testSuiteXml) {
+    private void assertRequest(final String testCaseNameRequest, final String testCaseXml, final String testSuiteXml) {
         final WsdlTestCase wsdlTestcase = (WsdlTestCase) this.testCase;
         final String xml = wsdlTestcase.getConfig().toString();
         final boolean flag1 = xml.indexOf(testCaseNameRequest) > 0;
@@ -165,13 +166,15 @@ public class SmartMetering {
      *            is the testcase name which includes the testcase
      * @param testSuiteXml
      *            is the testsuite name which includes the testcase
+     * @param logger
+     *            saves the response message in a logger *
      * @throws Throwable
      */
     protected void notOkRequestRunner(final Map<String, String> propertiesMap, final String testCaseNameRequest,
             final String testCaseXml, final String testSuiteXml, final Logger logger) throws Throwable {
 
-        this.correlationUidPattern = Pattern
-                .compile(this.organisationId.getOrganisationId() + XPATH_MATCHER_CORRELATIONUID);
+        this.correlationUidPattern = Pattern.compile(this.organisationId.getOrganisationId()
+                + XPATH_MATCHER_CORRELATIONUID);
         this.testCase = this.wsdlProjectFactory.createWsdlTestCase(SOAP_PROJECT_XML, testSuiteXml, testCaseXml);
         this.assertRequest(testCaseNameRequest, testCaseXml, testSuiteXml);
 
