@@ -51,15 +51,14 @@ public class DeviceDomainService {
 
         // Note: since this code is still specific for SSLD / PSLD, this null
         // check is needed.
-        if (ssld != null) {
-            if (!device.isActivated() || !ssld.isPublicKeyPresent()) {
-                throw new UnregisteredDeviceException(deviceIdentification);
-            }
-        }
-
         if (!device.isActivated()) {
             throw new InactiveDeviceException(deviceIdentification);
         }
+
+        if (ssld != null && !ssld.isPublicKeyPresent()) {
+            throw new UnregisteredDeviceException(deviceIdentification);
+        }
+
         return device;
     }
 }
