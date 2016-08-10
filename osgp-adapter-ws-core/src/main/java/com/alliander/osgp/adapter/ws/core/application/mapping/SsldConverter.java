@@ -111,6 +111,7 @@ class SsldConverter extends BidirectionalConverter<Ssld, Device> {
         destination.updateOutputSettings(deviceOutputSettings);
         destination.setPublicKeyPresent(source.isPublicKeyPresent());
         destination.setHasSchedule(source.isHasSchedule());
+        destination.setActivated(source.isActivated());
 
         // clearing the existing Eans to prevent duplication
         destination.setEans(new ArrayList<Ean>());
