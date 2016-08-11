@@ -36,4 +36,8 @@ Background:
   Scenario: Read the alarm register from a device
     When the get read alarm register request is received
     Then the alarm register should be returned
-    
+
+@SLIM-511
+  Scenario:  Approach an inactive device
+  When the get actual meter reads request on an inactive device is received
+  Then the inactive response "Device E9998000014123414 is not active in the platform" should be given

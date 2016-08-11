@@ -22,6 +22,7 @@ import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 
 import cucumber.api.Scenario;
+import cucumber.api.java.After;
 import cucumber.api.java.Before;
 
 /**
@@ -36,8 +37,10 @@ public class ScenarioHooks {
     private DlmsDeviceRepository dlmsDeviceRepository;
     private DeviceAuthorizationRepository deviceAuthorizationRepository;
 
+    private static final String DEVICE414 =  "E9998000014123414";
+
     @Before("@SLIM-218")
-    public void beforeSlim218(Scenario scenario) {
+    public void beforeSlim218(final Scenario scenario) {
 
         LOGGER.info("Preparing scenario for @SLIM-218");
 
@@ -55,14 +58,28 @@ public class ScenarioHooks {
         context.close();
     }
 
-    private void deleteDevicesFromPlatform(List<String> deviceIdList) {
+    @Before("@SLIM-511")
+    public void deactivateDevice(final Scenario scenario) {
+        LOGGER.info("Preparing scenario for @SLIM-511");
+        this.setDeviceIsActivateState(scenario, DEVICE414, false);
+        LOGGER.info("Ready preparing scenario for @SLIM-511");
+    }
+
+    @After("@SLIM-511")
+    public void activateDevice(final Scenario scenario) {
+        LOGGER.info("Resetting database after runnign scenario @SLIM-511");
+        this.setDeviceIsActivateState(scenario, DEVICE414, true);
+        LOGGER.info("Database settings are reset after @SLIM-511");
+    }
+
+    private void deleteDevicesFromPlatform(final List<String> deviceIdList) {
         for (final String deviceId : deviceIdList) {
             this.deleteCoreRecords(deviceId);
             this.deleteDlmsRecords(deviceId);
         }
     }
 
-    private void deleteCoreRecords(String deviceId) {
+    private void deleteCoreRecords(final String deviceId) {
         Device device = this.deviceRepository.findByDeviceIdentification(deviceId);
 
         if (device != null) {
@@ -79,11 +96,30 @@ public class ScenarioHooks {
         }
     }
 
-    private void deleteDlmsRecords(String deviceId) {
+    private void deleteDlmsRecords(final String deviceId) {
         final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceId);
         if (dlmsDevice != null) {
             LOGGER.info("deleting dlmsDevice and securityKeys..." + deviceId);
             this.dlmsDeviceRepository.delete(dlmsDevice);
+        }
+    }
+
+    private void setDeviceIsActivateState(final Scenario scenario, final String deviceId, final boolean isActiveState) {
+        LOGGER.info("Scenario name: {}", scenario.getName());
+        final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("cucumber.xml");
+        this.deviceRepository = context.getBean(DeviceRepository.class);
+        this.setDeviceIsActivated(deviceId, isActiveState);
+        context.close();
+    }
+
+    private void setDeviceIsActivated(final String deviceId, final boolean newState) {
+        final Device device = this.deviceRepository.findByDeviceIdentification(deviceId);
+        if (device != null) {
+            LOGGER.info("setting dlmsDevice.setActivated() to " + newState + " for device "+ deviceId);
+            device.setActivated(newState);
+            this.deviceRepository.save(device);
+        } else {
+            LOGGER.error("no such device " + deviceId);
         }
     }
 
