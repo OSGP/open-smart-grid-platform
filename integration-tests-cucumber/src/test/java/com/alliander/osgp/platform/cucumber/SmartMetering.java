@@ -167,7 +167,7 @@ public class SmartMetering {
      * @param testSuiteXml
      *            is the testsuite name which includes the testcase
      * @param logger
-     *            saves the response message in a logger *
+     *            the logger
      * @throws Throwable
      */
     protected void notOkRequestRunner(final Map<String, String> propertiesMap, final String testCaseNameRequest,

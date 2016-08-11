@@ -61,14 +61,14 @@ public class ScenarioHooks {
     @Before("@SLIM-511")
     public void deactivateDevice(final Scenario scenario) {
         LOGGER.info("Preparing scenario for @SLIM-511");
-        this.setDeviceIsActivatedState(scenario, DEVICE414, false);
+        this.setDeviceIsActivateState(scenario, DEVICE414, false);
         LOGGER.info("Ready preparing scenario for @SLIM-511");
     }
 
     @After("@SLIM-511")
     public void activateDevice(final Scenario scenario) {
         LOGGER.info("Resetting database after runnign scenario @SLIM-511");
-        this.setDeviceIsActivatedState(scenario, DEVICE414, true);
+        this.setDeviceIsActivateState(scenario, DEVICE414, true);
         LOGGER.info("Database settings are reset after @SLIM-511");
     }
 
@@ -104,7 +104,7 @@ public class ScenarioHooks {
         }
     }
 
-    private void setDeviceIsActivatedState(final Scenario scenario, final String deviceId, final boolean isActiveState) {
+    private void setDeviceIsActivateState(final Scenario scenario, final String deviceId, final boolean isActiveState) {
         LOGGER.info("Scenario name: {}", scenario.getName());
         final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("cucumber.xml");
         this.deviceRepository = context.getBean(DeviceRepository.class);
@@ -112,11 +112,6 @@ public class ScenarioHooks {
         context.close();
     }
 
-    /**
-     * This sets the given device, in the inActive state
-     * @param deviceId String
-     * @param newState boolean
-     */
     private void setDeviceIsActivated(final String deviceId, final boolean newState) {
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceId);
         if (device != null) {

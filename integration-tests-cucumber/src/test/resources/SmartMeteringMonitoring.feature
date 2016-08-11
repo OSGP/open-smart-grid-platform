@@ -40,4 +40,4 @@ Background:
 @SLIM-511
   Scenario:  Approach an inactive device
   When the get actual meter reads request on an inactive device is received
-  Then the response "Device E9998000014123414 is not active in the platform" should be given
+  Then the inactive response "Device E9998000014123414 is not active in the platform" should be given
