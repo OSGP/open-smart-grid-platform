@@ -28,7 +28,7 @@ public class ActualMeterReadsInactiveDevice extends SmartMetering {
     private static final String TEST_SUITE_XML = "SmartmeterMonitoring";
     private static final String TEST_CASE_XML = "392 Retrieve actual meter reads E";
     private static final String TEST_CASE_NAME_REQUEST = "GetActualMeterReads - Request 1";
-    private static final String PATH_REQUEST_RESPONSE = "/Envelope/Body/Fault/detail/FunctionalFault/InnerMessage/text()";
+    private static final String PATH_FAULT_MESSAGE = "/Envelope/Body/Fault/detail/FunctionalFault/InnerMessage/text()";
 
     private static final Map<String, String> PROPERTIES_MAP = new HashMap<>();
 
@@ -49,8 +49,8 @@ public class ActualMeterReadsInactiveDevice extends SmartMetering {
 
 
     @Then("^the inactive response \"([^\"]*)\" should be given$")
-    public void theResponseDeviceIsInactiveShouldBeGiven(final String arg1) throws Throwable {
-        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_REQUEST_RESPONSE, arg1));
+    public void theResponseDeviceIsInactiveShouldBeGiven(final String errorMessage) throws Throwable {
+        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_FAULT_MESSAGE, errorMessage));
     }
 
 }

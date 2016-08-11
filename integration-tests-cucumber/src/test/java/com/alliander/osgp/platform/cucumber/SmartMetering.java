@@ -29,7 +29,7 @@ import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
  */
 
 public class SmartMetering {
-    private final Logger LOGGER = LoggerFactory.getLogger(SmartMetering.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SmartMetering.class);
 
     protected static final String SOAP_PROJECT_XML = "/etc/osp/soapui/SmartMetering-soapui-project.xml";
     protected static final String XPATH_MATCHER_CORRELATIONUID = "\\|\\|\\|\\S{17}\\|\\|\\|\\S{17}";
@@ -123,7 +123,7 @@ public class SmartMetering {
         final boolean flag2 = xml.indexOf(testCaseXml) > 0;
         final boolean flag3 = xml.indexOf(testSuiteXml) > 0;
         if (!flag1 || !flag2 || !flag3) {
-            this.LOGGER.error(String.format(ERRMSG, xml, testSuiteXml, testCaseXml, testCaseNameRequest));
+            LOGGER.error(String.format(ERRMSG, xml, testSuiteXml, testCaseXml, testCaseNameRequest));
         }
     }
 
