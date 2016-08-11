@@ -125,7 +125,7 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
         try {
 
             if (osgpException != null) {
-                this.handleError(osgpException, deviceMessageMetadata);
+                this.handleError(osgpException, deviceMessageMetadata, responseMessage);
             } else if (this.hasRegularResponseObject(responseMessage)) {
                 LOGGER.info("Calling application service function to handle response: {}",
                         deviceMessageMetadata.getMessageType());
@@ -172,17 +172,36 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
     /**
      * In case of an error, this function can be used to send a response
      * containing the exception to the web-service-adapter.
+     * <p>
+     * The response message is provided to allow manipulation of certain
+     * responses, for instance in case the error has to be incorporated in the
+     * response instead of defining the response at its own.
      *
      * @param e
-     *            The exception.
-     * @param correlationUid
-     *            The correlation UID.
-     * @param organisationIdentification
-     *            The organisation identification.
-     * @param deviceIdentification
-     *            The device identification.
-     * @param messageType
-     *            The message type.
+     *            the exception.
+     * @param deviceMessageMetadata
+     *            the device message metadata.
+     * @param responseMessage
+     *            the response message.
+     * @throws FunctionalException
+     */
+    protected void handleError(final Exception e, final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessage responseMessage) throws FunctionalException {
+        if (responseMessage != null) {
+            LOGGER.debug("Handling error without using responseMessage for correlationUid: {}",
+                    responseMessage.getCorrelationUid());
+        }
+        this.handleError(e, deviceMessageMetadata);
+    }
+
+    /**
+     * In case of an error, this function can be used to send a response
+     * containing the exception to the web-service-adapter.
+     *
+     * @param e
+     *            the exception.
+     * @param deviceMessageMetadata
+     *            the device message metadata.
      */
     protected void handleError(final Exception e, final DeviceMessageMetadata deviceMessageMetadata) {
         LOGGER.info("handeling error: {} for message type: {}", e.getMessage(), deviceMessageMetadata.getMessageType());
@@ -193,7 +212,7 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
                 deviceMessageMetadata.getMessageType());
     }
 
-    private OsgpException ensureOsgpException(final Exception e) {
+    protected OsgpException ensureOsgpException(final Exception e) {
 
         if (e instanceof OsgpException) {
             return (OsgpException) e;
