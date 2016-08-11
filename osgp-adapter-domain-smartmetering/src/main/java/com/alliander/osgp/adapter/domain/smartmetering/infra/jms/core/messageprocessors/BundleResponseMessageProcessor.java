@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.messageprocessors;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -14,6 +16,8 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.BundleService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -42,6 +46,26 @@ public class BundleResponseMessageProcessor extends OsgpCoreResponseMessageProce
 
         final BundleMessagesRequestDto bundleMessagesResponseDto = (BundleMessagesRequestDto) responseMessage
                 .getDataObject();
+
+        this.bundleService.handleBundleResponse(deviceMessageMetadata, responseMessage.getResult(), osgpException,
+                bundleMessagesResponseDto);
+    }
+
+    @Override
+    protected void handleError(final Exception e, final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessage responseMessage) throws FunctionalException {
+
+        final OsgpException osgpException = this.ensureOsgpException(e);
+
+        final BundleMessagesRequestDto bundleMessagesResponseDto = (BundleMessagesRequestDto) responseMessage
+                .getDataObject();
+
+        final List<ActionDto> actionList = bundleMessagesResponseDto.getActionList();
+        for (final ActionDto action : actionList) {
+            if (action.getResponse() == null) {
+                action.setResponse(new ActionResponseDto(osgpException, "Unable to handle request"));
+            }
+        }
 
         this.bundleService.handleBundleResponse(deviceMessageMetadata, responseMessage.getResult(), osgpException,
                 bundleMessagesResponseDto);
