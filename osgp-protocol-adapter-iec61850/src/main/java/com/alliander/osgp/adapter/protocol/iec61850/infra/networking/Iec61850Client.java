@@ -194,13 +194,13 @@ public class Iec61850Client {
         final ServerModel serverModel;
         try {
             iec61850ClientAssociation = this.connect(deviceIdentification, ipAddress);
-            serverModel = this.readServerModelFromDevice(iec61850ClientAssociation.getClientAssociation());
         } catch (final ServiceError e) {
             throw new ProtocolAdapterException("Unexpected error connecting to device to disable registration.", e);
         }
         if (iec61850ClientAssociation == null || iec61850ClientAssociation.getClientAssociation() == null) {
             throw new ProtocolAdapterException("Unable to connect to device to disable registration.");
         }
+        serverModel = this.readServerModelFromDevice(iec61850ClientAssociation.getClientAssociation());
 
         final Function<Void> function = new Function<Void>() {
 
