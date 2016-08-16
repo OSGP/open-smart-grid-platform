@@ -16,6 +16,7 @@ import javax.net.ssl.TrustManagerFactory;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.StatusType;
 
 import org.apache.commons.lang3.StringUtils;
@@ -45,6 +46,7 @@ public class KeycloakClient extends AbstractClient {
 
     private static final String CONSTRUCTION_FAILED = "KeycloakClient construction failed";
     private static final String AUTHENTICATE_FAILED = "authenticate failed";
+    private static final String NOT_AUTHORIZED = "Access to KeycloakClient not authorized";
     private static final String RESPONSE_BODY_NOT_JSON = "response body is not JSON data";
 
     private static final String BEARER = "Bearer";
@@ -54,8 +56,7 @@ public class KeycloakClient extends AbstractClient {
     private static final String PATH_ELEMENT_SESSION_ID = "{sessionId}";
     private static final String PATH_ELEMENT_REALMS = "/realms/" + PATH_ELEMENT_REALM;
     private static final String PATH_ELEMENT_ADMIN_REALMS = "/admin" + PATH_ELEMENT_REALMS;
-    private static final String TOKEN_PATH_TEMPLATE = PATH_ELEMENT_REALMS
-            + "/protocol/openid-connect/token";
+    private static final String TOKEN_PATH_TEMPLATE = PATH_ELEMENT_REALMS + "/protocol/openid-connect/token";
     private static final String USERS_PATH_TEMPLATE = PATH_ELEMENT_ADMIN_REALMS + "/users";
     private static final String USER_PATH_TEMPLATE = USERS_PATH_TEMPLATE + "/" + PATH_ELEMENT_USER_ID;
     private static final String USER_SESSIONS_PATH_TEMPLATE = USER_PATH_TEMPLATE + "/sessions";
@@ -216,11 +217,13 @@ public class KeycloakClient extends AbstractClient {
                 .query("username", username);
 
         Response response = this.withBearerToken(getUserIdWebClient).get();
+
         JsonNode jsonNode;
         try {
             jsonNode = this.getJsonResponseBody(response);
         } catch (final KeycloakBearerException e) {
             LOGGER.debug("It looks like the bearer token expired, retry API call to the user lookup.", e);
+            this.refreshToken();
             response = this.withBearerToken(getUserIdWebClient).get();
             jsonNode = this.getJsonResponseBody(response);
         }
@@ -280,6 +283,7 @@ public class KeycloakClient extends AbstractClient {
             jsonNode = this.getJsonResponseBody(response);
         } catch (final KeycloakBearerException e) {
             LOGGER.debug("It looks like the bearer token expired, retry API call to get the session ID.", e);
+            this.refreshToken();
             response = this.withBearerToken(getUserSessionIdWebClient).get();
             jsonNode = this.getJsonResponseBody(response);
         }
@@ -378,15 +382,17 @@ public class KeycloakClient extends AbstractClient {
         }
         LOGGER.info("Removing Keycloak user session with ID '{}' for realm '{}'.", sessionId, this.realm);
 
-        final WebClient removeUserSessionWebClient = this.getWebClientInstance().path(this.sessionPath.replace(PATH_ELEMENT_SESSION_ID, sessionId));
+        final WebClient removeUserSessionWebClient = this.getWebClientInstance().path(
+                this.sessionPath.replace(PATH_ELEMENT_SESSION_ID, sessionId));
 
         Response response = this.withBearerToken(removeUserSessionWebClient).delete();
         try {
-            this.checkEmptyResponseBody(response);
+            this.checkResponseBody(response);
         } catch (final KeycloakBearerException e) {
             LOGGER.debug("It looks like the bearer token expired, retry API call to remove the session.", e);
+            this.refreshToken();
             response = this.withBearerToken(removeUserSessionWebClient).delete();
-            this.checkEmptyResponseBody(response);
+            this.checkResponseBody(response);
         }
     }
 
@@ -432,11 +438,12 @@ public class KeycloakClient extends AbstractClient {
 
         Response response = this.withBearerToken(createUserWebClient).post(newUserRepresentation);
         try {
-            this.checkEmptyResponseBody(response);
+            this.checkResponseBody(response);
         } catch (final KeycloakBearerException e) {
             LOGGER.debug("It looks like the bearer token expired, retry API call to add new user.", e);
+            this.refreshToken();
             response = this.withBearerToken(createUserWebClient).post(newUserRepresentation);
-            this.checkEmptyResponseBody(response);
+            this.checkResponseBody(response);
         }
 
         /*
@@ -444,25 +451,25 @@ public class KeycloakClient extends AbstractClient {
          * to be updated after creating the user, in order for the user to be
          * able to login (credential.temparary=false did not work when creating
          * a user).
-         *
+         * 
          * The keycloak mailing list mentions the possibility of this behavior
          * being fixed in a future release:
-         *
+         * 
          * https://lists.jboss.org/pipermail/keycloak-user/2016-March/005311.html
-         *
+         * 
          * Quote:
-         *
+         * 
          * We'll fix this in the future so you can do a single post with new
          * user, including credentials and role mappings. For now you'll have to
          * do the two separate requests though.
-         *
+         * 
          * https://lists.jboss.org/pipermail/keycloak-user/2014-July/000498.html
-         *
+         * 
          * Quote:
-         *
+         * 
          * - Use the endpoint to setup temporary password of user (It will
          * automatically add requiredAction for UPDATE_PASSWORD
-         *
+         * 
          * - Then use the endpoint for update user and send the empty array of
          * requiredActions in it. This will ensure that UPDATE_PASSWORD required
          * action will be deleted and user won't need to update password again.
@@ -486,7 +493,7 @@ public class KeycloakClient extends AbstractClient {
          * Update the password by setting a temporary password and clearing the
          * required actions (do not require the user to update the password in
          * Keycloak before a new password can be used).
-         *
+         * 
          * See the comments near the bottom of addNewUser(String, String) for
          * more details on the reasons behind this approach.
          */
@@ -502,11 +509,12 @@ public class KeycloakClient extends AbstractClient {
 
         Response response = this.withBearerToken(resetPasswordWebClient).put(credentialRepresentation);
         try {
-            this.checkEmptyResponseBody(response);
+            this.checkResponseBody(response);
         } catch (final KeycloakBearerException e) {
             LOGGER.debug("It looks like the bearer token expired, retry API call to reset the user password.", e);
+            this.refreshToken();
             response = this.withBearerToken(resetPasswordWebClient).put(credentialRepresentation);
-            this.checkEmptyResponseBody(response);
+            this.checkResponseBody(response);
         }
 
         final ObjectNode updateUserRequiredActionsRepresentation = this.jacksonObjectMapper.createObjectNode();
@@ -518,11 +526,12 @@ public class KeycloakClient extends AbstractClient {
 
         response = this.withBearerToken(updateUserWebClient).put(updateUserRequiredActionsRepresentation);
         try {
-            this.checkEmptyResponseBody(response);
+            this.checkResponseBody(response);
         } catch (final KeycloakBearerException e) {
             LOGGER.debug("It looks like the bearer token expired, retry API call to update the required actions.", e);
+            this.refreshToken();
             response = this.withBearerToken(updateUserWebClient).put(updateUserRequiredActionsRepresentation);
-            this.checkEmptyResponseBody(response);
+            this.checkResponseBody(response);
         }
     }
 
@@ -561,11 +570,12 @@ public class KeycloakClient extends AbstractClient {
 
         Response response = this.withBearerToken(deleteUserWebClient).delete();
         try {
-            this.checkEmptyResponseBody(response);
+            this.checkResponseBody(response);
         } catch (final KeycloakBearerException e) {
             LOGGER.debug("It looks like the bearer token expired, retry API call to delete the user.", e);
+            this.refreshToken();
             response = this.withBearerToken(deleteUserWebClient).delete();
-            this.checkEmptyResponseBody(response);
+            this.checkResponseBody(response);
         }
     }
 
@@ -599,6 +609,10 @@ public class KeycloakClient extends AbstractClient {
         LOGGER.info("Received response with status: {} - {} ({})", statusInfo.getStatusCode(),
                 statusInfo.getReasonPhrase(), statusInfo.getFamily());
 
+        if (statusInfo.getStatusCode() == Status.UNAUTHORIZED.getStatusCode()) {
+            throw new KeycloakBearerException(NOT_AUTHORIZED);
+        }
+
         final String responseBody = response.readEntity(String.class);
 
         if (StringUtils.isEmpty(responseBody)) {
@@ -618,7 +632,7 @@ public class KeycloakClient extends AbstractClient {
         }
     }
 
-    private void checkEmptyResponseBody(final Response response) throws KeycloakClientException {
+    private void checkResponseBody(final Response response) throws KeycloakClientException {
 
         if (response == null) {
             throw new KeycloakClientException(RESPONSE_IS_NULL);
@@ -627,6 +641,10 @@ public class KeycloakClient extends AbstractClient {
         final StatusType statusInfo = response.getStatusInfo();
         LOGGER.info("Received response with status: {} - {} ({})", statusInfo.getStatusCode(),
                 statusInfo.getReasonPhrase(), statusInfo.getFamily());
+
+        if (statusInfo.getStatusCode() == javax.ws.rs.core.Response.Status.UNAUTHORIZED.getStatusCode()) {
+            throw new KeycloakBearerException(NOT_AUTHORIZED);
+        }
 
         final String responseBody = response.readEntity(String.class);
 
@@ -639,7 +657,6 @@ public class KeycloakClient extends AbstractClient {
 
     private void checkBearer(final String responseBody) throws KeycloakBearerException {
         if (BEARER.equals(responseBody)) {
-            this.refreshToken();
             throw new KeycloakBearerException(AUTHENTICATE_FAILED);
         }
     }
