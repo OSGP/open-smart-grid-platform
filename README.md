@@ -19,3 +19,10 @@ The components have dependencies.
 
 - shared, Common classes used by the Protocol Adapter and Device Simulator
 - osgp-dto, Data Transfer Objects
+
+## Open smart grid platform information and news
+
+High-level project information and news can be found on the open smart grid platform website: 
+* [www.opensmartgridplatform.org](http://opensmartgridplatform.org/)
+Open smart grid platform detailed documentation:
+* [documentation.opensmartgridplatform.org/](http://documentation.opensmartgridplatform.org/)
