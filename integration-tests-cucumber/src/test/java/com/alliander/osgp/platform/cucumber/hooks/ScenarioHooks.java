@@ -53,7 +53,7 @@ public class ScenarioHooks {
         PROPERTIES_MAP.put("TST2", "osgp-tst.cloudapp.net:62443");
         PROPERTIES_MAP.put("AWS", "slimme-meters.aws.osg-platform.com:443");
 
-        this.serviceEndpoint.setServiceEndpoint(PROPERTIES_MAP.get("AWS"));
+        this.serviceEndpoint.setServiceEndpoint(PROPERTIES_MAP.get("TST2"));
     }
 
     @Before("@SLIM-218")

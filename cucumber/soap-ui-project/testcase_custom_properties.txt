@@ -1,5 +1,5 @@
-DeviceIdentificationE=E9998000014123414
-DeviceIdentificationG=G00XX561204926113
+DeviceIdentificationE=TEST1024000000001
+DeviceIdentificationG=TESTG102400000001
 OrganisationIdentification=Infostroom
-CorrelationUid=Infostroom|||E9998000014123414|||20160816061640341
-ServiceEndpoint=osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/smartMetering/monitoringService/
+CorrelationUid=
+ServiceEndpoint=osgp-tst.cloudapp.net:62443
