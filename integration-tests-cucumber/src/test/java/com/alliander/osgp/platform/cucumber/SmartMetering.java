@@ -31,11 +31,12 @@ import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 public class SmartMetering {
     private static final Logger LOGGER = LoggerFactory.getLogger(SmartMetering.class);
 
-    protected static final String SOAP_PROJECT_XML = "/etc/osp/soapui/SmartMetering-soapui-project.xml";
+    protected static final String SOAP_PROJECT_XML = "/etc/osp/soapui/OSGP_SmartMetering_Soapui_Project.xml";
     protected static final String XPATH_MATCHER_CORRELATIONUID = "\\|\\|\\|\\S{17}\\|\\|\\|\\S{17}";
     protected static final String DEVICE_IDENTIFICATION_E_LABEL = "DeviceIdentificationE";
     protected static final String DEVICE_IDENTIFICATION_G_LABEL = "DeviceIdentificationG";
     protected static final String ORGANISATION_IDENTIFICATION_LABEL = "OrganisationIdentification";
+    protected static final String ENDPOINT_LABEL = "ServiceEndpoint";
     public final static String CORRELATION_UID_LABEL = "CorrelationUid";
 
     private static final String ERRMSG = "The soapUi xml fragment: \n %s \ndoes not contain all three tags: \n %s, %s and/or %s";

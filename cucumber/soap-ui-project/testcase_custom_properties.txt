@@ -1,4 +1,5 @@
-DeviceIdentificationE=EXXXX001692675614
-OrganisationIdentification=LianderNetManagement
-CorrelationUid=
-DeviceIdentificationG=G00XX561204926013
+DeviceIdentificationE=E9998000014123414
+DeviceIdentificationG=G00XX561204926113
+OrganisationIdentification=Infostroom
+CorrelationUid=Infostroom|||E9998000014123414|||20160816061640341
+ServiceEndpoint=osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/smartMetering/monitoringService/

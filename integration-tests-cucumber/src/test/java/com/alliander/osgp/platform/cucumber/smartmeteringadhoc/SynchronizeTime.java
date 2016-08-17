@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alliander.osgp.platform.cucumber.SmartMetering;
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
 import com.alliander.osgp.platform.cucumber.support.OrganisationId;
+import com.alliander.osgp.platform.cucumber.support.ServiceEndpoint;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -41,15 +42,19 @@ public class SynchronizeTime extends SmartMetering {
     @Autowired
     private OrganisationId organisationId;
 
+    @Autowired
+    private ServiceEndpoint serviceEndpoint;
+
     @When("^the get synchronize time request is received$")
     public void theGetSynchronizeTimeRequestIsReceived() throws Throwable {
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_E_LABEL, this.deviceId.getDeviceIdE());
         PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, this.organisationId.getOrganisationId());
+        PROPERTIES_MAP.put(ENDPOINT_LABEL, this.serviceEndpoint.getServiceEndpoint());
 
         /*
          * Setup of deviation and DST information, that will make
          * SynchronizeTime configure a meter for time zone Europe/Amsterdam.
-         *
+         * 
          * This assumes the server time that will be synchronized is about the
          * same as the system time where this test code is executed and
          * configures deviation and DST according to the proper values for

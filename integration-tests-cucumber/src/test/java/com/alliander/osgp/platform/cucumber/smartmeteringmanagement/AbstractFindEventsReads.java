@@ -29,6 +29,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.management.EventType;
 import com.alliander.osgp.platform.cucumber.SmartMetering;
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
 import com.alliander.osgp.platform.cucumber.support.OrganisationId;
+import com.alliander.osgp.platform.cucumber.support.ServiceEndpoint;
 
 public abstract class AbstractFindEventsReads extends SmartMetering {
     private static final String PATH_RESULT_EVENTS = "/Envelope/Body/FindEventsResponse/Events";
@@ -47,11 +48,15 @@ public abstract class AbstractFindEventsReads extends SmartMetering {
     @Autowired
     private OrganisationId organisationId;
 
+    @Autowired
+    private ServiceEndpoint serviceEndpoint;
+
     protected abstract String getEventLogCategory();
 
     public void theFindEventsRequestIsReceived() throws Throwable {
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_E_LABEL, this.deviceId.getDeviceIdE());
         PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, this.organisationId.getOrganisationId());
+        PROPERTIES_MAP.put(ENDPOINT_LABEL, this.serviceEndpoint.getServiceEndpoint());
 
         this.requestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST + this.getEventLogCategory(), TEST_CASE_XML,
                 TEST_SUITE_XML);
@@ -83,7 +88,7 @@ public abstract class AbstractFindEventsReads extends SmartMetering {
      * @throws IOException
      */
     private final void checkResponse(final List<EventType> allowed) throws XPathExpressionException,
-            ParserConfigurationException, SAXException, IOException {
+    ParserConfigurationException, SAXException, IOException {
         final NodeList nodeList = this.runXpathResult.getNodeList(this.response, PATH_RESULT_EVENTS);
         if (nodeList.getLength() > 0) {
             for (int i = 0; i < nodeList.getLength(); i++) {
