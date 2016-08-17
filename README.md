@@ -27,3 +27,9 @@ And do something similar for the database:
 2) Reasign the symlink in /etc/osp): ln -s <yourfolder>/osgp-cucumber-response-data-smart-metering.properties
 3) Search-place: sed -i 's/osgp-tst.cloudapp.net:62432/localhost:5432/g' <yourfolder>/osgp-cucumber-response-data-smart-metering.properties
 
+## Open smart grid platform information and news
+
+High-level project information and news can be found on the open smart grid platform website: 
+* [www.opensmartgridplatform.org](http://opensmartgridplatform.org/)
+Open smart grid platform detailed documentation:
+* [documentation.opensmartgridplatform.org/](http://documentation.opensmartgridplatform.org/)
