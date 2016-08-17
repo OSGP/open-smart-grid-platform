@@ -5,6 +5,7 @@ import java.io.Serializable;
 public class ActionResponseDto implements Serializable {
 
     private static final long serialVersionUID = -6579443565899923397L;
+    private OsgpResultTypeDto result;
     private String exception;
     private String resultString;
 
@@ -13,14 +14,27 @@ public class ActionResponseDto implements Serializable {
     }
 
     public ActionResponseDto(final String resultString) {
-        this(null, resultString);
+        this(OsgpResultTypeDto.OK, null, resultString);
     }
 
     public ActionResponseDto(final Exception exception, final String resultString) {
+        this(exception == null ? OsgpResultTypeDto.OK : OsgpResultTypeDto.NOT_OK, exception, resultString);
+    }
+
+    public ActionResponseDto(final OsgpResultTypeDto result, final Exception exception, final String resultString) {
+        this.result = result;
         if (exception != null) {
             this.exception = exception.toString();
         }
         this.resultString = resultString;
+    }
+
+    public OsgpResultTypeDto getResult() {
+        return this.result;
+    }
+
+    public void setResult(final OsgpResultTypeDto result) {
+        this.result = result;
     }
 
     public String getException() {
