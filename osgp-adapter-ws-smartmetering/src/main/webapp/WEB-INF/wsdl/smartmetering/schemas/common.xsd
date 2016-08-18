@@ -59,6 +59,8 @@
 
     <xsd:complexType name="Response" abstract="true">
         <xsd:sequence>
+            <xsd:element name="Result" type="tns:OsgpResultType"
+                minOccurs="0" maxOccurs="1" />
             <xsd:element name="exception" type="xsd:string"
                 minOccurs="0" maxOccurs="1" />
             <xsd:element name="resultString" type="xsd:string"

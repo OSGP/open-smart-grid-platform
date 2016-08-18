@@ -11,16 +11,28 @@ import java.io.Serializable;
 
 public class ActionResponse implements Serializable {
 
-    private static final long serialVersionUID = -1400608536968152107L;
-    private String exception;
-    private String resultString;
+    private static final long serialVersionUID = -7017185186062612901L;
+
+    private final OsgpResultType result;
+    private final String exception;
+    private final String resultString;
+
+    protected ActionResponse() {
+        this(null, null, null);
+    }
+
+    public ActionResponse(final OsgpResultType result, final String exception, final String resultString) {
+        this.result = result;
+        this.exception = exception;
+        this.resultString = resultString;
+    }
+
+    public OsgpResultType getResult() {
+        return this.result;
+    }
 
     public String getException() {
         return this.exception;
-    }
-
-    public void setException(final String exception) {
-        this.exception = exception;
     }
 
     public boolean hasException() {
@@ -29,10 +41,5 @@ public class ActionResponse implements Serializable {
 
     public String getResultString() {
         return this.resultString;
-    }
-
-    public void setResultString(final String resultString) {
-        this.resultString = resultString;
-
     }
 }

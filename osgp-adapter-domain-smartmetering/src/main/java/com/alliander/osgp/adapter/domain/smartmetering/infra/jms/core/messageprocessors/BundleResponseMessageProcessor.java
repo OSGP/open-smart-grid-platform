@@ -19,6 +19,7 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.OsgpResultTypeDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
@@ -63,7 +64,8 @@ public class BundleResponseMessageProcessor extends OsgpCoreResponseMessageProce
         final List<ActionDto> actionList = bundleMessagesResponseDto.getActionList();
         for (final ActionDto action : actionList) {
             if (action.getResponse() == null) {
-                action.setResponse(new ActionResponseDto(osgpException, "Unable to handle request"));
+                action.setResponse(
+                        new ActionResponseDto(OsgpResultTypeDto.NOT_OK, e, "Unable to handle request"));
             }
         }
 
