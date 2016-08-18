@@ -15,13 +15,13 @@ Background:
 @SLIM-501 @SmartMeterBundle
   Scenario: Retrieve COSEM Logical Device Name in a a bundle
 	When a retrieve configuration request for OBIS code 0.0.42.0.0.255 is received as part of a bundled request
-	Then "bytes[75, 70, 77, 56, 48, 48, 48, 48, 49, 52, 49, 50, 51, 52, 49, 52]" is part of the response
+	Then "bytes[100, 101, 118, 105, 99, 101, 32, 110, 97, 109, 101]" is part of the response
 
 @SLIM-501 @SmartMeterBundle
   Scenario: Retrieve Administrative in/out
 	When a retrieve configuration request for OBIS code 0.1.94.31.0.255 is received as part of a bundled request
 	Then "Choice=ENUMERATE, ResultData isNumber" is part of the response
-	
+
 @SLIM-501 @SmartMeterBundle	
   Scenario:	Retrieve Currently Active Tariff
 	When a retrieve configuration request for OBIS code 0.0.96.14.0.255 is received as part of a bundled request

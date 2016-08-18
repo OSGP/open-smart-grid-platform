@@ -18,11 +18,13 @@ Background:
     Then the configuration object should be set on the device    
         
 @SLIM-125 @SmartMeterConfiguration
-  Scenario: Handle a received alarm notification from a device
+  Scenario: Handle a received alarm notification from a known device
     When an alarm notification is received from a known device
     Then the alarm should be pushed to OSGP
     And the alarm should be pushed to the osgp_logging database device_log_item table
-    
+ 
+@SLIM-125 @SmartMeterConfiguration
+  Scenario: Handle a received alarm notification from an unknown device  
     When an alarm notification is received from an unknown device
     Then the alarm should be pushed to the osgp_logging database device_log_item table
     

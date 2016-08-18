@@ -89,7 +89,7 @@ public class TestCaseRunner {
         if (propertiesMap.containsKey(SmartMetering.MAX_TIME)) {
             return new Integer(propertiesMap.get(SmartMetering.MAX_TIME));
         } else {
-            return 60000;
+            return 180000;
         }
     }
 
