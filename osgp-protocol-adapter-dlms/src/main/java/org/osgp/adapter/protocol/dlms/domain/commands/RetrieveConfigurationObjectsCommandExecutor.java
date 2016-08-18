@@ -77,19 +77,14 @@ public class RetrieveConfigurationObjectsCommandExecutor extends AbstractCommand
         LOGGER.debug("Retrieving configuration objects for class id: {}, obis code: {}, attribute id: {}", CLASS_ID,
                 OBIS_CODE, ATTRIBUTE_ID);
 
-        final List<GetResult> getResultList = this.dlmsHelper.getAndCheck(conn, device,
-                "Retrieving configuration objects for class", attributeAddress);
+        final DataObject objectList = this.dlmsHelper.getAttributeValue(conn, attributeAddress);
 
-        final DataObject resultData = getResultList.get(0).getResultData();
-        if (!resultData.isComplex()) {
+        if (!objectList.isComplex()) {
             this.throwUnexpectedTypeProtocolAdapterException();
         }
-        // The check here above "!resultData.isComplex()" garantees that can be
-        // cast to a List.
-        @SuppressWarnings("unchecked")
-        final List<DataObject> resultDataValue = (List<DataObject>) getResultList.get(0).getResultData().getValue();
+        final List<DataObject> objectListElements = objectList.getValue();
 
-        final List<ClassIdObisAttr> allObisCodes = this.getAllObisCodes(resultDataValue);
+        final List<ClassIdObisAttr> allObisCodes = this.getAllObisCodes(objectListElements);
         this.logAllObisCodes(allObisCodes);
 
         try {
@@ -150,7 +145,7 @@ public class RetrieveConfigurationObjectsCommandExecutor extends AbstractCommand
             this.throwUnexpectedTypeProtocolAdapterException();
         }
         final AttributeAddress attributeAddress = new AttributeAddress(classNumber,
-                this.createObisCode(obisCodeByteArray), attributeValue);
+                new ObisCode(obisCodeByteArray), attributeValue);
 
         LOGGER.debug("Retrieving configuration objects data for class id: {}, obis code: {}, attribute id: {}",
                 classNumber, obisCodeByteArray, attributeValue);
@@ -161,52 +156,44 @@ public class RetrieveConfigurationObjectsCommandExecutor extends AbstractCommand
         return this.dlmsHelper.getDebugInfo(getResult.getResultData());
     }
 
-    private ObisCode createObisCode(final byte[] obisCodeByteArray) {
-        return new ObisCode(this.toInt(obisCodeByteArray[0]), this.toInt(obisCodeByteArray[1]), this.toInt(obisCodeByteArray[2]),
-                this.toInt(obisCodeByteArray[3]), this.toInt(obisCodeByteArray[4]), this.toInt(obisCodeByteArray[5]));
-    }
-
-    private int toInt(final byte aByte) {
-        return aByte & 0xFF;
-    }
-    
-    @SuppressWarnings("unchecked")
-    private List<ClassIdObisAttr> getAllObisCodes(final List<DataObject> obisCodeMetaDataTree)
+    private List<ClassIdObisAttr> getAllObisCodes(final List<DataObject> objectListElements)
             throws ProtocolAdapterException {
         final List<ClassIdObisAttr> allObisCodes = new ArrayList<>();
 
-        for (final DataObject obisCodeMetaData : obisCodeMetaDataTree) {
-            final List<DataObject> obisCodeMetaDataList = (List<DataObject>) obisCodeMetaData.getValue();
-            final ClassIdObisAttr classIdObisAttr = new ClassIdObisAttr(this.getClassNumber(obisCodeMetaDataList
-                    .get(CLASS_ID_INDEX)), obisCodeMetaDataList.get(OBIS_CODE_INDEX),
-                    this.getNoOffAttributes(obisCodeMetaDataList));
+        for (final DataObject objectListElement : objectListElements) {
+            final List<DataObject> objectListElementValues = objectListElement.getValue();
+            final ClassIdObisAttr classIdObisAttr = new ClassIdObisAttr(this.getClassId(objectListElementValues
+                    .get(CLASS_ID_INDEX)), objectListElementValues.get(OBIS_CODE_INDEX),
+                    this.getNoOffAttributes(objectListElementValues));
 
             allObisCodes.add(classIdObisAttr);
         }
         return allObisCodes;
     }
 
-    private int getClassNumber(final DataObject dataObject) {
-        // is long unsi
-        return (int) dataObject.getValue();
+    private int getClassId(final DataObject dataObject) throws ProtocolAdapterException {
+        if (DataObject.Type.LONG_UNSIGNED != dataObject.getType()) {
+            this.throwUnexpectedTypeProtocolAdapterException();
+        }
+        return ((Number) dataObject.getValue()).intValue();
     }
 
     private void throwUnexpectedTypeProtocolAdapterException() throws ProtocolAdapterException {
         throw new ProtocolAdapterException("Unexpected type of element");
     }
 
-    private int getNoOffAttributes(final List<DataObject> obisCodeMetaDataList) throws ProtocolAdapterException {
-        final DataObject element3 = obisCodeMetaDataList.get(ATTR_INDEX);
-        if (!element3.isComplex()) {
+    private int getNoOffAttributes(final List<DataObject> objectListElementValues) throws ProtocolAdapterException {
+        final DataObject accessRights = objectListElementValues.get(ATTR_INDEX);
+        if (!accessRights.isComplex()) {
             this.throwUnexpectedTypeProtocolAdapterException();
         }
-        final List<DataObject> attributesList = (List) element3.getValue();
-        final DataObject attributes = attributesList.get(0);
-        if (!attributes.isComplex()) {
+        final List<DataObject> accessRightsValues = accessRights.getValue();
+        final DataObject attributeAccess = accessRightsValues.get(0);
+        if (!attributeAccess.isComplex()) {
             this.throwUnexpectedTypeProtocolAdapterException();
         }
-        final List<DataObject> listValue = attributes.getValue();
-        return listValue.size();
+        final List<DataObject> attributeAccessDescriptors = attributeAccess.getValue();
+        return attributeAccessDescriptors.size();
     }
 
     private class ClassIdObisAttr {

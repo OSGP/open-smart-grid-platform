@@ -24,6 +24,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActionDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.OsgpResultTypeDto;
 
 @Service(value = "dlmsBundleService")
 public class BundleService {
@@ -76,7 +77,7 @@ public class BundleService {
                             executorName, exception);
                     final String responseMessage = executor == null ? "Unable to handle request"
                             : "Error handling request with " + executorName;
-                    actionDto.setResponse(new ActionResponseDto(exception, responseMessage));
+                    actionDto.setResponse(new ActionResponseDto(OsgpResultTypeDto.NOT_OK, exception, responseMessage));
                 }
             }
         }
