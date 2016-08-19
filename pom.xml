@@ -74,8 +74,5 @@
     <!-- Fitnesse Acceptance Test Project -->
     <module>osgp-platform-test</module>
     
-    <!-- Cucumber Integration Test -->
-    <module>integration-tests-cucumber</module>
-    
   </modules>
 </project>
