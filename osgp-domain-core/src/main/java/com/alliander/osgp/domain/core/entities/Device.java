@@ -153,9 +153,10 @@ public class Device implements Serializable {
      */
     protected boolean isActivated;
 
-    public void setActivated(final boolean isActivated) {
-        this.isActivated = isActivated;
-    }
+    /**
+     * Indicates if a device is active
+     */
+    protected boolean isActive;
 
     /**
      * List of { @see DeviceAuthorization.class } containing authorizations for
@@ -223,7 +224,8 @@ public class Device implements Serializable {
         this.gpsLongitude = gpsLongitude;
     }
 
-    public DeviceAuthorization addAuthorization(final Organisation organisation, final DeviceFunctionGroup functionGroup) {
+    public DeviceAuthorization addAuthorization(final Organisation organisation,
+            final DeviceFunctionGroup functionGroup) {
         final DeviceAuthorization authorization = new DeviceAuthorization(this, organisation, functionGroup);
         this.authorizations.add(authorization);
         return authorization;
@@ -371,6 +373,18 @@ public class Device implements Serializable {
         return this.isActivated;
     }
 
+    public void setActivated(final boolean isActivated) {
+        this.isActivated = isActivated;
+    }
+
+    public boolean isActive() {
+        return this.isActive;
+    }
+
+    public void setActive(final boolean isActive) {
+        this.isActive = isActive;
+    }
+
     public boolean isInMaintenance() {
         return this.inMaintenance;
     }
@@ -451,7 +465,7 @@ public class Device implements Serializable {
         return this.deviceModel;
     }
 
-    public void setDeviceModel(DeviceModel deviceModel) {
+    public void setDeviceModel(final DeviceModel deviceModel) {
         this.deviceModel = deviceModel;
     }
 

@@ -49,12 +49,12 @@ public class DeviceDomainService {
         final Device device = this.searchDevice(deviceIdentification);
         final Ssld ssld = this.ssldRepository.findOne(device.getId());
 
-        // Note: since this code is still specific for SSLD / PSLD, this null
-        // check is needed.
-        if (!device.isActivated()) {
+        if (!device.isActivated() || !device.isActive()) {
             throw new InactiveDeviceException(deviceIdentification);
         }
 
+        // Note: since this code is still specific for SSLD / PSLD, this null
+        // check is needed.
         if (ssld != null && !ssld.isPublicKeyPresent()) {
             throw new UnregisteredDeviceException(deviceIdentification);
         }

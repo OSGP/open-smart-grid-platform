@@ -15,9 +15,6 @@ import java.util.Objects;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +25,9 @@ import com.alliander.osgp.domain.core.entities.Ean;
 import com.alliander.osgp.domain.core.entities.RelayStatus;
 import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
+
+import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.metadata.Type;
 
 class SsldConverter extends BidirectionalConverter<Ssld, Device> {
     private static final Logger LOGGER = LoggerFactory.getLogger(SsldConverter.class);
@@ -59,8 +59,8 @@ class SsldConverter extends BidirectionalConverter<Ssld, Device> {
 
                 newDeviceOutputSetting.setExternalId(deviceOutputSetting.getExternalId());
                 newDeviceOutputSetting.setInternalId(deviceOutputSetting.getInternalId());
-                newDeviceOutputSetting.setRelayType(deviceOutputSetting.getOutputType() == null ? null : RelayType
-                        .valueOf(deviceOutputSetting.getOutputType().name()));
+                newDeviceOutputSetting.setRelayType(deviceOutputSetting.getOutputType() == null ? null
+                        : RelayType.valueOf(deviceOutputSetting.getOutputType().name()));
                 newDeviceOutputSetting.setAlias(deviceOutputSetting.getAlias());
                 deviceOutputSettings.add(newDeviceOutputSetting);
             }
@@ -103,8 +103,9 @@ class SsldConverter extends BidirectionalConverter<Ssld, Device> {
             newDeviceOutputSetting = new com.alliander.osgp.domain.core.entities.DeviceOutputSetting(
                     deviceOutputSetting.getInternalId(), deviceOutputSetting.getExternalId(),
                     deviceOutputSetting.getRelayType() == null ? null
-                            : com.alliander.osgp.domain.core.valueobjects.RelayType.valueOf(deviceOutputSetting
-                                    .getRelayType().name()), deviceOutputSetting.getAlias());
+                            : com.alliander.osgp.domain.core.valueobjects.RelayType
+                                    .valueOf(deviceOutputSetting.getRelayType().name()),
+                    deviceOutputSetting.getAlias());
 
             deviceOutputSettings.add(newDeviceOutputSetting);
         }
@@ -112,6 +113,7 @@ class SsldConverter extends BidirectionalConverter<Ssld, Device> {
         destination.setPublicKeyPresent(source.isPublicKeyPresent());
         destination.setHasSchedule(source.isHasSchedule());
         destination.setActivated(source.isActivated());
+        destination.setActive(source.isActive());
 
         // clearing the existing Eans to prevent duplication
         destination.setEans(new ArrayList<Ean>());
