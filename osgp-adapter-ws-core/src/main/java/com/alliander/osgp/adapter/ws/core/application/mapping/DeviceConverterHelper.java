@@ -77,6 +77,7 @@ class DeviceConverterHelper<T extends com.alliander.osgp.domain.core.entities.De
         final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device destination = new com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device();
         destination.setAlias(source.getAlias());
         destination.setActivated(source.isActivated());
+        destination.setActive(source.isActive());
         destination.setContainerCity(source.getContainerCity());
         destination.setContainerNumber(source.getContainerNumber());
         destination.setContainerPostalCode(source.getContainerPostalCode());
