@@ -23,6 +23,7 @@ import org.w3c.dom.NodeList;
 import com.alliander.osgp.platform.cucumber.SmartMetering;
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
 import com.alliander.osgp.platform.cucumber.support.OrganisationId;
+import com.alliander.osgp.platform.cucumber.support.ServiceEndpoint;
 
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
@@ -44,10 +45,14 @@ public class Bundle extends SmartMetering {
     @Autowired
     private OrganisationId organisationId;
 
+    @Autowired
+    private ServiceEndpoint serviceEndpoint;
+
     @When("^a bundled request message is received$")
     public void aBundledRequestMessageIsReceived() throws Throwable {
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_E_LABEL, this.deviceId.getDeviceIdE());
         PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, this.organisationId.getOrganisationId());
+        PROPERTIES_MAP.put(ENDPOINT_LABEL, this.serviceEndpoint.getServiceEndpoint());
 
         this.requestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
 
@@ -71,10 +76,9 @@ public class Bundle extends SmartMetering {
 
     }
 
-    @And("^the requests in the bundled request message will be executed from top to bottom$")
+    @And("^the operations in the bundled request message will be executed from top to bottom$")
     public void theRequestsInTheBundledRequestMessageWillBeExecutedFromTopToBottom() throws Throwable {
         PROPERTIES_MAP.put(CORRELATION_UID_LABEL, this.correlationUid);
-        PROPERTIES_MAP.put(TIME_OUT, "90000");
         PROPERTIES_MAP.put(MAX_TIME, "180000");
 
         this.responseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
@@ -97,7 +101,7 @@ public class Bundle extends SmartMetering {
         }
     }
 
-    @Then("^a bundled response message will contain the response from all the requests$")
+    @Then("^a bundled response message will contain the response from all the operations$")
     public void aBundledResponseMessageWillContainTheResponseFromAllTheRequests() throws Throwable {
         LOGGER.debug("check if we get responses for all the requests");
         final NodeList nodeList = this.runXpathResult.getNodeList(this.response, "//AllResponses/*");

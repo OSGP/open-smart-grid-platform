@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alliander.osgp.platform.cucumber.SmartMetering;
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
 import com.alliander.osgp.platform.cucumber.support.OrganisationId;
+import com.alliander.osgp.platform.cucumber.support.ServiceEndpoint;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -42,10 +43,14 @@ public class AssociationLnObjects extends SmartMetering {
     @Autowired
     private OrganisationId organisationId;
 
+    @Autowired
+    private ServiceEndpoint serviceEndpoint;
+
     @When("^the retrieve association LN objectlist request is received$")
     public void theRetrieveAssociationLNObjectlistRequestIsReceived() throws Throwable {
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_E_LABEL, this.deviceId.getDeviceIdE());
         PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, this.organisationId.getOrganisationId());
+        PROPERTIES_MAP.put(ENDPOINT_LABEL, this.serviceEndpoint.getServiceEndpoint());
 
         this.requestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }

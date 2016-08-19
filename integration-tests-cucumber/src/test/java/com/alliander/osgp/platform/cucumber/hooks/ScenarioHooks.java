@@ -8,18 +8,22 @@
 package com.alliander.osgp.platform.cucumber.hooks;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
+import com.alliander.osgp.platform.cucumber.support.ServiceEndpoint;
 
 import cucumber.api.Scenario;
 import cucumber.api.java.After;
@@ -37,7 +41,20 @@ public class ScenarioHooks {
     private DlmsDeviceRepository dlmsDeviceRepository;
     private DeviceAuthorizationRepository deviceAuthorizationRepository;
 
-    private static final String DEVICE414 =  "E9998000014123414";
+    private static final String DEVICE414 = "E9998000014123414";
+
+    @Autowired
+    private ServiceEndpoint serviceEndpoint;
+
+    @Before()
+    public void setServiceEndpoint() {
+
+        final Map<String, String> PROPERTIES_MAP = new HashMap<>();
+        PROPERTIES_MAP.put("TST2", "osgp-tst.cloudapp.net:62443");
+        PROPERTIES_MAP.put("AWS", "slimme-meters.aws.osg-platform.com:443");
+
+        this.serviceEndpoint.setServiceEndpoint(PROPERTIES_MAP.get("TST2"));
+    }
 
     @Before("@SLIM-218")
     public void beforeSlim218(final Scenario scenario) {
@@ -115,7 +132,7 @@ public class ScenarioHooks {
     private void setDeviceIsActivated(final String deviceId, final boolean newState) {
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceId);
         if (device != null) {
-            LOGGER.info("setting dlmsDevice.setActivated() to " + newState + " for device "+ deviceId);
+            LOGGER.info("setting dlmsDevice.setActivated() to " + newState + " for device " + deviceId);
             device.setActivated(newState);
             this.deviceRepository.save(device);
         } else {

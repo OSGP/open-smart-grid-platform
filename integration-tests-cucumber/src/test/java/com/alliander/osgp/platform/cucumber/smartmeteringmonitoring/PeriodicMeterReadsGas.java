@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alliander.osgp.platform.cucumber.SmartMetering;
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
 import com.alliander.osgp.platform.cucumber.support.OrganisationId;
+import com.alliander.osgp.platform.cucumber.support.ServiceEndpoint;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -49,11 +50,15 @@ public class PeriodicMeterReadsGas extends SmartMetering {
     @Autowired
     private OrganisationId organisationId;
 
+    @Autowired
+    private ServiceEndpoint serviceEndpoint;
+
     @When("^the get periodic meter reads gas request is received$")
     public void theGetPeriodicMeterReadsRequestIsReceived() throws Throwable {
 
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_G_LABEL, this.deviceId.getDeviceIdG());
         PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, this.organisationId.getOrganisationId());
+        PROPERTIES_MAP.put(ENDPOINT_LABEL, this.serviceEndpoint.getServiceEndpoint());
 
         this.requestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML_225, TEST_SUITE_XML);
     }
@@ -61,7 +66,6 @@ public class PeriodicMeterReadsGas extends SmartMetering {
     @Then("^the periodic meter reads gas result should be returned$")
     public void thePeriodicMeterReadsResultShouldBeReturned() throws Throwable {
         PROPERTIES_MAP.put(CORRELATION_UID_LABEL, this.correlationUid);
-
         this.responseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
 
         assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_PERIODTYPE,
@@ -75,6 +79,7 @@ public class PeriodicMeterReadsGas extends SmartMetering {
     public void theGetIntervalMeterReadsRequestIsReceived() throws Throwable {
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_G_LABEL, this.deviceId.getDeviceIdG());
         PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, this.organisationId.getOrganisationId());
+        PROPERTIES_MAP.put(ENDPOINT_LABEL, this.serviceEndpoint.getServiceEndpoint());
 
         this.requestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML_228, TEST_SUITE_XML);
     }

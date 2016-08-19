@@ -73,5 +73,6 @@
 
     <!-- Fitnesse Acceptance Test Project -->
     <module>osgp-platform-test</module>
+    
   </modules>
 </project>

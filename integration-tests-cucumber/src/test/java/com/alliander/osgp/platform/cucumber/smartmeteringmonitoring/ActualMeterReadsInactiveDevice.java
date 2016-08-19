@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alliander.osgp.platform.cucumber.SmartMetering;
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
 import com.alliander.osgp.platform.cucumber.support.OrganisationId;
+import com.alliander.osgp.platform.cucumber.support.ServiceEndpoint;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -40,13 +41,16 @@ public class ActualMeterReadsInactiveDevice extends SmartMetering {
     @Autowired
     private OrganisationId organisationId;
 
+    @Autowired
+    private ServiceEndpoint serviceEndpoint;
+
     @When("^the get actual meter reads request on an inactive device is received$")
     public void theGetActualMeterReadsRequestOnAnInactiveIsReceived() throws Throwable {
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_E_LABEL, this.deviceId.getDeviceIdE());
         PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, this.organisationId.getOrganisationId());
+        PROPERTIES_MAP.put(ENDPOINT_LABEL, this.serviceEndpoint.getServiceEndpoint());
         this.notOkRequestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML, LOGGER);
     }
-
 
     @Then("^the inactive response \"([^\"]*)\" should be given$")
     public void theResponseDeviceIsInactiveShouldBeGiven(final String errorMessage) throws Throwable {
