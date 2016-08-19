@@ -49,7 +49,7 @@ public class DeviceDomainService {
         final Device device = this.searchDevice(deviceIdentification);
         final Ssld ssld = this.ssldRepository.findOne(device.getId());
 
-        if (!device.isActive()) {
+        if (!device.isActivated() || !device.isActive()) {
             throw new InactiveDeviceException(deviceIdentification);
         }
 
