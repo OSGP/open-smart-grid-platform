@@ -19,6 +19,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringReques
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 import com.alliander.osgp.shared.exceptionhandling.UnknownCorrelationUidException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
@@ -55,7 +56,7 @@ public class InstallationService {
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata).request(device).build();
+                .deviceMessageMetadata(deviceMessageMetadata).request(device).build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
@@ -63,8 +64,55 @@ public class InstallationService {
         return correlationUid;
     }
 
-    public MeterResponseData dequeueAddSmartMeterResponse(final String correlationUid)
-            throws UnknownCorrelationUidException {
+    /**
+     * @param correlationUid
+     *            the correlationUid to dequeue
+     * @return the MeterResponseData belonging to the request with the same
+     *         correlationUid
+     * @throws UnknownCorrelationUidException
+     *             correlationUid is unkown in the queue
+     */
+    public MeterResponseData dequeueResponse(final String correlationUid) throws UnknownCorrelationUidException {
         return this.meterResponseDataService.dequeue(correlationUid);
     }
+
+    /**
+     * @param organisationIdentification
+     *            the organisation requesting the coupling of devices
+     * @param deviceIdentification
+     *            the identification of the master device
+     * @param mbusDeviceIdentification
+     *            the identifation of the m-bus device
+     * @param channel
+     *            the channel the m-bus device should be coupled onto
+     * @param messagePriority
+     *            the priority of the message
+     * @param scheduleTime
+     *            the time the request should be carried out
+     * @return the correlationUid identifying the operation
+     */
+    public String enqueueCoupleMbusDeviceRequest(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, @Identification final String mbusDeviceIdentification,
+            final short channel, final int messagePriority, final Long scheduleTime) {
+
+        LOGGER.debug(
+                "enqueueCoupleMbusDeviceRequest called with organisation {}, gateway {} and mbus device {} on channel {}",
+                organisationIdentification, deviceIdentification, mbusDeviceIdentification, channel);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                SmartMeteringRequestMessageType.COUPLE_MBUS_DEVICE.toString(), messagePriority, scheduleTime);
+
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .request(new CoupleMbusDeviceRequestData(mbusDeviceIdentification, channel)).build();
+
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
 }

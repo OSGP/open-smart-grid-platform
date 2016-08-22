@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.domain.core.entities.SmartMeter;
+import com.alliander.osgp.domain.core.exceptions.InactiveDeviceException;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.services.SmartMeterDomainService;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -42,7 +43,27 @@ public class DomainHelperService {
         return smartMeter;
     }
 
-    public void ensureFunctionalExceptionForUnknownDevice(final String deviceIdentification) throws FunctionalException {
+    /**
+     * @param deviceIdentification
+     *            the identification of the active device we're looking for
+     * @return the active device for the given identification
+     * @throws FunctionalException
+     *             the device is either not in the database or not active
+     */
+    public SmartMeter findActiveSmartMeter(final String deviceIdentification) throws FunctionalException {
+        SmartMeter smartMeter;
+        try {
+            smartMeter = this.smartMeteringDeviceDomainService.searchActiveSmartMeter(deviceIdentification);
+        } catch (final InactiveDeviceException e) {
+            throw new FunctionalException(FunctionalExceptionType.INACTIVE_DEVICE, COMPONENT_TYPE, e);
+        } catch (final UnknownEntityException e) {
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, COMPONENT_TYPE, e);
+        }
+        return smartMeter;
+    }
+
+    public void ensureFunctionalExceptionForUnknownDevice(final String deviceIdentification)
+            throws FunctionalException {
 
         /*
          * findSmartMeteringDevice throws a FunctionalException containing
