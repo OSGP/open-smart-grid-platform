@@ -53,7 +53,7 @@ public class DeviceManagementService extends AbstractService {
 
     public void updateKey(final String organisationIdentification, @Identification final String deviceIdentification,
             final String correlationUid, final String messageType, @PublicKey final String publicKey)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.info("MessageType: {}. Updating key for device [{}] on behalf of organisation [{}]",
                 deviceIdentification, organisationIdentification, messageType);
@@ -64,9 +64,8 @@ public class DeviceManagementService extends AbstractService {
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_ORGANISATION, ComponentType.DOMAIN_ADMIN, e);
         }
 
-        this.osgpCoreRequestMessageSender.send(
-                new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, publicKey),
-                messageType, null);
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, publicKey), messageType, null);
     }
 
     public void handleUpdateKeyResponse(final String deviceIdentification, final String organisationIdentification,
@@ -121,9 +120,8 @@ public class DeviceManagementService extends AbstractService {
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_ORGANISATION, ComponentType.DOMAIN_ADMIN, e);
         }
 
-        this.osgpCoreRequestMessageSender.send(
-                new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, null), messageType,
-                null);
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, null), messageType, null);
 
     }
 
@@ -166,16 +164,28 @@ public class DeviceManagementService extends AbstractService {
                 deviceIdentification, result, osgpException, null));
     }
 
+    public void activateDevice(final String organisationIdentification,
+            @Identification final String deviceIdentification, final String correlationUid, final String messageType) {
+        LOGGER.info("MessageType: {}. ActivateDevice for organisationIdentification: {} for deviceIdentification: {}",
+                messageType, organisationIdentification, deviceIdentification);
+
+        this.setDeviceIsActive(organisationIdentification, deviceIdentification, correlationUid, true);
+    }
+
     public void deactivateDevice(final String organisationIdentification,
             @Identification final String deviceIdentification, final String correlationUid, final String messageType) {
-        LOGGER.info("deactivateDevice for organisationIdentification: {} for deviceIdentification: {}",
-                organisationIdentification, deviceIdentification);
+        LOGGER.info(
+                "MessageType: {}. DeactivateDevice for organisationIdentification: {} for deviceIdentification: {}",
+                messageType, organisationIdentification, deviceIdentification);
 
-        // TODO: bypassing authorization, this should be fixed.
+        this.setDeviceIsActive(organisationIdentification, deviceIdentification, correlationUid, false);
+    }
 
+    private void setDeviceIsActive(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final boolean active) {
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
 
-        device.setActive(false);
+        device.setActive(active);
 
         this.deviceRepository.save(device);
 

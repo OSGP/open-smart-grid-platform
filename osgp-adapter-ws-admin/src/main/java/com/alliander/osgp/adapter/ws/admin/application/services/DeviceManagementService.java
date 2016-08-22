@@ -359,7 +359,7 @@ public class DeviceManagementService {
 
     public Page<DeviceLogItem> findOslpMessages(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Min(value = 0) final int pageNumber)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.debug("findOslpMessage called with organisation {}, device {} and pagenumber {}", new Object[] {
                 organisationIdentification, deviceIdentification, pageNumber });
@@ -432,7 +432,7 @@ public class DeviceManagementService {
      */
     public void setOwner(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Identification final String newOwner)
-                    throws FunctionalException {
+            throws FunctionalException {
         Organisation organisation = this.findOrganisation(organisationIdentification);
         final Device device = this.findDevice(deviceIdentification);
         this.isAllowed(organisation, PlatformFunction.SET_OWNER);
@@ -556,7 +556,7 @@ public class DeviceManagementService {
 
     public void updateDeviceProtocol(final String organisationIdentification,
             @Identification final String deviceIdentification, final String protocol, final String protocolVersion)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.debug("Updating protocol for device [{}] on behalf of organisation [{}] to protocol: {}, version: {}",
                 deviceIdentification, organisationIdentification, protocol, protocolVersion);
@@ -578,6 +578,39 @@ public class DeviceManagementService {
 
         LOGGER.info("Organisation {} configured protocol: {}, version: {} on device {}", organisationIdentification,
                 protocol, protocolVersion, deviceIdentification);
+    }
+
+    public String enqueueActivateDeviceRequest(final String organisationIdentification,
+            final String deviceIdentification) {
+
+        LOGGER.debug("enqueueActivateDevice called with organisation {} and device {}", organisationIdentification,
+                deviceIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final AdminRequestMessage message = new AdminRequestMessage(AdminRequestMessageType.ACTIVATE_DEVICE,
+                correlationUid, organisationIdentification, deviceIdentification, null);
+
+        this.adminRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
+    public void activateDeviceRequest(final String organisationIdentification,
+            @Identification final String deviceIdentification) throws FunctionalException {
+
+        LOGGER.debug("Activating device [{}] on behalf of organisation [{}]", deviceIdentification,
+                organisationIdentification);
+
+        final Organisation organisation = this.findOrganisation(organisationIdentification);
+        this.isAllowed(organisation, PlatformFunction.DEACTIVATE_DEVICE);
+
+        if (this.deviceRepository.findByDeviceIdentification(deviceIdentification) == null) {
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.WS_ADMIN);
+        }
+
+        this.enqueueActivateDeviceRequest(organisationIdentification, deviceIdentification);
     }
 
     public String enqueueDeactivateDeviceRequest(final String organisationIdentification,

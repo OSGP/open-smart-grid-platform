@@ -136,6 +136,26 @@
     </xsd:complexType>
   </xsd:element>
 
+  <!-- activate device -->
+  <xsd:element name="ActivateDeviceRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"></xsd:element>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="ActivateDeviceResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Result" type="common:OsgpResultType"
+          minOccurs="1" />
+        <xsd:element name="Description" type="xsd:string"
+          minOccurs="0" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
   <!-- deactivate device -->
   <xsd:element name="DeactivateDeviceRequest">
     <xsd:complexType>
@@ -384,7 +404,8 @@
       <xsd:element name="deviceIdentification" type="common:Identification" />
       <xsd:element name="organisationIdentification" type="common:Identification" />
       <xsd:element name="functionGroup" type="tns:DeviceFunctionGroup" />
-      <xsd:element name="revoked" type="xsd:boolean" minOccurs="0" />
+      <xsd:element name="revoked" type="xsd:boolean"
+        minOccurs="0" />
     </xsd:sequence>
   </xsd:complexType>
 </xsd:schema>
