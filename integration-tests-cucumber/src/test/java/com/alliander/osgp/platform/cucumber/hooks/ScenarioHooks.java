@@ -23,6 +23,7 @@ import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
+import com.alliander.osgp.platform.cucumber.support.DeviceId;
 import com.alliander.osgp.platform.cucumber.support.ServiceEndpoint;
 
 import cucumber.api.Scenario;
@@ -41,7 +42,8 @@ public class ScenarioHooks {
     private DlmsDeviceRepository dlmsDeviceRepository;
     private DeviceAuthorizationRepository deviceAuthorizationRepository;
 
-    private static final String DEVICE414 = "E9998000014123414";
+    @Autowired
+    private DeviceId deviceId;
 
     @Autowired
     private ServiceEndpoint serviceEndpoint;
@@ -75,17 +77,10 @@ public class ScenarioHooks {
         context.close();
     }
 
-    @Before("@SLIM-511")
-    public void deactivateDevice(final Scenario scenario) {
-        LOGGER.info("Preparing scenario for @SLIM-511");
-        this.setDeviceIsActivateState(scenario, DEVICE414, false);
-        LOGGER.info("Ready preparing scenario for @SLIM-511");
-    }
-
     @After("@SLIM-511")
     public void activateDevice(final Scenario scenario) {
         LOGGER.info("Resetting database after runnign scenario @SLIM-511");
-        this.setDeviceIsActivateState(scenario, DEVICE414, true);
+        this.setDeviceIsActivateState(this.deviceId.getDeviceIdE(), true);
         LOGGER.info("Database settings are reset after @SLIM-511");
     }
 
@@ -121,8 +116,7 @@ public class ScenarioHooks {
         }
     }
 
-    private void setDeviceIsActivateState(final Scenario scenario, final String deviceId, final boolean isActiveState) {
-        LOGGER.info("Scenario name: {}", scenario.getName());
+    public void setDeviceIsActivateState(final String deviceId, final boolean isActiveState) {
         final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("cucumber.xml");
         this.deviceRepository = context.getBean(DeviceRepository.class);
         this.setDeviceIsActivated(deviceId, isActiveState);

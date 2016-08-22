@@ -39,6 +39,6 @@ Background:
 
 @SLIM-511 @SmartMeterMonitoring
   Scenario:  Approach an inactive device
-  Given a device with DeviceID "E9998000014123414"
+  Given an inactive device with DeviceID "E9998000014123414"
   When the get actual meter reads request on an inactive device is received
   Then the inactive response "Device E9998000014123414 is not active in the platform" should be given
