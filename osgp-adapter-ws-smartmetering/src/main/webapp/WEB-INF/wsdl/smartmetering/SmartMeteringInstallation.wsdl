@@ -43,6 +43,23 @@
         </wsdl:part>
     </wsdl:message>
 
+    <wsdl:message name="DeCoupleMbusDeviceRequest">
+        <wsdl:part element="sminst:DeCoupleMbusDeviceRequest" name="DeCoupleMbusDeviceRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="DeCoupleMbusDeviceAsyncResponse">
+        <wsdl:part element="sminst:DeCoupleMbusDeviceAsyncResponse" name="DeCoupleMbusDeviceAsyncResponse">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="DeCoupleMbusDeviceAsyncRequest">
+        <wsdl:part element="sminst:DeCoupleMbusDeviceAsyncRequest" name="DeCoupleMbusDeviceAsyncRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="DeCoupleMbusDeviceResponse">
+        <wsdl:part element="sminst:DeCoupleMbusDeviceResponse" name="DeCoupleMbusDeviceResponse">
+        </wsdl:part>
+    </wsdl:message>
+
     <wsdl:message name="CoupleMbusDeviceRequest">
         <wsdl:part element="sminst:CoupleMbusDeviceRequest" name="CoupleMbusDeviceRequest">
         </wsdl:part>
@@ -72,6 +89,19 @@
             <wsdl:input message="tns:AddDeviceAsyncRequest" name="AddDeviceAsyncRequest">
             </wsdl:input>
             <wsdl:output message="tns:AddDeviceResponse" name="AddDeviceResponse">
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="DeCoupleMbusDevice">
+            <wsdl:input message="tns:DeCoupleMbusDeviceRequest" name="DeCoupleMbusDeviceRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:DeCoupleMbusDeviceAsyncResponse" name="DeCoupleMbusDeviceAsyncResponse">
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetDeCoupleMbusDeviceReponse">
+            <wsdl:input message="tns:DeCoupleMbusDeviceAsyncRequest" name="DeCoupleMbusDeviceAsyncRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:DeCoupleMbusDeviceResponse" name="DeCoupleMbusDeviceResponse">
             </wsdl:output>
         </wsdl:operation>
 
@@ -118,6 +148,34 @@
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>
+        
+        <wsdl:operation name="DeCoupleMbusDevice">
+            <soap:operation soapAction="" />
+            <wsdl:input name="DeCoupleMbusDeviceRequest">
+                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
+				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="DeCoupleMbusDeviceAsyncResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="GetDeCoupleMbusDeviceReponse">
+            <soap:operation soapAction="" />
+            <wsdl:input name="DeCoupleMbusDeviceAsyncRequest">
+                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
+				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="DeCoupleMbusDeviceResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+
         
         <wsdl:operation name="CoupleMbusDevice">
             <soap:operation soapAction="" />
