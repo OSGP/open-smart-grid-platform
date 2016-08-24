@@ -65,7 +65,7 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
     }
 
     @Override
-    public Specification<Device> hasDeviceIdentification(final String deviceIdentification)
+    public Specification<Device> hasDeviceIdentification(final String deviceIdentification, final boolean exactMatch)
             throws ArgumentNullOrEmptyException {
         if (StringUtils.isEmpty(deviceIdentification)) {
             throw new ArgumentNullOrEmptyException("deviceIdentification");
@@ -75,9 +75,12 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             @Override
             public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
-
-                return cb.like(cb.upper(deviceRoot.<String> get("deviceIdentification")),
-                        deviceIdentification.toUpperCase());
+                if (exactMatch) {
+                    return cb.equal(cb.upper(deviceRoot.<String> get("deviceIdentification")), deviceIdentification);
+                } else {
+                    return cb.like(cb.upper(deviceRoot.<String> get("deviceIdentification")),
+                            deviceIdentification.toUpperCase());
+                }
             }
         };
     }
@@ -252,7 +255,7 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
                 subquery.where(cb.and(cb.like(
                         cb.upper(deviceAuthorizationRoot.get("organisation").<String> get("name")),
                         organisation.toUpperCase()), cb.equal(deviceAuthorizationRoot.get("functionGroup"),
-                                DeviceFunctionGroup.OWNER.ordinal())));
+                        DeviceFunctionGroup.OWNER.ordinal())));
                 return cb.in(deviceRoot.get("id")).value(subquery);
             }
         };
@@ -352,9 +355,9 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
                 final Subquery<Long> subquery = query.subquery(Long.class);
                 final Root<DeviceFirmware> deviceFirmwareRoot = subquery.from(DeviceFirmware.class);
                 subquery.select(deviceFirmwareRoot.get("device").get("id").as(Long.class));
-                subquery.where(cb.and(
-                        cb.like(cb.upper(deviceFirmwareRoot.get("firmware").<String> get(moduleFieldName)),
-                                firmwareModuleVersion.toUpperCase()), 
+                subquery.where(cb.and(cb.like(
+                        cb.upper(deviceFirmwareRoot.get("firmware").<String> get(moduleFieldName)),
+                        firmwareModuleVersion.toUpperCase()),
                         cb.equal(deviceFirmwareRoot.<Boolean> get("active"), true)));
                 return cb.in(deviceRoot.get("id").as(Long.class)).value(subquery);
             }
