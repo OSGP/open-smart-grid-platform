@@ -40,6 +40,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.application.services.AdhocSer
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AssociationLnListType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 @Endpoint
@@ -133,8 +134,14 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
             response = new SpecificConfigurationObjectResponse();
             final MeterResponseData meterResponseData = this.adhocService.dequeueResponse(request.getCorrelationUid());
 
+            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
             if (meterResponseData.getMessageData() instanceof String) {
-                response.setConfigurationData((String) meterResponseData.getMessageData());
+                if (ResponseMessageResultType.OK == meterResponseData.getResultType()) {
+                    response.setConfigurationData((String) meterResponseData.getMessageData());
+                } else {
+                    response.setConfigurationData("");
+                    response.setException((String) meterResponseData.getMessageData());
+                }
             }
 
         } catch (final Exception e) {

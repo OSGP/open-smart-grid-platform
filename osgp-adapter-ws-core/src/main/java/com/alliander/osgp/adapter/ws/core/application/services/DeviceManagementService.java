@@ -166,10 +166,10 @@ public class DeviceManagementService {
     @Transactional(value = "readableTransactionManager")
     public Page<DeviceLogItem> findDeviceMessages(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Min(value = 0) final int pageNumber)
-                    throws FunctionalException {
+            throws FunctionalException {
 
-        LOGGER.debug("findOslpMessage called with organisation {}, device {} and pagenumber {}", new Object[] {
-                organisationIdentification, deviceIdentification, pageNumber });
+        LOGGER.debug("findOslpMessage called with organisation {}, device {} and pagenumber {}",
+                new Object[] { organisationIdentification, deviceIdentification, pageNumber });
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_MESSAGES);
@@ -253,8 +253,8 @@ public class DeviceManagementService {
      */
     @Transactional(value = "transactionManager")
     public Page<Device> findDevices(@Identification final String organisationIdentification, final Integer pageSize,
-            final Integer pageNumber, final DeviceFilter deviceFilter) throws FunctionalException,
-            ArgumentNullOrEmptyException {
+            final Integer pageNumber, final DeviceFilter deviceFilter)
+            throws FunctionalException, ArgumentNullOrEmptyException {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.FIND_DEVICES);
         this.pagingSettings.updatePagingSettings(pageSize, pageNumber);
@@ -275,9 +275,9 @@ public class DeviceManagementService {
         Page<Device> devices = null;
         if (!this.netManagementOrganisation.equals(organisationIdentification)) {
             if (deviceFilter == null) {
-                final DeviceFilter df = new DeviceFilter(organisationIdentification, null, null, null, null, null,
-                        null, null, DeviceExternalManagedFilterType.BOTH, DeviceActivatedFilterType.BOTH,
-                        DeviceInMaintenanceFilterType.BOTH, null, null, false, null, null, null, null, null, null);
+                final DeviceFilter df = new DeviceFilter(organisationIdentification, null, null, null, null, null, null,
+                        null, DeviceExternalManagedFilterType.BOTH, DeviceActivatedFilterType.BOTH,
+                        DeviceInMaintenanceFilterType.BOTH, null, null, false, null, null, null, null, null, null, false);
                 devices = this.applyFilter(df, organisation, request);
             } else {
                 deviceFilter.updateOrganisationIdentification(organisationIdentification);
@@ -311,86 +311,92 @@ public class DeviceManagementService {
                 Specifications<Device> specifications;
 
                 if (!StringUtils.isEmpty(deviceFilter.getOrganisationIdentification())) {
-                    final Organisation org = this.domainHelperService.findOrganisation(deviceFilter
-                            .getOrganisationIdentification());
+                    final Organisation org = this.domainHelperService
+                            .findOrganisation(deviceFilter.getOrganisationIdentification());
                     specifications = where(this.deviceSpecifications.forOrganisation(org));
                 } else {
                     // dummy for 'not initialized'
                     specifications = where(this.deviceSpecifications.forOrganisation(organisation));
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getDeviceIdentification())) {
-                    specifications = specifications.and(this.deviceSpecifications.hasDeviceIdentification(deviceFilter
-                            .getDeviceIdentification().replaceAll(WILDCARD, "%") + "%"));
+                    String searchString = deviceFilter.getDeviceIdentification();
+
+                    if (!deviceFilter.isExactMatch()) {
+                            searchString = searchString.replaceAll(WILDCARD, "%") + "%";
+                            }
+
+                    specifications = specifications.and(this.deviceSpecifications.hasDeviceIdentification(searchString,
+                                                deviceFilter.isExactMatch()));
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getAlias())) {
-                    specifications = specifications.and(this.deviceSpecifications.hasAlias(deviceFilter.getAlias()
-                            .replaceAll(WILDCARD, "%") + "%"));
+                    specifications = specifications.and(this.deviceSpecifications
+                            .hasAlias(deviceFilter.getAlias().replaceAll(WILDCARD, "%") + "%"));
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getCity())) {
-                    specifications = specifications.and(this.deviceSpecifications.hasCity(deviceFilter.getCity()
-                            .replaceAll(WILDCARD, "%") + "%"));
+                    specifications = specifications.and(
+                            this.deviceSpecifications.hasCity(deviceFilter.getCity().replaceAll(WILDCARD, "%") + "%"));
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getPostalCode())) {
-                    specifications = specifications.and(this.deviceSpecifications.hasPostalCode(deviceFilter
-                            .getPostalCode().replaceAll(WILDCARD, "%") + "%"));
+                    specifications = specifications.and(this.deviceSpecifications
+                            .hasPostalCode(deviceFilter.getPostalCode().replaceAll(WILDCARD, "%") + "%"));
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getStreet())) {
-                    specifications = specifications.and(this.deviceSpecifications.hasStreet(deviceFilter.getStreet()
-                            .replaceAll(WILDCARD, "%") + "%"));
+                    specifications = specifications.and(this.deviceSpecifications
+                            .hasStreet(deviceFilter.getStreet().replaceAll(WILDCARD, "%") + "%"));
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getNumber())) {
-                    specifications = specifications.and(this.deviceSpecifications.hasNumber(deviceFilter.getNumber()
-                            .replaceAll(WILDCARD, "%") + "%"));
+                    specifications = specifications.and(this.deviceSpecifications
+                            .hasNumber(deviceFilter.getNumber().replaceAll(WILDCARD, "%") + "%"));
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getMunicipality())) {
-                    specifications = specifications.and(this.deviceSpecifications.hasMunicipality(deviceFilter
-                            .getMunicipality().replaceAll(WILDCARD, "%") + "%"));
+                    specifications = specifications.and(this.deviceSpecifications
+                            .hasMunicipality(deviceFilter.getMunicipality().replaceAll(WILDCARD, "%") + "%"));
                 }
                 if (deviceFilter.getDeviceExternalManaged() != null
                         && !DeviceExternalManagedFilterType.BOTH.equals(deviceFilter.getDeviceExternalManaged())) {
-                    specifications = specifications.and(this.deviceSpecifications.isManagedExternally(deviceFilter
-                            .getDeviceExternalManaged().getValue()));
+                    specifications = specifications.and(this.deviceSpecifications
+                            .isManagedExternally(deviceFilter.getDeviceExternalManaged().getValue()));
                 }
                 if (deviceFilter.getDeviceActivated() != null
                         && !DeviceActivatedFilterType.BOTH.equals(deviceFilter.getDeviceActivated())) {
-                    specifications = specifications.and(this.deviceSpecifications.isActived(deviceFilter
-                            .getDeviceActivated().getValue()));
+                    specifications = specifications
+                            .and(this.deviceSpecifications.isActived(deviceFilter.getDeviceActivated().getValue()));
                 }
                 if (deviceFilter.getDeviceInMaintenance() != null
                         && !DeviceInMaintenanceFilterType.BOTH.equals(deviceFilter.getDeviceInMaintenance())) {
-                    specifications = specifications.and(this.deviceSpecifications.isInMaintetance(deviceFilter
-                            .getDeviceInMaintenance().getValue()));
+                    specifications = specifications.and(this.deviceSpecifications
+                            .isInMaintetance(deviceFilter.getDeviceInMaintenance().getValue()));
                 }
                 if (deviceFilter.isHasTechnicalInstallation()) {
                     specifications = specifications.and(this.deviceSpecifications.hasTechnicalInstallationDate());
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getOwner())) {
-                    specifications = specifications.and(this.deviceSpecifications.forOwner(deviceFilter.getOwner()
-                            .replaceAll(WILDCARD, "%") + "%"));
+                    specifications = specifications.and(this.deviceSpecifications
+                            .forOwner(deviceFilter.getOwner().replaceAll(WILDCARD, "%") + "%"));
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getDeviceType())) {
-                    specifications = specifications.and(this.deviceSpecifications.forDeviceType(deviceFilter
-                            .getDeviceType().replaceAll(WILDCARD, "%") + "%"));
+                    specifications = specifications.and(this.deviceSpecifications
+                            .forDeviceType(deviceFilter.getDeviceType().replaceAll(WILDCARD, "%") + "%"));
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getModel())) {
-                    specifications = specifications.and(this.deviceSpecifications.forDeviceModel(deviceFilter
-                            .getModel().replaceAll(WILDCARD, "%") + "%"));
+                    specifications = specifications.and(this.deviceSpecifications
+                            .forDeviceModel(deviceFilter.getModel().replaceAll(WILDCARD, "%") + "%"));
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getManufacturer())) {
-                    final Manufacturer manufacturer = this.firmwareManagementService.findManufacturer(deviceFilter
-                            .getManufacturer());
+                    final Manufacturer manufacturer = this.firmwareManagementService
+                            .findManufacturer(deviceFilter.getManufacturer());
                     specifications = specifications.and(this.deviceSpecifications.forManufacturer(manufacturer));
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getFirmwareModuleVersion())) {
-                    specifications = specifications.and(this.deviceSpecifications.forFirmwareModuleVersion(
-                            deviceFilter.getFirmwareModuleType(),
-                            deviceFilter.getFirmwareModuleVersion().replaceAll(WILDCARD, "%") + "%"));
+                    specifications = specifications.and(
+                            this.deviceSpecifications.forFirmwareModuleVersion(deviceFilter.getFirmwareModuleType(),
+                                    deviceFilter.getFirmwareModuleVersion().replaceAll(WILDCARD, "%") + "%"));
                 }
                 devices = this.deviceRepository.findAll(specifications, request);
             } else {
                 if (organisation != null) {
-                    final Specifications<Device> specifications = where(this.deviceSpecifications
-                            .forOrganisation(organisation));
+                    final Specifications<Device> specifications = where(
+                            this.deviceSpecifications.forOrganisation(organisation));
                     devices = this.deviceRepository.findAll(specifications, request);
                 } else {
                     devices = this.deviceRepository.findAll(request);
@@ -409,7 +415,7 @@ public class DeviceManagementService {
     @Transactional(value = "transactionManager")
     public String enqueueSetEventNotificationsRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final List<EventNotificationType> eventNotifications)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -427,8 +433,8 @@ public class DeviceManagementService {
                 eventNotifications);
 
         final CommonRequestMessage message = new CommonRequestMessage(CommonRequestMessageType.SET_EVENT_NOTIFICATIONS,
-                correlationUid, organisationIdentification, deviceIdentification,
-                eventNotificationMessageDataContainer, null);
+                correlationUid, organisationIdentification, deviceIdentification, eventNotificationMessageDataContainer,
+                null);
 
         this.commonRequestMessageSender.send(message);
 
@@ -467,8 +473,8 @@ public class DeviceManagementService {
     public void updateDevice(@Identification final String organisationIdentification, @Valid final Ssld updateDevice)
             throws FunctionalException {
 
-        final Device existingDevice = this.writableDeviceRepository.findByDeviceIdentification(updateDevice
-                .getDeviceIdentification());
+        final Device existingDevice = this.writableDeviceRepository
+                .findByDeviceIdentification(updateDevice.getDeviceIdentification());
         if (existingDevice == null) {
             // device does not exist
             LOGGER.info("Device does not exist, nothing to update.");
@@ -476,8 +482,8 @@ public class DeviceManagementService {
                     new UnknownEntityException(Device.class, updateDevice.getDeviceIdentification()));
         }
 
-        final List<DeviceAuthorization> owners = this.writableAuthorizationRepository.findByDeviceAndFunctionGroup(
-                existingDevice, DeviceFunctionGroup.OWNER);
+        final List<DeviceAuthorization> owners = this.writableAuthorizationRepository
+                .findByDeviceAndFunctionGroup(existingDevice, DeviceFunctionGroup.OWNER);
 
         // Check organisation against owner of device
         boolean isOwner = false;
@@ -500,6 +506,8 @@ public class DeviceManagementService {
                 updateDevice.getGpsLatitude(), updateDevice.getGpsLongitude());
 
         existingDevice.setActivated(updateDevice.isActivated());
+        existingDevice.setActive(updateDevice.isActive());
+
         if (updateDevice.getTechnicalInstallationDate() != null) {
             existingDevice.setTechnicalInstallationDate(updateDevice.getTechnicalInstallationDate());
         }
@@ -533,8 +541,8 @@ public class DeviceManagementService {
             boolean isAuthorized = false;
             for (final DeviceAuthorization authorizations : existingDevice.getAuthorizations()) {
                 if (organisationIdentification.equals(authorizations.getOrganisation().getOrganisationIdentification())
-                        && (DeviceFunctionGroup.OWNER.equals(authorizations.getFunctionGroup()) || DeviceFunctionGroup.CONFIGURATION
-                                .equals(authorizations.getFunctionGroup()))) {
+                        && (DeviceFunctionGroup.OWNER.equals(authorizations.getFunctionGroup())
+                                || DeviceFunctionGroup.CONFIGURATION.equals(authorizations.getFunctionGroup()))) {
                     isAuthorized = true;
                     existingDevice.updateInMaintenance(status);
                     this.writableDeviceRepository.save(existingDevice);

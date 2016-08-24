@@ -59,8 +59,8 @@ class SsldConverter extends BidirectionalConverter<Ssld, Device> {
 
                 newDeviceOutputSetting.setExternalId(deviceOutputSetting.getExternalId());
                 newDeviceOutputSetting.setInternalId(deviceOutputSetting.getInternalId());
-                newDeviceOutputSetting.setRelayType(deviceOutputSetting.getOutputType() == null ? null : RelayType
-                        .valueOf(deviceOutputSetting.getOutputType().name()));
+                newDeviceOutputSetting.setRelayType(deviceOutputSetting.getOutputType() == null ? null
+                        : RelayType.valueOf(deviceOutputSetting.getOutputType().name()));
                 newDeviceOutputSetting.setAlias(deviceOutputSetting.getAlias());
                 deviceOutputSettings.add(newDeviceOutputSetting);
             }
@@ -103,14 +103,20 @@ class SsldConverter extends BidirectionalConverter<Ssld, Device> {
             newDeviceOutputSetting = new com.alliander.osgp.domain.core.entities.DeviceOutputSetting(
                     deviceOutputSetting.getInternalId(), deviceOutputSetting.getExternalId(),
                     deviceOutputSetting.getRelayType() == null ? null
-                            : com.alliander.osgp.domain.core.valueobjects.RelayType.valueOf(deviceOutputSetting
-                                    .getRelayType().name()), deviceOutputSetting.getAlias());
+                            : com.alliander.osgp.domain.core.valueobjects.RelayType
+                                    .valueOf(deviceOutputSetting.getRelayType().name()),
+                    deviceOutputSetting.getAlias());
 
             deviceOutputSettings.add(newDeviceOutputSetting);
         }
         destination.updateOutputSettings(deviceOutputSettings);
         destination.setPublicKeyPresent(source.isPublicKeyPresent());
         destination.setHasSchedule(source.isHasSchedule());
+        destination.setActivated(source.isActivated());
+
+        if (source.isActive() != null) {
+            destination.setActive(source.isActive());
+        }
 
         // clearing the existing Eans to prevent duplication
         destination.setEans(new ArrayList<Ean>());

@@ -153,7 +153,7 @@ public class DeviceInstallationService {
     }
 
     @Transactional(value = "writableTransactionManager")
-    public void updateDevice(@Identification final String organisationIdentification, @Valid final Device updateDevice)
+    public void updateDevice(@Identification final String organisationIdentification, @Valid final Ssld updateDevice)
             throws FunctionalException {
 
         final Ssld existingDevice = this.writableSsldRepository.findByDeviceIdentification(updateDevice
@@ -187,6 +187,8 @@ public class DeviceInstallationService {
                 updateDevice.getContainerPostalCode(), updateDevice.getContainerStreet(),
                 updateDevice.getContainerNumber(), updateDevice.getContainerMunicipality(),
                 updateDevice.getGpsLatitude(), updateDevice.getGpsLongitude());
+        existingDevice.setPublicKeyPresent(updateDevice.isPublicKeyPresent());
+
         this.writableSsldRepository.save(existingDevice);
     }
 

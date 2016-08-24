@@ -16,6 +16,7 @@ import com.alliander.osgp.adapter.domain.core.infra.jms.ws.WebServiceResponseMes
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.Ssld;
+import com.alliander.osgp.domain.core.exceptions.InactiveDeviceException;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.exceptions.UnregisteredDeviceException;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
@@ -53,6 +54,8 @@ public class AbstractService {
             device = this.deviceDomainService.searchActiveDevice(deviceIdentification);
         } catch (final UnregisteredDeviceException e) {
             throw new FunctionalException(FunctionalExceptionType.UNREGISTERED_DEVICE, ComponentType.DOMAIN_CORE, e);
+        } catch (final InactiveDeviceException e) {
+            throw new FunctionalException(FunctionalExceptionType.INACTIVE_DEVICE, ComponentType.DOMAIN_CORE, e);
         } catch (final UnknownEntityException e) {
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.DOMAIN_CORE, e);
         }

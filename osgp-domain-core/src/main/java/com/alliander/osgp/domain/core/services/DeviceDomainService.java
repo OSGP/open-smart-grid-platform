@@ -14,6 +14,7 @@ import org.springframework.validation.annotation.Validated;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.Ssld;
+import com.alliander.osgp.domain.core.exceptions.InactiveDeviceException;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.exceptions.UnregisteredDeviceException;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
@@ -43,22 +44,21 @@ public class DeviceDomainService {
     }
 
     public Device searchActiveDevice(@Identification final String deviceIdentification)
-            throws UnregisteredDeviceException, UnknownEntityException {
+            throws UnregisteredDeviceException, InactiveDeviceException, UnknownEntityException {
 
         final Device device = this.searchDevice(deviceIdentification);
         final Ssld ssld = this.ssldRepository.findOne(device.getId());
 
-        // Note: since this code is still specific for SSLD / PSLD, this null
-        // check is needed.
-        if (ssld != null) {
-            if (!device.isActivated() || !ssld.isPublicKeyPresent()) {
-                throw new UnregisteredDeviceException(deviceIdentification);
-            }
+        if (!device.isActivated() || !device.isActive()) {
+            throw new InactiveDeviceException(deviceIdentification);
         }
 
-        if (!device.isActivated()) {
+        // Note: since this code is still specific for SSLD / PSLD, this null
+        // check is needed.
+        if (ssld != null && !ssld.isPublicKeyPresent()) {
             throw new UnregisteredDeviceException(deviceIdentification);
         }
+
         return device;
     }
 }

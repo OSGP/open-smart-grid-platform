@@ -29,6 +29,7 @@ public class DeviceFilter {
     private String model;
     private FirmwareModuleFilterType firmwareModuleType;
     private String firmwareModuleVersion;
+    private boolean exactMatch;
 
     public DeviceFilter() {
         // Default constructor.
@@ -40,7 +41,8 @@ public class DeviceFilter {
             final DeviceActivatedFilterType deviceActivated, final DeviceInMaintenanceFilterType deviceInMaintenance,
             final String sortDir, final String sortedBy, final boolean hasTechnicalInstallation, final String owner,
             final String deviceType, final String manufacturer, final String model,
-            final FirmwareModuleFilterType firmwareModuleType, final String firmwareModuleVersion) {
+            final FirmwareModuleFilterType firmwareModuleType, final String firmwareModuleVersion,
+            final boolean exactMatch) {
         this.organisationIdentification = organisationIdentification;
         this.deviceIdentification = deviceIdentification;
         this.alias = alias;
@@ -61,6 +63,7 @@ public class DeviceFilter {
         this.model = model;
         this.firmwareModuleType = firmwareModuleType;
         this.firmwareModuleVersion = firmwareModuleVersion;
+        this.exactMatch = exactMatch;
     }
 
     public String getOrganisationIdentification() {
@@ -177,5 +180,9 @@ public class DeviceFilter {
 
     public void setFirmwareModuleVersion(final String firmwareModuleVersion) {
         this.firmwareModuleVersion = firmwareModuleVersion;
+    }
+
+    public boolean isExactMatch() {
+        return this.exactMatch;
     }
 }

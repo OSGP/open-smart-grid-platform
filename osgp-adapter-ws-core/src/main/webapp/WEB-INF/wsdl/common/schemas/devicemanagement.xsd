@@ -275,6 +275,7 @@
       <xsd:element name="NetworkAddress" type="tns:IPType" minOccurs="0" />
       <xsd:element name="DeviceType" type="xsd:string" minOccurs="0" />
       <xsd:element name="Activated" type="xsd:boolean" minOccurs="0" />
+      <xsd:element name="Active" type="xsd:boolean" minOccurs="0" />
       <xsd:element name="HasSchedule" type="xsd:boolean" minOccurs="0" />
       <xsd:element name="PublicKeyPresent" type="xsd:boolean" minOccurs="0" />
       <xsd:element name="Organisations" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
@@ -325,6 +326,7 @@
       <xsd:element name="Owner" type="xsd:string" minOccurs="0" />
       <xsd:element name="FirmwareModuleType" type="tns:FirmwareModuleFilterType" minOccurs="0" />
       <xsd:element name="FirmwareModuleVersion" type="xsd:string" minOccurs="0" />
+      <xsd:element name="ExactMatch" type="xsd:boolean" minOccurs="0" />
     </xsd:sequence>
   </xsd:complexType>
 

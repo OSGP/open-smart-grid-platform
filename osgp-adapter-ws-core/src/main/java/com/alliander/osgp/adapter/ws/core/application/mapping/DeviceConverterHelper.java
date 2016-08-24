@@ -33,6 +33,7 @@ class DeviceConverterHelper<T extends com.alliander.osgp.domain.core.entities.De
         this.clazz = clazz;
     }
 
+    @SuppressWarnings("unchecked")
     T initEntity(final Device source) {
         if (source.getGpsLatitude() == null) {
             source.setGpsLatitude("0");
@@ -44,26 +45,29 @@ class DeviceConverterHelper<T extends com.alliander.osgp.domain.core.entities.De
         if (this.clazz.isAssignableFrom(SmartMeter.class)) {
             destination = (T) new SmartMeter(source.getDeviceIdentification(), source.getAlias(),
                     source.getContainerCity(), source.getContainerPostalCode(), source.getContainerStreet(),
-                    source.getContainerNumber(), source.getContainerMunicipality(), Float.valueOf(source
-                            .getGpsLatitude()), Float.valueOf(source.getGpsLongitude()));
+                    source.getContainerNumber(), source.getContainerMunicipality(),
+                    Float.valueOf(source.getGpsLatitude()), Float.valueOf(source.getGpsLongitude()));
         } else {
             destination = (T) new Ssld(source.getDeviceIdentification(), source.getAlias(), source.getContainerCity(),
                     source.getContainerPostalCode(), source.getContainerStreet(), source.getContainerNumber(),
-                    source.getContainerMunicipality(), Float.valueOf(source.getGpsLatitude()), Float.valueOf(source
-                            .getGpsLongitude()));
+                    source.getContainerMunicipality(), Float.valueOf(source.getGpsLatitude()),
+                    Float.valueOf(source.getGpsLongitude()));
         }
 
         destination.setActivated(source.isActivated());
+        if (source.isActive() != null) {
+            destination.setActive(source.isActive());
+        }
 
         destination.updateRegistrationData(destination.getNetworkAddress(), source.getDeviceType());
 
         if (source.getTechnicalInstallationDate() != null) {
-            destination.setTechnicalInstallationDate(source.getTechnicalInstallationDate().toGregorianCalendar()
-                    .getTime());
+            destination.setTechnicalInstallationDate(
+                    source.getTechnicalInstallationDate().toGregorianCalendar().getTime());
         }
 
         if (source.getDeviceModel() != null) {
-            DeviceModel deviceModel = new DeviceModel();
+            final DeviceModel deviceModel = new DeviceModel();
             deviceModel.setModelCode(source.getDeviceModel().getModelCode());
         }
 
@@ -75,6 +79,7 @@ class DeviceConverterHelper<T extends com.alliander.osgp.domain.core.entities.De
         final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device destination = new com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device();
         destination.setAlias(source.getAlias());
         destination.setActivated(source.isActivated());
+        destination.setActive(source.isActive());
         destination.setContainerCity(source.getContainerCity());
         destination.setContainerNumber(source.getContainerNumber());
         destination.setContainerPostalCode(source.getContainerPostalCode());
@@ -93,7 +98,7 @@ class DeviceConverterHelper<T extends com.alliander.osgp.domain.core.entities.De
         }
 
         destination
-        .setNetworkAddress(source.getNetworkAddress() == null ? null : source.getNetworkAddress().toString());
+                .setNetworkAddress(source.getNetworkAddress() == null ? null : source.getNetworkAddress().toString());
         destination.setOwner(source.getOwner() == null ? "" : source.getOwner().getName());
         destination.getOrganisations().addAll(source.getOrganisations());
 
@@ -104,17 +109,17 @@ class DeviceConverterHelper<T extends com.alliander.osgp.domain.core.entities.De
             final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceAuthorization newDeviceAuthorization = new com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceAuthorization();
 
             newDeviceAuthorization.setFunctionGroup(deviceAuthorisation.getFunctionGroup().name());
-            newDeviceAuthorization.setOrganisation(deviceAuthorisation.getOrganisation()
-                    .getOrganisationIdentification());
+            newDeviceAuthorization
+                    .setOrganisation(deviceAuthorisation.getOrganisation().getOrganisationIdentification());
             deviceAuthorizations.add(newDeviceAuthorization);
         }
         destination.getDeviceAuthorizations().addAll(deviceAuthorizations);
 
         if (source.getDeviceModel() != null) {
-            DeviceModel deviceModel = new DeviceModel();
+            final DeviceModel deviceModel = new DeviceModel();
             deviceModel.setDescription(source.getDeviceModel().getDescription());
             if (source.getDeviceModel().getManufacturerId() != null) {
-                Manufacturer manufacturer = new Manufacturer();
+                final Manufacturer manufacturer = new Manufacturer();
                 manufacturer.setManufacturerId(source.getDeviceModel().getManufacturerId().getManufacturerId());
                 manufacturer.setName(source.getDeviceModel().getManufacturerId().getName());
                 manufacturer.setUsePrefix(source.getDeviceModel().getManufacturerId().isUsePrefix());
@@ -132,8 +137,8 @@ class DeviceConverterHelper<T extends com.alliander.osgp.domain.core.entities.De
             final GregorianCalendar gCalendarTechnicalInstallation = new GregorianCalendar();
             gCalendarTechnicalInstallation.setTime(source.getTechnicalInstallationDate());
             try {
-                destination.setTechnicalInstallationDate(DatatypeFactory.newInstance().newXMLGregorianCalendar(
-                        gCalendarTechnicalInstallation));
+                destination.setTechnicalInstallationDate(
+                        DatatypeFactory.newInstance().newXMLGregorianCalendar(gCalendarTechnicalInstallation));
             } catch (final DatatypeConfigurationException e) {
                 LOGGER.error("Bad date format in technical installation date", e);
             }

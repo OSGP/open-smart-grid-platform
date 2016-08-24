@@ -18,7 +18,7 @@ import com.alliander.osgp.domain.core.valueobjects.FirmwareModuleFilterType;
 public interface DeviceSpecifications {
     Specification<Device> forOrganisation(final Organisation organisation) throws ArgumentNullOrEmptyException;
 
-    Specification<Device> hasDeviceIdentification(final String deviceIdentification)
+    Specification<Device> hasDeviceIdentification(final String deviceIdentification, final boolean exactMatch)
             throws ArgumentNullOrEmptyException;
 
     Specification<Device> hasAlias(final String alias) throws ArgumentNullOrEmptyException;
