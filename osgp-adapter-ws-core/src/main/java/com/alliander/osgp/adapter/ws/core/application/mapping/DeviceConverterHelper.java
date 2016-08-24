@@ -55,7 +55,9 @@ class DeviceConverterHelper<T extends com.alliander.osgp.domain.core.entities.De
         }
 
         destination.setActivated(source.isActivated());
-        destination.setActive(source.isActive());
+        if (source.isActive() != null) {
+            destination.setActive(source.isActive());
+        }
 
         destination.updateRegistrationData(destination.getNetworkAddress(), source.getDeviceType());
 
