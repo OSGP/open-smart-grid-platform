@@ -326,6 +326,7 @@
       <xsd:element name="Owner" type="xsd:string" minOccurs="0" />
       <xsd:element name="FirmwareModuleType" type="tns:FirmwareModuleFilterType" minOccurs="0" />
       <xsd:element name="FirmwareModuleVersion" type="xsd:string" minOccurs="0" />
+      <xsd:element name="ExactMatch" type="xsd:boolean" minOccurs="0" />
     </xsd:sequence>
   </xsd:complexType>
 
