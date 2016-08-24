@@ -1,0 +1,1 @@
+INSERT INTO device_function_mapping(function_group, function) VALUES ('MANAGEMENT', 'ACTIVATE_DEVICE');

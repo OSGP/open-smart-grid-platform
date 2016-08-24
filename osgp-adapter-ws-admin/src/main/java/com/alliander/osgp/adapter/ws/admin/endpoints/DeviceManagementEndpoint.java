@@ -487,7 +487,7 @@ public class DeviceManagementEndpoint {
             LOGGER.error("Exception: {} while activating device: {} for organisation {}.",
                     new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
 
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_TYPE_WS_ADMIN,
                     new ValidationException(e.getConstraintViolations()));
 
         } catch (final Exception e) {
@@ -520,7 +520,7 @@ public class DeviceManagementEndpoint {
             LOGGER.error("Exception: {} while deactivating device: {} for organisation {}.",
                     new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
 
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_TYPE_WS_ADMIN,
                     new ValidationException(e.getConstraintViolations()));
 
         } catch (final Exception e) {

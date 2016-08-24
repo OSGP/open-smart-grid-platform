@@ -33,5 +33,6 @@ public enum PlatformFunction {
     GET_FIRMWARE,
     CREATE_FIRMWARE,
     CHANGE_FIRMWARE,
-    REMOVE_FIRMWARE
+    REMOVE_FIRMWARE,
+    ACTIVATE_DEVICE
 }
