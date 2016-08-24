@@ -15,6 +15,9 @@ import java.util.Objects;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
+import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.metadata.Type;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,9 +28,6 @@ import com.alliander.osgp.domain.core.entities.Ean;
 import com.alliander.osgp.domain.core.entities.RelayStatus;
 import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
-
-import ma.glasnost.orika.converter.BidirectionalConverter;
-import ma.glasnost.orika.metadata.Type;
 
 class SsldConverter extends BidirectionalConverter<Ssld, Device> {
     private static final Logger LOGGER = LoggerFactory.getLogger(SsldConverter.class);
@@ -113,7 +113,10 @@ class SsldConverter extends BidirectionalConverter<Ssld, Device> {
         destination.setPublicKeyPresent(source.isPublicKeyPresent());
         destination.setHasSchedule(source.isHasSchedule());
         destination.setActivated(source.isActivated());
-        destination.setActive(source.isActive());
+
+        if (source.isActive() != null) {
+            destination.setActive(source.isActive());
+        }
 
         // clearing the existing Eans to prevent duplication
         destination.setEans(new ArrayList<Ean>());

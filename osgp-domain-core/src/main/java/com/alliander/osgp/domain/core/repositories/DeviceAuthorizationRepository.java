@@ -37,5 +37,6 @@ public interface DeviceAuthorizationRepository extends JpaRepository<DeviceAutho
             + "     or da.organisation = ?2)")
     List<DeviceAuthorization> findByDeviceForOrganisation(Device device, Organisation organisation);
 
-    void deleteByDeviceAndFunctionGroup(Device device, DeviceFunctionGroup functionGroup);
+    void deleteByDeviceAndFunctionGroupAndOrganisation(Device device, DeviceFunctionGroup functionGroup, Organisation organisation);
+
 }
