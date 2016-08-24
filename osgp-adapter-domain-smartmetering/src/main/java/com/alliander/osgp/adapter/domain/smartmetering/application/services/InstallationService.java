@@ -132,22 +132,6 @@ public class InstallationService {
         this.handleResponse("handleDefaultDeviceResponse", deviceMessageMetadata, deviceResult, exception);
     }
 
-    private void handleResponse(final String methodName, final DeviceMessageMetadata deviceMessageMetadata,
-            final ResponseMessageResultType deviceResult, final OsgpException exception) {
-        LOGGER.debug("{} for MessageType: {}", methodName, deviceMessageMetadata.getMessageType());
-
-        ResponseMessageResultType result = deviceResult;
-        if (exception != null) {
-            LOGGER.error("Device Response not ok. Unexpected Exception", exception);
-            result = ResponseMessageResultType.NOT_OK;
-        }
-
-        this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                result, exception, null, deviceMessageMetadata.getMessagePriority()), deviceMessageMetadata
-                .getMessageType());
-    }
-
     /**
      * @param deviceMessageMetadata
      *            the metadata of the message, including the correlationUid, the
@@ -203,6 +187,20 @@ public class InstallationService {
     /**
      * @param deviceMessageMetadata
      *            the metadata of the message, including the correlationUid, the
+     *            deviceIdentification and the organisation
+     * @param deviceResult
+     *            the result of the response (for example, OK or NOT_OK)
+     * @param osgpException
+     *            if an exception was thrown, it is given in this parameter
+     */
+    public void handleCoupleMbusDeviceResponse(final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessageResultType deviceResult, final OsgpException osgpException) {
+        this.handleResponse("handleCoupleMbusDeviceResponse", deviceMessageMetadata, deviceResult, osgpException);
+    }
+
+    /**
+     * @param deviceMessageMetadata
+     *            the metadata of the message, including the correlationUid, the
      *            deviceIdentification and the organization
      * @param requestData
      *            the requestData of the message, including the identification
@@ -210,7 +208,7 @@ public class InstallationService {
      * @throws FunctionalException
      */
     public void deCoupleMbusDevice(final DeviceMessageMetadata deviceMessageMetadata,
-            final DeCoupleMbusDeviceRequestData requestData) throws FunctionalException {
+            final DeCoupleMbusDeviceRequestData requestData) {
 
         final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
         final String mbusDeviceIdentification = requestData.getMbusDeviceIdentification();
@@ -243,25 +241,23 @@ public class InstallationService {
             exception = functionalException;
             result = ResponseMessageResultType.NOT_OK;
         }
+
+        this.handleResponse("deCoupleMbusDevice", deviceMessageMetadata, result, exception);
+    }
+
+    private void handleResponse(final String methodName, final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessageResultType deviceResult, final OsgpException exception) {
+        LOGGER.debug("{} for MessageType: {}", methodName, deviceMessageMetadata.getMessageType());
+
+        ResponseMessageResultType result = deviceResult;
+        if (exception != null) {
+            LOGGER.error("Device Response not ok. Unexpected Exception", exception);
+            result = ResponseMessageResultType.NOT_OK;
+        }
+
         this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 result, exception, null, deviceMessageMetadata.getMessagePriority()), deviceMessageMetadata
                 .getMessageType());
-
     }
-
-    /**
-     * @param deviceMessageMetadata
-     *            the metadata of the message, including the correlationUid, the
-     *            deviceIdentification and the organisation
-     * @param deviceResult
-     *            the result of the response (for example, OK or NOT_OK)
-     * @param osgpException
-     *            if an exception was thrown, it is given in this parameter
-     */
-    public void handleCoupleMbusDeviceResponse(final DeviceMessageMetadata deviceMessageMetadata,
-            final ResponseMessageResultType deviceResult, final OsgpException osgpException) {
-        this.handleResponse("handleCoupleMbusDeviceResponse", deviceMessageMetadata, deviceResult, osgpException);
-    }
-
 }

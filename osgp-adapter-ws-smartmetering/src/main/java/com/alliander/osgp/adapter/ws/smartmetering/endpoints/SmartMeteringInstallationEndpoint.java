@@ -28,8 +28,10 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbu
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.DeCoupleMbusDeviceAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.DeCoupleMbusDeviceAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.DeCoupleMbusDeviceRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.DeCoupleMbusDeviceResponse;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.InstallationMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.InstallationService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
@@ -166,8 +168,37 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
 
             LOGGER.error("Exception: {} while coupling devices: {} and {} on channel {} for organisation {}.",
                     new Object[] { e.getMessage(), deviceIdentification, mbusDeviceIdentification, channel,
-                    organisationIdentification }, e);
+                            organisationIdentification }, e);
 
+            this.handleException(e);
+        }
+        return response;
+    }
+
+    /**
+     * @param request
+     *            the request message containing the correlationUid
+     * @return the response message containing the OsgpResultType and optional a
+     *         message
+     * @throws OsgpException
+     */
+    @PayloadRoot(localPart = "CoupleMbusDeviceAsyncRequest", namespace = SMARTMETER_INSTALLATION_NAMESPACE)
+    @ResponsePayload
+    public CoupleMbusDeviceResponse getCoupleMbusDeviceResponse(
+            @RequestPayload final CoupleMbusDeviceAsyncRequest request) throws OsgpException {
+
+        CoupleMbusDeviceResponse response = null;
+        try {
+            response = new CoupleMbusDeviceResponse();
+            final MeterResponseData meterResponseData = this.installationService.dequeueResponse(request
+                    .getCorrelationUid());
+
+            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+            if (meterResponseData.getMessageData() instanceof String) {
+                response.setDescription((String) meterResponseData.getMessageData());
+            }
+
+        } catch (final Exception e) {
             this.handleException(e);
         }
         return response;
@@ -215,7 +246,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
 
             LOGGER.error("Exception: {} while decoupling devices: {} and {} for organisation {}.",
                     new Object[] { e.getMessage(), deviceIdentification, mbusDeviceIdentification,
-                    organisationIdentification }, e);
+                            organisationIdentification }, e);
 
             this.handleException(e);
         }
@@ -229,14 +260,14 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
      *         message
      * @throws OsgpException
      */
-    @PayloadRoot(localPart = "CoupleMbusDeviceAsyncRequest", namespace = SMARTMETER_INSTALLATION_NAMESPACE)
+    @PayloadRoot(localPart = "DeCoupleMbusDeviceAsyncRequest", namespace = SMARTMETER_INSTALLATION_NAMESPACE)
     @ResponsePayload
-    public CoupleMbusDeviceResponse getCoupleMbusDeviceResponse(
-            @RequestPayload final CoupleMbusDeviceAsyncRequest request) throws OsgpException {
+    public DeCoupleMbusDeviceResponse getDeCoupleMbusDeviceResponse(
+            @RequestPayload final DeCoupleMbusDeviceAsyncRequest request) throws OsgpException {
 
-        CoupleMbusDeviceResponse response = null;
+        DeCoupleMbusDeviceResponse response = null;
         try {
-            response = new CoupleMbusDeviceResponse();
+            response = new DeCoupleMbusDeviceResponse();
             final MeterResponseData meterResponseData = this.installationService.dequeueResponse(request
                     .getCorrelationUid());
 
