@@ -277,7 +277,7 @@ public class DeviceManagementService {
             if (deviceFilter == null) {
                 final DeviceFilter df = new DeviceFilter(organisationIdentification, null, null, null, null, null, null,
                         null, DeviceExternalManagedFilterType.BOTH, DeviceActivatedFilterType.BOTH,
-                        DeviceInMaintenanceFilterType.BOTH, null, null, false, null, null, null, null, null, null);
+                        DeviceInMaintenanceFilterType.BOTH, null, null, false, null, null, null, null, null, null, false);
                 devices = this.applyFilter(df, organisation, request);
             } else {
                 deviceFilter.updateOrganisationIdentification(organisationIdentification);
@@ -319,8 +319,14 @@ public class DeviceManagementService {
                     specifications = where(this.deviceSpecifications.forOrganisation(organisation));
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getDeviceIdentification())) {
-                    specifications = specifications.and(this.deviceSpecifications.hasDeviceIdentification(
-                            deviceFilter.getDeviceIdentification().replaceAll(WILDCARD, "%") + "%"));
+                    String searchString = deviceFilter.getDeviceIdentification();
+
+                    if (!deviceFilter.isExactMatch()) {
+                            searchString = searchString.replaceAll(WILDCARD, "%") + "%";
+                            }
+
+                    specifications = specifications.and(this.deviceSpecifications.hasDeviceIdentification(searchString,
+                                                deviceFilter.isExactMatch()));
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getAlias())) {
                     specifications = specifications.and(this.deviceSpecifications
