@@ -56,7 +56,7 @@ public class InstallationService {
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata).request(device).build();
+                .deviceMessageMetadata(deviceMessageMetadata).request(device).build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
@@ -83,8 +83,6 @@ public class InstallationService {
      *            the identification of the master device
      * @param mbusDeviceIdentification
      *            the identifation of the m-bus device
-     * @param channel
-     *            the channel the m-bus device should be decoupled onto
      * @param messagePriority
      *            the priority of the message
      * @param scheduleTime
@@ -106,8 +104,8 @@ public class InstallationService {
                 SmartMeteringRequestMessageType.DE_COUPLE_MBUS_DEVICE.toString(), messagePriority, scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata)
-        .request(new DeCoupleMbusDeviceRequestData(mbusDeviceIdentification)).build();
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .request(new DeCoupleMbusDeviceRequestData(mbusDeviceIdentification)).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
