@@ -30,14 +30,14 @@
   <con:entry key="Save After" value="false"/>
   <con:entry key="Add Settings" value="false"/>
   <con:entry key="Endpoint" value=""/>
-</xml-fragment>]]></con:setting></con:settings><con:interface xsi:type="con:WsdlInterface" id="d0304966-e668-4432-a87b-d198d7716ad3" wsaVersion="NONE" name="SmartmeterInstallationPortSoap11" type="wsdl" bindingName="{http://www.alliander.com/definitions/osgp/smartmetering/sm-installation-v1.0}SmartmeterInstallationPortSoap11" soapVersion="1_1" anonymous="optional" definition="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringInstallation.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringInstallation.wsdl"><con:part><con:url>https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringInstallation.wsdl</con:url><con:content><![CDATA[<!--Platform version: 4.0.0-SNAPSHOT-jenkins-OSGP_Platform_development-670-->
+</xml-fragment>]]></con:setting></con:settings><con:interface xsi:type="con:WsdlInterface" id="d0304966-e668-4432-a87b-d198d7716ad3" wsaVersion="NONE" name="SmartmeterInstallationPortSoap11" type="wsdl" bindingName="{http://www.alliander.com/definitions/osgp/smartmetering/sm-installation-v1.0}SmartmeterInstallationPortSoap11" soapVersion="1_1" anonymous="optional" definition="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringInstallation.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringInstallation.wsdl"><con:part><con:url>https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringInstallation.wsdl</con:url><con:content><![CDATA[<!--Platform version: 4.0.0-SNAPSHOT-jenkins-OSGP_Platform_development-676-->
 <wsdl:definitions targetNamespace="http://www.alliander.com/definitions/osgp/smartmetering/sm-installation-v1.0" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:sminst="http://www.alliander.com/schemas/osgp/smartmetering/sm-installation/2014/10" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.alliander.com/definitions/osgp/smartmetering/sm-installation-v1.0">
   <wsdl:types>
     <xsd:schema targetNamespace="http://www.alliander.com/definitions/osgp/smartmetering/sm-installation/imports" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
       <xsd:import namespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-installation/2014/10" schemaLocation="schemas/sm-installation.xsd"/>
     </xsd:schema>
   </wsdl:types>
-  <wsdl:message name="AddDeviceHeader">
+  <wsdl:message name="ActionHeader">
     <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification"/>
     <wsdl:part element="common:UserName" name="UserName"/>
     <wsdl:part element="common:ApplicationName" name="ApplicationName"/>
@@ -54,6 +54,30 @@
   <wsdl:message name="AddDeviceResponse">
     <wsdl:part element="sminst:AddDeviceResponse" name="AddDeviceResponse"></wsdl:part>
   </wsdl:message>
+  <wsdl:message name="CoupleMbusDeviceRequest">
+    <wsdl:part element="sminst:CoupleMbusDeviceRequest" name="CoupleMbusDeviceRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="CoupleMbusDeviceAsyncResponse">
+    <wsdl:part element="sminst:CoupleMbusDeviceAsyncResponse" name="CoupleMbusDeviceAsyncResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="CoupleMbusDeviceAsyncRequest">
+    <wsdl:part element="sminst:CoupleMbusDeviceAsyncRequest" name="CoupleMbusDeviceAsyncRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="CoupleMbusDeviceResponse">
+    <wsdl:part element="sminst:CoupleMbusDeviceResponse" name="CoupleMbusDeviceResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="DeCoupleMbusDeviceRequest">
+    <wsdl:part element="sminst:DeCoupleMbusDeviceRequest" name="DeCoupleMbusDeviceRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="DeCoupleMbusDeviceAsyncResponse">
+    <wsdl:part element="sminst:DeCoupleMbusDeviceAsyncResponse" name="DeCoupleMbusDeviceAsyncResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="DeCoupleMbusDeviceAsyncRequest">
+    <wsdl:part element="sminst:DeCoupleMbusDeviceAsyncRequest" name="DeCoupleMbusDeviceAsyncRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="DeCoupleMbusDeviceResponse">
+    <wsdl:part element="sminst:DeCoupleMbusDeviceResponse" name="DeCoupleMbusDeviceResponse"></wsdl:part>
+  </wsdl:message>
   <wsdl:portType name="SmartmeterInstallationPort">
     <wsdl:operation name="AddDevice">
       <wsdl:input message="tns:AddDeviceRequest" name="AddDeviceRequest"></wsdl:input>
@@ -63,15 +87,31 @@
       <wsdl:input message="tns:AddDeviceAsyncRequest" name="AddDeviceAsyncRequest"></wsdl:input>
       <wsdl:output message="tns:AddDeviceResponse" name="AddDeviceResponse"></wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="CoupleMbusDevice">
+      <wsdl:input message="tns:CoupleMbusDeviceRequest" name="CoupleMbusDeviceRequest"></wsdl:input>
+      <wsdl:output message="tns:CoupleMbusDeviceAsyncResponse" name="CoupleMbusDeviceAsyncResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCoupleMbusDeviceReponse">
+      <wsdl:input message="tns:CoupleMbusDeviceAsyncRequest" name="CoupleMbusDeviceAsyncRequest"></wsdl:input>
+      <wsdl:output message="tns:CoupleMbusDeviceResponse" name="CoupleMbusDeviceResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DeCoupleMbusDevice">
+      <wsdl:input message="tns:DeCoupleMbusDeviceRequest" name="DeCoupleMbusDeviceRequest"></wsdl:input>
+      <wsdl:output message="tns:DeCoupleMbusDeviceAsyncResponse" name="DeCoupleMbusDeviceAsyncResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDeCoupleMbusDeviceReponse">
+      <wsdl:input message="tns:DeCoupleMbusDeviceAsyncRequest" name="DeCoupleMbusDeviceAsyncRequest"></wsdl:input>
+      <wsdl:output message="tns:DeCoupleMbusDeviceResponse" name="DeCoupleMbusDeviceResponse"></wsdl:output>
+    </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="SmartmeterInstallationPortSoap11" type="tns:SmartmeterInstallationPort">
     <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
     <wsdl:operation name="AddDevice">
       <soap:operation soapAction=""/>
       <wsdl:input name="AddDeviceRequest">
-        <soap:header message="tns:AddDeviceHeader" part="OrganisationIdentification" use="literal"/>
-        <soap:header message="tns:AddDeviceHeader" part="UserName" use="literal"/>
-        <soap:header message="tns:AddDeviceHeader" part="ApplicationName" use="literal"/>
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal"/>
+        <soap:header message="tns:ActionHeader" part="UserName" use="literal"/>
+        <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal"/>
         <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="AddDeviceAsyncResponse">
@@ -81,12 +121,60 @@
     <wsdl:operation name="GetAddDeviceReponse">
       <soap:operation soapAction=""/>
       <wsdl:input name="AddDeviceAsyncRequest">
-        <soap:header message="tns:AddDeviceHeader" part="OrganisationIdentification" use="literal"/>
-        <soap:header message="tns:AddDeviceHeader" part="UserName" use="literal"/>
-        <soap:header message="tns:AddDeviceHeader" part="ApplicationName" use="literal"/>
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal"/>
+        <soap:header message="tns:ActionHeader" part="UserName" use="literal"/>
+        <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal"/>
         <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="AddDeviceResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CoupleMbusDevice">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="CoupleMbusDeviceRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal"/>
+        <soap:header message="tns:ActionHeader" part="UserName" use="literal"/>
+        <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal"/>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="CoupleMbusDeviceAsyncResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCoupleMbusDeviceReponse">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="CoupleMbusDeviceAsyncRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal"/>
+        <soap:header message="tns:ActionHeader" part="UserName" use="literal"/>
+        <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal"/>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="CoupleMbusDeviceResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DeCoupleMbusDevice">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="DeCoupleMbusDeviceRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal"/>
+        <soap:header message="tns:ActionHeader" part="UserName" use="literal"/>
+        <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal"/>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="DeCoupleMbusDeviceAsyncResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDeCoupleMbusDeviceReponse">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="DeCoupleMbusDeviceAsyncRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal"/>
+        <soap:header message="tns:ActionHeader" part="UserName" use="literal"/>
+        <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal"/>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="DeCoupleMbusDeviceResponse">
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
@@ -127,16 +215,78 @@
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
+  <xsd:element name="CoupleMbusDeviceRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
+        <xsd:element name="MbusDeviceIdentification" type="common:DeviceIdentification"/>
+        <xsd:element name="Channel">
+          <xsd:simpleType>
+            <xsd:restriction base="xsd:short">
+              <xsd:minInclusive value="1"/>
+              <xsd:maxInclusive value="4"/>
+            </xsd:restriction>
+          </xsd:simpleType>
+        </xsd:element>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="CoupleMbusDeviceAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="CoupleMbusDeviceAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="CoupleMbusDeviceResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element minOccurs="1" name="Result" type="common:OsgpResultType"/>
+        <xsd:element minOccurs="0" name="Description" type="xsd:string"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="DeCoupleMbusDeviceRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
+        <xsd:element name="MbusDeviceIdentification" type="common:DeviceIdentification"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="DeCoupleMbusDeviceAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="DeCoupleMbusDeviceAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="DeCoupleMbusDeviceResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element minOccurs="1" name="Result" type="common:OsgpResultType"/>
+        <xsd:element minOccurs="0" name="Description" type="xsd:string"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
   <!--DATATYPES-->
   <xsd:complexType name="Device">
     <xsd:sequence>
-      <xsd:element minOccurs="0" name="Device_Identification">
-        <xsd:simpleType>
-          <xsd:restriction base="tns:AlphaNumericType">
-            <xsd:length value="17"/>
-          </xsd:restriction>
-        </xsd:simpleType>
-      </xsd:element>
+      <xsd:element minOccurs="0" name="Device_Identification" type="common:DeviceIdentification"/>
       <xsd:element minOccurs="0" name="Device_type">
         <xsd:simpleType>
           <xsd:restriction base="xsd:string">
@@ -526,7 +676,56 @@
          <ns:CorrelationUid>?</ns:CorrelationUid>\r
       </ns1:AddDeviceAsyncRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:credentials><con:username xsi:nil="true"/><con:password xsi:nil="true"/><con:domain xsi:nil="true"/><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-installation-v1.0/SmartmeterInstallationPort/AddDeviceAsyncRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:interface xsi:type="con:WsdlInterface" id="a56528fb-1e48-44a8-b9ff-fa38f347e315" wsaVersion="NONE" name="SmartMeteringManagementPortSoap11" type="wsdl" bindingName="{http://www.alliander.com/definitions/osgp/smartmetering/sm-management-v1.0}SmartMeteringManagementPortSoap11" soapVersion="1_1" anonymous="optional" definition="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringManagement.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringManagement.wsdl"><con:part><con:url>https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringManagement.wsdl</con:url><con:content><![CDATA[<!--Platform version: 4.0.0-SNAPSHOT-jenkins-OSGP_Platform_development-670-->
+</soapenv:Envelope>]]></con:request><con:credentials><con:username xsi:nil="true"/><con:password xsi:nil="true"/><con:domain xsi:nil="true"/><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-installation-v1.0/SmartmeterInstallationPort/AddDeviceAsyncRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="a9cab10f-bd2a-4cd8-8e3b-5395ba2452e8" isOneWay="false" action="" name="CoupleMbusDevice" bindingOperationName="CoupleMbusDevice" type="Request-Response" outputName="CoupleMbusDeviceAsyncResponse" inputName="CoupleMbusDeviceRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="8fd0b6ad-3b18-4899-bc1d-3fb2bc8052b6" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://${#TestCase#ServiceEndpoint}/osgp-adapter-ws-smartmetering/smartMetering/installationService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/smartmetering/sm-installation/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>?</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:CoupleMbusDeviceRequest>
+         <ns1:DeviceIdentification>?</ns1:DeviceIdentification>
+         <ns1:MbusDeviceIdentification>?</ns1:MbusDeviceIdentification>
+         <ns1:Channel>?</ns1:Channel>
+      </ns1:CoupleMbusDeviceRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-installation-v1.0/SmartmeterInstallationPort/CoupleMbusDeviceRequest"/></con:call></con:operation><con:operation id="6bc49e99-580d-4f6e-be30-f92e7210b261" isOneWay="false" action="" name="GetCoupleMbusDeviceReponse" bindingOperationName="GetCoupleMbusDeviceReponse" type="Request-Response" outputName="CoupleMbusDeviceResponse" inputName="CoupleMbusDeviceAsyncRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="7ad25de2-44bc-49d3-84a2-efd89295e582" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://${#TestCase#ServiceEndpoint}/osgp-adapter-ws-smartmetering/smartMetering/installationService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/smartmetering/sm-installation/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>?</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:CoupleMbusDeviceAsyncRequest>
+         <ns:DeviceIdentification>?</ns:DeviceIdentification>
+         <ns:CorrelationUid>?</ns:CorrelationUid>
+      </ns1:CoupleMbusDeviceAsyncRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-installation-v1.0/SmartmeterInstallationPort/CoupleMbusDeviceAsyncRequest"/></con:call></con:operation><con:operation id="83080d26-a552-4c49-99ea-84fa76fba52f" isOneWay="false" action="" name="DeCoupleMbusDevice" bindingOperationName="DeCoupleMbusDevice" type="Request-Response" outputName="DeCoupleMbusDeviceAsyncResponse" inputName="DeCoupleMbusDeviceRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="5c95ed26-8c6a-4294-aff1-e2ed0c9d4b6e" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://${#TestCase#ServiceEndpoint}/osgp-adapter-ws-smartmetering/smartMetering/installationService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/smartmetering/sm-installation/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>?</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:DeCoupleMbusDeviceRequest>
+         <ns1:DeviceIdentification>?</ns1:DeviceIdentification>
+         <ns1:MbusDeviceIdentification>?</ns1:MbusDeviceIdentification>
+      </ns1:DeCoupleMbusDeviceRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-installation-v1.0/SmartmeterInstallationPort/DeCoupleMbusDeviceRequest"/></con:call></con:operation><con:operation id="3b5ec16b-e7db-4b9d-b16d-bcbc5a50096b" isOneWay="false" action="" name="GetDeCoupleMbusDeviceReponse" bindingOperationName="GetDeCoupleMbusDeviceReponse" type="Request-Response" outputName="DeCoupleMbusDeviceResponse" inputName="DeCoupleMbusDeviceAsyncRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="7caa5dfd-4b11-4697-965c-1f13bc24996b" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://${#TestCase#ServiceEndpoint}/osgp-adapter-ws-smartmetering/smartMetering/installationService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/smartmetering/sm-installation/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>?</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:DeCoupleMbusDeviceAsyncRequest>
+         <ns:DeviceIdentification>?</ns:DeviceIdentification>
+         <ns:CorrelationUid>?</ns:CorrelationUid>
+      </ns1:DeCoupleMbusDeviceAsyncRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-installation-v1.0/SmartmeterInstallationPort/DeCoupleMbusDeviceAsyncRequest"/></con:call></con:operation></con:interface><con:interface xsi:type="con:WsdlInterface" id="a56528fb-1e48-44a8-b9ff-fa38f347e315" wsaVersion="NONE" name="SmartMeteringManagementPortSoap11" type="wsdl" bindingName="{http://www.alliander.com/definitions/osgp/smartmetering/sm-management-v1.0}SmartMeteringManagementPortSoap11" soapVersion="1_1" anonymous="optional" definition="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringManagement.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringManagement.wsdl"><con:part><con:url>https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringManagement.wsdl</con:url><con:content><![CDATA[<!--Platform version: 4.0.0-SNAPSHOT-jenkins-OSGP_Platform_development-676-->
 <wsdl:definitions targetNamespace="http://www.alliander.com/definitions/osgp/smartmetering/sm-management-v1.0" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:smman="http://www.alliander.com/schemas/osgp/smartmetering/sm-management/2014/10" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.alliander.com/definitions/osgp/smartmetering/sm-management-v1.0">
   <wsdl:types>
     <xsd:schema targetNamespace="http://www.alliander.com/definitions/osgp/smartmetering/sm-management/imports" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
@@ -1157,7 +1356,7 @@
          <ns:CorrelationUid>Infostroom|||E9998000014122714|||20160106141141445</ns:CorrelationUid>
       </ns1:FindEventsAsyncRequest>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:credentials><con:username xsi:nil="true"/><con:password xsi:nil="true"/><con:domain xsi:nil="true"/><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-management-v1.0/SmartMeteringManagementPort/FindEventsAsyncRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:interface xsi:type="con:WsdlInterface" id="48505ce4-d34c-4ae5-9461-f57b0748f17f" wsaVersion="NONE" name="SmartmetermonitoringPortSoap11" type="wsdl" bindingName="{http://www.alliander.com/definitions/osgp/smartmetering/sm-monitoring-v1.0}SmartmetermonitoringPortSoap11" soapVersion="1_1" anonymous="optional" definition="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringMonitoring.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringMonitoring.wsdl"><con:part><con:url>https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringMonitoring.wsdl</con:url><con:content><![CDATA[<!--Platform version: 4.0.0-SNAPSHOT-jenkins-OSGP_Platform_development-670-->
+</soapenv:Envelope>]]></con:request><con:credentials><con:username xsi:nil="true"/><con:password xsi:nil="true"/><con:domain xsi:nil="true"/><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-management-v1.0/SmartMeteringManagementPort/FindEventsAsyncRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:interface xsi:type="con:WsdlInterface" id="48505ce4-d34c-4ae5-9461-f57b0748f17f" wsaVersion="NONE" name="SmartmetermonitoringPortSoap11" type="wsdl" bindingName="{http://www.alliander.com/definitions/osgp/smartmetering/sm-monitoring-v1.0}SmartmetermonitoringPortSoap11" soapVersion="1_1" anonymous="optional" definition="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringMonitoring.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringMonitoring.wsdl"><con:part><con:url>https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringMonitoring.wsdl</con:url><con:content><![CDATA[<!--Platform version: 4.0.0-SNAPSHOT-jenkins-OSGP_Platform_development-676-->
 <wsdl:definitions targetNamespace="http://www.alliander.com/definitions/osgp/smartmetering/sm-monitoring-v1.0" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:smmon="http://www.alliander.com/schemas/osgp/smartmetering/sm-monitoring/2014/10" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.alliander.com/definitions/osgp/smartmetering/sm-monitoring-v1.0">
   <wsdl:types>
     <xsd:schema targetNamespace="http://www.alliander.com/definitions/osgp/smartmetering/sm-monitoring/imports" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
@@ -2192,7 +2391,7 @@
          <ns1:CorrelationUid>?</ns1:CorrelationUid>\r
       </ns1:RetrievePushNotificationAlarmRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:credentials><con:username xsi:nil="true"/><con:password xsi:nil="true"/><con:domain xsi:nil="true"/><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-monitoring-v1.0/SmartmetermonitoringPort/RetrievePushNotificationAlarmRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:interface xsi:type="con:WsdlInterface" id="ca5547c9-1ff1-42f9-9c42-dfdcc3fabaaa" wsaVersion="NONE" name="SmartmeteradhocPortSoap11" type="wsdl" bindingName="{http://www.alliander.com/definitions/osgp/smartmetering/sm-adhoc-v1.0}SmartmeteradhocPortSoap11" soapVersion="1_1" anonymous="optional" definition="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringAdhoc.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringAdhoc.wsdl"><con:part><con:url>https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringAdhoc.wsdl</con:url><con:content><![CDATA[<!--Platform version: 4.0.0-SNAPSHOT-jenkins-OSGP_Platform_development-670-->
+</soapenv:Envelope>]]></con:request><con:credentials><con:username xsi:nil="true"/><con:password xsi:nil="true"/><con:domain xsi:nil="true"/><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-monitoring-v1.0/SmartmetermonitoringPort/RetrievePushNotificationAlarmRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:interface xsi:type="con:WsdlInterface" id="ca5547c9-1ff1-42f9-9c42-dfdcc3fabaaa" wsaVersion="NONE" name="SmartmeteradhocPortSoap11" type="wsdl" bindingName="{http://www.alliander.com/definitions/osgp/smartmetering/sm-adhoc-v1.0}SmartmeteradhocPortSoap11" soapVersion="1_1" anonymous="optional" definition="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringAdhoc.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringAdhoc.wsdl"><con:part><con:url>https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringAdhoc.wsdl</con:url><con:content><![CDATA[<!--Platform version: 4.0.0-SNAPSHOT-jenkins-OSGP_Platform_development-676-->
 <wsdl:definitions targetNamespace="http://www.alliander.com/definitions/osgp/smartmetering/sm-adhoc-v1.0" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:smadhoc="http://www.alliander.com/schemas/osgp/smartmetering/sm-adhoc/2014/10" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.alliander.com/definitions/osgp/smartmetering/sm-adhoc-v1.0">
   <wsdl:types>
     <xsd:schema targetNamespace="http://www.alliander.com/definitions/osgp/smartmetering/sm-adhoc/imports" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
@@ -2984,7 +3183,7 @@
          <ns:CorrelationUid>?</ns:CorrelationUid>\r
       </ns1:SpecificConfigurationObjectAsyncRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:credentials><con:username xsi:nil="true"/><con:password xsi:nil="true"/><con:domain xsi:nil="true"/><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-adhoc-v1.0/SmartmeteradhocPort/SpecificConfigurationObjectAsyncRequest"/></con:call></con:operation></con:interface><con:interface xsi:type="con:WsdlInterface" id="9de10c54-0330-48dd-bd25-459e916be438" wsaVersion="NONE" name="SmartmeterconfigurationPortSoap11" type="wsdl" bindingName="{http://www.alliander.com/definitions/osgp/smartmetering/sm-configuration-v1.0}SmartmeterconfigurationPortSoap11" soapVersion="1_1" anonymous="optional" definition="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringConfiguration.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringConfiguration.wsdl"><con:part><con:url>https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringConfiguration.wsdl</con:url><con:content><![CDATA[<!--Platform version: 4.0.0-SNAPSHOT-jenkins-OSGP_Platform_development-670-->
+</soapenv:Envelope>]]></con:request><con:credentials><con:username xsi:nil="true"/><con:password xsi:nil="true"/><con:domain xsi:nil="true"/><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-adhoc-v1.0/SmartmeteradhocPort/SpecificConfigurationObjectAsyncRequest"/></con:call></con:operation></con:interface><con:interface xsi:type="con:WsdlInterface" id="9de10c54-0330-48dd-bd25-459e916be438" wsaVersion="NONE" name="SmartmeterconfigurationPortSoap11" type="wsdl" bindingName="{http://www.alliander.com/definitions/osgp/smartmetering/sm-configuration-v1.0}SmartmeterconfigurationPortSoap11" soapVersion="1_1" anonymous="optional" definition="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringConfiguration.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringConfiguration.wsdl"><con:part><con:url>https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringConfiguration.wsdl</con:url><con:content><![CDATA[<!--Platform version: 4.0.0-SNAPSHOT-jenkins-OSGP_Platform_development-676-->
 <wsdl:definitions targetNamespace="http://www.alliander.com/definitions/osgp/smartmetering/sm-configuration-v1.0" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:smconf="http://www.alliander.com/schemas/osgp/smartmetering/sm-configuration/2014/10" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.alliander.com/definitions/osgp/smartmetering/sm-configuration-v1.0">
   <wsdl:types>
     <xsd:schema targetNamespace="http://www.alliander.com/definitions/osgp/smartmetering/sm-configuration/imports" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
@@ -6408,7 +6607,7 @@
          <ns1:DeviceIdentification>?</ns1:DeviceIdentification>
       </ns1:GetDeviceFirmwareHistoryRequest>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:credentials><con:username xsi:nil="true"/><con:password xsi:nil="true"/><con:domain xsi:nil="true"/></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/common/firmwaremanagement-v1.0/FirmwareManagementPort/GetDeviceFirmwareHistoryRequest"/></con:call></con:operation></con:interface><con:interface xsi:type="con:WsdlInterface" id="cd42c40c-4d16-4ce7-a931-923ccdd3c978" wsaVersion="NONE" name="SmartMeteringBundlePortSoap11" type="wsdl" bindingName="{http://www.alliander.com/definitions/osgp/smartmetering/sm-bundle-v1.0}SmartMeteringBundlePortSoap11" soapVersion="1_1" anonymous="optional" definition="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringBundle.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringBundle.wsdl"><con:part><con:url>https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringBundle.wsdl</con:url><con:content><![CDATA[<!--Platform version: 4.0.0-SNAPSHOT-jenkins-OSGP_Platform_development-670-->
+</soapenv:Envelope>]]></con:request><con:credentials><con:username xsi:nil="true"/><con:password xsi:nil="true"/><con:domain xsi:nil="true"/></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/common/firmwaremanagement-v1.0/FirmwareManagementPort/GetDeviceFirmwareHistoryRequest"/></con:call></con:operation></con:interface><con:interface xsi:type="con:WsdlInterface" id="cd42c40c-4d16-4ce7-a931-923ccdd3c978" wsaVersion="NONE" name="SmartMeteringBundlePortSoap11" type="wsdl" bindingName="{http://www.alliander.com/definitions/osgp/smartmetering/sm-bundle-v1.0}SmartMeteringBundlePortSoap11" soapVersion="1_1" anonymous="optional" definition="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringBundle.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringBundle.wsdl"><con:part><con:url>https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringBundle.wsdl</con:url><con:content><![CDATA[<!--Platform version: 4.0.0-SNAPSHOT-jenkins-OSGP_Platform_development-676-->
 <wsdl:definitions targetNamespace="http://www.alliander.com/definitions/osgp/smartmetering/sm-bundle-v1.0" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:bundle="http://www.alliander.com/schemas/osgp/smartmetering/sm-bundle/2014/10" xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.alliander.com/definitions/osgp/smartmetering/sm-bundle-v1.0">
   <wsdl:types>
     <xsd:schema targetNamespace="http://www.alliander.com/definitions/osgp/smartmetering/sm-bundle/imports" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
@@ -6487,156 +6686,177 @@
   <xsd:import namespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-monitoring/2014/10" schemaLocation="sm-monitoring.xsd"/>
   <xsd:import namespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-adhoc/2014/10" schemaLocation="sm-adhoc.xsd"/>
   <!--Requests and Responses-->
+  <xsd:element name="FindEventsRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smman:FindEventsRequestData"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetSpecialDaysRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:SpecialDaysRequestData"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="ReadAlarmRegisterRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smmon:ReadAlarmRegisterData"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetActualMeterReadsRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smmon:ActualMeterReadsData"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetActualMeterReadsGasRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smmon:ActualMeterReadsGasData"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetAdministrativeStatusRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:GetAdministrativeStatusData"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetPeriodicMeterReadsRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smmon:PeriodicMeterReadsRequestData"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetPeriodicMeterReadsGasRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smmon:PeriodicMeterReadsGasRequestData"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetAdministrativeStatusRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:AdministrativeStatusTypeData"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetActivityCalendarRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:SetActivityCalendarRequestData"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetEncryptionKeyExchangeOnGMeterRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:SetEncryptionKeyExchangeOnGMeterRequestData"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetAlarmNotificationsRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:SetAlarmNotificationsRequestData"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetConfigurationObjectRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:SetConfigurationObjectRequestData"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetPushSetupAlarmRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:SetPushSetupAlarmRequestData"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetPushSetupSmsRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:SetPushSetupSmsRequestData"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SynchronizeTimeRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="adhoc:SynchronizeTimeRequestData"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetConfigurationRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="adhoc:GetConfigurationRequestData"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetFirmwareVersionRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:GetFirmwareVersionRequestData"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetSpecificConfigurationObjectRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="adhoc:SpecificConfigurationObjectRequestData"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetKeysRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:SetKeysRequestData"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetAssociationLnObjectsRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="adhoc:GetAssociationLnObjectsRequestData"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
   <xsd:complexType name="Actions">
     <xsd:sequence>
       <xsd:choice maxOccurs="unbounded">
-        <xsd:element name="FindEventsRequest">
-          <xsd:complexType>
-            <xsd:complexContent>
-              <xsd:extension base="smman:FindEventsRequestData"/>
-            </xsd:complexContent>
-          </xsd:complexType>
-        </xsd:element>
-        <xsd:element name="GetSpecialDaysRequest">
-          <xsd:complexType>
-            <xsd:complexContent>
-              <xsd:extension base="smconf:SpecialDaysRequestData"/>
-            </xsd:complexContent>
-          </xsd:complexType>
-        </xsd:element>
-        <xsd:element name="ReadAlarmRegisterRequest">
-          <xsd:complexType>
-            <xsd:complexContent>
-              <xsd:extension base="smmon:ReadAlarmRegisterData"/>
-            </xsd:complexContent>
-          </xsd:complexType>
-        </xsd:element>
-        <xsd:element name="GetActualMeterReadsRequest">
-          <xsd:complexType>
-            <xsd:complexContent>
-              <xsd:extension base="smmon:ActualMeterReadsData"/>
-            </xsd:complexContent>
-          </xsd:complexType>
-        </xsd:element>
-        <xsd:element name="GetActualMeterReadsGasRequest">
-          <xsd:complexType>
-            <xsd:complexContent>
-              <xsd:extension base="smmon:ActualMeterReadsGasData"/>
-            </xsd:complexContent>
-          </xsd:complexType>
-        </xsd:element>
-        <xsd:element name="GetAdministrativeStatusRequest">
-          <xsd:complexType>
-            <xsd:complexContent>
-              <xsd:extension base="smconf:GetAdministrativeStatusData"/>
-            </xsd:complexContent>
-          </xsd:complexType>
-        </xsd:element>
-        <xsd:element name="GetPeriodicMeterReadsRequest">
-          <xsd:complexType>
-            <xsd:complexContent>
-              <xsd:extension base="smmon:PeriodicMeterReadsRequestData"/>
-            </xsd:complexContent>
-          </xsd:complexType>
-        </xsd:element>
-        <xsd:element name="GetPeriodicMeterReadsGasRequest">
-          <xsd:complexType>
-            <xsd:complexContent>
-              <xsd:extension base="smmon:PeriodicMeterReadsGasRequestData"/>
-            </xsd:complexContent>
-          </xsd:complexType>
-        </xsd:element>
-        <xsd:element name="SetAdministrativeStatusRequest">
-          <xsd:complexType>
-            <xsd:complexContent>
-              <xsd:extension base="smconf:AdministrativeStatusTypeData"/>
-            </xsd:complexContent>
-          </xsd:complexType>
-        </xsd:element>
-        <xsd:element name="SetActivityCalendarRequest">
-          <xsd:complexType>
-            <xsd:complexContent>
-              <xsd:extension base="smconf:SetActivityCalendarRequestData"/>
-            </xsd:complexContent>
-          </xsd:complexType>
-        </xsd:element>
-        <xsd:element name="SetEncryptionKeyExchangeOnGMeterRequest">
-          <xsd:complexType>
-            <xsd:complexContent>
-              <xsd:extension base="smconf:SetEncryptionKeyExchangeOnGMeterRequestData"/>
-            </xsd:complexContent>
-          </xsd:complexType>
-        </xsd:element>
-        <xsd:element name="SetAlarmNotificationsRequest">
-          <xsd:complexType>
-            <xsd:complexContent>
-              <xsd:extension base="smconf:SetAlarmNotificationsRequestData"/>
-            </xsd:complexContent>
-          </xsd:complexType>
-        </xsd:element>
-        <xsd:element name="SetConfigurationObjectRequest">
-          <xsd:complexType>
-            <xsd:complexContent>
-              <xsd:extension base="smconf:SetConfigurationObjectRequestData"/>
-            </xsd:complexContent>
-          </xsd:complexType>
-        </xsd:element>
-        <xsd:element name="SetPushSetupAlarmRequest">
-          <xsd:complexType>
-            <xsd:complexContent>
-              <xsd:extension base="smconf:SetPushSetupAlarmRequestData"/>
-            </xsd:complexContent>
-          </xsd:complexType>
-        </xsd:element>
-        <xsd:element name="SetPushSetupSmsRequest">
-          <xsd:complexType>
-            <xsd:complexContent>
-              <xsd:extension base="smconf:SetPushSetupSmsRequestData"/>
-            </xsd:complexContent>
-          </xsd:complexType>
-        </xsd:element>
-        <xsd:element name="SynchronizeTimeRequest">
-          <xsd:complexType>
-            <xsd:complexContent>
-              <xsd:extension base="adhoc:SynchronizeTimeRequestData"/>
-            </xsd:complexContent>
-          </xsd:complexType>
-        </xsd:element>
-        <xsd:element name="GetConfigurationRequest">
-          <xsd:complexType>
-            <xsd:complexContent>
-              <xsd:extension base="adhoc:GetConfigurationRequestData"/>
-            </xsd:complexContent>
-          </xsd:complexType>
-        </xsd:element>
-        <xsd:element name="GetFirmwareVersionRequest">
-          <xsd:complexType>
-            <xsd:complexContent>
-              <xsd:extension base="smconf:GetFirmwareVersionRequestData"/>
-            </xsd:complexContent>
-          </xsd:complexType>
-        </xsd:element>
-        <xsd:element name="GetSpecificConfigurationObjectRequest">
-          <xsd:complexType>
-            <xsd:complexContent>
-              <xsd:extension base="adhoc:SpecificConfigurationObjectRequestData"/>
-            </xsd:complexContent>
-          </xsd:complexType>
-        </xsd:element>
-        <xsd:element name="SetKeysRequest">
-          <xsd:complexType>
-            <xsd:complexContent>
-              <xsd:extension base="smconf:SetKeysRequestData"/>
-            </xsd:complexContent>
-          </xsd:complexType>
-        </xsd:element>
-        <xsd:element name="GetAssociationLnObjectsRequest">
-          <xsd:complexType>
-            <xsd:complexContent>
-              <xsd:extension base="adhoc:GetAssociationLnObjectsRequestData"/>
-            </xsd:complexContent>
-          </xsd:complexType>
-        </xsd:element>
+        <xsd:element ref="tns:FindEventsRequest"/>
+        <xsd:element ref="tns:GetSpecialDaysRequest"/>
+        <xsd:element ref="tns:ReadAlarmRegisterRequest"/>
+        <xsd:element ref="tns:GetActualMeterReadsRequest"/>
+        <xsd:element ref="tns:GetActualMeterReadsGasRequest"/>
+        <xsd:element ref="tns:GetAdministrativeStatusRequest"/>
+        <xsd:element ref="tns:GetPeriodicMeterReadsRequest"/>
+        <xsd:element ref="tns:GetPeriodicMeterReadsGasRequest"/>
+        <xsd:element ref="tns:SetAdministrativeStatusRequest"/>
+        <xsd:element ref="tns:SetActivityCalendarRequest"/>
+        <xsd:element ref="tns:SetEncryptionKeyExchangeOnGMeterRequest"/>
+        <xsd:element ref="tns:SetAlarmNotificationsRequest"/>
+        <xsd:element ref="tns:SetConfigurationObjectRequest"/>
+        <xsd:element ref="tns:SetPushSetupAlarmRequest"/>
+        <xsd:element ref="tns:SetPushSetupSmsRequest"/>
+        <xsd:element ref="tns:SynchronizeTimeRequest"/>
+        <xsd:element ref="tns:GetConfigurationRequest"/>
+        <xsd:element ref="tns:GetFirmwareVersionRequest"/>
+        <xsd:element ref="tns:GetSpecificConfigurationObjectRequest"/>
+        <xsd:element ref="tns:SetKeysRequest"/>
+        <xsd:element ref="tns:GetAssociationLnObjectsRequest"/>
       </xsd:choice>
     </xsd:sequence>
   </xsd:complexType>
@@ -8814,7 +9034,7 @@
          <ns:CorrelationUid>?</ns:CorrelationUid>\r
       </ns1:BundleAsyncRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:credentials><con:username xsi:nil="true"/><con:password xsi:nil="true"/><con:domain xsi:nil="true"/></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-bundle-v1.0/SmartMeteringBundlePort/BundleAsyncRequest"/></con:call></con:operation></con:interface><con:interface xsi:type="con:WsdlInterface" id="867feabb-7f1b-42c6-bc34-04005beaf4f3" wsaVersion="NONE" name="DeviceManagementPortSoap11" type="wsdl" bindingName="{http://www.alliander.com/definitions/osgp/admin/devicemanagement-v1.0}DeviceManagementPortSoap11" soapVersion="1_1" anonymous="optional" definition="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-admin/wsdl/admin/DeviceManagement.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-admin/wsdl/admin/DeviceManagement.wsdl"><con:part><con:url>https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-admin/wsdl/admin/DeviceManagement.wsdl</con:url><con:content><![CDATA[<!--Platform version: 4.0.0-SNAPSHOT-jenkins-OSGP_Platform_development-670-->
+</soapenv:Envelope>]]></con:request><con:credentials><con:username xsi:nil="true"/><con:password xsi:nil="true"/><con:domain xsi:nil="true"/></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-bundle-v1.0/SmartMeteringBundlePort/BundleAsyncRequest"/></con:call></con:operation></con:interface><con:interface xsi:type="con:WsdlInterface" id="867feabb-7f1b-42c6-bc34-04005beaf4f3" wsaVersion="NONE" name="DeviceManagementPortSoap11" type="wsdl" bindingName="{http://www.alliander.com/definitions/osgp/admin/devicemanagement-v1.0}DeviceManagementPortSoap11" soapVersion="1_1" anonymous="optional" definition="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-admin/wsdl/admin/DeviceManagement.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-admin/wsdl/admin/DeviceManagement.wsdl"><con:part><con:url>https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-admin/wsdl/admin/DeviceManagement.wsdl</con:url><con:content><![CDATA[<!--Platform version: 4.0.0-SNAPSHOT-jenkins-OSGP_Platform_development-676-->
 <wsdl:definitions targetNamespace="http://www.alliander.com/definitions/osgp/admin/devicemanagement-v1.0" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:dman="http://www.alliander.com/schemas/osgp/admin/devicemanagement/2014/10" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.alliander.com/definitions/osgp/admin/devicemanagement-v1.0">
   <wsdl:types>
     <xsd:schema targetNamespace="http://www.alliander.com/definitions/osgp/admin/devicemanagement/imports" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
@@ -10033,7 +10253,7 @@ declare namespace ns3='http://www.alliander.com/schemas/osgp/common/2014/10';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:GetAdministrativeStatusRequest>\r
@@ -10050,7 +10270,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:GetAdministrativeStatusAsyncRequest>\r
@@ -10058,11 +10278,11 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
          <ns:CorrelationUid>${=testCase.getPropertyValue( "CorrelationUid" )}</ns:CorrelationUid>\r
       </ns1:GetAdministrativeStatusAsyncRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response" id="36e27c4a-b8a5-496a-8db2-ef7b1368af98" name="SOAP Response"/><con:assertion type="Schema Compliance" id="e342eb3c-7d8c-447e-aeef-aa2152a45d69" name="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion" id="ec7cd4f3-4872-4749-b8fb-0364433c5309" name="Not SOAP Fault"/><con:credentials><con:username xsi:nil="true"/><con:password xsi:nil="true"/><con:domain xsi:nil="true"/><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-configuration-v1.0/SmartmeterconfigurationPort/GetAdministrativeStatusAsyncRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties><con:property><con:name>DeviceIdentificationE</con:name><con:value>E9998000014123414</con:value></con:property><con:property><con:name>OrganisationIdentification</con:name><con:value>Infostroom</con:value></con:property><con:property><con:name>CorrelationUid</con:name><con:value>Infostroom|||E9998000014123414|||20160816061640341</con:value></con:property><con:property><con:name>DeviceIdentificationG</con:name><con:value>G00XX561204926113</con:value></con:property><con:property><con:name>ServiceEndpoint</con:name><con:value>osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/smartMetering/monitoringService/</con:value></con:property></con:properties></con:testCase><con:testCase id="829fc315-afd9-4ac6-916b-b8d91685713e" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="189 Set administrative status" searchProperties="true" timeout="0" wsrmEnabled="false" wsrmVersion="1.0" wsrmAckTo="" amfAuthorisation="false" amfEndpoint="" amfLogin="" amfPassword=""><con:settings/><con:testStep type="request" id="fe452228-0a9f-418b-84bd-3998a008666d" name="SetAdministrativeStatus - ON"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>SmartmeterconfigurationPortSoap11</con:interface><con:operation>SetAdministrativeStatus</con:operation><con:request name="SetAdministrativeStatus - ON" outgoingWss="" incomingWss="" timeout="" sslKeystore="Infostroom.pfx" useWsAddressing="false" useWsReliableMessaging="false" id="45f65a44-c865-4c0b-bb96-879b77751490"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://${#TestCase#ServiceEndpoint}/osgp-adapter-ws-smartmetering/smartMetering/configurationService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/smartmetering/sm-configuration/2014/10">\r
+</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response" id="36e27c4a-b8a5-496a-8db2-ef7b1368af98" name="SOAP Response"/><con:assertion type="Schema Compliance" id="e342eb3c-7d8c-447e-aeef-aa2152a45d69" name="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion" id="ec7cd4f3-4872-4749-b8fb-0364433c5309" name="Not SOAP Fault"/><con:credentials><con:username xsi:nil="true"/><con:password xsi:nil="true"/><con:domain xsi:nil="true"/><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-configuration-v1.0/SmartmeterconfigurationPort/GetAdministrativeStatusAsyncRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties><con:property><con:name>DeviceIdentificationE</con:name><con:value>E9998000014123414</con:value></con:property><con:property><con:name>OrganisationIdentification</con:name><con:value>Infostroom</con:value></con:property><con:property><con:name>CorrelationUid</con:name><con:value>Infostroom|||E9998000014123414|||20160826105559618</con:value></con:property><con:property><con:name>DeviceIdentificationG</con:name><con:value>G00XX561204926113</con:value></con:property><con:property><con:name>ServiceEndpoint</con:name><con:value>osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/smartMetering/monitoringService/</con:value></con:property></con:properties></con:testCase><con:testCase id="829fc315-afd9-4ac6-916b-b8d91685713e" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="189 Set administrative status" searchProperties="true" timeout="0" wsrmEnabled="false" wsrmVersion="1.0" wsrmAckTo="" amfAuthorisation="false" amfEndpoint="" amfLogin="" amfPassword=""><con:settings/><con:testStep type="request" id="fe452228-0a9f-418b-84bd-3998a008666d" name="SetAdministrativeStatus - ON"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>SmartmeterconfigurationPortSoap11</con:interface><con:operation>SetAdministrativeStatus</con:operation><con:request name="SetAdministrativeStatus - ON" outgoingWss="" incomingWss="" timeout="" sslKeystore="Infostroom.pfx" useWsAddressing="false" useWsReliableMessaging="false" id="45f65a44-c865-4c0b-bb96-879b77751490"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://${#TestCase#ServiceEndpoint}/osgp-adapter-ws-smartmetering/smartMetering/configurationService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/smartmetering/sm-configuration/2014/10">\r
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:SetAdministrativeStatusRequest>\r
@@ -10081,7 +10301,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:SetAdministrativeStatusAsyncRequest>\r
@@ -10093,7 +10313,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:GetAdministrativeStatusRequest>\r
@@ -10110,7 +10330,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:GetAdministrativeStatusAsyncRequest>\r
@@ -10126,7 +10346,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:SetAdministrativeStatusRequest>\r
@@ -10144,7 +10364,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:SetAdministrativeStatusAsyncRequest>\r
@@ -10156,7 +10376,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:GetAdministrativeStatusRequest>\r
@@ -10173,7 +10393,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:GetAdministrativeStatusAsyncRequest>\r
@@ -10189,7 +10409,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:SetConfigurationObjectRequest>\r
@@ -10215,7 +10435,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:SetConfigurationObjectAsyncRequest>\r
@@ -10231,7 +10451,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>
       <ns:ApplicationName>SoapUI</ns:ApplicationName>
       <ns:UserName>carlogeenen</ns:UserName>
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>
    </soapenv:Header>
    <soapenv:Body>
       <ns1:SetActivityCalendarRequest>
@@ -10333,7 +10553,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:SetActivityCalendarAsyncRequest>\r
@@ -10349,7 +10569,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>
       <ns:ApplicationName>SoapUI</ns:ApplicationName>
       <ns:UserName>carlogeenen</ns:UserName>
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>
    </soapenv:Header>
    <soapenv:Body>
       <ns1:SetActivityCalendarRequest>
@@ -10452,7 +10672,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:SetActivityCalendarAsyncRequest>\r
@@ -10468,7 +10688,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:SetEncryptionKeyExchangeOnGMeterRequest>\r
@@ -10485,7 +10705,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:SetEncryptionKeyExchangeOnGMeterAsyncRequest>\r
@@ -10501,7 +10721,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>
       <ns:ApplicationName>SoapUI</ns:ApplicationName>
       <ns:UserName>carlogeenen</ns:UserName>
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>
    </soapenv:Header>
    <soapenv:Body>
       <ns1:FindEventsRequest>
@@ -10523,7 +10743,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>
       <ns:ApplicationName>SoapUI</ns:ApplicationName>
       <ns:UserName>carlogeenen</ns:UserName>
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>
    </soapenv:Header>
    <soapenv:Body>
       <ns1:FindEventsAsyncRequest>
@@ -10536,7 +10756,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>
       <ns:ApplicationName>SoapUI</ns:ApplicationName>
       <ns:UserName>carlogeenen</ns:UserName>
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>
    </soapenv:Header>
    <soapenv:Body>
       <ns1:ActualMeterReadsRequest>
@@ -10552,7 +10772,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:ActualMeterReadsAsyncRequest>\r
@@ -10566,7 +10786,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>
       <ns:ApplicationName>SoapUI</ns:ApplicationName>
       <ns:UserName>carlogeenen</ns:UserName>
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>
    </soapenv:Header>
    <soapenv:Body>
       <ns1:ActualMeterReadsGasRequest>
@@ -10582,7 +10802,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:ActualMeterReadsGasAsyncRequest>\r
@@ -10594,7 +10814,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:PeriodicMeterReadsRequest>\r
@@ -10615,7 +10835,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:PeriodicMeterReadsAsyncRequest>\r
@@ -10630,7 +10850,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:PeriodicMeterReadsGasRequest>\r
@@ -10651,7 +10871,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:PeriodicMeterReadsGasAsyncRequest>\r
@@ -10663,7 +10883,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:SetSpecialDaysRequest>\r
@@ -10685,7 +10905,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:SetSpecialDaysAsyncRequest>\r
@@ -10701,7 +10921,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>
       <ns:ApplicationName>SoapUI</ns:ApplicationName>
       <ns:UserName>carlogeenen</ns:UserName>
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>
    </soapenv:Header>
    <soapenv:Body>
       <ns1:BundleRequest>
@@ -10876,7 +11096,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:BundleAsyncRequest>\r
@@ -10884,11 +11104,11 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
          <ns:CorrelationUid>${=testCase.getPropertyValue( "CorrelationUid" )}</ns:CorrelationUid>\r
       </ns1:BundleAsyncRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response" id="42998b34-cb69-4688-9d44-015e54a6faa1" name="SOAP Response"/><con:assertion type="Schema Compliance" id="967a888e-aa49-4807-87b9-a7c7528458a9" name="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion" id="e3d50ec2-fca4-4dbe-bc2d-bcdcc56b7108" name="Not SOAP Fault"/><con:credentials><con:username xsi:nil="true"/><con:password xsi:nil="true"/><con:domain xsi:nil="true"/><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-bundle-v1.0/SmartMeteringBundlePort/BundleAsyncRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties><con:property><con:name>DeviceIdentificationE</con:name><con:value>E9998000014123414</con:value></con:property><con:property><con:name>OrganisationIdentification</con:name><con:value>Infostroom</con:value></con:property><con:property><con:name>CorrelationUid</con:name><con:value>Infostroom|||E9998000014123414|||20160816061640341</con:value></con:property><con:property><con:name>DeviceIdentificationG</con:name><con:value>G00XX561204926113</con:value></con:property><con:property><con:name>ServiceEndpoint</con:name><con:value>osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/smartMetering/monitoringService/</con:value></con:property></con:properties></con:testCase><con:testCase id="38e3c30d-c2ed-40e2-ae7f-63278d4392c8" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="281 Deactivate device" searchProperties="true"><con:settings/><con:testStep type="request" id="13da0a74-737e-4ad8-b036-99402c35a1fd" name="DeactivateDevice - Request 1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>DeviceManagementPortSoap11</con:interface><con:operation>DeactivateDevice</con:operation><con:request name="DeactivateDevice - Request 1" outgoingWss="" incomingWss="" timeout="" sslKeystore="Infostroom.pfx" useWsAddressing="false" useWsReliableMessaging="false" id="5206e199-ad95-4ced-9167-1bf4c88a9cd4"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://${#TestCase#ServiceEndpoint}/osgp-adapter-ws-admin/admin/deviceManagementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/admin/devicemanagement/2014/10">\r
+</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response" id="42998b34-cb69-4688-9d44-015e54a6faa1" name="SOAP Response"/><con:assertion type="Schema Compliance" id="967a888e-aa49-4807-87b9-a7c7528458a9" name="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion" id="e3d50ec2-fca4-4dbe-bc2d-bcdcc56b7108" name="Not SOAP Fault"/><con:credentials><con:username xsi:nil="true"/><con:password xsi:nil="true"/><con:domain xsi:nil="true"/><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-bundle-v1.0/SmartMeteringBundlePort/BundleAsyncRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties><con:property><con:name>DeviceIdentificationE</con:name><con:value>TEST1024000000001</con:value></con:property><con:property><con:name>OrganisationIdentification</con:name><con:value>Infostroom</con:value></con:property><con:property><con:name>CorrelationUid</con:name><con:value>Infostroom|||TEST1024000000001|||20160826095713324</con:value></con:property><con:property><con:name>DeviceIdentificationG</con:name><con:value>G00XX561204926113</con:value></con:property><con:property><con:name>ServiceEndpoint</con:name><con:value>osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/smartMetering/monitoringService/</con:value></con:property></con:properties></con:testCase><con:testCase id="38e3c30d-c2ed-40e2-ae7f-63278d4392c8" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="281 Deactivate device" searchProperties="true"><con:settings/><con:testStep type="request" id="13da0a74-737e-4ad8-b036-99402c35a1fd" name="DeactivateDevice - Request 1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>DeviceManagementPortSoap11</con:interface><con:operation>DeactivateDevice</con:operation><con:request name="DeactivateDevice - Request 1" outgoingWss="" incomingWss="" timeout="" sslKeystore="Infostroom.pfx" useWsAddressing="false" useWsReliableMessaging="false" id="5206e199-ad95-4ced-9167-1bf4c88a9cd4"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://${#TestCase#ServiceEndpoint}/osgp-adapter-ws-admin/admin/deviceManagementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/admin/devicemanagement/2014/10">\r
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:DeactivateDeviceRequest>\r
@@ -10899,7 +11119,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:SetSpecialDaysRequest>\r
@@ -10922,7 +11142,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:SetSpecialDaysAsyncRequest>\r
@@ -10938,7 +11158,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:SetPushSetupAlarmRequest>\r
@@ -10955,7 +11175,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:SetPushSetupAlarmAsyncRequest>\r
@@ -10967,7 +11187,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:ReplaceKeysRequest>\r
@@ -10988,7 +11208,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:ReplaceKeysAsyncRequest>\r
@@ -11004,7 +11224,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:SetAlarmNotificationsRequest>\r
@@ -11027,7 +11247,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:SetAlarmNotificationsAsyncRequest>\r
@@ -11043,7 +11263,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>
       <ns:ApplicationName>SoapUI</ns:ApplicationName>
       <ns:UserName>carlogeenen</ns:UserName>
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>
    </soapenv:Header>
    <soapenv:Body>
       <ns1:GetFirmwareVersionRequest>
@@ -11060,7 +11280,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>
       <ns:ApplicationName>SoapUI</ns:ApplicationName>
       <ns:UserName>carlogeenen</ns:UserName>
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>
    </soapenv:Header>
    <soapenv:Body>
       <ns1:GetFirmwareVersionAsyncRequest>
@@ -11072,7 +11292,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>
       <ns:ApplicationName>SoapUI</ns:ApplicationName>
       <ns:UserName>carlogeenen</ns:UserName>
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>
    </soapenv:Header>
    <soapenv:Body>
       <ns1:ActualMeterReadsRequest>
@@ -11092,7 +11312,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:ActualMeterReadsAsyncRequest>\r
@@ -11106,7 +11326,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>
       <ns:ApplicationName>SoapUI</ns:ApplicationName>
       <ns:UserName>carlogeenen</ns:UserName>
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>
    </soapenv:Header>
    <soapenv:Body>
       <ns1:ActualMeterReadsGasRequest>
@@ -11122,7 +11342,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:ActualMeterReadsGasAsyncRequest>\r
@@ -11136,7 +11356,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SMA</ns:ApplicationName>\r
       <ns:UserName>klaas</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:PeriodicMeterReadsRequest>\r
@@ -11159,7 +11379,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SMA</ns:ApplicationName>\r
       <ns:UserName>Klaas</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:PeriodicMeterReadsAsyncRequest>\r
@@ -11174,7 +11394,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:PeriodicMeterReadsGasRequest>\r
@@ -11197,7 +11417,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:PeriodicMeterReadsGasAsyncRequest>\r
@@ -11211,7 +11431,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>
       <ns:ApplicationName>SoapUI</ns:ApplicationName>
       <ns:UserName>carlogeenen</ns:UserName>
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>
    </soapenv:Header>
    <soapenv:Body>
       <ns1:ActualMeterReadsGasRequest>
@@ -11229,7 +11449,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:ActualMeterReadsGasAsyncRequest>\r
@@ -11243,7 +11463,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:PeriodicMeterReadsGasRequest>\r
@@ -11266,7 +11486,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:PeriodicMeterReadsGasAsyncRequest>\r
@@ -11280,7 +11500,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:PeriodicMeterReadsGasRequest>\r
@@ -11304,7 +11524,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:PeriodicMeterReadsGasAsyncRequest>\r
@@ -11318,7 +11538,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:PeriodicMeterReadsGasRequest>\r
@@ -11341,7 +11561,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:PeriodicMeterReadsGasAsyncRequest>\r
@@ -11355,7 +11575,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SMA</ns:ApplicationName>\r
       <ns:UserName>klaas</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:PeriodicMeterReadsRequest>\r
@@ -11380,7 +11600,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SMA</ns:ApplicationName>\r
       <ns:UserName>Klaas</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:PeriodicMeterReadsAsyncRequest>\r
@@ -11693,7 +11913,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:ActualMeterReadsAsyncRequest>\r
@@ -11755,7 +11975,7 @@ for(int j=0;j&lt;10;j++) {
    <soapenv:Header>
       <ns:ApplicationName>SoapUI</ns:ApplicationName>
       <ns:UserName>carlogeenen</ns:UserName>
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>
    </soapenv:Header>
    <soapenv:Body>
       <ns1:BundleRequest>
@@ -11905,7 +12125,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:BundleAsyncRequest>\r
@@ -11917,7 +12137,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:PeriodicMeterReadsRequest>\r
@@ -11940,7 +12160,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:PeriodicMeterReadsAsyncRequest>\r
@@ -11954,7 +12174,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:ReadAlarmRegisterRequest>\r
@@ -11972,7 +12192,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:ReadAlarmRegisterAsyncRequest>\r
@@ -11984,7 +12204,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:GetAssociationLnObjectsRequest>\r
@@ -12002,7 +12222,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:GetAssociationLnObjectsAsyncRequest>\r
@@ -12014,7 +12234,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:SynchronizeTimeRequest>\r
@@ -12035,7 +12255,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:SynchronizeTimeAsyncRequest>\r
@@ -12052,7 +12272,7 @@ declare namespace ns3='http://www.alliander.com/schemas/osgp/smartmetering/sm-ad
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:RetrieveConfigurationObjectsRequest>\r
@@ -12069,7 +12289,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:RetrieveConfigurationObjectsAsyncRequest>\r
@@ -12086,7 +12306,7 @@ declare namespace ns3='http://www.alliander.com/schemas/osgp/smartmetering/sm-ad
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:GetAssociationLnObjectsRequest>\r
@@ -12102,7 +12322,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:GetAssociationLnObjectsAsyncRequest>\r
@@ -12114,7 +12334,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:BundleRequest>\r
@@ -12136,7 +12356,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:BundleAsyncRequest>\r
@@ -12148,7 +12368,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:BundleRequest>\r
@@ -12185,7 +12405,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:BundleAsyncRequest>\r
@@ -12197,7 +12417,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:SpecificConfigurationObjectRequest>\r
@@ -12223,7 +12443,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:SpecificConfigurationObjectAsyncRequest>\r
@@ -12235,7 +12455,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>
       <ns:ApplicationName>SoapUI</ns:ApplicationName>
       <ns:UserName>carlogeenen</ns:UserName>
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>
    </soapenv:Header>
    <soapenv:Body>
       <ns1:FindEventsRequest>
@@ -12259,7 +12479,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>
       <ns:ApplicationName>SoapUI</ns:ApplicationName>
       <ns:UserName>carlogeenen</ns:UserName>
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>
    </soapenv:Header>
    <soapenv:Body>
       <ns1:FindEventsAsyncRequest>
@@ -12271,7 +12491,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>
       <ns:ApplicationName>SoapUI</ns:ApplicationName>
       <ns:UserName>carlogeenen</ns:UserName>
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>
    </soapenv:Header>
    <soapenv:Body>
       <ns1:FindEventsRequest>
@@ -12295,7 +12515,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>
       <ns:ApplicationName>SoapUI</ns:ApplicationName>
       <ns:UserName>carlogeenen</ns:UserName>
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>
    </soapenv:Header>
    <soapenv:Body>
       <ns1:FindEventsAsyncRequest>
@@ -12307,7 +12527,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>
       <ns:ApplicationName>SoapUI</ns:ApplicationName>
       <ns:UserName>carlogeenen</ns:UserName>
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>
    </soapenv:Header>
    <soapenv:Body>
       <ns1:FindEventsRequest>
@@ -12331,7 +12551,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>
       <ns:ApplicationName>SoapUI</ns:ApplicationName>
       <ns:UserName>carlogeenen</ns:UserName>
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>
    </soapenv:Header>
    <soapenv:Body>
       <ns1:FindEventsAsyncRequest>
@@ -12343,7 +12563,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>
       <ns:ApplicationName>SoapUI</ns:ApplicationName>
       <ns:UserName>carlogeenen</ns:UserName>
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>
    </soapenv:Header>
    <soapenv:Body>
       <ns1:FindEventsRequest>
@@ -12367,7 +12587,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>
       <ns:ApplicationName>SoapUI</ns:ApplicationName>
       <ns:UserName>carlogeenen</ns:UserName>
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>
    </soapenv:Header>
    <soapenv:Body>
       <ns1:FindEventsAsyncRequest>
@@ -12379,7 +12599,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>
       <ns:ApplicationName>SoapUI</ns:ApplicationName>
       <ns:UserName>carlogeenen</ns:UserName>
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>
    </soapenv:Header>
    <soapenv:Body>
       <ns1:AddDeviceRequest>
@@ -12424,7 +12644,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Header>\r
       <ns:ApplicationName>SoapUI</ns:ApplicationName>\r
       <ns:UserName>carlogeenen</ns:UserName>\r
-      <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>\r
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:AddDeviceAsyncRequest>\r

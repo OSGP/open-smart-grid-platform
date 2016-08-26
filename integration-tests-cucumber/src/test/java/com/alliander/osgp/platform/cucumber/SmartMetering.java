@@ -87,8 +87,8 @@ public class SmartMetering {
      *            is the testsuite name which includes the testcase
      * @throws Throwable
      */
-    protected void requestRunner(final Map<String, String> propertiesMap, final String testCaseNameRequest,
-            final String testCaseXml, final String testSuiteXml) throws Throwable {
+    protected void requestRunner(final TestStepStatus testStepStatus, final Map<String, String> propertiesMap,
+            final String testCaseNameRequest, final String testCaseXml, final String testSuiteXml) throws Throwable {
 
         this.correlationUidPattern = Pattern.compile(this.organisationId.getOrganisationId()
                 + XPATH_MATCHER_CORRELATIONUID);
@@ -99,14 +99,16 @@ public class SmartMetering {
                 testCaseNameRequest);
         final TestStepResult runTestStepByNameResult = runTestStepByName.getRunTestStepByName();
         final WsdlTestCaseRunner wsdlTestCaseRunner = runTestStepByName.getResults();
-        assertEquals(TestStepStatus.OK, runTestStepByNameResult.getStatus());
+        assertEquals(testStepStatus, runTestStepByNameResult.getStatus());
 
         final MessageExchange messageExchange = (MessageExchange) wsdlTestCaseRunner.getResults().get(0);
         this.request = messageExchange.getRequestContent();
         this.response = messageExchange.getResponseContent();
         this.correlationUidMatcher = this.correlationUidPattern.matcher(this.response);
-        assertTrue(this.correlationUidMatcher.find());
-        this.correlationUid = this.correlationUidMatcher.group();
+        if (testStepStatus == TestStepStatus.OK) {
+            assertTrue(this.correlationUidMatcher.find());
+            this.correlationUid = this.correlationUidMatcher.group();
+        }
     }
 
     /**
@@ -153,37 +155,4 @@ public class SmartMetering {
         this.response = ((MessageExchange) wsdlTestCaseRunner.getResults().get(0)).getResponseContent();
         logger.info(testCaseNameResponse + " response {}", this.response);
     }
-
-    /**
-     * RequestRunner is called from the @When step from a subclass which
-     * represents cucumber test scenario('s) and return the correlationUid.
-     *
-     * @param propertiesMap
-     *            includes all needed properties for a specific test run such as
-     *            DeviceId and OrganisationId
-     * @param testCaseNameRequest
-     *            is the specific testcase request step to be executed
-     * @param testCaseXml
-     *            is the testcase name which includes the testcase
-     * @param testSuiteXml
-     *            is the testsuite name which includes the testcase
-     * @param logger
-     *            the logger
-     * @throws Throwable
-     */
-    protected void notOkRequestRunner(final Map<String, String> propertiesMap, final String testCaseNameRequest,
-            final String testCaseXml, final String testSuiteXml, final Logger logger) throws Throwable {
-
-        this.testCase = this.wsdlProjectFactory.createWsdlTestCase(SOAP_PROJECT_XML, testSuiteXml, testCaseXml);
-        this.assertRequest(testCaseNameRequest, testCaseXml, testSuiteXml);
-
-        final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase, propertiesMap,
-                testCaseNameRequest);
-        final TestStepResult runTestStepByNameResult = runTestStepByName.getRunTestStepByName();
-        final WsdlTestCaseRunner wsdlTestCaseRunner = runTestStepByName.getResults();
-        this.response = ((MessageExchange) wsdlTestCaseRunner.getResults().get(0)).getResponseContent();
-        logger.info(testCaseNameRequest + " response {}", this.response);
-        assertEquals(TestStepStatus.FAILED, runTestStepByNameResult.getStatus());
-    }
-
 }

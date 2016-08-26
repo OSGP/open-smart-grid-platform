@@ -21,6 +21,7 @@ import com.alliander.osgp.platform.cucumber.SmartMetering;
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
 import com.alliander.osgp.platform.cucumber.support.OrganisationId;
 import com.alliander.osgp.platform.cucumber.support.ServiceEndpoint;
+import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -60,7 +61,7 @@ public class PeriodicMeterReadsGas extends SmartMetering {
         PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, this.organisationId.getOrganisationId());
         PROPERTIES_MAP.put(ENDPOINT_LABEL, this.serviceEndpoint.getServiceEndpoint());
 
-        this.requestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML_225, TEST_SUITE_XML);
+        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML_225, TEST_SUITE_XML);
     }
 
     @Then("^the periodic meter reads gas result should be returned$")
@@ -81,7 +82,7 @@ public class PeriodicMeterReadsGas extends SmartMetering {
         PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, this.organisationId.getOrganisationId());
         PROPERTIES_MAP.put(ENDPOINT_LABEL, this.serviceEndpoint.getServiceEndpoint());
 
-        this.requestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML_228, TEST_SUITE_XML);
+        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML_228, TEST_SUITE_XML);
     }
 
     @Then("^the interval meter reads gas result should be returned$")
