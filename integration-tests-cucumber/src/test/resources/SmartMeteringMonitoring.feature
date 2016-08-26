@@ -38,7 +38,7 @@ Background:
     Then the alarm register should be returned
 
 @SLIM-511 @SmartMeterMonitoring
-  Scenario:  Approach an inactive device
+  Scenario: Refuse an operation with an inactive device
   Given an inactive device with DeviceID "E9998000014123414"
   When the get actual meter reads request on an inactive device is received
-  Then the inactive response "Device E9998000014123414 is not active in the platform" should be given
+  Then the response "Device E9998000014123414 is not active in the platform" will be returned

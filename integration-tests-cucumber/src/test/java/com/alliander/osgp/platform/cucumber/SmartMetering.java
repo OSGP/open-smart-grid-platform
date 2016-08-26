@@ -174,8 +174,6 @@ public class SmartMetering {
     protected void notOkRequestRunner(final Map<String, String> propertiesMap, final String testCaseNameRequest,
             final String testCaseXml, final String testSuiteXml, final Logger logger) throws Throwable {
 
-        this.correlationUidPattern = Pattern.compile(this.organisationId.getOrganisationId()
-                + XPATH_MATCHER_CORRELATIONUID);
         this.testCase = this.wsdlProjectFactory.createWsdlTestCase(SOAP_PROJECT_XML, testSuiteXml, testCaseXml);
         this.assertRequest(testCaseNameRequest, testCaseXml, testSuiteXml);
 

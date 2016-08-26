@@ -33,6 +33,7 @@ public class ActualMeterReads extends SmartMetering {
     private static final String PATH_RESULT_ACTIVE_ENERGY_IMPORT_TARIFF_TWO = "/Envelope/Body/ActualMeterReadsResponse/ActiveEnergyImportTariffTwo/text()";
     private static final String PATH_RESULT_ACTIVE_ENERGY_EXPORT_TARIFF_ONE = "/Envelope/Body/ActualMeterReadsResponse/ActiveEnergyExportTariffOne/text()";
     private static final String PATH_RESULT_ACTIVE_ENERGY_EXPORT_TARIFF_TWO = "/Envelope/Body/ActualMeterReadsResponse/ActiveEnergyExportTariffTwo/text()";
+    private static final String PATH_RESULT_NOT_AUTHORIZED = "/Envelope/Body/Fault/faultstring/text()";
 
     private static final String XPATH_MATCHER_RESULT_LOGTIME = "\\d{4}\\-\\d{2}\\-\\d{2}T\\d{2}\\:\\d{2}\\:\\d{2}\\.\\d{3}Z";
     private static final String XPATH_MATCHER_RESULT_ACTIVE_ENERGY = "\\d+\\.\\d+";
@@ -81,5 +82,18 @@ public class ActualMeterReads extends SmartMetering {
                 XPATH_MATCHER_RESULT_ACTIVE_ENERGY));
         assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_ACTIVE_ENERGY_EXPORT_TARIFF_TWO,
                 XPATH_MATCHER_RESULT_ACTIVE_ENERGY));
+    }
+
+    @When("^the not authorized get actual meter reads request is received$")
+    public void theNotAuthorizedGetActualMeterReadsRequestIsReceived() throws Throwable {
+        PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_E_LABEL, this.deviceId.getDeviceIdE());
+        PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, this.organisationId.getOrganisationId());
+        PROPERTIES_MAP.put(ENDPOINT_LABEL, this.serviceEndpoint.getServiceEndpoint());
+        this.notOkRequestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML, LOGGER);
+    }
+
+    @Then("^the response \"([^\"]*)\" be returned$")
+    public void theResponseBeReturned(final String response_string) throws Throwable {
+        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_NOT_AUTHORIZED, response_string));
     }
 }

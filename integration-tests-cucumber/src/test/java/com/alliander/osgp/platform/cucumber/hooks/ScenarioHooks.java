@@ -53,6 +53,7 @@ public class ScenarioHooks {
 
         final Map<String, String> PROPERTIES_MAP = new HashMap<>();
         PROPERTIES_MAP.put("TST2", "osgp-tst.cloudapp.net:62443");
+        PROPERTIES_MAP.put("TST7", "osgp-tst.cloudapp.net:57443");
         PROPERTIES_MAP.put("AWS", "slimme-meters.aws.osg-platform.com:443");
 
         this.serviceEndpoint.setServiceEndpoint(PROPERTIES_MAP.get("TST2"));
