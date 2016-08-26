@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import com.alliander.osgp.domain.core.entities.SmartMeter;
+import com.alliander.osgp.domain.core.exceptions.InactiveDeviceException;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.validation.Identification;
@@ -25,7 +26,8 @@ public class SmartMeterDomainService {
     @Autowired
     private SmartMeterRepository smartMeterRepository;
 
-    public SmartMeter searchSmartMeter(@Identification final String deviceIdentification) throws UnknownEntityException {
+    public SmartMeter searchSmartMeter(@Identification final String deviceIdentification)
+            throws UnknownEntityException {
 
         final SmartMeter smartMeter = this.smartMeterRepository.findByDeviceIdentification(deviceIdentification);
 
@@ -35,4 +37,26 @@ public class SmartMeterDomainService {
 
         return smartMeter;
     }
+
+    /**
+     * @param deviceIdentification
+     *            the identification of the active device we're looking for
+     * @return the active device for the given identification
+     * @throws InactiveDeviceException
+     *             the device is not active
+     * @throws UnknownEntityException
+     *             the device is not in the database
+     */
+    public SmartMeter searchActiveSmartMeter(@Identification final String deviceIdentification)
+            throws InactiveDeviceException, UnknownEntityException {
+
+        final SmartMeter smartMeter = this.searchSmartMeter(deviceIdentification);
+
+        if (!smartMeter.isActive()) {
+            throw new InactiveDeviceException(deviceIdentification);
+        }
+
+        return smartMeter;
+    }
+
 }

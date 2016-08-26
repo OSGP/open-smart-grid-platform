@@ -316,7 +316,7 @@ public class DeviceManagementService {
         // All checks pass, remove authorization
         device.removeAuthorization(organisation, group);
         this.deviceRepository.save(device);
-        this.authorizationRepository.deleteByDeviceAndFunctionGroup(device, group);
+        this.authorizationRepository.deleteByDeviceAndFunctionGroupAndOrganisation(device, group, organisation);
 
         LOGGER.info("Organisation {} now no longer has authorization for function group {} on device {}",
                 organisationIdentification, deviceIdentification, group);
