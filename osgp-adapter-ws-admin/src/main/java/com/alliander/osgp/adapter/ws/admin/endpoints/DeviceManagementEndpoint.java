@@ -25,6 +25,8 @@ import com.alliander.osgp.adapter.ws.admin.application.mapping.DeviceManagementM
 import com.alliander.osgp.adapter.ws.admin.application.services.DeviceManagementService;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.admin.common.OsgpResultType;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ActivateDeviceRequest;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ActivateDeviceResponse;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ActivateOrganisationRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ActivateOrganisationResponse;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ChangeOrganisationRequest;
@@ -196,8 +198,8 @@ public class DeviceManagementEndpoint {
             this.deviceManagementService.changeOrganisation(organisationIdentification, request
                     .getOrganisationIdentification(), request.getNewOrganisationIdentification(), request
                     .getNewOrganisationName(), PlatformFunctionGroup.valueOf(request
-                    .getNewOrganisationPlatformFunctionGroup().value()), this.deviceManagementMapper.mapAsList(
-                    request.getNewOrganisationPlatformDomains(), PlatformDomain.class));
+                            .getNewOrganisationPlatformFunctionGroup().value()), this.deviceManagementMapper.mapAsList(
+                                    request.getNewOrganisationPlatformDomains(), PlatformDomain.class));
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error(EXCEPTION_OCCURED, e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_TYPE_WS_ADMIN,
@@ -253,16 +255,16 @@ public class DeviceManagementEndpoint {
             for (final DeviceAuthorisation authorization : request.getDeviceAuthorisations()) {
                 if (authorization.isRevoked() != null && authorization.isRevoked()) {
                     this.deviceManagementService
-                            .removeDeviceAuthorization(organisationIdentification, authorization
-                                    .getOrganisationIdentification(), authorization.getDeviceIdentification(),
-                                    this.deviceManagementMapper.map(authorization.getFunctionGroup(),
-                                            DeviceFunctionGroup.class));
+                    .removeDeviceAuthorization(organisationIdentification, authorization
+                            .getOrganisationIdentification(), authorization.getDeviceIdentification(),
+                            this.deviceManagementMapper.map(authorization.getFunctionGroup(),
+                                    DeviceFunctionGroup.class));
                 } else {
                     this.deviceManagementService
-                            .addDeviceAuthorization(organisationIdentification, authorization
-                                    .getOrganisationIdentification(), authorization.getDeviceIdentification(),
-                                    this.deviceManagementMapper.map(authorization.getFunctionGroup(),
-                                            DeviceFunctionGroup.class));
+                    .addDeviceAuthorization(organisationIdentification, authorization
+                            .getOrganisationIdentification(), authorization.getDeviceIdentification(),
+                            this.deviceManagementMapper.map(authorization.getFunctionGroup(),
+                                    DeviceFunctionGroup.class));
                 }
             }
         } catch (final MethodConstraintViolationException e) {
@@ -469,6 +471,37 @@ public class DeviceManagementEndpoint {
         return new UpdateDeviceProtocolResponse();
     }
 
+    @PayloadRoot(localPart = "ActivateDeviceRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
+    @ResponsePayload
+    public ActivateDeviceResponse activateDevice(@OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final ActivateDeviceRequest request) throws OsgpException {
+
+        LOGGER.info("Incoming ActivateDeviceRequest for device: {}.", request.getDeviceIdentification());
+
+        try {
+
+            this.deviceManagementService.activateDeviceRequest(organisationIdentification,
+                    request.getDeviceIdentification());
+
+        } catch (final MethodConstraintViolationException e) {
+            LOGGER.error("Exception: {} while activating device: {} for organisation {}.",
+                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
+
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_TYPE_WS_ADMIN,
+                    new ValidationException(e.getConstraintViolations()));
+
+        } catch (final Exception e) {
+
+            LOGGER.error("Exception: {} while activating device: {} for organisation {}.",
+                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
+
+            this.handleException(e);
+        }
+        final ActivateDeviceResponse response = new ActivateDeviceResponse();
+        response.setResult(OsgpResultType.OK);
+        return response;
+    }
+
     @PayloadRoot(localPart = "DeactivateDeviceRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
     @ResponsePayload
     public DeactivateDeviceResponse deactivateDevice(
@@ -487,7 +520,7 @@ public class DeviceManagementEndpoint {
             LOGGER.error("Exception: {} while deactivating device: {} for organisation {}.",
                     new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
 
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_TYPE_WS_ADMIN,
                     new ValidationException(e.getConstraintViolations()));
 
         } catch (final Exception e) {

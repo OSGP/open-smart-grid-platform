@@ -22,20 +22,20 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 @Component
-public class DeactivateDeviceRequestMessageProcessor extends WebServiceRequestMessageProcessor {
+public class ActivateDeviceRequestMessageProcessor extends WebServiceRequestMessageProcessor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeactivateDeviceRequestMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ActivateDeviceRequestMessageProcessor.class);
     @Autowired
     @Qualifier("domainAdminDeviceManagementService")
     private DeviceManagementService deviceManagementService;
 
-    public DeactivateDeviceRequestMessageProcessor() {
-        super(DeviceFunction.DEACTIVATE_DEVICE);
+    public ActivateDeviceRequestMessageProcessor() {
+        super(DeviceFunction.ACTIVATE_DEVICE);
     }
 
     @Override
     public void processMessage(final ObjectMessage message) {
-        LOGGER.debug("Processing admin deactivate device message");
+        LOGGER.debug("Processing admin activate device message");
         String correlationUid = null;
         String messageType = null;
         String organisationIdentification = null;
@@ -56,7 +56,7 @@ public class DeactivateDeviceRequestMessageProcessor extends WebServiceRequestMe
         }
 
         try {
-            this.deviceManagementService.deactivateDevice(organisationIdentification, deviceIdentification,
+            this.deviceManagementService.activateDevice(organisationIdentification, deviceIdentification,
                     correlationUid, messageType);
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);

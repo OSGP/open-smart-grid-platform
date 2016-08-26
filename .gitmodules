@@ -1,5 +1,5 @@
 [submodule "Shared"]
 	path = Shared
 	url = https://github.com/OSGP/Shared.git
-	branch = SLIM-638-decouple-mbus-device
+	branch = SLIM-540-Activate_Device
 

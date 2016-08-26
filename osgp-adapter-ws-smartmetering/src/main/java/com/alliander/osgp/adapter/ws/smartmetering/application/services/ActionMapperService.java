@@ -141,16 +141,16 @@ public class ActionMapperService {
                 this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(SetActivityCalendarRequest.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP
-                .put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterRequestData.class,
-                        this.configurationMapper);
+        .put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterRequestData.class,
+                this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(SetEncryptionKeyExchangeOnGMeterRequest.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP
-                .put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsRequestData.class,
-                        this.configurationMapper);
+        .put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsRequestData.class,
+                this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(SetAlarmNotificationsRequest.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP
-                .put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectRequestData.class,
-                        this.configurationMapper);
+        .put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectRequestData.class,
+                this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(SetConfigurationObjectRequest.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(
                 com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmRequestData.class,
@@ -217,14 +217,14 @@ public class ActionMapperService {
                 com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarRequestData.class,
                 ActivityCalendarData.class);
         CLASS_MAP
-                .put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterRequestData.class,
-                        SetEncryptionKeyExchangeOnGMeterRequestData.class);
+        .put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterRequestData.class,
+                SetEncryptionKeyExchangeOnGMeterRequestData.class);
         CLASS_MAP
-                .put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsRequestData.class,
-                        SetAlarmNotificationsRequestData.class);
+        .put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsRequestData.class,
+                SetAlarmNotificationsRequestData.class);
         CLASS_MAP
-                .put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectRequestData.class,
-                        SetConfigurationObjectRequestData.class);
+        .put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectRequestData.class,
+                SetConfigurationObjectRequestData.class);
         CLASS_MAP.put(
                 com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmRequestData.class,
                 SetPushSetupAlarmRequestData.class);
@@ -247,7 +247,7 @@ public class ActionMapperService {
                 com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SpecificConfigurationObjectRequestData.class,
                 SpecificConfigurationObjectRequestData.class);
 
-        CLASS_MAP.put(GetSpecialDaysRequest.class, SpecialDaysRequestData.class);
+              CLASS_MAP.put(GetSpecialDaysRequest.class, SpecialDaysRequestData.class);
         CLASS_MAP.put(ReadAlarmRegisterRequest.class, ReadAlarmRegisterData.class);
         CLASS_MAP.put(ReadAlarmRegisterRequest.class, ReadAlarmRegisterData.class);
         CLASS_MAP.put(FindEventsRequest.class, FindEventsRequestData.class);
