@@ -67,6 +67,8 @@
 			<xsd:enumeration value="HANDLE_BUNDLED_ACTIONS" />
             <xsd:enumeration value="GET_ASSOCIATION_LN_OBJECTS" />
             <xsd:enumeration value="GET_FIRMWARE_VERSION" />
+            <xsd:enumeration value="COUPLE_MBUS_DEVICE" />
+            <xsd:enumeration value="DE_COUPLE_MBUS_DEVICE" />
 		</xsd:restriction>
 	</xsd:simpleType>
 
