@@ -304,6 +304,7 @@ public class MessagingConfig {
     }
 
     @Bean
+    @DependsOn("oslpSigningService")
     public DeviceResponseMessageSender oslpResponseMessageSender() {
         return new DeviceResponseMessageSender();
     }
@@ -493,7 +494,6 @@ public class MessagingConfig {
     }
 
     @Bean
-    @DependsOn("oslpResponseMessageSender")
     public SigningServerRequestMessageSender signingServerRequestMessageSender() {
         return new SigningServerRequestMessageSender();
     }
