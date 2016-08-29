@@ -447,6 +447,7 @@ public class Device implements Serializable {
         this.networkAddress = networkAddress;
         this.deviceType = deviceType;
         this.isActivated = true;
+        this.isActive = true;
     }
 
     public void updateGatewayDevice(final Device gatewayDevice) {
