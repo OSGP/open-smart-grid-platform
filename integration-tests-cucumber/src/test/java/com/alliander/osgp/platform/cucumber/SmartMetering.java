@@ -35,6 +35,7 @@ public class SmartMetering {
     protected static final String XPATH_MATCHER_CORRELATIONUID = "\\|\\|\\|\\S{17}\\|\\|\\|\\S{17}";
     protected static final String DEVICE_IDENTIFICATION_E_LABEL = "DeviceIdentificationE";
     protected static final String DEVICE_IDENTIFICATION_G_LABEL = "DeviceIdentificationG";
+    protected static final String CHANNEL_LABEL = "ChannelIdentification";
     protected static final String ORGANISATION_IDENTIFICATION_LABEL = "OrganisationIdentification";
     protected static final String ENDPOINT_LABEL = "ServiceEndpoint";
     public final static String CORRELATION_UID_LABEL = "CorrelationUid";
