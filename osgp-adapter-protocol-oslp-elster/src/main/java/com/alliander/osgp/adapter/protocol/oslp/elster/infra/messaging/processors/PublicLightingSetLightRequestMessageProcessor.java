@@ -14,18 +14,21 @@ import javax.jms.ObjectMessage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.oslp.elster.device.DeviceMessageStatus;
 import com.alliander.osgp.adapter.protocol.oslp.elster.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.elster.device.DeviceResponse;
 import com.alliander.osgp.adapter.protocol.oslp.elster.device.DeviceResponseHandler;
+import com.alliander.osgp.adapter.protocol.oslp.elster.device.requests.ResumeScheduleDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.elster.device.requests.SetLightDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.elster.device.responses.EmptyDeviceResponse;
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.OslpEnvelopeProcessor;
 import com.alliander.osgp.dto.valueobjects.LightValueMessageDataContainerDto;
+import com.alliander.osgp.dto.valueobjects.ResumeScheduleMessageDataContainerDto;
 import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.oslp.SignedOslpEnvelopeDto;
 import com.alliander.osgp.oslp.UnsignedOslpEnvelopeDto;
@@ -36,11 +39,14 @@ import com.alliander.osgp.shared.infra.jms.Constants;
  */
 @Component("oslpPublicLightingSetLightRequestMessageProcessor")
 public class PublicLightingSetLightRequestMessageProcessor extends DeviceRequestMessageProcessor implements
-OslpEnvelopeProcessor {
+        OslpEnvelopeProcessor {
     /**
      * Logger for this class
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(PublicLightingSetLightRequestMessageProcessor.class);
+
+    @Autowired
+    private PublicLightingResumeScheduleRequestMessageProcessor publicLightingResumeScheduleRequestMessageProcessor;
 
     public PublicLightingSetLightRequestMessageProcessor() {
         super(DeviceRequestMessageType.SET_LIGHT);
@@ -115,7 +121,7 @@ OslpEnvelopeProcessor {
         final int retryCount = unsignedOslpEnvelopeDto.getRetryCount();
         final boolean isScheduled = unsignedOslpEnvelopeDto.isScheduled();
 
-        final DeviceResponseHandler deviceResponseHandler = new DeviceResponseHandler() {
+        final DeviceResponseHandler setLightDeviceResponseHandler = new DeviceResponseHandler() {
 
             @Override
             public void handleResponse(final DeviceResponse deviceResponse) {
@@ -141,11 +147,30 @@ OslpEnvelopeProcessor {
             }
         };
 
-        final DeviceRequest deviceRequest = new DeviceRequest(organisationIdentification, deviceIdentification,
+        final DeviceRequest setLightdeviceRequest = new DeviceRequest(organisationIdentification, deviceIdentification,
                 correlationUid, domain, domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
+        // Execute a ResumeSchedule call with 'immediate = false' and 'index
+        // = 0' as arguments.
+        final ResumeScheduleMessageDataContainerDto resumeScheduleMessageDataContainer = new ResumeScheduleMessageDataContainerDto(
+                0, false);
+
+        final DeviceResponseHandler resumeScheduleDeviceResponseHandler = this.publicLightingResumeScheduleRequestMessageProcessor
+                .createResumeScheduleDeviceResponseHandler(domain, domainVersion,
+                        DeviceRequestMessageType.RESUME_SCHEDULE.name(), retryCount,
+                        resumeScheduleMessageDataContainer, isScheduled);
+
+        // The data of the setLightdeviceRequest can be reused
+        final ResumeScheduleDeviceRequest resumeScheduleDeviceRequest = new ResumeScheduleDeviceRequest(
+                setLightdeviceRequest.getOrganisationIdentification(), setLightdeviceRequest.getDeviceIdentification(),
+                setLightdeviceRequest.getCorrelationUid(), resumeScheduleMessageDataContainer,
+                setLightdeviceRequest.getDomain(), setLightdeviceRequest.getDomainVersion(),
+                DeviceRequestMessageType.RESUME_SCHEDULE.name(), setLightdeviceRequest.getIpAddress(),
+                setLightdeviceRequest.getRetryCount(), setLightdeviceRequest.isScheduled());
+
         try {
-            this.deviceService.doSetLight(oslpEnvelope, deviceRequest, deviceResponseHandler, ipAddress);
+            this.deviceService.doSetLight(oslpEnvelope, setLightdeviceRequest, resumeScheduleDeviceRequest,
+                    setLightDeviceResponseHandler, resumeScheduleDeviceResponseHandler, ipAddress);
         } catch (final IOException e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
                     domainVersion, messageType, retryCount);

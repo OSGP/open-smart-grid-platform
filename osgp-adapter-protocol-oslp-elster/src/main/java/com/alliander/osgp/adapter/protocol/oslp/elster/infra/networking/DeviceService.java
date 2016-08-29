@@ -105,8 +105,10 @@ public interface DeviceService {
 
     void setLight(SetLightDeviceRequest deviceRequest);
 
-    void doSetLight(OslpEnvelope oslpRequest, DeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler,
-            String ipAddress) throws IOException;
+    void doSetLight(OslpEnvelope oslpRequest, DeviceRequest setLightdeviceRequest,
+            ResumeScheduleDeviceRequest resumeScheduleDeviceRequest,
+            DeviceResponseHandler setLightDeviceResponseHandler,
+            DeviceResponseHandler resumeScheduleDeviceResponseHandler, String ipAddress) throws IOException;
 
     void setSchedule(SetScheduleDeviceRequest deviceRequest);
 
