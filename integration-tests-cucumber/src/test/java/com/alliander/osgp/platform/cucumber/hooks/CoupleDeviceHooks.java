@@ -47,13 +47,19 @@ public class CoupleDeviceHooks {
     public boolean areDevicesCoupled(final String deviceId, final String mbusDeviceId) {
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceId);
         final Device mbusDevice = this.deviceRepository.findByDeviceIdentification(mbusDeviceId);
-        return mbusDevice.getGatewayDevice().getId().equals(device.getId());
+
+        if ((mbusDevice != null) && (mbusDevice.getGatewayDevice() != null)
+                && (mbusDevice.getGatewayDevice().getId() != null)) {
+            return mbusDevice.getGatewayDevice().getId().equals(device.getId());
+        }
+        return false;
     }
 
     public void deCoupleDevices(final String deviceId, final String mbusDeviceId) {
         if (this.areDevicesCoupled(deviceId, mbusDeviceId)) {
             final Device mbusDevice = this.deviceRepository.findByDeviceIdentification(mbusDeviceId);
             mbusDevice.updateGatewayDevice(null);
+            this.deviceRepository.save(mbusDevice);
         }
     }
 

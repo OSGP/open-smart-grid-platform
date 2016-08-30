@@ -4,22 +4,27 @@ Feature:
     
 Background:
     Given an organisation with OrganisationID "Infostroom"
-    
+    Given a device with DeviceID "TEST1024000000001"
+
 @SLIM-218 @SmartMeterInstallation
   Scenario: Add a new device "E0026000059790003"
     When the add device "E0026000059790003" request is received
     Then the device request response should be ok
     And the device with id "E0026000059790003" should be added in the core database
     And the device with id "E0026000059790003" should be added in the dlms database
-    
+
+
+
+
+
     
 @SLIM-637-nominal-link
   Scenario: Link G-meter "TESTG102400000001" to E-meter "TEST1024000000001" on free MBUS channel 1
-	When mbus device "TESTG102400000001" is not coupled with device "TEST1024000000001"  
-    And the couple mbus device "TESTG102400000001" with device "TEST1024000000001" on channel 1 is received
-    Then the couple mbus device request response should be ok
-    And the mbus device "TESTG102400000001" should be linked to device "TEST1024000000001"
-    And the response "OK" should be given
+	Given an uncoupled gas device with DeviceID "TESTG102400000001"
+	And a free MBUS channel 1
+	When the Link G-meter request is received
+	Then the gas device "TESTG102400000001" should be linked to device "TEST1024000000001"
+	And the response "OK" should be given
 
 @SLIM-637-overwrite-link
   Scenario: Link G-meter to an E-meter on occupied MBUS channel 1
