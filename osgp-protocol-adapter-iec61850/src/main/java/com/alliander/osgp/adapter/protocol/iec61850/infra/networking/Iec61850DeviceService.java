@@ -878,7 +878,7 @@ public class Iec61850DeviceService implements DeviceService {
         final NodeContainer softwareConfiguration = deviceConnection.getFcModelNode(
                 LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.SOFTWARE_CONFIGURATION, Fc.CF);
         String lightTypeValue = softwareConfiguration.getString(SubDataAttribute.LIGHT_TYPE);
-        // Fix for Kaifa bug KI-..
+        // Fix for Kaifa bug KI-31
         if (lightTypeValue == null || lightTypeValue.isEmpty()) {
             lightTypeValue = "RELAY";
         }
@@ -960,7 +960,7 @@ public class Iec61850DeviceService implements DeviceService {
                 LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.SOFTWARE_CONFIGURATION, Fc.CF);
 
         String lightTypeValue = softwareConfiguration.getString(SubDataAttribute.LIGHT_TYPE);
-        // Fix for Kaifa bug KI-..
+        // Fix for Kaifa bug KI-31
         if (lightTypeValue == null || lightTypeValue.isEmpty()) {
             lightTypeValue = "RELAY";
         }
@@ -1020,9 +1020,9 @@ public class Iec61850DeviceService implements DeviceService {
         configuration.setTimeSyncFrequency(timeSyncFrequency);
         configuration.setAutomaticSummerTimingEnabled(automaticSummerTimingEnabled);
         configuration.setSummerTimeDetails(new DaylightSavingTimeTransition(TIME_ZONE_AMSTERDAM, summerTimeDetails)
-                .getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
+        .getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
         configuration.setWinterTimeDetails(new DaylightSavingTimeTransition(TIME_ZONE_AMSTERDAM, winterTimeDetails)
-                .getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
+        .getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
 
         return configuration;
     }
