@@ -21,8 +21,6 @@ import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.jasper.sessionproviders.SessionProvider;
 import org.osgp.adapter.protocol.jasper.sessionproviders.SessionProviderEnum;
 import org.osgp.adapter.protocol.jasper.sessionproviders.exceptions.SessionProviderException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -33,8 +31,6 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 @Component
 @PropertySource("file:${osp/osgpAdapterProtocolDlms/config}")
 public class SessionProviderSimulator extends SessionProvider {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SessionProviderSimulator.class);
 
     @Value("${triggered.simulator.url}")
     private String baseUrl;
@@ -74,8 +70,7 @@ public class SessionProviderSimulator extends SessionProvider {
             // data
             this.trigger.addHeader("accept", "application/json");
         } catch (final FunctionalException e) {
-            LOGGER.warn("No device known with deviceId: " + iccId);
-            throw new SessionProviderException("" + e);
+            throw new SessionProviderException("No device known with deviceId: " + iccId, e);
         }
 
         this.processResponse();
@@ -91,8 +86,7 @@ public class SessionProviderSimulator extends SessionProvider {
         } catch (final ClientProtocolException e) {
             throw new SessionProviderException("Error processing response from the simulator", e);
         } catch (final IOException e) {
-            LOGGER.warn("A problem occured during IO or the connection was aborted");
-            throw new SessionProviderException("" + e);
+            throw new SessionProviderException("A problem occured during IO or the connection was aborted", e);
         }
 
         // Check for HTTP response code: 200 = success
