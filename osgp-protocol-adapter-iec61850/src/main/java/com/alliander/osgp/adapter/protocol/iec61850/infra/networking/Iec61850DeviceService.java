@@ -877,7 +877,11 @@ public class Iec61850DeviceService implements DeviceService {
 
         final NodeContainer softwareConfiguration = deviceConnection.getFcModelNode(
                 LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.SOFTWARE_CONFIGURATION, Fc.CF);
-        final String lightTypeValue = softwareConfiguration.getString(SubDataAttribute.LIGHT_TYPE);
+        String lightTypeValue = softwareConfiguration.getString(SubDataAttribute.LIGHT_TYPE);
+        // Fix for Kaifa bug KI-..
+        if (lightTypeValue == null || lightTypeValue.isEmpty()) {
+            lightTypeValue = "RELAY";
+        }
         final LightTypeDto lightType = LightTypeDto.valueOf(lightTypeValue);
 
         /*
@@ -955,7 +959,12 @@ public class Iec61850DeviceService implements DeviceService {
         final NodeContainer softwareConfiguration = deviceConnection.getFcModelNode(
                 LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.SOFTWARE_CONFIGURATION, Fc.CF);
 
-        final String lightTypeValue = softwareConfiguration.getString(SubDataAttribute.LIGHT_TYPE);
+        String lightTypeValue = softwareConfiguration.getString(SubDataAttribute.LIGHT_TYPE);
+        // Fix for Kaifa bug KI-..
+        if (lightTypeValue == null || lightTypeValue.isEmpty()) {
+            lightTypeValue = "RELAY";
+        }
+
         final LightTypeDto lightType = LightTypeDto.valueOf(lightTypeValue);
         final short astroGateSunRiseOffset = softwareConfiguration.getShort(SubDataAttribute.ASTRONOMIC_SUNRISE_OFFSET)
                 .getValue();
