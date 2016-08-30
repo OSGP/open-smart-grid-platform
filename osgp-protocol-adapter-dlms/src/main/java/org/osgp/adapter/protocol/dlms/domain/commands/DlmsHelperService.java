@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.concurrent.TimeoutException;
 
@@ -73,6 +74,40 @@ public class DlmsHelperService {
     }
 
     public static final int MILLISECONDS_PER_MINUTE = 60000;
+
+    /**
+     * Gets a single result from a meter, and returns the result data if
+     * retrieval was successful (resultCode of the GetResult equals
+     * AccessResultCode.SUCCESS).
+     *
+     * @param conn
+     * @param attributeAddress
+     * @return a result from trying to retrieve the value for the attribute
+     *         identified by {@code attributeAddress}.
+     * @throws ConnectionException
+     * @throws ProtocolAdapterException
+     */
+    public DataObject getAttributeValue(final DlmsConnection conn, final AttributeAddress attributeAddress)
+            throws ProtocolAdapterException {
+        Objects.requireNonNull(conn, "conn must not be null");
+        Objects.requireNonNull(attributeAddress, "attributeAddress must not be null");
+        try {
+            final GetResult getResult = conn.get(attributeAddress);
+            final AccessResultCode resultCode = getResult.getResultCode();
+            if (AccessResultCode.SUCCESS == resultCode) {
+                return getResult.getResultData();
+            }
+            throw new ProtocolAdapterException("Retrieving attribute value for {" + attributeAddress.getClassId() + ","
+                    + attributeAddress.getInstanceId().toObisCode() + "," + attributeAddress.getId() + "} got result: "
+                    + resultCode + "(" + resultCode.getCode() + "), with data: "
+                    + this.getDebugInfo(getResult.getResultData()));
+        } catch (final IOException e) {
+            throw new ConnectionException(e);
+        } catch (final Exception e) {
+            throw new ProtocolAdapterException("Error retrieving attribute value for {" + attributeAddress.getClassId()
+            + "," + attributeAddress.getInstanceId().toObisCode() + "," + attributeAddress.getId() + "}.", e);
+        }
+    }
 
     /**
      * get results from the meter and check if the number of results equals the
