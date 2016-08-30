@@ -54,13 +54,6 @@ public class ActivateDevice extends SoapTestCase {
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }
 
-    @When("^the device is not active$")
-    public void theDeviceIsNotActive() throws Throwable {
-        final Device device = this.deviceRepository.findByDeviceIdentification(this.deviceId.getDeviceIdE());
-        device.setActive(false);
-        this.deviceRepository.save(device);
-    }
-
     @Then("^the device is activated again$")
     public void theDeviceIsActivatedAgain() throws Throwable {
         final Device device = this.deviceRepository.findByDeviceIdentification(this.deviceId.getDeviceIdE());

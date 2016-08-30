@@ -1,3 +1,12 @@
+/**
+ * Copyright 2016 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.platform.cucumber;
 
 import static org.junit.Assert.assertTrue;
@@ -9,11 +18,10 @@ import java.util.regex.Pattern;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
 /**
- * Super class for TestCase runner implementations. Each Runner will be called
- * from a subclass.
+ * Super class for TestCase runner implementations that communicate with
+ * SmartMetering webservices. Each Runner will be called from a subclass.
  */
-
-public class SmartMetering extends SoapTestCase {
+public abstract class SmartMetering extends SoapTestCase {
 
     protected static final String XPATH_MATCHER_CORRELATIONUID = "\\|\\|\\|\\S{17}\\|\\|\\|\\S{17}";
 

@@ -1,3 +1,12 @@
+/**
+ * Copyright 2016 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.platform.cucumber;
 
 import static org.junit.Assert.assertEquals;
@@ -21,11 +30,10 @@ import com.eviware.soapui.model.testsuite.TestStepResult;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
 /**
- * Super class for TestCase runner implementations. Each Runner will be called
- * from a subclass.
+ * Super class for TestCase runner implementations using Soap. Each Runner will
+ * be called from a subclass.
  */
-
-public class SoapTestCase {
+public abstract class SoapTestCase {
     private static final Logger LOGGER = LoggerFactory.getLogger(SmartMetering.class);
 
     protected static final String SOAP_PROJECT_XML = "/etc/osp/soapui/OSGP_SmartMetering_Soapui_Project.xml";
