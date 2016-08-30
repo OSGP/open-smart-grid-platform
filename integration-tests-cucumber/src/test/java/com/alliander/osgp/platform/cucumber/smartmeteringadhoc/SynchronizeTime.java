@@ -14,6 +14,7 @@ import com.alliander.osgp.platform.cucumber.SmartMetering;
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
 import com.alliander.osgp.platform.cucumber.support.OrganisationId;
 import com.alliander.osgp.platform.cucumber.support.ServiceEndpoint;
+import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -54,7 +55,7 @@ public class SynchronizeTime extends SmartMetering {
         /*
          * Setup of deviation and DST information, that will make
          * SynchronizeTime configure a meter for time zone Europe/Amsterdam.
-         * 
+         *
          * This assumes the server time that will be synchronized is about the
          * same as the system time where this test code is executed and
          * configures deviation and DST according to the proper values for
@@ -75,7 +76,7 @@ public class SynchronizeTime extends SmartMetering {
         PROPERTIES_MAP.put(DEVIATION_LABEL, deviation);
         PROPERTIES_MAP.put(DST_LABEL, dst);
 
-        this.requestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
+        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }
 
     @Then("^the date and time is synchronized on the device$")

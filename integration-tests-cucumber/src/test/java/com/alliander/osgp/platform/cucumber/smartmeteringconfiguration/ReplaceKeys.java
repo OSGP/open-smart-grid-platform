@@ -22,6 +22,7 @@ import com.alliander.osgp.platform.cucumber.smartmeteringmonitoring.ActualMeterR
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
 import com.alliander.osgp.platform.cucumber.support.OrganisationId;
 import com.alliander.osgp.platform.cucumber.support.ServiceEndpoint;
+import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
@@ -55,7 +56,7 @@ public class ReplaceKeys extends SmartMetering {
         PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, this.organisationId.getOrganisationId());
         PROPERTIES_MAP.put(ENDPOINT_LABEL, this.serviceEndpoint.getServiceEndpoint());
 
-        this.requestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
+        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }
 
     @Then("^the new keys are set on the device$")
