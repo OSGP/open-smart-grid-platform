@@ -52,7 +52,6 @@ public abstract class SoapTestCase {
      * this time is over, the polling will stop and return the result when
      * available.
      */
-
     public static final String TIME_OUT = "TimeOut";
     public static final String MAX_TIME = "MaxTime";
 
