@@ -34,6 +34,10 @@ public class CoupleDeviceHooks {
     @Autowired
     private SmartMeterRepository smartMeterRepository;
 
+    public boolean areDevicesCoupled(final String deviceId, final String mbusDeviceId) {
+        return this.areDevicesCoupled(deviceId, mbusDeviceId, null);
+    }
+
     /**
      * check that the given mbus device is coupled with a gateway device
      *
@@ -43,16 +47,21 @@ public class CoupleDeviceHooks {
      *            the mbus device
      * @return <code>true</code> when the devices are coupled, else
      *         <code>false</code>
+     * @throws InterruptedException
      */
-    public boolean areDevicesCoupled(final String deviceId, final String mbusDeviceId) {
+    public boolean areDevicesCoupled(final String deviceId, final String mbusDeviceId, Short mbusChannel) {
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceId);
-        final Device mbusDevice = this.deviceRepository.findByDeviceIdentification(mbusDeviceId);
+        final SmartMeter mbusDevice = this.smartMeterRepository.findByDeviceIdentification(mbusDeviceId);
 
-        if ((mbusDevice != null) && (mbusDevice.getGatewayDevice() != null)
-                && (mbusDevice.getGatewayDevice().getId() != null)) {
-            return mbusDevice.getGatewayDevice().getId().equals(device.getId());
-        }
-        return false;
+        // @formatter:off
+        return (mbusDevice != null)
+                && (device != null)
+                && (mbusDevice.getGatewayDevice() != null)
+                && ((mbusDevice.getGatewayDevice().getId() != null)
+                        && mbusDevice.getGatewayDevice().getId().equals(device.getId()))
+                        && ((mbusChannel == null) || mbusDevice.getChannel().equals(mbusChannel));
+        // @formatter:on
+
     }
 
     public void deCoupleDevices(final String deviceId, final String mbusDeviceId) {
@@ -63,11 +72,11 @@ public class CoupleDeviceHooks {
         }
     }
 
-    public void coupleDevices(String deviceId, String mbusDeviceId, int channel) {
-        final Device device = this.deviceRepository.findByDeviceIdentification(deviceId);
-        final SmartMeter mbusSmartMeter = this.smartMeterRepository.findByDeviceIdentification(mbusDeviceId);
+    public void coupleDevices(String eDevice, String gasDevice, Short channel) {
+        final Device device = this.deviceRepository.findByDeviceIdentification(eDevice);
+        final SmartMeter mbusSmartMeter = this.smartMeterRepository.findByDeviceIdentification(gasDevice);
         mbusSmartMeter.updateGatewayDevice(device);
-        mbusSmartMeter.setChannel((short) channel);
+        mbusSmartMeter.setChannel(channel);
         this.smartMeterRepository.save(mbusSmartMeter);
     }
 
@@ -82,4 +91,11 @@ public class CoupleDeviceHooks {
         mbusDevice.setActivated(true);
         this.deviceRepository.save(mbusDevice);
     }
+
+    public void clearChannelForSmartMeterDevice(String deviceIdG) {
+        final SmartMeter mbusDevice = this.smartMeterRepository.findByDeviceIdentification(deviceIdG);
+        mbusDevice.setChannel(null);
+        this.smartMeterRepository.save(mbusDevice);
+    }
+
 }

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 public class DeviceId {
     private String deviceIdE;
     private String deviceIdG;
+    private Short gasDeviceChannel;
 
     public void setDeviceIdE(final String deviceIdE) {
         this.deviceIdE = deviceIdE;
@@ -21,5 +22,13 @@ public class DeviceId {
 
     public String getDeviceIdG() {
         return this.deviceIdG;
+    }
+
+    public Short getGasDeviceChannel() {
+        return this.gasDeviceChannel;
+    }
+
+    public void setGasDeviceChannel(Short gasDeviceChannel) {
+        this.gasDeviceChannel = gasDeviceChannel;
     }
 }
