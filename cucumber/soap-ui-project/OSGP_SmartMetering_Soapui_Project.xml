@@ -10926,8 +10926,8 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    <soapenv:Body>
       <ns1:BundleRequest>
          <ns1:DeviceIdentification>${=testCase.getPropertyValue( "DeviceIdentificationE" )}</ns1:DeviceIdentification>
-         <ns1:Actions>
-
+         <ns1:Actions>	 
+      
          <ns1:FindEventsRequest>
 	            <ns2:EventLogCategory>FRAUD_DETECTION_LOG</ns2:EventLogCategory>
 	            <ns2:From>2016-01-01T00:00:00.000Z</ns2:From>
@@ -11193,8 +11193,8 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
       <ns1:ReplaceKeysRequest>\r
          <ns1:DeviceIdentification>${=testCase.getPropertyValue( "DeviceIdentificationE" )}</ns1:DeviceIdentification>\r
          <ns1:SetKeysRequestData>\r
-            <ns1:AuthenticationKey>bc082efed278e1bbebddc0431877d4fa47da4dbb44a2cd7414b738df44326c8f588e01b732e8d54bf47865f551c2fd85</ns1:AuthenticationKey>\r
-            <ns1:EncryptionKey>bc082efed278e1bbebddc0431877d4fa0a3a162f1e50f975f3c8c6f108bb0b3627523dd996dd3712ecc3f2fd9cd2bbd9</ns1:EncryptionKey>\r
+            <ns1:AuthenticationKey>bc082efed278e1bbebddc0431877d4fae80fa4e72925b6ad0bc67c84b8721598eda8458bcc1b2827fe6e5e7918ce22fd</ns1:AuthenticationKey>\r
+            <ns1:EncryptionKey>bc082efed278e1bbebddc0431877d4fa2df7728229f3e03c57b2549142b40d047b35011dbf9f77ad91db5fe6f19a7b9c</ns1:EncryptionKey>\r
          </ns1:SetKeysRequestData>\r
       </ns1:ReplaceKeysRequest>\r
    </soapenv:Body>\r
