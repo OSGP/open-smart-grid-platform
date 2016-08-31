@@ -119,7 +119,7 @@ public class CoupleMbusDeviceWithDevice extends SmartMetering {
         this.coupleDeviceHooks.inactivateDevice(mbusDeviceId);
     }
 
-    @Given("^a coupled gas device \"([^\"]*)\" on MBUS channel (\\d+)$")
+    @And("^a coupled gas device \"([^\"]*)\" on MBUS channel (\\d+)$")
     public void aCoupledGasDeviceOnMBUSChannel(String gasDevice, Short channel) throws Throwable {
         this.deviceId.setGasDeviceChannel(channel);
         this.coupleDeviceHooks.coupleDevices(this.deviceId.getDeviceIdE(), gasDevice, channel);
