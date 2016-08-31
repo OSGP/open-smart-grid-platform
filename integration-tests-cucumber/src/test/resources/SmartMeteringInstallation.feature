@@ -36,9 +36,9 @@ Background:
 @SLIM-637-unknown-mbusdevice
   Scenario: Link unknown G-meter to an E-meter
     Given a device with DeviceID "TEST1024000000001"
-	And an unknown gas device with DeviceID "TESTG102400000003"
+	And an unknown gas device with DeviceID "TESTG10240unknown"
 	When the Link G-meter request is received
-	Then the response "Device TESTG102400000003 is not present in the platform" should be given
+	Then the response "Device TESTG10240unknown is not present in the platform" should be given
 
 @SLIM-637-unknown-device
   Scenario: Link G-meter to an unkown E-meter
