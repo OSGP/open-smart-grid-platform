@@ -8,6 +8,7 @@
 package com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.processors;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
@@ -116,7 +117,25 @@ public class PublicLightingResumeScheduleRequestMessageProcessor extends DeviceR
         final int retryCount = unsignedOslpEnvelopeDto.getRetryCount();
         final boolean isScheduled = unsignedOslpEnvelopeDto.isScheduled();
 
-        final DeviceResponseHandler deviceResponseHandler = new DeviceResponseHandler() {
+        final DeviceResponseHandler deviceResponseHandler = this.createResumeScheduleDeviceResponseHandler(domain,
+                domainVersion, messageType, retryCount, unsignedOslpEnvelopeDto.getExtraData(), isScheduled);
+
+        final GetStatusDeviceRequest deviceRequest = new GetStatusDeviceRequest(organisationIdentification,
+                deviceIdentification, correlationUid, DomainTypeDto.PUBLIC_LIGHTING);
+
+        try {
+            this.deviceService.doResumeSchedule(oslpEnvelope, deviceRequest, deviceResponseHandler, ipAddress);
+        } catch (final IOException e) {
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
+                    domainVersion, messageType, retryCount);
+        }
+    }
+
+    protected DeviceResponseHandler createResumeScheduleDeviceResponseHandler(final String domain,
+            final String domainVersion, final String messageType, final int retryCount, final Serializable dto,
+            final boolean isScheduled) {
+
+        return new DeviceResponseHandler() {
 
             @Override
             public void handleResponse(final DeviceResponse deviceResponse) {
@@ -128,21 +147,10 @@ public class PublicLightingResumeScheduleRequestMessageProcessor extends DeviceR
             @Override
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                 PublicLightingResumeScheduleRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(
-                        deviceResponse, t, unsignedOslpEnvelopeDto.getExtraData(),
+                        deviceResponse, t, dto,
                         PublicLightingResumeScheduleRequestMessageProcessor.this.responseMessageSender, deviceResponse,
                         domain, domainVersion, messageType, isScheduled, retryCount);
             }
-
         };
-
-        final GetStatusDeviceRequest deviceRequest = new GetStatusDeviceRequest(organisationIdentification,
-                deviceIdentification, correlationUid, DomainTypeDto.PUBLIC_LIGHTING);
-
-        try {
-            this.deviceService.doResumeSchedule(oslpEnvelope, deviceRequest, deviceResponseHandler, ipAddress);
-        } catch (final IOException e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
-                    domainVersion, messageType, retryCount);
-        }
     }
 }

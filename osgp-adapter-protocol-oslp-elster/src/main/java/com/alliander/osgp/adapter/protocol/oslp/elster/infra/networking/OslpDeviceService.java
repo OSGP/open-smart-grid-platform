@@ -53,7 +53,6 @@ import com.alliander.osgp.adapter.protocol.oslp.elster.device.responses.GetFirmw
 import com.alliander.osgp.adapter.protocol.oslp.elster.device.responses.GetPowerUsageHistoryDeviceResponse;
 import com.alliander.osgp.adapter.protocol.oslp.elster.device.responses.GetStatusDeviceResponse;
 import com.alliander.osgp.adapter.protocol.oslp.elster.domain.entities.OslpDevice;
-import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.OslpLogItemRequestMessage;
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.OslpLogItemRequestMessageSender;
 import com.alliander.osgp.dto.valueobjects.ConfigurationDto;
@@ -65,7 +64,6 @@ import com.alliander.osgp.dto.valueobjects.LinkTypeDto;
 import com.alliander.osgp.dto.valueobjects.PageInfoDto;
 import com.alliander.osgp.dto.valueobjects.PowerUsageDataDto;
 import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryResponseMessageDataContainerDto;
-import com.alliander.osgp.dto.valueobjects.ResumeScheduleMessageDataContainerDto;
 import com.alliander.osgp.dto.valueobjects.ScheduleDto;
 import com.alliander.osgp.dto.valueobjects.ScheduleMessageDataContainerDto;
 import com.alliander.osgp.oslp.Oslp;
@@ -180,26 +178,29 @@ public class OslpDeviceService implements DeviceService {
     }
 
     @Override
-    public void doSetLight(final OslpEnvelope oslpRequest, final DeviceRequest deviceRequest,
-            final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
-        LOGGER.info("doSetLight() for device: {}.", deviceRequest.getDeviceIdentification());
+    public void doSetLight(final OslpEnvelope oslpRequest, final DeviceRequest setLightdeviceRequest,
+            final ResumeScheduleDeviceRequest resumeScheduleDeviceRequest,
+            final DeviceResponseHandler setLightDeviceResponseHandler,
+            final DeviceResponseHandler resumeScheduleDeviceResponseHandler, final String ipAddress) throws IOException {
+        LOGGER.info("doSetLight() for device: {}.", setLightdeviceRequest.getDeviceIdentification());
 
-        this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
+        this.saveOslpRequestLogEntry(setLightdeviceRequest, oslpRequest);
 
         final OslpResponseHandler oslpResponseHandler = new OslpResponseHandler() {
 
             @Override
             public void handleResponse(final OslpEnvelope oslpResponse) {
-                OslpDeviceService.this.handleOslpResponseSetLight(deviceRequest, oslpResponse, deviceResponseHandler);
+                OslpDeviceService.this.handleOslpResponseSetLight(setLightdeviceRequest, resumeScheduleDeviceRequest,
+                        oslpResponse, setLightDeviceResponseHandler, resumeScheduleDeviceResponseHandler);
             }
 
             @Override
             public void handleException(final Throwable t) {
-                OslpDeviceService.this.handleException(t, deviceRequest, deviceResponseHandler);
+                OslpDeviceService.this.handleException(t, setLightdeviceRequest, setLightDeviceResponseHandler);
             }
         };
 
-        this.sendMessage(ipAddress, oslpRequest, oslpResponseHandler, deviceRequest);
+        this.sendMessage(ipAddress, oslpRequest, oslpResponseHandler, setLightdeviceRequest);
     }
 
     @Override
@@ -1639,11 +1640,13 @@ public class OslpDeviceService implements DeviceService {
         deviceResponseHandler.handleResponse(deviceResponse);
     }
 
-    private void handleOslpResponseSetLight(final DeviceRequest deviceRequest, final OslpEnvelope oslpResponse,
-            final DeviceResponseHandler deviceResponseHandler) {
-        this.saveOslpResponseLogEntry(deviceRequest, oslpResponse);
+    private void handleOslpResponseSetLight(final DeviceRequest setLightdeviceRequest,
+            final ResumeScheduleDeviceRequest resumeScheduleDeviceRequest, final OslpEnvelope oslpResponse,
+            final DeviceResponseHandler setLightDeviceResponseHandler,
+            final DeviceResponseHandler resumeScheduleDeviceResponseHandler) {
+        this.saveOslpResponseLogEntry(setLightdeviceRequest, oslpResponse);
 
-        this.updateSequenceNumber(deviceRequest.getDeviceIdentification(), oslpResponse);
+        this.updateSequenceNumber(setLightdeviceRequest.getDeviceIdentification(), oslpResponse);
 
         DeviceMessageStatus status;
 
@@ -1655,9 +1658,10 @@ public class OslpDeviceService implements DeviceService {
         }
 
         // Send response to the message processor's device response handler.
-        final DeviceResponse deviceResponse = new EmptyDeviceResponse(deviceRequest.getOrganisationIdentification(),
-                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(), status);
-        deviceResponseHandler.handleResponse(deviceResponse);
+        final DeviceResponse deviceResponse = new EmptyDeviceResponse(
+                setLightdeviceRequest.getOrganisationIdentification(), setLightdeviceRequest.getDeviceIdentification(),
+                setLightdeviceRequest.getCorrelationUid(), status);
+        setLightDeviceResponseHandler.handleResponse(deviceResponse);
 
         if (this.executeResumeScheduleAfterSetLight && status.equals(DeviceMessageStatus.OK)) {
             // Wait a second to prevent timing issues when connecting to the
@@ -1669,26 +1673,17 @@ public class OslpDeviceService implements DeviceService {
             } catch (final InterruptedException e) {
                 LOGGER.error("InterruptedException", e);
             }
-            // Execute a ResumeSchedule call with 'immediate = false' and 'index
-            // = 0' as arguments.
-            final ResumeScheduleMessageDataContainerDto resumeScheduleMessageDataContainer = new ResumeScheduleMessageDataContainerDto(
-                    0, false);
-            final ResumeScheduleDeviceRequest resumeScheduleDeviceRequest = new ResumeScheduleDeviceRequest(
-                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
-                    deviceRequest.getCorrelationUid(), resumeScheduleMessageDataContainer, deviceRequest.getDomain(),
-                    deviceRequest.getDomainVersion(), DeviceRequestMessageType.RESUME_SCHEDULE.name(),
-                    deviceRequest.getIpAddress(), deviceRequest.getRetryCount(), deviceRequest.isScheduled());
-
-            LOGGER.info("Sending ResumeScheduleRequest for device: {}", deviceRequest.getDeviceIdentification());
+            LOGGER.info("Sending ResumeScheduleRequest for device: {}", setLightdeviceRequest.getDeviceIdentification());
             this.resumeSchedule(resumeScheduleDeviceRequest);
         } else {
-            LOGGER.info("Not sending ResumeScheduleRequest for device: {} as DeviceMessageStatus is: {}",
-                    deviceRequest.getDeviceIdentification(), status.name());
+            LOGGER.info(
+                    "Not sending ResumeScheduleRequest for device: {} because executeResumeScheduleAfterSetLight is false or DeviceMessageStatus is not OK",
+                    setLightdeviceRequest.getDeviceIdentification());
 
             final DeviceResponse emptyDeviceResponse = new EmptyDeviceResponse(
-                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
-                    deviceRequest.getCorrelationUid(), status);
-            deviceResponseHandler.handleResponse(emptyDeviceResponse);
+                    setLightdeviceRequest.getOrganisationIdentification(),
+                    setLightdeviceRequest.getDeviceIdentification(), setLightdeviceRequest.getCorrelationUid(), status);
+            resumeScheduleDeviceResponseHandler.handleResponse(emptyDeviceResponse);
         }
     }
 
