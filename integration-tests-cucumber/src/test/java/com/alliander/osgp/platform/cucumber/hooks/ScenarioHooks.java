@@ -120,15 +120,15 @@ public class ScenarioHooks {
     public void setDeviceIsActivateState(final String deviceId, final boolean isActiveState) {
         final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("cucumber.xml");
         this.deviceRepository = context.getBean(DeviceRepository.class);
-        this.setDeviceIsActivated(deviceId, isActiveState);
+        this.setDeviceIsActive(deviceId, isActiveState);
         context.close();
     }
 
-    private void setDeviceIsActivated(final String deviceId, final boolean newState) {
+    private void setDeviceIsActive(final String deviceId, final boolean newState) {
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceId);
         if (device != null) {
             LOGGER.info("setting dlmsDevice.setActivated() to " + newState + " for device " + deviceId);
-            device.setActivated(newState);
+            device.setActive(newState);
             this.deviceRepository.save(device);
         } else {
             LOGGER.error("no such device " + deviceId);

@@ -42,7 +42,7 @@
 
   <properties>
     <module.baseUri>${project.baseUri}/../</module.baseUri>
-    <osgp.version>3.9.0-SNAPSHOT</osgp.version>
+    <osgp.version>4.0.0-SNAPSHOT</osgp.version>
     <osgp.dlms.version>3.5.0-SNAPSHOT</osgp.dlms.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
