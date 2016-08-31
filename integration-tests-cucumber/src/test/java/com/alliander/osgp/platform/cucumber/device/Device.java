@@ -29,4 +29,10 @@ public class Device {
         this.deviceId.setDeviceIdE(deviceId);
         this.scenarioHooks.setDeviceIsActivateState(this.deviceId.getDeviceIdE(), false);
     }
+
+    @Given("^an active device with DeviceID \"([^\"]*)\"$")
+    public void anActiveDeviceWithDeviceID(final String deviceId) throws Throwable {
+        this.deviceId.setDeviceIdE(deviceId);
+        this.scenarioHooks.setDeviceIsActivateState(this.deviceId.getDeviceIdE(), true);
+    }
 }
