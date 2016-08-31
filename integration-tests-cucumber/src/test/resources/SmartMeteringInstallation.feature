@@ -58,5 +58,5 @@ Background:
   Scenario: Link G-meter to an inactive E-meter
     Given an inactive device with DeviceID "TEST1024000000001" 
 	And a gas device with DeviceID "TESTG102400000001"
-	When the Link G-meter request is received
+	When the Link G-meter request on an inactive device is received
 	Then the response "Device TEST1024000000001 not active in the platform" should be given

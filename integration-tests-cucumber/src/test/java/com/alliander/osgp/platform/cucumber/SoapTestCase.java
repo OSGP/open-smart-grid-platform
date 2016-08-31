@@ -39,6 +39,7 @@ public abstract class SoapTestCase {
     protected static final String SOAP_PROJECT_XML = "/etc/osp/soapui/OSGP_SmartMetering_Soapui_Project.xml";
     protected static final String DEVICE_IDENTIFICATION_E_LABEL = "DeviceIdentificationE";
     protected static final String DEVICE_IDENTIFICATION_G_LABEL = "DeviceIdentificationG";
+    protected static final String CHANNEL_LABEL = "ChannelIdentification";
     protected static final String ORGANISATION_IDENTIFICATION_LABEL = "OrganisationIdentification";
     protected static final String ENDPOINT_LABEL = "ServiceEndpoint";
     public final static String CORRELATION_UID_LABEL = "CorrelationUid";

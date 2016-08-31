@@ -67,6 +67,18 @@ public class CoupleMbusDeviceWithDevice extends SmartMetering {
         this.coupleDeviceHooks.clearChannelForSmartMeterDevice(this.deviceId.getDeviceIdG());
     }
 
+    @When("^the Link G-meter request on an inactive device is received$")
+    public void theLinkGMeterRequestOnAnInactiveDeviceIsReceived() throws Throwable {
+        PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_G_LABEL, this.deviceId.getDeviceIdG());
+        PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_E_LABEL, this.deviceId.getDeviceIdE());
+        PROPERTIES_MAP.put(CHANNEL_LABEL, String.valueOf(this.deviceId.getGasDeviceChannel()));
+        PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, this.organisationId.getOrganisationId());
+        PROPERTIES_MAP.put(ENDPOINT_LABEL, this.serviceEndpoint.getServiceEndpoint());
+
+        this.requestRunner(TestStepStatus.FAILED, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
+
+    }
+
     @When("^the Link G-meter request is received$")
     public void theLinkGMeterRequestIsReceived() throws Throwable {
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_G_LABEL, this.deviceId.getDeviceIdG());
