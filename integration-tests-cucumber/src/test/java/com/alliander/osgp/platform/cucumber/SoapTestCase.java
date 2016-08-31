@@ -76,6 +76,9 @@ public abstract class SoapTestCase {
      * RequestRunner is called from the @When step from a subclass which
      * represents cucumber test scenario('s) and return the correlationUid.
      *
+     * @param testStepStatus
+     *            Expected status of the wsdl test case. This value will be
+     *            asserted to be equal to the returned status.
      * @param propertiesMap
      *            includes all needed properties for a specific test run such as
      *            DeviceId and OrganisationId

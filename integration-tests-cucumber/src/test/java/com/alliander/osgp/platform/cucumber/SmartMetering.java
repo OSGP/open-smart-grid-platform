@@ -27,21 +27,6 @@ public abstract class SmartMetering extends SoapTestCase {
 
     protected String correlationUid;
 
-    /**
-     * RequestRunner is called from the @When step from a subclass which
-     * represents cucumber test scenario('s) and return the correlationUid.
-     *
-     * @param propertiesMap
-     *            includes all needed properties for a specific test run such as
-     *            DeviceId and OrganisationId
-     * @param testCaseNameRequest
-     *            is the specific testcase request step to be executed
-     * @param testCaseXml
-     *            is the testcase name which includes the testcase
-     * @param testSuiteXml
-     *            is the testsuite name which includes the testcase
-     * @throws Throwable
-     */
     @Override
     protected void requestRunner(final TestStepStatus testStepStatus, final Map<String, String> propertiesMap,
             final String testCaseNameRequest, final String testCaseXml, final String testSuiteXml) throws Throwable {
