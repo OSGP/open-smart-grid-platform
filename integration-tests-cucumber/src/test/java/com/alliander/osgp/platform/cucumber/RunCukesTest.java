@@ -1,5 +1,3 @@
-package com.alliander.osgp.platform.cucumber;
-
 /**
  * Copyright 2016 Smart Society Services B.V.
  *
@@ -9,6 +7,7 @@ package com.alliander.osgp.platform.cucumber;
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+package com.alliander.osgp.platform.cucumber;
 
 import org.junit.runner.RunWith;
 
