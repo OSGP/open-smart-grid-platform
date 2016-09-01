@@ -494,7 +494,6 @@ public class MessagingConfig {
     }
 
     @Bean
-    @DependsOn("oslpResponseMessageSender")
     public SigningServerRequestMessageSender signingServerRequestMessageSender() {
         return new SigningServerRequestMessageSender();
     }
