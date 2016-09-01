@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alliander.osgp.platform.cucumber.SmartMetering;
 import com.alliander.osgp.platform.cucumber.hooks.CoupleDeviceHooks;
 import com.alliander.osgp.platform.cucumber.hooks.DeviceHooks;
-import com.alliander.osgp.platform.cucumber.smartmeteringmonitoring.ActualMeterReadsGas;
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
 import com.alliander.osgp.platform.cucumber.support.OrganisationId;
 import com.alliander.osgp.platform.cucumber.support.ServiceEndpoint;
@@ -44,7 +43,7 @@ public class CoupleMbusDeviceWithDevice extends SmartMetering {
     private static final String TEST_CASE_NAME_REQUEST = "CoupleMbusDevice";
     private static final String TEST_CASE_NAME_RESPONSE = "GetCoupleMbusDeviceResponse";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ActualMeterReadsGas.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CoupleMbusDeviceWithDevice.class);
     private static final Map<String, String> PROPERTIES_MAP = new HashMap<>();
 
     @Autowired
@@ -66,12 +65,12 @@ public class CoupleMbusDeviceWithDevice extends SmartMetering {
     public void anUncoupledGasDeviceWithDeviceID(String gasDevice) {
         this.deviceId.setDeviceIdG(gasDevice);
         this.deviceHooks.activateDevice(gasDevice);
-        this.coupleDeviceHooks.deCoupleDevices(this.deviceId.getDeviceIdE(), gasDevice);
+        this.coupleDeviceHooks.decoupleDevices(this.deviceId.getDeviceIdE(), gasDevice);
     }
 
     @Given("^a free MBUS channel (\\d+)$")
     public void aFreeMBUSChannel(Short channel) {
-        this.deviceId.setGasDeviceChannel(channel);
+        this.deviceId.setMbusDeviceChannel(channel);
         this.coupleDeviceHooks.clearChannelForSmartMeterDevice(this.deviceId.getDeviceIdG());
     }
 
@@ -79,7 +78,7 @@ public class CoupleMbusDeviceWithDevice extends SmartMetering {
     public void theLinkGMeterRequestOnAnUnknownDeviceIsReceived(String unknownDevice) throws Throwable {
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_G_LABEL, this.deviceId.getDeviceIdG());
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_E_LABEL, this.deviceId.getDeviceIdE());
-        PROPERTIES_MAP.put(CHANNEL_LABEL, String.valueOf(this.deviceId.getGasDeviceChannel()));
+        PROPERTIES_MAP.put(CHANNEL_LABEL, String.valueOf(this.deviceId.getMbusDeviceChannel()));
         PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, this.organisationId.getOrganisationId());
         PROPERTIES_MAP.put(ENDPOINT_LABEL, this.serviceEndpoint.getServiceEndpoint());
 
@@ -90,7 +89,7 @@ public class CoupleMbusDeviceWithDevice extends SmartMetering {
     public void theLinkGMeterRequestOnAnInactiveDeviceIsReceived(String inactiveDevice) throws Throwable {
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_G_LABEL, this.deviceId.getDeviceIdG());
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_E_LABEL, this.deviceId.getDeviceIdE());
-        PROPERTIES_MAP.put(CHANNEL_LABEL, String.valueOf(this.deviceId.getGasDeviceChannel()));
+        PROPERTIES_MAP.put(CHANNEL_LABEL, String.valueOf(this.deviceId.getMbusDeviceChannel()));
         PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, this.organisationId.getOrganisationId());
         PROPERTIES_MAP.put(ENDPOINT_LABEL, this.serviceEndpoint.getServiceEndpoint());
 
@@ -98,7 +97,7 @@ public class CoupleMbusDeviceWithDevice extends SmartMetering {
     }
 
     @Then("^the response contains \"([^\"]*)\"$")
-    public void theResponseContains(String message) throws Throwable {
+    public void theResponseContains(String message) {
         final Pattern messagePattern = Pattern.compile(message);
         final Matcher messageMatcher = messagePattern.matcher(this.response);
         Assert.assertTrue(messageMatcher.find());
@@ -108,7 +107,7 @@ public class CoupleMbusDeviceWithDevice extends SmartMetering {
     public void theLinkGMeterRequestIsReceived() throws Throwable {
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_G_LABEL, this.deviceId.getDeviceIdG());
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_E_LABEL, this.deviceId.getDeviceIdE());
-        PROPERTIES_MAP.put(CHANNEL_LABEL, String.valueOf(this.deviceId.getGasDeviceChannel()));
+        PROPERTIES_MAP.put(CHANNEL_LABEL, String.valueOf(this.deviceId.getMbusDeviceChannel()));
         PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, this.organisationId.getOrganisationId());
         PROPERTIES_MAP.put(ENDPOINT_LABEL, this.serviceEndpoint.getServiceEndpoint());
 
@@ -127,8 +126,7 @@ public class CoupleMbusDeviceWithDevice extends SmartMetering {
     }
 
     @And("^the gas device \"([^\"]*)\" should be linked to device \"([^\"]*)\" on MBUS channel (\\d+)$")
-    public void theGasDeviceShouldBeLinkedToDevice(String mbusDeviceId, String deviceId, Short mbusChannel)
-            throws Throwable {
+    public void theGasDeviceShouldBeLinkedToDevice(String mbusDeviceId, String deviceId, Short mbusChannel) {
 
         Assert.assertTrue(this.coupleDeviceHooks.areDevicesCoupled(deviceId, mbusDeviceId, mbusChannel));
     }
@@ -153,34 +151,34 @@ public class CoupleMbusDeviceWithDevice extends SmartMetering {
     }
 
     @When("^mbus device \"([^\"]*)\" is not coupled with device \"([^\"]*)\"$")
-    public void mbusDeviceIsNotCoupledWithDevice(String mbusDeviceId, String deviceId) throws Throwable {
-        this.coupleDeviceHooks.deCoupleDevices(deviceId, mbusDeviceId);
+    public void mbusDeviceIsNotCoupledWithDevice(String mbusDeviceId, String deviceId) {
+        this.coupleDeviceHooks.decoupleDevices(deviceId, mbusDeviceId);
     }
 
     @Then("^the mbus device \"([^\"]*)\" shouldn't be linked to the device \"([^\"]*)\"$")
-    public void theMbusDeviceShouldNotBeLinkedToTheDevice(String mbusDeviceId, String deviceId) throws Throwable {
+    public void theMbusDeviceShouldNotBeLinkedToTheDevice(String mbusDeviceId, String deviceId) {
         Assert.assertFalse(this.coupleDeviceHooks.areDevicesCoupled(deviceId, mbusDeviceId));
     }
 
     @When("^device with DeviceID \"([^\"]*)\" is inactive$")
-    public void mbusDeviceWithDeviceIDIsInactive(String mbusDeviceId) throws Throwable {
+    public void mbusDeviceWithDeviceIDIsInactive(String mbusDeviceId) {
         this.deviceHooks.inactivateDevice(mbusDeviceId);
     }
 
     @And("^a coupled gas device \"([^\"]*)\" on MBUS channel (\\d+)$")
-    public void aCoupledGasDeviceOnMBUSChannel(String gasDevice, Short channel) throws Throwable {
-        this.deviceId.setGasDeviceChannel(channel);
+    public void aCoupledGasDeviceOnMBUSChannel(String gasDevice, Short channel) {
+        this.deviceId.setMbusDeviceChannel(channel);
         this.coupleDeviceHooks.coupleDevices(this.deviceId.getDeviceIdE(), gasDevice, channel);
     }
 
     @Then("^the gas device \"([^\"]*)\" should be linked to the device \"([^\"]*)\"$")
-    public void theGasDeviceShouldBeLinkedToTheDevice(String gasDevice, String device) throws Throwable {
+    public void theGasDeviceShouldBeLinkedToTheDevice(String gasDevice, String device) {
         Assert.assertTrue(this.coupleDeviceHooks.areDevicesCoupled(device, gasDevice,
-                this.deviceId.getGasDeviceChannel()));
+                this.deviceId.getMbusDeviceChannel()));
     }
 
     @Then("^the gas device \"([^\"]*)\" shouldn't be linked to the device \"([^\"]*)\"$")
-    public void theGasDeviceShouldnTBeLinkedToTheDevice(String gasDevice, String device) throws Throwable {
+    public void theGasDeviceShouldnTBeLinkedToTheDevice(String gasDevice, String device) {
         Assert.assertFalse(this.coupleDeviceHooks.areDevicesCoupled(device, gasDevice));
     }
 

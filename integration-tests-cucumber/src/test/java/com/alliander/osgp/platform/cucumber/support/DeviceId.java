@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 public class DeviceId {
     private String deviceIdE;
     private String deviceIdG;
-    private Short gasDeviceChannel;
+    private Short mbusDeviceChannel;
 
     public void setDeviceIdE(final String deviceIdE) {
         this.deviceIdE = deviceIdE;
@@ -24,11 +24,11 @@ public class DeviceId {
         return this.deviceIdG;
     }
 
-    public Short getGasDeviceChannel() {
-        return this.gasDeviceChannel;
+    public Short getMbusDeviceChannel() {
+        return this.mbusDeviceChannel;
     }
 
-    public void setGasDeviceChannel(Short gasDeviceChannel) {
-        this.gasDeviceChannel = gasDeviceChannel;
+    public void setMbusDeviceChannel(Short gasDeviceChannel) {
+        this.mbusDeviceChannel = gasDeviceChannel;
     }
 }
