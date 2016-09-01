@@ -20,8 +20,8 @@ Background:
 	And an uncoupled gas device with DeviceID "TESTG102400000001"
 	And a free MBUS channel 1
 	When the Link G-meter request is received
-	And the response "OK" should be given
-	Then the gas device "TESTG102400000001" should be linked to device "TEST1024000000001" on MBUS channel 1
+	And the response "OK" is given
+	Then the gas device "TESTG102400000001" is linked to device "TEST1024000000001" on MBUS channel 1
 
 @SLIM-637-overwrite-link
   Scenario: Link G-meter to an E-meter on occupied MBUS channel 1
@@ -29,16 +29,16 @@ Background:
     And a coupled gas device "TESTG102400000001" on MBUS channel 1
     And an uncoupled gas device with DeviceID "TESTG102400000002"
     When the Link G-meter request is received
-    And the response "OK" should be given
-    Then the gas device "TESTG102400000002" should be linked to the device "TEST1024000000001"
-    And the gas device "TESTG102400000001" shouldn't be linked to the device "TEST1024000000001" 
+    And the response "OK" is given
+    Then the gas device "TESTG102400000002" is linked to the device "TEST1024000000001"
+    And the gas device "TESTG102400000001" isn't be linked to the device "TEST1024000000001" 
 
 @SLIM-637-unknown-mbusdevice
   Scenario: Link unknown G-meter to an E-meter
     Given an active device with DeviceID "TEST1024000000001"
 	And an unknown gas device with DeviceID "TESTG10240unknown"
 	When the Link G-meter request is received
-	Then the response 'SmartMeter with id "TESTG10240unknown" could not be found' should be given
+	Then the response contains 'SmartMeter with id "TESTG10240unknown" could not be found'
 
 @SLIM-637-unknown-device
   Scenario: Link G-meter to an unkown E-meter
@@ -54,7 +54,7 @@ Background:
     Given an active device with DeviceID "TEST1024000000001"
 	And an inactive gas device with DeviceID "TESTG102400000001"
 	When the Link G-meter request is received
-	Then the not active response "Device TESTG102400000001 is not active in the platform" should be given
+	Then the response description contains "Device TESTG102400000001 is not active in the platform"
 
 @SLIM-637-couple-with-inactive-gateway-device
   Scenario: Link G-meter to an inactive E-meter

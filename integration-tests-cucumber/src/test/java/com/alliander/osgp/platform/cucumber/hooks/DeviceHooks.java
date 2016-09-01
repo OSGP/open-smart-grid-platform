@@ -29,7 +29,7 @@ public class DeviceHooks {
     @Autowired
     private DeviceRepository deviceRepository;
 
-    public void inactivateDevice(String mbusDeviceId) {
+    public void deactivateDevice(String mbusDeviceId) {
         final Device mbusDevice = this.deviceRepository.findByDeviceIdentification(mbusDeviceId);
         mbusDevice.setActive(false);
         this.deviceRepository.save(mbusDevice);

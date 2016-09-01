@@ -28,7 +28,7 @@ public class Device {
     @Given("^an inactive gas device with DeviceID \"([^\"]*)\"$")
     public void anInActiveGasDeviceWithDeviceID(final String deviceId) throws Throwable {
         this.deviceId.setDeviceIdG(deviceId);
-        this.deviceHooks.inactivateDevice(deviceId);
+        this.deviceHooks.deactivateDevice(deviceId);
     }
 
     @Given("^a device with DeviceID \"([^\"]*)\"$")
@@ -39,7 +39,7 @@ public class Device {
     @Given("^an inactive device with DeviceID \"([^\"]*)\"$")
     public void anInactiveDeviceWithDeviceID(final String deviceId) throws Throwable {
         this.deviceId.setDeviceIdE(deviceId);
-        this.deviceHooks.inactivateDevice(deviceId);
+        this.deviceHooks.deactivateDevice(deviceId);
     }
 
     @Given("^an active device with DeviceID \"([^\"]*)\"$")

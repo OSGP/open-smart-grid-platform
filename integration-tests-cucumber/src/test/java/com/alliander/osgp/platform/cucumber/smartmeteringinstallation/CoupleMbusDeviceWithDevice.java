@@ -115,8 +115,8 @@ public class CoupleMbusDeviceWithDevice extends SmartMetering {
 
     }
 
-    @Then("^the couple mbus device request response should be ok$")
-    public void theCoupleMbusDeviceRequestResponseShouldBeOk() throws Throwable {
+    @Then("^the couple mbus device request response is ok$")
+    public void theCoupleMbusDeviceRequestResponseIsOk() throws Throwable {
         PROPERTIES_MAP.put(CORRELATION_UID_LABEL, this.correlationUid);
 
         this.responseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
@@ -125,14 +125,14 @@ public class CoupleMbusDeviceWithDevice extends SmartMetering {
         Assert.assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT, XPATH_MATCHER_RESULT));
     }
 
-    @And("^the gas device \"([^\"]*)\" should be linked to device \"([^\"]*)\" on MBUS channel (\\d+)$")
-    public void theGasDeviceShouldBeLinkedToDevice(String mbusDeviceId, String deviceId, Short mbusChannel) {
+    @And("^the gas device \"([^\"]*)\" is linked to device \"([^\"]*)\" on MBUS channel (\\d+)$")
+    public void theGasDeviceIsLinkedToDevice(String mbusDeviceId, String deviceId, Short mbusChannel) {
 
         Assert.assertTrue(this.coupleDeviceHooks.areDevicesCoupled(deviceId, mbusDeviceId, mbusChannel));
     }
 
-    @Then("^the response 'SmartMeter with id \"([^\"]*)\" could not be found' should be given$")
-    public void theResponseSmartMeterWithIdCouldNotBeFoundShouldBeGiven(String unknownDeviceName) throws Throwable {
+    @Then("^the response contains 'SmartMeter with id \"([^\"]*)\" could not be found'$")
+    public void theResponseContainsSmartMeterWithIdCouldNotBeFound(String unknownDeviceName) throws Throwable {
 
         PROPERTIES_MAP.put(CORRELATION_UID_LABEL, this.correlationUid);
         this.responseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
@@ -141,8 +141,8 @@ public class CoupleMbusDeviceWithDevice extends SmartMetering {
         Assert.assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT, XPATH_MATCHER_NOT_OK_RESULT));
     }
 
-    @Then("^the not active response \"([^\"]*)\" should be given$")
-    public void theNotActiveResponseShouldBeGiven(String message) throws Throwable {
+    @Then("^the response description contains \"([^\"]*)\"$")
+    public void theNotActiveResponseIsGiven(String message) throws Throwable {
 
         PROPERTIES_MAP.put(CORRELATION_UID_LABEL, this.correlationUid);
         this.responseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
@@ -155,14 +155,14 @@ public class CoupleMbusDeviceWithDevice extends SmartMetering {
         this.coupleDeviceHooks.decoupleDevices(deviceId, mbusDeviceId);
     }
 
-    @Then("^the mbus device \"([^\"]*)\" shouldn't be linked to the device \"([^\"]*)\"$")
-    public void theMbusDeviceShouldNotBeLinkedToTheDevice(String mbusDeviceId, String deviceId) {
+    @Then("^the mbus device \"([^\"]*)\" isn't be linked to the device \"([^\"]*)\"$")
+    public void theMbusDeviceIsNotLinkedToTheDevice(String mbusDeviceId, String deviceId) {
         Assert.assertFalse(this.coupleDeviceHooks.areDevicesCoupled(deviceId, mbusDeviceId));
     }
 
     @When("^device with DeviceID \"([^\"]*)\" is inactive$")
     public void mbusDeviceWithDeviceIDIsInactive(String mbusDeviceId) {
-        this.deviceHooks.inactivateDevice(mbusDeviceId);
+        this.deviceHooks.deactivateDevice(mbusDeviceId);
     }
 
     @And("^a coupled gas device \"([^\"]*)\" on MBUS channel (\\d+)$")
@@ -171,19 +171,19 @@ public class CoupleMbusDeviceWithDevice extends SmartMetering {
         this.coupleDeviceHooks.coupleDevices(this.deviceId.getDeviceIdE(), gasDevice, channel);
     }
 
-    @Then("^the gas device \"([^\"]*)\" should be linked to the device \"([^\"]*)\"$")
-    public void theGasDeviceShouldBeLinkedToTheDevice(String gasDevice, String device) {
+    @Then("^the gas device \"([^\"]*)\" is linked to the device \"([^\"]*)\"$")
+    public void theGasDeviceIsLinkedToTheDevice(String gasDevice, String device) {
         Assert.assertTrue(this.coupleDeviceHooks.areDevicesCoupled(device, gasDevice,
                 this.deviceId.getMbusDeviceChannel()));
     }
 
-    @Then("^the gas device \"([^\"]*)\" shouldn't be linked to the device \"([^\"]*)\"$")
-    public void theGasDeviceShouldnTBeLinkedToTheDevice(String gasDevice, String device) {
+    @Then("^the gas device \"([^\"]*)\" isn't be linked to the device \"([^\"]*)\"$")
+    public void theGasDeviceIsNotLinkedToTheDevice(String gasDevice, String device) {
         Assert.assertFalse(this.coupleDeviceHooks.areDevicesCoupled(device, gasDevice));
     }
 
-    @Then("^the response \"([^\"]*)\" should be given$")
-    public void theResponseShouldBeGiven(String status) throws Throwable {
+    @Then("^the response \"([^\"]*)\" is given$")
+    public void theResponseIsGiven(String status) throws Throwable {
 
         PROPERTIES_MAP.put(CORRELATION_UID_LABEL, this.correlationUid);
         this.responseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
