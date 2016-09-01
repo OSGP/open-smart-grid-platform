@@ -8,5 +8,6 @@
 package org.osgp.adapter.protocol.jasper.sessionproviders;
 
 public enum SessionProviderEnum {
-    KPN;
+    KPN,
+    SIMULATOR;
 }
