@@ -38,25 +38,24 @@ Background:
     Given a device with DeviceID "TEST1024000000001"
 	And an unknown gas device with DeviceID "TESTG10240unknown"
 	When the Link G-meter request is received
-	Then the response "Device TESTG10240unknown is not present in the platform" should be given
+	Then the response 'SmartMeter with id "TESTG10240unknown" could not be found' should be given
 
 @SLIM-637-unknown-device
   Scenario: Link G-meter to an unkown E-meter
-    Given an unkown device with DeviceID "TEST1024000000099" 
+    Given an unknown device with DeviceID "TEST102400unknown" 
     And a gas device with DeviceID "TESTG102400000001"
-	When the Link G-meter request is received
-	Then the response "Device TEST1024000000099 is not present in the platform" should be given
+	When the Link G-meter request on an unknown "TEST102400unknown" device is received
 
 @SLIM-637-couple-inactive-mbus-device
   Scenario: Link inactive G-meter to an E-meter
     Given a device with DeviceID "TEST1024000000001"
 	And an inactive gas device with DeviceID "TESTG102400000001"
 	When the Link G-meter request is received
-	Then the response "Device TESTG102400000001 is not active in the platform" should be given
+	Then the not active response "Device TESTG102400000001 is not active in the platform" should be given
 
 @SLIM-637-couple-with-inactive-gateway-device
   Scenario: Link G-meter to an inactive E-meter
     Given an inactive device with DeviceID "TEST1024000000001" 
 	And a gas device with DeviceID "TESTG102400000001"
-	When the Link G-meter request on an inactive device is received
-	Then the response "Device TEST1024000000001 not active in the platform" should be given
+	When the Link G-meter request on inactive device "TEST1024000000001" is received
+

@@ -9,8 +9,6 @@
  */
 package com.alliander.osgp.platform.cucumber;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,8 +34,7 @@ public abstract class SmartMetering extends SoapTestCase {
         final Pattern correlationUidPattern = Pattern.compile(this.organisationId.getOrganisationId()
                 + XPATH_MATCHER_CORRELATIONUID);
         final Matcher correlationUidMatcher = correlationUidPattern.matcher(this.response);
-        if (testStepStatus == TestStepStatus.OK) {
-            assertTrue(correlationUidMatcher.find());
+        if ((testStepStatus == TestStepStatus.OK) && correlationUidMatcher.find()) {
             this.correlationUid = correlationUidMatcher.group();
         }
     }

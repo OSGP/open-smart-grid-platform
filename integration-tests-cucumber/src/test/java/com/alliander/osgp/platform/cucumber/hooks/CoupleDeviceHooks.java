@@ -80,18 +80,6 @@ public class CoupleDeviceHooks {
         this.smartMeterRepository.save(mbusSmartMeter);
     }
 
-    public void inactivateDevice(String mbusDeviceId) {
-        final Device mbusDevice = this.deviceRepository.findByDeviceIdentification(mbusDeviceId);
-        mbusDevice.setActivated(false);
-        this.deviceRepository.save(mbusDevice);
-    }
-
-    public void activateDevice(String mbusDeviceId) {
-        final Device mbusDevice = this.deviceRepository.findByDeviceIdentification(mbusDeviceId);
-        mbusDevice.setActivated(true);
-        this.deviceRepository.save(mbusDevice);
-    }
-
     public void clearChannelForSmartMeterDevice(String deviceIdG) {
         final SmartMeter mbusDevice = this.smartMeterRepository.findByDeviceIdentification(deviceIdG);
         mbusDevice.setChannel(null);
