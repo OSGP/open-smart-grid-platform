@@ -1,10 +1,10 @@
-Feature: 
+Feature: SmartMetering Management
   As a grid operator
   I want to be able to perform SmartMeteringManagement operations on a device
     
 Background:
     Given a device with DeviceID "E9998000014123414" 
-    And an organisation with OrganisationID "Infostroom"
+    And an organisation with OrganisationID "Test Organisation"
     
 @SLIM-150
   Scenario: find event information from a meter

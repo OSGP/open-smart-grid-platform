@@ -1,11 +1,11 @@
-Feature: 
+Feature: SmartMetering Monitoring
   As a grid operator
   I want to be able to perform SmartMeteringMonitoring operations on a device
     
 Background:
     Given a device with DeviceID "E9998000014123414" 
     Given a gas device with DeviceID "G00XX561204926013"
-    And an organisation with OrganisationID "Infostroom"
+    And an organisation with OrganisationID "Test Organisation"
   
 @SLIM-392
   Scenario: Get the actual meter reads from a device

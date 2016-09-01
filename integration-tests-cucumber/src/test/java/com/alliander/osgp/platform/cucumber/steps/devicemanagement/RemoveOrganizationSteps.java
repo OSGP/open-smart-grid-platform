@@ -1,0 +1,64 @@
+/**
+ * Copyright 2016 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
+package com.alliander.osgp.platform.cucumber.steps.devicemanagement;
+
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.junit.Assert;
+
+import com.alliander.osgp.platform.cucumber.SoapUiRunner;
+import com.alliander.osgp.platform.cucumber.steps.common.ResponseSteps;
+
+/**
+ * Class with all the remove organization requests steps
+ */
+public class RemoveOrganizationSteps extends SoapUiRunner {
+    
+    private static final String TEST_SUITE_XML = "DeviceManagement";
+    private static final String TEST_CASE_XML = "Remove an organization";
+    private static final String TEST_CASE_NAME_REQUEST = "RemoveOrganization";
+
+    private static final Map<String, String> PROPERTIES_MAP = new HashMap<>();
+    
+    /**
+     * Send a remove organization request to the Platform.
+     * @param requestParameter An list with request parameters for the request.
+     * @throws Throwable
+     */
+	@When("^receiving a remove organization request$")
+	public void receiving_a_remove_organization_request(Map<String, String> requestParameters) throws Throwable {
+
+		// Required parameters
+		PROPERTIES_MAP.put("__ORGANIZATION_IDENTIFICATION__", requestParameters.get("OrganizationIdentification"));
+	
+		this.requestRunner(PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
+	}
+	
+	/**
+	 * Verify that the create organization response is successfull.
+	 * @throws Throwable
+	 */
+	@Then("^the remove organization response is successfull$")
+	public void the_remove_organization_response_is_successfull() throws Throwable {
+		Assert.assertTrue(this.runXpathResult.assertXpath(this.response, "/Envelope/Body/RemoveOrganisationResponse", ""));
+	}
+
+	/**
+	 * Verify the remove organization response 
+	 * @param arg1
+	 * @throws Throwable
+	 */
+	@Then("^the remove organization response contains$")
+	public void the_remove_organization_response_contains(Map<String, String> expectedResult) throws Throwable {
+		ResponseSteps.VerifyFaultResponse(this.runXpathResult, this.response, expectedResult);
+	}
+}
