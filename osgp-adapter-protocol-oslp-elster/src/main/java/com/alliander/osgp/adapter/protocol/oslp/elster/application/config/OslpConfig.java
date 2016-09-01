@@ -227,19 +227,7 @@ public class OslpConfig {
 
     @Bean
     public boolean executeResumeScheduleAfterSetLight() {
-        final String property = this.environment
-                .getProperty(PROPERTY_NAME_OSLP_EXECUTE_RESUME_SCHEDULE_AFTER_SET_LIGHT);
-        if (property == null) {
-            return false;
-        }
-        try {
-            return Boolean.parseBoolean(property);
-        } catch (final Exception e) {
-            LOGGER.error(
-                    "Bean executeResumeScheduleAfterSetLight could not parse the property: {} with value: {}. valid values are 'true' and 'false'",
-                    PROPERTY_NAME_OSLP_EXECUTE_RESUME_SCHEDULE_AFTER_SET_LIGHT, property);
-            return false;
-        }
+        return Boolean.parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_OSLP_EXECUTE_RESUME_SCHEDULE_AFTER_SET_LIGHT));
     }
 
     @Bean
