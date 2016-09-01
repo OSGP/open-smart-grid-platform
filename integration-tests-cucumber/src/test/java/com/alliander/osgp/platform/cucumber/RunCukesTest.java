@@ -16,8 +16,9 @@ import cucumber.api.SnippetType;
 import cucumber.api.junit.Cucumber;
 
 @RunWith(Cucumber.class)
-@CucumberOptions(features = "src/test/resources/", tags = { "@SLIM-637-nominal-link,@SLIM-637-overwrite-link, @SLIM-637-unknown-mbusdevice,@SLIM-637-unknown-device, @SLIM-637-couple-inactive-mbus-device,  @SLIM-637-couple-with-inactive-gateway-device" }, plugin = {
-        "pretty", "html:target/output/Cucumber-report", "html:target/output/Cucumber-html-report.html" }, snippets = SnippetType.CAMELCASE)
+@CucumberOptions(features = "src/test/resources/", tags = { "~@SLIM-216", "~@SLIM-256", "~@SLIM-261", "~@SLIM-228",
+        "~@SLIM-484", "~@SLIM-501", "~@SLIM-150", "~@SLIM-441" }, plugin = { "pretty",
+        "html:target/output/Cucumber-report", "html:target/output/Cucumber-html-report.html" }, snippets = SnippetType.CAMELCASE)
 public class RunCukesTest {
 
 }
