@@ -26,7 +26,7 @@ Background:
 @SLIM-637-overwrite-link
   Scenario: Link G-meter to an E-meter on occupied MBUS channel 1
     Given an active device with DeviceID "TEST1024000000001"
-    And a coupled gas device "TESTG102400000001" on MBUS channel 1
+    And an active coupled gas device "TESTG102400000001" on MBUS channel 1
     And an active uncoupled gas device with DeviceID "TESTG102400000002"
     When the Link G-meter request is received
     And the response "OK" is given
