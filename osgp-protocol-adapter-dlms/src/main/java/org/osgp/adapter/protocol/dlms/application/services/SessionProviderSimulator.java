@@ -28,6 +28,20 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
+/**
+ *
+ * This class fakes being a SessionProvider. Instead, it sends a webrequest to
+ * start an instance of a device simulator on-demand, returning the ip-address
+ * of the location where this device simulator is started.
+ *
+ * To work properly, an implementation of a device simulator needs to be
+ * present, and deployed. This device simulator is not included in the source
+ * code of Protocol-Adapter-DLMS.
+ *
+ * Besides the implementation of a device simulator, the url and ip-address of
+ * the location of the web service should be provided in the config file.
+ *
+ */
 @Component
 @PropertySource("file:${osp/osgpAdapterProtocolDlms/config}")
 public class SessionProviderSimulator extends SessionProvider {
@@ -40,10 +54,6 @@ public class SessionProviderSimulator extends SessionProvider {
     @Autowired
     private DomainHelperService domainHelperService;
 
-    private HttpClient httpClient;
-    private HttpGet trigger;
-    private HttpResponse response;
-
     /**
      * Initialization function executed after dependency injection has finished.
      * The SessionProvider Singleton is added to the HashMap of
@@ -54,35 +64,39 @@ public class SessionProviderSimulator extends SessionProvider {
         this.sessionProviderMap.addProvider(SessionProviderEnum.SIMULATOR, this);
     }
 
+    /**
+     * This implementation depends on the iccId having the same value as the
+     * device identification (in order to be able to look up some data with the
+     * device for calling the simulator starting web service, like the port
+     * number and logicalId of a simulated device).
+     */
     @Override
     public String getIpAddress(final String iccId) throws SessionProviderException {
 
         final DlmsDevice dlmsDevice;
+        final HttpClient httpClient;
+        final HttpGet trigger;
 
         try {
             dlmsDevice = this.domainHelperService.findDlmsDevice(iccId);
-            // create HTTP Client
-            this.httpClient = HttpClientBuilder.create().build();
-            // create new getRequest
+            httpClient = HttpClientBuilder.create().build();
             final String url = this.configureUrl(dlmsDevice);
-            this.trigger = new HttpGet(url);
-            // Add additional header to getRequest which accepts application/xml
-            // data
-            this.trigger.addHeader("accept", "application/json");
+            trigger = new HttpGet(url);
+            trigger.addHeader("accept", "application/json");
         } catch (final FunctionalException e) {
             throw new SessionProviderException("No device known with deviceId: " + iccId, e);
         }
 
-        this.processResponse();
+        this.processResponse(httpClient, trigger);
 
         return this.ipAddress;
     }
 
-    private void processResponse() throws SessionProviderException {
+    private void processResponse(final HttpClient httpClient, final HttpGet trigger) throws SessionProviderException {
 
-        // Execute request and catch response
+        final HttpResponse response;
         try {
-            this.response = this.httpClient.execute(this.trigger);
+            response = httpClient.execute(trigger);
         } catch (final ClientProtocolException e) {
             throw new SessionProviderException("Error processing response from the simulator", e);
         } catch (final IOException e) {
@@ -90,7 +104,7 @@ public class SessionProviderSimulator extends SessionProvider {
         }
 
         // Check for HTTP response code: 200 = success
-        if (this.response.getStatusLine().getStatusCode() != 200) {
+        if (response.getStatusLine().getStatusCode() != 200) {
             throw new SessionProviderException("Failed: Unable to successfully start a simulator. ");
         }
 
@@ -98,7 +112,7 @@ public class SessionProviderSimulator extends SessionProvider {
 
     private String configureUrl(final DlmsDevice dlmsDevice) {
 
-        final int port = dlmsDevice.getPort().intValue();
+        final Long port = dlmsDevice.getPort();
         final Long logicalId = dlmsDevice.getLogicalId();
 
         return this.baseUrl + "?port=" + port + "&logicalId=" + logicalId;
