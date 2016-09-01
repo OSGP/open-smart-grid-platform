@@ -84,11 +84,6 @@ public class CoupleMbusDeviceWithDevice extends SmartMetering {
         PROPERTIES_MAP.put(ENDPOINT_LABEL, this.serviceEndpoint.getServiceEndpoint());
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
-
-        final Pattern messagePattern = Pattern.compile("Device with id \"" + unknownDevice + "\" could not be found");
-        final Matcher messageMatcher = messagePattern.matcher(this.response);
-        Assert.assertTrue(messageMatcher.find());
-
     }
 
     @When("^the Link G-meter request on inactive device \"([^\"]*)\" is received$")
@@ -100,11 +95,13 @@ public class CoupleMbusDeviceWithDevice extends SmartMetering {
         PROPERTIES_MAP.put(ENDPOINT_LABEL, this.serviceEndpoint.getServiceEndpoint());
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
+    }
 
-        final Pattern messagePattern = Pattern.compile("Device " + inactiveDevice + " is not active in the platform");
+    @Then("^the response contains \"([^\"]*)\"$")
+    public void theResponseContains(String message) throws Throwable {
+        final Pattern messagePattern = Pattern.compile(message);
         final Matcher messageMatcher = messagePattern.matcher(this.response);
         Assert.assertTrue(messageMatcher.find());
-
     }
 
     @When("^the Link G-meter request is received$")

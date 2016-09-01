@@ -30,12 +30,12 @@ public class Device {
     @Given("^an inactive device with DeviceID \"([^\"]*)\"$")
     public void anInactiveDeviceWithDeviceID(final String deviceId) throws Throwable {
         this.deviceId.setDeviceIdE(deviceId);
-        this.deviceHooks.inactivateDevice(this.deviceId.getDeviceIdE());
+        this.deviceHooks.inactivateDevice(deviceId);
     }
 
     @Given("^an active device with DeviceID \"([^\"]*)\"$")
     public void anActiveDeviceWithDeviceID(final String deviceId) throws Throwable {
         this.deviceId.setDeviceIdE(deviceId);
-        this.deviceHooks.activateDevice(this.deviceId.getDeviceIdE());
+        this.deviceHooks.activateDevice(deviceId);
     }
 }

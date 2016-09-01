@@ -45,6 +45,9 @@ Background:
     Given an unknown device with DeviceID "TEST102400unknown" 
     And a gas device with DeviceID "TESTG102400000001"
 	When the Link G-meter request on an unknown "TEST102400unknown" device is received
+	Then the response contains "Device with id"
+	Then the response contains "TEST102400unknown"
+	Then the response contains "could not be found"
 
 @SLIM-637-couple-inactive-mbus-device
   Scenario: Link inactive G-meter to an E-meter
@@ -58,4 +61,5 @@ Background:
     Given an inactive device with DeviceID "TEST1024000000001" 
 	And a gas device with DeviceID "TESTG102400000001"
 	When the Link G-meter request on inactive device "TEST1024000000001" is received
+	Then the response contains "Device TEST1024000000001 is not active in the platform"
 
