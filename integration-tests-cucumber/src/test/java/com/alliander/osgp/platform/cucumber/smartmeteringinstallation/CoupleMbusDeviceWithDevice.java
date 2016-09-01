@@ -184,22 +184,6 @@ public class CoupleMbusDeviceWithDevice extends SmartMetering {
         Assert.assertFalse(this.coupleDeviceHooks.areDevicesCoupled(device, gasDevice));
     }
 
-    @Given("^an unknown gas device with DeviceID \"([^\"]*)\"$")
-    public void anUnknownGasDeviceWithDeviceID(String gasDevice) throws Throwable {
-        this.deviceId.setDeviceIdG(gasDevice);
-    }
-
-    @Given("^an unknown device with DeviceID \"([^\"]*)\"$")
-    public void anUnkownDeviceWithDeviceID(String deviceIdE) throws Throwable {
-        this.deviceId.setDeviceIdE(deviceIdE);
-    }
-
-    @Given("^an inactive gas device with DeviceID \"([^\"]*)\"$")
-    public void anInactiveGasDeviceWithDeviceID(String deviceIdG) throws Throwable {
-        this.deviceHooks.inactivateDevice(deviceIdG);
-        this.deviceId.setDeviceIdG(deviceIdG);
-    }
-
     @Then("^the response \"([^\"]*)\" should be given$")
     public void theResponseShouldBeGiven(String status) throws Throwable {
 

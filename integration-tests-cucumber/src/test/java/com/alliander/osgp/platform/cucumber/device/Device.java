@@ -14,17 +14,26 @@ public class Device {
     @Autowired
     private DeviceHooks deviceHooks;
 
-    @Given("^a device with DeviceID \"([^\"]*)\"$")
-    public void aDeviceWithDeviceID(final String deviceId) throws Throwable {
-        this.deviceId.setDeviceIdE(deviceId);
-        this.deviceHooks.activateDevice(deviceId);
-    }
-
     @Given("^a gas device with DeviceID \"([^\"]*)\"$")
     public void aGasDeviceWithDeviceID(final String deviceId) throws Throwable {
         this.deviceId.setDeviceIdG(deviceId);
-        this.deviceHooks.activateDevice(deviceId);
+    }
 
+    @Given("^an active gas device with DeviceID \"([^\"]*)\"$")
+    public void anActiveGasDeviceWithDeviceID(final String deviceId) throws Throwable {
+        this.deviceId.setDeviceIdG(deviceId);
+        this.deviceHooks.activateDevice(deviceId);
+    }
+
+    @Given("^an inactive gas device with DeviceID \"([^\"]*)\"$")
+    public void anInActiveGasDeviceWithDeviceID(final String deviceId) throws Throwable {
+        this.deviceId.setDeviceIdG(deviceId);
+        this.deviceHooks.inactivateDevice(deviceId);
+    }
+
+    @Given("^a device with DeviceID \"([^\"]*)\"$")
+    public void aDeviceWithDeviceID(final String deviceId) throws Throwable {
+        this.deviceId.setDeviceIdE(deviceId);
     }
 
     @Given("^an inactive device with DeviceID \"([^\"]*)\"$")
@@ -38,4 +47,15 @@ public class Device {
         this.deviceId.setDeviceIdE(deviceId);
         this.deviceHooks.activateDevice(deviceId);
     }
+
+    @Given("^an unknown gas device with DeviceID \"([^\"]*)\"$")
+    public void anUnknownGasDeviceWithDeviceID(String gasDevice) throws Throwable {
+        this.deviceId.setDeviceIdG(gasDevice);
+    }
+
+    @Given("^an unknown device with DeviceID \"([^\"]*)\"$")
+    public void anUnkownDeviceWithDeviceID(String deviceIdE) throws Throwable {
+        this.deviceId.setDeviceIdE(deviceIdE);
+    }
+
 }
