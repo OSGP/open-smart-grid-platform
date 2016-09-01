@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2014-2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -179,8 +179,8 @@ public class MessagingConfig {
     public ActiveMQConnectionFactory connectionFactory() {
         final ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory();
         activeMQConnectionFactory.setRedeliveryPolicyMap(this.redeliveryPolicyMap());
-        activeMQConnectionFactory
-                .setBrokerURL(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_ACTIVEMQ_BROKER_URL));
+        activeMQConnectionFactory.setBrokerURL(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_ACTIVEMQ_BROKER_URL));
 
         activeMQConnectionFactory.setNonBlockingRedelivery(true);
 
@@ -204,18 +204,18 @@ public class MessagingConfig {
     @Bean
     public RedeliveryPolicy defaultRedeliveryPolicy() {
         final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
-        redeliveryPolicy.setInitialRedeliveryDelay(Long
-                .parseLong(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY)));
-        redeliveryPolicy.setMaximumRedeliveries(
-                Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES)));
-        redeliveryPolicy.setMaximumRedeliveryDelay(Long
-                .parseLong(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERY_DELAY)));
-        redeliveryPolicy.setRedeliveryDelay(
-                Long.parseLong(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_REDELIVERY_DELAY)));
-        redeliveryPolicy.setBackOffMultiplier(Double
-                .parseDouble(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_BACK_OFF_MULTIPLIER)));
-        redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_USE_EXPONENTIAL_BACK_OFF)));
+        redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY)));
+        redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES)));
+        redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERY_DELAY)));
+        redeliveryPolicy.setRedeliveryDelay(Long.parseLong(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_REDELIVERY_DELAY)));
+        redeliveryPolicy.setBackOffMultiplier(Double.parseDouble(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_BACK_OFF_MULTIPLIER)));
+        redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_USE_EXPONENTIAL_BACK_OFF)));
 
         return redeliveryPolicy;
     }
@@ -230,19 +230,19 @@ public class MessagingConfig {
     @Bean
     public RedeliveryPolicy oslpRequestsRedeliveryPolicy() {
         final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
-        redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSLP_REQUESTS_INITIAL_REDELIVERY_DELAY)));
-        redeliveryPolicy.setMaximumRedeliveries(Integer
-                .parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSLP_REQUESTS_MAXIMUM_REDELIVERIES)));
-        redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSLP_REQUESTS_MAXIMUM_REDELIVERY_DELAY)));
-        redeliveryPolicy.setRedeliveryDelay(
-                Long.parseLong(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSLP_REQUESTS_REDELIVERY_DELAY)));
+        redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_REQUESTS_INITIAL_REDELIVERY_DELAY)));
+        redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_REQUESTS_MAXIMUM_REDELIVERIES)));
+        redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_REQUESTS_MAXIMUM_REDELIVERY_DELAY)));
+        redeliveryPolicy.setRedeliveryDelay(Long.parseLong(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_REQUESTS_REDELIVERY_DELAY)));
         redeliveryPolicy.setDestination(this.oslpRequestsQueue());
-        redeliveryPolicy.setBackOffMultiplier(Double.parseDouble(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSLP_REQUESTS_BACK_OFF_MULTIPLIER)));
-        redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSLP_REQUESTS_USE_EXPONENTIAL_BACK_OFF)));
+        redeliveryPolicy.setBackOffMultiplier(Double.parseDouble(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_REQUESTS_BACK_OFF_MULTIPLIER)));
+        redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_REQUESTS_USE_EXPONENTIAL_BACK_OFF)));
         return redeliveryPolicy;
     }
 
@@ -251,10 +251,10 @@ public class MessagingConfig {
         final DefaultMessageListenerContainer messageListenerContainer = new DefaultMessageListenerContainer();
         messageListenerContainer.setConnectionFactory(this.pooledConnectionFactory());
         messageListenerContainer.setDestination(this.oslpRequestsQueue());
-        messageListenerContainer.setConcurrentConsumers(Integer
-                .parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSLP_REQUESTS_CONCURRENT_CONSUMERS)));
-        messageListenerContainer.setMaxConcurrentConsumers(Integer.parseInt(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSLP_REQUESTS_MAX_CONCURRENT_CONSUMERS)));
+        messageListenerContainer.setConcurrentConsumers(Integer.parseInt(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_REQUESTS_CONCURRENT_CONSUMERS)));
+        messageListenerContainer.setMaxConcurrentConsumers(Integer.parseInt(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_REQUESTS_MAX_CONCURRENT_CONSUMERS)));
         messageListenerContainer.setMessageListener(this.oslpRequestsMessageListener);
         messageListenerContainer.setSessionTransacted(true);
         return messageListenerContainer;
@@ -267,15 +267,15 @@ public class MessagingConfig {
         final JmsTemplate jmsTemplate = new JmsTemplate();
         jmsTemplate.setDefaultDestination(this.oslpResponsesQueue());
         // Enable the use of deliveryMode, priority, and timeToLive
-        jmsTemplate.setExplicitQosEnabled(Boolean.parseBoolean(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSLP_RESPONSES_EXPLICIT_QOS_ENABLED)));
-        jmsTemplate.setTimeToLive(
-                Long.parseLong(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSLP_RESPONSES_TIME_TO_LIVE)));
-        jmsTemplate.setDeliveryPersistent(Boolean.parseBoolean(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSLP_RESPONSES_DELIVERY_PERSISTENT)));
+        jmsTemplate.setExplicitQosEnabled(Boolean.parseBoolean(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_RESPONSES_EXPLICIT_QOS_ENABLED)));
+        jmsTemplate.setTimeToLive(Long.parseLong(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_RESPONSES_TIME_TO_LIVE)));
+        jmsTemplate.setDeliveryPersistent(Boolean.parseBoolean(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_RESPONSES_DELIVERY_PERSISTENT)));
         jmsTemplate.setConnectionFactory(this.pooledConnectionFactory());
-        jmsTemplate.setReceiveTimeout(
-                Long.parseLong(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSLP_RESPONSES_RECEIVE_TIMEOUT)));
+        jmsTemplate.setReceiveTimeout(Long.parseLong(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_RESPONSES_RECEIVE_TIMEOUT)));
         return jmsTemplate;
     }
 
@@ -287,19 +287,19 @@ public class MessagingConfig {
     @Bean
     public RedeliveryPolicy oslpResponsesRedeliveryPolicy() {
         final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
-        redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSLP_RESPONSES_INITIAL_REDELIVERY_DELAY)));
-        redeliveryPolicy.setMaximumRedeliveries(Integer
-                .parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSLP_RESPONSES_MAXIMUM_REDELIVERIES)));
-        redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSLP_RESPONSES_MAXIMUM_REDELIVERY_DELAY)));
-        redeliveryPolicy.setRedeliveryDelay(Long
-                .parseLong(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSLP_RESPONSES_REDELIVERY_DELAY)));
+        redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_RESPONSES_INITIAL_REDELIVERY_DELAY)));
+        redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_RESPONSES_MAXIMUM_REDELIVERIES)));
+        redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_RESPONSES_MAXIMUM_REDELIVERY_DELAY)));
+        redeliveryPolicy.setRedeliveryDelay(Long.parseLong(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_RESPONSES_REDELIVERY_DELAY)));
         redeliveryPolicy.setDestination(this.oslpResponsesQueue());
-        redeliveryPolicy.setBackOffMultiplier(Double.parseDouble(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSLP_RESPONSES_BACK_OFF_MULTIPLIER)));
-        redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSLP_RESPONSES_USE_EXPONENTIAL_BACK_OFF)));
+        redeliveryPolicy.setBackOffMultiplier(Double.parseDouble(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_RESPONSES_BACK_OFF_MULTIPLIER)));
+        redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_RESPONSES_USE_EXPONENTIAL_BACK_OFF)));
         return redeliveryPolicy;
     }
 
@@ -316,15 +316,15 @@ public class MessagingConfig {
         final JmsTemplate jmsTemplate = new JmsTemplate();
         jmsTemplate.setDefaultDestination(this.oslpLogItemRequestsQueue());
         // Enable the use of deliveryMode, priority, and timeToLive
-        jmsTemplate.setExplicitQosEnabled(Boolean.parseBoolean(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_EXPLICIT_QOS_ENABLED)));
-        jmsTemplate.setTimeToLive(Long.parseLong(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_TIME_TO_LIVE)));
-        jmsTemplate.setDeliveryPersistent(Boolean.parseBoolean(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_DELIVERY_PERSISTENT)));
+        jmsTemplate.setExplicitQosEnabled(Boolean.parseBoolean(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_EXPLICIT_QOS_ENABLED)));
+        jmsTemplate.setTimeToLive(Long.parseLong(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_TIME_TO_LIVE)));
+        jmsTemplate.setDeliveryPersistent(Boolean.parseBoolean(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_DELIVERY_PERSISTENT)));
         jmsTemplate.setConnectionFactory(this.pooledConnectionFactory());
-        jmsTemplate.setReceiveTimeout(Long.parseLong(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_RECEIVE_TIMEOUT)));
+        jmsTemplate.setReceiveTimeout(Long.parseLong(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_RECEIVE_TIMEOUT)));
         return jmsTemplate;
     }
 
@@ -338,15 +338,15 @@ public class MessagingConfig {
         final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
         redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(this.environment
                 .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_INITIAL_REDELIVERY_DELAY)));
-        redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_MAXIMUM_REDELIVERIES)));
+        redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_MAXIMUM_REDELIVERIES)));
         redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(this.environment
                 .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_MAXIMUM_REDELIVERY_DELAY)));
-        redeliveryPolicy.setRedeliveryDelay(Long.parseLong(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_REDELIVERY_DELAY)));
+        redeliveryPolicy.setRedeliveryDelay(Long.parseLong(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_REDELIVERY_DELAY)));
         redeliveryPolicy.setDestination(this.oslpLogItemRequestsQueue());
-        redeliveryPolicy.setBackOffMultiplier(Double.parseDouble(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_BACK_OFF_MULTIPLIER)));
+        redeliveryPolicy.setBackOffMultiplier(Double.parseDouble(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_BACK_OFF_MULTIPLIER)));
         redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(this.environment
                 .getRequiredProperty(PROPERTY_NAME_JMS_OSLP_LOG_ITEM_REQUESTS_USE_EXPONENTIAL_BACK_OFF)));
         return redeliveryPolicy;
@@ -364,15 +364,15 @@ public class MessagingConfig {
         final JmsTemplate jmsTemplate = new JmsTemplate();
         jmsTemplate.setDefaultDestination(this.osgpRequestsQueue());
         // Enable the use of deliveryMode, priority, and timeToLive
-        jmsTemplate.setExplicitQosEnabled(Boolean.parseBoolean(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSGP_REQUESTS_EXPLICIT_QOS_ENABLED)));
-        jmsTemplate.setTimeToLive(
-                Long.parseLong(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSGP_REQUESTS_TIME_TO_LIVE)));
-        jmsTemplate.setDeliveryPersistent(Boolean.parseBoolean(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSGP_REQUESTS_DELIVERY_PERSISTENT)));
+        jmsTemplate.setExplicitQosEnabled(Boolean.parseBoolean(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_REQUESTS_EXPLICIT_QOS_ENABLED)));
+        jmsTemplate.setTimeToLive(Long.parseLong(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_REQUESTS_TIME_TO_LIVE)));
+        jmsTemplate.setDeliveryPersistent(Boolean.parseBoolean(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_REQUESTS_DELIVERY_PERSISTENT)));
         jmsTemplate.setConnectionFactory(this.pooledConnectionFactory());
-        jmsTemplate.setReceiveTimeout(
-                Long.parseLong(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSGP_REQUESTS_RECEIVE_TIMEOUT)));
+        jmsTemplate.setReceiveTimeout(Long.parseLong(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_REQUESTS_RECEIVE_TIMEOUT)));
         return jmsTemplate;
     }
 
@@ -384,19 +384,19 @@ public class MessagingConfig {
     @Bean
     public RedeliveryPolicy osgpRequestsRedeliveryPolicy() {
         final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
-        redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSGP_REQUESTS_INITIAL_REDELIVERY_DELAY)));
-        redeliveryPolicy.setMaximumRedeliveries(Integer
-                .parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSGP_REQUESTS_MAXIMUM_REDELIVERIES)));
-        redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSGP_REQUESTS_MAXIMUM_REDELIVERY_DELAY)));
-        redeliveryPolicy.setRedeliveryDelay(
-                Long.parseLong(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSGP_REQUESTS_REDELIVERY_DELAY)));
+        redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_REQUESTS_INITIAL_REDELIVERY_DELAY)));
+        redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_REQUESTS_MAXIMUM_REDELIVERIES)));
+        redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_REQUESTS_MAXIMUM_REDELIVERY_DELAY)));
+        redeliveryPolicy.setRedeliveryDelay(Long.parseLong(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_REQUESTS_REDELIVERY_DELAY)));
         redeliveryPolicy.setDestination(this.osgpRequestsQueue());
-        redeliveryPolicy.setBackOffMultiplier(Double.parseDouble(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSGP_REQUESTS_BACK_OFF_MULTIPLIER)));
-        redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSGP_REQUESTS_USE_EXPONENTIAL_BACK_OFF)));
+        redeliveryPolicy.setBackOffMultiplier(Double.parseDouble(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_REQUESTS_BACK_OFF_MULTIPLIER)));
+        redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_REQUESTS_USE_EXPONENTIAL_BACK_OFF)));
         return redeliveryPolicy;
     }
 
@@ -415,19 +415,19 @@ public class MessagingConfig {
     @Bean
     public RedeliveryPolicy osgpResponsesRedeliveryPolicy() {
         final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
-        redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSGP_RESPONSES_INITIAL_REDELIVERY_DELAY)));
-        redeliveryPolicy.setMaximumRedeliveries(Integer
-                .parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSGP_RESPONSES_MAXIMUM_REDELIVERIES)));
-        redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSGP_RESPONSES_MAXIMUM_REDELIVERY_DELAY)));
-        redeliveryPolicy.setRedeliveryDelay(Long
-                .parseLong(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSGP_RESPONSES_REDELIVERY_DELAY)));
+        redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_RESPONSES_INITIAL_REDELIVERY_DELAY)));
+        redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_RESPONSES_MAXIMUM_REDELIVERIES)));
+        redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_RESPONSES_MAXIMUM_REDELIVERY_DELAY)));
+        redeliveryPolicy.setRedeliveryDelay(Long.parseLong(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_RESPONSES_REDELIVERY_DELAY)));
         redeliveryPolicy.setDestination(this.oslpRequestsQueue());
-        redeliveryPolicy.setBackOffMultiplier(Double.parseDouble(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSGP_RESPONSES_BACK_OFF_MULTIPLIER)));
-        redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSGP_RESPONSES_USE_EXPONENTIAL_BACK_OFF)));
+        redeliveryPolicy.setBackOffMultiplier(Double.parseDouble(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_RESPONSES_BACK_OFF_MULTIPLIER)));
+        redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_RESPONSES_USE_EXPONENTIAL_BACK_OFF)));
         return redeliveryPolicy;
     }
 
@@ -436,10 +436,10 @@ public class MessagingConfig {
         final DefaultMessageListenerContainer messageListenerContainer = new DefaultMessageListenerContainer();
         messageListenerContainer.setConnectionFactory(this.pooledConnectionFactory());
         messageListenerContainer.setDestination(this.osgpResponsesQueue());
-        messageListenerContainer.setConcurrentConsumers(Integer
-                .parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSGP_RESPONSES_CONCURRENT_CONSUMERS)));
-        messageListenerContainer.setMaxConcurrentConsumers(Integer.parseInt(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_OSGP_RESPONSES_MAX_CONCURRENT_CONSUMERS)));
+        messageListenerContainer.setConcurrentConsumers(Integer.parseInt(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_RESPONSES_CONCURRENT_CONSUMERS)));
+        messageListenerContainer.setMaxConcurrentConsumers(Integer.parseInt(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_RESPONSES_MAX_CONCURRENT_CONSUMERS)));
         messageListenerContainer.setMessageListener(this.osgpResponseMessageListener());
         messageListenerContainer.setSessionTransacted(true);
         return messageListenerContainer;
@@ -457,15 +457,15 @@ public class MessagingConfig {
         final JmsTemplate jmsTemplate = new JmsTemplate();
         jmsTemplate.setDefaultDestination(this.signingServerRequestsQueue());
         // Enable the use of deliveryMode, priority, and timeToLive
-        jmsTemplate.setExplicitQosEnabled(Boolean.parseBoolean(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_EXPLICIT_QOS_ENABLED)));
-        jmsTemplate.setTimeToLive(Long.parseLong(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_TIME_TO_LIVE)));
-        jmsTemplate.setDeliveryPersistent(Boolean.parseBoolean(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_DELIVERY_PERSISTENT)));
+        jmsTemplate.setExplicitQosEnabled(Boolean.parseBoolean(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_EXPLICIT_QOS_ENABLED)));
+        jmsTemplate.setTimeToLive(Long.parseLong(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_TIME_TO_LIVE)));
+        jmsTemplate.setDeliveryPersistent(Boolean.parseBoolean(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_DELIVERY_PERSISTENT)));
         jmsTemplate.setConnectionFactory(this.pooledConnectionFactory());
-        jmsTemplate.setReceiveTimeout(Long.parseLong(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_RECEIVE_TIMEOUT)));
+        jmsTemplate.setReceiveTimeout(Long.parseLong(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_RECEIVE_TIMEOUT)));
         return jmsTemplate;
     }
 
@@ -479,15 +479,15 @@ public class MessagingConfig {
         final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
         redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(this.environment
                 .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_INITIAL_REDELIVERY_DELAY)));
-        redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_MAXIMUM_REDELIVERIES)));
+        redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_MAXIMUM_REDELIVERIES)));
         redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(this.environment
                 .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_MAXIMUM_REDELIVERY_DELAY)));
-        redeliveryPolicy.setRedeliveryDelay(Long.parseLong(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_REDELIVERY_DELAY)));
+        redeliveryPolicy.setRedeliveryDelay(Long.parseLong(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_REDELIVERY_DELAY)));
         redeliveryPolicy.setDestination(this.signingServerRequestsQueue());
-        redeliveryPolicy.setBackOffMultiplier(Double.parseDouble(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_BACK_OFF_MULTIPLIER)));
+        redeliveryPolicy.setBackOffMultiplier(Double.parseDouble(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_BACK_OFF_MULTIPLIER)));
         redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(this.environment
                 .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_USE_EXPONENTIAL_BACK_OFF)));
         return redeliveryPolicy;
@@ -529,15 +529,15 @@ public class MessagingConfig {
         final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
         redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(this.environment
                 .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_INITIAL_REDELIVERY_DELAY)));
-        redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_MAXIMUM_REDELIVERIES)));
+        redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_MAXIMUM_REDELIVERIES)));
         redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(this.environment
                 .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_MAXIMUM_REDELIVERY_DELAY)));
-        redeliveryPolicy.setRedeliveryDelay(Long.parseLong(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_REDELIVERY_DELAY)));
+        redeliveryPolicy.setRedeliveryDelay(Long.parseLong(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_REDELIVERY_DELAY)));
         redeliveryPolicy.setDestination(this.replyToQueue());
-        redeliveryPolicy.setBackOffMultiplier(Double.parseDouble(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_BACK_OFF_MULTIPLIER)));
+        redeliveryPolicy.setBackOffMultiplier(Double.parseDouble(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_BACK_OFF_MULTIPLIER)));
         redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(this.environment
                 .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_USE_EXPONENTIAL_BACK_OFF)));
         return redeliveryPolicy;
@@ -548,8 +548,8 @@ public class MessagingConfig {
         final DefaultMessageListenerContainer messageListenerContainer = new DefaultMessageListenerContainer();
         messageListenerContainer.setConnectionFactory(this.pooledConnectionFactory());
         messageListenerContainer.setDestination(this.replyToQueue());
-        messageListenerContainer.setConcurrentConsumers(Integer.parseInt(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_CONCURRENT_CONSUMERS)));
+        messageListenerContainer.setConcurrentConsumers(Integer.parseInt(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_CONCURRENT_CONSUMERS)));
         messageListenerContainer.setMaxConcurrentConsumers(Integer.parseInt(this.environment
                 .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_MAX_CONCURRENT_CONSUMERS)));
         messageListenerContainer.setMessageListener(this.signingServerResponsesMessageListener);
