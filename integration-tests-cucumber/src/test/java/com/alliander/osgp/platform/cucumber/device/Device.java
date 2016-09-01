@@ -33,4 +33,9 @@ public class Device {
         this.deviceHooks.inactivateDevice(this.deviceId.getDeviceIdE());
     }
 
+    @Given("^an active device with DeviceID \"([^\"]*)\"$")
+    public void anActiveDeviceWithDeviceID(final String deviceId) throws Throwable {
+        this.deviceId.setDeviceIdE(deviceId);
+        this.deviceHooks.activateDevice(this.deviceId.getDeviceIdE());
+    }
 }

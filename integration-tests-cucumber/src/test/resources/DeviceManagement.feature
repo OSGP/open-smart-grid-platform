@@ -9,5 +9,11 @@ Background:
 @SLIM-540 @DeviceManagement
   Scenario: Activate a device
   	Given an inactive device with DeviceID "TEST1024000000001" 
-    And the activate device request is received
+    When the activate device request is received
 	Then the device is activated again
+
+@SLIM-281 @DeviceManagement
+  Scenario: Deactivate a device
+    Given an active device with DeviceID "TEST1024000000001"
+    When a deactivate device request is received
+    Then the device has to be deactivated

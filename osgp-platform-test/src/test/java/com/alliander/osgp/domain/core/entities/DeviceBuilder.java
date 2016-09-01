@@ -15,6 +15,7 @@ public class DeviceBuilder {
     private String deviceType;
     private InetAddress networkAddress;
     private boolean activated;
+    private boolean active;
     private boolean hasSchedule;
     private Float gpsLatitude;
     private Float gpsLongitude;
@@ -26,6 +27,7 @@ public class DeviceBuilder {
         this.deviceType = "PSLD";
         this.hasSchedule = false;
         this.activated = false;
+        this.active = true;
         this.gpsLatitude = null;
         this.gpsLongitude = null;
         this.publicKeyPresent = false;
@@ -57,6 +59,11 @@ public class DeviceBuilder {
         return this;
     }
 
+    public DeviceBuilder isActive(final boolean active) {
+        this.active = active;
+        return this;
+    }
+
     public DeviceBuilder hasSchedule(final boolean hasSchedule) {
         this.hasSchedule = hasSchedule;
         return this;
@@ -85,6 +92,7 @@ public class DeviceBuilder {
         ssld.updateMetaData(null, null, null, null, null, null, this.gpsLatitude, this.gpsLongitude);
         ssld.updateProtocol(this.protocolInfo);
         ssld.setPublicKeyPresent(this.publicKeyPresent);
+        ssld.setActive(this.active);
         return ssld;
     }
 }
