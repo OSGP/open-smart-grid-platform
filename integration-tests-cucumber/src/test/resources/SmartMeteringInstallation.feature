@@ -17,7 +17,7 @@ Background:
 @SLIM-637-nominal-link
   Scenario: Link G-meter "TESTG102400000001" to E-meter "TEST1024000000001" on free MBUS channel 1
     Given an active device with DeviceID "TEST1024000000001"
-	And an uncoupled gas device with DeviceID "TESTG102400000001"
+	And an active uncoupled gas device with DeviceID "TESTG102400000001"
 	And a free MBUS channel 1
 	When the Link G-meter request is received
 	And the response "OK" is given
@@ -27,7 +27,7 @@ Background:
   Scenario: Link G-meter to an E-meter on occupied MBUS channel 1
     Given an active device with DeviceID "TEST1024000000001"
     And a coupled gas device "TESTG102400000001" on MBUS channel 1
-    And an uncoupled gas device with DeviceID "TESTG102400000002"
+    And an active uncoupled gas device with DeviceID "TESTG102400000002"
     When the Link G-meter request is received
     And the response "OK" is given
     Then the gas device "TESTG102400000002" is linked to the device "TEST1024000000001"

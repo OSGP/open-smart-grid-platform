@@ -1,5 +1,5 @@
 /**
- * Copyright 2016 Smart Society Services B.V. *
+ * Copyright 2016 Smart Society Services B.V.
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
@@ -61,8 +61,8 @@ public class CoupleMbusDeviceWithDevice extends SmartMetering {
     @Autowired
     private DeviceId deviceId;
 
-    @Given("^an uncoupled gas device with DeviceID \"([^\"]*)\"$")
-    public void anUncoupledGasDeviceWithDeviceID(String gasDevice) {
+    @Given("^an active uncoupled gas device with DeviceID \"([^\"]*)\"$")
+    public void anActiveUncoupledGasDeviceWithDeviceID(String gasDevice) {
         this.deviceId.setDeviceIdG(gasDevice);
         this.deviceHooks.activateDevice(gasDevice);
         this.coupleDeviceHooks.decoupleDevices(this.deviceId.getDeviceIdE(), gasDevice);
