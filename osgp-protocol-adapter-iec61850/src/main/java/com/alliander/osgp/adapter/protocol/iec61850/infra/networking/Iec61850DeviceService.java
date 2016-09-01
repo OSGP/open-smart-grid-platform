@@ -837,8 +837,8 @@ public class Iec61850DeviceService implements DeviceService {
 
                 // NOTE remove this once the Kaifa device can handle the
                 // calls again
-                LOGGER.warn("Sleeping for 5 seconds before moving on");
-                Thread.sleep(5000);
+                LOGGER.warn("Sleeping for 10 seconds before moving on");
+                Thread.sleep(10000);
 
                 // return null == Void
                 return null;

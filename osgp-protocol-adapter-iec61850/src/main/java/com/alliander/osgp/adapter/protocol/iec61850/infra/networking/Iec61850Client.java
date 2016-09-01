@@ -253,7 +253,7 @@ public class Iec61850Client {
             clientAssociation.getAllDataValues();
             return true;
         } catch (ServiceError | IOException e) {
-            LOGGER.error("Unexpected excpetion during readAllDataValues", e);
+            LOGGER.error("Unexpected exception during readAllDataValues", e);
             return false;
         }
     }
