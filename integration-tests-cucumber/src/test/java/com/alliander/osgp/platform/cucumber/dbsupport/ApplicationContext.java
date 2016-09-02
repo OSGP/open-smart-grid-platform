@@ -11,6 +11,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
@@ -24,6 +25,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement()
 @Import({ PersistenceConfigCore.class, PersistenceConfigResponseData.class, PersistenceConfigResponseDlms.class,
     PersistenceConfigLogging.class })
-@PropertySource("file:/etc/osp/osgp-cucumber.properties")
+@PropertySources({
+	@PropertySource("classpath:osgp-cucumber.properties"),
+	@PropertySource(value = "file:/etc/osp/osgp-cucumber.properties", ignoreResourceNotFound = true)
+})
 public class ApplicationContext {
 }

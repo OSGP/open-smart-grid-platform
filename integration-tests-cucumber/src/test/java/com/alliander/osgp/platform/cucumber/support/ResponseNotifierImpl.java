@@ -19,12 +19,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.stereotype.Component;
 
 @Component
 @Configuration
-@PropertySource("file:/etc/osp/osgp-cucumber.properties")
+@PropertySources({
+	@PropertySource("classpath:osgp-cucumber.properties"),
+	@PropertySource(value = "file:/etc/osp/osgp-cucumber.properties", ignoreResourceNotFound = true)
+})
 public class ResponseNotifierImpl implements ResponseNotifier {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ResponseNotifierImpl.class);

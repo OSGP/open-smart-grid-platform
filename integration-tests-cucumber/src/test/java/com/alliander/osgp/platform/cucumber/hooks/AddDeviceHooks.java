@@ -13,7 +13,6 @@ import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.domain.core.entities.Device;
@@ -27,9 +26,6 @@ import com.alliander.osgp.domain.core.repositories.DeviceRepository;
  * afterwards.
  *
  */
-@Component
-@Configuration
-@PropertySource("file:/etc/osp/osgp-cucumber.properties")
 public class AddDeviceHooks {
 
     @Autowired

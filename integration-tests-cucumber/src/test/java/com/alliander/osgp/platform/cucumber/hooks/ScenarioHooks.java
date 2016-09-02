@@ -9,7 +9,6 @@ package com.alliander.osgp.platform.cucumber.hooks;
 
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

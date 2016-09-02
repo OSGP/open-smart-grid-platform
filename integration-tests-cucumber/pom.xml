@@ -97,30 +97,36 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <!-- Spring Framework -->
+
+    <!-- Cucumber Framework -->
     <dependency>
       <groupId>info.cukes</groupId>
       <artifactId>cucumber-spring</artifactId>
       <version>${cucumber.version}</version>
       <scope>test</scope>
     </dependency>
+    
+    <!-- Spring Framework -->
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
-      <version>${spring.version}</version>
+      <version>4.2.0.RELEASE</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-beans</artifactId>
+      <version>4.2.0.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-core</artifactId>
+      <version>4.2.0.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
+      <version>4.2.0.RELEASE</version>
     </dependency>
 
     <!-- Spring Data -->

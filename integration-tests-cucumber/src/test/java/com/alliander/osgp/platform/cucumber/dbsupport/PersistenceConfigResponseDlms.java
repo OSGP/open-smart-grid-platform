@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -28,7 +29,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableTransactionManagement()
 @Primary
-@PropertySource("file:/etc/osp/osgp-cucumber.properties")
+@PropertySources({
+	@PropertySource("classpath:osgp-cucumber.properties"),
+	@PropertySource(value = "file:/etc/osp/osgp-cucumber.properties", ignoreResourceNotFound = true)
+})
 public class PersistenceConfigResponseDlms extends AbstractPersistenceConfig {
 
     public PersistenceConfigResponseDlms() {

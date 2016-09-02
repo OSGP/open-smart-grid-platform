@@ -13,7 +13,6 @@ import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.valueobjects.PlatformDomain;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 
 import cucumber.api.java.Before;
 

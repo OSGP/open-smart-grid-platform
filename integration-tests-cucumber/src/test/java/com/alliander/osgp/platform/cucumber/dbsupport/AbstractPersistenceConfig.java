@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -30,7 +31,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableTransactionManagement()
 @Primary
-@PropertySource("file:/etc/osp/osgp-cucumber.properties")
+@PropertySources({
+	@PropertySource("classpath:osgp-cucumber.properties"),
+	@PropertySource(value = "file:/etc/osp/osgp-cucumber.properties", ignoreResourceNotFound = true)
+})
 public abstract class AbstractPersistenceConfig {
 
     @Value("${cucumber.dbs.driver}")
