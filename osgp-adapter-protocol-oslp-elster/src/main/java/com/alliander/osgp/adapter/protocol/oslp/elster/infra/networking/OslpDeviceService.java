@@ -97,9 +97,6 @@ public class OslpDeviceService implements DeviceService {
     @Resource
     private boolean executeResumeScheduleAfterSetLight;
 
-    @Resource
-    private long delayBeforeExecuteResumeScheduleAfterSetLight;
-
     @Autowired
     private OslpDeviceSettingsService oslpDeviceSettingsService;
 
@@ -1664,15 +1661,6 @@ public class OslpDeviceService implements DeviceService {
         setLightDeviceResponseHandler.handleResponse(deviceResponse);
 
         if (this.executeResumeScheduleAfterSetLight && status.equals(DeviceMessageStatus.OK)) {
-            // Wait a second to prevent timing issues when connecting to the
-            // device for a second time.
-            try {
-                LOGGER.info("Sleeping for {} milliseconds before executing ResumeSchedule",
-                        this.delayBeforeExecuteResumeScheduleAfterSetLight);
-                Thread.sleep(this.delayBeforeExecuteResumeScheduleAfterSetLight);
-            } catch (final InterruptedException e) {
-                LOGGER.error("InterruptedException", e);
-            }
             LOGGER.info("Sending ResumeScheduleRequest for device: {}", setLightdeviceRequest.getDeviceIdentification());
             this.resumeSchedule(resumeScheduleDeviceRequest);
         } else {
