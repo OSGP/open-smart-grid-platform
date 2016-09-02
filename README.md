@@ -7,7 +7,7 @@
 
 ### Component Description
 
-This repository contains all the tests to verify the platform and webapps. At the time the project was started, it was a good solution to use Fitnesse. But that became a bit difficult to maintain.
+This repository contains all the tests to verify the platform. At the time the project was started, it was a good solution to use Fitnesse. But that became a bit difficult to maintain.
 From now on it is meant that new tests will be written in cucumber.
 
 - Cucumber

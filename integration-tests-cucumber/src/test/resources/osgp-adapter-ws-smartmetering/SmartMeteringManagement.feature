@@ -1,6 +1,7 @@
 Feature: SmartMetering Management
   As a grid operator
   I want to be able to perform SmartMeteringManagement operations on a device
+  In order to ...
     
 Background:
     Given a device with DeviceID "TEST1024000000001" 
