@@ -36,9 +36,9 @@ public class DecoupleMbusDeviceWithDevice extends SmartMetering {
     private static final String XPATH_MATCHER_NOT_OK_RESULT = "NOT OK";
 
     private static final String TEST_SUITE_XML = "SmartmeterInstallation";
-    private static final String TEST_CASE_XML = "638 DeCouple M-Bus Device";
-    private static final String TEST_CASE_NAME_REQUEST = "DeCoupleMbusDevice";
-    private static final String TEST_CASE_NAME_RESPONSE = "GetDeCoupleMbusDeviceResponse";
+    private static final String TEST_CASE_XML = "638 Decouple M-Bus Device";
+    private static final String TEST_CASE_NAME_REQUEST = "DecoupleMbusDevice";
+    private static final String TEST_CASE_NAME_RESPONSE = "GetDecoupleMbusDeviceResponse";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DecoupleMbusDeviceWithDevice.class);
     private static final Map<String, String> PROPERTIES_MAP = new HashMap<>();
