@@ -28,7 +28,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableTransactionManagement()
 @Primary
-@PropertySource("file:/etc/osp/osgp-cucumber-response-data-smart-metering.properties")
+@PropertySource("file:/etc/osp/osgp-cucumber.properties")
 public class PersistenceConfigResponseDlms extends AbstractPersistenceConfig {
 
     public PersistenceConfigResponseDlms() {

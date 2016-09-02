@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Configuration
-@PropertySource("file:/etc/osp/osgp-cucumber-response-data-smart-metering.properties")
+@PropertySource("file:/etc/osp/osgp-cucumber.properties")
 public class ResponseNotifierImpl implements ResponseNotifier {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ResponseNotifierImpl.class);

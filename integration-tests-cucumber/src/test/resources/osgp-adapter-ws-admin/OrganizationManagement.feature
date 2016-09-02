@@ -95,7 +95,7 @@ Scenario: Remove an existing organization
 	      | Name                       | Test Organization |
 	      | FunctionGroup              | ADMIN             |
 	   Then the remove organization response is successfull
-	    And the organization with organization identification "TestOrganization" is removed
+	    And ensure the organization with organization identification "TestOrganization" is disabled
 	    
 Scenario: Remove a non existing organization
      When receiving a remove organization request

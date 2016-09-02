@@ -33,7 +33,7 @@ import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 public abstract class SoapUiRunner {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(SoapUiRunner.class);
-    private static final String DEFAULT_SOAPUI_PROJECT = "soap-ui-project/OSGP-SoapUI-project.xml";
+    private static final String DEFAULT_SOAPUI_PROJECT = "soap-ui-project/SmartMetering-SoapUI-project.xml";
     private String soapui_project = DEFAULT_SOAPUI_PROJECT;
     private static final String ERRMSG = "The soapUi xml fragment: \n %s \ndoes not contain all three tags: \n %s, %s and/or %s";
     
@@ -91,7 +91,7 @@ public abstract class SoapUiRunner {
      *            is the testsuite name which includes the testcase
      * @throws Throwable
      */
-    protected void requestRunner(final Map<String, String> propertiesMap, final String testCaseNameRequest,
+    protected void requestRunner(final TestStepStatus testStepStatus, final Map<String, String> propertiesMap, final String testCaseNameRequest,
             final String testCaseXml, final String testSuiteXml) throws Throwable {
 
         this.testCase = this.wsdlProjectFactory.createWsdlTestCase(this.soapui_project, testSuiteXml, testCaseXml);
@@ -106,7 +106,7 @@ public abstract class SoapUiRunner {
         this.request = messageExchange.getRequestContent();
         this.response = messageExchange.getResponseContent();
 
-        assertEquals(TestStepStatus.OK, runTestStepByNameResult.getStatus());
+        assertEquals(testStepStatus, runTestStepByNameResult.getStatus());
     }
 
     /**

@@ -24,6 +24,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement()
 @Import({ PersistenceConfigCore.class, PersistenceConfigResponseData.class, PersistenceConfigResponseDlms.class,
     PersistenceConfigLogging.class })
-@PropertySource("file:/etc/osp/osgp-cucumber-response-data-smart-metering.properties")
+@PropertySource("file:/etc/osp/osgp-cucumber.properties")
 public class ApplicationContext {
 }

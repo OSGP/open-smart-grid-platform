@@ -3,8 +3,6 @@ Feature: Firmware management
   I want to manage the firmware of a device
   In order to ...
 
-# NOTE: Authorisation is tested in Basic OSGP Functions - PBI119''
-
 #|given|a get firmware version request for device @device                                                                               |
 #|and  |the get firmware version request refers to a device @device with status @status                                                 |
 #|and  |the get firmware version request refers to an organisation that is authorised                                                   |
