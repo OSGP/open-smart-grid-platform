@@ -14,19 +14,19 @@ public class Device {
     @Autowired
     private DeviceHooks deviceHooks;
 
-    @Given("^a gas device with DeviceID \"([^\"]*)\"$")
-    public void aGasDeviceWithDeviceID(final String deviceId) throws Throwable {
+    @Given("^a mbus device with DeviceID \"([^\"]*)\"$")
+    public void aMbusDeviceWithDeviceID(final String deviceId) throws Throwable {
         this.deviceId.setDeviceIdG(deviceId);
     }
 
-    @Given("^an active gas device with DeviceID \"([^\"]*)\"$")
-    public void anActiveGasDeviceWithDeviceID(final String deviceId) throws Throwable {
+    @Given("^an active mbus device with DeviceID \"([^\"]*)\"$")
+    public void anActiveMbusDeviceWithDeviceID(final String deviceId) throws Throwable {
         this.deviceId.setDeviceIdG(deviceId);
         this.deviceHooks.activateDevice(deviceId);
     }
 
-    @Given("^an inactive gas device with DeviceID \"([^\"]*)\"$")
-    public void anInActiveGasDeviceWithDeviceID(final String deviceId) throws Throwable {
+    @Given("^an inactive mbus device with DeviceID \"([^\"]*)\"$")
+    public void anInActiveMbusDeviceWithDeviceID(final String deviceId) throws Throwable {
         this.deviceId.setDeviceIdG(deviceId);
         this.deviceHooks.deactivateDevice(deviceId);
     }
@@ -48,9 +48,9 @@ public class Device {
         this.deviceHooks.activateDevice(deviceId);
     }
 
-    @Given("^an unknown gas device with DeviceID \"([^\"]*)\"$")
-    public void anUnknownGasDeviceWithDeviceID(String gasDevice) throws Throwable {
-        this.deviceId.setDeviceIdG(gasDevice);
+    @Given("^an unknown mbus device with DeviceID \"([^\"]*)\"$")
+    public void anUnknownMbusDeviceWithDeviceID(String mbusDevice) throws Throwable {
+        this.deviceId.setDeviceIdG(mbusDevice);
     }
 
     @Given("^an unknown device with DeviceID \"([^\"]*)\"$")

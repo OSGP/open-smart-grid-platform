@@ -29,15 +29,15 @@ public class DeviceHooks {
     @Autowired
     private DeviceRepository deviceRepository;
 
-    public void deactivateDevice(String mbusDeviceId) {
-        final Device mbusDevice = this.deviceRepository.findByDeviceIdentification(mbusDeviceId);
-        mbusDevice.setActive(false);
-        this.deviceRepository.save(mbusDevice);
+    public void deactivateDevice(String deviceId) {
+        final Device device = this.deviceRepository.findByDeviceIdentification(deviceId);
+        device.setActive(false);
+        this.deviceRepository.save(device);
     }
 
-    public void activateDevice(String mbusDeviceId) {
-        final Device mbusDevice = this.deviceRepository.findByDeviceIdentification(mbusDeviceId);
-        mbusDevice.setActive(true);
-        this.deviceRepository.save(mbusDevice);
+    public void activateDevice(String deviceId) {
+        final Device device = this.deviceRepository.findByDeviceIdentification(deviceId);
+        device.setActive(true);
+        this.deviceRepository.save(device);
     }
 }
