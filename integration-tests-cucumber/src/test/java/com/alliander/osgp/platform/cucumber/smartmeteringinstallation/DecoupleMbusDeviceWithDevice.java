@@ -58,7 +58,7 @@ public class DecoupleMbusDeviceWithDevice extends SmartMetering {
     @Autowired
     private DeviceId deviceId;
 
-    @When("^the Decouple G-meter request is received$")
+    @When("^the decouple G-meter request is received$")
     public void theDecoupleGMeterRequestIsReceived() throws Throwable {
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_G_LABEL, this.deviceId.getDeviceIdG());
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_E_LABEL, this.deviceId.getDeviceIdE());
