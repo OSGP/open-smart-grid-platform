@@ -62,7 +62,7 @@ public class DecoupleMbusDeviceWithDevice extends SmartMetering {
     public void theDecoupleGMeterRequestIsReceived() throws Throwable {
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_G_LABEL, this.deviceId.getDeviceIdG());
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_E_LABEL, this.deviceId.getDeviceIdE());
-        PROPERTIES_MAP.put(CHANNEL_LABEL, String.valueOf(this.deviceId.getMbusDeviceChannel()));
+        PROPERTIES_MAP.put(CHANNEL_LABEL, String.valueOf(this.deviceId.getMbusChannel()));
         PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, this.organisationId.getOrganisationId());
         PROPERTIES_MAP.put(ENDPOINT_LABEL, this.serviceEndpoint.getServiceEndpoint());
 
@@ -91,22 +91,22 @@ public class DecoupleMbusDeviceWithDevice extends SmartMetering {
 
     }
 
-    @Then("^the gas device \"([^\"]*)\" isn't linked to the device \"([^\"]*)\"$")
-    public void theGasDeviceIsnTLinkedToTheDevice(String mbusDeviceId, String deviceId) {
+    @Then("^the mbus device \"([^\"]*)\" isn't coupled to the device \"([^\"]*)\"$")
+    public void theMbusDeviceIsnTCoupledToTheDevice(String mbusDeviceId, String deviceId) {
         Assert.assertFalse(this.coupleDeviceHooks.areDevicesCoupled(deviceId, mbusDeviceId));
     }
 
-    @Given("^an inactive gas device with DeviceID \"([^\"]*)\" on MBUS channel (\\d+)$")
-    public void anInactiveGasDeviceWithDeviceIDOnMBUSChannel(String mbusDeviceId, Short gasDeviceChannel) {
+    @Given("^an inactive mbus device with DeviceID \"([^\"]*)\" on MBUS channel (\\d+)$")
+    public void anInactiveMbusDeviceWithDeviceIDOnMBUSChannel(String mbusDeviceId, Short mbusDeviceChannel) {
         this.deviceId.setDeviceIdG(mbusDeviceId);
-        this.deviceId.setMbusDeviceChannel(gasDeviceChannel);
+        this.deviceId.setMbusChannel(mbusDeviceChannel);
         this.deviceHooks.deactivateDevice(mbusDeviceId);
     }
 
-    @Given("^an active gas device with DeviceID \"([^\"]*)\" on MBUS channel (\\d+)$")
-    public void anActiveGasDeviceWithDeviceIDOnMBUSChannel(String mbusDeviceId, Short gasDeviceChannel) {
+    @Given("^an active mbus device with DeviceID \"([^\"]*)\" on MBUS channel (\\d+)$")
+    public void anActiveMbusDeviceWithDeviceIDOnMBUSChannel(String mbusDeviceId, Short mbusDeviceChannel) {
         this.deviceId.setDeviceIdG(mbusDeviceId);
-        this.deviceId.setMbusDeviceChannel(gasDeviceChannel);
+        this.deviceId.setMbusChannel(mbusDeviceChannel);
         this.deviceHooks.activateDevice(mbusDeviceId);
     }
 
