@@ -9,8 +9,6 @@
  */
 package com.alliander.osgp.platform.cucumber;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,6 +22,7 @@ import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 public abstract class SmartMetering extends SoapTestCase {
 
     protected static final String XPATH_MATCHER_CORRELATIONUID = "\\|\\|\\|\\S{17}\\|\\|\\|\\S{17}";
+    protected static final String CHANNEL_LABEL = "ChannelIdentification";
 
     protected String correlationUid;
 
@@ -36,8 +35,7 @@ public abstract class SmartMetering extends SoapTestCase {
         final Pattern correlationUidPattern = Pattern.compile(this.organisationId.getOrganisationId()
                 + XPATH_MATCHER_CORRELATIONUID);
         final Matcher correlationUidMatcher = correlationUidPattern.matcher(this.response);
-        if (testStepStatus == TestStepStatus.OK) {
-            assertTrue(correlationUidMatcher.find());
+        if ((testStepStatus == TestStepStatus.OK) && correlationUidMatcher.find()) {
             this.correlationUid = correlationUidMatcher.group();
         }
     }
