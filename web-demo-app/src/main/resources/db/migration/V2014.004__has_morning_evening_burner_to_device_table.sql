@@ -1,0 +1,1 @@
+ALTER TABLE device ADD COLUMN has_evening_morning_burner boolean DEFAULT FALSE;
