@@ -63,3 +63,41 @@ Background:
 	When the Link G-meter request on inactive device "TEST1024000000001" is received
 	Then the response contains "Device TEST1024000000001 is not active in the platform"
 
+
+
+
+@SLIM-638-decouple-gmeter-from-emeter
+Scenario: Decouple G-meter from E-meter
+	Given an active device with DeviceID "E9998000014123414" 
+	And an active coupled gas device "G00XX561204926013" on MBUS channel 1
+	When the Decouple G-meter request is received
+	Then the response "OK" is given to the decouple request
+	And the gas device "G00XX561204926013" isn't linked to the device "E9998000014123414"
+
+@SLIM-638-decouple-unknown-gmeter-from-emeter
+Scenario: Decouple unknown G-meter from E-meter
+	Given an active device with DeviceID "E9998000014123414" 
+	And an unknown gas device with DeviceID "G00XX00000unknown"
+	When the Decouple G-meter request is received
+	Then the decouple request response description contains 'SmartMeter with id "G00XX00000unknown" could not be found'
+
+@SLIM-638-decouple-gmeter-from-unknown-emeter
+Scenario: Decouple G-meter from unknown E-meter
+	Given an unknown device with DeviceID "E999800000unknown" 
+	And an active gas device with DeviceID "G00XX561204926013"
+	When the Decouple G-meter request is received
+	Then the decouple request response description contains 'SmartMeter with id "E999800000unknown" could not be found'
+
+@SLIM-638-decouple-inactive-gmeter-from-emeter
+Scenario: Decouple inactive G-meter from E-meter
+	Given an active device with DeviceID "E9998000014123414" 
+	And an inactive gas device with DeviceID "G00XX561204926013" on MBUS channel 1
+	When the Decouple G-meter request is received
+	Then the decouple request response description contains "Device G00XX561204926013 is not active in the platform"
+
+@SLIM-638-decouple-gmeter-from-inactive-emeter
+Scenario: Decouple G-meter to an inactive E-meter
+	Given an inactive device with DeviceID "E9998000014123414" 
+	And an active gas device with DeviceID "G00XX561204926013" on MBUS channel 1
+	When the Decouple G-meter request is received
+	Then the decouple request response description contains "Device E9998000014123414 is not active in the platform"
