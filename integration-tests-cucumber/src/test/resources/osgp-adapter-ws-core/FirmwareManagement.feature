@@ -3,37 +3,28 @@ Feature: Firmware management
   I want to manage the firmware of a device
   In order to ...
 
-#|given|a get firmware version request for device @device                                                                               |
-#|and  |the get firmware version request refers to a device @device with status @status                                                 |
-#|and  |the get firmware version request refers to an organisation that is authorised                                                   |
-#|and  |the get firmware version oslp message from the device contains @firmwareversion                                                 |
-#|when |the get firmware version request is received                                                                                    |
-#|then |the get firmware version request should return an async response with a correlationId and deviceId @device                      |
-#|and  |a get firmware version oslp message is sent to device @device should be @ismessagesent                                          |
-#|and  |an ovl get firmware version message with result @result and firmwareversion @firmwareversion should be sent to the ovl out queue|
-# parameters
-# * device: device identification
-# * status: active, unknown, unregistered; should always be active for success scenario
-# * firmwareversion: the firmware version
-# * correlationId: correlationId of the message
-# * isgenerated: boolean (true/false) indicating whether a correlationID is generated
-# * isqueued: boolean (true/false) indicating whether a message is added to the queue
-# * result: OK (correlationID is returned) or exception
 Scenario Outline: Get firmware version
 	Given a device
 	    | DeviceIdentification | device-01          |
+	    | Status               | Active             |
 	    | Firmware Version     | <Firmware Version> |
 	    | Organization         | Test Organization  |
 	    | IsActivated          | True               |
 	 When receiving a get firmware version request
 	    | DeviceIdentification | device-01 |
+    And the device returns firmware version "<Firmware Version>" over OSLP 
 	 Then the get firmware version response contains
-	    | Firmware Version | <Firmware Version> |
+	    | FirmwareVersion | <Firmware Version> |
+	  And a get firmware version OSLP message is sent to device "device-01"
+	  And a get firmware version OSLP response message is received
+	    | FirmwareVersion | <Firmware Version> |
+	    | Result          | OK                 |
+	  And the platform sends a get get firmware version response message
+	    | FirmwareVersion | <Firmware Version> |
 	    
 Examples: 
       | Firmware Version |
       | 0123             |
-      |                  |
 
 # Scenario: Unsuccessfully get firmware version
 # |given|a get firmware version request for device @device                                     |

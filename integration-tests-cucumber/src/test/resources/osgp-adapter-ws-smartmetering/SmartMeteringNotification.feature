@@ -4,5 +4,5 @@ Feature: SmartMetering Notification
     
 Background:
     Given a device with DeviceID "E9998000014123414" 
-    Given a gas device with DeviceID "G00XX561204926013"
-    And an organisation with OrganisationID "Test Organisation"
+      And a gas device with DeviceID "G00XX561204926013"
+      And an organisation with OrganisationID "Test Organisation"

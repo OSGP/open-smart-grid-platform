@@ -3,7 +3,7 @@ Feature: SmartMetering Installation
   I want to be able to perform SmartMeteringInstallation operations on a device
     
 Background:
-    Given an organisation with OrganisationID "Infostroom"
+	Given an organisation with OrganisationID "Test Organisation"
     
 @SLIM-218 @SmartMeterInstallation
   Scenario: Add a new device "E0026000059790003"

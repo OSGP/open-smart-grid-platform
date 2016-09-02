@@ -1,4 +1,7 @@
 Feature: Organization management
+  As a ...
+  I want to manage the organizations in the platform
+  In order ...
 
 Scenario: Create a new organization
 	   When receiving a create organization request
