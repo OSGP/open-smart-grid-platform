@@ -42,7 +42,7 @@ Scenario: Create an already existing organization
 	      | Component      | WS_ADMIN                                                                                                                      |
 	      | InnerException | org.springframework.transaction.TransactionSystemException                                                                    |
 	      | InnerMessage   | Could not commit JPA transaction; nested exception is javax.persistence.RollbackException: Transaction marked as rollbackOnly |
-	    And the organization is with name "Different Organization" not created
+	    And the organization with name "Different Organization" should not be created
 
 # For this a special test is created in the SoapUI project, which uses the Unknown Organization as an organizationIdentification in the header.
 Scenario: Create an organization as an unauthorized organization
@@ -62,7 +62,7 @@ Scenario: Create an organization as an unauthorized organization
 	      | Component      | WS_ADMIN                                                         |
 	      | InnerException | com.alliander.osgp.domain.core.exceptions.UnknownEntityException |
 	      | InnerMessage   | Organisation with id "unknown-organization" could not be found.  | 
-	    And the organization is with name "An Organization" not created   
+	    And the organization with name "An Organization" should not be created   
 
 Scenario Outline: Creating an organization with an invalid organization identification
      When receiving a create organization request
@@ -77,7 +77,7 @@ Scenario Outline: Creating an organization with an invalid organization identifi
 	      | FaultString      | Validation error    |
 	      | FaultType        | ValidationError     |
 	      | ValidationErrors | <Validation Errors> |
-	    And the organization is with name "Test Organization" not created
+	    And the organization with name "Test Organization" should not be created
 
 # Note: The validation errors are ; separated if there are multiple.
 Examples:
@@ -98,7 +98,7 @@ Scenario: Remove an existing organization
 	      | Name                       | Test Organization |
 	      | FunctionGroup              | ADMIN             |
 	   Then the remove organization response is successfull
-	    And ensure the organization with organization identification "TestOrganization" is disabled
+	    And the organization with organization identification "TestOrganization" should be disabled
 	    
 Scenario: Remove a non existing organization
      When receiving a remove organization request

@@ -76,8 +76,8 @@ public class OrganizationSteps {
      * @param organizationIdentification
      * @throws Throwable
      */
-    @Then("^ensure the organization with organization identification \"([^\"]*)\" is disabled$")
-    public void ensure_the_organization_with_organization_identification_is_disabled(String organizationIdentification) throws Throwable {
+    @Then("^the organization with organization identification \"([^\"]*)\" should be disabled$")
+    public void the_organization_with_organization_identification_should_be_disabled(String organizationIdentification) throws Throwable {
         Organisation entity = repo.findByOrganisationIdentification(organizationIdentification);
 
         Assert.assertTrue(entity.isEnabled() == false);
@@ -88,8 +88,8 @@ public class OrganizationSteps {
      * @param name
      * @throws Throwable
      */
-    @Then("^the organization is with name \"([^\"]*)\" not created$")
-    public void the_organization_is_with_name_not_created(String name) throws Throwable {
-    	//Assert.assertNull(repo.findByName(name));
+    @Then("^the organization with name \"([^\"]*)\" should not be created$")
+    public void the_organization_with_name_should_not_be_created(String name) throws Throwable {
+    	Assert.assertNull(repo.findByName(name));
     }
 }
