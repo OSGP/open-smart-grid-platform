@@ -74,7 +74,6 @@ public class Hls5Connector {
 
         try {
             final DlmsConnection connection = this.createConnection();
-            this.discardInvalidKeys();
             return connection;
         } catch (final UnknownHostException e) {
             LOGGER.warn("The IP address is not found: {}", this.device.getIpAddress(), e);
@@ -165,11 +164,6 @@ public class Hls5Connector {
         if (this.device.getLogicalId() != null) {
             tcpConnectionBuilder.setLogicalDeviceId(this.device.getLogicalId().intValue());
         }
-    }
-
-    private void discardInvalidKeys() {
-        this.device.discardInvalidKeys();
-        this.device = this.dlmsDeviceRepository.save(this.device);
     }
 
     /**
