@@ -80,9 +80,25 @@ public class HomeController {
    ModelMap model) {
 	   System.out.println("Starting Soap Request");
 	   System.out.println(device.getDeviceIdentification());
-	   soapClientService.addDeviceRequest(device);
+	   
+	   soapClientService.addUpdateKeyRequest(device);
       
       return "add";
    }
+   
+//   @RequestMapping(value = "/device", method = RequestMethod.GET)
+//   public ModelAndView device() {
+//      return new ModelAndView("device", "command", new Device());
+//   }
+//   
+//   @RequestMapping(value = "/addDevice", method = RequestMethod.POST)
+//   public String updateKey(@ModelAttribute("SpringWeb")Device device, 
+//   ModelMap model) {
+//	   System.out.println("Starting Soap Request");
+//	   System.out.println(device.getDeviceIdentification());
+//	   soapClientService.addDeviceRequest(device);
+//      
+//      return "add";
+//   }
 
 }

@@ -5,6 +5,9 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 
+import javax.xml.soap.MessageFactory;
+import javax.xml.soap.SOAPException;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.ssl.SSLSocketFactory;
@@ -21,7 +24,21 @@ public class SoapRequestHelper {
 	private SaajSoapMessageFactory messageFactory;
 
 	public SoapRequestHelper() {
+		
+		System.out.println("Message Factory set");
+		
 		this.messageFactory = new SaajSoapMessageFactory();
+		
+		try {
+			this.messageFactory.setMessageFactory(MessageFactory.newInstance());
+		} catch (SOAPException e) {
+			// TODO Auto-generated catch block
+			System.err.println("Message Facotry failed!");
+			e.printStackTrace();
+		}
+		
+		
+		System.out.println("MessageFactory is null: " + this.messageFactory == null);
 
 		// Set Trust Store, set Key Store properties
 		this.keyStoreHelper = new KeyStoreHelper("jks", "/etc/ssl/certs/trust.jks",
@@ -32,27 +49,73 @@ public class SoapRequestHelper {
 		initMarshaller("com.alliander.osgp.platform.ws.schema.common.deviceinstallation");
 
 		String uri = "https://localhost/osgp-adapter-ws-core/common/deviceInstallationService/DeviceInstallation";
-		System.out.println("Check");
-		WebServiceTemplate webServiceTemplate = new WebServiceTemplate(
-				this.messageFactory);
-		System.out.println("Check2");
+
+		WebServiceTemplate webServiceTemplate = new WebServiceTemplate(this.messageFactory);
+
 		webServiceTemplate.setDefaultUri(uri);
 		webServiceTemplate.setMarshaller(marshaller);
 		webServiceTemplate.setUnmarshaller(marshaller);
-		System.out.println("Check3");
+
+		webServiceTemplate.setCheckConnectionForFault(true);
+		
+		webServiceTemplate.setInterceptors(new ClientInterceptor[] { 
+						createClientInterceptor("http://www.alliander.com/schemas/osp/common") 
+						});
+
+		webServiceTemplate.setMessageSender(createHttpMessageSender());
+
+		return webServiceTemplate;
+	}
+	
+	public WebServiceTemplate createUpdateKeyRequest() {
+		initMarshaller("com.alliander.osgp.platform.ws.schema.admin.devicemanagement");
+
+		String uri = "https://localhost/osgp-adapter-ws-admin/admin/deviceManagementService/DeviceManagement";
+
+		WebServiceTemplate webServiceTemplate = new WebServiceTemplate(this.messageFactory);
+
+		webServiceTemplate.setDefaultUri(uri);
+		webServiceTemplate.setMarshaller(marshaller);
+		webServiceTemplate.setUnmarshaller(marshaller);
+
+		webServiceTemplate.setCheckConnectionForFault(true);
+		
+		webServiceTemplate.setInterceptors(new ClientInterceptor[] { 
+						createClientInterceptor("http://www.alliander.com/schemas/osp/common") 
+						});
+
+		webServiceTemplate.setMessageSender(createHttpMessageSender());
+
+		return webServiceTemplate;
+	}
+	
+	
+	public WebServiceTemplate createFindAllDevicesRequest() {
+		initMarshaller("com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement");
+
+		String uri = "https://localhost/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/AdHocManagement";
+
+		WebServiceTemplate webServiceTemplate = new WebServiceTemplate(this.messageFactory);
+
+		webServiceTemplate.setDefaultUri(uri);
+		webServiceTemplate.setMarshaller(marshaller);
+		webServiceTemplate.setUnmarshaller(marshaller);
+
 	
 		webServiceTemplate.setCheckConnectionForFault(true);
 		
-		webServiceTemplate
-				.setInterceptors(new ClientInterceptor[] { createClientInterceptor("http://www.alliander.com/schemas/osp/common") });
-		System.out.println("Check4");
+		webServiceTemplate.setInterceptors(new ClientInterceptor[] { 
+						createClientInterceptor("http://www.alliander.com/schemas/osgp/common") 
+						});
+
 		webServiceTemplate.setMessageSender(createHttpMessageSender());
-		System.out.println("Check5");
+
 		return webServiceTemplate;
 	}
 
 	private void initMarshaller(String marshallerContext) {
 		this.marshaller = new Jaxb2Marshaller();
+		
 		marshaller.setContextPath(marshallerContext);
 	}
 
@@ -63,12 +126,16 @@ public class SoapRequestHelper {
 		HttpClient client = sender.getHttpClient();
 		SSLSocketFactory socketFactory;
 		try {			
-			
-			socketFactory = new SSLSocketFactory(keyStoreHelper.getKeyStore(),
+			socketFactory = new SSLSocketFactory(
+					keyStoreHelper.getKeyStore(),
 					keyStoreHelper.getKeyStorePw(),
-					keyStoreHelper.getTrustStore());
+					keyStoreHelper.getTrustStore()
+					);
+			
 			Scheme scheme = new Scheme("https", 443, socketFactory);
+			
 			client.getConnectionManager().getSchemeRegistry().register(scheme);
+			
 		} catch (KeyManagementException | UnrecoverableKeyException
 				| NoSuchAlgorithmException | KeyStoreException e) {
 			// TODO Auto-generated catch block
