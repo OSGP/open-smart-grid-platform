@@ -29,8 +29,6 @@ public class DeviceModelSteps {
     @Autowired
     private ManufacturerRepository manufacturerRepo;
 
-    private String DEFAULT_MODELCODE= "Test Model Code";
-    private String DEFAULT_DESCRIPTION = "Test Model";
     private Boolean DEFAULT_FILESTORAGE = true;
     
     /**
@@ -42,12 +40,15 @@ public class DeviceModelSteps {
     @Given("^a device model")
     public void aDeviceModel(final Map<String, String> settings) throws Throwable {
     	
-    	Manufacturer manufacturer = manufacturerRepo.findByName(settings.get("ManufacturerName"));
+    	// Get the given manufacturer (or the default).
+    	Manufacturer manufacturer = manufacturerRepo.findByName(
+    			getString(settings, "ManufacturerName", ManufacturerSteps.DEFAULT_NAME));
     	    
+    	// Create the new device model.
     	DeviceModel entity = new DeviceModel(
     			manufacturer,
-    			getString(settings, "ModelCode", DEFAULT_MODELCODE),
-    			getString(settings, "Description", DEFAULT_DESCRIPTION),
+    			getString(settings, "ModelCode", Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE),
+    			getString(settings, "Description", Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION),
     			getBoolean(settings, "FileStorage", DEFAULT_FILESTORAGE));
 
     	entity.setVersion(getLong(settings, "Version"));

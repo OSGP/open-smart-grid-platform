@@ -18,13 +18,13 @@ import cucumber.api.java.en.Given;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getBoolean;
 
-public class ManifacturSteps {
+public class ManufacturerSteps {
     
     @Autowired
     private ManufacturerRepository repo;
     
     private String DEFAULT_MANUFACTURER_ID = "1";
-    private String DEFAULT_NAME = "Test Manufacturer";
+    public static String DEFAULT_NAME = "Test Manufacturer";
     private Boolean DEFAULT_USEPREFIX = true;
     
     /**

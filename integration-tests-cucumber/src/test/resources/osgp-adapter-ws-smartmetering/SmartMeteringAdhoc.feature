@@ -8,19 +8,19 @@ Background:
         | DeviceType           | SMART_METER_G     |
     
 @SLIM-517 @SmartMeterAdhoc
-  Scenario: Retrieve the association LN objectlist from a device
+Scenario: Retrieve the association LN objectlist from a device
      When receiving a retrieve association LN objectlist request
         | DeviceIdentification | G00XX561204926013 |
      Then the objectlist should be returned
     
 @SLIM-193 @SmartMeterAdhoc
-  Scenario: Retrieve all configuration objects from a device
+Scenario: Retrieve all configuration objects from a device
      When receiving a retrieve configuration request
         | DeviceIdentification | G00XX561204926013 |
      Then all the configuration items should be returned
     
 @SLIM-534 @SmartMeterAdhoc
-  Scenario: Retrieve a specific configuration object from a device
+Scenario: Retrieve a specific configuration object from a device
      When receiving a retrieve specific configuration request
         | DeviceIdentification | G00XX561204926013 |
      Then the specific configuration item should be returned

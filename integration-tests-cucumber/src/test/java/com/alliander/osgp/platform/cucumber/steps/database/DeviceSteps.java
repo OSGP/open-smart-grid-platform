@@ -35,19 +35,11 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
 public class DeviceSteps {
-    @Autowired
-    private DeviceRepository deviceRepository;
 
-    @Autowired
-    private OrganisationRepository organizationRepository;
-
-    @Autowired
-    private DeviceModelRepository deviceModelRepository;
-
-    @Autowired
-    private DeviceAuthorizationRepository deviceAuthorizationRepository;
-
-    private String DEFAULT_ORGANIZATION_IDENTIFICATION = "test-org";
+    public static String DEFAULT_DEVICE_IDENTIFICATION = "test-device";
+    public static String DEFAULT_DEVICE_TYPE = "OSLP";
+    public static String DEFAULT_PROTOCOL = "OSLP";
+    public static String DEFAULT_PROTOCOL_VERSION = "1.0";
     private Long DEFAULT_DEVICE_ID = new java.util.Random().nextLong();
     private Boolean DEFAULT_IS_ACTIVATED = true;
     private Boolean DEFAULT_ACTIVE = true;
@@ -59,13 +51,21 @@ public class DeviceSteps {
     private String DEFAULT_CONTAINER_MUNICIPALITY = "";
     private Float DEFAULT_LATITUDE = new Float(0);
     private Float DEFAULT_LONGITUDE = new Float(0);
-    private String DEFAULT_DEVICE_TYPE = "SSLD";
+
+    @Autowired
+    private DeviceRepository deviceRepository;
+
+    @Autowired
+    private OrganisationRepository organizationRepository;
+
+    @Autowired
+    private DeviceModelRepository deviceModelRepository;
+    
+    @Autowired
+    private DeviceAuthorizationRepository deviceAuthorizationRepository;
 
     @Autowired
     private ProtocolInfoRepository protocolInfoRepository;
-
-    @Autowired
-    private DeviceAuthorizationRepository authorisationRepository;
 
     /**
      * Generic method which adds a device using the settings.
@@ -86,20 +86,21 @@ public class DeviceSteps {
         device.setActivated(getBoolean(settings, "IsActivated", this.DEFAULT_IS_ACTIVATED));
         device.setTechnicalInstallationDate(getDate(settings, "TechnicalInstallationDate").toDate());
 
-        if (settings.containsKey("DeviceModelId")) {
-            final DeviceModel deviceModel = this.deviceModelRepository.findOne(getLong(settings, "DeviceModelId"));
-            device.setDeviceModel(deviceModel);
-        }
-        // TODO: add protocol information in controlled place
-        device.updateProtocol(this.protocolInfoRepository.findByProtocolAndProtocolVersion("OSLP", "1.0"));
+        final DeviceModel deviceModel = this.deviceModelRepository.findByModelCode(
+        		getString(settings, "DeviceModel", Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
+        device.setDeviceModel(deviceModel);
 
-        // TODO: Add metadata if required
+        // TODO: add protocol information in controlled place
+        device.updateProtocol(this.protocolInfoRepository.findByProtocolAndProtocolVersion(
+        		getString(settings, "Protocol", this.DEFAULT_PROTOCOL), 
+        		getString(settings, "ProtocolVersion", this.DEFAULT_PROTOCOL_VERSION)));
+
         device.updateRegistrationData(InetAddress.getLocalHost(),
                 getString(settings, "DeviceType", this.DEFAULT_DEVICE_TYPE));
 
         device.setVersion(getLong(settings, "Version"));
         device.setActive(getBoolean(settings, "Active", this.DEFAULT_ACTIVE));
-        device.addOrganisation(getString(settings, "Organization", this.DEFAULT_ORGANIZATION_IDENTIFICATION));
+        device.addOrganisation(getString(settings, "Organization", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
         device.updateMetaData(getString(settings, "alias", this.DEFAULT_ALIAS),
                 getString(settings, "containerCity", this.DEFAULT_CONTAINER_CITY),
                 getString(settings, "containerPostalCode", this.DEFAULT_CONTAINER_POSTALCODE),
@@ -109,17 +110,13 @@ public class DeviceSteps {
                 getFloat(settings, "gpsLatitude", this.DEFAULT_LATITUDE),
                 getFloat(settings, "gpsLongitude", this.DEFAULT_LONGITUDE));
 
-        //
-        final Organisation organization = this.organizationRepository.findByOrganisationIdentification(
-                getString(settings, "OrganizationIdentification", this.DEFAULT_ORGANIZATION_IDENTIFICATION));
-
-        //
-        final DeviceFunctionGroup functionGroup = getEnum(settings, "DeviceFunctionGroup", DeviceFunctionGroup.class,
-                DeviceFunctionGroup.OWNER);
-
-        device = this.deviceRepository.save(device);
-        final DeviceAuthorization auth = device.addAuthorization(organization, functionGroup);
-        this.authorisationRepository.save(auth);
+        Organisation organization = organizationRepository.findByOrganisationIdentification(
+    			getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+    	
+    	DeviceFunctionGroup functionGroup = getEnum(settings, "DeviceFunctionGroup", DeviceFunctionGroup.class, DeviceFunctionGroup.OWNER);
+    	
+        final DeviceAuthorization authorization = device.addAuthorization(organization, functionGroup);
+        this.deviceAuthorizationRepository.save(authorization);
         this.deviceRepository.save(device);
     }
 

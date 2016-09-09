@@ -175,4 +175,25 @@ public class Helpers {
         
         ScenarioContext.Current().Data.put("CorrelationUid", correlationUidMatcher.group());
     }
+    
+
+
+	public static <T extends AbstractEntity> void cleanRepoAbstractEntity(JpaRepository<T, Long> repo) {
+		try {
+			repo.deleteAll();
+		} catch(Exception e) {
+			
+		}
+	}
+	
+
+
+	public static <T extends Serializable> void cleanRepoSerializable(JpaRepository<T, Long> repo) {
+		try {
+			repo.deleteAll();
+		} catch(Exception e) {
+			
+		}
+	}
 }
+
