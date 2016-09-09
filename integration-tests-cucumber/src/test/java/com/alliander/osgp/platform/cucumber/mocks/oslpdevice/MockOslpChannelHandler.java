@@ -61,8 +61,7 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
     private final ClientBootstrap clientBootstrap;
 
     // Device settings
-    private Integer sequenceNumber;
-    private String firmwareVersion = "R01";
+    private Integer sequenceNumber = 0;
 
     private static class Callback {
 
@@ -360,23 +359,7 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         LOGGER.info("deviceId as BASE 64 STRING: {}", deviceIdString);
 
         // Calculate expected sequence number
-        final Integer expectedSequenceNumber = this.doGetNextSequence();
-
-        /*
-         * // Check sequence number if (Math.abs(expectedSequenceNumber -
-         * sequenceNumber) > this.sequenceNumberWindow) {
-         * this.outOfSequenceList.add(new OutOfSequenceEvent(device.getId(),
-         * message.getPayloadMessage().toString(), DateTime.now()));
-         *
-         * throw new
-         * DeviceSimulatorException("SequenceNumber incorrect for device: " +
-         * device.getDeviceIdentification() + " Expected: " +
-         * (expectedSequenceNumber == 0 ? this.sequenceNumberMaximum :
-         * expectedSequenceNumber - 1) + " Actual: " + (sequenceNumber == 0 ?
-         * this.sequenceNumberMaximum : sequenceNumber - 1) +
-         * " SequenceNumberWindow: " + this.sequenceNumberWindow + " Request: "
-         * + message.getPayloadMessage().toString()); }
-         */
+        this.sequenceNumber = this.doGetNextSequence();
 
         // If responseDelayTime (and optional responseDelayRandomRange) are set,
         // sleep for a little while

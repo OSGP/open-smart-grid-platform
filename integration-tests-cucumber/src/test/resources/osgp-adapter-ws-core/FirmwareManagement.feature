@@ -12,13 +12,10 @@ Feature: Firmware management
     And the device returns firmware version "<Firmware Version>" over OSLP
     When receiving a get firmware version request
       | DeviceIdentification | D01 |
-    Then the get firmware version response contains
+    Then the get firmware version async response contains
       | DeviceIdentification | D01 |
     And a get firmware version OSLP message is sent to device "D01"
-    And a get firmware version OSLP response message is received
-      | FirmwareVersion | <Firmware Version> |
-      | Result          | OK                 |
-    And the platform sends a get get firmware version response message
+    And the platform buffers a get firmware version response message for device "D01"
       | FirmwareVersion | <Firmware Version> |
 
     Examples: 

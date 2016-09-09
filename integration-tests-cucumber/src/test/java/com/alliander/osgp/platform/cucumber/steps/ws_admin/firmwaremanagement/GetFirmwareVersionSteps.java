@@ -7,6 +7,9 @@
  */
 package com.alliander.osgp.platform.cucumber.steps.ws_admin.firmwaremanagement;
 
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
+import static com.alliander.osgp.platform.cucumber.core.Helpers.saveCorrelationUidInScenarioContext;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.platform.cucumber.SoapUiRunner;
+import com.alliander.osgp.platform.cucumber.steps.database.Defaults;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
 import cucumber.api.java.en.Given;
@@ -26,9 +30,10 @@ public class GetFirmwareVersionSteps extends SoapUiRunner {
     private final Logger LOGGER = LoggerFactory.getLogger(GetFirmwareVersionSteps.class);
 
     private static final String TEST_SUITE_XML = "FirmwareManagement";
-    private static final String TEST_CASE_XML = "AT Retrieve GetFirmwareVersion result";
-    private static final String TEST_CASE_NAME_REQUEST = "GetFirmwareVersion - Request 1";
-    private static final String TEST_CASE_NAME_RESPONSE = "GetFirmwareVersionResponse - Request 1";
+    private static final String TEST_CASE_ASYNC_REQ_XML = "AT Send GetFirmwareVersion Async";
+    private static final String TEST_CASE_RESULT_REQ_XML = "AT Retrieve GetFirmwareVersion Result";
+    private static final String TEST_CASE_ASYNC_NAME_REQUEST = "GetFirmwareVersion - Request 1";
+    private static final String TEST_CASE_RESULT_NAME_REQUEST = "GetGetFirmwareVersion - Request 1";
 
     private static final String PATH_DEVICE_IDENTIFICATION = "/Envelope/Body/GetFirmwareVersionAsyncResponse/AsyncResponse/DeviceId/text()";
     // private static final String PATH_CORRELATION_UID =
@@ -47,7 +52,8 @@ public class GetFirmwareVersionSteps extends SoapUiRunner {
         // Required parameters
         PROPERTIES_MAP.put("__DEVICE_IDENTIFICATION__", requestParameters.get("DeviceIdentification"));
 
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
+        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_ASYNC_NAME_REQUEST, TEST_CASE_ASYNC_REQ_XML,
+                TEST_SUITE_XML);
     }
 
     /**
@@ -55,7 +61,7 @@ public class GetFirmwareVersionSteps extends SoapUiRunner {
      * @param arg1
      * @throws Throwable
      */
-    @Then("^the get firmware version response contains$")
+    @Then("^the get firmware version async response contains$")
     public void thenTheGetFirmwareVersionResponseContains(final Map<String, String> expectedResponseData)
             throws Throwable {
         this.runXpathResult.assertXpath(this.response, PATH_DEVICE_IDENTIFICATION,
@@ -64,11 +70,19 @@ public class GetFirmwareVersionSteps extends SoapUiRunner {
 
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.
-        /*
-         * saveCorrelationUidInScenarioContext(this.runXpathResult.getValue(this
-         * .response, PATH_CORRELATION_UID), getString(expectedResponseData,
-         * "OrganizationIdentification",
-         * Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
-         */
+        saveCorrelationUidInScenarioContext(this.runXpathResult.getValue(this.response, PATH_CORRELATION_UID),
+                getString(expectedResponseData, "OrganizationIdentification",
+                        Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+    }
+
+    @Then("^the platform buffers a get firmware version response message for device \"([^\"]*)\"$")
+    public void thenThePlatformBufferesAGetFirmwareVersionResponseMessage(final String deviceIdentification,
+            final Map<String, String> expectedResponseData) throws Throwable {
+        // Required parameters
+        PROPERTIES_MAP.put("__DEVICE_IDENTIFICATION__", deviceIdentification);
+        PROPERTIES_MAP.put("__CORRELATION_UID__", "DUMMY");
+
+        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_RESULT_NAME_REQUEST, TEST_CASE_RESULT_REQ_XML,
+                TEST_SUITE_XML);
     }
 }

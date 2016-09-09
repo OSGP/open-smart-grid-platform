@@ -25,9 +25,8 @@ import cucumber.api.java.en.Given;
 public class OSLPDeviceSteps {
 
     private static final String DEFAULT_DEVICE_UID = "dGVzdDEyMzQ1Njc4";
-    private static final String PLATFORM_PUBLIC_KEY = "MHcCAQEEIIBhQuYM27c3Ol0stdc3wx3B/VgGkN+LR5c++HwVFdEkoAoGCCqGSM49"
-            + "AwEHoUQDQgAEFhUImXFJdqmputquVAc2CPdnn9Ju00M3m/Ice7wABNN+oAYKQbw/"
-            + "OceqvZmFF1+r4nO/vCm/f1JO5nEorE2jNQ==";
+    private static final String DEVICE_PUBLIC_KEY = "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEFhUImXFJdqmputquVAc2CPdnn9Ju"
+            + "00M3m/Ice7wABNN+oAYKQbw/OceqvZmFF1+r4nO/vCm/f1JO5nEorE2jNQ==";
 
     @Autowired
     private OslpDeviceRepository oslpDeviceRespository;
@@ -49,7 +48,7 @@ public class OSLPDeviceSteps {
         device.setSequenceNumber(0);
         device.setRandomDevice(0);
         device.setRandomPlatform(0);
-        device.updatePublicKey(PLATFORM_PUBLIC_KEY);
+        device.updatePublicKey(DEVICE_PUBLIC_KEY);
         this.oslpDeviceRespository.save(device);
     }
 }

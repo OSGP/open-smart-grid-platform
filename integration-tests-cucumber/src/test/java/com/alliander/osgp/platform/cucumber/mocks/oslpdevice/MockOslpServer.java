@@ -5,6 +5,7 @@ import java.net.InetSocketAddress;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -53,6 +54,9 @@ public class MockOslpServer {
 
     @Value("${oslp.security.signkey.path}")
     private String signKeyPath;
+
+    @Value("${oslp.security.verifykey.path}")
+    private String verifyKeyPath;
 
     @Value("${oslp.security.keytype}")
     private String keytype;
@@ -106,12 +110,14 @@ public class MockOslpServer {
                 count++;
                 Thread.sleep(1000);
             } catch (final InterruptedException e) {
+                LOGGER.warn("Polling for response interrupted");
                 // TODO add assertion?
                 return null;
             }
 
-            if (count > 60000) {
+            if (count > 6000000) {
                 // TODO add assertion?
+                LOGGER.warn("Polling for response failed, no response found");
                 return null;
             }
         }
@@ -172,8 +178,14 @@ public class MockOslpServer {
 
         pipeline.addLast("oslpEncoder", new OslpEncoder());
         pipeline.addLast("oslpDecoder", new OslpDecoder(this.oslpSignature, this.oslpSignatureProvider));
+        pipeline.addLast("oslpSecurity", new OslpSecurityHandler(this.publicKey()));
         pipeline.addLast("oslpChannelHandler", this.channelHandler);
         return pipeline;
+    }
+
+    private PublicKey publicKey()
+            throws NoSuchAlgorithmException, IOException, InvalidKeySpecException, NoSuchProviderException {
+        return CertificateHelper.createPublicKey(this.verifyKeyPath, this.keytype, this.oslpSignatureProvider);
     }
 
     private PrivateKey privateKey()

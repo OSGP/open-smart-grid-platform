@@ -14,8 +14,6 @@ import org.springframework.util.Assert;
 import com.alliander.osgp.oslp.Oslp.Message;
 import com.alliander.osgp.platform.cucumber.mocks.oslpdevice.MockOslpServer;
 
-import cucumber.api.DataTable;
-import cucumber.api.PendingException;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
@@ -44,22 +42,8 @@ public class OSLPDeviceSteps {
     @Then("^a get firmware version OSLP message is sent to device \"([^\"]*)\"$")
     public void a_get_firmware_version_OSLP_message_is_sent_to_device(final String deviceIdentification)
             throws Throwable {
-        // TODO: Wait until the mock service received the get firmware version
-        // oslp message from the platform.
-        // TODO: Make this more generic maybe.
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.GET_FIRMWARE_VERSION);
         Assert.notNull(message);
-        Assert.isTrue(message.hasGetFirmwareVersionResponse());
-
-        // TODO Assert.assertEquals(deviceIdentification, message);
-    }
-
-    @Then("^a get firmware version OSLP response message is received$")
-    public void a_get_firmware_version_OSLP_response_message_is_received(final DataTable arg1) throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        // For automatic transformation, change DataTable to one of
-        // List<YourType>, List<List<E>>, List<Map<K,V>> or Map<K,V>.
-        // E,K,V must be a scalar (String, Integer, Date, enum etc)
-        throw new PendingException();
+        Assert.isTrue(message.hasGetFirmwareVersionRequest());
     }
 }
