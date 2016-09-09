@@ -16,11 +16,12 @@ Feature: Firmware management
       | DeviceIdentification | D01 |
     And a get firmware version OSLP message is sent to device "D01"
     And the platform buffers a get firmware version response message for device "D01"
-      | FirmwareVersion | <Firmware Version> |
+      | FirmwareVersion    | <Firmware Version>     |
+      | FirmwareModuleType | <Firmware Module Type> |
 
     Examples: 
-      | Firmware Version |
-      | 0123             |
+      | Firmware Version | Firmware Module Type |
+      | 0123             | FUNCTIONAL           |
 
   # Scenario: Unsuccessfully get firmware version
   # |given|a get firmware version request for device @device                                     |

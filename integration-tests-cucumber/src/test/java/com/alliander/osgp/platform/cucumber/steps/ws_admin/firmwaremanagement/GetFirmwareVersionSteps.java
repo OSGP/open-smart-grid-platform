@@ -13,10 +13,12 @@ import static com.alliander.osgp.platform.cucumber.core.Helpers.saveCorrelationU
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.platform.cucumber.SoapUiRunner;
+import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.database.Defaults;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
@@ -35,10 +37,12 @@ public class GetFirmwareVersionSteps extends SoapUiRunner {
     private static final String TEST_CASE_ASYNC_NAME_REQUEST = "GetFirmwareVersion - Request 1";
     private static final String TEST_CASE_RESULT_NAME_REQUEST = "GetGetFirmwareVersion - Request 1";
 
-    private static final String PATH_DEVICE_IDENTIFICATION = "/Envelope/Body/GetFirmwareVersionAsyncResponse/AsyncResponse/DeviceId/text()";
-    // private static final String PATH_CORRELATION_UID =
-    // "/Envelope/Body/GetFirmwareVersionAsyncResponse/AsyncResponse/CorrelationUid/text()";
+    private static final String PATH_DEVICE_IDENTIFICATION = "//*[local-name()='DeviceId']/text()";
     private static final String PATH_CORRELATION_UID = "//*[local-name()='CorrelationUid']/text()";
+    private static final String PATH_RESULT = "//*[local-name()='Result']/text()";
+
+    private static final String PATH_FIRMWARE_TYPE = "//*[local-name()='FirmwareModuleType']/text()";
+    private static final String PATH_FIRMWARE_VERSION = "//*[local-name()='Version']/text()";
 
     private static final Map<String, String> PROPERTIES_MAP = new HashMap<>();
 
@@ -80,9 +84,26 @@ public class GetFirmwareVersionSteps extends SoapUiRunner {
             final Map<String, String> expectedResponseData) throws Throwable {
         // Required parameters
         PROPERTIES_MAP.put("__DEVICE_IDENTIFICATION__", deviceIdentification);
-        PROPERTIES_MAP.put("__CORRELATION_UID__", "DUMMY");
+        PROPERTIES_MAP.put("__CORRELATION_UID__", (String) ScenarioContext.Current().Data.get("CorrelationUid"));
 
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_RESULT_NAME_REQUEST, TEST_CASE_RESULT_REQ_XML,
-                TEST_SUITE_XML);
+        // Wait for OK response
+        int count = 0;
+        do {
+            if (count > 60) {
+                Assert.fail("Failed to retieve a response");
+            }
+
+            // Wait for next try to retrieve a response
+            count++;
+            Thread.sleep(1000);
+
+            this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_RESULT_NAME_REQUEST,
+                    TEST_CASE_RESULT_REQ_XML, TEST_SUITE_XML);
+        } while (!this.runXpathResult.assertXpath(this.response, PATH_RESULT, "OK"));
+
+        Assert.assertEquals(getString(expectedResponseData, "FirmwareModuleType", ""),
+                this.runXpathResult.getValue(this.response, PATH_FIRMWARE_TYPE));
+        Assert.assertEquals(getString(expectedResponseData, "FirmwareVersion", ""),
+                this.runXpathResult.getValue(this.response, PATH_FIRMWARE_VERSION));
     }
 }
