@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.adapter.protocol.oslp.elster.application.mapping;
 
+import java.util.ArrayList;
+
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.metadata.Type;
 
@@ -25,6 +27,7 @@ import com.alliander.osgp.dto.valueobjects.LongTermIntervalTypeDto;
 import com.alliander.osgp.dto.valueobjects.MeterTypeDto;
 import com.alliander.osgp.dto.valueobjects.RelayConfigurationDto;
 import com.alliander.osgp.dto.valueobjects.RelayMatrixDto;
+import com.alliander.osgp.dto.valueobjects.RelayMapDto;
 import com.alliander.osgp.oslp.Oslp;
 import com.google.protobuf.ByteString;
 
@@ -47,7 +50,7 @@ public class OslpGetConfigurationResponseToConfigurationConverter extends
         final Integer shortTermHistoryIntervalMinutes = source.hasShortTermHistoryIntervalMinutes() ? this.mapperFacade
                 .map(source.getShortTermHistoryIntervalMinutes(), Integer.class) : null;
         final RelayConfigurationDto relayConfiguration = source.hasRelayConfiguration() ? this.mapperFacade.map(
-                source.getRelayConfiguration(), RelayConfigurationDto.class) : null;
+                source.getRelayConfiguration(), RelayConfigurationDto.class) : new RelayConfigurationDto(new ArrayList<RelayMapDto>());
         final LinkTypeDto preferredLinkType = source.hasPreferredLinkType()
                 && !source.getPreferredLinkType().equals(Oslp.LinkType.LINK_NOT_SET) ? this.mapperFacade.map(
                 source.getPreferredLinkType(), LinkTypeDto.class) : null;
