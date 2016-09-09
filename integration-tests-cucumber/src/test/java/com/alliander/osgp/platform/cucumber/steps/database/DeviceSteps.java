@@ -19,7 +19,6 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.domain.core.entities.Device;
@@ -36,7 +35,6 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
-@Component
 @Transactional("txMgrCore")
 public class DeviceSteps {
 
