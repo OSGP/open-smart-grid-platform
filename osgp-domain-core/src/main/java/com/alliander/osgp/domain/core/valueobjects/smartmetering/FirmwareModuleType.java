@@ -25,15 +25,4 @@ public enum FirmwareModuleType {
     public String getDescription() {
         return this.description;
     }
-
-    public static FirmwareModuleType getWithDescription(String descriptionValue) {
-
-        for (final FirmwareModuleType fmt : FirmwareModuleType.values()) {
-            if (fmt.getDescription().equals(descriptionValue)) {
-                return fmt;
-            }
-        }
-        return null;
-
-    }
 }

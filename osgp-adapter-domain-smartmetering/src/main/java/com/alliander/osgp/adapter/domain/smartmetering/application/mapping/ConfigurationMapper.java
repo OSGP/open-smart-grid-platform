@@ -12,6 +12,8 @@ import ma.glasnost.orika.impl.ConfigurableMapper;
 
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.FirmwareVersionConverter;
+
 @Component(value = "configurationMapper")
 public class ConfigurationMapper extends ConfigurableMapper {
 

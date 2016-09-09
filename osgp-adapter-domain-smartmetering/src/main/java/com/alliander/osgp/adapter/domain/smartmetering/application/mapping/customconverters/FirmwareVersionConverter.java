@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
+package com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters;
 
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.metadata.Type;
@@ -13,7 +13,7 @@ import ma.glasnost.orika.metadata.Type;
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 
 public class FirmwareVersionConverter extends
-CustomConverter<FirmwareVersionDto, com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersion> {
+        CustomConverter<FirmwareVersionDto, com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersion> {
 
     @Override
     public com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersion convert(FirmwareVersionDto source,
@@ -21,11 +21,9 @@ CustomConverter<FirmwareVersionDto, com.alliander.osgp.domain.core.valueobjects.
 
         if (source != null) {
 
-            final com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersion firmwareVersion = new com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersion(
-                    com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareModuleType.getWithDescription(source
-                            .getFirmwareModuleType().getDescription()), source.getVersion());
-
-            return firmwareVersion;
+            return new com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersion(
+                    com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareModuleType.valueOf(source
+                            .getFirmwareModuleType().name()), source.getVersion());
         }
 
         return null;
