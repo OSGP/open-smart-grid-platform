@@ -54,18 +54,18 @@ public class PeriodicMeterReadsGas extends SmartMetering {
     private ServiceEndpoint serviceEndpoint;
 
     @Given("^the period type \"([^\"]*)\"$")
-    public void thePeriodType(final String arg1) {
-        PROPERTIES_MAP.put(PERIOD_TYPE_LABEL, arg1);
+    public void thePeriodType(final String periodType) {
+        PROPERTIES_MAP.put(PERIOD_TYPE_LABEL, periodType);
     }
 
     @Given("^the begin date \"([^\"]*)\"$")
-    public void theBeginDate(final String arg1) {
-        PROPERTIES_MAP.put(BEGIN_DATE_LABEL, arg1);
+    public void theBeginDate(final String beginDate) {
+        PROPERTIES_MAP.put(BEGIN_DATE_LABEL, beginDate);
     }
 
     @Given("^the end date \"([^\"]*)\"$")
-    public void theEndDate(final String arg1) {
-        PROPERTIES_MAP.put(END_DATE_LABEL, arg1);
+    public void theEndDate(final String endDate) {
+        PROPERTIES_MAP.put(END_DATE_LABEL, endDate);
     }
 
     @When("^the get periodic meter reads gas request is received$")
@@ -79,11 +79,11 @@ public class PeriodicMeterReadsGas extends SmartMetering {
     }
 
     @Then("^the \"([^\"]*)\" meter reads gas result should be returned$")
-    public void theMeterReadsGasResultShouldBeReturned(final String arg1) throws Throwable {
+    public void theMeterReadsGasResultShouldBeReturned(final String periodType) throws Throwable {
         PROPERTIES_MAP.put(CORRELATION_UID_LABEL, this.correlationUid);
         this.responseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
 
-        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_PERIODTYPE, arg1));
+        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_PERIODTYPE, periodType));
         assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_LOGTIME, XPATH_MATCHER_RESULT_LOGTIME));
         assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_CONSUMPTION, XPATH_MATCHER_RESULT));
         assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_CAPTURETIME, XPATH_MATCHER_RESULT));
