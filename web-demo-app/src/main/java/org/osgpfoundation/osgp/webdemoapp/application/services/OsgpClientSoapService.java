@@ -27,7 +27,7 @@ public class OsgpClientSoapService {
 		
 	}
 	
-	public void addUpdateKeyRequest (Device device) {
+	public void updateKeyRequest (Device device) {
 		
 		UpdateKeyRequest keyRequest = new UpdateKeyRequest ();
 		

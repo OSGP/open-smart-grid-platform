@@ -81,7 +81,7 @@ public class HomeController {
 	   System.out.println("Starting Soap Request");
 	   System.out.println(device.getDeviceIdentification());
 	   
-	   soapClientService.addUpdateKeyRequest(device);
+	   soapClientService.updateKeyRequest(device);
       
       return "add";
    }
