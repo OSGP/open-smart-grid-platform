@@ -31,9 +31,9 @@ Feature:
     Then the "<periodType>" meter reads gas result should be returned
 
     Examples:
-      |periodType	|beginDate	|endDate	|
-      |INTERVAL		|2015-09-01	|2015-10-01	|
-      |MONTHLY		|2016-01-01	|2016-09-01	|
+      |periodType   |beginDate  |endDate    |
+      |INTERVAL     |2015-09-01 |2015-10-01 |
+      |MONTHLY      |2016-01-01 |2016-09-01 |
 
   @SLIM-192 @SmartMeterMonitoring
   Scenario: Read the alarm register from a device
