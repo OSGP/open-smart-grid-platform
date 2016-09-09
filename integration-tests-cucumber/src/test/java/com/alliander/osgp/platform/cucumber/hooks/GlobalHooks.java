@@ -45,6 +45,9 @@ public class GlobalHooks {
 			// Create test organization used within the tests.
 			Organisation testOrg = new Organisation("test-org", "Test Organization for all tests", "MAA", PlatformFunctionGroup.ADMIN);
 			testOrg.addDomain(PlatformDomain.COMMON);
+			testOrg.addDomain(PlatformDomain.PUBLIC_LIGHTING);
+			testOrg.addDomain(PlatformDomain.TARIFF_SWITCHING);
+			testOrg.setIsEnabled(true);
 			
 			organizationRepo.save(testOrg);
 			

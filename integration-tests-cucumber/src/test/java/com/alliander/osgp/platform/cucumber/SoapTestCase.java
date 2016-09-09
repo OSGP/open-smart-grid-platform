@@ -36,9 +36,6 @@ public abstract class SoapTestCase extends SoapUiRunner {
     private Pattern correlationUidPattern;
     private Matcher correlationUidMatcher;
 
-    @Autowired
-    private OrganisationId organisationId;
-
     /**
      * RequestRunner is called from the @When step from a subclass which
      * represents cucumber test scenario('s) and return the correlationUid.
@@ -60,7 +57,7 @@ public abstract class SoapTestCase extends SoapUiRunner {
     	super.requestRunner(testStepStatus, propertiesMap, testCaseNameRequest, testCaseXml, testSuiteXml);
 
     	this.correlationUidPattern = Pattern
-                .compile(this.organisationId.getOrganisationId() + XPATH_MATCHER_CORRELATIONUID);
+                .compile(propertiesMap.get("OrganisationIdentification") + XPATH_MATCHER_CORRELATIONUID);
         
     	this.correlationUidMatcher = this.correlationUidPattern.matcher(this.response);
         assertTrue(this.correlationUidMatcher.find());

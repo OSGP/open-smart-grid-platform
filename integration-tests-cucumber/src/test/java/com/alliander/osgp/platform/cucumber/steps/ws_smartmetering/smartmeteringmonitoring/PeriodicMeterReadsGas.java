@@ -17,16 +17,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alliander.osgp.platform.cucumber.SmartMetering;
+import com.alliander.osgp.platform.cucumber.steps.ws_smartmetering.SmartMeteringStepsBase;
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
 import com.alliander.osgp.platform.cucumber.support.OrganisationId;
-import com.alliander.osgp.platform.cucumber.support.ServiceEndpoint;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class PeriodicMeterReadsGas extends SmartMetering {
+public class PeriodicMeterReadsGas extends SmartMeteringStepsBase {
     private static final String PATH_RESULT_PERIODTYPE = "/Envelope/Body/PeriodicMeterReadsGasResponse/PeriodType/text()";
     private static final String PATH_RESULT_LOGTIME = "/Envelope/Body/PeriodicMeterReadsGasResponse/PeriodicMeterReadsGas/LogTime/text()";
     private static final String PATH_RESULT_CONSUMPTION = "/Envelope/Body/PeriodicMeterReadsGasResponse/PeriodicMeterReadsGas/Consumption/text()";
@@ -51,15 +50,11 @@ public class PeriodicMeterReadsGas extends SmartMetering {
     @Autowired
     private OrganisationId organisationId;
 
-    @Autowired
-    private ServiceEndpoint serviceEndpoint;
-
     @When("^the get periodic meter reads gas request is received$")
     public void theGetPeriodicMeterReadsRequestIsReceived() throws Throwable {
 
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_G_LABEL, this.deviceId.getDeviceIdG());
         PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, this.organisationId.getOrganisationId());
-        PROPERTIES_MAP.put(ENDPOINT_LABEL, this.serviceEndpoint.getServiceEndpoint());
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML_225, TEST_SUITE_XML);
     }
@@ -80,7 +75,6 @@ public class PeriodicMeterReadsGas extends SmartMetering {
     public void theGetIntervalMeterReadsRequestIsReceived() throws Throwable {
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_G_LABEL, this.deviceId.getDeviceIdG());
         PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, this.organisationId.getOrganisationId());
-        PROPERTIES_MAP.put(ENDPOINT_LABEL, this.serviceEndpoint.getServiceEndpoint());
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML_228, TEST_SUITE_XML);
     }

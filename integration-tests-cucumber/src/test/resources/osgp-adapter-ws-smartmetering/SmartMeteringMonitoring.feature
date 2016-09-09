@@ -4,9 +4,12 @@ Feature: SmartMetering Monitoring
   In order to ...    
   
 Background: 
-    Given a device with DeviceID "TEST1024000000001"
-      And a gas device with DeviceID "TESTG102400000001"
-      And an organisation with OrganisationID "Test Organisation"
+    Given a device
+        | DeviceIdentification | TEST1024000000001 |
+        | DeviceType           | SMART_METER_E     |
+      And a device
+        | DeviceIdentification | TESTG102400000001 |
+        | DeviceType           | SMART_METER_G     |
   
 @SLIM-392 @SmartMeterMonitoring
 Scenario: Get the actual meter reads from a device
@@ -40,6 +43,9 @@ Scenario: Read the alarm register from a device
 
 @SLIM-511 @SmartMeterMonitoring
 Scenario: Refuse an operation with an inactive device
-    Given an inactive device with DeviceID "E9998000014123414"
+    Given a device
+        | DeviceIdentification | E9998000014123414 |
+        | DeviceType           | SMART_METER_E     | 
+        | Active               | False             |
      When the get actual meter reads request on an inactive device is received
      Then the response "Device E9998000014123414 is not active in the platform" will be returned

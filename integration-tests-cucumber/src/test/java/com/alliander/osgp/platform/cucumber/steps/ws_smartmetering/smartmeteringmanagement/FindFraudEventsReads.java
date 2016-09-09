@@ -11,6 +11,7 @@ package com.alliander.osgp.platform.cucumber.steps.ws_smartmetering.smartmeterin
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.EventLogCategory;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.EventType;
@@ -33,10 +34,10 @@ public class FindFraudEventsReads extends AbstractFindEventsReads {
         return category.substring(0, category.lastIndexOf('_'));
     }
 
-    @When("^the find fraud events request is received$")
+    @When("^receiving a find fraud events request$")
     @Override
-    public void theFindEventsRequestIsReceived() throws Throwable {
-        super.theFindEventsRequestIsReceived();
+    public void receivingAFindStandardEventsRequest(final Map<String, String> requestData) throws Throwable {
+        super.receivingAFindStandardEventsRequest(requestData);
     }
 
     @Then("^fraud events should be returned$")

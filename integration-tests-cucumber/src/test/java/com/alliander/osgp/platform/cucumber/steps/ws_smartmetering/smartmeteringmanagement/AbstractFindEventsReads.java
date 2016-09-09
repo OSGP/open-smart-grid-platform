@@ -26,13 +26,12 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.EventType;
-import com.alliander.osgp.platform.cucumber.SmartMetering;
+import com.alliander.osgp.platform.cucumber.steps.ws_smartmetering.SmartMeteringStepsBase;
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
 import com.alliander.osgp.platform.cucumber.support.OrganisationId;
-import com.alliander.osgp.platform.cucumber.support.ServiceEndpoint;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
-public abstract class AbstractFindEventsReads extends SmartMetering {
+public abstract class AbstractFindEventsReads extends SmartMeteringStepsBase {
     private static final String PATH_RESULT_EVENTS = "/Envelope/Body/FindEventsResponse/Events";
 
     private static final String TEST_SUITE_XML = "SmartmeterManagement";
@@ -49,15 +48,10 @@ public abstract class AbstractFindEventsReads extends SmartMetering {
     @Autowired
     private OrganisationId organisationId;
 
-    @Autowired
-    private ServiceEndpoint serviceEndpoint;
-
     protected abstract String getEventLogCategory();
 
-    public void theFindEventsRequestIsReceived() throws Throwable {
-        PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_E_LABEL, this.deviceId.getDeviceIdE());
-        PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, this.organisationId.getOrganisationId());
-        PROPERTIES_MAP.put(ENDPOINT_LABEL, this.serviceEndpoint.getServiceEndpoint());
+    public void receivingAFindStandardEventsRequest(final Map<String, String> requestData) throws Throwable {
+        PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_LABEL, requestData.get("DeviceIdentification"));
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST + this.getEventLogCategory(),
                 TEST_CASE_XML, TEST_SUITE_XML);

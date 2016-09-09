@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.platform.cucumber.SmartMetering;
+import com.alliander.osgp.platform.cucumber.steps.ws_smartmetering.SmartMeteringStepsBase;
 import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCase;
 import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCaseRunner;
 import com.eviware.soapui.model.support.PropertiesMap;
@@ -61,16 +61,16 @@ public class TestCaseRunner {
     }
 
     private String getCorrelId(final Map<String, String> propertiesMap) {
-        if (propertiesMap.containsKey(SmartMetering.CORRELATION_UID_LABEL)) {
-            return propertiesMap.get(SmartMetering.CORRELATION_UID_LABEL);
+        if (propertiesMap.containsKey(SmartMeteringStepsBase.CORRELATION_UID_LABEL)) {
+            return propertiesMap.get(SmartMeteringStepsBase.CORRELATION_UID_LABEL);
         } else {
             return null;
         }
     }
 
     private boolean resetCorrelId(final Map<String, String> propertiesMap) {
-        if (propertiesMap.containsKey(SmartMetering.CORRELATION_UID_LABEL)) {
-            propertiesMap.put(SmartMetering.CORRELATION_UID_LABEL, null);
+        if (propertiesMap.containsKey(SmartMeteringStepsBase.CORRELATION_UID_LABEL)) {
+            propertiesMap.put(SmartMeteringStepsBase.CORRELATION_UID_LABEL, null);
             return true;
         } else {
             return false;
@@ -78,16 +78,16 @@ public class TestCaseRunner {
     }
 
     private int getTimeout(final Map<String, String> propertiesMap) {
-        if (propertiesMap.containsKey(SmartMetering.TIME_OUT)) {
-            return new Integer(propertiesMap.get(SmartMetering.TIME_OUT));
+        if (propertiesMap.containsKey(SmartMeteringStepsBase.TIME_OUT)) {
+            return new Integer(propertiesMap.get(SmartMeteringStepsBase.TIME_OUT));
         } else {
             return 3000;
         }
     }
 
     private int getMaxTime(final Map<String, String> propertiesMap) {
-        if (propertiesMap.containsKey(SmartMetering.MAX_TIME)) {
-            return new Integer(propertiesMap.get(SmartMetering.MAX_TIME));
+        if (propertiesMap.containsKey(SmartMeteringStepsBase.MAX_TIME)) {
+            return new Integer(propertiesMap.get(SmartMeteringStepsBase.MAX_TIME));
         } else {
             return 180000;
         }

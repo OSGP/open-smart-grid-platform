@@ -7,13 +7,11 @@
  */
 package com.alliander.osgp.platform.cucumber.steps.ws_admin.firmwaremanagement;
 
-import cucumber.api.DataTable;
 import cucumber.api.java.en.Then;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +28,7 @@ public class GetFirmwareVersionSteps extends SoapUiRunner {
 	private final Logger LOGGER = LoggerFactory.getLogger(GetFirmwareVersionSteps.class);
     
     private static final String TEST_SUITE_XML = "FirmwareManagement";
-    private static final String TEST_CASE_XML = "Retrieve GetFirmwareVersion result";
+    private static final String TEST_CASE_XML = "AT Retrieve GetFirmwareVersion result";
     private static final String TEST_CASE_NAME_REQUEST = "GetFirmwareVersion - Request 1";
     private static final String TEST_CASE_NAME_RESPONSE = "GetFirmwareVersionResponse - Request 1";
 

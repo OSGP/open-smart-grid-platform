@@ -14,6 +14,10 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 
 import com.alliander.osgp.platform.cucumber.support.RunXpathResult;
 import com.alliander.osgp.platform.cucumber.support.TestCaseResult;
@@ -30,10 +34,21 @@ import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
  * Super class for SOAP UI runner implementations. Each Runner will be called
  * from a subclass.
  */
+@Configuration
+@PropertySources({
+	@PropertySource("classpath:osgp-cucumber.properties"),
+	@PropertySource(value = "file:/etc/osp/osgp-cucumber.properties", ignoreResourceNotFound = true),
+})
 public abstract class SoapUiRunner {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(SoapUiRunner.class);
-    private static final String DEFAULT_SOAPUI_PROJECT = "soap-ui-project/SmartMetering-SoapUI-project.xml";
+	/**
+	 * The url of the server to test. Default to localhost:443.
+	 */
+    @Value("${serviceEndpoint}")
+    private String serviceEndpoint;
+    
+    private final Logger LOGGER = LoggerFactory.getLogger(SoapUiRunner.class);
+    private static final String DEFAULT_SOAPUI_PROJECT = "soap-ui-project/Core-SoapUI-project.xml";
     private String soapui_project = DEFAULT_SOAPUI_PROJECT;
     private static final String ERRMSG = "The soapUi xml fragment: \n %s \ndoes not contain all three tags: \n %s, %s and/or %s";
     
@@ -94,19 +109,20 @@ public abstract class SoapUiRunner {
     protected void requestRunner(final TestStepStatus testStepStatus, final Map<String, String> propertiesMap, final String testCaseNameRequest,
             final String testCaseXml, final String testSuiteXml) throws Throwable {
 
+    	propertiesMap.put("ServiceEndpoint", this.serviceEndpoint);
+
         this.testCase = this.wsdlProjectFactory.createWsdlTestCase(this.soapui_project, testSuiteXml, testCaseXml);
         assertRequest(testCaseNameRequest, testCaseXml, testSuiteXml);
                
         final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase, propertiesMap,
                 testCaseNameRequest);
         final TestStepResult runTestStepByNameResult = runTestStepByName.getRunTestStepByName();
-        final WsdlTestCaseRunner wsdlTestCaseRunner = runTestStepByName.getResults();
+        assertEquals(testStepStatus, runTestStepByNameResult.getStatus());
 
+        final WsdlTestCaseRunner wsdlTestCaseRunner = runTestStepByName.getResults();
         final MessageExchange messageExchange = (MessageExchange) wsdlTestCaseRunner.getResults().get(0);
         this.request = messageExchange.getRequestContent();
         this.response = messageExchange.getResponseContent();
-
-        assertEquals(testStepStatus, runTestStepByNameResult.getStatus());
     }
 
     /**

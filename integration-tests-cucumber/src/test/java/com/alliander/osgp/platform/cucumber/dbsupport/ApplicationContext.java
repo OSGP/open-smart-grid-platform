@@ -30,4 +30,5 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 	@PropertySource(value = "file:/etc/osp/osgp-cucumber.properties", ignoreResourceNotFound = true)
 })
 public class ApplicationContext {
+	
 }

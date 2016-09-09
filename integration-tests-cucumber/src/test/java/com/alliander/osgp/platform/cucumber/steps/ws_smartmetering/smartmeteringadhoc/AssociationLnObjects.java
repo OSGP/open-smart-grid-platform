@@ -16,16 +16,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alliander.osgp.platform.cucumber.SmartMetering;
+import com.alliander.osgp.platform.cucumber.steps.ws_smartmetering.SmartMeteringStepsBase;
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
 import com.alliander.osgp.platform.cucumber.support.OrganisationId;
-import com.alliander.osgp.platform.cucumber.support.ServiceEndpoint;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class AssociationLnObjects extends SmartMetering {
+public class AssociationLnObjects extends SmartMeteringStepsBase {
     private static final String PATH_RESULT = "/Envelope/Body/GetAssociationLnObjectsResponse/Result/text()";
     private static final String PATH_RESULT_CLASSID = "/Envelope/Body/GetAssociationLnObjectsResponse/AssociationLnList/AssociationLnListElement/ClassId/text()";
     private static final String PATH_RESULT_VERSION = "/Envelope/Body/GetAssociationLnObjectsResponse/AssociationLnList/AssociationLnListElement/Version/text()";
@@ -51,15 +50,10 @@ public class AssociationLnObjects extends SmartMetering {
     @Autowired
     private OrganisationId organisationId;
 
-    @Autowired
-    private ServiceEndpoint serviceEndpoint;
-
-    @When("^the retrieve association LN objectlist request is received$")
-    public void theRetrieveAssociationLNObjectlistRequestIsReceived() throws Throwable {
-        PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_E_LABEL, this.deviceId.getDeviceIdE());
-        PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, this.organisationId.getOrganisationId());
-        PROPERTIES_MAP.put(ENDPOINT_LABEL, this.serviceEndpoint.getServiceEndpoint());
-
+    @When("^receiving a retrieve association LN objectlist request$")
+    public void receivingARetrieveAssociationLNObjectlistRequest(final Map<String, String> requestData) throws Throwable {
+        PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_LABEL, requestData.get("DeviceIdentification"));
+        
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }
 

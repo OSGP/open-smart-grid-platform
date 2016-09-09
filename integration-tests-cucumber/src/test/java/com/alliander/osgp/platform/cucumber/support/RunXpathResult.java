@@ -11,6 +11,7 @@ package com.alliander.osgp.platform.cucumber.support;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -92,4 +93,23 @@ public class RunXpathResult {
             assertTrue(responseMatcher.find());
         }
     }
+
+    /**
+     * Verifies that the XPath is not null or empty
+     * @param xml
+     * @param nodeXPath
+     * @throws Throwable
+     */
+	public void assertNotNull(String xml, String nodeXPath) throws Throwable {
+		final XpathResult xpathResult = this.runXPathExpression(xml, nodeXPath);
+        final XPathExpression expr = xpathResult.getXpathExpression();
+        
+        assertTrue(expr.evaluate(xpathResult.getDocument()) != null);
+	}
+	
+	public String getValue(String xml, String nodeXPath) throws Throwable {
+		final XpathResult xpathResult = this.runXPathExpression(xml, nodeXPath);
+        final XPathExpression expr = xpathResult.getXpathExpression();
+        return expr.evaluate(xpathResult.getDocument());
+	}
 }

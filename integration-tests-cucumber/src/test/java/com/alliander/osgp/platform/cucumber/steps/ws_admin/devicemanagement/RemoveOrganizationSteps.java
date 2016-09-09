@@ -17,15 +17,16 @@ import org.junit.Assert;
 
 import com.alliander.osgp.platform.cucumber.SoapUiRunner;
 import com.alliander.osgp.platform.cucumber.steps.common.ResponseSteps;
+import com.alliander.osgp.platform.cucumber.steps.ws_admin.AdminStepsBase;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
 /**
  * Class with all the remove organization requests steps
  */
-public class RemoveOrganizationSteps extends SoapUiRunner {
+public class RemoveOrganizationSteps extends AdminStepsBase {
     
     private static final String TEST_SUITE_XML = "DeviceManagement";
-    private static final String TEST_CASE_XML = "Remove an organization";
+    private static final String TEST_CASE_XML = "AT Remove an organization";
     private static final String TEST_CASE_NAME_REQUEST = "RemoveOrganization";
 
     private static final Map<String, String> PROPERTIES_MAP = new HashMap<>();

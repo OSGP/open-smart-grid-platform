@@ -16,22 +16,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alliander.osgp.platform.cucumber.SmartMetering;
+import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.hooks.AddDeviceHooks;
+import com.alliander.osgp.platform.cucumber.steps.ws_smartmetering.SmartMeteringStepsBase;
 import com.alliander.osgp.platform.cucumber.steps.ws_smartmetering.smartmeteringmonitoring.ActualMeterReadsGas;
-import com.alliander.osgp.platform.cucumber.support.OrganisationId;
-import com.alliander.osgp.platform.cucumber.support.ServiceEndpoint;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
+
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
+import static com.alliander.osgp.platform.cucumber.core.Helpers.saveCorrelationUidInScenarioContext;
 
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class AddDevice extends SmartMetering {
+public class AddDevice extends SmartMeteringStepsBase {
     private static final String PATH_RESULT = "/Envelope/Body/AddDeviceResponse/Result/text()";
-
+    private static final String PATH_DEVICE_IDENTIFICATION = "/Envelope/Body/AddDeviceAsyncResponse/DeviceIdentification/text()";
+    private static final String PATH_CORRELATION_UID = "/Envelope/Body/AddDeviceAsyncResponse/CorrelationUid/text()";
+    
     private static final String XPATH_MATCHER_RESULT = "OK";
-
+    
     private static final String TEST_SUITE_XML = "SmartmeterInstallation";
     private static final String TEST_CASE_XML = "218 Retrieve AddDevice result";
     private static final String TEST_CASE_NAME_REQUEST = "AddDevice - Request 1";
@@ -41,29 +45,36 @@ public class AddDevice extends SmartMetering {
     private static final Map<String, String> PROPERTIES_MAP = new HashMap<>();
 
     @Autowired
-    private OrganisationId organisationId;
-
-    @Autowired
     private AddDeviceHooks addDeviceHooks;
 
-    @Autowired
-    private ServiceEndpoint serviceEndpoint;
-
-    @When("^the add device \"([^\"]*)\" request is received$")
-    public void theAddDeviceRequestIsReceived(final String deviceId) throws Throwable {
-        PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_E_LABEL, deviceId);
-        PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, this.organisationId.getOrganisationId());
-        PROPERTIES_MAP.put(ENDPOINT_LABEL, this.serviceEndpoint.getServiceEndpoint());
+    @When("^receiving an add device request$")
+    public void receiving_an_add_device_request(final Map<String, String> requestData) throws Throwable {
+        PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_LABEL, requestData.get("DeviceIdentification"));
+        PROPERTIES_MAP.put(DEVICE_TYPE_LABEL, requestData.get("DeviceType"));
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }
+    
+    @Then("^the add device response contains$")
+    public void the_add_device_request_contains(final Map<String, String> expectedResponseData) throws Throwable {
+    	this.runXpathResult.assertXpath(this.response, PATH_DEVICE_IDENTIFICATION, expectedResponseData.get("DeviceIdentification"));
+    	this.runXpathResult.assertNotNull(this.response, PATH_CORRELATION_UID);
 
-    @Then("^the device request response should be ok$")
-    public void theDeviceRequestResponseShouldBeOk() throws Throwable {
-        PROPERTIES_MAP.put(CORRELATION_UID_LABEL, this.correlationUid);
+    	// Save the returned CorrelationUid in the Scenario related context for further use.
+    	saveCorrelationUidInScenarioContext(
+    	    this.runXpathResult.getValue(response, PATH_CORRELATION_UID),
+    	    getString(expectedResponseData, "OrganizationIdentification", "test-org"));
+    }
+	
+    @Then("^receiving an get add device response request$")
+    public void receiving_an_get_add_device_response_request(final Map<String, String> requestData) throws Throwable {
+        PROPERTIES_MAP.put(CORRELATION_UID_LABEL, ScenarioContext.Current().Data.get("CorrelationUid").toString());
 
         this.responseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
+    }
 
+    @Then("^the get add device request response should be ok$")
+    public void the_get_add_device_request_response_should_be_ok() throws Throwable {
         Assert.assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT, XPATH_MATCHER_RESULT));
     }
 

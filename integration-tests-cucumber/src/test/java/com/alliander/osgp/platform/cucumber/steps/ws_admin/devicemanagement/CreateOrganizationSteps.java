@@ -17,7 +17,9 @@ import java.util.Map;
 import org.junit.Assert;
 
 import com.alliander.osgp.platform.cucumber.SoapUiRunner;
+import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.common.ResponseSteps;
+import com.alliander.osgp.platform.cucumber.steps.ws_admin.AdminStepsBase;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
 /**
@@ -26,10 +28,10 @@ import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 @CucumberOptions(features = "src/test/resources/osg-adapter-ws-admin/OrganizationManagement.feature",
 	glue = "com.alliander.osgp.platform.cucumber",
 	format = {"pretty"})
-public class CreateOrganizationSteps extends SoapUiRunner {
+public class CreateOrganizationSteps extends AdminStepsBase {
     
     private static final String TEST_SUITE_XML = "DeviceManagement";
-    private static final String TEST_CASE_XML = "Create a new organization";
+    private static final String TEST_CASE_XML = "AT Create a new organization";
     private static final String TEST_CASE_NAME_REQUEST = "CreateOrganization";
     private static final String TEST_CASE_UNAUTHORIZED_NAME_REQUEST = "CreateOrganizationAsUnAuthorizedOrganization";
 

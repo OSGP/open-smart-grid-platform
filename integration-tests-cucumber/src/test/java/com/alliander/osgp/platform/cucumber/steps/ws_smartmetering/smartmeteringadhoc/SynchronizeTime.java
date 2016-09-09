@@ -17,16 +17,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alliander.osgp.platform.cucumber.SmartMetering;
-import com.alliander.osgp.platform.cucumber.support.DeviceId;
+import com.alliander.osgp.platform.cucumber.steps.ws_smartmetering.SmartMeteringStepsBase;
 import com.alliander.osgp.platform.cucumber.support.OrganisationId;
-import com.alliander.osgp.platform.cucumber.support.ServiceEndpoint;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class SynchronizeTime extends SmartMetering {
+public class SynchronizeTime extends SmartMeteringStepsBase {
     private static final String PATH_RESULT = "/Envelope/Body/SynchronizeTimeResponse/Result/text()";
 
     private static final String XPATH_MATCHER_RESULT = "OK";
@@ -45,19 +43,11 @@ public class SynchronizeTime extends SmartMetering {
     private static final DateTimeZone DTZ_EUROPE_AMSTERDAM = DateTimeZone.forID("Europe/Amsterdam");
 
     @Autowired
-    private DeviceId deviceId;
-
-    @Autowired
     private OrganisationId organisationId;
 
-    @Autowired
-    private ServiceEndpoint serviceEndpoint;
-
-    @When("^the get synchronize time request is received$")
-    public void theGetSynchronizeTimeRequestIsReceived() throws Throwable {
-        PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_E_LABEL, this.deviceId.getDeviceIdE());
-        PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, this.organisationId.getOrganisationId());
-        PROPERTIES_MAP.put(ENDPOINT_LABEL, this.serviceEndpoint.getServiceEndpoint());
+    @When("^receiving a get synchronize time request$")
+    public void receivingAGetSynchronizeTimeRequest(final Map<String, String> requestData) throws Throwable {
+        PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_LABEL, requestData.get("DeviceIdentification"));
 
         /*
          * Setup of deviation and DST information, that will make

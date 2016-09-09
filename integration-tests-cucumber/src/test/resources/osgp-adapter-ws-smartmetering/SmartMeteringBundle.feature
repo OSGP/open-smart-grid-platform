@@ -4,8 +4,9 @@ Feature: SmartMetering Bundle
   In order to ...
     
 Background:
-    Given a device with DeviceID "TEST1024000000001" 
-      And an organisation with OrganisationID "Test Organisation"
+    Given a device 
+        | DeviceIdentification | TEST1024000000001 |
+        | DeviceType           | SMART_METER_E     | 
     
 @SLIM-484 @SmartMeterBundle
 Scenario: Handle a bundle of operations

@@ -4,25 +4,30 @@ Feature: SmartMetering Management
   In order to ...
     
 Background:
-    Given a device with DeviceID "TEST1024000000001" 
-      And an organisation with OrganisationID "Test Organisation"
+    Given a device 
+        | DeviceIdentification | TEST1024000000001 |
+        | DeviceType           | SMART_METER_E     | 
     
 @SLIM-150 @SmartMeterManagement
 Scenario: find standard events from a device
-     When the find standard events request is received
+     When receiving a find standard events request
+        | DeviceIdentification | TEST1024000000001 |
      Then standard events should be returned
 
 @SLIM-150 @SmartMeterManagement
 Scenario: find fraud events from a device
-     When the find fraud events request is received
+     When receiving a find fraud events request
+        | DeviceIdentification | TEST1024000000001 |
      Then fraud events should be returned
 
 @SLIM-150 @SmartMeterManagement
 Scenario: find communication events from a device
-     When the find communication events request is received
+     When receiving a find communication events request
+        | DeviceIdentification | TEST1024000000001 |
      Then communication events should be returned
 
 @SLIM-150 @SmartMeterManagement
 Scenario: find mbus events from a device
-     When the find mbus events request is received
+     When receiving a find mbus events request
+        | DeviceIdentification | TEST1024000000001 |
      Then mbus events should be returned        

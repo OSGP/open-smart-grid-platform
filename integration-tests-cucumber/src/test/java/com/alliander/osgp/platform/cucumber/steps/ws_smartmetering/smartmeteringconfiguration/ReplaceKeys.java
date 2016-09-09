@@ -16,18 +16,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alliander.osgp.platform.cucumber.SmartMetering;
+import com.alliander.osgp.platform.cucumber.steps.ws_smartmetering.SmartMeteringStepsBase;
 import com.alliander.osgp.platform.cucumber.steps.ws_smartmetering.smartmeteringmonitoring.ActualMeterReadsGas;
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
 import com.alliander.osgp.platform.cucumber.support.OrganisationId;
-import com.alliander.osgp.platform.cucumber.support.ServiceEndpoint;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class ReplaceKeys extends SmartMetering {
+public class ReplaceKeys extends SmartMeteringStepsBase {
     private static final String PATH_RESULT = "/Envelope/Body/ReplaceKeysResponse/Result/text()";
 
     private static final String XPATH_MATCHER_RESULT = "OK";
@@ -46,14 +45,10 @@ public class ReplaceKeys extends SmartMetering {
     @Autowired
     private OrganisationId organisationId;
 
-    @Autowired
-    private ServiceEndpoint serviceEndpoint;
-
     @When("^the replace keys request is received$")
     public void theReplaceKeysRequestIsReceived() throws Throwable {
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_E_LABEL, this.deviceId.getDeviceIdE());
         PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, this.organisationId.getOrganisationId());
-        PROPERTIES_MAP.put(ENDPOINT_LABEL, this.serviceEndpoint.getServiceEndpoint());
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }

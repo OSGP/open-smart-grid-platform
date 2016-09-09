@@ -4,9 +4,12 @@ Feature: SmartMetering Configuration
   In order to ...
     
 Background:
-    Given a device with DeviceID "TEST1024000000001" 
-      And a gas device with DeviceID "TESTG102400000001"
-      And an organisation with OrganisationID "Test Organisation"
+    Given a device 
+        | DeviceIdentification | TEST1024000000001 |
+        | DeviceType           | SMART_METER_E     | 
+      And a device 
+        | DeviceIdentification | TESTG102400000001 |
+        | DeviceType           | SMART_METER_G     |
     
 @SLIM-215 @SmartMeterConfiguration
 Scenario: Set special days on a device

@@ -11,6 +11,7 @@ package com.alliander.osgp.platform.cucumber.steps.ws_smartmetering.smartmeterin
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.EventLogCategory;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.EventType;
@@ -31,9 +32,9 @@ public class FindCommunicationEventsReads extends AbstractFindEventsReads {
         return category.substring(0, category.lastIndexOf('_'));
     }
 
-    @When("^the find communication events request is received$")
+    @When("^receiving a find communication events request$")
     @Override
-    public void theFindEventsRequestIsReceived() throws Throwable {
+    public void receivingAFindStandardEventsRequest(final Map<String, String> requestData) throws Throwable {
         LOGGER.warn("{} disabled, because it genrates a soap-fault with OBJECT_UNDEFINED",
                 FindCommunicationEventsReads.class.getSimpleName());
     }
