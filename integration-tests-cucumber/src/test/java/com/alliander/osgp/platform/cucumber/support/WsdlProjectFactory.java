@@ -12,16 +12,23 @@ package com.alliander.osgp.platform.cucumber.support;
 import java.io.IOException;
 
 import org.apache.xmlbeans.XmlException;
-import org.springframework.stereotype.Component;
 
 import com.eviware.soapui.impl.wsdl.WsdlProject;
 import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCase;
 import com.eviware.soapui.support.SoapUIException;
 
-@Component
 public class WsdlProjectFactory {
-    public WsdlTestCase createWsdlTestCase(final String soapProjectXml, final String testSuiteXml,
-            final String testCaseXml) throws XmlException, IOException, SoapUIException {
-        return new WsdlProject(soapProjectXml).getTestSuiteByName(testSuiteXml).getTestCaseByName(testCaseXml);
+
+    private final WsdlProject project;
+
+    public WsdlProjectFactory(final String soapProjectXml, final String certBasePath)
+            throws XmlException, IOException, SoapUIException {
+        this.project = new WsdlProject(soapProjectXml);
+        this.project.setPropertyValue("CertBasePath", certBasePath);
+    }
+
+    public WsdlTestCase createWsdlTestCase(final String testSuiteXml, final String testCaseXml)
+            throws XmlException, IOException, SoapUIException {
+        return this.project.getTestSuiteByName(testSuiteXml).getTestCaseByName(testCaseXml);
     }
 }

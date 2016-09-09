@@ -12,6 +12,8 @@ Scenario Outline: Get firmware version
 	  And a device firmware
 	    | DeviceIdentification | device-01          |
 	    | Firmware Version     | <Firmware Version> |
+	And an oslp device	    
+	    | DeviceIdentification | device-01 |
     And the device returns firmware version "<Firmware Version>" over OSLP 
 	 When receiving a get firmware version request
 	    | DeviceIdentification | device-01 |

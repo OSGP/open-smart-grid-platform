@@ -8,8 +8,9 @@
 package com.alliander.osgp.platform.cucumber.hooks;
 
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
-
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
@@ -27,20 +28,30 @@ import cucumber.api.java.Before;
  */
 public class ScenarioHooks {
 
+    private final Logger LOGGER = LoggerFactory.getLogger(ScenarioHooks.class);
+
+    @Autowired
     private DeviceRepository deviceRepository;
+
+    @Autowired
     private DlmsDeviceRepository dlmsDeviceRepository;
+
+    @Autowired
     private DeviceAuthorizationRepository deviceAuthorizationRepository;
+
+    @Autowired
     private OrganisationRepository organizationRepository;
 
     /**
      * Executed before each scenario.
-     * 
-     * Remove all stuff from the database before each test. Each test should stand on its own. Therefore
-     * you should guarantee that the scenario is complete.
+     *
+     * Remove all stuff from the database before each test. Each test should
+     * stand on its own. Therefore you should guarantee that the scenario is
+     * complete.
      */
     @Before
     public void beforeScenario() {
-        clearDatabase();
+        this.clearDatabase();
     }
 
     /**
@@ -48,45 +59,38 @@ public class ScenarioHooks {
      */
     @After
     public void afterScenario() {
-    	// Destroy scenario context as the scenario is finished.
-    	ScenarioContext.context = null;
+        // Destroy scenario context as the scenario is finished.
+        ScenarioContext.context = null;
     }
 
     /**
      * Clears the database except for the normal data.
      */
     private void clearDatabase() {
-    	final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("cucumber.xml");
-
-        // Get all the repositories.
-        this.deviceRepository = context.getBean(DeviceRepository.class);
-        this.dlmsDeviceRepository = context.getBean(DlmsDeviceRepository.class);
-        this.deviceAuthorizationRepository = context.getBean(DeviceAuthorizationRepository.class);
-        this.organizationRepository = context.getBean(OrganisationRepository.class);
-
         // Remove all data from previous scenario.
         this.deviceAuthorizationRepository.deleteAll();
         this.deviceRepository.deleteAll();
-        this.dlmsDeviceRepository.deleteAll();
+        // TODO DLMS not used this.dlmsDeviceRepository.deleteAll();
 
-        // TODO Remove here all organizations except test-org. In GlobalHooks, the default data will be added
+        // TODO Remove here all organizations except test-org. In GlobalHooks,
+        // the default data will be added
         // in the database. The stuff here should not remove that.
         this.organizationRepository.deleteAll();
-        Organisation testOrg = new Organisation("test-org", "Test Organization for all tests", "MAA", PlatformFunctionGroup.ADMIN);
-		testOrg.addDomain(PlatformDomain.COMMON);
-		testOrg.addDomain(PlatformDomain.PUBLIC_LIGHTING);
-		testOrg.addDomain(PlatformDomain.TARIFF_SWITCHING);
-		testOrg.setIsEnabled(true);
-		organizationRepository.save(testOrg);
-		//this.organizationRepository.deleteAllExcept("test-org");
-        //for (Organisation organisation : this.organizationRepository.findAll()) {
-        //	if (organisation.getOrganisationIdentification() != "test-org") {
-        //    	this.organizationRepository.delete(organisation);
-        //	}
-        //}
-        
-        // TODO: Clean all other repositories ....
+        final Organisation testOrg = new Organisation("test-org", "Test Organization for all tests", "MAA",
+                PlatformFunctionGroup.ADMIN);
+        testOrg.addDomain(PlatformDomain.COMMON);
+        testOrg.addDomain(PlatformDomain.PUBLIC_LIGHTING);
+        testOrg.addDomain(PlatformDomain.TARIFF_SWITCHING);
+        testOrg.setIsEnabled(true);
+        this.organizationRepository.save(testOrg);
+        // this.organizationRepository.deleteAllExcept("test-org");
+        // for (Organisation organisation :
+        // this.organizationRepository.findAll()) {
+        // if (organisation.getOrganisationIdentification() != "test-org") {
+        // this.organizationRepository.delete(organisation);
+        // }
+        // }
 
-        context.close();
+        // TODO: Clean all other repositories ....
     }
 }

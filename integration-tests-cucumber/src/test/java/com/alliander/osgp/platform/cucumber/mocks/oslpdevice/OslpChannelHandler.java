@@ -8,16 +8,12 @@
 package com.alliander.osgp.platform.cucumber.mocks.oslpdevice;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.security.PrivateKey;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
-import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CountDownLatch;
@@ -25,7 +21,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import javax.annotation.Resource;
 import javax.persistence.Transient;
 
 import org.apache.commons.codec.binary.Base64;
@@ -38,44 +33,12 @@ import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.joda.time.Minutes;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
+import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.oslp.Oslp;
-import com.alliander.osgp.oslp.Oslp.ConfirmRegisterDeviceResponse;
-import com.alliander.osgp.oslp.Oslp.DaliConfiguration;
-import com.alliander.osgp.oslp.Oslp.GetActualPowerUsageRequest;
-import com.alliander.osgp.oslp.Oslp.GetActualPowerUsageResponse;
-import com.alliander.osgp.oslp.Oslp.GetFirmwareVersionResponse;
-import com.alliander.osgp.oslp.Oslp.GetPowerUsageHistoryRequest;
-import com.alliander.osgp.oslp.Oslp.GetPowerUsageHistoryResponse;
-import com.alliander.osgp.oslp.Oslp.GetStatusResponse;
-import com.alliander.osgp.oslp.Oslp.HistoryTermType;
-import com.alliander.osgp.oslp.Oslp.IndexAddressMap;
-import com.alliander.osgp.oslp.Oslp.LightValue;
-import com.alliander.osgp.oslp.Oslp.LongTermIntervalType;
 import com.alliander.osgp.oslp.Oslp.Message;
-import com.alliander.osgp.oslp.Oslp.MeterType;
-import com.alliander.osgp.oslp.Oslp.PageInfo;
-import com.alliander.osgp.oslp.Oslp.PowerUsageData;
-import com.alliander.osgp.oslp.Oslp.PsldData;
-import com.alliander.osgp.oslp.Oslp.RelayConfiguration;
-import com.alliander.osgp.oslp.Oslp.RelayType;
-import com.alliander.osgp.oslp.Oslp.SetEventNotificationsRequest;
-import com.alliander.osgp.oslp.Oslp.SetEventNotificationsResponse;
-import com.alliander.osgp.oslp.Oslp.SetLightRequest;
-import com.alliander.osgp.oslp.Oslp.SetLightResponse;
-import com.alliander.osgp.oslp.Oslp.SetScheduleRequest;
-import com.alliander.osgp.oslp.Oslp.SetScheduleResponse;
-import com.alliander.osgp.oslp.Oslp.SsldData;
-import com.alliander.osgp.oslp.Oslp.StartSelfTestResponse;
-import com.alliander.osgp.oslp.Oslp.StopSelfTestResponse;
-import com.alliander.osgp.oslp.Oslp.UpdateFirmwareRequest;
-import com.alliander.osgp.oslp.Oslp.UpdateFirmwareResponse;
 import com.alliander.osgp.oslp.OslpEnvelope;
 
 public class OslpChannelHandler extends SimpleChannelHandler {
@@ -86,6 +49,16 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
     @Transient
     private static final Integer SEQUENCE_NUMBER_MAXIMUM = 65535;
+
+    private final String oslpSignature;
+    private final String oslpSignatureProvider;
+    private final int connectionTimeout;
+    private final Integer sequenceNumberWindow;
+    private final Integer sequenceNumberMaximum;
+    private final Long responseDelayTime;
+    private final Long reponseDelayRandomRange;
+    private final PrivateKey privateKey;
+    private final ClientBootstrap clientBootstrap;
 
     // Device settings
     private Integer sequenceNumber;
@@ -108,8 +81,8 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                 if (!this.latch.await(this.connectionTimeout, TimeUnit.MILLISECONDS)) {
                     LOGGER.warn("Failed to receive response from device {} within timelimit {} ms",
                             deviceIdentification, this.connectionTimeout);
-                    throw new IOException("Failed to receive response within timelimit " + this.connectionTimeout
-                            + " ms");
+                    throw new IOException(
+                            "Failed to receive response within timelimit " + this.connectionTimeout + " ms");
                 }
 
                 LOGGER.info("Response received within {} ms", this.connectionTimeout);
@@ -125,40 +98,15 @@ public class OslpChannelHandler extends SimpleChannelHandler {
         }
     }
 
-    @Autowired
-    private PrivateKey privateKey;
-
-    @Resource
-    private String oslpSignatureProvider;
-
-    @Resource
-    private String oslpSignature;
-
-    @Resource
-    private int connectionTimeout;
-
-    @Autowired
-    private ClientBootstrap bootstrap;
-
     private final Lock lock = new ReentrantLock();
 
     private final ConcurrentMap<Integer, Callback> callbacks = new ConcurrentHashMap<>();
 
-    @Autowired
-    private Integer sequenceNumberWindow;
-
-    @Autowired
-    private Integer sequenceNumberMaximum;
-
     private final List<OutOfSequenceEvent> outOfSequenceList = new ArrayList<>();
 
-    @Autowired
-    private Long responseDelayTime;
-
-    @Autowired
-    private Long reponseDelayRandomRange;
-
     private final Random random = new Random();
+
+    private final ConcurrentMap<DeviceRequestMessageType, Message> mockMessages;
 
     private static final int CUMALATIVE_BURNING_MINUTES = 600;
     private static int INITIAL_BURNING_MINUTES = 100000;
@@ -187,6 +135,23 @@ public class OslpChannelHandler extends SimpleChannelHandler {
         }
     }
 
+    public OslpChannelHandler(final String oslpSignature, final String oslpSignatureProvider,
+            final int connectionTimeout, final Integer sequenceNumberWindow, final Integer sequenceNumberMaximum,
+            final Long responseDelayTime, final Long reponseDelayRandomRange, final PrivateKey privateKey,
+            final ClientBootstrap clientBootstrap,
+            final ConcurrentMap<DeviceRequestMessageType, Message> mockMessages) {
+        this.oslpSignature = oslpSignature;
+        this.oslpSignatureProvider = oslpSignatureProvider;
+        this.connectionTimeout = connectionTimeout;
+        this.sequenceNumberWindow = sequenceNumberWindow;
+        this.sequenceNumberMaximum = sequenceNumberMaximum;
+        this.responseDelayTime = responseDelayTime;
+        this.reponseDelayRandomRange = reponseDelayRandomRange;
+        this.privateKey = privateKey;
+        this.clientBootstrap = clientBootstrap;
+        this.mockMessages = mockMessages;
+    }
+
     /**
      * Get an OutOfSequenceEvent for given device id. The OutOfSequenceEvent
      * instance will be removed from the list, before the instance is returned.
@@ -204,26 +169,6 @@ public class OslpChannelHandler extends SimpleChannelHandler {
             }
         }
         return null;
-    }
-
-    public void setPrivateKey(final PrivateKey privateKey) {
-        this.privateKey = privateKey;
-    }
-
-    public void setProvider(final String provider) {
-        this.oslpSignatureProvider = provider;
-    }
-
-    public void setSignature(final String signature) {
-        this.oslpSignature = signature;
-    }
-
-    public ClientBootstrap getBootstrap() {
-        return this.bootstrap;
-    }
-
-    public void setBootstrap(final ClientBootstrap bootstrap) {
-        this.bootstrap = bootstrap;
     }
 
     @Override
@@ -249,8 +194,8 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                 // Sequence number logic
                 byte[] sequenceNumber = message.getSequenceNumber();
                 Integer number = -1;
-                if (!(message.getPayloadMessage().hasRegisterDeviceRequest() || message.getPayloadMessage()
-                        .hasConfirmRegisterDeviceRequest())) {
+                if (!(message.getPayloadMessage().hasRegisterDeviceRequest()
+                        || message.getPayloadMessage().hasConfirmRegisterDeviceRequest())) {
                     // Convert byte array to integer
                     number = this.convertByteArrayToInteger(sequenceNumber);
 
@@ -276,8 +221,8 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
                 // Build the OslpEnvelope with the incremented sequence number.
                 final OslpEnvelope.Builder responseBuilder = new OslpEnvelope.Builder()
-                .withSignature(this.oslpSignature).withProvider(this.oslpSignatureProvider)
-                .withPrimaryKey(this.privateKey).withDeviceId(deviceId).withSequenceNumber(sequenceNumber);
+                        .withSignature(this.oslpSignature).withProvider(this.oslpSignatureProvider)
+                        .withPrimaryKey(this.privateKey).withDeviceId(deviceId).withSequenceNumber(sequenceNumber);
 
                 // Pass the incremented sequence number to the handleRequest()
                 // function for checking.
@@ -345,7 +290,7 @@ public class OslpChannelHandler extends SimpleChannelHandler {
         // Open connection and send message
         ChannelFuture channelFuture = null;
         try {
-            channelFuture = this.bootstrap.connect(address);
+            channelFuture = this.clientBootstrap.connect(address);
             channelFuture.awaitUninterruptibly(this.connectionTimeout, TimeUnit.MILLISECONDS);
             if (channelFuture.getChannel() != null && channelFuture.getChannel().isConnected()) {
                 LOGGER.info("Connection established to: {}", address);
@@ -412,22 +357,25 @@ public class OslpChannelHandler extends SimpleChannelHandler {
         LOGGER.info("manufacturerId byte[0]: {} byte[1]: {}", message.getDeviceId()[0], message.getDeviceId()[1]);
         LOGGER.info("deviceId as BASE 64 STRING: {}", deviceIdString);
 
-         // Calculate expected sequence number
+        // Calculate expected sequence number
         final Integer expectedSequenceNumber = this.doGetNextSequence();
 
-        /*// Check sequence number
-        if (Math.abs(expectedSequenceNumber - sequenceNumber) > this.sequenceNumberWindow) {
-            this.outOfSequenceList.add(new OutOfSequenceEvent(device.getId(), message.getPayloadMessage().toString(),
-                    DateTime.now()));
+        /*
+         * // Check sequence number if (Math.abs(expectedSequenceNumber -
+         * sequenceNumber) > this.sequenceNumberWindow) {
+         * this.outOfSequenceList.add(new OutOfSequenceEvent(device.getId(),
+         * message.getPayloadMessage().toString(), DateTime.now()));
+         *
+         * throw new
+         * DeviceSimulatorException("SequenceNumber incorrect for device: " +
+         * device.getDeviceIdentification() + " Expected: " +
+         * (expectedSequenceNumber == 0 ? this.sequenceNumberMaximum :
+         * expectedSequenceNumber - 1) + " Actual: " + (sequenceNumber == 0 ?
+         * this.sequenceNumberMaximum : sequenceNumber - 1) +
+         * " SequenceNumberWindow: " + this.sequenceNumberWindow + " Request: "
+         * + message.getPayloadMessage().toString()); }
+         */
 
-            throw new DeviceSimulatorException("SequenceNumber incorrect for device: "
-                    + device.getDeviceIdentification() + " Expected: "
-                    + (expectedSequenceNumber == 0 ? this.sequenceNumberMaximum : expectedSequenceNumber - 1)
-                    + " Actual: " + (sequenceNumber == 0 ? this.sequenceNumberMaximum : sequenceNumber - 1)
-                    + " SequenceNumberWindow: " + this.sequenceNumberWindow + " Request: "
-                    + message.getPayloadMessage().toString());
-        }*/
-        
         // If responseDelayTime (and optional responseDelayRandomRange) are set,
         // sleep for a little while
         if (this.responseDelayTime != null && this.reponseDelayRandomRange == null) {
@@ -438,8 +386,10 @@ public class OslpChannelHandler extends SimpleChannelHandler {
         }
 
         // Handle requests
-        if (request.hasGetFirmwareVersionRequest()) {
-            response = createGetFirmwareVersionResponse();
+        if (request.hasGetFirmwareVersionRequest()
+                && this.mockMessages.containsKey(DeviceRequestMessageType.GET_FIRMWARE_VERSION)) {
+            response = this.mockMessages.get(DeviceRequestMessageType.GET_FIRMWARE_VERSION);
+            this.mockMessages.remove(DeviceRequestMessageType.GET_FIRMWARE_VERSION);
         }
         // TODO: Implement further requests.
         else {
@@ -453,17 +403,6 @@ public class OslpChannelHandler extends SimpleChannelHandler {
         return response;
     }
 
-    /**
-     * Create a get firmware version response
-     * @return
-     */
-    private Message createGetFirmwareVersionResponse() {
-        return Oslp.Message.newBuilder()
-                .setGetFirmwareVersionResponse(
-                		GetFirmwareVersionResponse.newBuilder().setFirmwareVersion(this.firmwareVersion))
-                .build();
-    }
-    
     private int doGetNextSequence() {
         int next = this.sequenceNumber + 1;
         if (next > SEQUENCE_NUMBER_MAXIMUM) {
@@ -472,7 +411,7 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
         return next;
     }
-    
+
     private byte[] convertIntegerToByteArray(final Integer value) {
         // See: platform.service.SequenceNumberUtils
         final byte[] bytes = new byte[2];

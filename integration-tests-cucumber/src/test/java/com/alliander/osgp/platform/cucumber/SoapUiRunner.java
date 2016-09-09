@@ -9,8 +9,12 @@ package com.alliander.osgp.platform.cucumber;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
+import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,49 +33,62 @@ import com.eviware.soapui.model.iface.MessageExchange;
 import com.eviware.soapui.model.testsuite.TestCase;
 import com.eviware.soapui.model.testsuite.TestStepResult;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
+import com.eviware.soapui.support.SoapUIException;
 
 /**
  * Super class for SOAP UI runner implementations. Each Runner will be called
  * from a subclass.
  */
 @Configuration
-@PropertySources({
-	@PropertySource("classpath:osgp-cucumber.properties"),
-	@PropertySource(value = "file:/etc/osp/osgp-cucumber.properties", ignoreResourceNotFound = true),
-})
+@PropertySources({ @PropertySource("classpath:osgp-cucumber.properties"),
+        @PropertySource(value = "file:/etc/osp/osgp-cucumber.properties", ignoreResourceNotFound = true), })
 public abstract class SoapUiRunner {
 
-	/**
-	 * The url of the server to test. Default to localhost:443.
-	 */
+    /**
+     * The url of the server to test. Default to localhost:443.
+     */
     @Value("${serviceEndpoint}")
     private String serviceEndpoint;
-    
+
+    @Value("${certificate.basepath}")
+    private String certBasePath;
+
     private final Logger LOGGER = LoggerFactory.getLogger(SoapUiRunner.class);
     private static final String DEFAULT_SOAPUI_PROJECT = "soap-ui-project/Core-SoapUI-project.xml";
-    private String soapui_project = DEFAULT_SOAPUI_PROJECT;
+    private String soapuiProject = DEFAULT_SOAPUI_PROJECT;
     private static final String ERRMSG = "The soapUi xml fragment: \n %s \ndoes not contain all three tags: \n %s, %s and/or %s";
-    
+
     /**
-     * Default constructor.
-     * As default project the OSGP-SoapUI-project.xml will be used.
+     * Default constructor. As default project the OSGP-SoapUI-project.xml will
+     * be used.
      */
     protected SoapUiRunner() {
     }
-    
+
     /**
      * Constructor.
-     * 
-     * @param soapUiProject The full path of the soap ui project to be used.
+     *
+     * @param soapUiProject
+     *            The full path of the soap ui project to be used.
+     * @throws SoapUIException
+     * @throws IOException
+     * @throws XmlException
      */
-    public SoapUiRunner(String soapUiProject) {
-    	this.soapui_project = soapUiProject;
+    public SoapUiRunner(final String soapUiProject) {
+        this.soapuiProject = soapUiProject;
     }
-    
+
+    @PostConstruct
+    protected void init() throws XmlException, IOException, SoapUIException {
+        this.wsdlProjectFactory = new WsdlProjectFactory(this.soapuiProject, this.certBasePath);
+    }
+
     /**
-     * TIME_OUT represents the time in milliseconds between each moment polling the database for a response. 
-     * MAX_TIME represents the maximum allowed polling time in milliseconds within the response should be returned. 
-     * When this time is over, the polling will stop and return the result when available.
+     * TIME_OUT represents the time in milliseconds between each moment polling
+     * the database for a response. MAX_TIME represents the maximum allowed
+     * polling time in milliseconds within the response should be returned. When
+     * this time is over, the polling will stop and return the result when
+     * available.
      */
 
     public static final String TIME_OUT = "TimeOut";
@@ -82,7 +99,6 @@ public abstract class SoapUiRunner {
 
     private TestCase testCase;
 
-    @Autowired
     protected WsdlProjectFactory wsdlProjectFactory;
 
     @Autowired
@@ -106,14 +122,14 @@ public abstract class SoapUiRunner {
      *            is the testsuite name which includes the testcase
      * @throws Throwable
      */
-    protected void requestRunner(final TestStepStatus testStepStatus, final Map<String, String> propertiesMap, final String testCaseNameRequest,
-            final String testCaseXml, final String testSuiteXml) throws Throwable {
+    protected void requestRunner(final TestStepStatus testStepStatus, final Map<String, String> propertiesMap,
+            final String testCaseNameRequest, final String testCaseXml, final String testSuiteXml) throws Throwable {
 
-    	propertiesMap.put("ServiceEndpoint", this.serviceEndpoint);
+        propertiesMap.put("ServiceEndpoint", this.serviceEndpoint);
 
-        this.testCase = this.wsdlProjectFactory.createWsdlTestCase(this.soapui_project, testSuiteXml, testCaseXml);
-        assertRequest(testCaseNameRequest, testCaseXml, testSuiteXml);
-               
+        this.testCase = this.wsdlProjectFactory.createWsdlTestCase(testSuiteXml, testCaseXml);
+        this.assertRequest(testCaseNameRequest, testCaseXml, testSuiteXml);
+
         final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase, propertiesMap,
                 testCaseNameRequest);
         final TestStepResult runTestStepByNameResult = runTestStepByName.getRunTestStepByName();
@@ -126,21 +142,21 @@ public abstract class SoapUiRunner {
     }
 
     /**
-     * Here we check if the xml fragment does contain the tags to be used in the test.
-     * If not this is logged. Probably the test will fail later on. 
+     * Here we check if the xml fragment does contain the tags to be used in the
+     * test. If not this is logged. Probably the test will fail later on.
+     *
      * @param testCaseNameRequest
      * @param testCaseXml
      * @param testSuiteXml
      */
-    private void assertRequest( final String testCaseNameRequest,
-            final String testCaseXml, final String testSuiteXml) {
+    private void assertRequest(final String testCaseNameRequest, final String testCaseXml, final String testSuiteXml) {
         final WsdlTestCase wsdlTestcase = (WsdlTestCase) this.testCase;
         final String xml = wsdlTestcase.getConfig().toString();
         final boolean flag1 = xml.indexOf(testCaseNameRequest) > 0;
         final boolean flag2 = xml.indexOf(testCaseXml) > 0;
         final boolean flag3 = xml.indexOf(testSuiteXml) > 0;
         if (!flag1 || !flag2 || !flag3) {
-            LOGGER.error(String.format(ERRMSG, xml, testSuiteXml, testCaseXml, testCaseNameRequest));
+            this.LOGGER.error(String.format(ERRMSG, xml, testSuiteXml, testCaseXml, testCaseNameRequest));
         }
     }
 
