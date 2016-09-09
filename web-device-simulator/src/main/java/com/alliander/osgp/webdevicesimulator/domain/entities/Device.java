@@ -352,9 +352,9 @@ public class Device extends AbstractEntity {
         final List<DeviceOutputSetting> defaultConfiguration = new ArrayList<>();
 
         if (this.deviceType.equalsIgnoreCase(SSLD_TYPE)) {
-            defaultConfiguration.add(new DeviceOutputSetting(1, 1, OutputType.LIGHT));
+            defaultConfiguration.add(new DeviceOutputSetting(1, 1, OutputType.TARIFF));
             defaultConfiguration.add(new DeviceOutputSetting(2, 2, OutputType.LIGHT));
-            defaultConfiguration.add(new DeviceOutputSetting(3, 3, OutputType.TARIFF));
+            defaultConfiguration.add(new DeviceOutputSetting(3, 3, OutputType.LIGHT));
         }
 
         return defaultConfiguration;
