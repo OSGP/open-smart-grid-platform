@@ -19,6 +19,8 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
@@ -34,6 +36,8 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
+@Component
+@Transactional("txMgrCore")
 public class DeviceSteps {
 
     public static String DEFAULT_DEVICE_IDENTIFICATION = "test-device";
@@ -60,7 +64,7 @@ public class DeviceSteps {
 
     @Autowired
     private DeviceModelRepository deviceModelRepository;
-    
+
     @Autowired
     private DeviceAuthorizationRepository deviceAuthorizationRepository;
 
@@ -86,16 +90,16 @@ public class DeviceSteps {
         device.setActivated(getBoolean(settings, "IsActivated", this.DEFAULT_IS_ACTIVATED));
         device.setTechnicalInstallationDate(getDate(settings, "TechnicalInstallationDate").toDate());
 
-        final DeviceModel deviceModel = this.deviceModelRepository.findByModelCode(
-        		getString(settings, "DeviceModel", Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
+        final DeviceModel deviceModel = this.deviceModelRepository
+                .findByModelCode(getString(settings, "DeviceModel", Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
         device.setDeviceModel(deviceModel);
 
         // TODO: add protocol information in controlled place
         device.updateProtocol(this.protocolInfoRepository.findByProtocolAndProtocolVersion(
-        		getString(settings, "Protocol", this.DEFAULT_PROTOCOL), 
-        		getString(settings, "ProtocolVersion", this.DEFAULT_PROTOCOL_VERSION)));
+                getString(settings, "Protocol", this.DEFAULT_PROTOCOL),
+                getString(settings, "ProtocolVersion", this.DEFAULT_PROTOCOL_VERSION)));
 
-        device.updateRegistrationData(InetAddress.getLocalHost(),
+        device.updateRegistrationData(InetAddress.getLoopbackAddress(),
                 getString(settings, "DeviceType", this.DEFAULT_DEVICE_TYPE));
 
         device.setVersion(getLong(settings, "Version"));
@@ -110,14 +114,17 @@ public class DeviceSteps {
                 getFloat(settings, "gpsLatitude", this.DEFAULT_LATITUDE),
                 getFloat(settings, "gpsLongitude", this.DEFAULT_LONGITUDE));
 
-        Organisation organization = organizationRepository.findByOrganisationIdentification(
-    			getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
-    	
-    	DeviceFunctionGroup functionGroup = getEnum(settings, "DeviceFunctionGroup", DeviceFunctionGroup.class, DeviceFunctionGroup.OWNER);
-    	
+        device = this.deviceRepository.save(device);
+
+        final Organisation organization = this.organizationRepository.findByOrganisationIdentification(
+                getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+
+        final DeviceFunctionGroup functionGroup = getEnum(settings, "DeviceFunctionGroup", DeviceFunctionGroup.class,
+                DeviceFunctionGroup.OWNER);
+
         final DeviceAuthorization authorization = device.addAuthorization(organization, functionGroup);
-        this.deviceAuthorizationRepository.save(authorization);
         this.deviceRepository.save(device);
+        this.deviceAuthorizationRepository.save(authorization);
     }
 
     /**

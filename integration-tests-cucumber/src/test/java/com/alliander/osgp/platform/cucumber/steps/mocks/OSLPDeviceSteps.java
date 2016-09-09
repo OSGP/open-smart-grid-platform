@@ -7,9 +7,12 @@
  */
 package com.alliander.osgp.platform.cucumber.steps.mocks;
 
+import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 
-import com.alliander.osgp.platform.cucumber.mocks.oslpdevice.OslpMockServer;
+import com.alliander.osgp.oslp.Oslp.Message;
+import com.alliander.osgp.platform.cucumber.mocks.oslpdevice.MockOslpServer;
 
 import cucumber.api.DataTable;
 import cucumber.api.PendingException;
@@ -23,8 +26,7 @@ import cucumber.api.java.en.When;
 public class OSLPDeviceSteps {
 
     @Autowired
-    // private OSLPDeviceMock oslpDeviceMock;
-    private OslpMockServer oslpMockServer;
+    private MockOslpServer oslpMockServer;
 
     @When("^the device returns firmware version \"([^\"]*)\" over OSLP$")
     public void the_device_returns_firmware_version_over_OSLP(final String fwVersion) throws Throwable {
@@ -45,8 +47,9 @@ public class OSLPDeviceSteps {
         // TODO: Wait until the mock service received the get firmware version
         // oslp message from the platform.
         // TODO: Make this more generic maybe.
-        // TODO final String message =
-        // oslpDeviceMock.WaitForGetFirmwareVersionMessage();
+        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.GET_FIRMWARE_VERSION);
+        Assert.notNull(message);
+        Assert.isTrue(message.hasGetFirmwareVersionResponse());
 
         // TODO Assert.assertEquals(deviceIdentification, message);
     }

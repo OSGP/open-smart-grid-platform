@@ -41,11 +41,11 @@ import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.Oslp.Message;
 import com.alliander.osgp.oslp.OslpEnvelope;
 
-public class OslpChannelHandler extends SimpleChannelHandler {
+public class MockOslpChannelHandler extends SimpleChannelHandler {
 
     private static DateTimeZone localTimeZone = DateTimeZone.forID("Europe/Amsterdam");
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OslpChannelHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MockOslpChannelHandler.class);
 
     @Transient
     private static final Integer SEQUENCE_NUMBER_MAXIMUM = 65535;
@@ -106,7 +106,8 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
     private final Random random = new Random();
 
-    private final ConcurrentMap<DeviceRequestMessageType, Message> mockMessages;
+    private final ConcurrentMap<DeviceRequestMessageType, Message> mockResponses;
+    private final ConcurrentMap<DeviceRequestMessageType, Message> receivedRequests;
 
     private static final int CUMALATIVE_BURNING_MINUTES = 600;
     private static int INITIAL_BURNING_MINUTES = 100000;
@@ -135,11 +136,11 @@ public class OslpChannelHandler extends SimpleChannelHandler {
         }
     }
 
-    public OslpChannelHandler(final String oslpSignature, final String oslpSignatureProvider,
+    public MockOslpChannelHandler(final String oslpSignature, final String oslpSignatureProvider,
             final int connectionTimeout, final Integer sequenceNumberWindow, final Integer sequenceNumberMaximum,
             final Long responseDelayTime, final Long reponseDelayRandomRange, final PrivateKey privateKey,
-            final ClientBootstrap clientBootstrap,
-            final ConcurrentMap<DeviceRequestMessageType, Message> mockMessages) {
+            final ClientBootstrap clientBootstrap, final ConcurrentMap<DeviceRequestMessageType, Message> mockResponses,
+            final ConcurrentMap<DeviceRequestMessageType, Message> receivedRequests) {
         this.oslpSignature = oslpSignature;
         this.oslpSignatureProvider = oslpSignatureProvider;
         this.connectionTimeout = connectionTimeout;
@@ -149,7 +150,8 @@ public class OslpChannelHandler extends SimpleChannelHandler {
         this.reponseDelayRandomRange = reponseDelayRandomRange;
         this.privateKey = privateKey;
         this.clientBootstrap = clientBootstrap;
-        this.mockMessages = mockMessages;
+        this.mockResponses = mockResponses;
+        this.receivedRequests = receivedRequests;
     }
 
     /**
@@ -387,9 +389,10 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
         // Handle requests
         if (request.hasGetFirmwareVersionRequest()
-                && this.mockMessages.containsKey(DeviceRequestMessageType.GET_FIRMWARE_VERSION)) {
-            response = this.mockMessages.get(DeviceRequestMessageType.GET_FIRMWARE_VERSION);
-            this.mockMessages.remove(DeviceRequestMessageType.GET_FIRMWARE_VERSION);
+                && this.mockResponses.containsKey(DeviceRequestMessageType.GET_FIRMWARE_VERSION)) {
+            this.receivedRequests.put(DeviceRequestMessageType.GET_FIRMWARE_VERSION, request);
+            response = this.mockResponses.get(DeviceRequestMessageType.GET_FIRMWARE_VERSION);
+            this.mockResponses.remove(DeviceRequestMessageType.GET_FIRMWARE_VERSION);
         }
         // TODO: Implement further requests.
         else {

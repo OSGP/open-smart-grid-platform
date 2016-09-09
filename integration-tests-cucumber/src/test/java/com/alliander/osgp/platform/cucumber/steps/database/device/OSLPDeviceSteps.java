@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.platform.cucumber.steps.database.device;
 
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
+
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alliander.osgp.adapter.protocol.oslp.domain.entities.OslpDevice;
 import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRepository;
 import com.alliander.osgp.platform.cucumber.steps.database.DeviceSteps;
-import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 
 import cucumber.api.java.en.Given;
 
@@ -22,25 +23,33 @@ import cucumber.api.java.en.Given;
  * OSLP device specific steps.
  */
 public class OSLPDeviceSteps {
-	
-	private String DEFAULT_DEVICE_UID = "MTIzNA==";
+
+    private static final String DEFAULT_DEVICE_UID = "dGVzdDEyMzQ1Njc4";
+    private static final String PLATFORM_PUBLIC_KEY = "MHcCAQEEIIBhQuYM27c3Ol0stdc3wx3B/VgGkN+LR5c++HwVFdEkoAoGCCqGSM49"
+            + "AwEHoUQDQgAEFhUImXFJdqmputquVAc2CPdnn9Ju00M3m/Ice7wABNN+oAYKQbw/"
+            + "OceqvZmFF1+r4nO/vCm/f1JO5nEorE2jNQ==";
 
     @Autowired
     private OslpDeviceRepository oslpDeviceRespository;
 
+    @Autowired
+    private DeviceSteps deviceSteps;
+
     @Given("^an oslp device$")
     public void anOslpDevice(final Map<String, String> settings) throws Throwable {
-    	
-    	// First create the device itself
-    	DeviceSteps deviceSteps = new DeviceSteps();
-    	deviceSteps.aDevice(settings);
 
-    	// Now create the OSLP device in the OSLP database
-        final String deviceIdentification = getString(settings, "DeviceIdentification", DeviceSteps.DEFAULT_DEVICE_IDENTIFICATION);
-        final OslpDevice device = new OslpDevice(
-        		getString(settings, "DeviceUid", DEFAULT_DEVICE_UID), 
-        		deviceIdentification, 
-        		getString(settings, "DeviceType", DeviceSteps.DEFAULT_DEVICE_TYPE));
+        // First create the device itself
+        this.deviceSteps.aDevice(settings);
+
+        // Now create the OSLP device in the OSLP database
+        final String deviceIdentification = getString(settings, "DeviceIdentification",
+                DeviceSteps.DEFAULT_DEVICE_IDENTIFICATION);
+        final OslpDevice device = new OslpDevice(getString(settings, "DeviceUid", DEFAULT_DEVICE_UID),
+                deviceIdentification, getString(settings, "DeviceType", DeviceSteps.DEFAULT_DEVICE_TYPE));
+        device.setSequenceNumber(0);
+        device.setRandomDevice(0);
+        device.setRandomPlatform(0);
+        device.updatePublicKey(PLATFORM_PUBLIC_KEY);
         this.oslpDeviceRespository.save(device);
     }
 }

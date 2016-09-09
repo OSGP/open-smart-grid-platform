@@ -26,9 +26,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
         "com.alliander.osgp.adapter.protocol.oslp.domain.entities" })
 @EnableTransactionManagement()
 @Import({ PersistenceConfigCore.class, PersistenceConfigResponseData.class, PersistenceConfigResponseDlms.class,
-        PersistenceConfigLogging.class })
+        PersistenceConfigLogging.class, PersistenceConfigResponseOslp.class })
 @PropertySources({ @PropertySource("classpath:osgp-cucumber.properties"),
         @PropertySource(value = "file:/etc/osp/osgp-cucumber.properties", ignoreResourceNotFound = true) })
 public class ApplicationContext {
-	
+
 }

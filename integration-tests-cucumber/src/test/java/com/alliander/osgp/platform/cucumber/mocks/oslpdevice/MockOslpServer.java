@@ -35,9 +35,9 @@ import com.alliander.osgp.oslp.OslpEncoder;
 import com.alliander.osgp.shared.security.CertificateHelper;
 
 @Component
-public class OslpMockServer {
+public class MockOslpServer {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OslpMockServer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MockOslpServer.class);
 
     @Value("${oslp.port.server}")
     private int oslpPortServer;
@@ -74,26 +74,49 @@ public class OslpMockServer {
     // TODO split channelhandler in client/server
     private ChannelHandler channelHandler;
 
-    private final ConcurrentMap<DeviceRequestMessageType, Message> mockMessages = new ConcurrentHashMap<>();
+    private final ConcurrentMap<DeviceRequestMessageType, Message> mockResponses = new ConcurrentHashMap<>();
+    private final ConcurrentMap<DeviceRequestMessageType, Message> receivedRequests = new ConcurrentHashMap<>();
 
     @PostConstruct
     protected void init()
             throws InvalidKeySpecException, NoSuchAlgorithmException, NoSuchProviderException, IOException {
-        this.channelHandler = new OslpChannelHandler(this.oslpSignature, this.oslpSignatureProvider,
+        this.channelHandler = new MockOslpChannelHandler(this.oslpSignature, this.oslpSignatureProvider,
                 this.connectionTimeout, this.sequenceNumberWindow, this.sequenceNumberMaximum, this.responseDelayTime,
-                this.reponseDelayRandomRange, this.privateKey(), this.clientBootstrap(), this.mockMessages);
+                this.reponseDelayRandomRange, this.privateKey(), this.clientBootstrap(), this.mockResponses,
+                this.receivedRequests);
         this.server = this.serverBootstrap();
         this.server.bind(new InetSocketAddress(this.oslpPortServer));
+        LOGGER.info("Started OSLP Mock server on port {}", this.oslpPortServer);
     }
 
     public void resetServer() {
-        this.mockMessages.clear();
+        this.mockResponses.clear();
     }
 
     public void mockFirmwareResponse(final String fwVersion) {
-        this.mockMessages.put(DeviceRequestMessageType.GET_FIRMWARE_VERSION, Oslp.Message.newBuilder()
+        this.mockResponses.put(DeviceRequestMessageType.GET_FIRMWARE_VERSION, Oslp.Message.newBuilder()
                 .setGetFirmwareVersionResponse(GetFirmwareVersionResponse.newBuilder().setFirmwareVersion(fwVersion))
                 .build());
+    }
+
+    public Message waitForRequest(final DeviceRequestMessageType requestType) {
+        int count = 0;
+        while (!this.receivedRequests.containsKey(requestType)) {
+            try {
+                count++;
+                Thread.sleep(1000);
+            } catch (final InterruptedException e) {
+                // TODO add assertion?
+                return null;
+            }
+
+            if (count > 60000) {
+                // TODO add assertion?
+                return null;
+            }
+        }
+
+        return this.receivedRequests.get(requestType);
     }
 
     private ServerBootstrap serverBootstrap() {
@@ -106,7 +129,7 @@ public class OslpMockServer {
             @Override
             public ChannelPipeline getPipeline()
                     throws InvalidKeySpecException, NoSuchAlgorithmException, IOException, NoSuchProviderException {
-                final ChannelPipeline pipeline = OslpMockServer.this.createPipeLine();
+                final ChannelPipeline pipeline = MockOslpServer.this.createPipeLine();
                 LOGGER.info("Created new server pipeline");
                 return pipeline;
             }
@@ -126,7 +149,7 @@ public class OslpMockServer {
             @Override
             public ChannelPipeline getPipeline()
                     throws InvalidKeySpecException, NoSuchAlgorithmException, IOException, NoSuchProviderException {
-                final ChannelPipeline pipeline = OslpMockServer.this.createPipeLine();
+                final ChannelPipeline pipeline = MockOslpServer.this.createPipeLine();
                 LOGGER.info("Created new client pipeline");
                 return pipeline;
             }
