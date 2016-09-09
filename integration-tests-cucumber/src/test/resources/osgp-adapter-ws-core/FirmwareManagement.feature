@@ -10,6 +10,8 @@ Scenario Outline: Get firmware version
 	    | Firmware Version     | <Firmware Version> |
 	    | Organization         | Test Organization  |
 	    | IsActivated          | True               |
+	And an oslp device	    
+	    | DeviceIdentification | device-01 |
 	 When receiving a get firmware version request
 	    | DeviceIdentification | device-01 |
     And the device returns firmware version "<Firmware Version>" over OSLP 

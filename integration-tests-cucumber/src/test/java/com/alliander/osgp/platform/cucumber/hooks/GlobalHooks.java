@@ -20,42 +20,47 @@ import cucumber.api.java.Before;
  * Global hooks for the cucumber tests.
  */
 public class GlobalHooks {
-	
-	private static boolean dunit = false;
-	
-	@Autowired
-	private OrganisationRepository organizationRepo;
-	
-	/**
-	 * Executed once before all scenarios.
-	 */
-	@Before
-	public void beforeAll() {
-		if (!dunit) {
-			Runtime.getRuntime().addShutdownHook(new Thread() {
-				public void run() {
-					afterAll();
-				}
-			});
-			
-			// Do the before all stuff here ...
-			// First delete all organizations as we want our own organization to be added.
-			organizationRepo.deleteAll();
-			
-			// Create test organization used within the tests.
-			Organisation testOrg = new Organisation("test-org", "Test Organization for all tests", "MAA", PlatformFunctionGroup.ADMIN);
-			testOrg.addDomain(PlatformDomain.COMMON);
-			
-			organizationRepo.save(testOrg);
-			
-			dunit = true;
-		}
-	}
-	
-	/**
-	 * Executed after all scenarios.
-	 */
-	public void afterAll() {
-		// Do here the after all stuff...
-	}
+
+    private static boolean dunit = false;
+
+    @Autowired
+    private OrganisationRepository organizationRepo;
+
+    /**
+     * Executed once before all scenarios.
+     */
+    @Before
+    public void beforeAll() {
+        if (!dunit) {
+            Runtime.getRuntime().addShutdownHook(new Thread() {
+                @Override
+                public void run() {
+                    GlobalHooks.this.afterAll();
+                }
+            });
+
+            // Do the before all stuff here ...
+            // First delete all organizations as we want our own organization to
+            // be added.
+            this.organizationRepo.deleteAll();
+
+            // Create test organization used within the tests.
+            final Organisation testOrg = new Organisation("test-org", "Test Organization for all tests", "MAA",
+                    PlatformFunctionGroup.ADMIN);
+            testOrg.addDomain(PlatformDomain.COMMON);
+            testOrg.addDomain(PlatformDomain.PUBLIC_LIGHTING);
+            testOrg.addDomain(PlatformDomain.TARIFF_SWITCHING);
+
+            this.organizationRepo.save(testOrg);
+
+            dunit = true;
+        }
+    }
+
+    /**
+     * Executed after all scenarios.
+     */
+    public void afterAll() {
+        // Do here the after all stuff...
+    }
 }
