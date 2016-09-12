@@ -7,8 +7,6 @@
  */
 package com.alliander.osgp.platform.cucumber.core;
 
-import java.util.Dictionary;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,7 +23,7 @@ public class ScenarioContext {
 	/**
 	 * The data object to store the scenario specific context in.
 	 */
-	public Map<String, Object> Data = new HashMap<String, Object>();
+	private Map<String, Object> Data = new HashMap<String, Object>();
 	
 	/**
 	 * Get the current context and instantiate it.
@@ -38,4 +36,12 @@ public class ScenarioContext {
 		
 		return context;
 	}
+	
+	public Object get(final Object key) {
+	    return this.Data.get(key);
+	}
+
+    public void put(final String key, final Object value) {
+        this.Data.put(key, value);
+    }
 }

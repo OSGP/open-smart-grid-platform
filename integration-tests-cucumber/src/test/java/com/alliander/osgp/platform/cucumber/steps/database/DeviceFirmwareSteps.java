@@ -19,6 +19,8 @@ import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceFirmware;
 import com.alliander.osgp.domain.core.entities.Firmware;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
+import com.alliander.osgp.platform.cucumber.steps.Defaults;
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 
 import cucumber.api.java.en.Given;
 
@@ -44,12 +46,14 @@ public class DeviceFirmwareSteps {
     public void aDeviceFirmware(final Map<String, String> settings) throws Throwable {
 
         // Get the device
-        final Device device = this.deviceRepository.findByDeviceIdentification(settings.get("DeviceIdentification"));
+        final Device device = this.deviceRepository.findByDeviceIdentification(
+                getString(settings, "DeviceIdentification", Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         // TODO for now take the last
         final List<Firmware> fws = this.firmwareRepository.findAll();
+        final Firmware firmware = fws.get(fws.size() - 1);
 
-        final Firmware firmware = new Firmware();
+        // Now create the device firmware.
         final DeviceFirmware deviceFirmware = new DeviceFirmware();
 
         deviceFirmware.setDevice(device);

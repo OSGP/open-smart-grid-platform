@@ -27,7 +27,7 @@ import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.valueobjects.PlatformDomain;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
-import com.alliander.osgp.platform.cucumber.steps.database.Defaults;
+import com.alliander.osgp.platform.cucumber.steps.Defaults;
 
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
@@ -86,13 +86,13 @@ public class ScenarioHooks {
      */
     private void clearDatabase() {
         // Remove all data from previous scenario.
+        cleanRepoAbstractEntity(this.dlmsDeviceRepository);
+        cleanRepoAbstractEntity(this.oslpDeviceRepository);
         cleanRepoAbstractEntity(this.deviceAuthorizationRepository);
         cleanRepoSerializable(this.deviceRepository);
         cleanRepoSerializable(this.deviceModelRepo);
         cleanRepoSerializable(this.manufacturerRepo);
         cleanRepoAbstractEntity(this.organizationRepository);
-        cleanRepoAbstractEntity(this.dlmsDeviceRepository);
-        cleanRepoAbstractEntity(this.oslpDeviceRepository);
 
         // TODO: Better would be to have some sort of init method in the
         // steps.database package which will create the nescessary basic

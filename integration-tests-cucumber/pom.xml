@@ -259,34 +259,7 @@
       <artifactId>spring-ws-support</artifactId>
     </dependency>
 
-   <dependency>
-      <groupId>com.alliander.osgp</groupId>
-      <artifactId>osgp-adapter-ws-smartmetering</artifactId>
-      <classifier>classes</classifier>
-    </dependency>
-
-   <dependency>
-      <groupId>org.osgp</groupId>
-      <artifactId>osgp-protocol-adapter-dlms</artifactId>
-      <classifier>classes</classifier>
-    </dependency>
-    <dependency>
-      <groupId>com.alliander.osgp</groupId>
-      <artifactId>osgp-protocol-adapter-oslp</artifactId>
-      <classifier>classes</classifier>
-    </dependency>
-    
-    <dependency>
-      <groupId>com.alliander.osgp</groupId>
-      <artifactId>osgp-domain-logging</artifactId>
-    </dependency>
-    
-    <dependency>
-      <groupId>com.alliander.osgp</groupId>
-      <artifactId>osgp-adapter-ws-shared-db</artifactId>
-    </dependency>
- 
-	<dependency>
+   	<dependency>
 	  <groupId>org.hibernate.javax.persistence</groupId>
 	  <artifactId>hibernate-jpa-2.0-api</artifactId>
 	  <version>1.0.1.Final</version>
@@ -329,6 +302,32 @@
 	</dependency>
 
 	<!-- OSGP -->
+	<dependency>
+      <groupId>com.alliander.osgp</groupId>
+      <artifactId>osgp-adapter-ws-smartmetering</artifactId>
+      <classifier>classes</classifier>
+    </dependency>
+
+    <dependency>
+      <groupId>org.osgp</groupId>
+      <artifactId>osgp-protocol-adapter-dlms</artifactId>
+      <classifier>classes</classifier>
+    </dependency>
+    <dependency>
+      <groupId>com.alliander.osgp</groupId>
+      <artifactId>osgp-protocol-adapter-oslp</artifactId>
+      <classifier>classes</classifier>
+    </dependency>
+    
+    <dependency>
+      <groupId>com.alliander.osgp</groupId>
+      <artifactId>osgp-domain-logging</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>com.alliander.osgp</groupId>
+      <artifactId>osgp-adapter-ws-shared-db</artifactId>
+    </dependency>
     <dependency>
     	<groupId>com.alliander.osgp</groupId>
     	<artifactId>oslp</artifactId>

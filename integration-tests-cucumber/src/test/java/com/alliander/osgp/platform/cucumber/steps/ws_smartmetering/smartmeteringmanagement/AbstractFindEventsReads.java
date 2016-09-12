@@ -26,6 +26,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.EventType;
+import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.ws_smartmetering.SmartMeteringStepsBase;
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
 import com.alliander.osgp.platform.cucumber.support.OrganisationId;
@@ -58,7 +59,7 @@ public abstract class AbstractFindEventsReads extends SmartMeteringStepsBase {
     }
 
     public void eventsShouldBeReturned() throws Throwable {
-        PROPERTIES_MAP.put(CORRELATION_UID_LABEL, this.correlationUid);
+        PROPERTIES_MAP.put(CORRELATION_UID_LABEL, ScenarioContext.Current().get("CorrelationUid").toString());
 
         this.responseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE + this.getEventLogCategory(), LOGGER);
 
@@ -66,7 +67,7 @@ public abstract class AbstractFindEventsReads extends SmartMeteringStepsBase {
     }
 
     /**
-     * Return the types of events allowed in a reponse, an assert will be done.
+     * Return the types of events allowed in a response, an assert will be done.
      *
      * @return
      */

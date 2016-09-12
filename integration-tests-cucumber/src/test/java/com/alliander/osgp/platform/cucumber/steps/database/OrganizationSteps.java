@@ -7,7 +7,6 @@
  */
 package com.alliander.osgp.platform.cucumber.steps.database;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +22,6 @@ import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getEnum;
-import static com.alliander.osgp.platform.cucumber.core.Helpers.WaitForEntity;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
@@ -66,7 +64,7 @@ public class OrganizationSteps {
 
     	// Save the created id for the organization in the scenario context.
     	Organisation savedEntity = repo.findByName(getString(settings, "Name", DEFAULT_NAME));
-    	ScenarioContext.Current().Data.put("OrganizationId", savedEntity.getId());
+    	ScenarioContext.Current().put("OrganizationId", savedEntity.getId());
     }
 
     /**
@@ -112,7 +110,6 @@ public class OrganizationSteps {
      */
     @Then("^the organization with name \"([^\"]*)\" should not be created$")
     public void the_organization_with_name_should_not_be_created(String name) throws Throwable {
-    	// TODO: cannot find symbol
-    	//Assert.assertNull(repo.findByName(name));
+    	Assert.assertNull(repo.findByName(name));
     }
 }

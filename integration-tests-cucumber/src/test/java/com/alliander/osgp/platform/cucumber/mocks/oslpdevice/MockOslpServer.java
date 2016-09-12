@@ -13,6 +13,7 @@ import java.util.concurrent.Executors;
 
 import javax.annotation.PostConstruct;
 
+import org.junit.Assert;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.ChannelFactory;
@@ -75,7 +76,7 @@ public class MockOslpServer {
 
     private ServerBootstrap server;
 
-    // TODO split channelhandler in client/server
+    // TODO split channel handler in client/server
     private ChannelHandler channelHandler;
 
     private final ConcurrentMap<DeviceRequestMessageType, Message> mockResponses = new ConcurrentHashMap<>();
@@ -108,17 +109,14 @@ public class MockOslpServer {
         while (!this.receivedRequests.containsKey(requestType)) {
             try {
                 count++;
+                LOGGER.info("Sleeping 1s " + count);
                 Thread.sleep(1000);
             } catch (final InterruptedException e) {
-                LOGGER.warn("Polling for response interrupted");
-                // TODO add assertion?
-                return null;
+                Assert.fail("Polling for response interrupted");
             }
 
-            if (count > 6000000) {
-                // TODO add assertion?
-                LOGGER.warn("Polling for response failed, no response found");
-                return null;
+            if (count > 60) {
+                Assert.fail("Polling for response failed, no reponse found");
             }
         }
 

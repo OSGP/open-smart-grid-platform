@@ -23,40 +23,26 @@ Feature: Firmware management
       | Firmware Version | Firmware Module Type |
       | 0123             | FUNCTIONAL           |
 
-  # Scenario: Unsuccessfully get firmware version
-  # |given|a get firmware version request for device @device                                     |
-  # |and  |the get firmware version request refers to a device @device with status @status       |
-  # |and  |the get firmware version request refers to an organisation that is authorised         |
-  # |when |the get firmware version request is received                                          |
-  # |then |a get firmware version oslp message is sent to device @device should be @ismessagesent|
-  # -| get firmware version failure matrix |
-  # |device   |status      |oslpresponse|ismessagesent|
-  # |device-01|unknown     |N/A         |false        |
-  # |device-01|unregistered|N/A         |false        |
-  #!3 ''NOTE: Device Message Status not implemented in protocol??? Therefore the following tests cannot be performed...''
-  # * |device-01|active      |FAILURE     |true         |DEVICEMESSAGEFAILEDEXCEPTION  |
-  # * |device-01|active      |REJECTED    |true         |DEVICEMESSAGEREJECTEDEXCEPTION|
-  #!2 Parameters:
-  # * device: device identification
-  # * status: active, unknown, unregistered, ???
-  # * isgenerated: boolean (true/false) indicating whether a correlationID is generated
-  # * isqueued: boolean (true/false) indicating whether a message is added to the queue
-  # * result: OK (correlationID is returned) or exception
-  Scenario Outline: Failure get firmware version
-    Given a get firmware version request for device testdevice
-    And the get firmware version request refers to a device testdevice with status <Status>
-    And the get firmware version request refers to an organisation that is authorised
-    When the get firmware version request is received
-    Then a get firmware version oslp message is sent to device testdevice should be <Is Message Sent>
+  Scenario Outline: Get firmware version from inactive device
+    Given an oslp device
+      | DeviceIdentification | D01               |
+      | Status               | <Status>          |
+      | Organization         | Test Organization |
+      | IsActivated          | True              |
+    When receiving a get firmware version request
+      | DeviceIdentification | D01 |
+    Then no get firmware version oslp message is sent to device with deviceidentification "D01"
 
     Examples: 
-      | Status       | Oslp Response | Is Message Sent |
-      | unknown      | N/A           | false           |
-      | unregistered | N/A           | false           |
+      | Status       | 
+      | unknown      | 
+      | unregistered |
 
   # Because the device message status is not implemented in the protocol, the following tests cannot be performed:
-  #     | active       | FAILURE       | true            | DEVICEMESSAGEFAILEDEXCEPTION   |
-  #     | active       | REJECTED      | true            | DEVICEMESSAGEREJECTEDEXCEPTION |
+  #     | Status       | Message Status | Reason                         |
+  #     | active       | FAILURE        | DEVICEMESSAGEFAILEDEXCEPTION   |
+  #     | active       | REJECTED       | DEVICEMESSAGEREJECTEDEXCEPTION |
+  
   #!2 Scenario: Receive A Get Firmware Response Request
   #-| scenario | get firmware response input values | correlationid || deviceid || isfound || deviceid2 || qresult || qdescription || firmwareversion || result || description|
   #|given|a get firmware version response request with correlationId @correlationid and deviceId @deviceid                                                                                                                |

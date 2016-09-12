@@ -9,7 +9,6 @@
  */
 package com.alliander.osgp.platform.cucumber.steps.ws_admin.devicemanagement;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -22,17 +21,15 @@ import cucumber.api.java.en.When;
 
 public class DeactivateDeviceSteps extends AdminStepsBase {
 
-    private static final String TEST_SUITE_XML = "DeviceManagement";
-    private static final String TEST_CASE_XML = "281 Deactivate device";
+    private static final String TEST_SUITE = "DeviceManagement";
+    private static final String TEST_CASE_NAME = "281 Deactivate device";
     private static final String TEST_CASE_NAME_REQUEST = "DeactivateDevice - Request 1";
-
-    private static final Map<String, String> PROPERTIES_MAP = new HashMap<>();
 
     @When("^receiving a deactivate device request$")
     public void receivingADeactivateDeviceRequest(final Map<String, String> requestSettings) throws Throwable {
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_LABEL, requestSettings.get("DeviceIdentification"));
         
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
+        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_NAME, TEST_SUITE);
     }
 
     /**

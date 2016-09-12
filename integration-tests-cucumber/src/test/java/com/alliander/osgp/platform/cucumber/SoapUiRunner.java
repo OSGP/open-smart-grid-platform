@@ -9,12 +9,12 @@ package com.alliander.osgp.platform.cucumber;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.xmlbeans.XmlException;
+import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,6 @@ import com.eviware.soapui.model.iface.MessageExchange;
 import com.eviware.soapui.model.testsuite.TestCase;
 import com.eviware.soapui.model.testsuite.TestStepResult;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
-import com.eviware.soapui.support.SoapUIException;
 
 /**
  * Super class for SOAP UI runner implementations. Each Runner will be called
@@ -58,6 +57,19 @@ public abstract class SoapUiRunner {
     private String soapuiProject = DEFAULT_SOAPUI_PROJECT;
     private static final String ERRMSG = "The soapUi xml fragment: \n %s \ndoes not contain all three tags: \n %s, %s and/or %s";
 
+    protected static final Map<String, String> PROPERTIES_MAP = new HashMap<>();
+
+    // Labels.
+    protected static final String DEVICE_IDENTIFICATION_LABEL = "DeviceIdentification";
+    protected static final String ORGANISATION_IDENTIFICATION_LABEL = "OrganisationIdentification";
+    protected static final String SERVICE_ENDPOINT_LABEL = "ServiceEndpoint";
+    public    static final String CORRELATION_UID_LABEL = "CorrelationUid";
+    protected static final String DEVICE_TYPE_LABEL = "DeviceType";
+
+    protected static final String PATH_DEVICE_IDENTIFICATION = "//*[local-name()='DeviceId']/text()";
+    protected static final String PATH_CORRELATION_UID = "//*[local-name()='CorrelationUid']/text()";
+    protected static final String PATH_RESULT = "//*[local-name()='Result']/text()";
+
     /**
      * Default constructor. As default project the OSGP-SoapUI-project.xml will
      * be used.
@@ -70,16 +82,18 @@ public abstract class SoapUiRunner {
      *
      * @param soapUiProject
      *            The full path of the soap ui project to be used.
-     * @throws SoapUIException
-     * @throws IOException
-     * @throws XmlException
      */
     public SoapUiRunner(final String soapUiProject) {
         this.soapuiProject = soapUiProject;
     }
 
+    /**
+     * Create the WSDL project based on the given SoapUI project.
+     * 
+     * @throws Throwable.
+     */
     @PostConstruct
-    protected void init() throws XmlException, IOException, SoapUIException {
+    protected void init() throws Throwable {
         this.wsdlProjectFactory = new WsdlProjectFactory(this.soapuiProject, this.certBasePath);
     }
 
@@ -90,7 +104,6 @@ public abstract class SoapUiRunner {
      * this time is over, the polling will stop and return the result when
      * available.
      */
-
     public static final String TIME_OUT = "TimeOut";
     public static final String MAX_TIME = "MaxTime";
 
@@ -125,7 +138,7 @@ public abstract class SoapUiRunner {
     protected void requestRunner(final TestStepStatus testStepStatus, final Map<String, String> propertiesMap,
             final String testCaseNameRequest, final String testCaseXml, final String testSuiteXml) throws Throwable {
 
-        propertiesMap.put("ServiceEndpoint", this.serviceEndpoint);
+        propertiesMap.put(SERVICE_ENDPOINT_LABEL, this.serviceEndpoint);
 
         this.testCase = this.wsdlProjectFactory.createWsdlTestCase(testSuiteXml, testCaseXml);
         this.assertRequest(testCaseNameRequest, testCaseXml, testSuiteXml);
@@ -184,5 +197,31 @@ public abstract class SoapUiRunner {
 
         this.response = ((MessageExchange) wsdlTestCaseRunner.getResults().get(0)).getResponseContent();
         logger.info(testCaseNameResponse + " response {}", this.response);
+    }
+
+    /**
+     * Wait for a response. 
+     * @param propertiesMap
+     * @param testCaseResultName
+     * @param testCaseResultReqXML
+     * @param testSuiteXML
+     * @throws Throwable 
+     */
+    public void waitForResponse(final TestStepStatus testStepStatus, final Map<String, String> propertiesMap, final String testCaseResultNameRequest,
+                final String testCaseResultReqXml, final String testSuiteXml) throws Throwable {
+        // Wait for OK response
+        int count = 0;
+        do {
+            if (count > 120) {
+                Assert.fail("Failed to retieve a response");
+            }
+    
+            // Wait for next try to retrieve a response
+            count++;
+            Thread.sleep(1000);
+    
+            this.requestRunner(testStepStatus, propertiesMap, testCaseResultNameRequest,
+                    testCaseResultReqXml, testSuiteXml);
+        } while (!this.runXpathResult.assertXpath(this.response, PATH_RESULT, "OK")); 
     }
 }

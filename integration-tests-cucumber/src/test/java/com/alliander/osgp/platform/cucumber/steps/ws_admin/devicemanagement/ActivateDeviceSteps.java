@@ -9,11 +9,9 @@
  */
 package com.alliander.osgp.platform.cucumber.steps.ws_admin.devicemanagement;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Assert;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.platform.cucumber.steps.ws_admin.AdminStepsBase;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
@@ -23,17 +21,15 @@ import cucumber.api.java.en.When;
 
 public class ActivateDeviceSteps extends AdminStepsBase {
 
-    private static final String TEST_SUITE_XML = "DeviceManagement";
-    private static final String TEST_CASE_XML = "540 Activate device";
+    private static final String TEST_SUITE = "DeviceManagement";
+    private static final String TEST_CASE_NAME = "540 Activate device";
     private static final String TEST_CASE_NAME_REQUEST = "ActivateDevice - Request 1";
-
-    private static final Map<String, String> PROPERTIES_MAP = new HashMap<>();
 
     @When("^receiving a activate device request$")
     public void receivingAActivateDeviceRequest(final Map<String, String> requestSettings) throws Throwable {
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_LABEL, requestSettings.get("DeviceIdentification"));
 
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
+        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_NAME, TEST_SUITE);
     }
     
     /**

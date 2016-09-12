@@ -15,6 +15,7 @@ import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.ManufacturerRepository;
+import com.alliander.osgp.platform.cucumber.steps.Defaults;
 
 import cucumber.api.java.en.Given;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;

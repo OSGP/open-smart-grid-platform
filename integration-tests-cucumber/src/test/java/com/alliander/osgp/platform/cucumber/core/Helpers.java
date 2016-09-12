@@ -14,6 +14,7 @@ import org.joda.time.DateTime;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.util.Assert;
 
+import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
 public class Helpers {
@@ -155,24 +156,6 @@ public class Helpers {
     }
 
     /**
-     *
-     * @param repo
-     * @param entityType
-     * @param serialiable
-     * @return
-     */
-    public static AbstractEntity WaitForEntity(final JpaRepository repo, final Class<AbstractEntity> entityType,
-            final Serializable serialiable) {
-        AbstractEntity entity = null;
-
-        while (entity == null) {
-            entity = (AbstractEntity) repo.findOne(serialiable);
-        }
-
-        return entity;
-    }
-
-    /**
      * Check the correlationUid in the response and save it in the current
      * scenarioContext.
      *
@@ -186,26 +169,20 @@ public class Helpers {
     public static void saveCorrelationUidInScenarioContext(final String correlationUid,
             String organizationIdentification) throws Throwable {
         if (organizationIdentification == null || organizationIdentification.isEmpty()) {
-            organizationIdentification = "test-org";
+            organizationIdentification = Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION;
         }
-
-        // TODO why is this check required? It currently does not seem to work
-
-        // Pattern correlationUidPattern =
-        // Pattern.compile(organizationIdentification +
-        // XPATH_MATCHER_CORRELATIONUID);
-        // Matcher correlationUidMatcher =
-        // correlationUidPattern.matcher(correlationUid);
-        // correlationUidMatcher.find();
-        //
-        // ScenarioContext.Current().Data.put("CorrelationUid",
-        // correlationUidMatcher.group());
-
+        
         // Validate the correlation-id starts with correct organization
         Assert.isTrue(correlationUid.startsWith(organizationIdentification));
-        ScenarioContext.Current().Data.put("CorrelationUid", correlationUid);
+        ScenarioContext.Current().put("CorrelationUid", correlationUid);
     }
 
+    /**
+     * When running automatic tests, it might be that not each project is started in tomcat. When 
+     * the repo's are cleared at the beginning of a test run, you get some exceptions when the database wasn't
+     * found. Therefore this method is created to ignore that. 
+     * @param repo The repository to remove.
+     */
     public static <T extends AbstractEntity> void cleanRepoAbstractEntity(final JpaRepository<T, Long> repo) {
         try {
             repo.deleteAll();
@@ -214,6 +191,12 @@ public class Helpers {
         }
     }
 
+    /**
+     * When running automatic tests, it might be that not each project is started in tomcat. When 
+     * the repo's are cleared at the beginning of a test run, you get some exceptions when the database wasn't
+     * found. Therefore this method is created to ignore that. 
+     * @param repo
+     */
     public static <T extends Serializable> void cleanRepoSerializable(final JpaRepository<T, Long> repo) {
         try {
             repo.deleteAll();

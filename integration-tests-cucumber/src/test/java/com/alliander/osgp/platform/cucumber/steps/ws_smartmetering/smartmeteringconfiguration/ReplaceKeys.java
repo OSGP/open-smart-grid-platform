@@ -16,6 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
+import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.ws_smartmetering.SmartMeteringStepsBase;
 import com.alliander.osgp.platform.cucumber.steps.ws_smartmetering.smartmeteringmonitoring.ActualMeterReadsGas;
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
@@ -29,15 +31,12 @@ import cucumber.api.java.en.When;
 public class ReplaceKeys extends SmartMeteringStepsBase {
     private static final String PATH_RESULT = "/Envelope/Body/ReplaceKeysResponse/Result/text()";
 
-    private static final String XPATH_MATCHER_RESULT = "OK";
-
     private static final String TEST_SUITE_XML = "SmartmeterConfiguration";
     private static final String TEST_CASE_XML = "128/441 Replace Keys";
     private static final String TEST_CASE_NAME_REQUEST = "ReplaceKeys - Request 1";
     private static final String TEST_CASE_NAME_RESPONSE = "GetReplaceKeysResponse - Request 1";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ActualMeterReadsGas.class);
-    private static final Map<String, String> PROPERTIES_MAP = new HashMap<>();
 
     @Autowired
     private DeviceId deviceId;
@@ -55,11 +54,11 @@ public class ReplaceKeys extends SmartMeteringStepsBase {
 
     @Then("^the new keys are set on the device$")
     public void theNewKeysAreSetOnTheDevice() throws Throwable {
-        PROPERTIES_MAP.put(CORRELATION_UID_LABEL, this.correlationUid);
+        PROPERTIES_MAP.put(CORRELATION_UID_LABEL, ScenarioContext.Current().get("CorrelationUid").toString());
 
         this.responseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
 
-        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT, XPATH_MATCHER_RESULT));
+        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT, Defaults.EXPECTED_RESULT));
     }
 
     @And("^the new keys are stored in the osgp_adapter_protocol_dlms database security_key table$")

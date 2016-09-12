@@ -13,14 +13,16 @@ import static com.alliander.osgp.platform.cucumber.core.Helpers.cleanRepoSeriali
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.domain.core.entities.DeviceModel;
+import com.alliander.osgp.domain.core.entities.Firmware;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
+import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.ManufacturerRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.valueobjects.PlatformDomain;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
-import com.alliander.osgp.platform.cucumber.steps.database.Defaults;
+import com.alliander.osgp.platform.cucumber.steps.Defaults;
 
 import cucumber.api.java.Before;
 
@@ -39,6 +41,9 @@ public class GlobalHooks {
     
     @Autowired
     private DeviceModelRepository deviceModelRepo;
+    
+    @Autowired 
+    private DeviceRepository deviceRepo;
 
     /**
      * Executed once before all scenarios.
@@ -56,6 +61,7 @@ public class GlobalHooks {
             // Do the before all stuff here ...
             // First delete all organizations as we want our own organization to
             // be added.
+            cleanRepoSerializable(this.deviceRepo);
             cleanRepoSerializable(this.deviceModelRepo);
             cleanRepoSerializable(this.manufacturerRepo);
             cleanRepoAbstractEntity(this.organizationRepo);

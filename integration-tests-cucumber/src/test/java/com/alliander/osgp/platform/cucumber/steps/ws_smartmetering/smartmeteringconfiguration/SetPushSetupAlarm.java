@@ -23,7 +23,9 @@ import org.springframework.data.domain.PageRequest;
 
 import com.alliander.osgp.logging.domain.entities.DeviceLogItem;
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
+import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.hooks.SimulatePushedAlarmsHooks;
+import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.ws_smartmetering.SmartMeteringStepsBase;
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
 import com.alliander.osgp.platform.cucumber.support.OrganisationId;
@@ -36,7 +38,6 @@ import cucumber.api.java.en.When;
 public class SetPushSetupAlarm extends SmartMeteringStepsBase {
     private static final String PATH_RESULT = "/Envelope/Body/SetPushSetupAlarmResponse/Result/text()";
 
-    private static final String XPATH_MATCHER_RESULT = "OK";
     private static final String XPATH_MATCHER_PUSH_NOTIFICATION = "DlmsPushNotification \\[device = \\w*, trigger type = Push alarm monitor, alarms=\\[(\\w*(, )?)+\\]\\]";
 
     private static final String TEST_SUITE_XML = "SmartmeterConfiguration";
@@ -76,11 +77,11 @@ public class SetPushSetupAlarm extends SmartMeteringStepsBase {
 
     @Then("^the alarm should be pushed to OSGP$")
     public void theAlarmShouldBePushedToOSGP() throws Throwable {
-        PROPERTIES_MAP.put(CORRELATION_UID_LABEL, this.correlationUid);
+        PROPERTIES_MAP.put(CORRELATION_UID_LABEL, ScenarioContext.Current().get("CorrelationUid").toString());
 
         this.responseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
 
-        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT, XPATH_MATCHER_RESULT));
+        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT, Defaults.EXPECTED_RESULT));
     }
 
     @And("^the alarm should be pushed to the osgp_logging database device_log_item table$")

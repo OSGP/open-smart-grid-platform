@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.steps.database;
+package com.alliander.osgp.platform.cucumber.steps;
 
 /**
  * Defaults within the database.
@@ -19,5 +19,8 @@ public class Defaults {
 	public static final String DEFAULT_MANUFACTURER_NAME = "Test Manufacturer";
 	public static final String DEFAULT_DEVICE_MODEL_MODEL_CODE = "TestModel";
 	public static final String DEFAULT_DEVICE_MODEL_DESCRIPTION = "Test Model";
+    public static final String DEFAULT_DEVICE_IDENTIFICATION = "TD01"; // Test Device  01
+    
+    public static final String EXPECTED_RESULT = "OK";
 	
 }

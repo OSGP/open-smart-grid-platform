@@ -18,6 +18,9 @@ import cucumber.api.java.en.Given;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getBoolean;
 
+/**
+ * The manufacturer related steps.
+ */
 public class ManufacturerSteps {
     
     @Autowired

@@ -1,21 +1,21 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package com.alliander.osgp.platform.cucumber.steps.ws_admin.devicemanagement;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Assert;
 
-import com.alliander.osgp.platform.cucumber.SoapUiRunner;
 import com.alliander.osgp.platform.cucumber.steps.common.ResponseSteps;
 import com.alliander.osgp.platform.cucumber.steps.ws_admin.AdminStepsBase;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
@@ -25,12 +25,10 @@ import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
  */
 public class RemoveOrganizationSteps extends AdminStepsBase {
     
-    private static final String TEST_SUITE_XML = "DeviceManagement";
-    private static final String TEST_CASE_XML = "AT Remove an organization";
+    private static final String TEST_SUITE = "DeviceManagement";
+    private static final String TEST_CASE_NAME = "AT Remove an organization";
     private static final String TEST_CASE_NAME_REQUEST = "RemoveOrganization";
 
-    private static final Map<String, String> PROPERTIES_MAP = new HashMap<>();
-    
     /**
      * Send a remove organization request to the Platform.
      * @param requestParameter An list with request parameters for the request.
@@ -42,11 +40,11 @@ public class RemoveOrganizationSteps extends AdminStepsBase {
 		// Required parameters
 		PROPERTIES_MAP.put("__ORGANIZATION_IDENTIFICATION__", requestParameters.get("OrganizationIdentification"));
 	
-		this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
+		this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_NAME, TEST_SUITE);
 	}
 	
 	/**
-	 * Verify that the create organization response is successfull.
+	 * Verify that the create organization response is successful.
 	 * @throws Throwable
 	 */
 	@Then("^the remove organization response is successfull$")

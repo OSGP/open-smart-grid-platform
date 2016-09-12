@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.ws_smartmetering.SmartMeteringStepsBase;
 import com.alliander.osgp.platform.cucumber.steps.ws_smartmetering.smartmeteringmonitoring.ActualMeterReadsGas;
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
@@ -36,7 +37,6 @@ public class GetAdministrativeStatus extends SmartMeteringStepsBase {
     private static final String TEST_CASE_NAME_RESPONSE = "GetGetAdministrativeStatusResponse - Request 1";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ActualMeterReadsGas.class);
-    private static final Map<String, String> PROPERTIES_MAP = new HashMap<>();
 
     @Autowired
     private DeviceId deviceId;
@@ -54,7 +54,7 @@ public class GetAdministrativeStatus extends SmartMeteringStepsBase {
 
     @Then("^the administrative status should be returned$")
     public void theAdministrativeStatusShouldBeReturned() throws Throwable {
-        PROPERTIES_MAP.put(CORRELATION_UID_LABEL, this.correlationUid);
+        PROPERTIES_MAP.put(CORRELATION_UID_LABEL, ScenarioContext.Current().get("CorrelationUid").toString());
 
         this.responseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
 

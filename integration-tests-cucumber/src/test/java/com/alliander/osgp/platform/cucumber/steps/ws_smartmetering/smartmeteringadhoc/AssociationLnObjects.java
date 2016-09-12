@@ -9,13 +9,14 @@ package com.alliander.osgp.platform.cucumber.steps.ws_smartmetering.smartmeterin
 
 import static org.junit.Assert.assertTrue;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
+import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.ws_smartmetering.SmartMeteringStepsBase;
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
 import com.alliander.osgp.platform.cucumber.support.OrganisationId;
@@ -32,7 +33,6 @@ public class AssociationLnObjects extends SmartMeteringStepsBase {
     private static final String PATH_RESULT_ATTRIBUTE_ID = "/Envelope/Body/GetAssociationLnObjectsResponse/AssociationLnList/AssociationLnListElement/AccessRights/AttributeAccess/AttributeAccessItem/AttributeId/text()";
     private static final String PATH_RESULT_ACCESS_MODE = "/Envelope/Body/GetAssociationLnObjectsResponse/AssociationLnList/AssociationLnListElement/AccessRights/AttributeAccess/AttributeAccessItem/AccessMode/text()";
 
-    private static final String XPATH_MATCHER_RESULT = "OK";
     private static final String XPATH_MATCHER_RESULT_DECIMAL = "\\d+";
     private static final String XPATH_MATCHER_RESULT_ACCESS_MODE = "\\w+\\_\\w+";
 
@@ -42,7 +42,6 @@ public class AssociationLnObjects extends SmartMeteringStepsBase {
     private static final String TEST_CASE_NAME_RESPONSE = "GetGetAssociationLnObjectsResponse - Request 1";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AssociationLnObjects.class);
-    private static final Map<String, String> PROPERTIES_MAP = new HashMap<>();
 
     @Autowired
     private DeviceId deviceId;
@@ -59,11 +58,11 @@ public class AssociationLnObjects extends SmartMeteringStepsBase {
 
     @Then("^the objectlist should be returned$")
     public void theObjectlistShouldBeReturned() throws Throwable {
-        PROPERTIES_MAP.put(CORRELATION_UID_LABEL, this.correlationUid);
+        PROPERTIES_MAP.put(CORRELATION_UID_LABEL, ScenarioContext.Current().get("CorrelationUid").toString());
 
         this.responseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
-
-        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT, XPATH_MATCHER_RESULT));
+        
+        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT, Defaults.EXPECTED_RESULT));
         assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_CLASSID, XPATH_MATCHER_RESULT_DECIMAL));
         assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_VERSION, XPATH_MATCHER_RESULT_DECIMAL));
         assertTrue(this.runXpathResult

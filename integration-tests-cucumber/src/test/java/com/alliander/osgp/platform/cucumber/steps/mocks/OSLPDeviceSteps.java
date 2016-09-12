@@ -26,9 +26,14 @@ public class OSLPDeviceSteps {
     @Autowired
     private MockOslpServer oslpMockServer;
 
+    /**
+     * Setup method to set the firmware which should be returned by the mock.
+     * @param firmwareVersion The firmware to respond.
+     * @throws Throwable
+     */
     @When("^the device returns firmware version \"([^\"]*)\" over OSLP$")
-    public void the_device_returns_firmware_version_over_OSLP(final String fwVersion) throws Throwable {
-        this.oslpMockServer.mockFirmwareResponse(fwVersion);
+    public void the_device_returns_firmware_version_over_OSLP(final String firmwareVersion) throws Throwable {
+        this.oslpMockServer.mockFirmwareResponse(firmwareVersion);
     }
 
     /**

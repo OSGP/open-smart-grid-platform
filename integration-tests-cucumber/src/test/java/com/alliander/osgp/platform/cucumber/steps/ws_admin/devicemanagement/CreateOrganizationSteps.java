@@ -1,9 +1,11 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package com.alliander.osgp.platform.cucumber.steps.ws_admin.devicemanagement;
 
@@ -11,13 +13,10 @@ import cucumber.api.CucumberOptions;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Assert;
 
-import com.alliander.osgp.platform.cucumber.SoapUiRunner;
-import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.common.ResponseSteps;
 import com.alliander.osgp.platform.cucumber.steps.ws_admin.AdminStepsBase;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
@@ -25,18 +24,13 @@ import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 /**
  * Class with all the create organization requests steps
  */
-@CucumberOptions(features = "src/test/resources/osg-adapter-ws-admin/OrganizationManagement.feature",
-	glue = "com.alliander.osgp.platform.cucumber",
-	format = {"pretty"})
 public class CreateOrganizationSteps extends AdminStepsBase {
     
-    private static final String TEST_SUITE_XML = "DeviceManagement";
-    private static final String TEST_CASE_XML = "AT Create a new organization";
+    private static final String TEST_SUITE = "DeviceManagement";
+    private static final String TEST_CASE_NAME = "AT Create a new organization";
     private static final String TEST_CASE_NAME_REQUEST = "CreateOrganization";
     private static final String TEST_CASE_UNAUTHORIZED_NAME_REQUEST = "CreateOrganizationAsUnAuthorizedOrganization";
 
-    private static final Map<String, String> PROPERTIES_MAP = new HashMap<>();
-    
     /**
      * 
      * @param requestParameters
@@ -59,7 +53,7 @@ public class CreateOrganizationSteps extends AdminStepsBase {
 
 		this.fillPropertiesMap(requestParameters);
 		
-		this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
+		this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_NAME, TEST_SUITE);
 	}
 	
 	/**
@@ -71,7 +65,7 @@ public class CreateOrganizationSteps extends AdminStepsBase {
 
 		this.fillPropertiesMap(requestParameters);
 	
-		this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_UNAUTHORIZED_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
+		this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_UNAUTHORIZED_NAME_REQUEST, TEST_CASE_NAME, TEST_SUITE);
 	}
 	
 	/**
