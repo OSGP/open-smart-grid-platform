@@ -7,19 +7,18 @@
  */
 package org.osgpfoundation.osgp.webdemoapp.web.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.osgpfoundation.osgp.webdemoapp.application.services.OsgpClientSoapService;
+import org.osgpfoundation.osgp.webdemoapp.application.services.OsgpAdminClientSoapService;
+import org.osgpfoundation.osgp.webdemoapp.application.services.OsgpPublicLightingClientSoapService;
+import org.osgpfoundation.osgp.webdemoapp.domain.Device;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-
-import com.alliander.osgp.platform.ws.schema.common.deviceinstallation.Device;
 
 /**
  * Handles requests for the application home page.
@@ -27,7 +26,7 @@ import com.alliander.osgp.platform.ws.schema.common.deviceinstallation.Device;
 @Controller
 public class HomeController {
 	
-	private OsgpClientSoapService soapClientService = new OsgpClientSoapService();
+	
     protected static final String DEVICES_URL = "/devices";
     protected static final String DEVICE_CREATE_URL = "/devices/create";
     protected static final String DEVICE_EDIT_URL = "/devices/edit/{id}";
@@ -38,13 +37,19 @@ public class HomeController {
     protected static final String DEVICE_REGISTRATION_VIEW = "devices/deviceRegistrationCheck";
     
     protected static final String MODEL_ATTRIBUTE_DEVICES = "devices";
+    
+    @Autowired
+    OsgpAdminClientSoapService osgpAdminClientSoapService;
+    
+    @Autowired
+    OsgpPublicLightingClientSoapService osgpPublicLightingClientSoapService;
 
     /**
      * Simply selects the home view to render by returning its name.
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String home() {
-        return "redirect:/devices";
+        return "redirect:/list";
     }
     
 //    @RequestMapping(value = DEVICES_URL, method = RequestMethod.GET)
@@ -81,9 +86,20 @@ public class HomeController {
 	   System.out.println("Starting Soap Request");
 	   System.out.println(device.getDeviceIdentification());
 	   
-	   soapClientService.updateKeyRequest(device);
+	   osgpAdminClientSoapService.updateKeyRequest(device);
       
       return "add";
+   }
+   
+   @RequestMapping(value = "/list", method= RequestMethod.GET )
+   public ModelAndView showDeviceList () {
+	   
+	   List<Device> list = osgpPublicLightingClientSoapService.findAllDevicesRequest();
+	   
+	   ModelAndView model = new ModelAndView("list");
+	   model.addObject("deviceList", list);
+	   
+	   return model;
    }
    
 //   @RequestMapping(value = "/device", method = RequestMethod.GET)

@@ -15,14 +15,6 @@
         <td><form:input path="deviceIdentification" /></td>
     </tr>
     <tr>
-        <td><form:label path="owner">Owner</form:label></td>
-        <td><form:input path="owner" /></td>
-    </tr>
-    <tr>
-        <td><form:label path="alias">Alias</form:label></td>
-        <td><form:input path="alias" /></td>
-    </tr>
-    <tr>
         <td colspan="2">
             <input type="submit" value="Submit"/>
         </td>
