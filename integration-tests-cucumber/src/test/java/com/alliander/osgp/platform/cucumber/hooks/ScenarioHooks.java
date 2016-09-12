@@ -8,15 +8,15 @@
 package com.alliander.osgp.platform.cucumber.hooks;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.alliander.osgp.domain.core.entities.Device;
@@ -34,6 +34,7 @@ import cucumber.api.java.Before;
  * class for preparing specific scenarios
  *
  */
+@PropertySource("file:/etc/osp/osgp-cucumber-response-data-smart-metering.properties")
 public class ScenarioHooks {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ScenarioHooks.class);
@@ -48,15 +49,12 @@ public class ScenarioHooks {
     @Autowired
     private ServiceEndpoint serviceEndpoint;
 
+    @Value("${service.endpoint.host}")
+    private String serviceEndpointHost;
+
     @Before()
     public void setServiceEndpoint() {
-
-        final Map<String, String> PROPERTIES_MAP = new HashMap<>();
-        PROPERTIES_MAP.put("TST2", "osgp-tst.cloudapp.net:62443");
-        PROPERTIES_MAP.put("TST7", "osgp-tst.cloudapp.net:57443");
-        PROPERTIES_MAP.put("AWS", "slimme-meters.aws.osg-platform.com:443");
-
-        this.serviceEndpoint.setServiceEndpoint(PROPERTIES_MAP.get("TST2"));
+        this.serviceEndpoint.setServiceEndpoint(this.serviceEndpointHost);
     }
 
     @Before("@SLIM-218")
