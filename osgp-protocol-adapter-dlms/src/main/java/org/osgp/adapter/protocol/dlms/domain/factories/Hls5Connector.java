@@ -73,8 +73,7 @@ public class Hls5Connector {
         this.checkIpAddress();
 
         try {
-            final DlmsConnection connection = this.createConnection();
-            return connection;
+            return this.createConnection();
         } catch (final UnknownHostException e) {
             LOGGER.warn("The IP address is not found: {}", this.device.getIpAddress(), e);
             // Unknown IP, unrecoverable.
