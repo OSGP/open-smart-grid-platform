@@ -207,9 +207,9 @@ public class Ssld extends Device {
         }
 
         if (this.deviceType.equalsIgnoreCase(SSLD_TYPE)) {
-            defaultConfiguration.add(new DeviceOutputSetting(1, 1, RelayType.LIGHT, ""));
+            defaultConfiguration.add(new DeviceOutputSetting(1, 1, RelayType.TARIFF, ""));
             defaultConfiguration.add(new DeviceOutputSetting(2, 2, RelayType.LIGHT, ""));
-            defaultConfiguration.add(new DeviceOutputSetting(3, 3, RelayType.TARIFF, ""));
+            defaultConfiguration.add(new DeviceOutputSetting(3, 3, RelayType.LIGHT, ""));
 
             return defaultConfiguration;
         }
