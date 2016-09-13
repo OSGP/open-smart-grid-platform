@@ -31,6 +31,7 @@ import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
+import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 
 import cucumber.api.java.en.Given;
@@ -122,8 +123,10 @@ public class DeviceSteps {
                 DeviceFunctionGroup.OWNER);
 
         final DeviceAuthorization authorization = device.addAuthorization(organization, functionGroup);
-        this.deviceRepository.save(device);
+        Device savedDevice = this.deviceRepository.save(device);
         this.deviceAuthorizationRepository.save(authorization);
+        
+        ScenarioContext.Current().put("DeviceIdentification", savedDevice.getDeviceIdentification());
     }
 
     /**

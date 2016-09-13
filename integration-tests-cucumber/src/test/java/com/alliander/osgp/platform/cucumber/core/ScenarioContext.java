@@ -44,4 +44,12 @@ public class ScenarioContext {
     public void put(final String key, final Object value) {
         this.Data.put(key, value);
     }
+
+    public Object get(String key, String defaultValue) {
+        if (!this.Data.containsKey(key)) {
+            return defaultValue;
+        } else {
+            return this.get(key);
+        }
+    }
 }

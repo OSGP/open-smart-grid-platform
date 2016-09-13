@@ -64,7 +64,7 @@ public class OrganizationSteps {
 
     	// Save the created id for the organization in the scenario context.
     	Organisation savedEntity = repo.findByName(getString(settings, "Name", DEFAULT_NAME));
-    	ScenarioContext.Current().put("OrganizationId", savedEntity.getId());
+    	ScenarioContext.Current().put("OrganizationIdentification", savedEntity.getOrganisationIdentification());
     }
 
     /**

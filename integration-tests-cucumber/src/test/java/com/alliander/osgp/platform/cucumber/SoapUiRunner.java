@@ -174,33 +174,10 @@ public abstract class SoapUiRunner {
     }
 
     /**
-     * ResponseRunner is called from the @Then step from a subclass which
-     * represents cucumber test scenario('s) and returns the response.
-     *
-     * @param propertiesMap
-     *            includes all needed properties for a specific test run such as
-     *            DeviceId, OrganisationId and CorrelationUid
-     * @param testCaseNameResponse
-     *            is the specific testcase response step to be executed
-     * @param logger
-     *            saves the response message in a logger
-     * @throws Throwable
-     */
-    protected void responseRunner(final Map<String, String> propertiesMap, final String testCaseNameResponse,
-            final Logger logger) throws Throwable {
-
-        final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase, propertiesMap,
-                testCaseNameResponse);
-        final TestStepResult runTestStepByNameResult = runTestStepByName.getRunTestStepByName();
-        final WsdlTestCaseRunner wsdlTestCaseRunner = runTestStepByName.getResults();
-        assertEquals(TestStepStatus.OK, runTestStepByNameResult.getStatus());
-
-        this.response = ((MessageExchange) wsdlTestCaseRunner.getResults().get(0)).getResponseContent();
-        logger.info(testCaseNameResponse + " response {}", this.response);
-    }
-
-    /**
      * Wait for a response. 
+     * @note In order to get the actual response from the device of the original request to the platform, 
+     * we need to poll for it. Newer devices use notification services though, and thus they don't need 
+     * to poll for it using this method.
      * @param propertiesMap
      * @param testCaseResultName
      * @param testCaseResultReqXML

@@ -67,7 +67,7 @@ public class GlobalHooks {
             cleanRepoAbstractEntity(this.organizationRepo);
 
             // TODO: Better would be to have some sort of init method in the 
-            // steps.database package which will create the nescessary basic 
+            // steps.database package which will create the necessary basic 
             // entities.
             // Create test organization used within the tests.
             final Organisation testOrg = new Organisation(
