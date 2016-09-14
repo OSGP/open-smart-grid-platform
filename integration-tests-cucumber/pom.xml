@@ -1,13 +1,7 @@
-<!--
-
-    Copyright 2016 Smart Society Services B.V.
-
-    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
-
-        http://www.apache.org/licenses/LICENSE-2.0
-
--->
- <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<!-- Copyright 2016 Smart Society Services B.V. Licensed under the Apache 
+  License, Version 2.0 (the "License"); you may not use this file except in 
+  compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.alliander</groupId>
@@ -143,34 +137,34 @@
       <artifactId>spring-ws-support</artifactId>
     </dependency>
 
-   <dependency>
+    <dependency>
       <groupId>com.alliander.osgp</groupId>
       <artifactId>osgp-adapter-ws-smartmetering</artifactId>
       <classifier>classes</classifier>
     </dependency>
 
-   <dependency>
+    <dependency>
       <groupId>org.osgp</groupId>
       <artifactId>osgp-protocol-adapter-dlms</artifactId>
       <classifier>classes</classifier>
     </dependency>
-    
+
     <dependency>
       <groupId>com.alliander.osgp</groupId>
       <artifactId>osgp-domain-logging</artifactId>
     </dependency>
- 
-	<dependency>
-	  <groupId>org.hibernate.javax.persistence</groupId>
-	  <artifactId>hibernate-jpa-2.0-api</artifactId>
-	  <version>1.0.1.Final</version>
-	</dependency>
-    
-   <dependency>
+
+    <dependency>
+      <groupId>org.hibernate.javax.persistence</groupId>
+      <artifactId>hibernate-jpa-2.0-api</artifactId>
+      <version>1.0.1.Final</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
       <scope>provided</scope>
     </dependency>
-    
+
   </dependencies>
 </project>

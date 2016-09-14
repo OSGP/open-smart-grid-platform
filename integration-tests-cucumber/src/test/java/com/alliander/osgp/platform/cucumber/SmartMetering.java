@@ -24,6 +24,10 @@ public abstract class SmartMetering extends SoapTestCase {
     protected static final String XPATH_MATCHER_CORRELATIONUID = "\\|\\|\\|\\S{17}\\|\\|\\|\\S{17}";
     protected static final String CHANNEL_LABEL = "ChannelIdentification";
 
+    protected static final String PERIOD_TYPE_LABEL = "PeriodType";
+    protected static final String BEGIN_DATE_LABEL = "BeginDate";
+    protected static final String END_DATE_LABEL = "EndDate";
+
     protected String correlationUid;
 
     @Override

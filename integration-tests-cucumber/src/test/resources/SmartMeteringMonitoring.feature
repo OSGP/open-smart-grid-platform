@@ -4,7 +4,7 @@ Feature:
 
   Background: 
     Given a device with DeviceID "TEST1024000000001"
-    Given a gas device with DeviceID "TESTG102400000001"
+    Given an active mbus device with DeviceID "TESTG102400000001"
     And an organisation with OrganisationID "Infostroom"
 
   @SLIM-392 @SmartMeterMonitoring
@@ -22,15 +22,18 @@ Feature:
     When the get periodic meter reads request is received
     Then the periodic meter reads result should be returned
 
-  @SLIM-225 @SmartMeterMonitoring
-  Scenario: Get the periodic meter reads from a gas device
+  @SLIM-225 @SLIM-228 @SmartMeterMonitoring
+  Scenario Outline: Get the meter reads from a a gas device
+    Given the period type "<periodType>"
+    And the begin date "<beginDate>"
+    And the end date "<endDate>"
     When the get periodic meter reads gas request is received
-    Then the periodic meter reads gas result should be returned
+    Then the "<periodType>" meter reads gas result should be returned
 
-  @SLIM-228 @SmartMeterMonitoring
-  Scenario: Get the interval meter reads from a gas device
-    When the get interval meter reads gas request is received
-    Then the interval meter reads gas result should be returned
+    Examples:
+      |periodType   |beginDate  |endDate    |
+      |INTERVAL     |2015-09-01 |2015-10-01 |
+      |MONTHLY      |2016-01-01 |2016-09-01 |
 
   @SLIM-192 @SmartMeterMonitoring
   Scenario: Read the alarm register from a device
