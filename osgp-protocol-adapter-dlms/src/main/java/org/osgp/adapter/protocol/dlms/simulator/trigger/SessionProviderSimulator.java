@@ -6,17 +6,11 @@
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
 
-package org.osgp.adapter.protocol.dlms.application.services;
-
-import java.io.IOException;
+package org.osgp.adapter.protocol.dlms.simulator.trigger;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.osgp.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.jasper.sessionproviders.SessionProvider;
 import org.osgp.adapter.protocol.jasper.sessionproviders.SessionProviderEnum;
@@ -46,13 +40,14 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 @PropertySource("file:${osp/osgpAdapterProtocolDlms/config}")
 public class SessionProviderSimulator extends SessionProvider {
 
-    @Value("${triggered.simulator.url}")
-    private String baseUrl;
     @Value("${triggered.simulator.ipaddress}")
     private String ipAddress;
 
     @Autowired
     private DomainHelperService domainHelperService;
+
+    @Autowired
+    private SimulatorTriggerClient simulatorTriggerClient;
 
     /**
      * Initialization function executed after dependency injection has finished.
@@ -69,53 +64,26 @@ public class SessionProviderSimulator extends SessionProvider {
      * device identification (in order to be able to look up some data with the
      * device for calling the simulator starting web service, like the port
      * number and logicalId of a simulated device).
+     *
+     * @throws SessionProviderException
+     *             when no dlmsDevice can be found with a deviceId equal to the
+     *             given iccId, or the simulator was not successfully started.
+     *
      */
     @Override
     public String getIpAddress(final String iccId) throws SessionProviderException {
 
-        final DlmsDevice dlmsDevice;
-        final HttpClient httpClient;
-        final HttpGet trigger;
-
+        DlmsDevice dlmsDevice;
         try {
             dlmsDevice = this.domainHelperService.findDlmsDevice(iccId);
-            httpClient = HttpClientBuilder.create().build();
-            final String url = this.configureUrl(dlmsDevice);
-            trigger = new HttpGet(url);
-            trigger.addHeader("accept", "application/json");
+            this.simulatorTriggerClient.sendTrigger(dlmsDevice);
         } catch (final FunctionalException e) {
-            throw new SessionProviderException("No device known with deviceId: " + iccId, e);
+            throw new SessionProviderException("Unable to find dlmsDevice. ", e);
+        } catch (final SimulatorTriggerClientException e) {
+            throw new SessionProviderException("Unable to start successfully start a simulator. ", e);
         }
-
-        this.processResponse(httpClient, trigger);
 
         return this.ipAddress;
-    }
-
-    private void processResponse(final HttpClient httpClient, final HttpGet trigger) throws SessionProviderException {
-
-        final HttpResponse response;
-        try {
-            response = httpClient.execute(trigger);
-        } catch (final ClientProtocolException e) {
-            throw new SessionProviderException("Error processing response from the simulator", e);
-        } catch (final IOException e) {
-            throw new SessionProviderException("A problem occured during IO or the connection was aborted", e);
-        }
-
-        // Check for HTTP response code: 200 = success
-        if (response.getStatusLine().getStatusCode() != 200) {
-            throw new SessionProviderException("Failed: Unable to successfully start a simulator. ");
-        }
-
-    }
-
-    private String configureUrl(final DlmsDevice dlmsDevice) {
-
-        final Long port = dlmsDevice.getPort();
-        final Long logicalId = dlmsDevice.getLogicalId();
-
-        return this.baseUrl + "?port=" + port + "&logicalId=" + logicalId;
     }
 
 }
