@@ -27,7 +27,7 @@ public class SimulatorTriggerClient extends AbstractClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(SimulatorTriggerClient.class);
 
     private static final String CONSTRUCTION_FAILED = "SimulatorTriggerClient construction failed";
-    private final String triggerPath = "/trigger";
+    private static final String TRIGGERPATH = "/trigger";
 
     /**
      * Construct a SimulatorTriggerClient instance.
@@ -59,7 +59,7 @@ public class SimulatorTriggerClient extends AbstractClient {
 
     public void sendTrigger(final DlmsDevice simulatedDlmsDevice) throws SimulatorTriggerClientException {
 
-        final Response response = this.getWebClientInstance().path(this.triggerPath)
+        final Response response = this.getWebClientInstance().path(TRIGGERPATH)
                 .query("port", simulatedDlmsDevice.getPort()).query("logicalId", simulatedDlmsDevice.getLogicalId())
                 .get();
 
