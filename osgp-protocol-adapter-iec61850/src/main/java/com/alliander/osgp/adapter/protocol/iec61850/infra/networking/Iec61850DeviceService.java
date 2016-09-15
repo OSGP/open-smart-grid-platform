@@ -457,9 +457,6 @@ public class Iec61850DeviceService implements DeviceService {
                         deviceRequest.getDeviceIdentification()));
             }
 
-            // Disconnect from the device.
-            clientAssociation.disconnect();
-
             // Sleep and wait
             try {
                 LOGGER.info("Waiting {} seconds before getting the device status", this.selftestTimeout / 1000);
