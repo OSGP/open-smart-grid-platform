@@ -12,6 +12,8 @@ import ma.glasnost.orika.impl.ConfigurableMapper;
 
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.FirmwareVersionConverter;
+
 @Component(value = "configurationMapper")
 public class ConfigurationMapper extends ConfigurableMapper {
 
@@ -22,5 +24,6 @@ public class ConfigurationMapper extends ConfigurableMapper {
         // Orika sometimes throws an exception if mapping by default is tried
         mapperFactory.getConverterFactory().registerConverter(new CosemDateTimeConverter(this));
         mapperFactory.getConverterFactory().registerConverter(new AdministrativeStatusResponseConverter());
+        mapperFactory.getConverterFactory().registerConverter(new FirmwareVersionConverter());
     }
 }
