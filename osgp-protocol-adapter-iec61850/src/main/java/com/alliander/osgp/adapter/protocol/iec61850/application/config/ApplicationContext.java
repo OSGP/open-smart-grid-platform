@@ -7,13 +7,14 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.application.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import javax.annotation.Resource;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.core.env.Environment;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.FirmwareLocation;
@@ -30,21 +31,25 @@ import com.alliander.osgp.core.db.api.iec61850.application.config.Iec61850OsgpCo
 @PropertySource("file:${osp/osgpAdapterProtocolIec61850/config}")
 public class ApplicationContext {
 
-    @Value("${retrycount.max}")
-    private int maxRetryCount;
+    private static final String PROPERTY_NAME_MAX_RETRY_COUNT = "retrycount.max";
+    private static final String PROPERTY_NAME_SELFTEST_TIMEOUT = "selftest.timeout";
 
-    @Value("${selftest.timeout}")
-    private int selftestTimeout;
+    private static final String PROPERTY_NAME_CONNECTION_RESPONSE_TIMEOUT = "connection.reponse.timeout";
 
-    @Value("${connection.reponse.timeout}")
-    private int responseTimeout;
+    private static final String PROPERTY_NAME_FIRMWARE_PROTOCOL = "firmware.protocol";
+    private static final String PROPERTY_NAME_FIRMWARE_DOMAIN = "firmware.domain";
+    private static final String PROPERTY_NAME_FIRMWARE_PORT = "firmware.port";
+    private static final String PROPERTY_NAME_FIRMWARE_PATH = "firmware.path";
+
+    @Resource
+    private Environment environment;
 
     /**
      * The number of times the communication with the device is retried
      */
     @Bean
     public int maxRetryCount() {
-        return this.maxRetryCount;
+        return Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_MAX_RETRY_COUNT));
     }
 
     /**
@@ -53,7 +58,7 @@ public class ApplicationContext {
      */
     @Bean
     public int responseTimeout() {
-        return this.responseTimeout;
+        return Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_CONNECTION_RESPONSE_TIMEOUT));
     }
 
     /**
@@ -62,20 +67,14 @@ public class ApplicationContext {
      */
     @Bean
     public int selftestTimeout() {
-        return this.selftestTimeout;
+        return Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_SELFTEST_TIMEOUT));
     }
 
     @Bean
-    public FirmwareLocation firmwareLocation(@Value("${firmware.protocol}") final String protocol,
-            @Value("${firmware.domain}") final String domain, @Value("${firmware.port}") final int port,
-            @Value("${firmware.path}") final String path) {
-        return new FirmwareLocation(protocol, domain, port, path);
-    }
-
-    @Bean
-    public PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-        final PropertySourcesPlaceholderConfigurer propertySource = new PropertySourcesPlaceholderConfigurer();
-        propertySource.setIgnoreUnresolvablePlaceholders(true);
-        return propertySource;
+    public FirmwareLocation firmwareLocation() {
+        return new FirmwareLocation(this.environment.getProperty(PROPERTY_NAME_FIRMWARE_PROTOCOL),
+                this.environment.getProperty(PROPERTY_NAME_FIRMWARE_DOMAIN), Integer.parseInt(this.environment
+                        .getProperty(PROPERTY_NAME_FIRMWARE_PORT)),
+                        this.environment.getProperty(PROPERTY_NAME_FIRMWARE_PATH));
     }
 }
