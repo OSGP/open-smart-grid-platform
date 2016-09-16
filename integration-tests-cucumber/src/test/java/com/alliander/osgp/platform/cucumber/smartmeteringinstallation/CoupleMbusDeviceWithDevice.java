@@ -166,18 +166,16 @@ public class CoupleMbusDeviceWithDevice extends SmartMetering {
     }
 
     @And("^an active coupled mbus device \"([^\"]*)\" on MBUS channel (\\d+)$")
-    public void anActiveCoupledGasDeviceOnMBUSChannel(String mbusDeviceId, Short channel) {
+    public void anActiveCoupledMbusDeviceOnMBUSChannel(String mbusDeviceId, Short channel) {
         this.deviceId.setMbusChannel(channel);
         this.deviceId.setDeviceIdG(mbusDeviceId);
         this.deviceHooks.activateDevice(mbusDeviceId);
         this.coupleDeviceHooks.coupleDevices(this.deviceId.getDeviceIdE(), mbusDeviceId, channel);
-
     }
 
     @Then("^the mbus device \"([^\"]*)\" is coupled to the device \"([^\"]*)\"$")
     public void theGasDeviceIsCoupledToTheDevice(String gasDevice, String device) {
-        Assert.assertTrue(this.coupleDeviceHooks.areDevicesCoupled(device, gasDevice,
-                this.deviceId.getMbusChannel()));
+        Assert.assertTrue(this.coupleDeviceHooks.areDevicesCoupled(device, gasDevice, this.deviceId.getMbusChannel()));
     }
 
     @Then("^the mbus device \"([^\"]*)\" isn't be coupled to the device \"([^\"]*)\"$")
