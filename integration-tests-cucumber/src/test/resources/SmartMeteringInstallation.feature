@@ -63,9 +63,6 @@ Background:
 	When the Couple G-meter request on inactive device "TEST1024000000001" is received
 	Then the couple response contains "Device TEST1024000000001 is not active in the platform"
 
-
-
-
 @SLIM-638-decouple-gmeter-from-emeter
 Scenario: Decouple G-meter from E-meter
 	Given an active device with DeviceID "E9998000014123414" 
@@ -73,6 +70,7 @@ Scenario: Decouple G-meter from E-meter
 	When the decouple G-meter request is received
 	Then the response "OK" is given to the decouple request
 	And the mbus device "G00XX561204926013" isn't coupled to the device "E9998000014123414"
+	And the channel of device "G00XX561204926013" is cleared
 
 @SLIM-638-decouple-unknown-gmeter-from-emeter
 Scenario: Decouple unknown G-meter from E-meter
