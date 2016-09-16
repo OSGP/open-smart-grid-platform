@@ -13,19 +13,19 @@ public class FirmwareVersion implements Serializable {
 
     private static final long serialVersionUID = 892449074530829565L;
 
-    private String type;
+    private FirmwareModuleType type;
     private String version;
 
-    public FirmwareVersion(final String type, final String version) {
+    public FirmwareVersion(final FirmwareModuleType type, final String version) {
         this.type = type;
         this.version = version;
     }
 
-    public String getType() {
+    public FirmwareModuleType getType() {
         return this.type;
     }
 
-    public void setType(final String type) {
+    public void setType(final FirmwareModuleType type) {
         this.type = type;
     }
 

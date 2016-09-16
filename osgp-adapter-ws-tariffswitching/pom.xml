@@ -8,252 +8,252 @@
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>osgp-adapter-ws-tariffswitching</artifactId>
-    <name>osgp-adapter-ws-tariffswitching</name>
-    <packaging>war</packaging>
-    <!-- Description element is needed for the maven-jxr-plugin to generate a maven site -->
-    <description>Web service module for tariff switching.</description>
+  <artifactId>osgp-adapter-ws-tariffswitching</artifactId>
+  <name>osgp-adapter-ws-tariffswitching</name>
+  <packaging>war</packaging>
+  <!-- Description element is needed for the maven-jxr-plugin to generate a maven site -->
+  <description>Web service module for tariff switching.</description>
 
-    <parent>
-        <groupId>com.alliander.osgp</groupId>
-        <artifactId>parent-platform</artifactId>
-        <version>4.1.0-SNAPSHOT</version>
-        <relativePath>../parent-platform/pom.xml</relativePath>
-    </parent>
+  <parent>
+    <groupId>com.alliander.osgp</groupId>
+    <artifactId>parent-platform</artifactId>
+    <version>4.1.0-SNAPSHOT</version>
+    <relativePath>../parent-platform/pom.xml</relativePath>
+  </parent>
 
-    <properties>
-        <display.version>${project.version}-${BUILD_TAG}</display.version>
-    </properties>
+  <properties>
+    <display.version>${project.version}-${BUILD_TAG}</display.version>
+  </properties>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>jaxb2-maven-plugin</artifactId>
-                <version>1.5</version>
-                <executions>
-                    <!-- TARRIF SWITCHING -->
-                    <execution>
-                        <id>tarrif-switching-ad-hoc-management</id>
-                        <goals>
-                            <goal>xjc</goal>
-                        </goals>
-                        <configuration>
-                               <bindingDirectory>src/main/webapp/WEB-INF/wsdl/tariffswitching/schemas</bindingDirectory>
-                               <bindingFiles>ts-adhocmanagement.xjb</bindingFiles>
-                            <schemaDirectory>src/main/webapp/WEB-INF/wsdl/tariffswitching</schemaDirectory>
-                            <schemaFiles>TariffSwitchingAdHocManagement.wsdl</schemaFiles>
-<!--                             <packageName>com.alliander.osgp.adapter.ws.schema.tariffswitching.adhocmanagement</packageName> -->
-                            <wsdl>true</wsdl>
-                            <xmlschema>false</xmlschema>
-                            <staleFile>${project.build.directory}/jaxb2/.schema-tarrif-switching-ad-hoc-management-stale-flag</staleFile>
-                             <!-- USE THIS ONLY FOR THE FIRST EXECUTION -->
-                            <clearOutputDir>false</clearOutputDir>
-                        </configuration>
-                    </execution>
-                    
-                    <execution>
-                        <id>tarrif-switching-schedule-management</id>
-                        <goals>
-                            <goal>xjc</goal>
-                        </goals>
-                        <configuration>
-                               <bindingDirectory>src/main/webapp/WEB-INF/wsdl/tariffswitching/schemas</bindingDirectory>
-                               <bindingFiles>ts-schedulemanagement.xjb</bindingFiles>
-                            <schemaDirectory>src/main/webapp/WEB-INF/wsdl/tariffswitching</schemaDirectory>
-                            <schemaFiles>TariffSwitchingScheduleManagement.wsdl</schemaFiles>
-<!--                             <packageName>com.alliander.osgp.adapter.ws.schema.tariffswitching.schedulemanagement</packageName> -->
-                            <wsdl>true</wsdl>
-                            <xmlschema>false</xmlschema>
-                            <staleFile>${project.build.directory}/jaxb2/.schema-tarrif-switching-schedule-management-stale-flag</staleFile>
-                            <!-- USE THIS FOR ALL EXECUTIONS EXCEPT THE FIRST -->
-                            <clearOutputDir>false</clearOutputDir>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>2.4</version>
-                <configuration>
-                    <attachClasses>true</attachClasses>
-                    <failOnMissingWebXml>false</failOnMissingWebXml>
-                    <nonFilteredFileExtensions>
-                        <nonFilteredFileExtension>gif</nonFilteredFileExtension>
-                        <nonFilteredFileExtension>ico</nonFilteredFileExtension>
-                        <nonFilteredFileExtension>jpg</nonFilteredFileExtension>
-                        <nonFilteredFileExtension>png</nonFilteredFileExtension>
-                        <nonFilteredFileExtension>pdf</nonFilteredFileExtension>
-                    </nonFilteredFileExtensions>
-                    <webResources>
-                        <resource>
-                            <directory>src/main/webapp</directory>
-                            <filtering>true</filtering>
-                        </resource>
-                    </webResources>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jaxb2-maven-plugin</artifactId>
+        <version>1.5</version>
+        <executions>
+          <!-- TARRIF SWITCHING -->
+          <execution>
+            <id>tarrif-switching-ad-hoc-management</id>
+            <goals>
+              <goal>xjc</goal>
+            </goals>
+            <configuration>
+              <bindingDirectory>src/main/webapp/WEB-INF/wsdl/tariffswitching/schemas</bindingDirectory>
+              <bindingFiles>ts-adhocmanagement.xjb</bindingFiles>
+              <schemaDirectory>src/main/webapp/WEB-INF/wsdl/tariffswitching</schemaDirectory>
+              <schemaFiles>TariffSwitchingAdHocManagement.wsdl</schemaFiles>
+              <!-- <packageName>com.alliander.osgp.adapter.ws.schema.tariffswitching.adhocmanagement</packageName> -->
+              <wsdl>true</wsdl>
+              <xmlschema>false</xmlschema>
+              <staleFile>${project.build.directory}/jaxb2/.schema-tarrif-switching-ad-hoc-management-stale-flag</staleFile>
+              <!-- USE THIS ONLY FOR THE FIRST EXECUTION -->
+              <clearOutputDir>false</clearOutputDir>
+            </configuration>
+          </execution>
 
-    <dependencies>
-        <!-- Alliander -->
-        <dependency>
-            <groupId>com.alliander.osgp</groupId>
-            <artifactId>shared</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.alliander.osgp</groupId>
-            <artifactId>osgp-adapter-ws-shared</artifactId>
-        </dependency>
+          <execution>
+            <id>tarrif-switching-schedule-management</id>
+            <goals>
+              <goal>xjc</goal>
+            </goals>
+            <configuration>
+              <bindingDirectory>src/main/webapp/WEB-INF/wsdl/tariffswitching/schemas</bindingDirectory>
+              <bindingFiles>ts-schedulemanagement.xjb</bindingFiles>
+              <schemaDirectory>src/main/webapp/WEB-INF/wsdl/tariffswitching</schemaDirectory>
+              <schemaFiles>TariffSwitchingScheduleManagement.wsdl</schemaFiles>
+              <!-- <packageName>com.alliander.osgp.adapter.ws.schema.tariffswitching.schedulemanagement</packageName> -->
+              <wsdl>true</wsdl>
+              <xmlschema>false</xmlschema>
+              <staleFile>${project.build.directory}/jaxb2/.schema-tarrif-switching-schedule-management-stale-flag</staleFile>
+              <!-- USE THIS FOR ALL EXECUTIONS EXCEPT THE FIRST -->
+              <clearOutputDir>false</clearOutputDir>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>2.4</version>
+        <configuration>
+          <attachClasses>true</attachClasses>
+          <failOnMissingWebXml>false</failOnMissingWebXml>
+          <nonFilteredFileExtensions>
+            <nonFilteredFileExtension>gif</nonFilteredFileExtension>
+            <nonFilteredFileExtension>ico</nonFilteredFileExtension>
+            <nonFilteredFileExtension>jpg</nonFilteredFileExtension>
+            <nonFilteredFileExtension>png</nonFilteredFileExtension>
+            <nonFilteredFileExtension>pdf</nonFilteredFileExtension>
+          </nonFilteredFileExtensions>
+          <webResources>
+            <resource>
+              <directory>src/main/webapp</directory>
+              <filtering>true</filtering>
+            </resource>
+          </webResources>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
-        <!-- Spring Framework -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-beans</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context-support</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jdbc</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-orm</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-tx</artifactId>
-        </dependency>
+  <dependencies>
+    <!-- Alliander -->
+    <dependency>
+      <groupId>com.alliander.osgp</groupId>
+      <artifactId>shared</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.alliander.osgp</groupId>
+      <artifactId>osgp-adapter-ws-shared</artifactId>
+    </dependency>
 
-        <!-- Spring Data -->
-        <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-jpa</artifactId>
-        </dependency>
+    <!-- Spring Framework -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-beans</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context-support</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jdbc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-orm</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-tx</artifactId>
+    </dependency>
 
-        <!-- Spring WS -->
-        <dependency>
-            <groupId>org.springframework.ws</groupId>
-            <artifactId>spring-ws-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-web</artifactId>
-        </dependency>    
-        <dependency>
-            <groupId>org.springframework.ws</groupId>
-            <artifactId>spring-ws-support</artifactId>
-        </dependency>
+    <!-- Spring Data -->
+    <dependency>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-jpa</artifactId>
+    </dependency>
 
-        <!-- Joda Time (Date/Time util) -->
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-        </dependency>
+    <!-- Spring WS -->
+    <dependency>
+      <groupId>org.springframework.ws</groupId>
+      <artifactId>spring-ws-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.ws</groupId>
+      <artifactId>spring-ws-support</artifactId>
+    </dependency>
 
-          <!-- Hikari connection pooling -->
-        <dependency>
-          <groupId>com.zaxxer</groupId>
-          <artifactId>HikariCP</artifactId>
-        </dependency>
+    <!-- Joda Time (Date/Time util) -->
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+    </dependency>
 
-        <!-- Hibernate -->
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-entitymanager</artifactId>
-        </dependency>
+    <!-- Hikari connection pooling -->
+    <dependency>
+      <groupId>com.zaxxer</groupId>
+      <artifactId>HikariCP</artifactId>
+    </dependency>
 
-        <!-- Hibernate validator -->
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-validator</artifactId>
-        </dependency>
+    <!-- Hibernate -->
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-entitymanager</artifactId>
+    </dependency>
 
-        <!-- Flyway (DB Migration) -->
-        <dependency>
-            <groupId>com.googlecode.flyway</groupId>
-            <artifactId>flyway-core</artifactId>
-        </dependency>
+    <!-- Hibernate validator -->
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-validator</artifactId>
+    </dependency>
 
-        <!-- Logging -->
-         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-        </dependency>        
-        <dependency>
-            <groupId>org.logback-extensions</groupId>
-            <artifactId>logback-ext-spring</artifactId>
-        </dependency>
+    <!-- Flyway (DB Migration) -->
+    <dependency>
+      <groupId>com.googlecode.flyway</groupId>
+      <artifactId>flyway-core</artifactId>
+    </dependency>
 
-        <!-- Servlet API 3.0 -->
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
+    <!-- Logging -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.logback-extensions</groupId>
+      <artifactId>logback-ext-spring</artifactId>
+    </dependency>
 
-        <!-- Jakarta commons codec -->
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-        </dependency>
+    <!-- Servlet API 3.0 -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
-        <!-- Apache commons -->
-        <dependency>
-            <groupId>org.apache.ws.xmlschema</groupId>
-            <artifactId>xmlschema-core</artifactId>
-            <version>${apache.commons.schema}</version>
-        </dependency>
+    <!-- Jakarta commons codec -->
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+    </dependency>
 
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
+    <!-- Apache commons -->
+    <dependency>
+      <groupId>org.apache.ws.xmlschema</groupId>
+      <artifactId>xmlschema-core</artifactId>
+      <version>${apache.commons.schema}</version>
+    </dependency>
 
-        <!-- Orika (mapping framework) -->
-        <dependency>
-           <groupId>ma.glasnost.orika</groupId>
-           <artifactId>orika-core</artifactId>
-        </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+    </dependency>
 
-        <!--  Apache ActiveMQ -->    
-        <dependency> 
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-client</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-spring</artifactId>
-        </dependency>
+    <!-- Orika (mapping framework) -->
+    <dependency>
+      <groupId>ma.glasnost.orika</groupId>
+      <artifactId>orika-core</artifactId>
+    </dependency>
 
-        <!-- Testing dependencies -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-        </dependency>
-    </dependencies>
+    <!-- Apache ActiveMQ -->
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-spring</artifactId>
+    </dependency>
+
+    <!-- Testing dependencies -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+  </dependencies>
 </project>
