@@ -141,9 +141,11 @@ public class Iec61850Client {
     public ServerModel readServerModelFromDevice(final ClientAssociation clientAssociation) {
         ServerModel serverModel;
         try {
+            LOGGER.debug("Start reading server model from device");
             // RetrieveModel() will call all GetDirectory and GetDefinition ACSI
             // services needed to get the complete server model.
             serverModel = clientAssociation.retrieveModel();
+            LOGGER.debug("Completed reading server model from device");
             return serverModel;
         } catch (final ServiceError e) {
             LOGGER.error("Service Error requesting model.", e);
@@ -250,7 +252,9 @@ public class Iec61850Client {
     public boolean readAllDataValues(final ClientAssociation clientAssociation) {
         // Get the values of all data attributes in the model.
         try {
+            LOGGER.debug("Start getAllDataValues from device");
             clientAssociation.getAllDataValues();
+            LOGGER.debug("Completed getAllDataValues from device");
             return true;
         } catch (ServiceError | IOException e) {
             LOGGER.error("Unexpected exception during readAllDataValues", e);
