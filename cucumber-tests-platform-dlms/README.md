@@ -1,23 +1,13 @@
-# Integration Tests for OSGP Components and Protocol Adapters
+# Cucumber Tests project for Platform in relation to DLMS
 
 ### Build Status
 
 [![Build Status](http://ci.opensmartgridplatform.org/job/OSGP_Integration-Tests_development/badge/icon?style=plastic)](http://ci.opensmartgridplatform.org/job/OSGP_Integration-Tests_development)
 
-
 ### Component Description
 
-This repository contains all the tests to verify the platform. At the time the project was started, it was a good solution to use Fitnesse. But that became a bit difficult to maintain.
-From now on it is meant that new tests will be written in cucumber.
-
-- Cucumber
-  - cucumber-tests-platform, The test project where all new platform tests are put.
-  - cucumber-tests-platform-dlms, The test project where all new dlms related platform tests are put.
-- Fitnesse (deprecated, please use the integration-tests-cucumber project):
-  - fitnesse, The Fitnesse program and the wiki pages for the test suite
-  - osgp-platform-test, The domain steps for the test suite
-  - local-maven-repo, A local maven repository, needed for givwenzen.jar because it was removed from the maven repository.
-- Shared, Platform and Protocol-Adapter-*, The components under test
+This repository contains all the tests to verify the platform related to dlms devices.
+You will need a dlms device simulator to run these tests.
 
 ##### Running Cucumber integration tests
 
