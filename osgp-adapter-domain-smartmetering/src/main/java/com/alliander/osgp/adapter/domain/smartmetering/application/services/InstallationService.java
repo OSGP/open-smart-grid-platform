@@ -205,6 +205,7 @@ public class InstallationService {
 
             for (final SmartMeter coupledDevice : alreadyCoupled) {
                 if (coupledDevice.getDeviceIdentification().equals(mbusDevice.getDeviceIdentification())) {
+                    coupledDevice.setChannel(null);
                     coupledDevice.updateGatewayDevice(null);
                     this.smartMeteringDeviceRepository.save(coupledDevice);
                 }
