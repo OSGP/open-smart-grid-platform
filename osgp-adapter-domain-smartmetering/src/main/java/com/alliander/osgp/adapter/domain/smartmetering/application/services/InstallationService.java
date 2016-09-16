@@ -155,9 +155,9 @@ public class InstallationService {
 
         try {
             final SmartMeter gateway = this.domainHelperService.findActiveSmartMeter(deviceIdentification);
-            this.checkAndHandleChannelOnGateway(channel, gateway);
-
             final SmartMeter mbusDevice = this.domainHelperService.findActiveSmartMeter(mbusDeviceIdentification);
+
+            this.checkAndHandleChannelOnGateway(channel, gateway);
 
             mbusDevice.setChannel(channel);
             mbusDevice.updateGatewayDevice(gateway);
