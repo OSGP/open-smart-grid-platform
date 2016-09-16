@@ -71,10 +71,10 @@ public class CoupleMbusDeviceWithDevice extends SmartMetering {
     @Given("^a free MBUS channel (\\d+)$")
     public void aFreeMBUSChannel(Short channel) {
         this.deviceId.setMbusChannel(channel);
-        this.coupleDeviceHooks.clearChannelForSmartMeterDevice(this.deviceId.getDeviceIdG());
+        this.coupleDeviceHooks.clearChannelForSmartMeterDevice(this.deviceId.getDeviceIdE(), channel);
     }
 
-    @When("^the Couple G-meter request on an unknown \"([^\"]*)\" device is received")
+    @When("^the couple G-meter request on an unknown \"([^\"]*)\" device is received")
     public void theCoupleGMeterRequestOnAnUnknownDeviceIsReceived(String unknownDevice) throws Throwable {
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_G_LABEL, this.deviceId.getDeviceIdG());
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_E_LABEL, this.deviceId.getDeviceIdE());
@@ -85,7 +85,7 @@ public class CoupleMbusDeviceWithDevice extends SmartMetering {
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }
 
-    @When("^the Couple G-meter request on inactive device \"([^\"]*)\" is received$")
+    @When("^the couple G-meter request on inactive device \"([^\"]*)\" is received$")
     public void theCoupleGMeterRequestOnAnInactiveDeviceIsReceived(String inactiveDevice) throws Throwable {
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_G_LABEL, this.deviceId.getDeviceIdG());
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_E_LABEL, this.deviceId.getDeviceIdE());
@@ -103,7 +103,7 @@ public class CoupleMbusDeviceWithDevice extends SmartMetering {
         Assert.assertTrue(messageMatcher.find());
     }
 
-    @When("^the Couple G-meter request is received$")
+    @When("^the couple G-meter request is received$")
     public void theCoupleGMeterRequestIsReceived() throws Throwable {
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_G_LABEL, this.deviceId.getDeviceIdG());
         PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_E_LABEL, this.deviceId.getDeviceIdE());
@@ -141,11 +141,14 @@ public class CoupleMbusDeviceWithDevice extends SmartMetering {
         Assert.assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT, XPATH_MATCHER_NOT_OK_RESULT));
     }
 
+    @Then("^the response description contains 'SmartMeter with id \"([^\"]*)\" could not be found'$")
+    public void theResponseDescriptionContainsSmartMeterWithIdCouldNotBeFound(String message) throws Throwable {
+        this.theResponseDescriptionContains(message);
+    }
+
     @Then("^the response description contains \"([^\"]*)\"$")
     public void theResponseDescriptionContains(String message) throws Throwable {
 
-        PROPERTIES_MAP.put(CORRELATION_UID_LABEL, this.correlationUid);
-        this.responseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
         Assert.assertTrue(this.runXpathResult.assertXpath(this.response, PATH_DESCRIPTION, message));
         Assert.assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT, XPATH_MATCHER_NOT_OK_RESULT));
     }
@@ -176,8 +179,7 @@ public class CoupleMbusDeviceWithDevice extends SmartMetering {
 
     @Then("^the mbus device \"([^\"]*)\" is coupled to the device \"([^\"]*)\"$")
     public void theGasDeviceIsCoupledToTheDevice(String gasDevice, String device) {
-        Assert.assertTrue(this.coupleDeviceHooks.areDevicesCoupled(device, gasDevice,
-                this.deviceId.getMbusChannel()));
+        Assert.assertTrue(this.coupleDeviceHooks.areDevicesCoupled(device, gasDevice, this.deviceId.getMbusChannel()));
     }
 
     @Then("^the mbus device \"([^\"]*)\" isn't be coupled to the device \"([^\"]*)\"$")
