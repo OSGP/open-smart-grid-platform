@@ -91,8 +91,8 @@ public class Iec61850Client {
         final ClientSap clientSap = new ClientSap();
         final Iec61850ClientAssociation clientAssociation;
 
-        LOGGER.info("Attempting to connect to server: {} on port: {}", ipAddress.getHostAddress(),
-                this.iec61850PortServer);
+        LOGGER.info("Attempting to connect to server: {} on port: {} with max retry count: {}",
+                ipAddress.getHostAddress(), this.iec61850PortServer, this.maxRetryCount);
         try {
             final Iec61850ClientEventListener reportListener = new Iec61850ClientEventListener(deviceIdentification,
                     this.deviceManagementService);

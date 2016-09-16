@@ -71,8 +71,8 @@ public class Iec61850DeviceConnectionService {
         // values.
         try {
             // Try to connect.
-            LOGGER.info("Trying to connect to deviceIdentification: {} at IP address {}", deviceIdentification,
-                    ipAddress);
+            LOGGER.info("Trying to connect to deviceIdentification: {} at IP address {} using response time-out: {}",
+                    deviceIdentification, ipAddress, this.responseTimeout);
             final Iec61850ClientAssociation iec61850clientAssociation = this.iec61850Client.connect(
                     deviceIdentification, inetAddress);
             final ClientAssociation clientAssociation = iec61850clientAssociation.getClientAssociation();
