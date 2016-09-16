@@ -4,7 +4,7 @@ Feature:
     
 Background:
     Given a device with DeviceID "TEST1024000000001" 
-    Given a gas device with DeviceID "TESTG102400000001"
+    Given an active mbus device with DeviceID "TESTG102400000001"
     And an organisation with OrganisationID "Infostroom"
     
 @SLIM-215 @SmartMeterConfiguration

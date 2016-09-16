@@ -1,12 +1,6 @@
-<!--
-
-  Copyright 2015 Smart Society Services B.V.
-
-  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
--->
+<!-- Copyright 2015 Smart Society Services B.V. Licensed under the Apache 
+  License, Version 2.0 (the "License"); you may not use this file except in 
+  compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
@@ -14,13 +8,14 @@
   <artifactId>osgp-platform-test</artifactId>
   <name>osgp-platform-test</name>
   <packaging>jar</packaging>
-  <!-- Description element is needed for the maven-jxr-plugin to generate a maven site -->
+  <!-- Description element is needed for the maven-jxr-plugin to generate 
+    a maven site -->
   <description>FitNesse domain steps module.</description>
 
   <parent>
     <groupId>com.alliander.osgp</groupId>
     <artifactId>parent-integration-tests</artifactId>
-    <version>3.9.0-SNAPSHOT</version>
+    <version>4.1.0-SNAPSHOT</version>
     <relativePath>../parent-integration-tests/pom.xml</relativePath>
   </parent>
 
@@ -35,8 +30,8 @@
         <artifactId>maven-pmd-plugin</artifactId>
       </plugin>
       <plugin>
-         <groupId>org.apache.maven.plugins</groupId>
-         <artifactId>maven-compiler-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
       </plugin>
     </plugins>
   </build>
@@ -178,7 +173,7 @@
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-web</artifactId>
-    </dependency>  
+    </dependency>
     <dependency>
       <groupId>org.springframework.ws</groupId>
       <artifactId>spring-ws-support</artifactId>
@@ -219,7 +214,7 @@
     </dependency>
 
     <!-- Logging -->
-     <dependency>
+    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
@@ -269,8 +264,8 @@
       <artifactId>netty</artifactId>
     </dependency>
 
-    <!--  Apache ActiveMQ -->  
-    <dependency> 
+    <!-- Apache ActiveMQ -->
+    <dependency>
       <groupId>org.apache.activemq</groupId>
       <artifactId>activemq-client</artifactId>
     </dependency>
@@ -283,7 +278,7 @@
     <dependency>
       <groupId>org.apache.activemq</groupId>
       <artifactId>activemq-kahadb-store</artifactId>
-    </dependency>  
+    </dependency>
     <dependency>
       <groupId>org.apache.activemq.protobuf</groupId>
       <artifactId>activemq-protobuf</artifactId>
