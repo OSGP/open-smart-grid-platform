@@ -9,13 +9,10 @@ package org.osgpfoundation.osgp.webdemoapp.web.controller;
 
 import java.util.List;
 
-import org.osgpfoundation.osgp.webdemoapp.application.services.OsgpAdminClientSoapService;
 import org.osgpfoundation.osgp.webdemoapp.application.services.OsgpPublicLightingClientSoapService;
 import org.osgpfoundation.osgp.webdemoapp.domain.Device;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -25,21 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
  */
 @Controller
 public class HomeController {
-	
-	
-    protected static final String DEVICES_URL = "/devices";
-    protected static final String DEVICE_CREATE_URL = "/devices/create";
-    protected static final String DEVICE_EDIT_URL = "/devices/edit/{id}";
 
-    protected static final String DEVICES_VIEW = "devices/list";
-    protected static final String DEVICE_CREATE_VIEW = "devices/create";
-    protected static final String DEVICE_EDIT_VIEW = "devices/edit";
-    protected static final String DEVICE_REGISTRATION_VIEW = "devices/deviceRegistrationCheck";
-    
-    protected static final String MODEL_ATTRIBUTE_DEVICES = "devices";
-    
-    @Autowired
-    OsgpAdminClientSoapService osgpAdminClientSoapService;
     
     @Autowired
     OsgpPublicLightingClientSoapService osgpPublicLightingClientSoapService;
@@ -52,44 +35,7 @@ public class HomeController {
         return "redirect:/list";
     }
     
-//    @RequestMapping(value = DEVICES_URL, method = RequestMethod.GET)
-//    public String showDevices(final Model model) {
-//        model.addAttribute(MODEL_ATTRIBUTE_DEVICES);
-//
-//        final List<String> deviceTypes = new ArrayList<>();
-//
-//        return DEVICES_VIEW;
-//    }
-//    
-//    @RequestMapping(value ="/add", method = RequestMethod.GET)
-//    public String addDevice(Model model) {
-//    	model.addAttribute("test","Test from Spring");
-//    	return "devices/add";
-//    }
-//    
-//    
-//   @RequestMapping(value ="/add-device", method = RequestMethod.POST)
-//    public String getAddDevice(@ModelAttribute("Springweb")Device device, Model model){
-//	   
-//	   return " ";
-//   }
-//   
 
-   @RequestMapping(value = "/device", method = RequestMethod.GET)
-   public ModelAndView student() {
-      return new ModelAndView("device", "command", new Device());
-   }
-   
-   @RequestMapping(value = "/addDevice", method = RequestMethod.POST)
-   public String addDevice(@ModelAttribute("SpringWeb")Device device, 
-   ModelMap model) {
-	   System.out.println("Starting Soap Request");
-	   System.out.println(device.getDeviceIdentification());
-	   
-	   osgpAdminClientSoapService.updateKeyRequest(device);
-      
-      return "add";
-   }
    
    @RequestMapping(value = "/list", method= RequestMethod.GET )
    public ModelAndView showDeviceList () {
@@ -101,20 +47,14 @@ public class HomeController {
 	   
 	   return model;
    }
-   
-//   @RequestMapping(value = "/device", method = RequestMethod.GET)
-//   public ModelAndView device() {
-//      return new ModelAndView("device", "command", new Device());
-//   }
-//   
-//   @RequestMapping(value = "/addDevice", method = RequestMethod.POST)
-//   public String updateKey(@ModelAttribute("SpringWeb")Device device, 
-//   ModelMap model) {
-//	   System.out.println("Starting Soap Request");
-//	   System.out.println(device.getDeviceIdentification());
-//	   soapClientService.addDeviceRequest(device);
-//      
-//      return "add";
-//   }
 
+   
+   @RequestMapping(value = "/device", method= RequestMethod.GET )
+   public ModelAndView deviceDetails () {
+	   	   
+	   ModelAndView model = new ModelAndView("device");
+	   
+	   return model;
+   }
+   
 }

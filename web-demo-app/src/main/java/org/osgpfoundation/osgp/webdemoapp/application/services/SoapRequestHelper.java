@@ -27,32 +27,9 @@ public class SoapRequestHelper {
 				
 		this.messageFactory = messageFactory;
 		this.keyStoreHelper = keyStoreHelper;
-		
-
 	}
 
-//	public WebServiceTemplate createAddDeviceRequest() {
-//		initMarshaller("com.alliander.osgp.platform.ws.schema.common.deviceinstallation");
-//
-//		String uri = "https://localhost/osgp-adapter-ws-core/common/deviceInstallationService/DeviceInstallation";
-//
-//		WebServiceTemplate webServiceTemplate = new WebServiceTemplate(this.messageFactory);
-//
-//		webServiceTemplate.setDefaultUri(uri);
-//		webServiceTemplate.setMarshaller(marshaller);
-//		webServiceTemplate.setUnmarshaller(marshaller);
-//
-//		webServiceTemplate.setCheckConnectionForFault(true);
-//		
-//		webServiceTemplate.setInterceptors(new ClientInterceptor[] { 
-//						createClientInterceptor("http://www.alliander.com/schemas/osp/common") 
-//						});
-//
-//		webServiceTemplate.setMessageSender(createHttpMessageSender());
-//
-//		return webServiceTemplate;
-//	}
-	
+
 	public WebServiceTemplate createUpdateKeyRequest() {
 		initMarshaller("com.alliander.osgp.platform.ws.schema.admin.devicemanagement");
 
@@ -77,6 +54,29 @@ public class SoapRequestHelper {
 	
 	
 	public WebServiceTemplate createFindAllDevicesRequest() {
+		initMarshaller("com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement");
+
+		String uri = "https://localhost/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/AdHocManagement";
+
+		WebServiceTemplate webServiceTemplate = new WebServiceTemplate(this.messageFactory);
+
+		webServiceTemplate.setDefaultUri(uri);
+		webServiceTemplate.setMarshaller(marshaller);
+		webServiceTemplate.setUnmarshaller(marshaller);
+
+	
+		webServiceTemplate.setCheckConnectionForFault(true);
+		
+		webServiceTemplate.setInterceptors(new ClientInterceptor[] { 
+						createClientInterceptor("http://www.alliander.com/schemas/osgp/common") 
+						});
+
+		webServiceTemplate.setMessageSender(createHttpMessageSender());
+
+		return webServiceTemplate;
+	}
+	
+	public WebServiceTemplate createSetLightRequest() {
 		initMarshaller("com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement");
 
 		String uri = "https://localhost/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/AdHocManagement";

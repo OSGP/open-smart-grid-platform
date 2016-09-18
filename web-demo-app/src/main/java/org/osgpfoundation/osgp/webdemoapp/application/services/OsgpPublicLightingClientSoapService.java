@@ -9,6 +9,10 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 
 import com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement.FindAllDevicesRequest;
 import com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement.FindAllDevicesResponse;
+import com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement.GetStatusResponse;
+import com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement.LightValue;
+import com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement.SetLightAsyncResponse;
+import com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement.SetLightRequest;
 
 public class OsgpPublicLightingClientSoapService {
 	
@@ -19,7 +23,6 @@ public class OsgpPublicLightingClientSoapService {
 
 	public OsgpPublicLightingClientSoapService(MapperFacade mapper) {
 		this.publicLightingAdHocMapperFacade = mapper;
-		
 	}
 
 	public List<org.osgpfoundation.osgp.webdemoapp.domain.Device> findAllDevicesRequest() {
@@ -37,5 +40,25 @@ public class OsgpPublicLightingClientSoapService {
 		
 		return result;
 	}
+	
+	public String setLightRequest (String deviceId, int dimValue, boolean lightOn) {
+		SetLightRequest request = new SetLightRequest ();
+		LightValue lightValue = new LightValue();
+		lightValue.setDimValue(dimValue);
+		lightValue.setOn(lightOn);
+		
+		WebServiceTemplate template = this.soapRequestHelper
+				.createSetLightRequest();
+		
+		request.setDeviceIdentification(deviceId);
+		request.getLightValue().add(lightValue);
+		
+		SetLightAsyncResponse response = (SetLightAsyncResponse) template
+				.marshalSendAndReceive(request);
+		
+		return response.getAsyncResponse().getCorrelationUid();
+	}
+	
+	
 
 }

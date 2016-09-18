@@ -12,8 +12,6 @@ public class OsgpAdminClientSoapService {
 	@Autowired
 	SoapRequestHelper soapRequestHelper;
 	
-//	@Autowired
-//	@Qualifier("adminAdHocMapperFacade")
 	private MapperFacade adminAdHocMapperFacade;
 	
 	public OsgpAdminClientSoapService (MapperFacade mapper) {
