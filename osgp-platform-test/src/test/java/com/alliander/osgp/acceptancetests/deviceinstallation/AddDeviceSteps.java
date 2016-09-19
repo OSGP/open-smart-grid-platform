@@ -30,6 +30,7 @@ import com.alliander.osgp.adapter.ws.core.application.services.DeviceInstallatio
 import com.alliander.osgp.adapter.ws.core.endpoints.DeviceInstallationEndpoint;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.AddDeviceRequest;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.AddDeviceResponse;
+import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.DeviceModel;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceAuthorizationRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableSsldRepository;
@@ -75,6 +76,7 @@ public class AddDeviceSteps {
     private Ssld device;
     private Organisation owner;
     private DeviceAuthorization authOwner;
+    private DeviceModel deviceModel;
 
     private DeviceInstallationEndpoint deviceInstallationEndpoint;
 
@@ -101,16 +103,20 @@ public class AddDeviceSteps {
     @Qualifier(value = "wsCoreDeviceInstallationService")
     private DeviceInstallationService deviceInstallationService;
 
+    @Autowired
+    @Qualifier("coreDeviceInstallationMapper")
+    private DeviceInstallationMapper deviceInstallationMapper;
+
     public void setUp() {
         Mockito.reset(new Object[] { this.authorizationRepositoryMock, this.deviceRepositoryMock,
                 this.ssldRepositoryMock, this.writableAuthorizationRepositoryMock, this.writableDeviceRepositoryMock,
                 this.writableSsldRepositoryMock, this.organisationRepositoryMock });
 
-        final DeviceInstallationMapper deviceInstallationMapper = new DeviceInstallationMapper();
-        deviceInstallationMapper.initialize();
-
         this.deviceInstallationEndpoint = new DeviceInstallationEndpoint(this.deviceInstallationService,
-                deviceInstallationMapper);
+                this.deviceInstallationMapper);
+
+        this.deviceModel = new DeviceModel();
+        this.deviceModel.setModelCode("DUMMY_123");
 
         this.device = new Ssld(DEVICE_ID, "alias", "city", "postal-code", "street", "street-number", "municipality",
                 12.1234F, 14.1234F);
@@ -163,6 +169,7 @@ public class AddDeviceSteps {
         this.request = new AddDeviceRequest();
         final com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device device = new com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device();
         device.setDeviceIdentification(DEVICE_ID);
+        device.setDeviceModel(this.deviceModel);
         this.request.setDevice(device);
         this.organisation = ORGANISATION_ID_OWNER;
     }
@@ -179,6 +186,7 @@ public class AddDeviceSteps {
         this.request = new AddDeviceRequest();
         final com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device device = new com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device();
         device.setDeviceIdentification(DEVICE_ID_EMPTY);
+        device.setDeviceModel(this.deviceModel);
         this.request.setDevice(device);
         this.organisation = ORGANISATION_ID_OWNER;
     }
@@ -192,6 +200,7 @@ public class AddDeviceSteps {
         this.request = new AddDeviceRequest();
         final com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device device = new com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device();
         device.setDeviceIdentification(DEVICE_ID_SPACES);
+        device.setDeviceModel(this.deviceModel);
         this.request.setDevice(device);
         this.organisation = ORGANISATION_ID_OWNER;
     }
@@ -205,6 +214,7 @@ public class AddDeviceSteps {
         this.request = new AddDeviceRequest();
         final com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device device = new com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device();
         device.setDeviceIdentification(DEVICE_ID_INVALID);
+        device.setDeviceModel(this.deviceModel);
         this.request.setDevice(device);
         this.organisation = ORGANISATION_ID_OWNER;
     }
@@ -230,6 +240,7 @@ public class AddDeviceSteps {
         this.request = new AddDeviceRequest();
         final com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device device = new com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device();
         device.setDeviceIdentification(DEVICE_ID_EXISTING);
+        device.setDeviceModel(this.deviceModel);
         this.request.setDevice(device);
         this.organisation = ORGANISATION_ID_OWNER;
     }
@@ -254,6 +265,7 @@ public class AddDeviceSteps {
         this.request = new AddDeviceRequest();
         final com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device device = new com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device();
         device.setDeviceIdentification(DEVICE_ID);
+        device.setDeviceModel(this.deviceModel);
         this.request.setDevice(device);
         this.organisation = ORGANISATION_ID_UNKNOWN;
     }
@@ -275,6 +287,7 @@ public class AddDeviceSteps {
         this.request = new AddDeviceRequest();
         final com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device device = new com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device();
         device.setDeviceIdentification(DEVICE_ID);
+        device.setDeviceModel(this.deviceModel);
         this.request.setDevice(device);
         this.organisation = ORGANISATION_ID_EMPTY;
     }
