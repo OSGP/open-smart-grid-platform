@@ -49,8 +49,6 @@ import com.alliander.osgp.adapter.ws.core.application.services.FirmwareManagemen
 import com.alliander.osgp.adapter.ws.core.endpoints.FirmwareManagementEndpoint;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
 import com.alliander.osgp.adapter.ws.schema.core.common.AsyncRequest;
-import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FirmwareModuleType;
-import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FirmwareVersion;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionRequest;
@@ -68,6 +66,8 @@ import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
+import com.alliander.osgp.dto.valueobjects.FirmwareModuleType;
+import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import com.alliander.osgp.oslp.Oslp.Message;
 import com.alliander.osgp.oslp.OslpEnvelope;
@@ -190,20 +190,20 @@ public class GetFirmwareVersionSteps {
 
         this.organisation = new Organisation(ORGANISATION_ID, ORGANISATION_ID, ORGANISATION_PREFIX,
                 PlatformFunctionGroup.USER);
-        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ID)).thenReturn(
-                this.organisation);
+        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ID))
+                .thenReturn(this.organisation);
 
         final List<DeviceAuthorization> authorizations = new ArrayList<>();
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.FIRMWARE).build());
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
-        .thenReturn(authorizations);
+                .thenReturn(authorizations);
 
         final List<DeviceFunction> deviceFunctions = new ArrayList<>();
         deviceFunctions.add(DeviceFunction.GET_FIRMWARE_VERSION);
 
-        when(this.deviceFunctionMappingRepositoryMock.findByDeviceFunctionGroups(any(ArrayList.class))).thenReturn(
-                deviceFunctions);
+        when(this.deviceFunctionMappingRepositoryMock.findByDeviceFunctionGroups(any(ArrayList.class)))
+                .thenReturn(deviceFunctions);
     }
 
     @DomainStep("the get firmware version oslp message from the device contains (.*)")
@@ -213,11 +213,10 @@ public class GetFirmwareVersionSteps {
         final com.alliander.osgp.oslp.Oslp.GetFirmwareVersionResponse getFirmwareVersionResponse = com.alliander.osgp.oslp.Oslp.GetFirmwareVersionResponse
                 .newBuilder().setFirmwareVersion(firmwareVersion).build();
 
-        this.oslpResponse = OslpTestUtils
-                .createOslpEnvelopeBuilder()
-                .withDeviceId(Base64.decodeBase64(DEVICE_UID))
+        this.oslpResponse = OslpTestUtils.createOslpEnvelopeBuilder().withDeviceId(Base64.decodeBase64(DEVICE_UID))
                 .withPayloadMessage(
-                        Message.newBuilder().setGetFirmwareVersionResponse(getFirmwareVersionResponse).build()).build();
+                        Message.newBuilder().setGetFirmwareVersionResponse(getFirmwareVersionResponse).build())
+                .build();
 
         this.oslpChannelHandler = OslpTestUtils.createOslpChannelHandlerWithResponse(this.oslpResponse,
                 this.channelMock, this.device.getNetworkAddress());
@@ -268,10 +267,9 @@ public class GetFirmwareVersionSteps {
                             ComponentType.UNKNOWN, new ValidationException());
                     exception = (OsgpException) dataObject;
                 } else {
-                    final List<FirmwareVersion> firmwareVersions = new ArrayList<FirmwareVersion>();
-                    final FirmwareVersion fw = new FirmwareVersion();
-                    fw.setFirmwareModuleType(FirmwareModuleType.FUNCTIONAL);
-                    fw.setVersion(firmwareversion);
+                    final List<FirmwareVersionDto> firmwareVersions = new ArrayList<>();
+                    final FirmwareVersionDto fw = new FirmwareVersionDto(FirmwareModuleType.FUNCTIONAL,
+                            firmwareversion);
                     firmwareVersions.add(fw);
                     dataObject = (Serializable) firmwareVersions;
                 }
@@ -325,8 +323,8 @@ public class GetFirmwareVersionSteps {
 
         try {
             Assert.assertNotNull("asyncResponse should not be null", this.asyncResponse);
-            Assert.assertNotNull("CorrelationId should not be null", this.asyncResponse.getAsyncResponse()
-                    .getCorrelationUid());
+            Assert.assertNotNull("CorrelationId should not be null",
+                    this.asyncResponse.getAsyncResponse().getCorrelationUid());
             Assert.assertNull("Throwable should be null", this.throwable);
         } catch (final Exception e) {
             LOGGER.error("Exception [{}]: {}", e.getClass().getSimpleName(), e.getMessage());
@@ -348,8 +346,8 @@ public class GetFirmwareVersionSteps {
             if (isMessageSent) {
                 this.oslpRequest = argument.getValue();
 
-                Assert.assertTrue("Message should contain get firmware version request.", this.oslpRequest
-                        .getPayloadMessage().hasGetFirmwareVersionRequest());
+                Assert.assertTrue("Message should contain get firmware version request.",
+                        this.oslpRequest.getPayloadMessage().hasGetFirmwareVersionRequest());
             }
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
@@ -463,8 +461,10 @@ public class GetFirmwareVersionSteps {
                 this.deviceAuthorizationRepositoryMock, this.deviceLogItemRepositoryMock, this.channelMock,
                 this.webServiceResponseMessageSenderMock, this.oslpDeviceRepositoryMock });
 
+        final FirmwareManagementMapper firmwareManagementMapper = new FirmwareManagementMapper();
+        firmwareManagementMapper.initialize();
         this.firmwareManagementEndpoint = new FirmwareManagementEndpoint(this.firmwareManagementService,
-                new FirmwareManagementMapper());
+                firmwareManagementMapper);
         this.deviceRegistrationService.setSequenceNumberMaximum(OslpTestUtils.OSLP_SEQUENCE_NUMBER_MAXIMUM);
         this.deviceRegistrationService.setSequenceNumberWindow(OslpTestUtils.OSLP_SEQUENCE_NUMBER_WINDOW);
 
