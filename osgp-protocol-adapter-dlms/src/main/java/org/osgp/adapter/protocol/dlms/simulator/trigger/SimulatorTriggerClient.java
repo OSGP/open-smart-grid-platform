@@ -8,12 +8,19 @@
 
 package org.osgp.adapter.protocol.dlms.simulator.trigger;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.net.ssl.TrustManagerFactory;
 import javax.ws.rs.core.Response;
 
+import org.apache.cxf.configuration.jsse.TLSClientParameters;
+import org.apache.cxf.jaxrs.client.ClientConfiguration;
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.apache.cxf.transport.http.HTTPConduit;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,16 +38,36 @@ public class SimulatorTriggerClient extends AbstractClient {
 
     /**
      * Construct a SimulatorTriggerClient instance.
-     *
+     * 
+     * @param truststoreLocation
+     *            The location of the trust store
+     * @param truststorePassword
+     *            The password for the trust store
+     * @param truststoreType
+     *            The type of the trust store
      * @param baseAddress
      *            The base address or URL for the SimulatorTriggerClient.
      * @throws SimulatorTriggerClientException
      *             In case the construction fails, a
      *             SimulatorTriggerClientException will be thrown.
      */
-    public SimulatorTriggerClient(final String baseAddress) {
+    public SimulatorTriggerClient(final String truststoreLocation, final String truststorePassword,
+            final String truststoreType, final String baseAddress) throws SimulatorTriggerClientException {
+
+        InputStream stream = null;
+        boolean isClosed = false;
+        Exception exception = null;
 
         try {
+            // Create the KeyStore.
+            final KeyStore truststore = KeyStore.getInstance(truststoreType.toUpperCase());
+
+            stream = new FileInputStream(truststoreLocation);
+            truststore.load(stream, truststorePassword.toCharArray());
+
+            // Create TrustManagerFactory and initialize it using the KeyStore.
+            final TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            tmf.init(truststore);
 
             // Create Apache CXF WebClient with JSON provider.
             final List<Object> providers = new ArrayList<Object>();
@@ -51,10 +78,28 @@ public class SimulatorTriggerClient extends AbstractClient {
                 throw new SimulatorTriggerClientException("webclient is null");
             }
 
+            // Set up the HTTP Conduit to use the TrustManagers.
+            final ClientConfiguration config = WebClient.getConfig(this.webClient);
+            final HTTPConduit conduit = config.getHttpConduit();
+
+            conduit.setTlsClientParameters(new TLSClientParameters());
+            conduit.getTlsClientParameters().setTrustManagers(tmf.getTrustManagers());
         } catch (final Exception e) {
             LOGGER.error(CONSTRUCTION_FAILED, e);
+            throw new SimulatorTriggerClientException(CONSTRUCTION_FAILED, e);
+        } finally {
+            try {
+                stream.close();
+                isClosed = true;
+            } catch (final Exception streamCloseException) {
+                LOGGER.error(CONSTRUCTION_FAILED, streamCloseException);
+                exception = streamCloseException;
+            }
         }
 
+        if (!isClosed) {
+            throw new SimulatorTriggerClientException(CONSTRUCTION_FAILED, exception);
+        }
     }
 
     public void sendTrigger(final DlmsDevice simulatedDlmsDevice) throws SimulatorTriggerClientException {
