@@ -1,0 +1,34 @@
+-- Script for migration legacy relay status.
+
+CREATE OR REPLACE FUNCTION migration_for_relay_status() RETURNS SETOF relay_status AS
+$BODY$
+DECLARE 
+    r relay_status%rowtype;
+    
+BEGIN
+
+  FOR r IN SELECT * FROM relay_status order by id
+  LOOP
+	IF r.index = 1 THEN
+		UPDATE relay_status SET index = 2 where id = r.id;
+	ELSEIF r.index = 2 THEN
+		UPDATE relay_status SET index = 3 where id = r.id;
+    ELSEIF r.index = 3 THEN
+		UPDATE relay_status SET index = 1 where id = r.id;
+    ELSEIF r.index = 4 THEN
+		UPDATE relay_status SET index = 4 where id = r.id;
+	END IF;
+
+	RETURN NEXT r;    
+  END LOOP;
+  RETURN;   
+
+END
+$BODY$
+LANGUAGE 'plpgsql';
+
+-- Usage:
+SELECT * FROM migration_for_relay_status();
+
+-- Drop function regarding clean code
+DROP FUNCTION IF EXISTS migration_for_relay_status();
