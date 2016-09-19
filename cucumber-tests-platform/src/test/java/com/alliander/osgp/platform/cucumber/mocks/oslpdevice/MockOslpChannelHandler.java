@@ -36,7 +36,6 @@ import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessage;
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.Oslp.Message;
 import com.alliander.osgp.oslp.OslpEnvelope;

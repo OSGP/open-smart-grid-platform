@@ -14,7 +14,9 @@ public class OslpMockServerHooks {
 
     @Before
     public void before() {
-        this.mockServer.resetServer();
+    	if (this.mockServer != null) {
+            this.mockServer.resetServer();
+    	}
     }
     
     @Before("@OslpMockServer")

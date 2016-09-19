@@ -3,6 +3,8 @@ package com.alliander.osgp.platform.cucumber.steps.database;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.cleanRepoAbstractEntity;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.cleanRepoSerializable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -43,8 +45,11 @@ public class DatabaseSteps {
     /**
      * 
      */
-	public void prepareDatabaseForScenario() {
-        // Remove all data from previous scenario.
+	public void prepareDatabaseForTestRun() {
+		Logger LOGGER = LoggerFactory.getLogger(DatabaseSteps.class);
+		LOGGER.info("DatabaseSteps.prepareDatabaseForTestRun");
+
+		// Remove all data from previous scenario.
         cleanRepoAbstractEntity(this.oslpDeviceRepo);
         cleanRepoAbstractEntity(this.deviceAuthorizationRepo);
         cleanRepoSerializable(this.deviceRepo);
@@ -91,5 +96,19 @@ public class DatabaseSteps {
         		Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE, 
         		Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION);
         this.deviceModelRepo.save(deviceModel);
+	}
+
+	public void prepareDatabaseForScenario() {
+        cleanRepoAbstractEntity(this.oslpDeviceRepo);
+        cleanRepoAbstractEntity(this.deviceAuthorizationRepo);
+        cleanRepoSerializable(this.deviceRepo);
+        cleanRepoSerializable(this.deviceModelRepo);
+        cleanRepoSerializable(this.manufacturerRepo);
+		for(Organisation org : this.organizationRepo.findAll()) {
+			if (!org.getOrganisationIdentification().equals("test-org") && 
+					!org.getOrganisationIdentification().equals("LianderNetManagement")) {
+				this.organizationRepo.delete(org);
+			}
+		}
 	}
 }

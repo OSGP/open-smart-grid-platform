@@ -12,7 +12,7 @@ package com.alliander.osgp.platform.cucumber.steps;
  */
 public class Defaults {
 	
-	public static final String DEFAULT_ORGANIZATION_DESCRIPTION = "Test Organization for all tests";
+	public static final String DEFAULT_ORGANIZATION_DESCRIPTION = "Test Organization";
 	public static final String DEFAULT_ORGANIZATION_IDENTIFICATION = "test-org";
 	public static final String DEFAULT_PREFIX = "MAA";
 	public static final String DEFAULT_MANUFACTURER_ID = "Test";

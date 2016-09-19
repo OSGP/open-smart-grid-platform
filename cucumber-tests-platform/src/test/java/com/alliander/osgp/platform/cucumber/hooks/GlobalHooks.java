@@ -7,6 +7,10 @@
  */
 package com.alliander.osgp.platform.cucumber.hooks;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.alliander.osgp.platform.cucumber.steps.database.DatabaseSteps;
+
 import cucumber.api.java.Before;
 
 /**
@@ -15,6 +19,9 @@ import cucumber.api.java.Before;
 public class GlobalHooks {
 
     private static boolean executedOnce = false;
+    
+    @Autowired
+    DatabaseSteps databaseSteps;
 
     /**
      * Executed once before all scenarios.
@@ -30,6 +37,7 @@ public class GlobalHooks {
             });
 
             // TODO: Do the global stuff which has to be executed only once here.
+        	databaseSteps.prepareDatabaseForTestRun();
 
             executedOnce = true;
         }
