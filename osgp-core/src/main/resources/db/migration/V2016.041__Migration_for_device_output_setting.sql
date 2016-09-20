@@ -1,4 +1,5 @@
 -- Script for migration legacy device_output_setting.
+-- Only migrate device_output_settings from devices in dev simulator.
 
 CREATE OR REPLACE FUNCTION migration_for_device_output_setting_osgp_core() 
 	RETURNS VARCHAR AS
@@ -14,7 +15,7 @@ BEGIN
 	device_id bigint, 
 	internal_id smallint,
 	external_id smallint,
-        alias varchar(255),
+    alias varchar(255),
 	output_type smallint	
     );
 
@@ -30,6 +31,8 @@ BEGIN
 		from device_output_setting      
 		where output_type IN (1, 2)   -- TARIFF or TARIFF REVERSED
 		and internal_id != 4
+		and device_id NOT IN (select id from device 
+					where network_address <> '127.0.0.1')
 
 	UNION
 	
@@ -50,7 +53,9 @@ BEGIN
 				and dos2.internal_id != 4 
 				--and dos2.internal_id > 1
 				and dos2.device_id = dos1.device_id
-				and dos2.ctid < dos1.ctid)
+				and dos2.ctid < dos1.ctid) 
+		and device_id NOT IN (select id from device 
+					where network_address <> '127.0.0.1')
 
 	UNION
 	
@@ -71,7 +76,10 @@ BEGIN
 			    and dos2.internal_id != 4 
                             and dos2.internal_id > 1
 			    and dos2.device_id = dos1.device_id
-			    and dos2.ctid < dos1.ctid)	
+			    and dos2.ctid < dos1.ctid)
+		and device_id NOT IN (select id from device 
+					where network_address <> '127.0.0.1')
+		
 	UNION
 
 	-- add the internal_id = 4 relays (like a boiler).
@@ -82,6 +90,8 @@ BEGIN
 		, output_type AS outputType
 		from device_output_setting dos1
 		where internal_id = 4
+		and device_id NOT IN (select id from device 
+					where network_address <> '127.0.0.1')
 
 	UNION
 	
@@ -102,10 +112,15 @@ BEGIN
 			    and dos2.internal_id != 4 
 			    and dos2.device_id = dos1.device_id
 			    )
+		and device_id NOT IN (select id from device 
+					where network_address <> '127.0.0.1')
 	order by deviceId, internalid);
 
-   TRUNCATE device_output_setting;
-
+   -- Only delete output_settings from devices in simulator
+   DELETE FROM device_output_setting
+   WHERE device_id NOT IN (SELECT id FROM device 
+			WHERE network_address <> '127.0.0.1');
+   
    INSERT INTO device_output_setting(device_id, internal_id, external_id, alias, output_type)
    SELECT device_id, internal_id, external_id, alias, output_type 
    FROM copy_device_output_setting 
