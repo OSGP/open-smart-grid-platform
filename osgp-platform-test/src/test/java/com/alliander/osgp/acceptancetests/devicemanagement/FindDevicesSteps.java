@@ -20,6 +20,7 @@ import java.util.List;
 import org.givwenzen.annotations.DomainStep;
 import org.givwenzen.annotations.DomainSteps;
 import org.junit.Assert;
+import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specifications;
 
 import com.alliander.osgp.adapter.ws.core.application.mapping.DeviceManagementMapper;
 import com.alliander.osgp.adapter.ws.core.application.services.DeviceManagementService;
@@ -56,10 +58,11 @@ import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
 public class FindDevicesSteps {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FindDevicesSteps.class);
-    private static final String ORGANISATION_ID = "LianderNetManagement";
-    private static final String ORGANISATION_PREFIX = "LIA";
+    private static final String ORGANISATION_ID = "GemeenteHeerlen";
+    private static final String ORGANISATION_PREFIX = "HRL";
     private static final int DEFAULT_PAGE = 0;
-    private static final int DEFAULT_PAGESIZE = 25;
+    private static final int DEFAULT_PAGE_SIZE = 20;
+
     private DeviceManagementEndpoint deviceManagementEndpoint;
     private FindDevicesRequest request;
     private FindDevicesResponse response;
@@ -87,10 +90,15 @@ public class FindDevicesSteps {
 
     private Organisation ownerOrganisation;
 
-    private void setUp() {
-        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.ssldRepositoryMock,
-                this.organisationRepositoryMock, this.deviceAuthorizationRepositoryMock });
+    private boolean firstSetup = true;
 
+    private void setUp() {
+        if (!this.firstSetup) {
+            Mockito.reset(new Object[] { this.deviceRepositoryMock, this.ssldRepositoryMock,
+                    this.organisationRepositoryMock, this.deviceAuthorizationRepositoryMock });
+        }
+
+        this.deviceManagementMapper.initialize();
         this.deviceManagementEndpoint = new DeviceManagementEndpoint(this.deviceManagementService,
                 this.deviceManagementMapper);
 
@@ -99,8 +107,10 @@ public class FindDevicesSteps {
 
         this.organisation = new Organisation(ORGANISATION_ID, ORGANISATION_ID, ORGANISATION_PREFIX,
                 PlatformFunctionGroup.ADMIN);
-        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ID)).thenReturn(
-                this.organisation);
+        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ID))
+                .thenReturn(this.organisation);
+
+        this.firstSetup = false;
     }
 
     // === GIVEN ===
@@ -124,13 +134,15 @@ public class FindDevicesSteps {
 
         this.device.addAuthorization(this.ownerOrganisation, DeviceFunctionGroup.OWNER);
 
-        this.pageRequest = new PageRequest(DEFAULT_PAGE, DEFAULT_PAGESIZE, Sort.Direction.DESC, "creationTime");
+        this.pageRequest = new PageRequest(DEFAULT_PAGE, DEFAULT_PAGE_SIZE, Sort.Direction.DESC, "creationTime");
 
         final List<Device> devicesList = new ArrayList<Device>();
         devicesList.add(this.device);
         this.devices = new PageImpl<Device>(devicesList, this.pageRequest, devicesList.size());
 
-        when(this.deviceRepositoryMock.findAll(this.pageRequest)).thenReturn(this.devices);
+        when(this.deviceRepositoryMock.findAll(any(PageRequest.class))).thenReturn(this.devices);
+        when(this.deviceRepositoryMock.findAll(Matchers.<Specifications<Device>> any(), any(PageRequest.class)))
+                .thenReturn(this.devices);
         when(this.ssldRepositoryMock.findByDeviceIdentification(any(String.class))).thenReturn(null);
         when(this.ssldRepositoryMock.findOne(any(Long.class))).thenReturn(null);
 
@@ -138,14 +150,14 @@ public class FindDevicesSteps {
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.OWNER).build());
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
-        .thenReturn(authorizations);
+                .thenReturn(authorizations);
     }
 
     // === WHEN ===
 
     @DomainStep("the find devices request is received")
-    public void whenTheFindDevicesRequestIsReceived() throws UnknownEntityException, ValidationException,
-    NotAuthorizedException {
+    public void whenTheFindDevicesRequestIsReceived()
+            throws UnknownEntityException, ValidationException, NotAuthorizedException {
         LOGGER.info("WHEN: \"the the find devices request is received\".");
 
         try {
@@ -162,7 +174,8 @@ public class FindDevicesSteps {
         LOGGER.info("THEN: \"the the find devices request should return a find devices response\".");
 
         // Expect that
-        verify(this.deviceRepositoryMock, times(1)).findAll(any(PageRequest.class));
+        verify(this.deviceRepositoryMock, times(1)).findAll(Matchers.<Specifications<Device>> any(),
+                any(PageRequest.class));
 
         return this.response != null;
     }

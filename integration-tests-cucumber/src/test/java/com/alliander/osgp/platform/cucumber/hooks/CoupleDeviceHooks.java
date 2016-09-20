@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.platform.cucumber.hooks;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -83,10 +85,17 @@ public class CoupleDeviceHooks {
         this.smartMeterRepository.save(mbusSmartMeter);
     }
 
-    public void clearChannelForSmartMeterDevice(String mbusDeviceIdentification) {
-        final SmartMeter mbusDevice = this.smartMeterRepository.findByDeviceIdentification(mbusDeviceIdentification);
-        mbusDevice.setChannel(null);
-        this.smartMeterRepository.save(mbusDevice);
-    }
+    public void clearChannelForSmartMeterDevice(String deviceIdentification, Short channel) {
+        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+        final List<SmartMeter> mbusDevicesCoupled = this.smartMeterRepository.getMbusDevicesForGateway(device.getId());
 
+        for (final SmartMeter mbusDevice : mbusDevicesCoupled) {
+            if (mbusDevice.getChannel().equals(channel)) {
+                mbusDevice.setChannel(null);
+                mbusDevice.updateGatewayDevice(null);
+                this.deviceRepository.save(mbusDevice);
+            }
+        }
+
+    }
 }

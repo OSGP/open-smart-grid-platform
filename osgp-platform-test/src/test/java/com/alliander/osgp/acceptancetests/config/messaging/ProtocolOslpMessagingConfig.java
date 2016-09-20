@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Scope;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
@@ -76,6 +77,7 @@ public class ProtocolOslpMessagingConfig {
     }
 
     @Bean
+    @DependsOn("oslpSigningService")
     public DeviceResponseMessageSender oslpResponseMessageSender() {
         return new DeviceResponseMessageSender();
     }
