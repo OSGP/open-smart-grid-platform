@@ -46,16 +46,18 @@ public class DatabaseSteps {
      * 
      */
 	public void prepareDatabaseForTestRun() {
-		Logger LOGGER = LoggerFactory.getLogger(DatabaseSteps.class);
-		LOGGER.info("DatabaseSteps.prepareDatabaseForTestRun");
-
 		// Remove all data from previous scenario.
         cleanRepoAbstractEntity(this.oslpDeviceRepo);
         cleanRepoAbstractEntity(this.deviceAuthorizationRepo);
         cleanRepoSerializable(this.deviceRepo);
         cleanRepoSerializable(this.deviceModelRepo);
         cleanRepoSerializable(this.manufacturerRepo);
-        cleanRepoAbstractEntity(this.organizationRepo);
+		for(Organisation org : this.organizationRepo.findAll()) {
+			if (!org.getOrganisationIdentification().equals("test-org") && 
+					!org.getOrganisationIdentification().equals("LianderNetManagement")) {
+				this.organizationRepo.delete(org);
+			}
+		}
 
         // TODO: Clean all other repositories ....
 
@@ -70,20 +72,23 @@ public class DatabaseSteps {
 		// TODO: Better would be to have some sort of init method in the 
         // steps.database package which will create the necessary basic 
         // entities.
-        // Create test organization used within the tests.
-        final Organisation testOrg = new Organisation(
-        		Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION, 
-        		Defaults.DEFAULT_ORGANIZATION_DESCRIPTION, 
-        		Defaults.DEFAULT_PREFIX,
-        		PlatformFunctionGroup.ADMIN);
-        testOrg.addDomain(PlatformDomain.COMMON);
-		testOrg.addDomain(PlatformDomain.PUBLIC_LIGHTING);
-		testOrg.addDomain(PlatformDomain.TARIFF_SWITCHING);
-		testOrg.setIsEnabled(true);
-
-        this.organizationRepo.save(testOrg);
         
-        // Create default test manufacturer
+		if (this.organizationRepo.findByOrganisationIdentification(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION) == null) {
+	        // Create test organization used within the tests.
+	        final Organisation testOrg = new Organisation(
+	        		Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION, 
+	        		Defaults.DEFAULT_ORGANIZATION_DESCRIPTION, 
+	        		Defaults.DEFAULT_PREFIX,
+	        		PlatformFunctionGroup.ADMIN);
+	        testOrg.addDomain(PlatformDomain.COMMON);
+			testOrg.addDomain(PlatformDomain.PUBLIC_LIGHTING);
+			testOrg.addDomain(PlatformDomain.TARIFF_SWITCHING);
+			testOrg.setIsEnabled(true);
+
+	        this.organizationRepo.save(testOrg);
+		}
+
+		// Create default test manufacturer
         final Manufacturer manufacturer = new Manufacturer(
         		Defaults.DEFAULT_MANUFACTURER_ID, 
         		Defaults.DEFAULT_MANUFACTURER_NAME, 
