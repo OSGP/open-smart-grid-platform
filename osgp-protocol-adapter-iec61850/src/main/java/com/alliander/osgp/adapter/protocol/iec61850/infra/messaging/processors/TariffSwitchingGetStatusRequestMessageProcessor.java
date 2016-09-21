@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageProcessor;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.SsldDeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -28,7 +28,7 @@ import com.alliander.osgp.shared.infra.jms.Constants;
  * Class for processing tariff switching get status request messages
  */
 @Component("iec61850TariffSwitchingGetStatusRequestMessageProcessor")
-public class TariffSwitchingGetStatusRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class TariffSwitchingGetStatusRequestMessageProcessor extends SsldDeviceRequestMessageProcessor {
     /**
      * Logger for this class
      */

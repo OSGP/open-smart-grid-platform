@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageProcessor;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.SsldDeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -28,7 +28,7 @@ import com.alliander.osgp.shared.infra.jms.Constants;
  * Class for processing public lighting get status request messages
  */
 @Component("iec61850PublicLightingGetStatusRequestMessageProcessor")
-public class PublicLightingGetStatusRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class PublicLightingGetStatusRequestMessageProcessor extends SsldDeviceRequestMessageProcessor {
     /**
      * Logger for this class
      */
@@ -113,4 +113,5 @@ public class PublicLightingGetStatusRequestMessageProcessor extends DeviceReques
 
         this.deviceService.getStatus(deviceRequest, deviceResponseHandler);
     }
+
 }

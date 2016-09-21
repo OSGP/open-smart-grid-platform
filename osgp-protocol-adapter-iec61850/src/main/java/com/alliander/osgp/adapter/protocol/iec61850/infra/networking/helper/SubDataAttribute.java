@@ -209,8 +209,43 @@ public enum SubDataAttribute {
     /**
      * End of summer time.
      */
-    WINTER_TIME_DETAILS("dstEndT");
-
+    WINTER_TIME_DETAILS("dstEndT"),
+    /**
+     * Magnitude.
+     */
+    MAGNITUDE("mag"),
+    /**
+     * Instantaneous magnitude.
+     */
+    MAGNITUDE_INSTANTANEOUS("instMag"),
+    /**
+     * Setpoint for magnitude.
+     */
+    MAGNITUDE_SETPOINT("setMag"),
+    /**
+     * Quality indicator
+     */
+    QUALITY("q"),
+    /**
+     * Timestamp
+     */
+    TIME("t"),
+    /**
+     * Float
+     */
+    FLOAT("f"),
+    /**
+     * Actual value
+     */
+    ACTUAL_VALUE("actVal"),
+    /**
+     * Enables substitution
+     */
+    SUBSTITUDE_ENABLE("subEna"),
+    /**
+     * Substitution value
+     */
+    SUBSTITUDE_VALUE("subVal");
     private String description;
 
     private SubDataAttribute(final String description) {

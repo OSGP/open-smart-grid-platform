@@ -14,7 +14,7 @@ package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper;
 public interface Function<R> {
 
     /**
-     * The function, containing the bussiness logic of the Function
+     * The function, containing the business logic of the Function
      */
     R apply() throws Exception;
 }

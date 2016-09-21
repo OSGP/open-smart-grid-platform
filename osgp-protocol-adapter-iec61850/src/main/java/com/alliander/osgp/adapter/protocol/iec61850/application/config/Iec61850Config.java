@@ -45,7 +45,8 @@ public class Iec61850Config {
     private static final String PROPERTY_NAME_IEC61850_TIMEOUT_CONNECT = "iec61850.timeout.connect";
     private static final String PROPERTY_NAME_IEC61850_PORT_CLIENT = "iec61850.port.client";
     private static final String PROPERTY_NAME_IEC61850_PORT_CLIENTLOCAL = "iec61850.port.clientlocal";
-    private static final String PROPERTY_NAME_IEC61850_PORT_SERVER = "iec61850.port.server";
+    private static final String PROPERTY_NAME_IEC61850_SSLD_PORT_SERVER = "iec61850.ssld.port.server";
+    private static final String PROPERTY_NAME_IEC61850_RTU_PORT_SERVER = "iec61850.rtu.port.server";
     private static final String PROPERTY_NAME_IEC61850_PORT_LISTENER = "iec61850.port.listener";
 
     @Resource
@@ -71,8 +72,13 @@ public class Iec61850Config {
     }
 
     @Bean
-    public int iec61850PortServer() {
-        return Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_IEC61850_PORT_SERVER));
+    public int iec61850SsldPortServer() {
+        return Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_IEC61850_SSLD_PORT_SERVER));
+    }
+
+    @Bean
+    public int iec61850RtuPortServer() {
+        return Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_IEC61850_RTU_PORT_SERVER));
     }
 
     /**

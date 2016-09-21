@@ -1,5 +1,5 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2014-2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -8,6 +8,8 @@
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking;
 
 import org.openmuc.openiec61850.ClientAssociation;
+
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.reporting.Iec61850ClientBaseEventListener;
 
 /**
  * Helper class, intended to make the ClientEventListener with a
@@ -21,10 +23,10 @@ import org.openmuc.openiec61850.ClientAssociation;
 public class Iec61850ClientAssociation {
 
     private final ClientAssociation clientAssociation;
-    private final Iec61850ClientEventListener reportListener;
+    private final Iec61850ClientBaseEventListener reportListener;
 
     public Iec61850ClientAssociation(final ClientAssociation clientAssociation,
-            final Iec61850ClientEventListener reportListener) {
+            final Iec61850ClientBaseEventListener reportListener) {
         this.clientAssociation = clientAssociation;
         this.reportListener = reportListener;
     }
@@ -33,7 +35,7 @@ public class Iec61850ClientAssociation {
         return this.clientAssociation;
     }
 
-    public Iec61850ClientEventListener getReportListener() {
+    public Iec61850ClientBaseEventListener getReportListener() {
         return this.reportListener;
     }
 }

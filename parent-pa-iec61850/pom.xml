@@ -134,6 +134,12 @@
         <version>${osgp.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>com.alliander.osgp</groupId>
+        <artifactId>osgp-domain-microgrids</artifactId>
+        <version>${osgp.shared.version}</version>
+      </dependency>
+
       <!-- Guava for Joiner class -->
       <dependency>
         <groupId>com.google.guava</groupId>

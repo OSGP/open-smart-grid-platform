@@ -116,9 +116,7 @@ public class SsldDataService {
     }
 
     public GpsCoordinatesDto getGpsCoordinatesForDevice(final String deviceIdentification) {
-
         final Device device = this.findDevice(deviceIdentification);
-
         if (device != null) {
             return new GpsCoordinatesDto(device.getGpsLatitude(), device.getGpsLongitude());
         }

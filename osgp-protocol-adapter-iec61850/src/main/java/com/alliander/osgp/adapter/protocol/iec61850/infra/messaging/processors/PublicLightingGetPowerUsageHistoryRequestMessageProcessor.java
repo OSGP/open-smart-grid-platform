@@ -16,9 +16,9 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
-import com.alliander.osgp.adapter.protocol.iec61850.device.requests.GetPowerUsageHistoryDeviceRequest;
-import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetPowerUsageHistoryDeviceResponse;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageProcessor;
+import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.requests.GetPowerUsageHistoryDeviceRequest;
+import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.GetPowerUsageHistoryDeviceResponse;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.SsldDeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceResponseMessageSender;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
@@ -37,7 +37,7 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
  * Class for processing public lighting get power usage history request messages
  */
 @Component("iec61850PublicLightingGetPowerUsageHistoryRequestMessageProcessor")
-public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends SsldDeviceRequestMessageProcessor {
     /**
      * Logger for this class
      */
@@ -78,7 +78,7 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends D
             messagePriority = message.getJMSPriority();
             scheduleTime = message.propertyExists(Constants.SCHEDULE_TIME) ? message
                     .getLongProperty(Constants.SCHEDULE_TIME) : null;
-            powerUsageHistoryMessageDataContainerDto = (PowerUsageHistoryMessageDataContainerDto) message.getObject();
+                    powerUsageHistoryMessageDataContainerDto = (PowerUsageHistoryMessageDataContainerDto) message.getObject();
 
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
@@ -102,11 +102,11 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends D
             @Override
             public void handleResponse(final DeviceResponse deviceResponse) {
                 PublicLightingGetPowerUsageHistoryRequestMessageProcessor.this
-                        .handleGetPowerUsageHistoryDeviceResponse((GetPowerUsageHistoryDeviceResponse) deviceResponse,
-                                PublicLightingGetPowerUsageHistoryRequestMessageProcessor.this.responseMessageSender,
-                                requestMessageData.getDomain(), requestMessageData.getDomainVersion(),
-                                requestMessageData.getMessageType(), requestMessageData.getRetryCount(),
-                                messagePriority, scheduleTime);
+                .handleGetPowerUsageHistoryDeviceResponse((GetPowerUsageHistoryDeviceResponse) deviceResponse,
+                        PublicLightingGetPowerUsageHistoryRequestMessageProcessor.this.responseMessageSender,
+                        requestMessageData.getDomain(), requestMessageData.getDomainVersion(),
+                        requestMessageData.getMessageType(), requestMessageData.getRetryCount(),
+                        messagePriority, scheduleTime);
             }
 
             @Override
@@ -165,4 +165,5 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends D
 
         responseMessageSender.send(responseMessage);
     }
+
 }
