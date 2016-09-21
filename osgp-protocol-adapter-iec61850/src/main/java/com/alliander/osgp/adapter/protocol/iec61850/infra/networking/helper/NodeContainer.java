@@ -9,12 +9,14 @@ package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.Objects;
 
 import org.openmuc.openiec61850.BdaBoolean;
 import org.openmuc.openiec61850.BdaFloat32;
 import org.openmuc.openiec61850.BdaInt16;
 import org.openmuc.openiec61850.BdaInt16U;
 import org.openmuc.openiec61850.BdaInt32;
+import org.openmuc.openiec61850.BdaInt64;
 import org.openmuc.openiec61850.BdaInt8;
 import org.openmuc.openiec61850.BdaInt8U;
 import org.openmuc.openiec61850.BdaTimestamp;
@@ -28,11 +30,21 @@ public class NodeContainer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NodeContainer.class);
 
-    private final DeviceConnection connection;
-    private final FcModelNode parent;
+    protected final String deviceIdentification;
+    protected final DeviceConnection connection;
+    protected final FcModelNode parent;
 
     public NodeContainer(final DeviceConnection connection, final FcModelNode fcmodelNode) {
+        Objects.requireNonNull(connection, "connection must not be null");
+        Objects.requireNonNull(fcmodelNode, "fcmodelNode must not be null");
+        this.deviceIdentification = connection.getDeviceIdentification();
         this.connection = connection;
+        this.parent = fcmodelNode;
+    }
+
+    public NodeContainer(final String deviceIdentification, final FcModelNode fcmodelNode) {
+        this.deviceIdentification = deviceIdentification;
+        this.connection = null;
         this.parent = fcmodelNode;
     }
 
@@ -42,7 +54,9 @@ public class NodeContainer {
         } catch (final ServiceError e) {
             LOGGER.error("ServiceError during write()", e);
         } catch (final IOException e) {
-            // "if a fatal association error occurs. The association object will be closed and can no longer be used after this exception is thrown."
+            // "if a fatal association error occurs. The association object will
+            // be closed and can no longer be used after this exception is
+            // thrown."
             LOGGER.error("IOException during write()", e);
         }
     }
@@ -57,7 +71,7 @@ public class NodeContainer {
             LOGGER.error("BdaVisibleString is null, most likely attribute: {} does not exist");
         }
 
-        LOGGER.info("device: {}, {} has value {}", this.connection.getDeviceIdentification(), child.getDescription(),
+        LOGGER.info("device: {}, {} has value {}", this.deviceIdentification, child.getDescription(),
                 bdaString.getStringValue());
         return bdaString.getStringValue();
     }
@@ -68,8 +82,7 @@ public class NodeContainer {
     public void writeString(final SubDataAttribute child, final String value) {
         final BdaVisibleString stringNode = (BdaVisibleString) this.parent.getChild(child.getDescription());
 
-        LOGGER.info("device: {}, writing {} to {}", this.connection.getDeviceIdentification(), value,
-                child.getDescription());
+        LOGGER.info("device: {}, writing {} to {}", this.deviceIdentification, value, child.getDescription());
 
         stringNode.setValue(value);
         this.writeNode(stringNode);
@@ -85,7 +98,7 @@ public class NodeContainer {
             LOGGER.error("BdaTimeStamp is null, most likely attribute: {} does not exist");
         }
 
-        LOGGER.info("device: {}, {} has value {}", this.connection.getDeviceIdentification(), child.getDescription(),
+        LOGGER.info("device: {}, {} has value {}", this.deviceIdentification, child.getDescription(),
                 dBdaTimestamp.getDate());
         return dBdaTimestamp.getDate();
     }
@@ -96,8 +109,7 @@ public class NodeContainer {
     public void writeDate(final SubDataAttribute child, final Date value) {
         final BdaTimestamp dBdaTimestamp = (BdaTimestamp) this.parent.getChild(child.getDescription());
 
-        LOGGER.info("device: {}, writing {} to {}", this.connection.getDeviceIdentification(), value,
-                child.getDescription());
+        LOGGER.info("device: {}, writing {} to {}", this.deviceIdentification, value, child.getDescription());
         dBdaTimestamp.setDate(value);
         this.writeNode(dBdaTimestamp);
     }
@@ -156,6 +168,16 @@ public class NodeContainer {
         this.writeNode(bdaInteger);
     }
 
+    public BdaInt64 getLong(final SubDataAttribute child) {
+        return (BdaInt64) this.parent.getChild(child.getDescription());
+    }
+
+    public void writeLong(final SubDataAttribute child, final Integer value) {
+        final BdaInt64 bdaInteger = (BdaInt64) this.parent.getChild(child.getDescription());
+        bdaInteger.setValue(value);
+        this.writeNode(bdaInteger);
+    }
+
     public BdaFloat32 getFloat(final SubDataAttribute child) {
         return (BdaFloat32) this.parent.getChild(child.getDescription());
     }
@@ -176,7 +198,9 @@ public class NodeContainer {
             LOGGER.error("ServiceError during writeNode()", e);
         } catch (final IOException e) {
 
-            // "if a fatal association error occurs. The association object will be closed and can no longer be used after this exception is thrown."
+            // "if a fatal association error occurs. The association object will
+            // be closed and can no longer be used after this exception is
+            // thrown."
             LOGGER.error("IOException during writeNode()", e);
         }
     }
@@ -208,5 +232,14 @@ public class NodeContainer {
      */
     public NodeContainer getChild(final String child) {
         return new NodeContainer(this.connection, (FcModelNode) this.parent.getChild(child));
+    }
+
+    @Override
+    public String toString() {
+        if (this.parent == null) {
+            return "";
+        }
+
+        return this.parent.toString();
     }
 }

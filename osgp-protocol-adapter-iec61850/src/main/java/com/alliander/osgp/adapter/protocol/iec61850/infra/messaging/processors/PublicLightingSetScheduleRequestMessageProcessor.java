@@ -16,8 +16,8 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
-import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetScheduleDeviceRequest;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageProcessor;
+import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.requests.SetScheduleDeviceRequest;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.SsldDeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
 import com.alliander.osgp.dto.valueobjects.RelayTypeDto;
@@ -30,7 +30,7 @@ import com.alliander.osgp.shared.infra.jms.Constants;
  * Class for processing public lighting set schedule request messages
  */
 @Component("iec61850PublicLightingSetScheduleRequestMessageProcessor")
-public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class PublicLightingSetScheduleRequestMessageProcessor extends SsldDeviceRequestMessageProcessor {
     /**
      * Logger for this class
      */
@@ -121,4 +121,5 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
 
         this.deviceService.setSchedule(deviceRequest, deviceResponseHandler);
     }
+
 }

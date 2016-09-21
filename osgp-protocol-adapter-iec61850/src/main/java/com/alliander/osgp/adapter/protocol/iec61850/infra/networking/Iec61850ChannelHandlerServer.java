@@ -1,5 +1,5 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2014-2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.OsgpRequestMessageSender;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.IED;
 import com.alliander.osgp.core.db.api.iec61850.entities.Ssld;
 import com.alliander.osgp.dto.valueobjects.DeviceFunctionDto;
 import com.alliander.osgp.dto.valueobjects.DeviceRegistrationDataDto;
@@ -59,7 +60,9 @@ public class Iec61850ChannelHandlerServer extends Iec61850ChannelHandler {
 
         String deviceIdentification = message.getDeviceIdentification();
         String deviceType = Ssld.SSLD_TYPE;
+        final IED ied = IED.FLEX_OVL;
         String ipAddress = message.getIpAddress();
+
         if (this.testDeviceId != null && this.testDeviceIp != null) {
             LOGGER.info("Using testDeviceId: {} and testDeviceIp: {}", this.testDeviceId, this.testDeviceIp);
             deviceIdentification = this.testDeviceId;
@@ -77,7 +80,7 @@ public class Iec61850ChannelHandlerServer extends Iec61850ChannelHandler {
         this.osgpRequestMessageSender.send(requestMessage, DeviceFunctionDto.REGISTER_DEVICE.name());
 
         try {
-            this.iec61850Client.disableRegistration(deviceIdentification, InetAddress.getByName(ipAddress));
+            this.iec61850Client.disableRegistration(deviceIdentification, InetAddress.getByName(ipAddress), ied);
             LOGGER.info("Disabled registration for device: {}, at IP address: {}", deviceIdentification, ipAddress);
         } catch (final Exception e) {
             LOGGER.error("Failed to disable registration for device: {}, at IP address: {}", deviceIdentification,

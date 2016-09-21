@@ -1,3 +1,10 @@
+/**
+ * Copyright 2014-2016 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects;
 
 import java.util.Objects;
@@ -311,6 +318,14 @@ public class DaylightSavingTimeTransition {
     private final String transition;
     private final DateTimeZone dateTimeZone;
 
+    public static DaylightSavingTimeTransition forDateTimeAccordingToFormat(final DateTime dateTime,
+            final DstTransitionFormat format) {
+        Objects.requireNonNull(dateTime, "dateTime must not be null");
+        Objects.requireNonNull(format, "format must not be null");
+
+        return format.getDaylightSavingTimeTransition(dateTime);
+    }
+
     /**
      * Creates a {@link DaylightSavingTimeTransition} for the given textual
      * representation. The {@code transition} must be a {@link String} according
@@ -338,14 +353,6 @@ public class DaylightSavingTimeTransition {
         } else {
             throw new IllegalArgumentException("Transition is not a supported textual representation: " + transition);
         }
-    }
-
-    public static DaylightSavingTimeTransition forDateTimeAccordingToFormat(final DateTime dateTime,
-            final DstTransitionFormat format) {
-        Objects.requireNonNull(dateTime, "dateTime must not be null");
-        Objects.requireNonNull(format, "format must not be null");
-
-        return format.getDaylightSavingTimeTransition(dateTime);
     }
 
     /**

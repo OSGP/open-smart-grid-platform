@@ -57,9 +57,9 @@ public class OsgpResponseMessageListener implements MessageListener {
     private void handleDeviceRegistration(final String result, final String deviceIdentification,
             final String messageType, final OsgpException osgpException) throws ProtocolAdapterException {
         if (ResponseMessageResultType.valueOf(result).equals(ResponseMessageResultType.NOT_OK)) {
-            throw new ProtocolAdapterException(String.format(
-                    "Response for device: %s for MessageType: %s is: %s, error: %s", deviceIdentification, messageType,
-                    result, osgpException));
+            throw new ProtocolAdapterException(
+                    String.format("Response for device: %s for MessageType: %s is: %s, error: %s", deviceIdentification,
+                            messageType, result, osgpException));
         } else {
             LOGGER.info("Device registration successful for device: {}", deviceIdentification);
         }

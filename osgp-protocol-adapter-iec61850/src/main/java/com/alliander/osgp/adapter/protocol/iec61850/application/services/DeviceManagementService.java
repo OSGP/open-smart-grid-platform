@@ -1,5 +1,5 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2014-2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -17,13 +17,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceResponseMessageSender;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.OsgpRequestMessageSender;
 import com.alliander.osgp.core.db.api.iec61850.entities.DeviceOutputSetting;
 import com.alliander.osgp.core.db.api.iec61850.entities.Ssld;
 import com.alliander.osgp.core.db.api.iec61850.repositories.SsldDataRepository;
 import com.alliander.osgp.dto.valueobjects.DeviceFunctionDto;
 import com.alliander.osgp.dto.valueobjects.EventNotificationDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.DataResponseDto;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
+import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
+import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 @Service(value = "iec61850DeviceManagementService")
 @Transactional(value = "iec61850OsgpCoreDbApiTransactionManager")
@@ -37,6 +42,9 @@ public class DeviceManagementService {
     @Autowired
     private OsgpRequestMessageSender osgpRequestMessageSender;
 
+    @Autowired
+    private DeviceResponseMessageSender responseSender;
+
     public DeviceManagementService() {
         // Parameterless constructor required for transactions...
     }
@@ -48,7 +56,7 @@ public class DeviceManagementService {
      *            The identification of the device.
      * @param eventNotifications
      *            The event notifications.
-     * 
+     *
      * @throws ProtocolAdapterException
      *             In case the device can not be found in the database.
      */
@@ -57,8 +65,8 @@ public class DeviceManagementService {
 
         final Ssld ssldDevice = this.ssldDataRepository.findByDeviceIdentification(deviceIdentification);
         if (ssldDevice == null) {
-            throw new ProtocolAdapterException("Unable to find device using deviceIdentification: "
-                    + deviceIdentification);
+            throw new ProtocolAdapterException(
+                    "Unable to find device using deviceIdentification: " + deviceIdentification);
         }
 
         LOGGER.info("addEventNotifications called for device {}: {}", deviceIdentification, eventNotifications);
@@ -85,10 +93,21 @@ public class DeviceManagementService {
 
         final Ssld ssldDevice = this.ssldDataRepository.findByDeviceIdentification(deviceIdentification);
         if (ssldDevice == null) {
-            throw new ProtocolAdapterException("Unable to find device using deviceIdentification: "
-                    + deviceIdentification);
+            throw new ProtocolAdapterException(
+                    "Unable to find device using deviceIdentification: " + deviceIdentification);
         }
 
         return ssldDevice.getOutputSettings();
+    }
+
+    public void sendMeasurements(final String deviceIdentification, final DataResponseDto response)
+            throws ProtocolAdapterException {
+        // Correlation ID is generated @ WS adapter, domain+version is hardcoded
+        // for now
+        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder().dataObject(response)
+                .deviceMessageMetadata(new DeviceMessageMetadata(deviceIdentification, "no-organisation",
+                        "no-correlationUid", DeviceFunctionDto.GET_DATA.name(), 0))
+                .result(ResponseMessageResultType.OK).domain("MICROGRIDS").domainVersion("1.0").build();
+        this.responseSender.send(responseMessage);
     }
 }

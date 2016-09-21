@@ -37,12 +37,14 @@ public class DeviceRequestMessageProcessorMap extends BaseMessageProcessorMap {
         final DeviceRequestMessageType messageType = DeviceRequestMessageType.valueOf(message.getJMSType());
         if (messageType.name() == null) {
             LOGGER.error("No message processor found for message type: {}", message.getJMSType());
-            throw new JMSException("Unknown message processor");
+            throw new JMSException("Unknown message processor for message type: " + message.getJMSType());
         }
 
         final MessageProcessor messageProcessor = this.messageProcessors.get(messageType.ordinal());
         if (messageProcessor == null) {
-            throw new IllegalArgumentException("Message type is not supported: " + message.getJMSType());
+            LOGGER.error("No message processor instance found in message processor map for message type: {}",
+                    message.getJMSType());
+            throw new JMSException("Unknown message processor");
         }
 
         return messageProcessor;

@@ -11,11 +11,11 @@ import java.io.IOException;
 import java.net.InetAddress;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 
 import org.openmuc.openiec61850.ClientAssociation;
 import org.openmuc.openiec61850.ClientSap;
 import org.openmuc.openiec61850.Fc;
+import org.openmuc.openiec61850.FcModelNode;
 import org.openmuc.openiec61850.SclParseException;
 import org.openmuc.openiec61850.ServerModel;
 import org.openmuc.openiec61850.ServiceError;
@@ -24,15 +24,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.adapter.protocol.iec61850.application.services.DeviceManagementService;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ConnectionFailureException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Function;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.IED;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalDevice;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalNode;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.NodeContainer;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.reporting.Iec61850ClientBaseEventListener;
 import com.alliander.osgp.core.db.api.iec61850.entities.Ssld;
 import com.alliander.osgp.core.db.api.iec61850.repositories.SsldDataRepository;
 
@@ -42,30 +44,29 @@ public class Iec61850Client {
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850Client.class);
 
     @Autowired
-    private DeviceManagementService deviceManagementService;
-
-    @Autowired
-    private Iec61850DeviceService iec61850DeviceService;
-
-    @Autowired
-    private SsldDataRepository ssldDataRepository;
-
-    @Autowired
     private int iec61850PortClient;
 
     @Autowired
     private int iec61850PortClientLocal;
 
     @Autowired
-    private int iec61850PortServer;
+    private int iec61850SsldPortServer;
 
-    @Resource
+    @Autowired
+    private int iec61850RtuPortServer;
+
+    @Autowired
     private int maxRetryCount;
+
+    @Autowired
+    private SsldDataRepository ssldDataRepository;
 
     @PostConstruct
     private void init() {
-        LOGGER.info("portClient: {}, portClientLocal: {}, portServer: {}", this.iec61850PortClient,
-                this.iec61850PortClientLocal, this.iec61850PortServer);
+        LOGGER.info(
+                "portClient: {}, portClientLocal: {}, iec61850SsldPortServer: {}, iec61850RtuPortServer: {}, maxRetryCount: {}",
+                this.iec61850PortClient, this.iec61850PortClientLocal, this.iec61850SsldPortServer,
+                this.iec61850RtuPortServer, this.maxRetryCount);
     }
 
     /**
@@ -83,25 +84,18 @@ public class Iec61850Client {
      *             In case the connection to the device could not be
      *             established.
      */
-    public Iec61850ClientAssociation connect(final String deviceIdentification, final InetAddress ipAddress)
-            throws ServiceError {
+    public Iec61850ClientAssociation connect(final String deviceIdentification, final InetAddress ipAddress,
+            final Iec61850ClientBaseEventListener reportListener, final int port) throws ServiceError {
         // Alternatively you could use ClientSap(SocketFactory factory) to e.g.
         // connect using SSL.
-
         final ClientSap clientSap = new ClientSap();
         final Iec61850ClientAssociation clientAssociation;
-
         LOGGER.info("Attempting to connect to server: {} on port: {} with max retry count: {}",
-                ipAddress.getHostAddress(), this.iec61850PortServer, this.maxRetryCount);
+                ipAddress.getHostAddress(), port, this.maxRetryCount);
+
         try {
-            final Iec61850ClientEventListener reportListener = new Iec61850ClientEventListener(deviceIdentification,
-                    this.deviceManagementService);
-            final ClientAssociation association = clientSap.associate(ipAddress, this.iec61850PortServer, null,
-                    reportListener);
+            final ClientAssociation association = clientSap.associate(ipAddress, port, null, reportListener);
             clientAssociation = new Iec61850ClientAssociation(association, reportListener);
-        } catch (final ProtocolAdapterException e) {
-            LOGGER.error("Error setting up ClientEventListener for server association", e);
-            return null;
         } catch (final IOException e) {
             // an IOException will always indicate a fatal exception. It
             // indicates that the association was closed and
@@ -190,26 +184,40 @@ public class Iec61850Client {
      * @throws ProtocolAdapterException
      *             In case the connection to the device can not be established.
      */
-    public void disableRegistration(final String deviceIdentification, final InetAddress ipAddress)
+    public void disableRegistration(final String deviceIdentification, final InetAddress ipAddress, final IED ied)
             throws ProtocolAdapterException {
         final Iec61850ClientAssociation iec61850ClientAssociation;
-        final ServerModel serverModel;
         try {
-            iec61850ClientAssociation = this.connect(deviceIdentification, ipAddress);
+            // Currently, only the SSLD devices use this method.
+            switch (ied) {
+            case FLEX_OVL:
+                iec61850ClientAssociation = this.connect(deviceIdentification, ipAddress, null,
+                        this.iec61850SsldPortServer);
+                break;
+            case ZOWN_RTU:
+                iec61850ClientAssociation = this.connect(deviceIdentification, ipAddress, null,
+                        this.iec61850RtuPortServer);
+                break;
+            default:
+                throw new ProtocolAdapterException("Unable to execute Disable Registration for IED "
+                        + ied.getDescription());
+            }
         } catch (final ServiceError e) {
             throw new ProtocolAdapterException("Unexpected error connecting to device to disable registration.", e);
         }
         if (iec61850ClientAssociation == null || iec61850ClientAssociation.getClientAssociation() == null) {
             throw new ProtocolAdapterException("Unable to connect to device to disable registration.");
         }
-        serverModel = this.readServerModelFromDevice(iec61850ClientAssociation.getClientAssociation());
+
+        final ServerModel serverModel = this
+                .readServerModelFromDevice(iec61850ClientAssociation.getClientAssociation());
 
         final Function<Void> function = new Function<Void>() {
 
             @Override
             public Void apply() throws Exception {
                 final DeviceConnection deviceConnection = new DeviceConnection(new Iec61850Connection(
-                        iec61850ClientAssociation, serverModel), deviceIdentification);
+                        iec61850ClientAssociation, serverModel), deviceIdentification, IED.FLEX_OVL);
 
                 // Set the location information for this device.
                 final Ssld ssld = Iec61850Client.this.ssldDataRepository
@@ -217,23 +225,29 @@ public class Iec61850Client {
                 if (ssld != null) {
                     final Float longitude = ssld.getGpsLongitude();
                     final Float latitude = ssld.getGpsLatitude();
+                    LOGGER.info("Ssld found for device: {} longitude: {}, latitude: {}", deviceIdentification,
+                            longitude, latitude);
+
                     if (longitude != null && latitude != null) {
-                        final NodeContainer astronomical = deviceConnection.getFcModelNode(
+                        final NodeContainer astronomical = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
                                 LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.ASTRONOMICAL, Fc.CF);
                         astronomical.writeFloat(SubDataAttribute.GPS_LONGITUDE, ssld.getGpsLongitude());
                         astronomical.writeFloat(SubDataAttribute.GPS_LATITUDE, ssld.getGpsLatitude());
+                        LOGGER.info("longitude: {}, latitude: {} written for device: {}", longitude, latitude,
+                                deviceIdentification);
                     }
                 }
 
-                // Disable the registration by the device by setting attribute
-                // of property Reg to false.
-                final NodeContainer deviceRegistration = deviceConnection.getFcModelNode(
+                // Set attribute to false in order to signal the device the
+                // registration was successful.
+                final NodeContainer deviceRegistration = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
                         LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.REGISTRATION, Fc.CF);
                 deviceRegistration.writeBoolean(SubDataAttribute.DEVICE_REGISTRATION_ENABLED, false);
+                LOGGER.info("Registration disabled");
 
-                // Make sure the device can send a report.
-                Iec61850Client.this.iec61850DeviceService.enableReportingOnDevice(deviceConnection,
-                        deviceIdentification);
+                // Disconnect from the device.
+                Iec61850Client.this.disconnect(iec61850ClientAssociation.getClientAssociation(), deviceIdentification);
+
                 return null;
             }
         };
@@ -258,6 +272,25 @@ public class Iec61850Client {
             return true;
         } catch (ServiceError | IOException e) {
             LOGGER.error("Unexpected exception during readAllDataValues", e);
+            return false;
+        }
+    }
+
+    /**
+     * Read the values of all data attributes of all Logical Nodes.
+     *
+     * @param clientAssociation
+     *            An {@link ClientAssociation} instance.
+     *
+     * @return True if all values have been read successfully.
+     */
+    public boolean readNodeDataValues(final ClientAssociation clientAssociation, final FcModelNode modelNode) {
+        // Get the values of all data attributes in the model.
+        try {
+            clientAssociation.getDataValues(modelNode);
+            return true;
+        } catch (ServiceError | IOException e) {
+            LOGGER.error("Unexpected excpetion during readAllDataValues", e);
             return false;
         }
     }
