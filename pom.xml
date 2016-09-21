@@ -85,11 +85,13 @@
         <!-- Domain -->
         <module>osgp-domain-core</module>
         <module>osgp-domain-logging</module>
+        <module>osgp-domain-microgrids</module>
 
         <module>osgp-adapter-domain-shared</module>
 
         <module>osgp-adapter-domain-admin</module>
         <module>osgp-adapter-domain-core</module>
+        <module>osgp-adapter-domain-microgrids</module>
         <module>osgp-adapter-domain-publiclighting</module>
         <module>osgp-adapter-domain-tariffswitching</module>
         <module>osgp-adapter-domain-smartmetering</module>
@@ -99,6 +101,7 @@
         <module>osgp-adapter-ws-shared-db</module>
         <module>osgp-adapter-ws-core</module>
         <module>osgp-adapter-ws-admin</module>
+        <module>osgp-adapter-ws-microgrids</module>
         <module>osgp-adapter-ws-publiclighting</module>
         <module>osgp-adapter-ws-tariffswitching</module>
         <module>osgp-adapter-ws-smartmetering</module>

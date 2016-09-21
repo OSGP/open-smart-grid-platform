@@ -25,5 +25,6 @@ public enum PlatformDomain {
      * Domain containing all tariff switching functionality, like tariff
      * schedules.
      */
-    TARIFF_SWITCHING
+    TARIFF_SWITCHING,
+    MICROGRIDS
 }

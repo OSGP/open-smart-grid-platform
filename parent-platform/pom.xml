@@ -139,6 +139,12 @@
 
       <dependency>
         <groupId>com.alliander.osgp</groupId>
+        <artifactId>osgp-domain-microgrids</artifactId>
+        <version>${osgp.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.alliander.osgp</groupId>
         <artifactId>osgp-domain-logging</artifactId>
         <version>${osgp.version}</version>
       </dependency>
@@ -153,6 +159,13 @@
       <dependency>
         <groupId>com.alliander.osgp</groupId>
         <artifactId>osgp-adapter-ws-core</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+
+      <dependency>
+        <groupId>com.alliander.osgp</groupId>
+        <artifactId>osgp-adapter-ws-microgrids</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
       </dependency>
@@ -186,6 +199,12 @@
       <dependency>
         <groupId>com.alliander.osgp</groupId>
         <artifactId>osgp-adapter-domain-core</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+      <dependency>
+        <groupId>com.alliander.osgp</groupId>
+        <artifactId>osgp-adapter-domain-microgrids</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
       </dependency>
