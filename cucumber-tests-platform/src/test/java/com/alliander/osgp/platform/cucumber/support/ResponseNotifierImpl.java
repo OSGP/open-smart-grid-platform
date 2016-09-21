@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 @Configuration
 @PropertySources({
 	@PropertySource("classpath:osgp-cucumber.properties"),
-	@PropertySource(value = "file:/etc/osp/osgp-cucumber.properties", ignoreResourceNotFound = true)
+	@PropertySource(value = "file:${osgp/cucumber/platform}", ignoreResourceNotFound = true)
 })
 public class ResponseNotifierImpl implements ResponseNotifier {
 

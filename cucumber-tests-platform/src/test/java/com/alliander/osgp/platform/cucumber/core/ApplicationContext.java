@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.dbsupport;
+package com.alliander.osgp.platform.cucumber.core;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -29,7 +29,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Import({ PersistenceConfigCore.class, PersistenceConfigResponseData.class, PersistenceConfigResponseDlms.class,
         PersistenceConfigLogging.class, PersistenceConfigResponseOslp.class })
 @PropertySources({ @PropertySource("classpath:osgp-cucumber.properties"),
-        @PropertySource(value = "file:/etc/osp/osgp-cucumber.properties", ignoreResourceNotFound = true) })
+        @PropertySource(value = "file:${osgp/cucumber/platform}", ignoreResourceNotFound = true) })
 public class ApplicationContext {
 
 }

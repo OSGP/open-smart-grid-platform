@@ -5,45 +5,35 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.dbsupport;
+package com.alliander.osgp.platform.cucumber.core;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
-import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-@EnableJpaRepositories(entityManagerFactoryRef = "entityMgrFactDlms", 
-    transactionManagerRef = "txMgrDlms",
-    basePackageClasses = { DlmsDeviceRepository.class })
-@Configuration
-@EnableTransactionManagement()
-@Primary
-@PropertySources({
-	@PropertySource("classpath:osgp-cucumber.properties"),
-	@PropertySource(value = "file:/etc/osp/osgp-cucumber.properties", ignoreResourceNotFound = true)
-})
-public class PersistenceConfigResponseDlms extends AbstractPersistenceConfig {
+import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
 
-    public PersistenceConfigResponseDlms() {
-    }
+@EnableJpaRepositories(entityManagerFactoryRef = "entityMgrRespData", 
+    transactionManagerRef = "txMgrRespData",
+    basePackageClasses = { MeterResponseDataRepository.class })
+public class PersistenceConfigResponseData extends AbstractPersistenceConfig {
 
-    @Value("${cucumber.osgpadapterprotocoldlmsdbs.url}")
+    @Value("${cucumber.osgpadapterwssmartmeteringdbs.url}")
     private String databaseUrl;
 
-    @Value("${entitymanager.packages.to.scan.dlms}")
+    @Value("${entitymanager.packages.to.scan}")
     private String entitymanagerPackagesToScan;
-  
+
+ 
+    public PersistenceConfigResponseData() {
+    }
+
     @Override
     protected String getDatabaseUrl() {
         return databaseUrl;
@@ -59,7 +49,7 @@ public class PersistenceConfigResponseDlms extends AbstractPersistenceConfig {
      *
      * @return DataSource
      */
-    @Bean(name = "dsDlms")    
+    @Bean(name = "dsRespData")    
     public DataSource dataSource() {
         return makeDataSource();
     }
@@ -71,11 +61,11 @@ public class PersistenceConfigResponseDlms extends AbstractPersistenceConfig {
      * @throws ClassNotFoundException
      *             when class not found
      */
-    @Bean(name = "entityMgrFactDlms")
+    @Bean(name = "entityMgrRespData")
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(
-            @Qualifier("dsDlms") DataSource dataSource) throws ClassNotFoundException {
+            @Qualifier("dsRespData") DataSource dataSource) throws ClassNotFoundException {
 
-        return makeEntityManager("OSGP_CUCUMBER_DLMS", dataSource);
+        return makeEntityManager("OSGP_CUCUMBER_RESPDATA", dataSource);
     }
 
     /**
@@ -85,9 +75,9 @@ public class PersistenceConfigResponseDlms extends AbstractPersistenceConfig {
      * @throws ClassNotFoundException
      *             when class not found
      */
-    @Bean(name = "txMgrDlms")    
+    @Bean(name = "txMgrRespData")    
     public JpaTransactionManager transactionManager(
-            @Qualifier("entityMgrFactDlms") EntityManagerFactory barEntityManagerFactory) {
+            @Qualifier("entityMgrRespData") EntityManagerFactory barEntityManagerFactory) {
         return new JpaTransactionManager(barEntityManagerFactory);    }
 
 }

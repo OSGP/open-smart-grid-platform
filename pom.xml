@@ -73,6 +73,7 @@
 
     <!-- Fitnesse Acceptance Test Project -->
     <!--<module>osgp-platform-test</module>-->
-    <module>integration-tests-cucumber</module>
+    <module>cucumber-tests-platform</module>
+    <module>cucumber-tests-platform-dlms</module>
   </modules>
 </project>

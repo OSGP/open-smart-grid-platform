@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.dbsupport;
+package com.alliander.osgp.platform.cucumber.core;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;

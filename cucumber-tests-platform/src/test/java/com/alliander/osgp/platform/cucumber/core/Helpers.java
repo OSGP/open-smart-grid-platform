@@ -9,6 +9,8 @@ package com.alliander.osgp.platform.cucumber.core;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.joda.time.DateTime;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -204,4 +206,85 @@ public class Helpers {
 
         }
     }
+    
+    /**
+     * This is a generic method which will translate the given string to a datetime.
+     * Supported:
+     *   now + 3 months
+     *   tomorrow - 1 year
+     *   yesterday + 2 weeks
+     *    
+     * @param dateString
+     * @return
+     * @throws Exception
+     */
+	public static DateTime getDateTime(final String dateString) throws Exception {
+		
+		DateTime retval;
+		
+		String pattern = "([a-z]*)[ ]*([+-]?)[ ]*([0-9]*)[ ]*([a-z]*)";
+		Pattern r = Pattern.compile(pattern);
+		Matcher m = r.matcher(dateString);
+		
+		if (m.groupCount() != 4) {
+			throw new Exception("Incorrect dateString [" + dateString + "]");
+		}
+		
+		m.find();
+         
+		String when = m.group(1).toLowerCase();
+		String op = m.group(2);
+		Integer numberToAddOrSubstract = Integer.parseInt(m.group(3));
+		String what = m.group(4);
+		
+		switch (when) {
+		case "tomorrow":
+			retval = DateTime.now().plusDays(1);
+			break;
+		case "yesterday":
+			retval = DateTime.now().minusDays(1);
+			break;
+		case "now":
+		case "today":
+			retval = DateTime.now();
+			break;
+		default:
+			throw new Exception("Incorrect dateString [" + dateString + "]");
+		}
+
+		switch (what) {
+		case "days":
+			if (op.equals("+")) {
+				retval = retval.plusDays(numberToAddOrSubstract);
+			} else {
+				retval = retval.minusDays(numberToAddOrSubstract);
+			}
+		case "hours":
+			if (op.equals("+")) {
+				retval = retval.plusHours(numberToAddOrSubstract);
+			} else {
+				retval = retval.minusHours(numberToAddOrSubstract);
+			}
+		case "weeks":
+			if (op.equals("+")) {
+				retval = retval.plusWeeks(numberToAddOrSubstract);
+			} else {
+				retval = retval.minusWeeks(numberToAddOrSubstract);
+			}
+		case "months":
+			if (op.equals("+")) {
+				retval = retval.plusMonths(numberToAddOrSubstract);
+			} else {
+				retval = retval.minusMonths(numberToAddOrSubstract);
+			}
+		case "years":
+			if (op.equals("+")) {
+				retval = retval.plusYears(numberToAddOrSubstract);
+			} else {
+				retval = retval.minusYears(numberToAddOrSubstract);
+			}
+		}
+		
+		return retval;
+	}
 }

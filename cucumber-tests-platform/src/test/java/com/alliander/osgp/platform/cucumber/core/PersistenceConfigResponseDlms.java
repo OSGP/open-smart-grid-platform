@@ -5,36 +5,45 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.dbsupport;
+package com.alliander.osgp.platform.cucumber.core;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
+import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
-import com.alliander.osgp.domain.core.repositories.DeviceRepository;
+@EnableJpaRepositories(entityManagerFactoryRef = "entityMgrFactDlms", 
+    transactionManagerRef = "txMgrDlms",
+    basePackageClasses = { DlmsDeviceRepository.class })
+@Configuration
+@EnableTransactionManagement()
+@Primary
+@PropertySources({
+	@PropertySource("classpath:osgp-cucumber.properties"),
+	@PropertySource(value = "file:${osgp/cucumber/platform}", ignoreResourceNotFound = true)
+})
+public class PersistenceConfigResponseDlms extends AbstractPersistenceConfig {
 
-@EnableJpaRepositories(entityManagerFactoryRef = "entityMgrCore",  
-    transactionManagerRef = "txMgrCore",
-    basePackageClasses = { DeviceRepository.class, DeviceAuthorizationRepository.class })
-public class PersistenceConfigCore extends AbstractPersistenceConfig {
-
-    @Value("${cucumber.osgpcoredbs.url}")
-    private String databaseUrl;
-
-    @Value("${entitymanager.packages.to.scan.core}")
-    private String entitymanagerPackagesToScan;
-  
-    public PersistenceConfigCore() {
+    public PersistenceConfigResponseDlms() {
     }
 
+    @Value("${cucumber.osgpadapterprotocoldlmsdbs.url}")
+    private String databaseUrl;
+
+    @Value("${entitymanager.packages.to.scan.dlms}")
+    private String entitymanagerPackagesToScan;
+  
     @Override
     protected String getDatabaseUrl() {
         return databaseUrl;
@@ -50,8 +59,7 @@ public class PersistenceConfigCore extends AbstractPersistenceConfig {
      *
      * @return DataSource
      */
-    @Primary
-    @Bean(name = "dsCore")    
+    @Bean(name = "dsDlms")    
     public DataSource dataSource() {
         return makeDataSource();
     }
@@ -63,14 +71,13 @@ public class PersistenceConfigCore extends AbstractPersistenceConfig {
      * @throws ClassNotFoundException
      *             when class not found
      */
-    @Primary
-    @Bean(name = "entityMgrCore")
-    public LocalContainerEntityManagerFactoryBean entityMgrCore(@Qualifier("dsCore") DataSource dataSource)
-            throws ClassNotFoundException {
+    @Bean(name = "entityMgrFactDlms")
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(
+            @Qualifier("dsDlms") DataSource dataSource) throws ClassNotFoundException {
 
-        return makeEntityManager("OSGP_CUCUMBER_CORE", dataSource);
+        return makeEntityManager("OSGP_CUCUMBER_DLMS", dataSource);
     }
-    
+
     /**
      * Method for creating the Transaction Manager.
      *
@@ -78,12 +85,9 @@ public class PersistenceConfigCore extends AbstractPersistenceConfig {
      * @throws ClassNotFoundException
      *             when class not found
      */
-    @Primary
-    @Bean(name = "txMgrCore")    
-    public JpaTransactionManager txMgrCore( 
-            @Qualifier("entityMgrCore") EntityManagerFactory entityMgrCore) throws ClassNotFoundException {
-
-        return new JpaTransactionManager(entityMgrCore);
-    }
+    @Bean(name = "txMgrDlms")    
+    public JpaTransactionManager transactionManager(
+            @Qualifier("entityMgrFactDlms") EntityManagerFactory barEntityManagerFactory) {
+        return new JpaTransactionManager(barEntityManagerFactory);    }
 
 }
