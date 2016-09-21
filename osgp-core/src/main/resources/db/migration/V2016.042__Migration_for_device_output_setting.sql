@@ -58,7 +58,7 @@ BEGIN
 		     where network_address = '127.0.0.1');
 
    DELETE FROM device_output_setting
-   WHERE device_id NOT (select id from device 
+   WHERE device_id IN (select id from device 
 		     where network_address = '127.0.0.1');
 
    INSERT INTO device_output_setting(device_id, internal_id, external_id, output_type, alias)
