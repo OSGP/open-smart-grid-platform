@@ -1,86 +1,54 @@
--- Script for migration legacy device_output_setting in device simulator.
+-- Script for migration legacy device_output_setting.
 
-CREATE OR REPLACE FUNCTION migration_for_device_output_setting_device_sim() 
+CREATE OR REPLACE FUNCTION migration_for_device_output_setting_device_simulator() 
 	RETURNS VARCHAR AS
 $BODY$
 DECLARE 
-
+   x int[];
+   deviceId int;
 BEGIN
-
+    x := array(select distinct device_id from device_output_setting order by device_id);
+ 
    CREATE TABLE copy_device_output_setting (
 	device_id bigint, 
 	internal_id smallint,
 	external_id smallint,
-        output_type smallint	
-    );
-
-   INSERT INTO copy_device_output_setting 
-	 (SELECT device_id AS deviceId
-		, 1 AS internalId
-		, 1 AS externalId
-		, output_type AS outputType
-		from device_output_setting      
-		where output_type IN (1, 2)   -- TARIFF or TARIFF REVERSED
-		and internal_id != 4
-
-	UNION
-	
-	SELECT device_id AS deviceId
-		, 2 AS internalId
-		, 2 AS externalId
-		, output_type AS outputType
-		from device_output_setting dos1
-		where output_type = 0  -- LIGHT
-		and internal_id  != 4
-		and not exists (select 1 
-				from device_output_setting dos2 
-				where dos2.output_type = 0 
-				and dos2.internal_id != 4 
-				and dos2.device_id = dos1.device_id
-				and dos2.ctid < dos1.ctid)
-
-	UNION
-	
-	SELECT device_id AS deviceId
-		, 3 AS internalId
-		, 3 AS externalId
-		, output_type AS outputType
-		from device_output_setting dos1
-		where output_type = 0   -- LIGHT
-		and internal_id != 4
-		and exists (select 1 
-			    from device_output_setting dos2 
-			    where dos2.output_type = 0   -- LIGHT
-			    and dos2.internal_id != 4 
-			    and dos2.device_id = dos1.device_id
-			    and dos2.ctid < dos1.ctid)	
-	UNION
-
-	-- add the internal_id = 4 relays (like a boiler).
-        SELECT device_id AS deviceId
-		, internal_id AS internalId
-		, external_id AS externalId
-		, output_type AS outputType
-		from device_output_setting dos1
-		where internal_id = 4
+        output_type smallint
    );
 
+   FOREACH deviceId IN ARRAY x
+   LOOP
+   
+      insert into copy_device_output_setting (device_id, internal_id, external_id, output_type)	
+      values (deviceId, 1, 1, 1);
+   
+      insert into copy_device_output_setting (device_id, internal_id, external_id, output_type)	
+      values (deviceId, 2, 2, 0);
+   
+      insert into copy_device_output_setting (device_id, internal_id, external_id, output_type)	
+      values (deviceId, 3, 3, 0);
+
+   END LOOP;
+
+   insert into copy_device_output_setting (device_id, internal_id, external_id, output_type)
+   select device_id, 4, 4, output_type from device_output_setting where external_id = 4;
+   
    TRUNCATE device_output_setting;
 
    INSERT INTO device_output_setting(device_id, internal_id, external_id, output_type)
-   SELECT device_id, internal_id, external_id, output_type 
+   SELECT device_id, internal_id, external_id, output_type
    FROM copy_device_output_setting 
    ORDER BY device_id;
 
    DROP TABLE copy_device_output_setting;
-   
- RETURN 'Migrated device_output_settings device simulator succesfully';
+  
+ RETURN 'Migrated device_output_settings device_simulator succesfully';
 END;
 $BODY$
 LANGUAGE 'plpgsql';
 
 -- Usage:
-SELECT * FROM migration_for_device_output_setting_device_sim();
+SELECT * FROM migration_for_device_output_setting_device_simulator();
 
 -- Drop function regarding clean code
-DROP FUNCTION IF EXISTS migration_for_device_output_setting_device_sim();
+DROP FUNCTION IF EXISTS migration_for_device_output_setting_device_simulator();
