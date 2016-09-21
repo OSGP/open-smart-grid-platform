@@ -72,8 +72,8 @@
 
   <xsd:complexType name="FirmwareVersion">
     <xsd:sequence>
-      <xsd:element name="version" type="xsd:string" />
-      <xsd:element name="type" type="tns:FirmwareModuleType" />
+      <xsd:element name="Version" type="xsd:string" />
+      <xsd:element name="FirmwareModuleType" type="tns:FirmwareModuleType" />
     </xsd:sequence>
   </xsd:complexType>
 
