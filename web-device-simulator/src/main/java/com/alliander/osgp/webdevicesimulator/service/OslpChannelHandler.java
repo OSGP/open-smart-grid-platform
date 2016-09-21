@@ -665,30 +665,23 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                                                                 .newBuilder()
                                                                 .setIndex(
                                                                         ByteString
-                                                                        .copyFrom(new byte[] { 1 }))
+                                                                        .copyFrom(new byte[] { 2 }))
                                                                         .setTotalLightingMinutes(480))
                                                                         .addRelayData(
                                                                                 Oslp.RelayData
                                                                                 .newBuilder()
                                                                                 .setIndex(
                                                                                         ByteString
-                                                                                        .copyFrom(new byte[] { 2 }))
+                                                                                        .copyFrom(new byte[] { 3 }))
                                                                                         .setTotalLightingMinutes(480))
                                                                                         .addRelayData(
                                                                                                 Oslp.RelayData
                                                                                                 .newBuilder()
                                                                                                 .setIndex(
                                                                                                         ByteString
-                                                                                                        .copyFrom(new byte[] { 3 }))
-                                                                                                        .setTotalLightingMinutes(480))
-                                                                                                        .addRelayData(
-                                                                                                                Oslp.RelayData
-                                                                                                                .newBuilder()
-                                                                                                                .setIndex(
-                                                                                                                        ByteString
-                                                                                                                        .copyFrom(new byte[] { 4 }))
-                                                                                                                        .setTotalLightingMinutes(480))))
-                                                                                                                        .setStatus(Oslp.Status.OK)).build();
+                                                                                                        .copyFrom(new byte[] { 4 }))
+                                                                                                        .setTotalLightingMinutes(480))))
+                                                                                                        .setStatus(Oslp.Status.OK)).build();
     }
 
     private static Message createGetPowerUsageHistoryWithDatesResponse(
@@ -770,30 +763,24 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                             .setAveragePowerFactor2(20)
                             .setAveragePowerFactor3(30)
                             .addRelayData(
-                                    Oslp.RelayData
-                                    .newBuilder()
-                                    .setIndex(ByteString.copyFrom(new byte[] { 1 }))
-                                    .setTotalLightingMinutes(
-                                            INITIAL_BURNING_MINUTES - randomCumulativeMinutes))
-                                            .addRelayData(
-                                                    Oslp.RelayData
-                                                    .newBuilder()
-                                                    .setIndex(ByteString.copyFrom(new byte[] { 2 }))
-                                                    .setTotalLightingMinutes(
-                                                            INITIAL_BURNING_MINUTES - randomCumulativeMinutes))
-                                                            .addRelayData(
-                                                                    Oslp.RelayData
-                                                                    .newBuilder()
-                                                                    .setIndex(ByteString.copyFrom(new byte[] { 3 }))
-                                                                    .setTotalLightingMinutes(
-                                                                            INITIAL_BURNING_MINUTES - randomCumulativeMinutes))
-                                                                            .addRelayData(
-                                                                                    Oslp.RelayData
-                                                                                    .newBuilder()
-                                                                                    .setIndex(ByteString.copyFrom(new byte[] { 4 }))
-                                                                                    .setTotalLightingMinutes(
-                                                                                            INITIAL_BURNING_MINUTES - randomCumulativeMinutes)))
-                                                                                            .build();
+                            Oslp.RelayData
+                            .newBuilder()
+                            .setIndex(ByteString.copyFrom(new byte[] { 2 }))
+                            .setTotalLightingMinutes(
+                                    INITIAL_BURNING_MINUTES - randomCumulativeMinutes))
+                                    .addRelayData(
+                                            Oslp.RelayData
+                                            .newBuilder()
+                                            .setIndex(ByteString.copyFrom(new byte[] { 3 }))
+                                            .setTotalLightingMinutes(
+                                                    INITIAL_BURNING_MINUTES - randomCumulativeMinutes))
+                                                    .addRelayData(
+                                                            Oslp.RelayData
+                                                            .newBuilder()
+                                                            .setIndex(ByteString.copyFrom(new byte[] { 4 }))
+                                                            .setTotalLightingMinutes(
+                                                                    INITIAL_BURNING_MINUTES - randomCumulativeMinutes)))
+                                                                    .build();
 
             powerUsageDataList.add(powerUsageData);
             pageStartTime = pageStartTime.minusMinutes(intervalMinutes);
@@ -883,9 +870,11 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                 configuration.addSwitchingDelay(3);
                 configuration.addSwitchingDelay(4);
                 configuration.addRelayLinking(Oslp.RelayMatrix.newBuilder()
-                        .setMasterRelayIndex(ByteString.copyFrom(new byte[] { 1 })).setMasterRelayOn(false)
-                        .setIndicesOfControlledRelaysOn(ByteString.copyFrom(new byte[] { 2, 3, 4 }))
-                        .setIndicesOfControlledRelaysOff(ByteString.copyFrom(new byte[] { 2, 3, 4 })));
+                        .setMasterRelayIndex(ByteString.copyFrom(new byte[] { 2 })).setMasterRelayOn(false)
+
+                        // TODO:This has to be changed by default wiring?
+                        .setIndicesOfControlledRelaysOn(ByteString.copyFrom(new byte[] { 3, 4 }))
+                        .setIndicesOfControlledRelaysOff(ByteString.copyFrom(new byte[] { 3, 4 })));
                 configuration.setRelayRefreshing(false).setSummerTimeDetails("0360100").setWinterTimeDetails("1060200");
             }
 
