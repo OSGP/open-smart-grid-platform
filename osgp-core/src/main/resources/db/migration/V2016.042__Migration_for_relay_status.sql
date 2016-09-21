@@ -8,8 +8,8 @@ DECLARE
 BEGIN
 
   FOR r IN SELECT * FROM relay_status 
-  			where device_id NOT IN (select id from device 
-						where network_address <> '127.0.0.1')
+  			where device_id IN (select id from device 
+						where network_address = '127.0.0.1')
   	   order by id
   LOOP
 	IF r.index = 1 THEN

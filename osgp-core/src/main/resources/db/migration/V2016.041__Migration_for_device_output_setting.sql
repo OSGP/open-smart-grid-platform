@@ -11,8 +11,8 @@ DECLARE
    alias_relay2 varchar(255);
 BEGIN
    x := array(select distinct device_id from device_output_setting 
-              where device_id NOT IN (select id from device 
-				                      where network_address <> '127.0.0.1')
+              where device_id IN (select id from device 
+				                  where network_address = '127.0.0.1')
 	          order by device_id);
  
    CREATE TABLE copy_device_output_setting (
@@ -51,9 +51,15 @@ BEGIN
    END LOOP;
 
    insert into copy_device_output_setting (device_id, internal_id, external_id, output_type, alias)
-   select device_id, 4, 4, output_type, null from device_output_setting where external_id = 4;
-   
-   TRUNCATE device_output_setting;
+   select device_id, 4, 4, output_type, null 
+   from device_output_setting 
+   where external_id = 4
+   and device_id IN (select id from device 
+		     where network_address = '127.0.0.1');
+
+   DELETE FROM device_output_setting
+   WHERE device_id NOT IN (select id from device 
+		     where network_address <> '127.0.0.1');
 
    INSERT INTO device_output_setting(device_id, internal_id, external_id, output_type, alias)
    SELECT device_id, internal_id, external_id, output_type, alias
