@@ -9,6 +9,8 @@ package com.alliander.osgp.adapter.domain.smartmetering.application.services;
 
 import java.util.List;
 
+import ma.glasnost.orika.MapperFactory;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,7 @@ import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
+import com.alliander.osgp.domain.core.exceptions.ChannelAlreadyOccupiedException;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
@@ -39,8 +42,6 @@ import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
-
-import ma.glasnost.orika.MapperFactory;
 
 @Service(value = "domainSmartMeteringInstallationService")
 @Transactional(value = "transactionManager")
@@ -83,8 +84,8 @@ public class InstallationService {
         LOGGER.debug("addMeter for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
-        SmartMeter device = this.smartMeteringDeviceRepository
-                .findByDeviceIdentification(deviceMessageMetadata.getDeviceIdentification());
+        SmartMeter device = this.smartMeteringDeviceRepository.findByDeviceIdentification(deviceMessageMetadata
+                .getDeviceIdentification());
         if (device == null) {
 
             /*
@@ -114,15 +115,13 @@ public class InstallationService {
             throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICE, ComponentType.DOMAIN_SMART_METERING);
         }
 
-        final SmartMeteringDeviceDto smartMeteringDeviceDto = this.mapperFactory.getMapperFacade()
-                .map(smartMeteringDeviceValueObject, SmartMeteringDeviceDto.class);
+        final SmartMeteringDeviceDto smartMeteringDeviceDto = this.mapperFactory.getMapperFacade().map(
+                smartMeteringDeviceValueObject, SmartMeteringDeviceDto.class);
 
-        this.osgpCoreRequestMessageSender.send(
-                new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                        deviceMessageMetadata.getOrganisationIdentification(),
-                        deviceMessageMetadata.getDeviceIdentification(), smartMeteringDeviceDto),
-                deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
-                deviceMessageMetadata.getScheduleTime());
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                smartMeteringDeviceDto), deviceMessageMetadata.getMessageType(), deviceMessageMetadata
+                .getMessagePriority(), deviceMessageMetadata.getScheduleTime());
     }
 
     public void handleAddMeterResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -156,21 +155,9 @@ public class InstallationService {
 
         try {
             final SmartMeter gateway = this.domainHelperService.findActiveSmartMeter(deviceIdentification);
-
             final SmartMeter mbusDevice = this.domainHelperService.findActiveSmartMeter(mbusDeviceIdentification);
 
-            final List<SmartMeter> alreadyCoupled = this.smartMeteringDeviceRepository
-                    .getMbusDevicesForGateway(gateway.getId());
-
-            for (final SmartMeter coupledDevice : alreadyCoupled) {
-                if (channel == coupledDevice.getChannel()) {
-                    LOGGER.info("M-bus device {} was coupled to gateway {} on channel {}, this device is decoupled",
-                            coupledDevice.getDeviceIdentification(), gateway.getDeviceIdentification(), channel);
-                    coupledDevice.setChannel(null);
-                    coupledDevice.updateGatewayDevice(null);
-                    this.smartMeteringDeviceRepository.save(coupledDevice);
-                }
-            }
+            this.checkAndHandleChannelOnGateway(channel, gateway);
 
             mbusDevice.setChannel(channel);
             mbusDevice.updateGatewayDevice(gateway);
@@ -208,8 +195,8 @@ public class InstallationService {
 
             final SmartMeter mbusDevice = this.domainHelperService.findActiveSmartMeter(mbusDeviceIdentification);
 
-            final List<SmartMeter> alreadyCoupled = this.smartMeteringDeviceRepository
-                    .getMbusDevicesForGateway(gateway.getId());
+            final List<SmartMeter> alreadyCoupled = this.smartMeteringDeviceRepository.getMbusDevicesForGateway(gateway
+                    .getId());
 
             if (alreadyCoupled.isEmpty()) {
                 throw new FunctionalException(FunctionalExceptionType.DEVICES_NOT_COUPLED,
@@ -231,6 +218,32 @@ public class InstallationService {
         this.handleResponse("deCoupleMbusDevice", deviceMessageMetadata, result, exception);
     }
 
+    /**
+     * @param channel
+     *            the channel number
+     * @param gateway
+     *            the {@link SmartMeter} gateway
+     * @throws FunctionalException
+     *             is thrown when channel number is already occupied with on the
+     *             gateway
+     */
+    private void checkAndHandleChannelOnGateway(final short channel, final SmartMeter gateway)
+            throws FunctionalException {
+        final List<SmartMeter> alreadyCoupled = this.smartMeteringDeviceRepository.getMbusDevicesForGateway(gateway
+                .getId());
+
+        for (final SmartMeter coupledDevice : alreadyCoupled) {
+            if ((coupledDevice.getChannel() != null) && (coupledDevice.getChannel().equals(channel))) {
+                LOGGER.info("There is already an M-bus device {} coupled to gateway {} on channel {}",
+                        coupledDevice.getDeviceIdentification(), gateway.getDeviceIdentification(), channel);
+
+                throw new FunctionalException(FunctionalExceptionType.CHANNEL_ON_DEVICE_ALREADY_COUPLED,
+                        ComponentType.DOMAIN_SMART_METERING, new ChannelAlreadyOccupiedException(channel));
+
+            }
+        }
+    }
+
     private void handleResponse(final String methodName, final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType deviceResult, final OsgpException exception) {
         LOGGER.debug("{} for MessageType: {}", methodName, deviceMessageMetadata.getMessageType());
@@ -243,7 +256,7 @@ public class InstallationService {
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                result, exception, null, deviceMessageMetadata.getMessagePriority()),
-                deviceMessageMetadata.getMessageType());
+                result, exception, null, deviceMessageMetadata.getMessagePriority()), deviceMessageMetadata
+                .getMessageType());
     }
 }
