@@ -14,8 +14,6 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import ma.glasnost.orika.impl.ConfigurableMapper;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -27,7 +25,6 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.AdhocMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.CommonMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.ConfigurationMapper;
-import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.InstallationMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.ManagementMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionResponse;
@@ -46,6 +43,8 @@ import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 
+import ma.glasnost.orika.impl.ConfigurableMapper;
+
 @Service(value = "wsSmartMeteringActionResponseMapperService")
 @Validated
 public class ActionMapperResponseService {
@@ -58,9 +57,6 @@ public class ActionMapperResponseService {
 
     @Autowired
     private ConfigurationMapper configurationMapper;
-
-    @Autowired
-    private InstallationMapper installationMapper;
 
     @Autowired
     private MonitoringMapper monitoringMapper;
@@ -90,32 +86,31 @@ public class ActionMapperResponseService {
     }
 
     /**
-     * Specifies to which core object the ws object needs to be mapped.
+     * Specifies to which ws object the core object needs to be mapped.
      */
     static {
         CLASS_MAP.put(MeterReadsGas.class,
-                com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponseData.class);
+                com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ActualMeterReadsGasResponse.class);
         CLASS_MAP.put(MeterReads.class,
-                com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponseData.class);
+                com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ActualMeterReadsResponse.class);
         CLASS_MAP.put(EventMessagesResponse.class,
-                com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsResponseData.class);
+                com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.FindEventsResponse.class);
         CLASS_MAP.put(ActionResponse.class,
-                com.alliander.osgp.adapter.ws.schema.smartmetering.common.ActionResponseData.class);
+                com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ActionResponse.class);
         CLASS_MAP.put(AlarmRegister.class,
-                com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterResponseData.class);
-        CLASS_MAP
-                .put(AdministrativeStatusTypeResponse.class,
-                        com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusResponseData.class);
+                com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ReadAlarmRegisterResponse.class);
+        CLASS_MAP.put(AdministrativeStatusTypeResponse.class,
+                com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.AdministrativeStatusResponse.class);
         CLASS_MAP.put(PeriodicMeterReadsContainer.class,
-                com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponseData.class);
+                com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.PeriodicMeterReadsResponse.class);
         CLASS_MAP.put(PeriodicMeterReadsContainerGas.class,
-                com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasResponseData.class);
+                com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.PeriodicMeterReadsGasResponse.class);
         CLASS_MAP.put(GetConfigurationResponse.class,
-                com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetConfigurationResponseData.class);
+                com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetConfigurationResponse.class);
         CLASS_MAP.put(FirmwareVersionResponse.class,
-                com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionResponseData.class);
+                com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetFirmwareVersionResponse.class);
         CLASS_MAP.put(AssociationLnObjectsResponseData.class,
-                com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.AssociationLnObjectsResponseData.class);
+                com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.AssociationLnObjectsResponse.class);
 
     }
 
@@ -146,7 +141,9 @@ public class ActionMapperResponseService {
 
         if (response == null) {
             throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
-                    ComponentType.WS_SMART_METERING, new RuntimeException("No Value Object for Action of class: "
+                    ComponentType.WS_SMART_METERING,
+                    new RuntimeException("No Response Object of class " + (clazz == null ? "null" : clazz.getName())
+                            + " for ActionResponse Value Object of class: "
                             + actionValueResponseObject.getClass().getName()));
         }
 
@@ -158,7 +155,8 @@ public class ActionMapperResponseService {
 
         if (clazz == null) {
             throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
-                    ComponentType.WS_SMART_METERING, new RuntimeException("No Value Object class for Action class: "
+                    ComponentType.WS_SMART_METERING,
+                    new RuntimeException("No Response class for ActionResponse Value Object class: "
                             + actionValueResponseObject.getClass().getName()));
         }
 
@@ -170,7 +168,8 @@ public class ActionMapperResponseService {
 
         if (mapper == null) {
             throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
-                    ComponentType.WS_SMART_METERING, new RuntimeException("No mapper for Action class: "
+                    ComponentType.WS_SMART_METERING,
+                    new RuntimeException("No mapper for ActionResponse Value Object class: "
                             + actionValueResponseObject.getClass().getName()));
         }
 
