@@ -5,132 +5,62 @@ CREATE OR REPLACE FUNCTION migration_for_device_output_setting_osgp_core()
 	RETURNS VARCHAR AS
 $BODY$
 DECLARE 
-
+   x int[];
+   deviceId int;
+   alias_relay1 varchar(255);
+   alias_relay2 varchar(255);
 BEGIN
-
-   -- Remove constraint from table
-   ALTER TABLE device_output_setting DROP CONSTRAINT device_output_setting_device_id_internal_id_key;
-
+   x := array(select distinct device_id from device_output_setting 
+              where device_id NOT IN (select id from device 
+				                      where network_address <> '127.0.0.1')
+	          order by device_id);
+ 
    CREATE TABLE copy_device_output_setting (
-	device_id bigint, 
-	internal_id smallint,
-	external_id smallint,
-    alias varchar(255),
-	output_type smallint	
+			device_id bigint, 
+			internal_id smallint,
+			external_id smallint,
+		    output_type smallint,
+		    alias varchar(255)	
     );
 
-   INSERT INTO copy_device_output_setting 
-	 (SELECT device_id AS deviceId
-		, 1 AS internalId
-		, 1 AS externalId
-		, CASE WHEN alias IS NULL or alias = ''
-			       THEN NULL
-			       ELSE alias || ' (migrated from TARIFF or TARIFF REVERSED)'
-			  END AS aliasMig
-		, output_type AS outputType
-		from device_output_setting      
-		where output_type IN (1, 2)   -- TARIFF or TARIFF REVERSED
-		and internal_id != 4
-		and device_id NOT IN (select id from device 
-					where network_address <> '127.0.0.1')
-
-	UNION
-	
-	SELECT device_id AS deviceId
-		, 2 AS internalId
-		, 2 AS externalId
-		, CASE WHEN alias IS NULL or alias = ''
-			       THEN NULL
-			       ELSE alias || ' (migrated from light relay)'
-			  END AS aliasMig
-		, output_type AS outputType
-		from device_output_setting dos1
-		where output_type = 0  -- LIGHT
-		and internal_id  != 4
-		and not exists (select 1 
-				from device_output_setting dos2 
-				where dos2.output_type = 0 
-				and dos2.internal_id != 4 
-				--and dos2.internal_id > 1
-				and dos2.device_id = dos1.device_id
-				and dos2.ctid < dos1.ctid) 
-		and device_id NOT IN (select id from device 
-					where network_address <> '127.0.0.1')
-
-	UNION
-	
-	SELECT device_id AS deviceId
-		, 3 AS internalId
-		, 3 AS externalId
-		,  CASE WHEN alias IS NULL or alias = ''
-			       THEN NULL
-			       ELSE alias || ' (migrated from light relay)'
-			  END AS aliasMig
-		, output_type AS outputType
-		from device_output_setting dos1
-		where output_type = 0   -- LIGHT
-		and internal_id != 4
-		and exists (select 1 
-			    from device_output_setting dos2 
-			    where dos2.output_type = 0   -- LIGHT
-			    and dos2.internal_id != 4 
-                            and dos2.internal_id > 1
-			    and dos2.device_id = dos1.device_id
-			    and dos2.ctid < dos1.ctid)
-		and device_id NOT IN (select id from device 
-					where network_address <> '127.0.0.1')
-		
-	UNION
-
-	-- add the internal_id = 4 relays (like a boiler).
-        SELECT device_id AS deviceId
-		, internal_id AS internalId
-		, external_id AS externalId
-		, alias AS aliasMig
-		, output_type AS outputType
-		from device_output_setting dos1
-		where internal_id = 4
-		and device_id NOT IN (select id from device 
-					where network_address <> '127.0.0.1')
-
-	UNION
-	
-	SELECT device_id AS deviceId
-		, 1 AS internalId
-		, 1 AS externalId
-		,  CASE WHEN alias IS NULL or alias = ''
-			       THEN NULL
-			       ELSE alias || ' (migrated from light relay)'
-			  END AS aliasMig
-		, output_type AS outputType
-		from device_output_setting dos1
-		where output_type = 0   -- LIGHT
-		and internal_id = 1
-		and not exists (select 1 
-			    from device_output_setting dos2 
-			    where dos2.output_type IN (1, 2)   -- TARIFF or TARIFF REVERSED
-			    and dos2.internal_id != 4 
-			    and dos2.device_id = dos1.device_id
-			    )
-		and device_id NOT IN (select id from device 
-					where network_address <> '127.0.0.1')
-	order by deviceId, internalid);
-
-   -- Only delete output_settings from devices in simulator
-   DELETE FROM device_output_setting
-   WHERE device_id NOT IN (SELECT id FROM device 
-			WHERE network_address <> '127.0.0.1');
+   FOREACH deviceId IN ARRAY x
+   LOOP
    
-   INSERT INTO device_output_setting(device_id, internal_id, external_id, alias, output_type)
-   SELECT device_id, internal_id, external_id, alias, output_type 
+   alias_relay1 := (select alias from device_output_setting where device_id = deviceId and internal_id = 1);
+   alias_relay2 := (select alias from device_output_setting where device_id = deviceId and internal_id = 2);
+
+   insert into copy_device_output_setting (device_id, internal_id, external_id, output_type, alias)	
+   values (deviceId, 1, 1, 1, null);
+   
+   if alias_relay1 is null or alias_relay1 = '' then
+      insert into copy_device_output_setting (device_id, internal_id, external_id, output_type, alias)	
+      values (deviceId, 2, 2, 0, null);
+   else
+      insert into copy_device_output_setting (device_id, internal_id, external_id, output_type, alias)	
+      values (deviceId, 2, 2, 0, alias_relay1 || (' (migrated from R1)'));
+   end if;
+   
+   if alias_relay2 is null or alias_relay2 = '' then
+      insert into copy_device_output_setting (device_id, internal_id, external_id, output_type, alias)	
+      values (deviceId, 3, 3, 0, null);
+   else
+      insert into copy_device_output_setting (device_id, internal_id, external_id, output_type, alias)	
+      values (deviceId, 3, 3, 0, alias_relay2 || (' (migrated from R2)'));
+   end if;
+
+   END LOOP;
+
+   insert into copy_device_output_setting (device_id, internal_id, external_id, output_type, alias)
+   select device_id, 4, 4, output_type, null from device_output_setting where external_id = 4;
+   
+   TRUNCATE device_output_setting;
+
+   INSERT INTO device_output_setting(device_id, internal_id, external_id, output_type, alias)
+   SELECT device_id, internal_id, external_id, output_type, alias
    FROM copy_device_output_setting 
    ORDER BY device_id;
 
    DROP TABLE copy_device_output_setting;
-   
-   -- Add constraint to table
-   ALTER TABLE device_output_setting
-   ADD CONSTRAINT device_output_setting_device_id_internal_id_key UNIQUE(device_id, internal_id); 
   
  RETURN 'Migrated device_output_settings osgp_core succesfully';
 END;
