@@ -50,10 +50,10 @@ public class EveningMorningBurnersLightSwitchingOff implements Runnable {
                 LOGGER.info("Sending LIGHT_EVENTS_LIGHT_OFF event for device : {}: {} ", device.getId(),
                         device.getDeviceIdentification());
 
-                // The event index for Evening/Morning Burners is 2.
+                // The event index for Evening/Morning Burners is 3.
                 this.registerDevice.sendEventNotificationCommand(device.getId(),
                         Oslp.Event.LIGHT_EVENTS_LIGHT_OFF_VALUE,
-                        "LIGHT_EVENTS_LIGHT_OFF event occurred on Light Switching off ", 2);
+                        "LIGHT_EVENTS_LIGHT_OFF event occurred on Light Switching off ", 3);
             }
         }
     }
