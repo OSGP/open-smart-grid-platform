@@ -38,7 +38,7 @@ public class OrganizationSteps {
 	 */
 	private String DEFAULT_ORGANIZATION = "An Organization";
 	private String DEFAULT_NAME = "An Organization";
-	private String DEFAULT_PREFIX = "Test";
+	private String DEFAULT_PREFIX = "Tes";
 	private PlatformFunctionGroup DEFAULT_PLATFORM_FUNCTION_GROUP = PlatformFunctionGroup.ADMIN;
 	private PlatformDomain DEFAULT_PLATFORM_DOMAIN = PlatformDomain.COMMON;
 

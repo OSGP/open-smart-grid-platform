@@ -33,7 +33,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Primary
 @PropertySources({
 	@PropertySource("classpath:osgp-cucumber.properties"),
-	@PropertySource(value = "file:${osgp/cucumber/platform}", ignoreResourceNotFound = true)
+	@PropertySource(value = "file:${osgp/cucumber/platform/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:/etc/osp/cucumber-platform.properties", ignoreResourceNotFound = true)
 })
 public abstract class AbstractPersistenceConfig {
 
@@ -69,9 +70,12 @@ public abstract class AbstractPersistenceConfig {
 
     @Resource
     protected Environment environment;
-
   
+    /**
+     * Default constructor
+     */
     public AbstractPersistenceConfig() {
+    	// Default constructor
     }
 
     
