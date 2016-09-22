@@ -14,7 +14,6 @@ import static com.alliander.osgp.platform.cucumber.core.Helpers.saveCorrelationU
 
 import java.util.Map;
 
-import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,12 +31,9 @@ import cucumber.api.java.en.Then;
 public class SetLightSteps extends PublicLightingStepsBase {
     private static final String TEST_SUITE_XML = "PublicLightingAdHocManagement";
     private static final String TEST_CASE_ASYNC_REQ_XML = "AT Send SetLight Async";
-    private static final String TEST_CASE_RESULT_REQ_XML = "AT Retrieve SetLight Result";
     private static final String TEST_CASE_ASYNC_NAME_REQUEST = "SetLight - Request 1";
+    private static final String TEST_CASE_RESULT_REQ_XML = "AT Retrieve SetLight Result";
     private static final String TEST_CASE_RESULT_NAME_REQUEST = "GetSetLightResponse - Request 1";
-
-    private static final String PATH_FIRMWARE_TYPE = "//*[local-name()='FirmwareModuleType']/text()";
-    private static final String PATH_FIRMWARE_VERSION = "//*[local-name()='Version']/text()";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetLightSteps.class);
     
@@ -84,18 +80,12 @@ public class SetLightSteps extends PublicLightingStepsBase {
     }
 
     @Then("^the platform buffers a set light response message for device \"([^\"]*)\"$")
-    public void thenThePlatformBufferesASetLightResponseMessage(final String deviceIdentification,
-            final Map<String, String> expectedResponseData) throws Throwable {
+    public void thenThePlatformBufferesASetLightResponseMessage(final String deviceIdentification) throws Throwable {
         // Required parameters
         PROPERTIES_MAP.put("__DEVICE_IDENTIFICATION__", deviceIdentification);
         PROPERTIES_MAP.put("__CORRELATION_UID__", (String) ScenarioContext.Current().get("CorrelationUid"));
 
         this.waitForResponse(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_RESULT_NAME_REQUEST,
                     TEST_CASE_RESULT_REQ_XML, TEST_SUITE_XML);
-        
-        Assert.assertEquals(getString(expectedResponseData, "FirmwareModuleType", ""),
-                this.runXpathResult.getValue(this.response, PATH_FIRMWARE_TYPE));
-        Assert.assertEquals(getString(expectedResponseData, "FirmwareVersion", ""),
-                this.runXpathResult.getValue(this.response, PATH_FIRMWARE_VERSION));
     }
 }

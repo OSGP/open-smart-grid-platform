@@ -17,6 +17,7 @@ Feature: Adhoc Management
     Then the set light async response contains
       | DeviceIdentification | D01 |
     And a set light OSLP message is sent to device "D01"
+    And the platform buffers a set light response message for device "D01"
 
     Examples: 
       | Status | Index | On    | Result | Description |

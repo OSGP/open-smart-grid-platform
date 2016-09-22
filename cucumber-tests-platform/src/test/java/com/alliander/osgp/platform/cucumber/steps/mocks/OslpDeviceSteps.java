@@ -52,7 +52,7 @@ public class OslpDeviceSteps {
      * @param firmwareVersion The firmware to respond.
      * @throws Throwable
      */
-    @Given("^the device returns \"([^\"]*)\" over OSLP$")
+    @Given("^the device returns firmware version \"([^\"]*)\" over OSLP$")
     public void the_device_returns_firmware_version_over_OSLP(final String firmwareVersion) throws Throwable {
         this.oslpMockServer.mockFirmwareResponse(firmwareVersion);
     }

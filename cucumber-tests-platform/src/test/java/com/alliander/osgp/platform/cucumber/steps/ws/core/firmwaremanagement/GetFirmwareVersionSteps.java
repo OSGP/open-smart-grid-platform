@@ -85,26 +85,6 @@ public class GetFirmwareVersionSteps extends CoreStepsBase {
         // Required parameters
         PROPERTIES_MAP.put("__DEVICE_IDENTIFICATION__", deviceIdentification);
         PROPERTIES_MAP.put("__CORRELATION_UID__", (String) ScenarioContext.Current().get("CorrelationUid"));
-
-        //this.waitForResponse(PROPERTIES_MAP, TEST_CASE_RESULT_NAME_REQUEST,
-        //        TEST_CASE_RESULT_REQ_XML, TEST_SUITE_XML);
-     
-        /**
-        // Wait for OK response
-        int count = 0;
-        do {
-            if (count > 120) {
-                Assert.fail("Failed to retieve a response");
-            }
-    
-            // Wait for next try to retrieve a response
-            count++;
-            Thread.sleep(1000);
-    
-            this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_RESULT_NAME_REQUEST,
-                    TEST_CASE_RESULT_REQ_XML, TEST_SUITE_XML);
-        } while (!this.runXpathResult.assertXpath(this.response, PATH_RESULT, "OK")); 
-         */
         
         this.waitForResponse(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_RESULT_NAME_REQUEST,
                     TEST_CASE_RESULT_REQ_XML, TEST_SUITE_XML);

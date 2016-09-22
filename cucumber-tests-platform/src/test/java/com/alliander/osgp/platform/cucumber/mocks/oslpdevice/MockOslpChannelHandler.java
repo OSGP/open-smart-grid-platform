@@ -14,6 +14,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CountDownLatch;
@@ -365,10 +366,10 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         // Handle requests
         if (request.hasGetFirmwareVersionRequest()
                 && this.mockResponses.containsKey(DeviceRequestMessageType.GET_FIRMWARE_VERSION)) {
-        	processRequest(DeviceRequestMessageType.GET_FIRMWARE_VERSION, request);
+        	response = processRequest(DeviceRequestMessageType.GET_FIRMWARE_VERSION, request);
         } else if (request.hasSetLightRequest() 
         		&& this.mockResponses.containsKey(DeviceRequestMessageType.SET_LIGHT)) {
-        	processRequest(DeviceRequestMessageType.SET_LIGHT, request);
+        	response = processRequest(DeviceRequestMessageType.SET_LIGHT, request);
         }
         // TODO: Implement further requests.
         else {
@@ -384,7 +385,7 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
     
     private Oslp.Message processRequest(final DeviceRequestMessageType type, final Oslp.Message request) {
     	Oslp.Message response = null;
-        
+    	
     	this.receivedRequests.put(type, request);
     	response = this.mockResponses.get(type);
     	this.mockResponses.remove(type);

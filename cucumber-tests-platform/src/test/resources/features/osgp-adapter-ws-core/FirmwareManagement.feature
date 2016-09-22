@@ -3,8 +3,8 @@ Feature: Firmware management
   I want to manage the firmware of a device
   In order to ...
 
-# Note: All devices return multiple firmwares. How to solve this?
-@OslpMockServer
+  # Note: All devices return multiple firmwares. How to solve this?
+  @OslpMockServer
   Scenario Outline: Get firmware version
     Given an oslp device
       | DeviceIdentification | D01               |

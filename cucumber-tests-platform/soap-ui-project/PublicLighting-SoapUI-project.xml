@@ -1479,7 +1479,7 @@
          </ns1:LightValue>
       </ns1:SetLightRequest>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response" id="33045a18-8e93-49d2-a8da-dc04b45015ef"/><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="GetSetLightResponse - Request 1" id="cfe71324-40e0-4e28-bcb5-d625d4eabe61"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PublicLightingAdHocManagementPortSoap11</con:interface><con:operation>GetSetLightResponse</con:operation><con:request name="GetSetLightResponse - Request 1" id="cf4d0f8c-4e54-4bb0-8e0a-d21663770f7a"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://${#TestCase#ServiceEndpoint}/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/publiclighting/adhocmanagement/2014/10">
+</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response" id="33045a18-8e93-49d2-a8da-dc04b45015ef"/><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/></con:testCase><con:testCase id="47f787a8-381c-431e-9aed-d64835f837e8" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="AT Retrieve SetLight Result" searchProperties="true"><con:settings/><con:testStep type="request" name="GetSetLightResponse - Request 1" id="cfe71324-40e0-4e28-bcb5-d625d4eabe61"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PublicLightingAdHocManagementPortSoap11</con:interface><con:operation>GetSetLightResponse</con:operation><con:request name="GetSetLightResponse - Request 1" id="cf4d0f8c-4e54-4bb0-8e0a-d21663770f7a" sslKeystore="test-org.pfx"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://${#TestCase#ServiceEndpoint}/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/publiclighting/adhocmanagement/2014/10">
    <soapenv:Header>
       <ns:ApplicationName>SoapUI</ns:ApplicationName>
       <ns:UserName>TestUser</ns:UserName>
@@ -1488,8 +1488,8 @@
    <soapenv:Body>
       <ns1:SetLightAsyncRequest>
          <ns1:AsyncRequest>
-            <ns:CorrelationUid>${#TestCase#CorrelationUid}</ns:CorrelationUid>
-            <ns:DeviceId>${#TestCase#DeviceId}</ns:DeviceId>
+            <ns:CorrelationUid>${=testCase.getPropertyValue( "__CORRELATION_UID__" )}</ns:CorrelationUid>
+            <ns:DeviceId>${=testCase.getPropertyValue( "__DEVICE_IDENTIFICATION__" )}</ns:DeviceId>
          </ns1:AsyncRequest>
       </ns1:SetLightAsyncRequest>
    </soapenv:Body>
