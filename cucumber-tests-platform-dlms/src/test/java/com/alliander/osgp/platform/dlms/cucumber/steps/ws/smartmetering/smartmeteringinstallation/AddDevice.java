@@ -3,17 +3,18 @@
  */
 package com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.smartmeteringinstallation;
 
-import java.util.Map;
-
-import org.junit.Assert;
-
-import com.alliander.osgp.platform.cucumber.steps.Defaults;
-import com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.SmartMeteringStepsBase;
-import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
-import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
-
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.saveCorrelationUidInScenarioContext;
+
+import java.util.Map;
+
+import junit.framework.Assert;
+
+import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
+import com.alliander.osgp.platform.cucumber.steps.Defaults;
+import com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.SmartMeteringStepsBase;
+import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
+
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
