@@ -50,6 +50,13 @@ Background:
 	And the couple response contains "TEST102400unknown"
 	And the couple response contains "could not be found"
 
+@SLIM-637-couple-with-inactive-gateway-device
+  Scenario: Couple G-meter to an inactive E-meter
+    Given an inactive device with DeviceID "TEST1024000000001" 
+    And an active mbus device with DeviceID "TESTG102400000001"
+    When the couple G-meter request on inactive device "TEST1024000000001" is received
+    Then the couple response contains "Device TEST1024000000001 is not active in the platform"
+
 @SLIM-637-couple-inactive-mbus-device
   Scenario: Couple inactive G-meter to an E-meter
     Given an active device with DeviceID "TEST1024000000001"
@@ -57,13 +64,6 @@ Background:
 	When the couple G-meter request is received
 	Then the response "NOT OK" is given
 	And the response description contains "Device TESTG102400000001 is not active in the platform"
-
-@SLIM-637-couple-with-inactive-gateway-device
-  Scenario: Couple G-meter to an inactive E-meter
-    Given an inactive device with DeviceID "TEST1024000000001" 
-	And an active mbus device with DeviceID "TESTG102400000001"
-	When the couple G-meter request on inactive device "TEST1024000000001" is received
-	Then the couple response contains "Device TEST1024000000001 is not active in the platform"
 
 @SLIM-638-decouple-gmeter-from-emeter
 Scenario: Decouple G-meter from E-meter
@@ -83,21 +83,21 @@ Scenario: Decouple unknown G-meter from E-meter
 
 @SLIM-638-decouple-gmeter-from-unknown-emeter
 Scenario: Decouple G-meter from unknown E-meter
-	Given an unknown device with DeviceID "E999800000unknown" 
-	And an active mbus device with DeviceID "G00XX561204926013"
-	When the decouple G-meter request is received
-	Then the decouple request response description contains 'SmartMeter with id "E999800000unknown" could not be found'
+    Given an unknown device with DeviceID "E999800000unknown" 
+    And an active mbus device with DeviceID "G00XX561204926013"
+    When the decouple G-meter request is received
+    Then the decouple request response description contains 'SmartMeter with id "E999800000unknown" could not be found'
 
 @SLIM-638-decouple-inactive-gmeter-from-emeter
 Scenario: Decouple inactive G-meter from E-meter
-	Given an active device with DeviceID "E9998000014123414" 
-	And an inactive mbus device with DeviceID "G00XX561204926013" on MBUS channel 1
-	When the decouple G-meter request is received
-	Then the decouple request response description contains "Device G00XX561204926013 is not active in the platform"
+    Given an active device with DeviceID "E9998000014123414" 
+    And an inactive mbus device with DeviceID "G00XX561204926013" on MBUS channel 1
+    When the decouple G-meter request is received
+    Then the decouple request response description contains "Device G00XX561204926013 is not active in the platform"
 
 @SLIM-638-decouple-gmeter-from-inactive-emeter
 Scenario: Decouple G-meter to an inactive E-meter
-	Given an inactive device with DeviceID "E9998000014123414" 
-	And an active mbus device with DeviceID "G00XX561204926013" on MBUS channel 1
-	When the decouple G-meter request is received
-	Then the decouple request response description contains "Device E9998000014123414 is not active in the platform"
+    Given an inactive device with DeviceID "E9998000014123414" 
+    And an active mbus device with DeviceID "G00XX561204926013" on MBUS channel 1
+    When the decouple G-meter request is received
+    Then the decouple request response description contains "Device E9998000014123414 is not active in the platform"

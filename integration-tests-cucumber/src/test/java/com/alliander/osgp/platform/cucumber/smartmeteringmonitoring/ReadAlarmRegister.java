@@ -27,7 +27,7 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 public class ReadAlarmRegister extends SmartMetering {
-    private static final String PATH_RESULT_ALARMTYPES = "/Envelope/Body/ReadAlarmRegisterResponse/AlarmRegister/AlarmTypes/text()";
+    private static final String PATH_RESULT_ALARMTYPES = "/Envelope/Body/ReadAlarmRegisterResponse/AlarmTypes/text()";
 
     private static final String XPATH_MATCHER_RESULT_ALARMTYPES = "\\w[A-Z]";
 
