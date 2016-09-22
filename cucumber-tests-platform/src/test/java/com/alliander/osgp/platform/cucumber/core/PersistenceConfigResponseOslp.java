@@ -29,7 +29,7 @@ import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRe
 @Configuration
 @EnableTransactionManagement()
 @Primary
-@PropertySources({ @PropertySource("classpath:osgp-cucumber.properties"),
+@PropertySources({ @PropertySource("classpath:cucumber-platform.properties"),
         @PropertySource(value = "file:${osgp/cucumber/platform}", ignoreResourceNotFound = true),
         @PropertySource(value = "file:/etc/osp/cucumber-platform.properties", ignoreResourceNotFound = true)}
 )
