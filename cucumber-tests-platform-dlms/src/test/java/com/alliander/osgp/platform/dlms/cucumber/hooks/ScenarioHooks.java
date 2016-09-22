@@ -6,7 +6,7 @@ package com.alliander.osgp.platform.dlms.cucumber.hooks;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
-import com.alliander.osgp.platform.dlms.cucumber.steps.database.DatabaseSteps;
+import com.alliander.osgp.platform.dlms.cucumber.steps.database.DlmsDatabaseSteps;
 
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
@@ -17,7 +17,7 @@ import cucumber.api.java.Before;
 public class ScenarioHooks {
 
 	@Autowired
-    private DatabaseSteps databaseSteps;
+    private DlmsDatabaseSteps databaseSteps;
 
     /**
      * Executed before each scenario.

@@ -3,7 +3,6 @@
  */
 package com.alliander.osgp.platform.dlms.cucumber;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
@@ -19,12 +18,10 @@ import org.springframework.context.annotation.PropertySources;
 })
 public abstract class SoapUiRunner extends com.alliander.osgp.platform.cucumber.SoapUiRunner {
 
-    /**
-     * The url of the server to test. Default to localhost:443.
-     */
-    @Value("${dlmsDeviceSimulator}")
-    private String dlmsDeviceSimulator;
-    
+	/**
+	 * Constructor.
+	 * @param soapUiProject The soap ui project to use within the dlms related tests.
+	 */
     protected SoapUiRunner(final String soapUiProject){
         super(soapUiProject);
     }

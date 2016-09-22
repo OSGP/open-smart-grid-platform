@@ -7,11 +7,13 @@ import static com.alliander.osgp.platform.cucumber.core.Helpers.cleanRepoAbstrac
 
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * 
  */
-public class DatabaseSteps {
+@Component
+public class DlmsDatabaseSteps {
 	
 	@Autowired
 	private DlmsDeviceRepository dlmsDeviceRepo;

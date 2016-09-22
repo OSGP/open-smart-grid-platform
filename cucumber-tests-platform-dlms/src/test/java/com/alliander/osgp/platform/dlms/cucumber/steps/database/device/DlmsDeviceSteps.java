@@ -4,6 +4,7 @@
 package com.alliander.osgp.platform.dlms.cucumber.steps.database.device;
 
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getBoolean;
 
 import java.util.Map;
 
@@ -25,7 +26,8 @@ import cucumber.api.java.en.Given;
  */
 public class DlmsDeviceSteps {
 
-    private static final String DEFAULT_COMMUNICATION_METHOD = "TODO";
+    private static final String DEFAULT_COMMUNICATION_METHOD = "GPRS";
+	private static final Boolean DEFAULT_IP_ADDRESS_IS_STATIC = true;
 
 	@Autowired
     private DeviceRepository deviceRepository;
@@ -51,6 +53,9 @@ public class DlmsDeviceSteps {
         final DlmsDevice dlmsDevice = new DlmsDevice(deviceIdentification);
         dlmsDevice.setCommunicationMethod(
         		getString(settings, "CommunicationMethod", DEFAULT_COMMUNICATION_METHOD));
+        dlmsDevice.setIpAddressIsStatic(
+        		getBoolean(settings, "IpAddressIsStatic", DEFAULT_IP_ADDRESS_IS_STATIC));
+        dlmsDevice.setPort(4059L);
         // TODO: Set dlms specific device settings
         this.dlmsDeviceRepository.save(dlmsDevice);
         
