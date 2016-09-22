@@ -50,7 +50,7 @@ public class TariffSwitchingHigh implements Runnable {
                         device.getDeviceIdentification());
                 this.registerDevice.sendEventNotificationCommand(device.getId(),
                         Oslp.Event.TARIFF_EVENTS_TARIFF_ON_VALUE,
-                        "TARIFF_EVENTS_TARIFF_ON event occurred on Tariff Switching high ", 3);
+                        "TARIFF_EVENTS_TARIFF_ON event occurred on Tariff Switching high ", 1);
             }
         }
     }
