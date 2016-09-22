@@ -3,6 +3,9 @@ Feature: SmartMetering Installation
   I want to be able to perform SmartMeteringInstallation operations on a device
     
 Scenario: Add a new device
+    Given a dlms device
+        | DeviceIdentification   | E0026000059790003 |
+        | DeviceType             | SMART_METER_E     |
      When receiving an add device request
         | DeviceIdentification   | E0026000059790003 |
         | DeviceType             | SMART_METER_E     |
