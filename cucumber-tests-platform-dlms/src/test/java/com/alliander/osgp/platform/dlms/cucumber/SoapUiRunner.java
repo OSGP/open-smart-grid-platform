@@ -13,7 +13,6 @@ import org.springframework.context.annotation.PropertySources;
  */
 @Configuration
 @PropertySources({ @PropertySource("classpath:cucumber-platform-dlms.properties"),
-        @PropertySource(value = "file:${osgp/cucumber/platform/dlms}", ignoreResourceNotFound = true),
     	@PropertySource(value = "file:/etc/osp/cucumber-platform-dlms.properties", ignoreResourceNotFound = true)
 })
 public abstract class SoapUiRunner extends com.alliander.osgp.platform.cucumber.SoapUiRunner {

@@ -30,7 +30,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
         PersistenceConfigLogging.class, PersistenceConfigResponseOslp.class })
 @PropertySources({ 
 		@PropertySource("classpath:cucumber-platform.properties"),
-        @PropertySource(value = "file:${osgp/cucumber/platform}", ignoreResourceNotFound = true),
         @PropertySource(value = "file:/etc/osp/cucumber-platform.properties", ignoreResourceNotFound = true)}
 )
 public class ApplicationContext {
