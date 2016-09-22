@@ -14,8 +14,6 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import ma.glasnost.orika.impl.ConfigurableMapper;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -29,7 +27,6 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetConfiguratio
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetFirmwareVersionRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetPeriodicMeterReadsGasRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetPeriodicMeterReadsRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetSpecialDaysRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetSpecificConfigurationObjectRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ReadAlarmRegisterRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetActivityCalendarRequest;
@@ -40,11 +37,11 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetEncryptionKe
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetKeysRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetPushSetupAlarmRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetPushSetupSmsRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetSpecialDaysRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SynchronizeTimeRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Action;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.AdhocMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.ConfigurationMapper;
-import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.InstallationMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.ManagementMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionRequest;
@@ -73,6 +70,8 @@ import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 
+import ma.glasnost.orika.impl.ConfigurableMapper;
+
 @Service(value = "wsSmartMeteringActionMapperService")
 @Validated
 public class ActionMapperService {
@@ -85,9 +84,6 @@ public class ActionMapperService {
 
     @Autowired
     private ConfigurationMapper configurationMapper;
-
-    @Autowired
-    private InstallationMapper installationMapper;
 
     @Autowired
     private MonitoringMapper monitoringMapper;
@@ -103,7 +99,7 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(
                 com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecialDaysRequestData.class,
                 this.configurationMapper);
-        CLASS_TO_MAPPER_MAP.put(GetSpecialDaysRequest.class, this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(SetSpecialDaysRequest.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(
                 com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterData.class,
                 this.monitoringMapper);
@@ -247,7 +243,7 @@ public class ActionMapperService {
                 com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SpecificConfigurationObjectRequestData.class,
                 SpecificConfigurationObjectRequestData.class);
 
-              CLASS_MAP.put(GetSpecialDaysRequest.class, SpecialDaysRequestData.class);
+        CLASS_MAP.put(SetSpecialDaysRequest.class, SpecialDaysRequestData.class);
         CLASS_MAP.put(ReadAlarmRegisterRequest.class, ReadAlarmRegisterData.class);
         CLASS_MAP.put(ReadAlarmRegisterRequest.class, ReadAlarmRegisterData.class);
         CLASS_MAP.put(FindEventsRequest.class, FindEventsRequestData.class);
