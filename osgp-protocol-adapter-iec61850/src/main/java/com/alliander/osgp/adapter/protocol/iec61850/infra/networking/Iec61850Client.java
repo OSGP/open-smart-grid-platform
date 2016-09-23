@@ -180,7 +180,7 @@ public class Iec61850Client {
         try {
             return clientAssociation.getModelFromSclFile(filePath);
         } catch (final SclParseException e) {
-            LOGGER.error("Error parsing SCL file.", e);
+            LOGGER.error("Error parsing SCL file: " + filePath, e);
             return null;
         }
     }
@@ -299,7 +299,7 @@ public class Iec61850Client {
         final Iec61850ClientBaseEventListener reportListener = deviceConnection.getConnection()
                 .getIec61850ClientAssociation().getReportListener();
 
-        final Integer sqNum = reporting.getUnsignedShort(SubDataAttribute.SEQUENCE_NUMBER).getValue();
+        final short sqNum = reporting.getUnsignedByte(SubDataAttribute.SEQUENCE_NUMBER).getValue();
         reportListener.setSqNum(sqNum);
         reporting.writeBoolean(SubDataAttribute.ENABLE_REPORTING, true);
         LOGGER.info("Allowing device {} to send events", deviceIdentification);

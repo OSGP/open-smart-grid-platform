@@ -43,6 +43,9 @@ public class Iec61850Config {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850Config.class);
 
+    private static final String DEFAULT_PROPERTY_MESSAGE = "Using default value {} for property {}";
+    private static final String PROPERTY_IS_VALUE = "{}={}";
+
     private static final String PROPERTY_NAME_IEC61850_TIMEOUT_CONNECT = "iec61850.timeout.connect";
     private static final String PROPERTY_NAME_IEC61850_PORT_CLIENT = "iec61850.port.client";
     private static final String PROPERTY_NAME_IEC61850_PORT_CLIENTLOCAL = "iec61850.port.clientlocal";
@@ -53,6 +56,9 @@ public class Iec61850Config {
     private static final String PROPERTY_NAME_IEC61850_DELAY_AFTER_DEVICE_REGISTRATION = "iec61850.delay.after.device.registration";
     private static final String PROPERTY_NAME_IEC61850_IS_REPORTING_AFTER_DEVICE_REGISTRATION_ENABLED = "iec61850.is.reporting.after.device.registration.enabled";
     private static final String PROPERTY_NAME_IEC61850_DISCONNECT_DELAY = "iec61850.disconnect.delay";
+
+    private static final String PROPERTY_NAME_IEC61850_ICD_FILE_PATH = "iec61850.icd.file.path";
+    private static final String PROPERTY_NAME_IEC61850_ICD_FILE_USE = "iec61850.icd.file.use";
 
     @Resource
     private Environment environment;
@@ -158,11 +164,16 @@ public class Iec61850Config {
     @Bean
     public int delayAfterDeviceRegistration() {
         final String property = this.environment.getProperty(PROPERTY_NAME_IEC61850_DELAY_AFTER_DEVICE_REGISTRATION);
+        int milliSeconds;
         if (StringUtils.isEmpty(property)) {
-            return 5000;
+            milliSeconds = 5000;
+            LOGGER.info(DEFAULT_PROPERTY_MESSAGE, milliSeconds, PROPERTY_NAME_IEC61850_DISCONNECT_DELAY);
         } else {
-            return Integer.parseInt(property);
+            milliSeconds = Integer.parseInt(property);
+            LOGGER.info(PROPERTY_IS_VALUE, PROPERTY_NAME_IEC61850_DELAY_AFTER_DEVICE_REGISTRATION, milliSeconds);
         }
+
+        return milliSeconds;
     }
 
     /**
@@ -174,11 +185,17 @@ public class Iec61850Config {
     public boolean isReportingAfterDeviceRegistrationEnabled() {
         final String property = this.environment
                 .getProperty(PROPERTY_NAME_IEC61850_IS_REPORTING_AFTER_DEVICE_REGISTRATION_ENABLED);
+        boolean isEnabled;
         if (StringUtils.isEmpty(property)) {
-            return false;
+            isEnabled = false;
+            LOGGER.info(DEFAULT_PROPERTY_MESSAGE, isEnabled,
+                    PROPERTY_NAME_IEC61850_IS_REPORTING_AFTER_DEVICE_REGISTRATION_ENABLED);
         } else {
-            return Boolean.parseBoolean(property);
+            isEnabled = Boolean.parseBoolean(property);
+            LOGGER.info(PROPERTY_IS_VALUE, PROPERTY_NAME_IEC61850_IS_REPORTING_AFTER_DEVICE_REGISTRATION_ENABLED,
+                    isEnabled);
         }
+        return isEnabled;
     }
 
     /**
@@ -189,11 +206,31 @@ public class Iec61850Config {
     @Bean
     public int disconnectDelay() {
         final String property = this.environment.getProperty(PROPERTY_NAME_IEC61850_DISCONNECT_DELAY);
+        int milliSeconds;
         if (StringUtils.isEmpty(property)) {
-            return 5000;
+            milliSeconds = 5000;
+            LOGGER.info(DEFAULT_PROPERTY_MESSAGE, milliSeconds, PROPERTY_NAME_IEC61850_DISCONNECT_DELAY);
         } else {
-            return Integer.parseInt(property);
+            milliSeconds = Integer.parseInt(property);
+            LOGGER.info(PROPERTY_IS_VALUE, PROPERTY_NAME_IEC61850_IS_REPORTING_AFTER_DEVICE_REGISTRATION_ENABLED,
+                    milliSeconds);
         }
+        return milliSeconds;
+    }
+
+    /**
+     * File path for SCL / ICD file which describes the ServerModel of an IED.
+     */
+    @Bean
+    public String icdFilePath() {
+        final boolean isIcdFileUsed = Boolean.parseBoolean(this.environment
+                .getRequiredProperty(PROPERTY_NAME_IEC61850_ICD_FILE_USE));
+        if (isIcdFileUsed) {
+            final String filePath = this.environment.getRequiredProperty(PROPERTY_NAME_IEC61850_ICD_FILE_PATH);
+            LOGGER.info("Using ICD file with file path: {}", filePath);
+            return filePath;
+        }
+        return null;
     }
 
     @Bean

@@ -57,6 +57,9 @@ public class Iec61850DeviceConnectionService {
     @Autowired
     private int responseTimeout;
 
+    @Autowired
+    private String icdFilePath;
+
     public synchronized void connect(final String ipAddress, final String deviceIdentification, final IED ied,
             final LogicalDevice logicalDevice) {
         LOGGER.info("Trying to find connection in cache for deviceIdentification: {}", deviceIdentification);
@@ -101,7 +104,7 @@ public class Iec61850DeviceConnectionService {
             clientAssociation.setResponseTimeout(this.responseTimeout);
 
             // Read the ServerModel, either from the device or from a SCL file.
-            final ServerModel serverModel = this.iec61850Client.readServerModelFromDevice(clientAssociation);
+            final ServerModel serverModel = this.readServerModel(clientAssociation, deviceIdentification);
 
             // Cache the connection.
             this.cacheIec61850Connection(deviceIdentification, new Iec61850Connection(iec61850clientAssociation,
@@ -111,11 +114,6 @@ public class Iec61850DeviceConnectionService {
             LOGGER.info(
                     "Connected to device: {}, fetched server model. Start time: {}, end time: {}, total time in milliseconds: {}",
                     deviceIdentification, startTime, endTime, endTime.minus(startTime.getMillis()).getMillis());
-
-            // this.enableReportingOnDevice(new DeviceConnection(new
-            // Iec61850Connection(iec61850clientAssociation,
-            // serverModel), deviceIdentification, IED.FLEX_OVL),
-            // deviceIdentification);
         } catch (final ServiceError e) {
             LOGGER.error("Unexpected ServiceError when connecting to an IEC61850 device", e);
         } catch (final ProtocolAdapterException e) {
@@ -174,6 +172,24 @@ public class Iec61850DeviceConnectionService {
         return false;
     }
 
+    private ServerModel readServerModel(final ClientAssociation clientAssociation, final String deviceIdentification) {
+        if (this.icdFilePath == null) {
+            LOGGER.info("Reading ServerModel from device: {} using readServerModelFromDevice()", deviceIdentification);
+            return this.iec61850Client.readServerModelFromDevice(clientAssociation);
+        } else {
+            LOGGER.info("Reading ServerModel from SCL / ICD file: {}", this.icdFilePath);
+            ServerModel serverModel = this.iec61850Client.readServerModelFromSclFile(clientAssociation,
+                    this.icdFilePath);
+            if (serverModel == null) {
+                LOGGER.warn(
+                        "Reading ServerModel from SCL / ICD file: {} failed, reading ServerModel from device: {} using readServerModelFromDevice() instead...",
+                        this.icdFilePath, deviceIdentification);
+                serverModel = this.iec61850Client.readServerModelFromDevice(clientAssociation);
+            }
+            return serverModel;
+        }
+    }
+
     public synchronized void disconnect(final String deviceIdentification) {
         try {
             LOGGER.info("Trying to disconnect from deviceIdentification: {}", deviceIdentification);
@@ -212,7 +228,6 @@ public class Iec61850DeviceConnectionService {
     }
 
     public void enableReportingOnDevice(final DeviceConnection deviceConnection, final String deviceIdentification) {
-
         this.iec61850Client.enableReportingOnDevice(deviceConnection, deviceIdentification);
     }
 
