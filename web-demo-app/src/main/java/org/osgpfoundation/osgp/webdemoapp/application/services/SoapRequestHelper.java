@@ -23,50 +23,13 @@ public class SoapRequestHelper {
 
 	private SaajSoapMessageFactory messageFactory;
 
-	public SoapRequestHelper() {
-		
-		System.out.println("Message Factory set");
-		
-		this.messageFactory = new SaajSoapMessageFactory();
-		
-		try {
-			this.messageFactory.setMessageFactory(MessageFactory.newInstance());
-		} catch (SOAPException e) {
-			// TODO Auto-generated catch block
-			System.err.println("Message Facotry failed!");
-			e.printStackTrace();
-		}
-		
-		
-		System.out.println("MessageFactory is null: " + this.messageFactory == null);
-
-		// Set Trust Store, set Key Store properties
-		this.keyStoreHelper = new KeyStoreHelper("jks", "/etc/ssl/certs/trust.jks",
-				"123456", "/etc/ssl/certs/test-org.pfx", "pkcs12", "1234");
+	public SoapRequestHelper(SaajSoapMessageFactory messageFactory, KeyStoreHelper keyStoreHelper) {
+				
+		this.messageFactory = messageFactory;
+		this.keyStoreHelper = keyStoreHelper;
 	}
 
-	public WebServiceTemplate createAddDeviceRequest() {
-		initMarshaller("com.alliander.osgp.platform.ws.schema.common.deviceinstallation");
 
-		String uri = "https://localhost/osgp-adapter-ws-core/common/deviceInstallationService/DeviceInstallation";
-
-		WebServiceTemplate webServiceTemplate = new WebServiceTemplate(this.messageFactory);
-
-		webServiceTemplate.setDefaultUri(uri);
-		webServiceTemplate.setMarshaller(marshaller);
-		webServiceTemplate.setUnmarshaller(marshaller);
-
-		webServiceTemplate.setCheckConnectionForFault(true);
-		
-		webServiceTemplate.setInterceptors(new ClientInterceptor[] { 
-						createClientInterceptor("http://www.alliander.com/schemas/osp/common") 
-						});
-
-		webServiceTemplate.setMessageSender(createHttpMessageSender());
-
-		return webServiceTemplate;
-	}
-	
 	public WebServiceTemplate createUpdateKeyRequest() {
 		initMarshaller("com.alliander.osgp.platform.ws.schema.admin.devicemanagement");
 
@@ -91,6 +54,29 @@ public class SoapRequestHelper {
 	
 	
 	public WebServiceTemplate createFindAllDevicesRequest() {
+		initMarshaller("com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement");
+
+		String uri = "https://localhost/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/AdHocManagement";
+
+		WebServiceTemplate webServiceTemplate = new WebServiceTemplate(this.messageFactory);
+
+		webServiceTemplate.setDefaultUri(uri);
+		webServiceTemplate.setMarshaller(marshaller);
+		webServiceTemplate.setUnmarshaller(marshaller);
+
+	
+		webServiceTemplate.setCheckConnectionForFault(true);
+		
+		webServiceTemplate.setInterceptors(new ClientInterceptor[] { 
+						createClientInterceptor("http://www.alliander.com/schemas/osgp/common") 
+						});
+
+		webServiceTemplate.setMessageSender(createHttpMessageSender());
+
+		return webServiceTemplate;
+	}
+	
+	public WebServiceTemplate createSetLightRequest() {
 		initMarshaller("com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement");
 
 		String uri = "https://localhost/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/AdHocManagement";
