@@ -13,6 +13,7 @@
 	type="text/javascript"></script>
 </head>
 <body>
+	<jsp:include page="nav.jsp" />
 	<div class="container">
 		<h4>Device List</h4>
 		<div class="row">
@@ -22,14 +23,18 @@
 					<c:forEach var="device" items="${deviceList}">
 
 						<li class="span2">
-						<div class="thumbnail">
-							<img src="/web-demo-app/static/img/light_bulb_off.png" alt=""
-								height="42" width="42">
-							<div class="caption">
-								<h5>${device.deviceIdentification}</h5>
-								<p><a href="/web-demo-app/deviceDetails/${device.deviceIdentification}" class="btn">Details</a></p>
+							<div class="thumbnail">
+								<img src="/web-demo-app/static/img/light_bulb_off.png" alt=""
+									height="42" width="42">
+								<div class="caption">
+									<h5>${device.deviceIdentification}</h5>
+									<p>
+										<a
+											href="/web-demo-app/deviceDetails/${device.deviceIdentification}"
+											class="btn">Switch</a>
+									</p>
+								</div>
 							</div>
-						</div>
 						</li>
 					</c:forEach>
 				</ul>

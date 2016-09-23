@@ -29,7 +29,7 @@ public class OsgpAdminClientSoapService {
 		keyRequest.setProtocolInfoId(1);
 
 		WebServiceTemplate template = this.soapRequestHelper
-				.createUpdateKeyRequest();
+				.createAdminRequest();
 
 		template.marshalSendAndReceive(keyRequest);
 
