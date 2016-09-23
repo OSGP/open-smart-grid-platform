@@ -12,6 +12,7 @@ import java.util.concurrent.Executors;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelHandler;
@@ -49,6 +50,10 @@ public class Iec61850Config {
     private static final String PROPERTY_NAME_IEC61850_RTU_PORT_SERVER = "iec61850.rtu.port.server";
     private static final String PROPERTY_NAME_IEC61850_PORT_LISTENER = "iec61850.port.listener";
 
+    private static final String PROPERTY_NAME_IEC61850_DELAY_AFTER_DEVICE_REGISTRATION = "iec61850.delay.after.device.registration";
+    private static final String PROPERTY_NAME_IEC61850_IS_REPORTING_AFTER_DEVICE_REGISTRATION_ENABLED = "iec61850.is.reporting.after.device.registration.enabled";
+    private static final String PROPERTY_NAME_IEC61850_DISCONNECT_DELAY = "iec61850.disconnect.delay";
+
     @Resource
     private Environment environment;
 
@@ -58,27 +63,27 @@ public class Iec61850Config {
 
     @Bean
     public int connectionTimeout() {
-        return Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_IEC61850_TIMEOUT_CONNECT));
+        return Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_IEC61850_TIMEOUT_CONNECT));
     }
 
     @Bean
     public int iec61850PortClient() {
-        return Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_IEC61850_PORT_CLIENT));
+        return Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_IEC61850_PORT_CLIENT));
     }
 
     @Bean
     public int iec61850PortClientLocal() {
-        return Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_IEC61850_PORT_CLIENTLOCAL));
+        return Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_IEC61850_PORT_CLIENTLOCAL));
     }
 
     @Bean
     public int iec61850SsldPortServer() {
-        return Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_IEC61850_SSLD_PORT_SERVER));
+        return Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_IEC61850_SSLD_PORT_SERVER));
     }
 
     @Bean
     public int iec61850RtuPortServer() {
-        return Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_IEC61850_RTU_PORT_SERVER));
+        return Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_IEC61850_RTU_PORT_SERVER));
     }
 
     /**
@@ -134,7 +139,7 @@ public class Iec61850Config {
      */
     @Bean
     public int iec61850PortListener() {
-        return Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_IEC61850_PORT_LISTENER));
+        return Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_IEC61850_PORT_LISTENER));
     }
 
     /**
@@ -143,6 +148,52 @@ public class Iec61850Config {
     @Bean
     public Iec61850ChannelHandlerServer iec61850ChannelHandlerServer() {
         return new Iec61850ChannelHandlerServer();
+    }
+
+    /**
+     * Used to configure how long (in milliseconds) the connection is kept open
+     * to allow the device to send reports. If this property is not set, the
+     * default value of 5000 milliseconds is used.
+     */
+    @Bean
+    public int delayAfterDeviceRegistration() {
+        final String property = this.environment.getProperty(PROPERTY_NAME_IEC61850_DELAY_AFTER_DEVICE_REGISTRATION);
+        if (StringUtils.isEmpty(property)) {
+            return 5000;
+        } else {
+            return Integer.parseInt(property);
+        }
+    }
+
+    /**
+     * Used to configure if the reporting is enabled after a device has
+     * registered. If this property is not set, the default value of false is
+     * used.
+     */
+    @Bean
+    public boolean isReportingAfterDeviceRegistrationEnabled() {
+        final String property = this.environment
+                .getProperty(PROPERTY_NAME_IEC61850_IS_REPORTING_AFTER_DEVICE_REGISTRATION_ENABLED);
+        if (StringUtils.isEmpty(property)) {
+            return false;
+        } else {
+            return Boolean.parseBoolean(property);
+        }
+    }
+
+    /**
+     * Used to configure how long (in milliseconds) the connection is kept open
+     * to allow the device to send reports. If this property is not set, the
+     * default value of 5000 milliseconds is used.
+     */
+    @Bean
+    public int disconnectDelay() {
+        final String property = this.environment.getProperty(PROPERTY_NAME_IEC61850_DISCONNECT_DELAY);
+        if (StringUtils.isEmpty(property)) {
+            return 5000;
+        } else {
+            return Integer.parseInt(property);
+        }
     }
 
     @Bean
