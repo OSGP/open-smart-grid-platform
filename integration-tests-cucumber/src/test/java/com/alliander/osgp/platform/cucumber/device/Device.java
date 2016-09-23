@@ -31,11 +31,6 @@ public class Device {
         this.deviceHooks.deactivateDevice(deviceId);
     }
 
-    @Given("^a device with DeviceID \"([^\"]*)\"$")
-    public void aDeviceWithDeviceID(final String deviceId) throws Throwable {
-        this.deviceId.setDeviceIdE(deviceId);
-    }
-
     @Given("^an inactive device with DeviceID \"([^\"]*)\"$")
     public void anInactiveDeviceWithDeviceID(final String deviceId) throws Throwable {
         this.deviceId.setDeviceIdE(deviceId);
@@ -49,12 +44,12 @@ public class Device {
     }
 
     @Given("^an unknown mbus device with DeviceID \"([^\"]*)\"$")
-    public void anUnknownMbusDeviceWithDeviceID(String mbusDevice) throws Throwable {
+    public void anUnknownMbusDeviceWithDeviceID(final String mbusDevice) throws Throwable {
         this.deviceId.setDeviceIdG(mbusDevice);
     }
 
     @Given("^an unknown device with DeviceID \"([^\"]*)\"$")
-    public void anUnkownDeviceWithDeviceID(String deviceIdE) throws Throwable {
+    public void anUnkownDeviceWithDeviceID(final String deviceIdE) throws Throwable {
         this.deviceId.setDeviceIdE(deviceIdE);
     }
 
