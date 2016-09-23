@@ -672,7 +672,6 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
 
             this.pushFirmwareToDevice(new DeviceConnection(new Iec61850Connection(new Iec61850ClientAssociation(
                     clientAssociation, null), serverModel), deviceRequest.getDeviceIdentification(), IED.FLEX_OVL),
-                    serverModel, clientAssociation,
                     deviceRequest.getFirmwareDomain().concat(deviceRequest.getFirmwareUrl()));
 
             final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
@@ -1474,9 +1473,8 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
         this.iec61850Client.sendCommandWithRetry(function);
     }
 
-    private void pushFirmwareToDevice(final DeviceConnection deviceConnection, final ServerModel serverModel,
-            final ClientAssociation clientAssociation, final String fullUrl) throws ProtocolAdapterException,
-            FunctionalException {
+    private void pushFirmwareToDevice(final DeviceConnection deviceConnection, final String fullUrl)
+            throws ProtocolAdapterException {
         final Function<Void> function = new Function<Void>() {
 
             @Override
@@ -1505,7 +1503,7 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
     }
 
     private void pushSslCertificateToDevice(final DeviceConnection deviceConnection,
-            final CertificationDto certification) throws ProtocolAdapterException, FunctionalException {
+            final CertificationDto certification) throws ProtocolAdapterException {
         final Function<Void> function = new Function<Void>() {
 
             @Override
@@ -1547,7 +1545,7 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
     }
 
     private void setEventNotificationFilterOnDevice(final DeviceConnection deviceConnection, final String filter)
-            throws ProtocolAdapterException, FunctionalException {
+            throws ProtocolAdapterException {
         final Function<Void> function = new Function<Void>() {
 
             @Override
