@@ -8972,13 +8972,13 @@
                <ns2:From>?</ns2:From>
                <ns2:Until>?</ns2:Until>
             </ns1:FindEventsRequest>
-            <ns1:GetSpecialDaysRequest>
+            <ns1:SetSpecialDaysRequest>
                <!--1 to 30 repetitions:-->
                <ns3:SpecialDays>
                   <ns3:specialDayDate>cid:414862528995</ns3:specialDayDate>
                   <ns3:dayId>?</ns3:dayId>
                </ns3:SpecialDays>
-            </ns1:GetSpecialDaysRequest>
+            </ns1:SetSpecialDaysRequest>
             <ns1:ReadAlarmRegisterRequest/>
             <ns1:GetActualMeterReadsRequest/>
             <ns1:GetActualMeterReadsGasRequest>
@@ -9160,13 +9160,13 @@
                <ns2:From>?</ns2:From>
                <ns2:Until>?</ns2:Until>
             </ns1:FindEventsRequest>
-            <ns1:GetSpecialDaysRequest>
+            <ns1:SetSpecialDaysRequest>
                <!--1 to 30 repetitions:-->
                <ns3:SpecialDays>
                   <ns3:specialDayDate>cid:414862528995</ns3:specialDayDate>
                   <ns3:dayId>?</ns3:dayId>
                </ns3:SpecialDays>
-            </ns1:GetSpecialDaysRequest>
+            </ns1:SetSpecialDaysRequest>
             <ns1:ReadAlarmRegisterRequest/>
             <ns1:GetActualMeterReadsRequest/>
             <ns1:GetActualMeterReadsGasRequest>
@@ -11305,12 +11305,12 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
 	            <ns2:Until>${=new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(new Date())}</ns2:Until>
 	         </ns1:FindEventsRequest>
 	         
-	         <ns1:GetSpecialDaysRequest>
+	         <ns1:SetSpecialDaysRequest>
          	      <ns3:SpecialDays>
                   <ns3:specialDayDate>FFFFFFFFFF</ns3:specialDayDate>
                   <ns3:dayId>3</ns3:dayId>
                 </ns3:SpecialDays>
-              </ns1:GetSpecialDaysRequest>
+              </ns1:SetSpecialDaysRequest>
               
               <ns1:ReadAlarmRegisterRequest/>
               
@@ -12277,12 +12277,12 @@ for(int j=0;j&lt;10;j++) {
       <ns1:BundleRequest>
          <ns1:DeviceIdentification>${=testCase.getPropertyValue( "DeviceIdentificationE" )}</ns1:DeviceIdentification>
          <ns1:Actions>      
-            <ns1:GetSpecialDaysRequest>
+            <ns1:SetSpecialDaysRequest>
          	      <ns3:SpecialDays>
                   <ns3:specialDayDate>FFFFFFFFFF</ns3:specialDayDate>
                   <ns3:dayId>3</ns3:dayId>
                 </ns3:SpecialDays>
-              </ns1:GetSpecialDaysRequest>
+              </ns1:SetSpecialDaysRequest>
             
  		<ns1:SetAdministrativeStatusRequest>
                <ns3:AdministrativeStatusType>ON</ns3:AdministrativeStatusType>
