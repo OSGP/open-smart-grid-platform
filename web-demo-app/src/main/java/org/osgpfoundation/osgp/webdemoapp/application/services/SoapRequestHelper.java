@@ -30,7 +30,7 @@ public class SoapRequestHelper {
 	}
 
 
-	public WebServiceTemplate createUpdateKeyRequest() {
+	public WebServiceTemplate createAdminRequest() {
 		initMarshaller("com.alliander.osgp.platform.ws.schema.admin.devicemanagement");
 
 		String uri = "https://localhost/osgp-adapter-ws-admin/admin/deviceManagementService/DeviceManagement";
@@ -53,7 +53,7 @@ public class SoapRequestHelper {
 	}
 	
 	
-	public WebServiceTemplate createFindAllDevicesRequest() {
+	public WebServiceTemplate createPublicLightingRequest() {
 		initMarshaller("com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement");
 
 		String uri = "https://localhost/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/AdHocManagement";
@@ -76,28 +76,28 @@ public class SoapRequestHelper {
 		return webServiceTemplate;
 	}
 	
-	public WebServiceTemplate createSetLightRequest() {
-		initMarshaller("com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement");
-
-		String uri = "https://localhost/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/AdHocManagement";
-
-		WebServiceTemplate webServiceTemplate = new WebServiceTemplate(this.messageFactory);
-
-		webServiceTemplate.setDefaultUri(uri);
-		webServiceTemplate.setMarshaller(marshaller);
-		webServiceTemplate.setUnmarshaller(marshaller);
-
-	
-		webServiceTemplate.setCheckConnectionForFault(true);
-		
-		webServiceTemplate.setInterceptors(new ClientInterceptor[] { 
-						createClientInterceptor("http://www.alliander.com/schemas/osgp/common") 
-						});
-
-		webServiceTemplate.setMessageSender(createHttpMessageSender());
-
-		return webServiceTemplate;
-	}
+//	public WebServiceTemplate createSetLightRequest() {
+//		initMarshaller("com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement");
+//
+//		String uri = "https://localhost/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/AdHocManagement";
+//
+//		WebServiceTemplate webServiceTemplate = new WebServiceTemplate(this.messageFactory);
+//
+//		webServiceTemplate.setDefaultUri(uri);
+//		webServiceTemplate.setMarshaller(marshaller);
+//		webServiceTemplate.setUnmarshaller(marshaller);
+//
+//	
+//		webServiceTemplate.setCheckConnectionForFault(true);
+//		
+//		webServiceTemplate.setInterceptors(new ClientInterceptor[] { 
+//						createClientInterceptor("http://www.alliander.com/schemas/osgp/common") 
+//						});
+//
+//		webServiceTemplate.setMessageSender(createHttpMessageSender());
+//
+//		return webServiceTemplate;
+//	}
 
 	private void initMarshaller(String marshallerContext) {
 		this.marshaller = new Jaxb2Marshaller();
