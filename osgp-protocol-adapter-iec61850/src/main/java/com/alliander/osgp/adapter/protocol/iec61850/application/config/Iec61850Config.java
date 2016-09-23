@@ -167,7 +167,7 @@ public class Iec61850Config {
         int milliSeconds;
         if (StringUtils.isEmpty(property)) {
             milliSeconds = 5000;
-            LOGGER.info(DEFAULT_PROPERTY_MESSAGE, milliSeconds, PROPERTY_NAME_IEC61850_DISCONNECT_DELAY);
+            LOGGER.info(DEFAULT_PROPERTY_MESSAGE, milliSeconds, PROPERTY_NAME_IEC61850_DELAY_AFTER_DEVICE_REGISTRATION);
         } else {
             milliSeconds = Integer.parseInt(property);
             LOGGER.info(PROPERTY_IS_VALUE, PROPERTY_NAME_IEC61850_DELAY_AFTER_DEVICE_REGISTRATION, milliSeconds);
@@ -212,10 +212,14 @@ public class Iec61850Config {
             LOGGER.info(DEFAULT_PROPERTY_MESSAGE, milliSeconds, PROPERTY_NAME_IEC61850_DISCONNECT_DELAY);
         } else {
             milliSeconds = Integer.parseInt(property);
-            LOGGER.info(PROPERTY_IS_VALUE, PROPERTY_NAME_IEC61850_IS_REPORTING_AFTER_DEVICE_REGISTRATION_ENABLED,
-                    milliSeconds);
+            LOGGER.info(PROPERTY_IS_VALUE, PROPERTY_NAME_IEC61850_DISCONNECT_DELAY, milliSeconds);
         }
         return milliSeconds;
+    }
+
+    @Bean
+    public boolean isIcdFileUsed() {
+        return Boolean.parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_IEC61850_ICD_FILE_USE));
     }
 
     /**
@@ -223,9 +227,7 @@ public class Iec61850Config {
      */
     @Bean
     public String icdFilePath() {
-        final boolean isIcdFileUsed = Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_IEC61850_ICD_FILE_USE));
-        if (isIcdFileUsed) {
+        if (this.isIcdFileUsed()) {
             final String filePath = this.environment.getRequiredProperty(PROPERTY_NAME_IEC61850_ICD_FILE_PATH);
             LOGGER.info("Using ICD file with file path: {}", filePath);
             return filePath;

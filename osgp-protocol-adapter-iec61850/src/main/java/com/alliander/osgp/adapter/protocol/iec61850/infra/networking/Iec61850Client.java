@@ -14,6 +14,7 @@ import java.util.TimerTask;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openmuc.openiec61850.ClientAssociation;
 import org.openmuc.openiec61850.ClientSap;
 import org.openmuc.openiec61850.Fc;
@@ -173,8 +174,15 @@ public class Iec61850Client {
      * @param filePath
      *            "../sampleServer/sampleModel.icd"
      * @return Instance of {@link ServerModel}
+     * @throws ProtocolAdapterException
+     *             In case the file path is empty.
      */
-    public ServerModel readServerModelFromSclFile(final ClientAssociation clientAssociation, final String filePath) {
+    public ServerModel readServerModelFromSclFile(final ClientAssociation clientAssociation, final String filePath)
+            throws ProtocolAdapterException {
+        if (StringUtils.isEmpty(filePath)) {
+            throw new ProtocolAdapterException("File path is empty");
+        }
+
         // Instead of calling retrieveModel you could read the model directly
         // from an SCL file.
         try {

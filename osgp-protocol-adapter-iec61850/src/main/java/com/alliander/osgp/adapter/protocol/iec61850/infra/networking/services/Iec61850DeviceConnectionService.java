@@ -11,6 +11,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.openmuc.openiec61850.ClientAssociation;
 import org.openmuc.openiec61850.Fc;
@@ -59,6 +60,9 @@ public class Iec61850DeviceConnectionService {
 
     @Autowired
     private String icdFilePath;
+
+    @Autowired
+    private boolean isIcdFileUsed;
 
     public synchronized void connect(final String ipAddress, final String deviceIdentification, final IED ied,
             final LogicalDevice logicalDevice) {
@@ -172,11 +176,9 @@ public class Iec61850DeviceConnectionService {
         return false;
     }
 
-    private ServerModel readServerModel(final ClientAssociation clientAssociation, final String deviceIdentification) {
-        if (this.icdFilePath == null) {
-            LOGGER.info("Reading ServerModel from device: {} using readServerModelFromDevice()", deviceIdentification);
-            return this.iec61850Client.readServerModelFromDevice(clientAssociation);
-        } else {
+    private ServerModel readServerModel(final ClientAssociation clientAssociation, final String deviceIdentification)
+            throws ProtocolAdapterException {
+        if (this.isIcdFileUsed && StringUtils.isNotEmpty(this.icdFilePath)) {
             LOGGER.info("Reading ServerModel from SCL / ICD file: {}", this.icdFilePath);
             ServerModel serverModel = this.iec61850Client.readServerModelFromSclFile(clientAssociation,
                     this.icdFilePath);
@@ -187,6 +189,9 @@ public class Iec61850DeviceConnectionService {
                 serverModel = this.iec61850Client.readServerModelFromDevice(clientAssociation);
             }
             return serverModel;
+        } else {
+            LOGGER.info("Reading ServerModel from device: {} using readServerModelFromDevice()", deviceIdentification);
+            return this.iec61850Client.readServerModelFromDevice(clientAssociation);
         }
     }
 
