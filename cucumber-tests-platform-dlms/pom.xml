@@ -81,8 +81,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
+      <version>4.11</version>
     </dependency>
     <dependency>
       <groupId>info.cukes</groupId>
@@ -117,6 +116,8 @@
       <groupId>com.alliander</groupId>
       <artifactId>cucumber.tests.platform</artifactId>
       <version>1.0-SNAPSHOT</version>
+      <type>test-jar</type>
+      <scope>test</scope>
     </dependency>    
     
   </dependencies>
