@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.alliander</groupId>
-  <artifactId>cucumber.tests.platform.dlms</artifactId>
+  <artifactId>cucumber-tests-platform-dlms</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
@@ -114,7 +114,7 @@
     <!-- OSGP -->
     <dependency>
       <groupId>com.alliander</groupId>
-      <artifactId>cucumber.tests.platform</artifactId>
+      <artifactId>cucumber-tests-platform</artifactId>
       <version>1.0-SNAPSHOT</version>
       <type>test-jar</type>
       <scope>test</scope>
