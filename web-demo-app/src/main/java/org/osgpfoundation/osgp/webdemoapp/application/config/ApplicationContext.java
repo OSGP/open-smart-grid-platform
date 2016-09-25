@@ -67,13 +67,13 @@ public class ApplicationContext {
 	}
 
 	@Bean
-	public OsgpAdminClientSoapService adminClientSoapService () {
-		return new OsgpAdminClientSoapService(adminAdHocMapperFacade());
+	public OsgpPublicLightingClientSoapService publicLightingClientSoapService () {
+		return new OsgpPublicLightingClientSoapService(publicLightingAdHocMapperFacade());
 	}
 	
 	@Bean
-	public OsgpPublicLightingClientSoapService publicLightingClientSoapService () {
-		return new OsgpPublicLightingClientSoapService(publicLightingAdHocMapperFacade());
+	public OsgpAdminClientSoapService osgpAdminClientSoapService () {
+		return new OsgpAdminClientSoapService (adminAdHocMapperFacade());
 	}
 
 	
