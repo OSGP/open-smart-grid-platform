@@ -8,24 +8,16 @@
 	rel="stylesheet">
 <script src="/web-demo-app/static/js/jquery-1.8.3.min.js"
 	type="text/javascript"></script>
-<title>Add Device</title>
+<title>Add Device Result</title>
 </head>
 <body class="container">
 	<jsp:include page="nav.jsp" />
 	<br>
 	<div>
-		<h4>Add new device</h4>
-		<form:form method="POST" action="/web-demo-app/doAddDevice">
-			<table>
-				<tr>
-					<td><form:label path="deviceIdentification">Device Identification</form:label></td>
-					<td><form:input path="deviceIdentification" /></td>
-				</tr>
-				<tr>
-					<td colspan="2"><input type="submit" value="Submit" /></td>
-				</tr>
-			</table>
-		</form:form>
+		<p>The device with id <i>${deviceId}</i> has been added to the Platform.</p>
+		<p>Please simulate the device by adding and registering it to the <a href="https://localhost/web-device-simulator/devices" target="_blank">device simulator</a>.</p>
+		<br>
+		<p><a class="btn" href="/web-demo-app/list">Return to Devices List</a></p>
 	</div>
 </body>
 </html>

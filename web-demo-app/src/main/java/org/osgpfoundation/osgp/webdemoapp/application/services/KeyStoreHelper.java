@@ -40,12 +40,10 @@ public class KeyStoreHelper {
 	}
 	
 	public KeyStore getTrustStore () {
-		System.out.println("Truststore returned");
 		return this.trustStoreFactory.getObject();
 	}
 	
 	public KeyStore getKeyStore () {
-		System.out.println("Keystore returned");
 		return this.keyStoreFactory.getObject();
 	}
 	

@@ -11,16 +11,23 @@
 	type="text/javascript"></script>
 <title>Device details</title>
 </head>
-<body>
+<body class="container">
 	<jsp:include page="nav.jsp" />
-	<div class="container">
-
+	<br>
+	<div>
+	
 		<c:if test="${not empty device}">
-			<p>SetLight request for device ${device.deviceId} has been sent to the Platform</p>
-			
-			<p>Light Value will be set to ${device.lightValue}</p>
-			<p>Light On will be set to ${device.lightOn}</p>
-
+			<p>SetLight request for device ${device.deviceId} has been sent
+				to the Platform</p>
+			<c:choose>
+				<c:when test="${device.lightOn}">
+					<p>Light Value will be set to ${device.lightValue}</p>
+					<p>Light On will be set to ${device.lightOn}</p>
+				</c:when>
+				<c:otherwise>
+					<p>Light will be switched off</p>
+				</c:otherwise>
+			</c:choose>
 		</c:if>
 
 	</div>

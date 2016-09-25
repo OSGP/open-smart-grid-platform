@@ -15,7 +15,7 @@
 	<description>Demo Apps for the OSGP Platform.</description>
 	<organization>
 		<name>OSGP</name>
-		<url>https://osgplatform.wordpress.com</url>
+		<url>www.opensmartgridplatform.org</url>
 	</organization>
 	<licenses>
 		<license>
@@ -76,15 +76,12 @@
 	<modules>
 		<!-- Shared Libs -->
 
-		<module>parent-da</module>
+		<module>parent-os-demo-app</module>
 		<module>generated-ws</module>
 
 
 		<!-- Webapp, Dev-Sim for Protocol Adapter OSLP -->
 		<module>web-demo-app</module>
 
-		<!-- Protocol Adapter OSLP -->
-		<!-- <module>osgp-core-db-api</module> <module>osgp-adapter-protocol-oslp</module> 
-			<module>osgp-adapter-protocol-oslp-elster</module> <module>signing-server</module> -->
 	</modules>
 </project>

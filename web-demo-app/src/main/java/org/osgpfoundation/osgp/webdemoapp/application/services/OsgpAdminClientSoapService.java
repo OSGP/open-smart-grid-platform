@@ -14,10 +14,10 @@ public class OsgpAdminClientSoapService {
 	
 	private MapperFacade adminAdHocMapperFacade;
 	
-	public OsgpAdminClientSoapService (MapperFacade mapper) {
-		adminAdHocMapperFacade = mapper;
+	public OsgpAdminClientSoapService(MapperFacade mapper) {
+		this.adminAdHocMapperFacade = mapper;
 	}
-	
+
 	
 	public void updateKeyRequest(org.osgpfoundation.osgp.webdemoapp.domain.Device device) {
 

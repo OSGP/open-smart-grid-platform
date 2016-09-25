@@ -1,8 +1,8 @@
 <!-- MENU -->
 <div class="navbar">
 	<div class="navbar-inner">
-		<a class="brand" href="#"> 
-		<img src="/web-demo-app/static/img/opensmartgridplatform_logo.png" alt="" height="64" width="64">
+		<a class="brand" href="/web-demo-app/"> 
+		<img src="/web-demo-app/static/img/opensmartgridplatform_logo.png" alt="" height="96" width="96">
 		</a>
 
 		<ul class="nav">

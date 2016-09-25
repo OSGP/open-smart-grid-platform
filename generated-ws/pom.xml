@@ -9,9 +9,9 @@
 
     <parent>
         <groupId>org.osgpfoundation.osgp</groupId>
-        <artifactId>parent-da</artifactId>
+        <artifactId>parent-os-demo-app</artifactId>
         <version>4.0.0-SNAPSHOT</version>
-        <relativePath>../parent-da/pom.xml</relativePath>
+        <relativePath>../parent-os-demo-app/pom.xml</relativePath>
     </parent>
 
     <dependencies>
@@ -60,10 +60,7 @@
                             <!-- USE THIS FOR ALL EXECUTIONS EXCEPT THE FIRST -->
                             <clearOutputDir>false</clearOutputDir>
                         </configuration>
-</execution>
-
-
-                    <!-- PUBLIC LIGHTING -->
+		    </execution>
 
                     <execution>
                         <id>public-lighting-ad-hoc-management</id>

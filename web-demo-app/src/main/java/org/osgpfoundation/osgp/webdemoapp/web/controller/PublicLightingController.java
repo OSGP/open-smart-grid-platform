@@ -14,8 +14,6 @@ import org.osgpfoundation.osgp.webdemoapp.domain.Device;
 import org.osgpfoundation.osgp.webdemoapp.domain.DeviceLightStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,7 +35,7 @@ public class PublicLightingController {
 	 */
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String home() {
-		return "redirect:/list";
+		return "home";
 	}
 
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -61,8 +59,7 @@ public class PublicLightingController {
 	}
 
 	@RequestMapping(value = "/deviceDetails/{deviceId}", method = RequestMethod.GET)
-	public ModelAndView devicesDetails(@PathVariable String deviceId,
-			Model model) {
+	public ModelAndView devicesDetails(@PathVariable String deviceId) {
 		ModelAndView modelView = new ModelAndView("device");
 
 		try {
@@ -71,13 +68,13 @@ public class PublicLightingController {
 					.getDeviceStatus(deviceId);
 			modelView.addObject("device", deviceStatus);
 		} catch (SoapFaultClientException e) {
-			modelView.addObject("error", e.getFaultStringOrReason());
-			modelView.addObject("errorMessage",
-					"Is the device registered in the Platform?");
+			return this.error(e.getFaultStringOrReason());
+			// modelView.addObject("errorMessage",
+			// "Is the device registered in the Platform?");
 		} catch (NullPointerException e) {
-			modelView.addObject("error", e.getCause());
-			modelView.addObject("errorMessage",
-					"The Soap Request returned null, is the platform running?");
+			return this.error("A response from the platform returned 'null'");
+			// modelView.addObject("errorMessage",
+			// "The Soap Request returned null, is the platform running?");
 		}
 
 		modelView.addObject("command", new DeviceLightStatus());
@@ -86,16 +83,37 @@ public class PublicLightingController {
 	}
 
 	@RequestMapping(value = "/doSwitchDevice", method = RequestMethod.POST)
-	public String addDevice(
-			@ModelAttribute("SpringWeb") DeviceLightStatus deviceStatus,
-			ModelMap model) {
+	public ModelAndView addDevice(
+			@ModelAttribute("SpringWeb") DeviceLightStatus deviceStatus) {
+		ModelAndView modelView = new ModelAndView("switch-result");
+		try {
+			if (deviceStatus.isLightOn() && ( deviceStatus.getLightValue() > 0 && deviceStatus.getLightValue() <= 100 )) {
+				osgpPublicLightingClientSoapService.setLightRequest(
+						deviceStatus.getDeviceId(),
+						deviceStatus.getLightValue(), deviceStatus.isLightOn());
+			} else if (!deviceStatus.isLightOn()) {
+				osgpPublicLightingClientSoapService.switchLightRequest(
+						deviceStatus.getDeviceId(), deviceStatus.isLightOn());
+			} else {
+				return this.error("LightValue must be a number between 1 - 100");
+			}
 
-		osgpPublicLightingClientSoapService.setLightRequest(
-				deviceStatus.getDeviceId(), deviceStatus.getLightValue(),
-				deviceStatus.isLightOn());
+		} catch (SoapFaultClientException e) {
+			return this.error(e.getFaultStringOrReason());
+		}
 
-		model.addAttribute("device", deviceStatus);
+		modelView.addObject("device", deviceStatus);
 
-		return "switch-result";
+		return modelView;
 	}
+	
+	public ModelAndView error(String error) {
+		ModelAndView modelView = new ModelAndView("error");
+	
+		modelView.addObject("error", error);
+	
+		return modelView;
+	}
+
+
 }

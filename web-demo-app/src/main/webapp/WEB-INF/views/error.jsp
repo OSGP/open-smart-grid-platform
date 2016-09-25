@@ -1,3 +1,4 @@
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -8,24 +9,16 @@
 	rel="stylesheet">
 <script src="/web-demo-app/static/js/jquery-1.8.3.min.js"
 	type="text/javascript"></script>
-<title>Add Device</title>
+<title>Error</title>
 </head>
 <body class="container">
 	<jsp:include page="nav.jsp" />
 	<br>
 	<div>
-		<h4>Add new device</h4>
-		<form:form method="POST" action="/web-demo-app/doAddDevice">
-			<table>
-				<tr>
-					<td><form:label path="deviceIdentification">Device Identification</form:label></td>
-					<td><form:input path="deviceIdentification" /></td>
-				</tr>
-				<tr>
-					<td colspan="2"><input type="submit" value="Submit" /></td>
-				</tr>
-			</table>
-		</form:form>
+	
+	<h4>An error occurred</h4>
+	<p>${error}</p>
+	
 	</div>
 </body>
 </html>
