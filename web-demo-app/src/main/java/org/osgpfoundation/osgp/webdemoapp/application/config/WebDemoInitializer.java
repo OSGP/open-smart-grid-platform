@@ -7,7 +7,6 @@
  */
 package org.osgpfoundation.osgp.webdemoapp.application.config;
 
-import java.io.FileNotFoundException;
 import java.util.TimeZone;
 
 import javax.naming.Context;
@@ -16,17 +15,12 @@ import javax.naming.NamingException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
-
 //import org.jboss.netty.logging.InternalLoggerFactory;
 //import org.jboss.netty.logging.Slf4JLoggerFactory;
-
-import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
-
-import ch.qos.logback.core.joran.spi.JoranException;
-import ch.qos.logback.ext.spring.LogbackConfigurer;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.springframework.web.WebApplicationInitializer;
 
 import org.osgpfoundation.osgp.webdemoapp.application.config.ApplicationContext;
 
