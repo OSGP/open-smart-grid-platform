@@ -12,9 +12,10 @@
 <script src="/web-demo-app/static/js/jquery-1.8.3.min.js"
 	type="text/javascript"></script>
 </head>
-<body>
+<body class="container">
 	<jsp:include page="nav.jsp" />
-	<div class="container">
+	<br>
+	<div>
 		<h4>Device List</h4>
 		<div class="row">
 			<c:if test="${not empty deviceList}">
@@ -31,7 +32,7 @@
 									<p>
 										<a
 											href="/web-demo-app/deviceDetails/${device.deviceIdentification}"
-											class="btn">Switch</a>
+											class="btn">Manage</a>
 									</p>
 								</div>
 							</div>
@@ -41,7 +42,7 @@
 
 			</c:if>
 			<c:if test="${empty deviceList}">
-				<p>No devices found</p>
+				<p>No devices found, please <a href="/web-demo-app/addDevice">add a Device</a> </p>
 			</c:if>
 		</div>
 	</div>

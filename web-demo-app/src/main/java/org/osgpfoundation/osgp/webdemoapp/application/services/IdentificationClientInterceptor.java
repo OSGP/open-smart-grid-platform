@@ -33,14 +33,12 @@ public class IdentificationClientInterceptor implements ClientInterceptor {
 	@Override
 	public void afterCompletion(MessageContext arg0, Exception arg1)
 			throws WebServiceClientException {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public boolean handleFault(MessageContext arg0)
 			throws WebServiceClientException {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
@@ -68,7 +66,6 @@ public class IdentificationClientInterceptor implements ClientInterceptor {
 	@Override
 	public boolean handleResponse(MessageContext arg0)
 			throws WebServiceClientException {
-		// TODO Auto-generated method stub
 		return true;
 	}
 

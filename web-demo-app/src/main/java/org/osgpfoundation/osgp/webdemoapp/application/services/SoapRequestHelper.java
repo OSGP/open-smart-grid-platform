@@ -5,9 +5,6 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 
-import javax.xml.soap.MessageFactory;
-import javax.xml.soap.SOAPException;
-
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.ssl.SSLSocketFactory;
@@ -75,29 +72,6 @@ public class SoapRequestHelper {
 
 		return webServiceTemplate;
 	}
-	
-//	public WebServiceTemplate createSetLightRequest() {
-//		initMarshaller("com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement");
-//
-//		String uri = "https://localhost/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/AdHocManagement";
-//
-//		WebServiceTemplate webServiceTemplate = new WebServiceTemplate(this.messageFactory);
-//
-//		webServiceTemplate.setDefaultUri(uri);
-//		webServiceTemplate.setMarshaller(marshaller);
-//		webServiceTemplate.setUnmarshaller(marshaller);
-//
-//	
-//		webServiceTemplate.setCheckConnectionForFault(true);
-//		
-//		webServiceTemplate.setInterceptors(new ClientInterceptor[] { 
-//						createClientInterceptor("http://www.alliander.com/schemas/osgp/common") 
-//						});
-//
-//		webServiceTemplate.setMessageSender(createHttpMessageSender());
-//
-//		return webServiceTemplate;
-//	}
 
 	private void initMarshaller(String marshallerContext) {
 		this.marshaller = new Jaxb2Marshaller();

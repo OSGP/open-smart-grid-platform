@@ -1,7 +1,5 @@
 package org.osgpfoundation.osgp.webdemoapp.application.services;
 
-import ma.glasnost.orika.MapperFacade;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
@@ -11,13 +9,6 @@ public class OsgpAdminClientSoapService {
 	
 	@Autowired
 	SoapRequestHelper soapRequestHelper;
-	
-	private MapperFacade adminAdHocMapperFacade;
-	
-	public OsgpAdminClientSoapService (MapperFacade mapper) {
-		adminAdHocMapperFacade = mapper;
-	}
-	
 	
 	public void updateKeyRequest(org.osgpfoundation.osgp.webdemoapp.domain.Device device) {
 

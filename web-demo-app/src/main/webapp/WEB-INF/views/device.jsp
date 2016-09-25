@@ -11,31 +11,51 @@
 	type="text/javascript"></script>
 <title>Device details</title>
 </head>
-<body>
+<body class="container">
 	<jsp:include page="nav.jsp" />
-	<div class="container">
+	<br>
+	<div>
 
 		<c:if test="${not empty device}">
 
 			<h4>Switch Light</h4>
-			<%-- 			<p><label>Device Id</label>${device.deviceId}</p> --%>
-			<%-- 			<p><label>Light Value</label>${device.lightValue}</p> --%>
-			<%-- 			<p><label>Light On</label>${device.lightOn}</p> --%>
 			<form:form method="POST" action="/web-demo-app/doSwitchDevice">
 				<table>
 					<tr>
 						<td><form:label path="deviceId">Device Identification</form:label></td>
-						<td><form:input path="deviceId" value="${device.deviceId}" readonly="true"/></td>
+						<td><form:input path="deviceId" value="${device.deviceId}"
+								readonly="true" /></td>
 					</tr>
-					<tr>	
+					<tr>
 						<td><form:label path="lightValue">Light Value</form:label></td>
-						<td><form:input path="lightValue"
-								value="${device.lightValue}" /></td>
+						<c:choose>
+							<c:when test="${device.lightValue <= -10}">
+								<td><form:input path="lightValue"
+										value="${device.lightValue}" readonly="true" /></td>
+							</c:when>
+							<c:when test="${device.lightValue > 100}">
+								<td><form:input path="lightValue"
+										value="${device.lightValue}" readonly="true" /></td>
+							</c:when>
+							<c:otherwise>
+								<td><form:input path="lightValue" type="number"
+										value="${device.lightValue}" /></td>
+							</c:otherwise>
+						</c:choose>
 					</tr>
 					<tr>
 						<td><form:label path="lightOn">Light On</form:label></td>
-						<td><form:checkbox path="lightOn"
-								value="${device.lightOn}" /></td>
+						<c:choose>
+							<c:when test="${device.lightOn == true}">
+								<td><form:checkbox path="lightOn" value="${device.lightOn}"
+										checked="true" /></td>
+								<td><img src="/web-demo-app/static/img/light_bulb_on.png" alt="" height="32" width="32"></td>
+							</c:when>
+							<c:otherwise>
+								<td><form:checkbox path="lightOn" value="${device.lightOn}" /></td>
+								<td><img src="/web-demo-app/static/img/light_bulb_off.png" alt="" height="32" width="32"></td>
+							</c:otherwise>
+						</c:choose>
 					</tr>
 					<tr>
 						<td colspan="2"><input type="submit" value="Submit" /></td>

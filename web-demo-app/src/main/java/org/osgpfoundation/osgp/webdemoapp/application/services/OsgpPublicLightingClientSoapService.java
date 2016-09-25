@@ -5,10 +5,8 @@ import java.util.List;
 import ma.glasnost.orika.MapperFacade;
 
 import org.osgpfoundation.osgp.webdemoapp.domain.DeviceLightStatus;
-import org.osgpfoundation.osgp.webdemoapp.domain.UnknownDeviceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.client.core.WebServiceTemplate;
-import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement.AsyncRequest;
 import com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement.FindAllDevicesRequest;
@@ -66,6 +64,23 @@ public class OsgpPublicLightingClientSoapService {
 
 		return response.getAsyncResponse().getCorrelationUid();
 	}
+	
+	public String switchLightRequest(String deviceId, boolean lightOn) {
+		SetLightRequest request = new SetLightRequest();
+		LightValue lightValue = new LightValue();
+		lightValue.setOn(lightOn);
+
+		WebServiceTemplate template = this.soapRequestHelper
+				.createPublicLightingRequest();
+
+		request.setDeviceIdentification(deviceId);
+		request.getLightValue().add(lightValue);
+
+		SetLightAsyncResponse response = (SetLightAsyncResponse) template
+				.marshalSendAndReceive(request);
+
+		return response.getAsyncResponse().getCorrelationUid();
+	}
 
 	public DeviceLightStatus getDeviceStatus(String deviceId) {
 		WebServiceTemplate requestTemplate = this.soapRequestHelper
@@ -101,9 +116,7 @@ public class OsgpPublicLightingClientSoapService {
 			GetStatusResponse response = (GetStatusResponse) responseTemplate
 					.marshalSendAndReceive(asyncStatusRequest);
 			OsgpResultType result = response.getResult();
-			System.err.println("The result is: " + result);
 			if (result.value().equals("OK")) {
-				System.err.println("RESULT IS OK!!!");
 				responseReceived = true;
 				deviceStatus = processStatusResponse(response.getDeviceStatus()
 						.getLightValues().get(0), asyncStatusResponse
@@ -112,16 +125,13 @@ public class OsgpPublicLightingClientSoapService {
 			} else {
 				// Wait a while for response
 				try {
-					System.err.println("Waiting..");
 					Thread.sleep(1000);
 				} catch (InterruptedException ie) {
 					ie.printStackTrace();
 				}
 				i++;
 			}
-
 		}
-
 		return deviceStatus;
 	}
 
