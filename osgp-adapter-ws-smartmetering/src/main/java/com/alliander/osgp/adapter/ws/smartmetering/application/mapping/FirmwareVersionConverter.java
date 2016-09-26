@@ -24,8 +24,9 @@ CustomConverter<FirmwareVersion, com.alliander.osgp.adapter.ws.schema.smartmeter
         if (source != null) {
 
             final com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.FirmwareVersion firmwareVersion = new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.FirmwareVersion();
-            firmwareVersion.setFirmwareModuleType(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.FirmwareModuleType
-                    .valueOf(source.getType().name()));
+            firmwareVersion
+                    .setFirmwareModuleType(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.FirmwareModuleType
+                            .valueOf(source.getType().getDescription()));
             firmwareVersion.setVersion(source.getVersion());
 
             return firmwareVersion;

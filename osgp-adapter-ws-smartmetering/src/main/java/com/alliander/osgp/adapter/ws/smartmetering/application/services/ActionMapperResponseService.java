@@ -14,6 +14,8 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import ma.glasnost.orika.impl.ConfigurableMapper;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -42,8 +44,6 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterRe
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
-
-import ma.glasnost.orika.impl.ConfigurableMapper;
 
 @Service(value = "wsSmartMeteringActionResponseMapperService")
 @Validated
@@ -81,7 +81,7 @@ public class ActionMapperResponseService {
         CLASS_TO_MAPPER_MAP.put(PeriodicMeterReadsContainer.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(PeriodicMeterReadsContainerGas.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(GetConfigurationResponse.class, this.monitoringMapper);
-        CLASS_TO_MAPPER_MAP.put(FirmwareVersionResponse.class, this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(FirmwareVersionResponse.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(AssociationLnObjectsResponseData.class, this.adhocMapper);
     }
 
@@ -141,8 +141,8 @@ public class ActionMapperResponseService {
 
         if (response == null) {
             throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
-                    ComponentType.WS_SMART_METERING,
-                    new RuntimeException("No Response Object of class " + (clazz == null ? "null" : clazz.getName())
+                    ComponentType.WS_SMART_METERING, new RuntimeException("No Response Object of class "
+                            + (clazz == null ? "null" : clazz.getName())
                             + " for ActionResponse Value Object of class: "
                             + actionValueResponseObject.getClass().getName()));
         }
@@ -155,9 +155,9 @@ public class ActionMapperResponseService {
 
         if (clazz == null) {
             throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
-                    ComponentType.WS_SMART_METERING,
-                    new RuntimeException("No Response class for ActionResponse Value Object class: "
-                            + actionValueResponseObject.getClass().getName()));
+                    ComponentType.WS_SMART_METERING, new RuntimeException(
+                            "No Response class for ActionResponse Value Object class: "
+                                    + actionValueResponseObject.getClass().getName()));
         }
 
         return clazz;
@@ -168,9 +168,9 @@ public class ActionMapperResponseService {
 
         if (mapper == null) {
             throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
-                    ComponentType.WS_SMART_METERING,
-                    new RuntimeException("No mapper for ActionResponse Value Object class: "
-                            + actionValueResponseObject.getClass().getName()));
+                    ComponentType.WS_SMART_METERING, new RuntimeException(
+                            "No mapper for ActionResponse Value Object class: "
+                                    + actionValueResponseObject.getClass().getName()));
         }
 
         return mapper;
