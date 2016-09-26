@@ -3,7 +3,7 @@ Feature:
   I want to be able to perform SmartMeteringMonitoring operations on a device
 
   Background: 
-    Given a device with DeviceID "TEST1024000000001"
+    Given an active device with DeviceID "TEST1024000000001"
     Given an active mbus device with DeviceID "TESTG102400000001"
     And an organisation with OrganisationID "Infostroom"
 
