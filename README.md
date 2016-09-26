@@ -2,7 +2,7 @@
 
 ### Build Status
 
-[![Build Status](http://54.77.62.182/job/OSGP_Shared_master/badge/icon?style=plastic)](http://54.77.62.182/job/OSGP_Shared_master/)
+[![Build Status](http://ci.opensmartgridplatform.org/job/OSGP_Shared_master/badge/icon?style=plastic)](http://ci.opensmartgridplatform.org/job/OSGP_Shared_master/)
 
 ### Component Description
 
