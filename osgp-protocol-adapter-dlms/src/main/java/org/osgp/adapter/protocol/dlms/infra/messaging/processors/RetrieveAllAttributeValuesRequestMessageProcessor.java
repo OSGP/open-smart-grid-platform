@@ -19,19 +19,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class RetrieveConfigurationObjectsRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class RetrieveAllAttributeValuesRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
     @Autowired
     private AdhocService adhocService;
 
-    protected RetrieveConfigurationObjectsRequestMessageProcessor() {
-        super(DeviceRequestMessageType.GET_CONFIGURATION_OBJECTS);
+    protected RetrieveAllAttributeValuesRequestMessageProcessor() {
+        super(DeviceRequestMessageType.GET_ALL_ATTRIBUTE_VALUES);
     }
 
     @Override
     protected Serializable handleMessage(final DlmsConnection conn, final DlmsDevice device,
             final Serializable requestObject) throws ProtocolAdapterException {
 
-        return this.adhocService.retrieveConfigurationObjects(conn, device);
+        return this.adhocService.retrieveAllAttributeValues(conn, device);
     }
 }

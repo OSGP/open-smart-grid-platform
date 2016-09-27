@@ -13,7 +13,7 @@ import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.DlmsConnection;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAssociationLnObjectsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetSpecificAttributeValueCommandExecutor;
-import org.osgp.adapter.protocol.dlms.domain.commands.RetrieveConfigurationObjectsCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.RetrieveAllAttributeValuesCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SynchronizeTimeCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -31,7 +31,7 @@ public class AdhocService {
     private SynchronizeTimeCommandExecutor synchronizeTimeCommandExecutor;
 
     @Autowired
-    private RetrieveConfigurationObjectsCommandExecutor retrieveConfigurationObjectsCommandExecutor;
+    private RetrieveAllAttributeValuesCommandExecutor retrieveAllAttributeValuesCommandExecutor;
 
     @Autowired
     private GetSpecificAttributeValueCommandExecutor getSpecificAttributeValueCommandExecutor;
@@ -51,10 +51,10 @@ public class AdhocService {
         }
     }
 
-    public String retrieveConfigurationObjects(final DlmsConnection conn, final DlmsDevice device)
+    public String retrieveAllAttributeValues(final DlmsConnection conn, final DlmsDevice device)
             throws ProtocolAdapterException {
 
-        return this.retrieveConfigurationObjectsCommandExecutor.execute(conn, device, null);
+        return this.retrieveAllAttributeValuesCommandExecutor.execute(conn, device, null);
     }
 
     public AssociationLnListTypeDto getAssociationLnObjects(final DlmsConnection conn, final DlmsDevice device)

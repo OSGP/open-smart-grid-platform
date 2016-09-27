@@ -17,7 +17,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfoDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAdministrativeStatusDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAssociationLnObjectsRequestDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetAttributeValuesRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGasRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDataDto;
@@ -55,10 +55,9 @@ public class CommandExecutorMapStub extends CommandExecutorMap {
         this.addCommandExecutor(SetPushSetupAlarmRequestDto.class, new SetPushSetupAlarmBundleCommandExecutorStub());
         this.addCommandExecutor(SetPushSetupSmsRequestDto.class, new SetPushSetupSmsBundleCommandExecutorStub());
         this.addCommandExecutor(SynchronizeTimeRequestDto.class, new SynchronizeTimeBundleCommandExecutorStub());
-        this.addCommandExecutor(GetConfigurationRequestDto.class,
-                new RetrieveConfigurationObjectsBundleCommandExecutorStub());
-        this.addCommandExecutor(GetFirmwareVersionRequestDto.class,
-                new GetFirmwareVersionsBundleCommandExecutorStub());
+        this.addCommandExecutor(GetAttributeValuesRequestDto.class,
+                new RetrieveAttributeValuesBundleCommandExecutorStub());
+        this.addCommandExecutor(GetFirmwareVersionRequestDto.class, new GetFirmwareVersionsBundleCommandExecutorStub());
         this.addCommandExecutor(GetAssociationLnObjectsRequestDto.class,
                 new GetAssociationLnObjectsBundleCommandExecutorStub());
     }
