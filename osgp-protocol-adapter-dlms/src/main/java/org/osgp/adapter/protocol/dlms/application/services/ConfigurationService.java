@@ -25,6 +25,7 @@ import org.osgp.adapter.protocol.dlms.domain.commands.SetEncryptionKeyExchangeOn
 import org.osgp.adapter.protocol.dlms.domain.commands.SetPushSetupAlarmCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetPushSetupSmsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetSpecialDaysCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.UpdateFirmwareCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
@@ -102,6 +103,9 @@ public class ConfigurationService {
 
     @Autowired
     private ReplaceKeyCommandExecutor replaceKeyCommandExecutor;
+
+    @Autowired
+    private UpdateFirmwareCommandExecutor updateFirmwareCommandExecutor;
 
     public void requestSpecialDays(final DlmsConnection conn, final DlmsDevice device,
             final SpecialDaysRequestDto specialDaysRequest) throws ProtocolAdapterException {
@@ -272,4 +276,16 @@ public class ConfigurationService {
         }
     }
 
+    public void updateFirmware(final DlmsConnection conn, final DlmsDevice device, final String firmwareIdentifier)
+            throws ProtocolAdapterException {
+        LOGGER.info("Updating firmware of device {} to firmware with identifier {}", device, firmwareIdentifier);
+
+        final AccessResultCode accessResultCode = this.updateFirmwareCommandExecutor.execute(conn, device,
+                firmwareIdentifier);
+
+        if (AccessResultCode.SUCCESS != accessResultCode) {
+            throw new ProtocolAdapterException("AccessResultCode for update firmware was not SUCCESS: "
+                    + accessResultCode);
+        }
+    }
 }
