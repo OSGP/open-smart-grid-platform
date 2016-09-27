@@ -30,6 +30,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Cli
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Connection;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Function;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.IED;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalDevice;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalNode;
@@ -243,6 +244,10 @@ public class Iec61850DeviceConnectionService {
         }
         final ClientAssociation clientAssociation = iec61850Connection.getClientAssociation();
         return this.iec61850Client.readAllDataValues(clientAssociation);
+    }
+
+    public <T> T sendCommandWithRetry(final Function<T> function) throws ProtocolAdapterException {
+        return this.iec61850Client.sendCommandWithRetry(function);
     }
 
     private void cacheIec61850Connection(final String deviceIdentification, final Iec61850Connection iec61850Connection) {
