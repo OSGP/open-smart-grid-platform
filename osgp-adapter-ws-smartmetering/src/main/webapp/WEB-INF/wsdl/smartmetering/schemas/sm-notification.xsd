@@ -69,6 +69,7 @@
             <xsd:enumeration value="GET_FIRMWARE_VERSION" />
             <xsd:enumeration value="COUPLE_MBUS_DEVICE" />
             <xsd:enumeration value="DE_COUPLE_MBUS_DEVICE" />
+            <xsd:enumeration value="UPDATE_FIRMWARE" />
 		</xsd:restriction>
 	</xsd:simpleType>
 

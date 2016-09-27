@@ -74,6 +74,10 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpeci
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareResponse;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.ConfigurationMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.ConfigurationService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
@@ -188,6 +192,60 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
                 } else {
                     LOGGER.info("Get Firmware Version firmware is null");
                 }
+            }
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+
+        return response;
+    }
+
+    @PayloadRoot(localPart = "UpdateFirmwareRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public UpdateFirmwareAsyncResponse updateFirmware(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final UpdateFirmwareRequest request, @MessagePriority final String messagePriority,
+            @ScheduleTime final String scheduleTime) throws OsgpException {
+
+        LOGGER.info("UpdateFirmware Request received from organisation {} for device {}.", organisationIdentification,
+                request.getDeviceIdentification());
+
+        final UpdateFirmwareAsyncResponse response = new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ObjectFactory()
+        .createUpdateFirmwareAsyncResponse();
+
+        try {
+            final String correlationUid = this.configurationService.enqueueUpdateFirmwareRequest(
+                    organisationIdentification, request.getDeviceIdentification(), request.getFirmwareIdentification(),
+                    MessagePriorityEnum.getMessagePriority(messagePriority),
+                    this.configurationMapper.map(scheduleTime, Long.class));
+
+            response.setCorrelationUid(correlationUid);
+            response.setDeviceIdentification(request.getDeviceIdentification());
+
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+
+        return response;
+    }
+
+    @PayloadRoot(localPart = "UpdateFirmwareAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public UpdateFirmwareResponse getUpdateFirmwareResponse(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final UpdateFirmwareAsyncRequest request) throws OsgpException {
+
+        LOGGER.info("GetUpdateFirmwareResponse Request received from organisation {} for device: {}.",
+                organisationIdentification, request.getDeviceIdentification());
+
+        final UpdateFirmwareResponse response = new UpdateFirmwareResponse();
+
+        try {
+            final MeterResponseData meterResponseData = this.configurationService.dequeueUpdateFirmwareResponse(request
+                    .getCorrelationUid());
+            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+            if (meterResponseData.getMessageData() instanceof String) {
+                response.setDescription((String) meterResponseData.getMessageData());
             }
         } catch (final Exception e) {
             this.handleException(e);

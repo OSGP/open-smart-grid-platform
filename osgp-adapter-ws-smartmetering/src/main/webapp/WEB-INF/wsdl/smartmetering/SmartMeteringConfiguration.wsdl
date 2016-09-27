@@ -19,7 +19,12 @@
                 schemaLocation="schemas/sm-configuration.xsd" />
         </xsd:schema>
     </wsdl:types>    
-    
+
+    <wsdl:message name="ActionHeader">
+        <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+        <wsdl:part element="common:UserName" name="UserName" />
+        <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+    </wsdl:message>
     
     <wsdl:message name="GetFirmwareVersionRequest">
         <wsdl:part element="smconf:GetFirmwareVersionRequest" name="GetFirmwareVersionRequest">
@@ -39,12 +44,24 @@
         </wsdl:part>
     </wsdl:message>
     
-
-    <wsdl:message name="ActionHeader">
-        <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
-        <wsdl:part element="common:UserName" name="UserName" />
-        <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+    <wsdl:message name="UpdateFirmwareRequest">
+        <wsdl:part element="smconf:UpdateFirmwareRequest" name="UpdateFirmwareRequest">
+        </wsdl:part>
     </wsdl:message>
+    <wsdl:message name="UpdateFirmwareAsyncResponse">
+        <wsdl:part element="smconf:UpdateFirmwareAsyncResponse" name="UpdateFirmwareAsyncResponse">
+        </wsdl:part>
+    </wsdl:message>
+    
+    <wsdl:message name="UpdateFirmwareAsyncRequest">
+        <wsdl:part element="smconf:UpdateFirmwareAsyncRequest" name="UpdateFirmwareAsyncRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="UpdateFirmwareResponse">
+        <wsdl:part element="smconf:UpdateFirmwareResponse" name="UpdateFirmwareResponse">
+        </wsdl:part>
+    </wsdl:message> 
+    
     
     <wsdl:message name="SetSpecialDaysRequest">
         <wsdl:part element="smconf:SetSpecialDaysRequest" name="SetSpecialDaysRequest">
@@ -226,7 +243,6 @@
             </wsdl:output>
         </wsdl:operation>
 
-
         <wsdl:operation name="GetFirmwareVersion">
             <wsdl:input message="tns:GetFirmwareVersionRequest" name="GetFirmwareVersionRequest">
             </wsdl:input>
@@ -234,7 +250,20 @@
             </wsdl:output>
         </wsdl:operation>
         
-
+        <wsdl:operation name="UpdateFirmware">
+            <wsdl:input message="tns:UpdateFirmwareRequest" name="UpdateFirmwareRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:UpdateFirmwareAsyncResponse" name="UpdateFirmwareAsyncResponse">
+            </wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="GetUpdateFirmwareResponse">
+            <wsdl:input message="tns:UpdateFirmwareAsyncRequest" name="UpdateFirmwareAsyncRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:UpdateFirmwareResponse" name="UpdateFirmwareResponse">
+            </wsdl:output>
+        </wsdl:operation>
+        
         <wsdl:operation name="SetSpecialDays">
             <wsdl:input message="tns:SetSpecialDaysRequest" name="SetSpecialDaysRequest">
             </wsdl:input>
@@ -396,6 +425,32 @@
                 <soap:body use="literal" />
             </wsdl:input>
             <wsdl:output name="GetFirmwareVersionAsyncResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="UpdateFirmware">
+            <soap:operation soapAction="" />
+            <wsdl:input name="UpdateFirmwareRequest">
+                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
+                <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="UpdateFirmwareAsyncResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="GetUpdateFirmwareResponse">
+            <soap:operation soapAction="" />
+            <wsdl:input name="UpdateFirmwareAsyncRequest">
+                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
+                <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="UpdateFirmwareResponse">
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>
