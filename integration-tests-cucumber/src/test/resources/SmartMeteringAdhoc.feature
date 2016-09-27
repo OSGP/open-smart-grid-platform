@@ -12,14 +12,14 @@ Background:
     Then the objectlist should be returned
     
 @SLIM-193 @SmartMeterAdhoc
-  Scenario: Retrieve all configuration objects from a device
-    When the retrieve configuration request is received
-    Then all the configuration items should be returned
+  Scenario: Retrieve all attribute values objects from a device
+    When the retrieve attribute values request is received
+    Then all the attribute values items should be returned
     
 @SLIM-534 @SmartMeterAdhoc
-  Scenario: Retrieve a specific configuration object from a device
-    When the retrieve specific configuration request is received
-    Then the specific configuration item should be returned
+  Scenario: Retrieve a specific attribute value from a device
+    When the retrieve specific attribute value request is received
+    Then the specific attribute value item should be returned
     
 @SLIM-213 @SmartMeterAdhoc
   Scenario: Retrieve SynchronizeTime result from a device
