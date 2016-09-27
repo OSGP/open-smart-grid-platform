@@ -48,8 +48,8 @@ public class AdhocService {
     private MeterResponseDataService meterResponseDataService;
 
     public String enqueueSynchronizeTimeRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final SynchronizeTimeRequestData utcOffset, final int messagePriority,
-            final Long scheduleTime) throws FunctionalException {
+            @Identification final String deviceIdentification, final SynchronizeTimeRequestData utcOffset,
+            final int messagePriority, final Long scheduleTime) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -67,7 +67,7 @@ public class AdhocService {
                 SmartMeteringRequestMessageType.SYNCHRONIZE_TIME.toString(), messagePriority, scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata).request(utcOffset).build();
+                .deviceMessageMetadata(deviceMessageMetadata).request(utcOffset).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -99,7 +99,7 @@ public class AdhocService {
                 SmartMeteringRequestMessageType.GET_CONFIGURATION_OBJECTS.toString(), messagePriority, scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata).request(request).build();
+                .deviceMessageMetadata(deviceMessageMetadata).request(request).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -131,23 +131,23 @@ public class AdhocService {
                 SmartMeteringRequestMessageType.GET_ASSOCIATION_LN_OBJECTS.toString(), messagePriority, scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata).request(request).build();
+                .deviceMessageMetadata(deviceMessageMetadata).request(request).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
     }
 
-    public String enqueueSpecificConfigurationObjectRequest(@Identification final String organisationIdentification,
+    public String enqueueSpecificAttributeValueRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification,
-            final com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecificConfigurationObjectRequest request,
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecificAttributeValueRequest request,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
-        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_SPECIFIC_CONFIGURATION_OBJECT);
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_SPECIFIC_ATTRIBUTE_VALUE);
 
-        LOGGER.debug("enqueueSpecificConfigurationObjectRequest called with organisation {} and device {}",
+        LOGGER.debug("enqueueSpecificAttributeValueRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
@@ -155,11 +155,11 @@ public class AdhocService {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.GET_SPECIFIC_CONFIGURATION_OBJECT.toString(), messagePriority,
+                SmartMeteringRequestMessageType.GET_SPECIFIC_ATTRIBUTE_VALUE.toString(), messagePriority,
                 scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata).request(request).build();
+                .deviceMessageMetadata(deviceMessageMetadata).request(request).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 

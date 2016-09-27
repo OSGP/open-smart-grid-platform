@@ -26,10 +26,10 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.RetrieveConfigur
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.RetrieveConfigurationObjectsAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.RetrieveConfigurationObjectsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.RetrieveConfigurationObjectsResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SpecificConfigurationObjectAsyncRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SpecificConfigurationObjectAsyncResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SpecificConfigurationObjectRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SpecificConfigurationObjectResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SpecificAttributeValueAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SpecificAttributeValueAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SpecificAttributeValueRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SpecificAttributeValueResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeRequest;
@@ -124,14 +124,14 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
         return response;
     }
 
-    @PayloadRoot(localPart = "SpecificConfigurationObjectAsyncRequest", namespace = SMARTMETER_ADHOC_NAMESPACE)
+    @PayloadRoot(localPart = "SpecificAttributeValueAsyncRequest", namespace = SMARTMETER_ADHOC_NAMESPACE)
     @ResponsePayload
-    public SpecificConfigurationObjectResponse getSpecificConfigurationObjectResponse(
-            @RequestPayload final SpecificConfigurationObjectAsyncRequest request) throws OsgpException {
+    public SpecificAttributeValueResponse getSpecificAttributeValueResponse(
+            @RequestPayload final SpecificAttributeValueAsyncRequest request) throws OsgpException {
 
-        SpecificConfigurationObjectResponse response = null;
+        SpecificAttributeValueResponse response = null;
         try {
-            response = new SpecificConfigurationObjectResponse();
+            response = new SpecificAttributeValueResponse();
             final MeterResponseData meterResponseData = this.adhocService.dequeueResponse(request.getCorrelationUid());
 
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
@@ -150,24 +150,22 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
         return response;
     }
 
-    @PayloadRoot(localPart = "SpecificConfigurationObjectRequest", namespace = SMARTMETER_ADHOC_NAMESPACE)
+    @PayloadRoot(localPart = "SpecificAttributeValueRequest", namespace = SMARTMETER_ADHOC_NAMESPACE)
     @ResponsePayload
-    public SpecificConfigurationObjectAsyncResponse getSpecificConfigurationObject(
+    public SpecificAttributeValueAsyncResponse getSpecificAttributeValue(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SpecificConfigurationObjectRequest request,
-            @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime)
-            throws OsgpException {
+            @RequestPayload final SpecificAttributeValueRequest request, @MessagePriority final String messagePriority,
+            @ScheduleTime final String scheduleTime) throws OsgpException {
 
-        final SpecificConfigurationObjectAsyncResponse response = new SpecificConfigurationObjectAsyncResponse();
+        final SpecificAttributeValueAsyncResponse response = new SpecificAttributeValueAsyncResponse();
 
-        final com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecificConfigurationObjectRequest getSpecificConfigurationObjectRequest = this.adhocMapper
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecificAttributeValueRequest getSpecificAttributeValueRequest = this.adhocMapper
                 .map(request,
-                        com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecificConfigurationObjectRequest.class);
+                        com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecificAttributeValueRequest.class);
 
         final String correlationUid = this.adhocService
-                .enqueueSpecificConfigurationObjectRequest(organisationIdentification,
-                        request.getDeviceIdentification(), getSpecificConfigurationObjectRequest,
-                        MessagePriorityEnum.getMessagePriority(messagePriority),
+                .enqueueSpecificAttributeValueRequest(organisationIdentification, request.getDeviceIdentification(),
+                        getSpecificAttributeValueRequest, MessagePriorityEnum.getMessagePriority(messagePriority),
                         this.adhocMapper.map(scheduleTime, Long.class));
 
         response.setCorrelationUid(correlationUid);

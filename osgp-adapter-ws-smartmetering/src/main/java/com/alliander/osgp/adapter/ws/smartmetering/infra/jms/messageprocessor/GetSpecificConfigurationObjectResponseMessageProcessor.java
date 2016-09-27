@@ -16,7 +16,7 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 public class GetSpecificConfigurationObjectResponseMessageProcessor extends DomainResponseMessageProcessor {
 
     public GetSpecificConfigurationObjectResponseMessageProcessor() {
-        super(DeviceFunction.GET_SPECIFIC_CONFIGURATION_OBJECT);
+        super(DeviceFunction.GET_SPECIFIC_ATTRIBUTE_VALUE);
     }
 
 }

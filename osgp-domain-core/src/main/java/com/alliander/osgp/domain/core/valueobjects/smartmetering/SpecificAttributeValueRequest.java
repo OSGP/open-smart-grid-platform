@@ -9,13 +9,13 @@
  */
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
-public class SpecificConfigurationObjectRequest extends SpecificConfigurationObjectRequestData {
+public class SpecificAttributeValueRequest extends SpecificAttributeValueRequestData {
 
     private static final long serialVersionUID = 1;
 
     private final String deviceIdentification;
 
-    public SpecificConfigurationObjectRequest(final int classId, final int attribute, final ObisCodeValues obisCode,
+    public SpecificAttributeValueRequest(final int classId, final int attribute, final ObisCodeValues obisCode,
             final String deviceIdentification) {
         super(classId, attribute, obisCode);
         this.deviceIdentification = deviceIdentification;
@@ -44,7 +44,7 @@ public class SpecificConfigurationObjectRequest extends SpecificConfigurationObj
         if (this.getClass() != obj.getClass()) {
             return false;
         }
-        final SpecificConfigurationObjectRequest other = (SpecificConfigurationObjectRequest) obj;
+        final SpecificAttributeValueRequest other = (SpecificAttributeValueRequest) obj;
         if (this.deviceIdentification == null) {
             if (other.deviceIdentification != null) {
                 return false;
