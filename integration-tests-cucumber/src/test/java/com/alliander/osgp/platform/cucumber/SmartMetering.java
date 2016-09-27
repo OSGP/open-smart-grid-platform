@@ -9,10 +9,17 @@
  */
 package com.alliander.osgp.platform.cucumber;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
 /**
@@ -30,6 +37,9 @@ public abstract class SmartMetering extends SoapTestCase {
 
     protected String correlationUid;
 
+    @Autowired
+    MeterResponseDataRepository meterResponseDataRepository;
+
     @Override
     protected void requestRunner(final TestStepStatus testStepStatus, final Map<String, String> propertiesMap,
             final String testCaseNameRequest, final String testCaseXml, final String testSuiteXml) throws Throwable {
@@ -42,5 +52,14 @@ public abstract class SmartMetering extends SoapTestCase {
         if ((testStepStatus == TestStepStatus.OK) && correlationUidMatcher.find()) {
             this.correlationUid = correlationUidMatcher.group();
         }
+    }
+
+    @Override
+    protected void responseRunner(final Map<String, String> propertiesMap, final String testCaseNameResponse,
+            final Logger logger) throws Throwable {
+        super.responseRunner(propertiesMap, testCaseNameResponse, logger);
+
+        // Check that the MeterResponseData is deleted
+        assertTrue(CollectionUtils.isEmpty(this.meterResponseDataRepository.findByCorrelationUid(this.correlationUid)));
     }
 }
