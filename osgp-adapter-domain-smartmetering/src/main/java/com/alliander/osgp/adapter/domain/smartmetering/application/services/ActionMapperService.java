@@ -63,7 +63,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesRequestDt
 import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAdministrativeStatusDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAssociationLnObjectsRequestDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetAttributeValuesRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterDataDto;
@@ -129,7 +129,7 @@ public class ActionMapperService {
         CLASS_MAP.put(SetPushSetupAlarmRequestData.class, SetPushSetupAlarmRequestDto.class);
         CLASS_MAP.put(SetPushSetupSmsRequestData.class, SetPushSetupSmsRequestDto.class);
         CLASS_MAP.put(SynchronizeTimeRequestData.class, SynchronizeTimeRequestDto.class);
-        CLASS_MAP.put(GetConfigurationRequestData.class, GetConfigurationRequestDto.class);
+        CLASS_MAP.put(GetConfigurationRequestData.class, GetAttributeValuesRequestDto.class);
         CLASS_MAP.put(GetFirmwareVersionRequestData.class, GetFirmwareVersionRequestDto.class);
         CLASS_MAP.put(SetKeysRequestData.class, SetKeysRequestDto.class);
         CLASS_MAP.put(SpecificAttributeValueRequestData.class, SpecificAttributeValueRequestDto.class);

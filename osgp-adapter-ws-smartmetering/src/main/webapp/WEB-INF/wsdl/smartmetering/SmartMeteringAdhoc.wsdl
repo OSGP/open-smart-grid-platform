@@ -63,20 +63,20 @@
         </wsdl:part>
     </wsdl:message>
     
-    <wsdl:message name="RetrieveConfigurationObjectsRequest">
-        <wsdl:part element="smadhoc:RetrieveConfigurationObjectsRequest" name="RetrieveConfigurationObjectsRequest">
+    <wsdl:message name="RetrieveAllAttributeValuesRequest">
+        <wsdl:part element="smadhoc:RetrieveAllAttributeValuesRequest" name="RetrieveAllAttributeValuesRequest">
         </wsdl:part>
     </wsdl:message>
-    <wsdl:message name="RetrieveConfigurationObjectsAsyncResponse">
-        <wsdl:part element="smadhoc:RetrieveConfigurationObjectsAsyncResponse" name="RetrieveConfigurationObjectsAsyncResponse">
+    <wsdl:message name="RetrieveAllAttributeValuesAsyncResponse">
+        <wsdl:part element="smadhoc:RetrieveAllAttributeValuesAsyncResponse" name="RetrieveAllAttributeValuesAsyncResponse">
         </wsdl:part>
     </wsdl:message>
-    <wsdl:message name="RetrieveConfigurationObjectsAsyncRequest">
-        <wsdl:part element="smadhoc:RetrieveConfigurationObjectsAsyncRequest" name="RetrieveConfigurationObjectsAsyncRequest">
+    <wsdl:message name="RetrieveAllAttributeValuesAsyncRequest">
+        <wsdl:part element="smadhoc:RetrieveAllAttributeValuesAsyncRequest" name="RetrieveAllAttributeValuesAsyncRequest">
         </wsdl:part>
     </wsdl:message>
-    <wsdl:message name="RetrieveConfigurationObjectsResponse">
-        <wsdl:part element="smadhoc:RetrieveConfigurationObjectsResponse" name="RetrieveConfigurationObjectsResponse">
+    <wsdl:message name="RetrieveAllAttributeValuesResponse">
+        <wsdl:part element="smadhoc:RetrieveAllAttributeValuesResponse" name="RetrieveAllAttributeValuesResponse">
         </wsdl:part>
     </wsdl:message>
 
@@ -108,14 +108,14 @@
             <wsdl:output message="tns:SynchronizeTimeResponse" name="SynchronizeTimeResponse" />
         </wsdl:operation>        
 
-        <wsdl:operation name="RetrieveConfigurationObjects">
-            <wsdl:input message="tns:RetrieveConfigurationObjectsRequest" name="RetrieveConfigurationObjectsRequest" />
-            <wsdl:output message="tns:RetrieveConfigurationObjectsAsyncResponse" name="RetrieveConfigurationObjectsAsyncResponse" />
+        <wsdl:operation name="RetrieveAllAttributeValues">
+            <wsdl:input message="tns:RetrieveAllAttributeValuesRequest" name="RetrieveAllAttributeValuesRequest" />
+            <wsdl:output message="tns:RetrieveAllAttributeValuesAsyncResponse" name="RetrieveAllAttributeValuesAsyncResponse" />
         </wsdl:operation>
         
-        <wsdl:operation name="GetRetrieveConfigurationObjectsResponse">
-            <wsdl:input message="tns:RetrieveConfigurationObjectsAsyncRequest" name="RetrieveConfigurationObjectsAsyncRequest" />
-            <wsdl:output message="tns:RetrieveConfigurationObjectsResponse" name="RetrieveConfigurationObjectsResponse" />
+        <wsdl:operation name="GetRetrieveAllAttributeValuesResponse">
+            <wsdl:input message="tns:RetrieveAllAttributeValuesAsyncRequest" name="RetrieveAllAttributeValuesAsyncRequest" />
+            <wsdl:output message="tns:RetrieveAllAttributeValuesResponse" name="RetrieveAllAttributeValuesResponse" />
         </wsdl:operation>           
 
         <wsdl:operation name="GetSpecificAttributeValue">
@@ -167,28 +167,28 @@
             </wsdl:output>
         </wsdl:operation>
 
-        <wsdl:operation name="RetrieveConfigurationObjects">
+        <wsdl:operation name="RetrieveAllAttributeValues">
             <soap:operation soapAction="" />
-            <wsdl:input name="RetrieveConfigurationObjectsRequest">
+            <wsdl:input name="RetrieveAllAttributeValuesRequest">
                 <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
                 <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
 				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
                 <soap:body use="literal" />
             </wsdl:input>
-            <wsdl:output name="RetrieveConfigurationObjectsAsyncResponse">
+            <wsdl:output name="RetrieveAllAttributeValuesAsyncResponse">
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>
         
-        <wsdl:operation name="GetRetrieveConfigurationObjectsResponse">
+        <wsdl:operation name="GetRetrieveAllAttributeValuesResponse">
             <soap:operation soapAction="" />
-            <wsdl:input name="RetrieveConfigurationObjectsAsyncRequest">
+            <wsdl:input name="RetrieveAllAttributeValuesAsyncRequest">
                 <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
                 <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
 				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
                 <soap:body use="literal" />
             </wsdl:input>
-            <wsdl:output name="RetrieveConfigurationObjectsResponse">
+            <wsdl:output name="RetrieveAllAttributeValuesResponse">
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>

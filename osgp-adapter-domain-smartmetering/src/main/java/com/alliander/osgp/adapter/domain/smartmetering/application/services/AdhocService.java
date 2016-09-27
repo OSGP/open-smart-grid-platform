@@ -26,7 +26,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecificAttribu
 import com.alliander.osgp.dto.valueobjects.smartmetering.AssociationLnListTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAssociationLnObjectsRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ObisCodeValuesDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.RetrieveConfigurationObjectsRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.RetrieveAllAttributeValuesRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecificAttributeValueRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -98,17 +98,17 @@ public class AdhocService {
                 .getMessageType());
     }
 
-    public void retrieveConfigurationObjects(final DeviceMessageMetadata deviceMessageMetadata,
-            final com.alliander.osgp.domain.core.valueobjects.smartmetering.RetrieveConfigurationObjectsRequest request)
+    public void retrieveAllAttributeValues(final DeviceMessageMetadata deviceMessageMetadata,
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.RetrieveAllAttributeValuesRequest request)
                     throws FunctionalException {
 
-        LOGGER.debug("retrieveConfigurationObjects for organisationIdentification: {} for deviceIdentification: {}",
+        LOGGER.debug("retrieveAllAttributeValues for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
         final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceMessageMetadata
                 .getDeviceIdentification());
 
-        final RetrieveConfigurationObjectsRequestDto requestDto = new RetrieveConfigurationObjectsRequestDto(
+        final RetrieveAllAttributeValuesRequestDto requestDto = new RetrieveAllAttributeValuesRequestDto(
                 request.getDeviceIdentification());
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
@@ -118,10 +118,10 @@ public class AdhocService {
 
     }
 
-    public void handleRetrieveConfigurationObjectsResponse(final DeviceMessageMetadata deviceMessageMetadata,
+    public void handleRetrieveAllAttributeValuesResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType deviceResult, final OsgpException exception, final String resultData) {
 
-        LOGGER.debug("handleRetrieveConfigurationObjectsResponse for MessageType: {}",
+        LOGGER.debug("handleRetrieveAllAttributeValuesResponse for MessageType: {}",
                 deviceMessageMetadata.getMessageType());
 
         ResponseMessageResultType result = deviceResult;

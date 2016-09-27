@@ -27,7 +27,7 @@ public class RetrieveConfigurationObjectsResponseMessageProcessor extends OsgpCo
     private AdhocService adhocService;
 
     public RetrieveConfigurationObjectsResponseMessageProcessor() {
-        super(DeviceFunction.GET_CONFIGURATION_OBJECTS);
+        super(DeviceFunction.GET_ALL_ATTRIBUTE_VALUES);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class RetrieveConfigurationObjectsResponseMessageProcessor extends OsgpCo
     @Override
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessage responseMessage, final OsgpException osgpException) {
-        this.adhocService.handleRetrieveConfigurationObjectsResponse(deviceMessageMetadata,
+        this.adhocService.handleRetrieveAllAttributeValuesResponse(deviceMessageMetadata,
                 responseMessage.getResult(), osgpException, (String) responseMessage.getDataObject());
 
     }
