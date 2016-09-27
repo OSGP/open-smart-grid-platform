@@ -76,7 +76,7 @@
     <module>Platform/osgp-logging</module>
 
     <!-- Fitnesse Acceptance Test Project -->
-    <module>osgp-platform-test</module>
+    <!--module>osgp-platform-test</module-->
     <module>cucumber-tests-platform</module>
     <module>cucumber-tests-platform-dlms</module>
   </modules>
