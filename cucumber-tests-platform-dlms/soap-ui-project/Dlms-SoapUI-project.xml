@@ -10156,9 +10156,9 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
       <ns1:AddDeviceRequest>
          <ns1:Device>
             <!--Optional:-->
-            <ns1:Device_Identification>${#testCase#DeviceIdentification}</ns1:Device_Identification>
+            <ns1:Device_Identification>${=testCase.getPropertyValue( "DeviceIdentification" )}</ns1:Device_Identification>
             <!--Optional:-->
-            <ns1:Device_type>${#testCase#DeviceType}</ns1:Device_type>
+            <ns1:Device_type>${=testCase.getPropertyValue( "DeviceType")}</ns1:Device_type>
             <!--Optional:-->
             <ns1:Communication_method>GPRS</ns1:Communication_method>
             <!--Optional:-->

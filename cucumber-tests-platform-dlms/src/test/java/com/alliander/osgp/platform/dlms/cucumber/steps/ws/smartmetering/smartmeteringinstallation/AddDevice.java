@@ -8,7 +8,7 @@ import static com.alliander.osgp.platform.cucumber.core.Helpers.saveCorrelationU
 
 import java.util.Map;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
