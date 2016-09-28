@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 /**
  * Handles requests for the application home page.
@@ -23,9 +24,16 @@ public class AdminController {
 	
 	@RequestMapping(value = "/doAddDevice", method = RequestMethod.POST)
 	public ModelAndView addDevice(@ModelAttribute("SpringWeb") Device device) {
+		
 		ModelAndView modelView = new ModelAndView ("add-result");
+		
 		if (device.getDeviceIdentification() != null && device.getDeviceIdentification().length() > 2) {
+			try {
 			osgpAdminClientSoapService.updateKeyRequest(device);
+			} catch (SoapFaultClientException e) {
+				return publicLightingController
+						.error(e.getFaultStringOrReason());
+			}
 			modelView.addObject("deviceId",device.getDeviceIdentification());
 			return modelView;
 		} else
