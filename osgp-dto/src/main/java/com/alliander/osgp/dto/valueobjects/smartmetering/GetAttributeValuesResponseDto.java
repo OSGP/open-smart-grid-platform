@@ -23,6 +23,6 @@ public class GetAttributeValuesResponseDto extends ActionResponseDto {
 
     public String getConfigurationData() {
         return this.configurationData;
-    };
+    }
 
 }
