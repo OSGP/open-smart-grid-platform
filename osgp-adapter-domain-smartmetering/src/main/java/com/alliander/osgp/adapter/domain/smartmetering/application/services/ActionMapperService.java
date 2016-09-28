@@ -54,6 +54,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetPushSetupSms
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecificConfigurationObjectRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequestData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.UpdateFirmwareRequestData;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDataDto;
@@ -75,6 +76,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupSmsRequestD
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecificConfigurationObjectRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.UpdateFirmwareRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -131,6 +133,8 @@ public class ActionMapperService {
         CLASS_MAP.put(SynchronizeTimeRequestData.class, SynchronizeTimeRequestDto.class);
         CLASS_MAP.put(GetConfigurationRequestData.class, GetConfigurationRequestDto.class);
         CLASS_MAP.put(GetFirmwareVersionRequestData.class, GetFirmwareVersionRequestDto.class);
+
+        CLASS_MAP.put(UpdateFirmwareRequestData.class, UpdateFirmwareRequestDto.class);
         CLASS_MAP.put(SetKeysRequestData.class, SetKeysRequestDto.class);
         CLASS_MAP.put(SpecificConfigurationObjectRequestData.class, SpecificConfigurationObjectRequestDto.class);
         CLASS_MAP.put(GetAssociationLnObjectsRequestData.class, GetAssociationLnObjectsRequestDto.class);
@@ -165,6 +169,7 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(SynchronizeTimeRequestData.class, this.commonMapper);
         CLASS_TO_MAPPER_MAP.put(GetConfigurationRequestData.class, this.commonMapper);
         CLASS_TO_MAPPER_MAP.put(GetFirmwareVersionRequestData.class, this.commonMapper);
+        CLASS_TO_MAPPER_MAP.put(UpdateFirmwareRequestData.class, this.commonMapper);
         CLASS_TO_MAPPER_MAP.put(SetKeysRequestData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(SpecificConfigurationObjectRequestData.class, this.commonMapper);
         CLASS_TO_MAPPER_MAP.put(GetAssociationLnObjectsRequestData.class, this.commonMapper);
