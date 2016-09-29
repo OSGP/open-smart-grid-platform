@@ -206,7 +206,7 @@ public class ConfigurationService {
         final ProtocolMeterInfo protocolMeterInfo = new ProtocolMeterInfo(gMeterInfo.getChannel(),
                 gMeterInfo.getDeviceIdentification(), gMeterDevice.getValidSecurityKey(
                         SecurityKeyType.G_METER_ENCRYPTION).getKey(), gMeterDevice.getValidSecurityKey(
-                                SecurityKeyType.G_METER_MASTER).getKey());
+                        SecurityKeyType.G_METER_MASTER).getKey());
 
         this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, protocolMeterInfo);
 
@@ -280,12 +280,10 @@ public class ConfigurationService {
             throws ProtocolAdapterException {
         LOGGER.info("Updating firmware of device {} to firmware with identifier {}", device, firmwareIdentifier);
 
-        final AccessResultCode accessResultCode = this.updateFirmwareCommandExecutor.execute(conn, device,
-                firmwareIdentifier);
+        final boolean result = this.updateFirmwareCommandExecutor.execute(conn, device, firmwareIdentifier);
 
-        if (AccessResultCode.SUCCESS != accessResultCode) {
-            throw new ProtocolAdapterException("AccessResultCode for update firmware was not SUCCESS: "
-                    + accessResultCode);
+        if (!result) {
+            throw new ProtocolAdapterException("Firmware was not updates successfully.");
         }
     }
 }
