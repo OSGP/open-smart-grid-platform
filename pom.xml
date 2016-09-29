@@ -75,9 +75,14 @@
     <module>Platform/osgp-core</module>
     <module>Platform/osgp-logging</module>
 
-    <!-- Fitnesse Acceptance Test Project -->
-    <!--module>osgp-platform-test</module-->
+    <!-- Automatic tests project -->
     <module>cucumber-tests-platform</module>
     <module>cucumber-tests-platform-dlms</module>
+
+    <!-- Fitnesse Acceptance Test Project (Obsolete, but in here because not all tests are moved to the cucumber projects -->
+    <!--module>osgp-platform-test</module-->
+    
+    <!-- obsolete but yet in because the cucumber-tests-platform-dlms project is not yet working well --> 
+    <module>integration-tests-cucumber</module>
   </modules>
 </project>
