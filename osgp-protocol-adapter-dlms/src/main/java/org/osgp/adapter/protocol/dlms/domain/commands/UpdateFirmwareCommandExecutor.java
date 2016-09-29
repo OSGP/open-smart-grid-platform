@@ -1,6 +1,8 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.bouncycastle.util.Arrays;
 import org.openmuc.jdlms.AttributeAddress;
@@ -37,8 +39,7 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
             throws ProtocolAdapterException {
 
         final CosemObject cosemObject = new CosemObject(conn, OBIS_CODE, CLASS_ID);
-        final ImageTransfer transfer = new ImageTransfer(cosemObject, firmwareIdentifier,
-                this.getImageData(firmwareIdentifier));
+        final ImageTransfer transfer = new ImageTransfer(cosemObject, "AAA", this.getImageData(firmwareIdentifier));
 
         try {
             if (!transfer.imageTransferEnabled()) {
@@ -67,7 +68,10 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
 
     private byte[] getImageData(final String firmwareIdentifier) {
         // TODO: READ IMAGE DATA FROM WEB.
-        return new byte[10];
+        return new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0 };
     }
 
     @Override
@@ -105,7 +109,10 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
         private static final int ATTRIBUTE_IMAGE_TRANSFER_STATUS = 6;
         private static final int ATTRIBUTE_IMAGE_TO_ACTIVATE_INFO = 7;
 
+        private static final int METHOD_IMAGE_TRANSFER_INITIATE = 1;
+        private static final int METHOD_IMAGE_BLOCK_TRANSFER = 2;
         private static final int METHOD_IMAGE_VERIFY = 3;
+        private static final int METHOD_IMAGE_ACTIVATE = 4;
 
         private final String imageIdentifier;
         private final byte[] data;
@@ -135,7 +142,7 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
                 throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_BLOCK_SIZE_NOT_READ);
             }
 
-            this.imageBlockSize = (Integer) imageBlockSizeData.getValue();
+            this.imageBlockSize = ((Long) imageBlockSizeData.getValue()).intValue();
             this.imageBlockSizeRead = true;
             return this.imageBlockSize;
         }
@@ -150,11 +157,11 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
         private int getImageFirstNotTransferredBlockNumber() throws ProtocolAdapterException {
             final DataObject imageFirstNotReadBlockNumberData = this.cosemObject
                     .readAttribute(ATTRIBUTE_IMAGE_FIRST_NOT_TRANSFERRED_BLOCK_NUMBER);
-            if (imageFirstNotReadBlockNumberData == null && !imageFirstNotReadBlockNumberData.isNumber()) {
+            if (imageFirstNotReadBlockNumberData == null || !imageFirstNotReadBlockNumberData.isNumber()) {
                 throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_FIRST_NOT_TRANSFERRED_BLOCK_NUMBER_NOT_READ);
             }
 
-            return (Integer) imageFirstNotReadBlockNumberData.getValue();
+            return ((Long) imageFirstNotReadBlockNumberData.getValue()).intValue();
         }
 
         private boolean isImageTransferInitiated() throws ProtocolAdapterException {
@@ -175,7 +182,13 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
             final int index = imageBlockSize * blockNumber;
 
             final byte[] transferData = Arrays.copyOfRange(this.data, index, index + imageBlockSize);
-            // TODO: CALL METHOD ON METER
+
+            final List<DataObject> params = new ArrayList<>();
+            params.add(DataObject.newUInteger32Data(blockNumber));
+            params.add(DataObject.newOctetStringData(transferData));
+
+            final DataObject result = this.cosemObject.callMethod(METHOD_IMAGE_BLOCK_TRANSFER,
+                    DataObject.newStructureData(params));
         }
 
         /**
@@ -199,7 +212,13 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
          * and the COSEM server is prepared to accept ImageBlocks.
          */
         public void initiateImageTransfer() {
-            // TODO: CALL METHOD ON METER
+            final List<DataObject> params = new ArrayList<>();
+            params.add(DataObject.newOctetStringData(this.imageIdentifier.getBytes()));
+            params.add(DataObject.newUInteger32Data(this.getImageSize()));
+
+            final DataObject result = this.cosemObject.callMethod(METHOD_IMAGE_TRANSFER_INITIATE,
+                    DataObject.newStructureData(params));
+
         }
 
         /**
@@ -281,7 +300,7 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
             final DataObject imageTransferStatusData = this.cosemObject.readAttribute(ATTRIBUTE_IMAGE_TO_ACTIVATE_INFO);
             // TODO: check values
 
-            return false;
+            return true;
         }
 
         /**
@@ -291,8 +310,12 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
          * @throws ProtocolAdapterException
          */
         public int activateImage() throws ProtocolAdapterException {
-            // TODO: CALL METHOD ON METER
-            return Data_Access_Result.OTHER_REASON;
+            final DataObject imageActivate = this.cosemObject.callMethod(METHOD_IMAGE_ACTIVATE);
+            if (imageActivate == null || !imageActivate.isNumber()) {
+                throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_VERIFY_NOT_CALLED);
+            }
+
+            return (Integer) imageActivate.getValue();
         }
     }
 
@@ -338,6 +361,23 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
 
         public DataObject callMethod(final int methodId) {
             final MethodParameter methodParameter = this.createMethodParameter(methodId);
+
+            MethodResult result = null;
+            try {
+                result = this.conn.action(methodParameter);
+            } catch (final IOException e) {
+                throw new ConnectionException(e);
+            }
+
+            if (result == null) {
+
+            }
+
+            return result.getResultData();
+        }
+
+        public DataObject callMethod(final int methodId, final DataObject dataObject) {
+            final MethodParameter methodParameter = this.createMethodParameter(methodId, dataObject);
 
             MethodResult result = null;
             try {
