@@ -152,10 +152,10 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-  <xsd:element name="GetSpecificConfigurationObjectRequest">
+  <xsd:element name="GetSpecificAttributeValueRequest">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="adhoc:SpecificConfigurationObjectRequestData"></xsd:extension>
+        <xsd:extension base="adhoc:SpecificAttributeValueRequestData"></xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -195,7 +195,7 @@
         <xsd:element ref="tns:SynchronizeTimeRequest" />
         <xsd:element ref="tns:GetConfigurationRequest" />
         <xsd:element ref="tns:GetFirmwareVersionRequest" />
-        <xsd:element ref="tns:GetSpecificConfigurationObjectRequest" />
+        <xsd:element ref="tns:GetSpecificAttributeValueRequest" />
         <xsd:element ref="tns:SetKeysRequest" />
         <xsd:element ref="tns:GetAssociationLnObjectsRequest" />
       </xsd:choice>

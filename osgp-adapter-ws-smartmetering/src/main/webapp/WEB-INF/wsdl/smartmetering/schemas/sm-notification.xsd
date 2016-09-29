@@ -61,8 +61,8 @@
 			<xsd:enumeration value="REPLACE_KEYS" />
 			<xsd:enumeration value="SET_PUSH_SETUP_ALARM" />
             <xsd:enumeration value="SET_PUSH_SETUP_SMS" />
-			<xsd:enumeration value="GET_CONFIGURATION_OBJECTS" />
-            <xsd:enumeration value="GET_SPECIFIC_CONFIGURATION_OBJECT" />
+			<xsd:enumeration value="GET_ALL_ATTRIBUTE_VALUES" />
+            <xsd:enumeration value="GET_SPECIFIC_ATTRIBUTE_VALUE" />
 			<xsd:enumeration value="SET_ENCRYPTION_KEY_EXCHANGE_ON_G_METER" />
 			<xsd:enumeration value="HANDLE_BUNDLED_ACTIONS" />
             <xsd:enumeration value="GET_ASSOCIATION_LN_OBJECTS" />

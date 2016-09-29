@@ -13,10 +13,10 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 
 @Component
-public class GetSpecificConfigurationObjectResponseMessageProcessor extends DomainResponseMessageProcessor {
+public class RetrieveAllAttributeValuesResponseMessageProcessor extends DomainResponseMessageProcessor {
 
-    public GetSpecificConfigurationObjectResponseMessageProcessor() {
-        super(DeviceFunction.GET_SPECIFIC_CONFIGURATION_OBJECT);
+    public RetrieveAllAttributeValuesResponseMessageProcessor() {
+        super(DeviceFunction.GET_ALL_ATTRIBUTE_VALUES);
     }
 
 }
