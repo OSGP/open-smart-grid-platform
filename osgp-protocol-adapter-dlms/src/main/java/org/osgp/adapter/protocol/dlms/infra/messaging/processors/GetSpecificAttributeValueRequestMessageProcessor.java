@@ -21,12 +21,12 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecificAttributeValueRequestDto;
 
 @Component
-public class GetSpecificConfigurationObjectRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class GetSpecificAttributeValueRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
     @Autowired
     private AdhocService adhocService;
 
-    protected GetSpecificConfigurationObjectRequestMessageProcessor() {
+    protected GetSpecificAttributeValueRequestMessageProcessor() {
         super(DeviceRequestMessageType.GET_SPECIFIC_ATTRIBUTE_VALUE);
     }
 
