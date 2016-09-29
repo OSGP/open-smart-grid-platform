@@ -1,4 +1,4 @@
-## demo_app
+## Web Demo App
 
 This repository contains a simple demo app for the Open Smart Grid Platform.
 The demo app serves as a SOAP Client for the Platform's Web Services. It demonstrates how to create a Web Request, and send it to the Platform using a signed request over HTTPS.
