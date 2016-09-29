@@ -14,7 +14,7 @@ import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 
-public class RetrieveConfigurationObjectsBundleCommandExecutorStub extends AbstractCommandExecutorStub {
+public class RetrieveAttributeValuesBundleCommandExecutorStub extends AbstractCommandExecutorStub {
 
     @Override
     public ActionResponseDto executeBundleAction(final DlmsConnection conn, final DlmsDevice device,

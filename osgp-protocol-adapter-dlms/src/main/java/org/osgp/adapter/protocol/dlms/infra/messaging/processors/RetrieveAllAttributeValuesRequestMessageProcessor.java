@@ -18,24 +18,20 @@ import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.SpecificConfigurationObjectRequestDto;
-
 @Component
-public class GetSpecificConfigurationObjectRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class RetrieveAllAttributeValuesRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
     @Autowired
     private AdhocService adhocService;
 
-    protected GetSpecificConfigurationObjectRequestMessageProcessor() {
-        super(DeviceRequestMessageType.GET_SPECIFIC_CONFIGURATION_OBJECT);
+    protected RetrieveAllAttributeValuesRequestMessageProcessor() {
+        super(DeviceRequestMessageType.GET_ALL_ATTRIBUTE_VALUES);
     }
 
     @Override
     protected Serializable handleMessage(final DlmsConnection conn, final DlmsDevice device,
             final Serializable requestObject) throws ProtocolAdapterException {
-        final SpecificConfigurationObjectRequestDto specificConfigurationObjectRequestDataDto = (SpecificConfigurationObjectRequestDto) requestObject;
 
-        return this.adhocService
-                .getSpecificConfigurationObject(conn, device, specificConfigurationObjectRequestDataDto);
+        return this.adhocService.retrieveAllAttributeValues(conn, device);
     }
 }

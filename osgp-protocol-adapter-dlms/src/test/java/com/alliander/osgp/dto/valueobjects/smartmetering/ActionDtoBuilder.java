@@ -112,8 +112,8 @@ public class ActionDtoBuilder {
         return new SynchronizeTimeRequestDto(120, true);
     }
 
-    public GetConfigurationRequestDto makeGetConfigurationRequestDataDto() {
-        return new GetConfigurationRequestDto();
+    public GetAttributeValuesRequestDto makeGetConfigurationRequestDataDto() {
+        return new GetAttributeValuesRequestDto();
     }
 
     public GetFirmwareVersionRequestDto makeGetFirmwareVersionRequestDataDto() {

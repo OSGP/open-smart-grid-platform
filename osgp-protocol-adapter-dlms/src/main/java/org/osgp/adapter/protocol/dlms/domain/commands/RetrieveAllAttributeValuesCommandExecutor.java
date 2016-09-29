@@ -27,11 +27,11 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationRequestDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetAttributeValuesRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetAttributeValuesResponseDto;
 
 @Component
-public class RetrieveConfigurationObjectsCommandExecutor extends AbstractCommandExecutor<DataObject, String> {
+public class RetrieveAllAttributeValuesCommandExecutor extends AbstractCommandExecutor<DataObject, String> {
 
     private static final int OBIS_CODE_BYTE_ARRAY_LENGTH = 6;
     /* 0 is the index of the class number */
@@ -47,17 +47,17 @@ public class RetrieveConfigurationObjectsCommandExecutor extends AbstractCommand
     @Autowired
     private DlmsHelperService dlmsHelper;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RetrieveConfigurationObjectsCommandExecutor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RetrieveAllAttributeValuesCommandExecutor.class);
 
-    public RetrieveConfigurationObjectsCommandExecutor() {
-        super(GetConfigurationRequestDto.class);
+    public RetrieveAllAttributeValuesCommandExecutor() {
+        super(GetAttributeValuesRequestDto.class);
     }
 
     @Override
     public DataObject fromBundleRequestInput(final ActionRequestDto bundleInput) throws ProtocolAdapterException {
         /*
-         * GetConfigurationRequestDto does not contain any values to pass on,
-         * and the RetrieveConfigurationObjectsCommandExecutor takes a
+         * GetAllAttributeValuesRequestDto does not contain any values to pass
+         * on, and the RetrieveAllAttributeValuesCommandExecutor takes a
          * DataObject as input that is ignored.
          */
         return null;
@@ -65,7 +65,7 @@ public class RetrieveConfigurationObjectsCommandExecutor extends AbstractCommand
 
     @Override
     public ActionResponseDto asBundleResponse(final String executionResult) throws ProtocolAdapterException {
-        return new GetConfigurationResponseDto(executionResult);
+        return new GetAttributeValuesResponseDto(executionResult);
     }
 
     @Override
@@ -74,7 +74,7 @@ public class RetrieveConfigurationObjectsCommandExecutor extends AbstractCommand
 
         final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
-        LOGGER.debug("Retrieving configuration objects for class id: {}, obis code: {}, attribute id: {}", CLASS_ID,
+        LOGGER.debug("Retrieving all attribute values for class id: {}, obis code: {}, attribute id: {}", CLASS_ID,
                 OBIS_CODE, ATTRIBUTE_ID);
 
         final DataObject objectList = this.dlmsHelper.getAttributeValue(conn, attributeAddress);
@@ -112,7 +112,8 @@ public class RetrieveConfigurationObjectsCommandExecutor extends AbstractCommand
         String output = "";
         int index = 1;
         for (final ClassIdObisAttr obisAttr : allObisCodes) {
-            LOGGER.debug("Creating output for {} {}/{}", obisAttr.getObisCode().getValue(), index++, allObisCodes.size());
+            LOGGER.debug("Creating output for {} {}/{}", obisAttr.getObisCode().getValue(), index++,
+                    allObisCodes.size());
             output += this.getAllDataFromObisCode(conn, obisAttr);
             LOGGER.debug("Length of output is now: {}", output.length());
         }
@@ -125,16 +126,16 @@ public class RetrieveConfigurationObjectsCommandExecutor extends AbstractCommand
 
         final int noOfAttr = obisAttr.getNoAttr();
         for (int attributeValue = 1; attributeValue <= noOfAttr; attributeValue++) {
-            LOGGER.debug("Creating output for {} attr: {}/{}", obisAttr.getObisCode().getValue(), attributeValue, noOfAttr);
+            LOGGER.debug("Creating output for {} attr: {}/{}", obisAttr.getObisCode().getValue(), attributeValue,
+                    noOfAttr);
             output += this.getAllDataFromAttribute(conn, obisAttr.getClassNumber(), obisAttr.getObisCode(),
                     attributeValue);
         }
         return output;
     }
 
-    private String getAllDataFromAttribute(final DlmsConnection conn, final int classNumber,
-            final DataObject obisCode, final int attributeValue) throws ProtocolAdapterException, IOException,
-            TimeoutException {
+    private String getAllDataFromAttribute(final DlmsConnection conn, final int classNumber, final DataObject obisCode,
+            final int attributeValue) throws ProtocolAdapterException, IOException, TimeoutException {
 
         if (!obisCode.isByteArray()) {
             this.throwUnexpectedTypeProtocolAdapterException();
@@ -144,8 +145,8 @@ public class RetrieveConfigurationObjectsCommandExecutor extends AbstractCommand
         if (obisCodeByteArray.length != OBIS_CODE_BYTE_ARRAY_LENGTH) {
             this.throwUnexpectedTypeProtocolAdapterException();
         }
-        final AttributeAddress attributeAddress = new AttributeAddress(classNumber,
-                new ObisCode(obisCodeByteArray), attributeValue);
+        final AttributeAddress attributeAddress = new AttributeAddress(classNumber, new ObisCode(obisCodeByteArray),
+                attributeValue);
 
         LOGGER.debug("Retrieving configuration objects data for class id: {}, obis code: {}, attribute id: {}",
                 classNumber, obisCodeByteArray, attributeValue);
@@ -197,9 +198,9 @@ public class RetrieveConfigurationObjectsCommandExecutor extends AbstractCommand
     }
 
     private class ClassIdObisAttr {
-        private int classNumber;
-        private DataObject obisCode;
-        private int noAttr;
+        private final int classNumber;
+        private final DataObject obisCode;
+        private final int noAttr;
 
         public ClassIdObisAttr(final int classNumber, final DataObject obisCode, final int noAttr) {
             this.classNumber = classNumber;
