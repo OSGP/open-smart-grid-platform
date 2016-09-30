@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.messageprocessors;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +18,14 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.services.Bund
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesRequestDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.OsgpResultTypeDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.FaultResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.FaultResponseParameterDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.FaultResponseParametersDto;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 
@@ -64,12 +68,59 @@ public class BundleResponseMessageProcessor extends OsgpCoreResponseMessageProce
         final List<ActionDto> actionList = bundleMessagesResponseDto.getActionList();
         for (final ActionDto action : actionList) {
             if (action.getResponse() == null) {
+                final List<FaultResponseParameterDto> parameterList = new ArrayList<>();
+                final FaultResponseParameterDto deviceIdentificationParameter = new FaultResponseParameterDto(
+                        "deviceIdentification", deviceMessageMetadata.getDeviceIdentification());
+                parameterList.add(deviceIdentificationParameter);
                 action.setResponse(
-                        new ActionResponseDto(OsgpResultTypeDto.NOT_OK, e, "Unable to handle request"));
+                        this.faultResponseForException(e, parameterList, "Unable to handle request"));
             }
         }
 
         this.bundleService.handleBundleResponse(deviceMessageMetadata, responseMessage.getResult(), osgpException,
                 bundleMessagesResponseDto);
+    }
+
+    private FaultResponseDto faultResponseForException(final Exception exception,
+            final List<FaultResponseParameterDto> parameters, final String defaultMessage) {
+
+        if (exception instanceof FunctionalException || exception instanceof TechnicalException) {
+            return this.faultResponseForFunctionalOrTechnicalException((OsgpException) exception, parameters);
+        }
+
+        return new FaultResponseDto(null, defaultMessage, ComponentType.DOMAIN_SMART_METERING.getComponentName(),
+                exception.getClass().getName(), exception.getMessage(), new FaultResponseParametersDto(parameters));
+    }
+
+    private FaultResponseDto faultResponseForFunctionalOrTechnicalException(final OsgpException exception,
+            final List<FaultResponseParameterDto> parameters) {
+
+        final Integer code;
+        if (exception instanceof FunctionalException) {
+            code = ((FunctionalException) exception).getCode();
+        } else {
+            code = null;
+        }
+
+        final String component;
+        if (exception.getComponentType() == null) {
+            component = null;
+        } else {
+            component = exception.getComponentType().getComponentName();
+        }
+
+        final String innerException;
+        final String innerMessage;
+        final Throwable cause = exception.getCause();
+        if (cause == null) {
+            innerException = null;
+            innerMessage = null;
+        } else {
+            innerException = cause.getClass().getName();
+            innerMessage = cause.getMessage();
+        }
+
+        return new FaultResponseDto(code, exception.getMessage(), component, innerException, innerMessage,
+                new FaultResponseParametersDto(parameters));
     }
 }
