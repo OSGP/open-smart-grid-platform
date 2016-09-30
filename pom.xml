@@ -50,6 +50,7 @@
     <!-- Protocol-Adapter-DLMS -->
     <module>Protocol-Adapter-DLMS/osgp-dlms</module>
     <module>Protocol-Adapter-DLMS/osgp-protocol-adapter-dlms</module>
+    <module>Protocol-Adapter-DLMS/osgp-jasper-interface</module>
 
     <!-- Platform -->
     <module>Platform/osgp-domain-core</module>
