@@ -15,11 +15,13 @@ import org.springframework.stereotype.Repository;
 import com.alliander.osgp.domain.core.entities.Organisation;
 
 /**
- * Organisation repository interface
+ * Organization repository interface
  */
 @Repository
 public interface OrganisationRepository extends JpaRepository<Organisation, Long> {
-    Organisation findByOrganisationIdentification(String organisationIdentification);
+	Organisation findByOrganisationIdentification(String organisationIdentification);
 
-    List<Organisation> findByEnabled(boolean enabled);
+	Organisation findByName(String name);
+
+	List<Organisation> findByEnabled(boolean enabled);
 }
