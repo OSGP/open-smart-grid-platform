@@ -12758,9 +12758,9 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
          <ns1:Attribute>2</ns1:Attribute>
          <ns1:ObisCode>
             <ns:a>0</ns:a>
-            <ns:b>0</ns:b>
-            <ns:c>96</ns:c>
-            <ns:d>14</ns:d>
+            <ns:b>1</ns:b>
+            <ns:c>94</ns:c>
+            <ns:d>31</ns:d>
             <ns:e>0</ns:e>
             <ns:f>255</ns:f>
          </ns1:ObisCode>
