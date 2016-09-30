@@ -504,7 +504,7 @@ public class FirmwareManagementEndpoint {
         try {
             this.firmwareManagementService.addDeviceModel(organisationIdentification, request.getDeviceModel()
                     .getManufacturer(), request.getDeviceModel().getModelCode(), request.getDeviceModel()
-                    .getDescription());
+                    .getDescription(), request.getDeviceModel().isMetered());
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("Exception adding devicemodel: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
@@ -581,7 +581,7 @@ public class FirmwareManagementEndpoint {
         try {
             this.firmwareManagementService.changeDeviceModel(organisationIdentification, request.getDeviceModel()
                     .getManufacturer(), request.getDeviceModel().getModelCode(), request.getDeviceModel()
-                    .getDescription());
+                    .getDescription(), request.getDeviceModel().isMetered());
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("Exception Changing devicemodel: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
