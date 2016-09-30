@@ -209,6 +209,5 @@
 			<groupId>com.alliander.osgp</groupId>
 			<artifactId>oslp</artifactId>
 		</dependency>
-
 	</dependencies>
 </project>

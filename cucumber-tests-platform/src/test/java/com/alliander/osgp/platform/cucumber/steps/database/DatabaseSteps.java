@@ -101,7 +101,8 @@ public class DatabaseSteps {
         final DeviceModel deviceModel = new DeviceModel(
         		manufacturer, 
         		Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE, 
-        		Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION);
+        		Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION,
+        		true);
         this.deviceModelRepo.save(deviceModel);
 	}
 
