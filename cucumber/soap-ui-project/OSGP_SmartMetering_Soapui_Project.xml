@@ -2422,17 +2422,17 @@
     <wsdl:part element="smadhoc:SynchronizeTimeResponse" name="SynchronizeTimeResponse"></wsdl:part>
   </wsdl:message>
   <!--RETRIEVE CONFIGURATION OBJECTS-->
-  <wsdl:message name="SpecificConfigurationObjectRequest">
-    <wsdl:part element="smadhoc:SpecificConfigurationObjectRequest" name="SpecificConfigurationObjectRequest"></wsdl:part>
+  <wsdl:message name="SpecificAttributeValueRequest">
+    <wsdl:part element="smadhoc:SpecificAttributeValueRequest" name="SpecificAttributeValueRequest"></wsdl:part>
   </wsdl:message>
-  <wsdl:message name="SpecificConfigurationObjectAsyncResponse">
-    <wsdl:part element="smadhoc:SpecificConfigurationObjectAsyncResponse" name="SpecificConfigurationObjectAsyncResponse"></wsdl:part>
+  <wsdl:message name="SpecificAttributeValueAsyncResponse">
+    <wsdl:part element="smadhoc:SpecificAttributeValueAsyncResponse" name="SpecificAttributeValueAsyncResponse"></wsdl:part>
   </wsdl:message>
-  <wsdl:message name="SpecificConfigurationObjectAsyncRequest">
-    <wsdl:part element="smadhoc:SpecificConfigurationObjectAsyncRequest" name="SpecificConfigurationObjectAsyncRequest"></wsdl:part>
+  <wsdl:message name="SpecificAttributeValueAsyncRequest">
+    <wsdl:part element="smadhoc:SpecificAttributeValueAsyncRequest" name="SpecificAttributeValueAsyncRequest"></wsdl:part>
   </wsdl:message>
-  <wsdl:message name="SpecificConfigurationObjectResponse">
-    <wsdl:part element="smadhoc:SpecificConfigurationObjectResponse" name="SpecificConfigurationObjectResponse"></wsdl:part>
+  <wsdl:message name="SpecificAttributeValueResponse">
+    <wsdl:part element="smadhoc:SpecificAttributeValueResponse" name="SpecificAttributeValueResponse"></wsdl:part>
   </wsdl:message>
   <wsdl:message name="RetrieveAllAttributeValuesRequest">
     <wsdl:part element="smadhoc:RetrieveAllAttributeValuesRequest" name="RetrieveAllAttributeValuesRequest"></wsdl:part>
@@ -2475,13 +2475,13 @@
       <wsdl:input message="tns:RetrieveAllAttributeValuesAsyncRequest" name="RetrieveAllAttributeValuesAsyncRequest"/>
       <wsdl:output message="tns:RetrieveAllAttributeValuesResponse" name="RetrieveAllAttributeValuesResponse"/>
     </wsdl:operation>
-    <wsdl:operation name="GetSpecificConfigurationObject">
-      <wsdl:input message="tns:SpecificConfigurationObjectRequest" name="SpecificConfigurationObjectRequest"/>
-      <wsdl:output message="tns:SpecificConfigurationObjectAsyncResponse" name="SpecificConfigurationObjectAsyncResponse"/>
+    <wsdl:operation name="GetSpecificAttributeValue">
+      <wsdl:input message="tns:SpecificAttributeValueRequest" name="SpecificAttributeValueRequest"/>
+      <wsdl:output message="tns:SpecificAttributeValueAsyncResponse" name="SpecificAttributeValueAsyncResponse"/>
     </wsdl:operation>
-    <wsdl:operation name="GetSpecificConfigurationObjectResponse">
-      <wsdl:input message="tns:SpecificConfigurationObjectAsyncRequest" name="SpecificConfigurationObjectAsyncRequest"/>
-      <wsdl:output message="tns:SpecificConfigurationObjectResponse" name="SpecificConfigurationObjectResponse"/>
+    <wsdl:operation name="GetSpecificAttributeValueResponse">
+      <wsdl:input message="tns:SpecificAttributeValueAsyncRequest" name="SpecificAttributeValueAsyncRequest"/>
+      <wsdl:output message="tns:SpecificAttributeValueResponse" name="SpecificAttributeValueResponse"/>
     </wsdl:operation>
     <wsdl:operation name="GetAssociationLnObjects">
       <wsdl:input message="tns:GetAssociationLnObjectsRequest" name="GetAssociationLnObjectsRequest"/>
@@ -2542,27 +2542,27 @@
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="GetSpecificConfigurationObject">
+    <wsdl:operation name="GetSpecificAttributeValue">
       <soap:operation soapAction=""/>
-      <wsdl:input name="SpecificConfigurationObjectRequest">
+      <wsdl:input name="SpecificAttributeValueRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName" use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal"/>
         <soap:body use="literal"/>
       </wsdl:input>
-      <wsdl:output name="SpecificConfigurationObjectAsyncResponse">
+      <wsdl:output name="SpecificAttributeValueAsyncResponse">
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="GetSpecificConfigurationObjectResponse">
+    <wsdl:operation name="GetSpecificAttributeValueResponse">
       <soap:operation soapAction=""/>
-      <wsdl:input name="SpecificConfigurationObjectAsyncRequest">
+      <wsdl:input name="SpecificAttributeValueAsyncRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName" use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal"/>
         <soap:body use="literal"/>
       </wsdl:input>
-      <wsdl:output name="SpecificConfigurationObjectResponse">
+      <wsdl:output name="SpecificAttributeValueResponse">
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
@@ -2673,10 +2673,10 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
-  <xsd:element name="SpecificConfigurationObjectRequest">
+  <xsd:element name="SpecificAttributeValueRequest">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="tns:SpecificConfigurationObjectRequestData">
+        <xsd:extension base="tns:SpecificAttributeValueRequestData">
           <xsd:sequence>
             <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
           </xsd:sequence>
@@ -2684,21 +2684,21 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-  <xsd:element name="SpecificConfigurationObjectAsyncResponse">
+  <xsd:element name="SpecificAttributeValueAsyncResponse">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension base="common:AsyncResponse"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-  <xsd:element name="SpecificConfigurationObjectAsyncRequest">
+  <xsd:element name="SpecificAttributeValueAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension base="common:AsyncRequest"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-  <xsd:element name="SpecificConfigurationObjectResponse">
+  <xsd:element name="SpecificAttributeValueResponse">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension base="common:Response">
@@ -2709,7 +2709,7 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-  <xsd:complexType name="SpecificConfigurationObjectRequestData">
+  <xsd:complexType name="SpecificAttributeValueRequestData">
     <xsd:complexContent>
       <xsd:extension base="common:Query">
         <xsd:sequence>
@@ -3155,14 +3155,14 @@
          <ns:CorrelationUid>?</ns:CorrelationUid>\r
       </ns1:GetAssociationLnObjectsAsyncRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:credentials><con:username xsi:nil="true"/><con:password xsi:nil="true"/><con:domain xsi:nil="true"/><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-adhoc-v1.0/SmartmeteradhocPort/GetAssociationLnObjectsAsyncRequest"/></con:call></con:operation><con:operation id="cfba1267-be22-4b31-b183-9362a754e5ab" isOneWay="false" action="" name="GetSpecificConfigurationObject" bindingOperationName="GetSpecificConfigurationObject" type="Request-Response" outputName="SpecificConfigurationObjectAsyncResponse" inputName="SpecificConfigurationObjectRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="9c3f0b1d-88d0-433e-b532-c011cf12a8cb" name="Request 1" sslKeystore="Infostroom.pfx" outgoingWss="" incomingWss=""><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://${#TestCase#ServiceEndpoint}/osgp-adapter-ws-smartmetering/smartMetering/adhocService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/smartmetering/sm-adhoc/2014/10">\r
+</soapenv:Envelope>]]></con:request><con:credentials><con:username xsi:nil="true"/><con:password xsi:nil="true"/><con:domain xsi:nil="true"/><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-adhoc-v1.0/SmartmeteradhocPort/GetAssociationLnObjectsAsyncRequest"/></con:call></con:operation><con:operation id="cfba1267-be22-4b31-b183-9362a754e5ab" isOneWay="false" action="" name="GetSpecificAttributeValue" bindingOperationName="GetSpecificAttributeValue" type="Request-Response" outputName="SpecificAttributeValueAsyncResponse" inputName="SpecificAttributeValueRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="9c3f0b1d-88d0-433e-b532-c011cf12a8cb" name="Request 1" sslKeystore="Infostroom.pfx" outgoingWss="" incomingWss=""><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://${#TestCase#ServiceEndpoint}/osgp-adapter-ws-smartmetering/smartMetering/adhocService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/smartmetering/sm-adhoc/2014/10">\r
    <soapenv:Header>\r
       <ns:ApplicationName>?</ns:ApplicationName>\r
       <ns:UserName>?</ns:UserName>\r
       <ns:OrganisationIdentification>?</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
-      <ns1:SpecificConfigurationObjectRequest>\r
+      <ns1:SpecificAttributeValueRequest>\r
          <ns1:ClassId>?</ns1:ClassId>\r
          <ns1:Attribute>?</ns1:Attribute>\r
          <ns1:ObisCode>\r
@@ -3174,21 +3174,21 @@
             <ns:f>?</ns:f>\r
          </ns1:ObisCode>\r
          <ns1:DeviceIdentification>?</ns1:DeviceIdentification>\r
-      </ns1:SpecificConfigurationObjectRequest>\r
+      </ns1:SpecificAttributeValueRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:credentials><con:username xsi:nil="true"/><con:password xsi:nil="true"/><con:domain xsi:nil="true"/><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-adhoc-v1.0/SmartmeteradhocPort/SpecificConfigurationObjectRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="775f6f3f-ffdb-44f5-807f-2e6f6ed65212" isOneWay="false" action="" name="GetSpecificConfigurationObjectResponse" bindingOperationName="GetSpecificConfigurationObjectResponse" type="Request-Response" outputName="SpecificConfigurationObjectResponse" inputName="SpecificConfigurationObjectAsyncRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="f47c187b-b656-4c77-9671-0aedc8285c9b" name="Request 1" sslKeystore="Infostroom.pfx" outgoingWss="" incomingWss=""><con:settings><con:setting id="com.eviware.soapui.impl.support.AbstractHttpRequest@follow-redirects">true</con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://${#TestCase#ServiceEndpoint}/osgp-adapter-ws-smartmetering/smartMetering/adhocService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/smartmetering/sm-adhoc/2014/10">\r
+</soapenv:Envelope>]]></con:request><con:credentials><con:username xsi:nil="true"/><con:password xsi:nil="true"/><con:domain xsi:nil="true"/><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-adhoc-v1.0/SmartmeteradhocPort/SpecificAttributeValueRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="775f6f3f-ffdb-44f5-807f-2e6f6ed65212" isOneWay="false" action="" name="GetSpecificAttributeValueResponse" bindingOperationName="GetSpecificAttributeValueResponse" type="Request-Response" outputName="SpecificAttributeValueResponse" inputName="SpecificAttributeValueAsyncRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="f47c187b-b656-4c77-9671-0aedc8285c9b" name="Request 1" sslKeystore="Infostroom.pfx" outgoingWss="" incomingWss=""><con:settings><con:setting id="com.eviware.soapui.impl.support.AbstractHttpRequest@follow-redirects">true</con:setting><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://${#TestCase#ServiceEndpoint}/osgp-adapter-ws-smartmetering/smartMetering/adhocService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/smartmetering/sm-adhoc/2014/10">\r
    <soapenv:Header>\r
       <ns:ApplicationName>?</ns:ApplicationName>\r
       <ns:UserName>?</ns:UserName>\r
       <ns:OrganisationIdentification>?</ns:OrganisationIdentification>\r
    </soapenv:Header>\r
    <soapenv:Body>\r
-      <ns1:SpecificConfigurationObjectAsyncRequest>\r
+      <ns1:SpecificAttributeValueAsyncRequest>\r
          <ns:DeviceIdentification>?</ns:DeviceIdentification>\r
          <ns:CorrelationUid>?</ns:CorrelationUid>\r
-      </ns1:SpecificConfigurationObjectAsyncRequest>\r
+      </ns1:SpecificAttributeValueAsyncRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:credentials><con:username xsi:nil="true"/><con:password xsi:nil="true"/><con:domain xsi:nil="true"/><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-adhoc-v1.0/SmartmeteradhocPort/SpecificConfigurationObjectAsyncRequest"/></con:call></con:operation></con:interface><con:interface xsi:type="con:WsdlInterface" id="9de10c54-0330-48dd-bd25-459e916be438" wsaVersion="NONE" name="SmartmeterconfigurationPortSoap11" type="wsdl" bindingName="{http://www.alliander.com/definitions/osgp/smartmetering/sm-configuration-v1.0}SmartmeterconfigurationPortSoap11" soapVersion="1_1" anonymous="optional" definition="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringConfiguration.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringConfiguration.wsdl"><con:part><con:url>https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringConfiguration.wsdl</con:url><con:content><![CDATA[<!--Platform version: 4.1.0-SNAPSHOT-jenkins-OSGP_Platform_development-704-->
+</soapenv:Envelope>]]></con:request><con:credentials><con:username xsi:nil="true"/><con:password xsi:nil="true"/><con:domain xsi:nil="true"/><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-adhoc-v1.0/SmartmeteradhocPort/SpecificAttributeValueAsyncRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:interface xsi:type="con:WsdlInterface" id="9de10c54-0330-48dd-bd25-459e916be438" wsaVersion="NONE" name="SmartmeterconfigurationPortSoap11" type="wsdl" bindingName="{http://www.alliander.com/definitions/osgp/smartmetering/sm-configuration-v1.0}SmartmeterconfigurationPortSoap11" soapVersion="1_1" anonymous="optional" definition="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringConfiguration.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringConfiguration.wsdl"><con:part><con:url>https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringConfiguration.wsdl</con:url><con:content><![CDATA[<!--Platform version: 4.1.0-SNAPSHOT-jenkins-OSGP_Platform_development-704-->
 <wsdl:definitions targetNamespace="http://www.alliander.com/definitions/osgp/smartmetering/sm-configuration-v1.0" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:smconf="http://www.alliander.com/schemas/osgp/smartmetering/sm-configuration/2014/10" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.alliander.com/definitions/osgp/smartmetering/sm-configuration-v1.0">
   <wsdl:types>
     <xsd:schema targetNamespace="http://www.alliander.com/definitions/osgp/smartmetering/sm-configuration/imports" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
@@ -7044,10 +7044,10 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-  <xsd:element name="GetSpecificConfigurationObjectRequest">
+  <xsd:element name="GetSpecificAttributeValueRequest">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="adhoc:SpecificConfigurationObjectRequestData"/>
+        <xsd:extension base="adhoc:SpecificAttributeValueRequestData"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -7086,7 +7086,7 @@
         <xsd:element ref="tns:SynchronizeTimeRequest"/>
         <xsd:element ref="tns:GetConfigurationRequest"/>
         <xsd:element ref="tns:GetFirmwareVersionRequest"/>
-        <xsd:element ref="tns:GetSpecificConfigurationObjectRequest"/>
+        <xsd:element ref="tns:GetSpecificAttributeValueRequest"/>
         <xsd:element ref="tns:SetKeysRequest"/>
         <xsd:element ref="tns:GetAssociationLnObjectsRequest"/>
       </xsd:choice>
@@ -8789,10 +8789,10 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
-  <xsd:element name="SpecificConfigurationObjectRequest">
+  <xsd:element name="SpecificAttributeValueRequest">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="tns:SpecificConfigurationObjectRequestData">
+        <xsd:extension base="tns:SpecificAttributeValueRequestData">
           <xsd:sequence>
             <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
           </xsd:sequence>
@@ -8800,21 +8800,21 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-  <xsd:element name="SpecificConfigurationObjectAsyncResponse">
+  <xsd:element name="SpecificAttributeValueAsyncResponse">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension base="common:AsyncResponse"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-  <xsd:element name="SpecificConfigurationObjectAsyncRequest">
+  <xsd:element name="SpecificAttributeValueAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension base="common:AsyncRequest"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-  <xsd:element name="SpecificConfigurationObjectResponse">
+  <xsd:element name="SpecificAttributeValueResponse">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension base="common:Response">
@@ -8825,7 +8825,7 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-  <xsd:complexType name="SpecificConfigurationObjectRequestData">
+  <xsd:complexType name="SpecificAttributeValueRequestData">
     <xsd:complexContent>
       <xsd:extension base="common:Query">
         <xsd:sequence>
@@ -9124,7 +9124,7 @@
             </ns1:SynchronizeTimeRequest>
             <ns1:GetConfigurationRequest/>
             <ns1:GetFirmwareVersionRequest/>
-            <ns1:GetSpecificConfigurationObjectRequest>
+            <ns1:GetSpecificAttributeValueRequest>
                <ns5:ClassId>?</ns5:ClassId>
                <ns5:Attribute>?</ns5:Attribute>
                <ns5:ObisCode>
@@ -9135,7 +9135,7 @@
                   <ns:e>?</ns:e>
                   <ns:f>?</ns:f>
                </ns5:ObisCode>
-            </ns1:GetSpecificConfigurationObjectRequest>
+            </ns1:GetSpecificAttributeValueRequest>
             <ns1:SetKeysRequest>
                <ns3:AuthenticationKey>cid:684523082122</ns3:AuthenticationKey>
                <ns3:EncryptionKey>cid:734327732695</ns3:EncryptionKey>
@@ -9312,7 +9312,7 @@
             </ns1:SynchronizeTimeRequest>
             <ns1:GetConfigurationRequest/>
             <ns1:GetFirmwareVersionRequest/>
-            <ns1:GetSpecificConfigurationObjectRequest>
+            <ns1:GetSpecificAttributeValueRequest>
                <ns5:ClassId>?</ns5:ClassId>
                <ns5:Attribute>?</ns5:Attribute>
                <ns5:ObisCode>
@@ -9323,7 +9323,7 @@
                   <ns:e>?</ns:e>
                   <ns:f>?</ns:f>
                </ns5:ObisCode>
-            </ns1:GetSpecificConfigurationObjectRequest>
+            </ns1:GetSpecificAttributeValueRequest>
             <ns1:SetKeysRequest>
                <ns3:AuthenticationKey>cid:684523082122</ns3:AuthenticationKey>
                <ns3:EncryptionKey>cid:734327732695</ns3:EncryptionKey>
@@ -12746,45 +12746,45 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
          <ns:CorrelationUid>${=testCase.getPropertyValue( "CorrelationUid" )}</ns:CorrelationUid>\r
       </ns1:BundleAsyncRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response" id="648243e1-49b9-4607-ba84-24fd48800761" name="SOAP Response"/><con:assertion type="Schema Compliance" id="7fa65f3d-9b8d-4d92-81fd-efd0d2ea6796" name="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion" id="b723db0e-e7cb-4209-8ade-024fcc068849" name="Not SOAP Fault"/><con:credentials><con:username xsi:nil="true"/><con:password xsi:nil="true"/><con:domain xsi:nil="true"/><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-bundle-v1.0/SmartMeteringBundlePort/BundleAsyncRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties><con:property><con:name>DeviceIdentificationE</con:name><con:value>TEST1024000000001</con:value></con:property><con:property><con:name>OrganisationIdentification</con:name><con:value>Infostroom</con:value></con:property><con:property><con:name>CorrelationUid</con:name><con:value>Infostroom|||TEST1024000000001|||20160818064429970</con:value></con:property><con:property><con:name>DeviceIdentificationG</con:name><con:value>G00XX561204926113</con:value></con:property><con:property><con:name>ObisCodeA</con:name><con:value>1</con:value></con:property><con:property><con:name>ObisCodeB</con:name><con:value>0</con:value></con:property><con:property><con:name>ObisCodeC</con:name><con:value>0</con:value></con:property><con:property><con:name>ObisCodeD</con:name><con:value>2</con:value></con:property><con:property><con:name>ObisCodeE</con:name><con:value>0</con:value></con:property><con:property><con:name>ObisCodeF</con:name><con:value>255</con:value></con:property><con:property><con:name>ServiceEndpoint</con:name><con:value>osgp-tst.cloudapp.net:62443</con:value></con:property></con:properties></con:testCase><con:testCase id="dc143c9f-73b3-41cf-bae4-f573d680c4ae" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="534 Retrieve specific attribute value" searchProperties="true"><con:settings/><con:testStep type="request" id="278c4ff2-1480-4a98-b5ea-c14ddf273b45" name="GetSpecificAttributeValue - Request 1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>SmartmeteradhocPortSoap11</con:interface><con:operation>GetSpecificConfigurationObject</con:operation><con:request name="GetSpecificAttributeValue - Request 1" outgoingWss="" incomingWss="" timeout="" sslKeystore="Infostroom.pfx" useWsAddressing="false" useWsReliableMessaging="false" id="5eb0e1bb-3d8e-4943-b974-0de429ea3437"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://${#TestCase#ServiceEndpoint}/osgp-adapter-ws-smartmetering/smartMetering/adhocService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/smartmetering/sm-adhoc/2014/10">
+</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response" id="648243e1-49b9-4607-ba84-24fd48800761" name="SOAP Response"/><con:assertion type="Schema Compliance" id="7fa65f3d-9b8d-4d92-81fd-efd0d2ea6796" name="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion" id="b723db0e-e7cb-4209-8ade-024fcc068849" name="Not SOAP Fault"/><con:credentials><con:username xsi:nil="true"/><con:password xsi:nil="true"/><con:domain xsi:nil="true"/><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-bundle-v1.0/SmartMeteringBundlePort/BundleAsyncRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties><con:property><con:name>DeviceIdentificationE</con:name><con:value>TEST1024000000001</con:value></con:property><con:property><con:name>OrganisationIdentification</con:name><con:value>Infostroom</con:value></con:property><con:property><con:name>CorrelationUid</con:name><con:value>Infostroom|||TEST1024000000001|||20160818064429970</con:value></con:property><con:property><con:name>DeviceIdentificationG</con:name><con:value>G00XX561204926113</con:value></con:property><con:property><con:name>ObisCodeA</con:name><con:value>1</con:value></con:property><con:property><con:name>ObisCodeB</con:name><con:value>0</con:value></con:property><con:property><con:name>ObisCodeC</con:name><con:value>0</con:value></con:property><con:property><con:name>ObisCodeD</con:name><con:value>2</con:value></con:property><con:property><con:name>ObisCodeE</con:name><con:value>0</con:value></con:property><con:property><con:name>ObisCodeF</con:name><con:value>255</con:value></con:property><con:property><con:name>ServiceEndpoint</con:name><con:value>osgp-tst.cloudapp.net:62443</con:value></con:property></con:properties></con:testCase><con:testCase id="dc143c9f-73b3-41cf-bae4-f573d680c4ae" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="534 Retrieve specific attribute value" searchProperties="true"><con:settings/><con:testStep type="request" id="278c4ff2-1480-4a98-b5ea-c14ddf273b45" name="GetSpecificAttributeValue - Request 1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>SmartmeteradhocPortSoap11</con:interface><con:operation>GetSpecificAttributeValue</con:operation><con:request name="GetSpecificAttributeValue - Request 1" outgoingWss="" incomingWss="" timeout="" sslKeystore="Infostroom.pfx" useWsAddressing="false" useWsReliableMessaging="false" id="5eb0e1bb-3d8e-4943-b974-0de429ea3437"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://${#TestCase#ServiceEndpoint}/osgp-adapter-ws-smartmetering/smartMetering/adhocService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/smartmetering/sm-adhoc/2014/10">
    <soapenv:Header>
       <ns:ApplicationName>SoapUI</ns:ApplicationName>
       <ns:UserName>carlogeenen</ns:UserName>
       <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>
    </soapenv:Header>
    <soapenv:Body>
-      <ns1:SpecificConfigurationObjectRequest>
-         <ns1:ClassId>?</ns1:ClassId>
-         <ns1:Attribute>?</ns1:Attribute>
+      <ns1:SpecificAttributeValueRequest>
+         <ns1:ClassId>1</ns1:ClassId>
+         <ns1:Attribute>2</ns1:Attribute>
          <ns1:ObisCode>
-            <ns:a>?</ns:a>
-            <ns:b>?</ns:b>
-            <ns:c>?</ns:c>
-            <ns:d>?</ns:d>
-            <ns:e>?</ns:e>
-            <ns:f>?</ns:f>
+            <ns:a>0</ns:a>
+            <ns:b>0</ns:b>
+            <ns:c>96</ns:c>
+            <ns:d>14</ns:d>
+            <ns:e>0</ns:e>
+            <ns:f>255</ns:f>
          </ns1:ObisCode>
-         <ns1:DeviceIdentification>?</ns1:DeviceIdentification>
-      </ns1:SpecificConfigurationObjectRequest>
+         <ns1:DeviceIdentification>TEST1024000000001</ns1:DeviceIdentification>
+      </ns1:SpecificAttributeValueRequest>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response" id="86892e3b-0a46-4404-941d-4a9162e6391d" name="SOAP Response"/><con:assertion type="Schema Compliance" id="24e2de0d-8391-4160-a7cb-44239f11bfc4" name="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion" id="95f04166-82de-4e06-9f02-cbb29e0e6753" name="Not SOAP Fault"/><con:credentials><con:username xsi:nil="true"/><con:password xsi:nil="true"/><con:domain xsi:nil="true"/><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-adhoc-v1.0/SmartmeteradhocPort/SpecificConfigurationObjectRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="transfer" name="Property Transfer" id="7c9f1580-daab-4db4-a743-b8264cfa233e"><con:settings/><con:config xsi:type="con:PropertyTransfersStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" ignoreEmpty="false" transferToAll="false" entitize="false" transferChildNodes="false"><con:name>CorrelationUid</con:name><con:sourceType>Response</con:sourceType><con:sourceStep>GetSpecificAttributeValue - Request 1</con:sourceStep><con:sourcePath>declare namespace ns2='http://www.alliander.com/schemas/osgp/smartmetering/sm-adhoc/2014/10';
+</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response" id="86892e3b-0a46-4404-941d-4a9162e6391d" name="SOAP Response"/><con:assertion type="Schema Compliance" id="24e2de0d-8391-4160-a7cb-44239f11bfc4" name="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion" id="95f04166-82de-4e06-9f02-cbb29e0e6753" name="Not SOAP Fault"/><con:credentials><con:username xsi:nil="true"/><con:password xsi:nil="true"/><con:domain xsi:nil="true"/><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-adhoc-v1.0/SmartmeteradhocPort/SpecificAttributeValueRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="transfer" name="Property Transfer" id="7c9f1580-daab-4db4-a743-b8264cfa233e"><con:settings/><con:config xsi:type="con:PropertyTransfersStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" ignoreEmpty="false" transferToAll="false" entitize="false" transferChildNodes="false"><con:name>CorrelationUid</con:name><con:sourceType>Response</con:sourceType><con:sourceStep>GetSpecificAttributeValue - Request 1</con:sourceStep><con:sourcePath>declare namespace ns2='http://www.alliander.com/schemas/osgp/smartmetering/sm-adhoc/2014/10';
 declare namespace ns3='http://www.alliander.com/schemas/osgp/common/2014/10';
 declare namespace ns4='http://www.alliander.com/schemas/osgp/smartmetering/sm-configuration/2014/10';
 declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
 
-//SOAP-ENV:Body/ns2:SpecificConfigurationObjectAsyncResponse/ns3:CorrelationUid</con:sourcePath><con:targetType>CorrelationUid</con:targetType><con:targetStep>#TestCase#</con:targetStep><con:upgraded>true</con:upgraded></con:transfers></con:config></con:testStep><con:testStep type="delay" name="Delay" id="f830867d-e1ca-4637-a11e-5e9dff588886"><con:settings/><con:config><delay>25000</delay></con:config></con:testStep><con:testStep type="request" id="e15370fc-497f-4e5a-abe8-26464e7e964d" name="GetSpecificAttributeValueResponse - Request 1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>SmartmeteradhocPortSoap11</con:interface><con:operation>GetSpecificConfigurationObjectResponse</con:operation><con:request name="GetSpecificAttributeValueResponse - Request 1" outgoingWss="" incomingWss="" timeout="" sslKeystore="Infostroom.pfx" useWsAddressing="false" useWsReliableMessaging="false" id="f054d733-4e50-4494-82e9-619167dc5d2d"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://${#TestCase#ServiceEndpoint}/osgp-adapter-ws-smartmetering/smartMetering/adhocService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/smartmetering/sm-adhoc/2014/10">
+//SOAP-ENV:Body/ns2:SpecificAttributeValueAsyncResponse/ns3:CorrelationUid</con:sourcePath><con:targetType>CorrelationUid</con:targetType><con:targetStep>#TestCase#</con:targetStep><con:upgraded>true</con:upgraded></con:transfers></con:config></con:testStep><con:testStep type="delay" name="Delay" id="f830867d-e1ca-4637-a11e-5e9dff588886"><con:settings/><con:config><delay>25000</delay></con:config></con:testStep><con:testStep type="request" id="e15370fc-497f-4e5a-abe8-26464e7e964d" name="GetSpecificAttributeValueResponse - Request 1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>SmartmeteradhocPortSoap11</con:interface><con:operation>GetSpecificAttributeValueResponse</con:operation><con:request name="GetSpecificAttributeValueResponse - Request 1" outgoingWss="" incomingWss="" timeout="" sslKeystore="Infostroom.pfx" useWsAddressing="false" useWsReliableMessaging="false" id="f054d733-4e50-4494-82e9-619167dc5d2d"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://${#TestCase#ServiceEndpoint}/osgp-adapter-ws-smartmetering/smartMetering/adhocService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/smartmetering/sm-adhoc/2014/10">
    <soapenv:Header>
       <ns:ApplicationName>SoapUI</ns:ApplicationName>
       <ns:UserName>carlogeenen</ns:UserName>
       <ns:OrganisationIdentification>Infostroom</ns:OrganisationIdentification>
    </soapenv:Header>
    <soapenv:Body>
-      <ns1:SpecificConfigurationObjectAsyncRequest>
+      <ns1:SpecificAttributeValueAsyncRequest>
          <ns:DeviceIdentification>${=testCase.getPropertyValue( "DeviceIdentificationE" )}</ns:DeviceIdentification>
          <ns:CorrelationUid>${=testCase.getPropertyValue( "CorrelationUid" )}</ns:CorrelationUid>
-      </ns1:SpecificConfigurationObjectAsyncRequest>
+      </ns1:SpecificAttributeValueAsyncRequest>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response" id="5c620bf4-4eac-4e09-a648-4654c9161958" name="SOAP Response"/><con:assertion type="Schema Compliance" id="2d03075a-5931-44c3-8f84-63206663496e" name="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion" id="b915fe18-f2ae-40d8-896c-1340b25e29d4" name="Not SOAP Fault"/><con:credentials><con:username xsi:nil="true"/><con:password xsi:nil="true"/><con:domain xsi:nil="true"/><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-adhoc-v1.0/SmartmeteradhocPort/SpecificConfigurationObjectAsyncRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties><con:property><con:name>DeviceIdentificationE</con:name><con:value>E9998000014123414</con:value></con:property><con:property><con:name>OrganisationIdentification</con:name><con:value>Infostroom</con:value></con:property><con:property><con:name>CorrelationUid</con:name><con:value>Infostroom|||E9998000014123414|||20160816061640341</con:value></con:property><con:property><con:name>DeviceIdentificationG</con:name><con:value>G00XX561204926113</con:value></con:property><con:property><con:name>ServiceEndpoint</con:name><con:value>osgp-tst.cloudapp.net:62443</con:value></con:property></con:properties></con:testCase><con:properties/></con:testSuite><con:testSuite id="a6019448-d7aa-461a-8c9b-54e5ade865ea" name="SmartmeterNotification"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:properties/></con:testSuite><con:testSuite id="44dc58d6-9f5b-416d-a30b-37a435bac54c" name="SmartmeterManagement"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase id="9399cf41-eb7a-4893-9f58-2b9a4905f72f" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="19 Retrieve events from the meter" searchProperties="true"><con:settings/><con:testStep type="request" id="fb666a60-d2a6-4025-9393-f34fa671426f" name="FindEvents - STANDARD_EVENT"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>SmartMeteringManagementPortSoap11</con:interface><con:operation>FindEvents</con:operation><con:request name="FindEvents - STANDARD_EVENT" outgoingWss="" incomingWss="" timeout="" sslKeystore="Infostroom.pfx" useWsAddressing="false" useWsReliableMessaging="false" id="5bae800e-35ec-47a1-a676-0dbc06838acb"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://${#TestCase#ServiceEndpoint}/osgp-adapter-ws-smartmetering/smartMetering/managementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/smartmetering/sm-management/2014/10">
+</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response" id="5c620bf4-4eac-4e09-a648-4654c9161958" name="SOAP Response"/><con:assertion type="Schema Compliance" id="2d03075a-5931-44c3-8f84-63206663496e" name="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion" id="b915fe18-f2ae-40d8-896c-1340b25e29d4" name="Not SOAP Fault"/><con:credentials><con:username xsi:nil="true"/><con:password xsi:nil="true"/><con:domain xsi:nil="true"/><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-adhoc-v1.0/SmartmeteradhocPort/SpecificAttributeValueAsyncRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties><con:property><con:name>DeviceIdentificationE</con:name><con:value>E9998000014123414</con:value></con:property><con:property><con:name>OrganisationIdentification</con:name><con:value>Infostroom</con:value></con:property><con:property><con:name>CorrelationUid</con:name><con:value>Infostroom|||E9998000014123414|||20160816061640341</con:value></con:property><con:property><con:name>DeviceIdentificationG</con:name><con:value>G00XX561204926113</con:value></con:property><con:property><con:name>ServiceEndpoint</con:name><con:value>osgp-tst.cloudapp.net:62443</con:value></con:property></con:properties></con:testCase><con:properties/></con:testSuite><con:testSuite id="a6019448-d7aa-461a-8c9b-54e5ade865ea" name="SmartmeterNotification"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:properties/></con:testSuite><con:testSuite id="44dc58d6-9f5b-416d-a30b-37a435bac54c" name="SmartmeterManagement"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase id="9399cf41-eb7a-4893-9f58-2b9a4905f72f" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="19 Retrieve events from the meter" searchProperties="true"><con:settings/><con:testStep type="request" id="fb666a60-d2a6-4025-9393-f34fa671426f" name="FindEvents - STANDARD_EVENT"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>SmartMeteringManagementPortSoap11</con:interface><con:operation>FindEvents</con:operation><con:request name="FindEvents - STANDARD_EVENT" outgoingWss="" incomingWss="" timeout="" sslKeystore="Infostroom.pfx" useWsAddressing="false" useWsReliableMessaging="false" id="5bae800e-35ec-47a1-a676-0dbc06838acb"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://${#TestCase#ServiceEndpoint}/osgp-adapter-ws-smartmetering/smartMetering/managementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/smartmetering/sm-management/2014/10">
    <soapenv:Header>
       <ns:ApplicationName>SoapUI</ns:ApplicationName>
       <ns:UserName>carlogeenen</ns:UserName>

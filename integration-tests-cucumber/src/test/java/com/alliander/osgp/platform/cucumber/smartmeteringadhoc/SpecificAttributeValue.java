@@ -21,7 +21,7 @@ import cucumber.api.java.en.When;
 public class SpecificAttributeValue extends SmartMetering {
     private static final String PATH_RESULT_CONFIGURATION_DATA = "/Envelope/Body/SpecificAttributeValueResponse/ConfigurationData/text()";
 
-    private static final String XPATH_MATCHER_RESULT_CONFIGURATION_DATA = "DataObject: Choice=\\w[A-Z]+, ResultData \\w+, value=";
+    private static final String XPATH_MATCHER_RESULT_CONFIGURATION_DATA = "DataObject: Choice=\\w+, ResultData \\w+, value=";
 
     private static final String TEST_SUITE_XML = "SmartmeterAdhoc";
     private static final String TEST_CASE_XML = "534 Retrieve specific attribute value";
