@@ -20,6 +20,8 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.co
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850ActualPowerLimitCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850BehaviourCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850HealthCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850MaximumActualPowerCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850MinimumActualPowerCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850ModeCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850OperationalHoursCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850StateCommand;
@@ -40,6 +42,8 @@ public class Iec61850EngineCommandFactory implements RtuCommandFactory {
         this.rtuCommandMap.put(DataAttribute.OPERATIONAL_HOURS, new Iec61850OperationalHoursCommand());
         this.rtuCommandMap.put(DataAttribute.MODE, new Iec61850ModeCommand());
         this.rtuCommandMap.put(DataAttribute.ACTUAL_POWER, new Iec61850ActualPowerCommand());
+        this.rtuCommandMap.put(DataAttribute.MAX_ACTUAL_POWER, new Iec61850MaximumActualPowerCommand());
+        this.rtuCommandMap.put(DataAttribute.MIN_ACTUAL_POWER, new Iec61850MinimumActualPowerCommand());
         this.rtuCommandMap.put(DataAttribute.ACTUAL_POWER_LIMIT, new Iec61850ActualPowerLimitCommand());
         this.rtuCommandMap.put(DataAttribute.TOTAL_ENERGY, new Iec61850TotalEnergyCommand());
         this.rtuCommandMap.put(DataAttribute.STATE, new Iec61850StateCommand());
