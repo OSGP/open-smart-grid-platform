@@ -39,8 +39,8 @@ public class DeviceResponseMessageService {
 
     // The array of exceptions which have to be retried.
     private static final String[] RETRY_EXCEPTIONS = { "Unable to connect", "ConnectException",
-        "Failed to receive response within timelimit", "Timeout waiting for",
-    "Connection closed by remote host while waiting for association response" };
+            "Failed to receive response within timelimit", "Timeout waiting for",
+            "Connection closed by remote host while waiting for association response" };
 
     @Autowired
     private DomainResponseService domainResponseMessageSender;
@@ -116,8 +116,8 @@ public class DeviceResponseMessageService {
     }
 
     private void handleScheduledTask(final ProtocolResponseMessage message) {
-        final ScheduledTask scheduledTask = this.scheduledTaskRepository.findByCorrelationUid(message
-                .getCorrelationUid());
+        final ScheduledTask scheduledTask = this.scheduledTaskRepository
+                .findByCorrelationUid(message.getCorrelationUid());
 
         if (scheduledTask == null) {
             LOGGER.error("Scheduled task for device [{}] with correlation uid [{}] not found",
@@ -127,26 +127,20 @@ public class DeviceResponseMessageService {
 
         if (message.getResult() == ResponseMessageResultType.OK
                 && scheduledTask.getStatus() == ScheduledTaskStatusType.PENDING) {
-            this.scheduledTaskRepository.delete(scheduledTask);
             this.domainResponseMessageSender.send(message);
         } else {
-            final String errorMessage = message.getOsgpException() == null ? ""
-                    : message.getOsgpException().getCause() == null ? message.getOsgpException().getMessage() : message
-                            .getOsgpException().getCause().getMessage();
-            scheduledTask.setFailed(errorMessage);
 
             if (message.getRetryHeader() != null && message.getRetryHeader().shouldRetry()) {
                 scheduledTask.retryOn(message.getRetryHeader().getScheduledRetryTime());
             } else {
                 this.domainResponseMessageSender.send(message);
             }
-
-            this.scheduledTaskRepository.save(scheduledTask);
         }
+        this.scheduledTaskRepository.delete(scheduledTask);
     }
 
-    private void handleProtocolResponseMessage(final ProtocolResponseMessage message) throws FunctionalException,
-    JMSException {
+    private void handleProtocolResponseMessage(final ProtocolResponseMessage message)
+            throws FunctionalException, JMSException {
         if (message.getRetryHeader() != null && message.getRetryHeader().shouldRetry()) {
             // Create scheduled task for retries.
             LOGGER.info("Creating a scheduled retry task for message of type {} for device {}.",
