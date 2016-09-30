@@ -7,6 +7,7 @@
  */
 package org.osgp.adapter.protocol.dlms.application.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openmuc.jdlms.DlmsConnection;
@@ -22,9 +23,14 @@ import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesRequestDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.OsgpResultTypeDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.FaultResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.FaultResponseParameterDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.FaultResponseParametersDto;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
 @Service(value = "dlmsBundleService")
 public class BundleService {
@@ -77,12 +83,68 @@ public class BundleService {
                             executorName, exception);
                     final String responseMessage = executor == null ? "Unable to handle request"
                             : "Error handling request with " + executorName;
-                    actionDto.setResponse(new ActionResponseDto(OsgpResultTypeDto.NOT_OK, exception, responseMessage));
+
+                    this.addFaultResponse(actionDto, exception, responseMessage, device);
                 }
             }
         }
 
         return bundleMessagesRequest;
+    }
+
+    private void addFaultResponse(final ActionDto actionDto, final Exception exception, final String defaultMessage,
+            final DlmsDevice device) {
+
+        final List<FaultResponseParameterDto> parameterList = new ArrayList<>();
+        final FaultResponseParameterDto deviceIdentificationParameter = new FaultResponseParameterDto(
+                "deviceIdentification", device.getDeviceIdentification());
+        parameterList.add(deviceIdentificationParameter);
+
+        final FaultResponseDto faultResponse = this.faultResponseForException(exception, parameterList, defaultMessage);
+        actionDto.setResponse(faultResponse);
+    }
+
+    private FaultResponseDto faultResponseForException(final Exception exception,
+            final List<FaultResponseParameterDto> parameters, final String defaultMessage) {
+
+        if (exception instanceof FunctionalException || exception instanceof TechnicalException) {
+            return this.faultResponseForFunctionalOrTechnicalException((OsgpException) exception, parameters);
+        }
+
+        return new FaultResponseDto(null, defaultMessage, ComponentType.PROTOCOL_DLMS.getComponentName(),
+                exception.getClass().getName(), exception.getMessage(), new FaultResponseParametersDto(parameters));
+    }
+
+    private FaultResponseDto faultResponseForFunctionalOrTechnicalException(final OsgpException exception,
+            final List<FaultResponseParameterDto> parameters) {
+
+        final Integer code;
+        if (exception instanceof FunctionalException) {
+            code = ((FunctionalException) exception).getCode();
+        } else {
+            code = null;
+        }
+
+        final String component;
+        if (exception.getComponentType() == null) {
+            component = null;
+        } else {
+            component = exception.getComponentType().getComponentName();
+        }
+
+        final String innerException;
+        final String innerMessage;
+        final Throwable cause = exception.getCause();
+        if (cause == null) {
+            innerException = null;
+            innerMessage = null;
+        } else {
+            innerException = cause.getClass().getName();
+            innerMessage = cause.getMessage();
+        }
+
+        return new FaultResponseDto(code, exception.getMessage(), component, innerException,
+                innerMessage, new FaultResponseParametersDto(parameters));
     }
 
     private void checkIfExecutorExists(final Class<? extends ActionRequestDto> actionRequestClass,

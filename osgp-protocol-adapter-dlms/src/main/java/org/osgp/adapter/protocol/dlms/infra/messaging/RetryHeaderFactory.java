@@ -37,7 +37,8 @@ public class RetryHeaderFactory {
         final Calendar retryTime = Calendar.getInstance();
         retryTime.add(Calendar.MILLISECOND, this.calculateDelay(retry));
 
-        LOGGER.info("Scheduling retry for {}.", retryTime.getTime());
+        LOGGER.info("Creating retry header for retryCount: {}, maximumRetries: {}, scheduledRetryTime: {}.", retry,
+                this.maximumRetries, retryTime.getTime());
         return new RetryHeader(retry, this.maximumRetries, retryTime.getTime());
     }
 
