@@ -126,6 +126,7 @@ class DeviceConverterHelper<T extends com.alliander.osgp.domain.core.entities.De
                 deviceModel.setManufacturer(manufacturer);
             }
             deviceModel.setModelCode(source.getDeviceModel().getModelCode());
+            deviceModel.setMetered(source.getDeviceModel().isMetered());
             destination.setDeviceModel(deviceModel);
         }
 

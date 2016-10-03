@@ -32,25 +32,36 @@ public class DeviceModel extends AbstractEntity {
     @Column(length = 255)
     private String description;
 
-    @Column()
+    @Column
     private boolean fileStorage;
+
+    @Column
+    private boolean metered;
 
     public DeviceModel() {
         // Default constructor
     }
 
-    public DeviceModel(final Manufacturer manufacturerId, final String modelCode, final String description) {
+    public DeviceModel(final Manufacturer manufacturerId, final String modelCode, final String description,
+            final boolean metered) {
         this.manufacturerId = manufacturerId;
         this.modelCode = modelCode;
         this.description = description;
         // default behaviour is true
         this.fileStorage = true;
+        this.metered = metered;
     }
 
     public DeviceModel(final Manufacturer manufacturerId, final String modelCode, final String description,
-            final boolean fileStorage) {
-        this(manufacturerId, modelCode, description);
+            final boolean fileStorage, final boolean metered) {
+        this(manufacturerId, modelCode, description, metered);
         this.fileStorage = fileStorage;
+        this.metered = metered;
+    }
+
+    public void updateData(final String description, final boolean metered) {
+        this.description = description;
+        this.metered = metered;
     }
 
     public Manufacturer getManufacturerId() {
@@ -65,11 +76,11 @@ public class DeviceModel extends AbstractEntity {
         return this.modelCode;
     }
 
-    public void setDescription(final String description) {
-        this.description = description;
-    }
-
     public boolean isFileStorage() {
         return this.fileStorage;
+    }
+
+    public boolean isMetered() {
+        return this.metered;
     }
 }
