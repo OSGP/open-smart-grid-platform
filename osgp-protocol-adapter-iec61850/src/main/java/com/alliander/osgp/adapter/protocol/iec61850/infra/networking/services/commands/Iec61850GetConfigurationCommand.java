@@ -21,6 +21,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterEx
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Function;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalDevice;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalNode;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.NodeContainer;
@@ -48,111 +49,121 @@ public class Iec61850GetConfigurationCommand {
 
     public ConfigurationDto getConfigurationFromDevice(final Iec61850Client iec61850Client,
             final DeviceConnection deviceConnection, final Ssld ssld, final Iec61850Mapper mapper)
-            throws ProtocolAdapterException {
-        // Keeping the hardcoded values and values that aren't fetched from the
-        // device out of the Function
+                    throws ProtocolAdapterException {
+        final Function<ConfigurationDto> function = new Function<ConfigurationDto>() {
 
-        // Hardcoded (not supported)
-        final MeterTypeDto meterType = MeterTypeDto.AUX;
-        // Hardcoded (not supported)
-        final Integer shortTermHistoryIntervalMinutes = 15;
-        // Hardcoded (not supported)
-        final LinkTypeDto preferredLinkType = LinkTypeDto.ETHERNET;
-        // Hardcoded (not supported)
-        final Integer longTermHistoryInterval = 1;
-        // Hardcoded (not supported)
-        final LongTermIntervalTypeDto longTermHistoryIntervalType = LongTermIntervalTypeDto.DAYS;
+            @Override
+            public ConfigurationDto apply() throws Exception {
+                // Keeping the hardcoded values and values that aren't fetched
+                // from the
+                // device out of the Function
 
-        final List<RelayMapDto> relayMaps = new ArrayList<>();
+                // Hardcoded (not supported)
+                final MeterTypeDto meterType = MeterTypeDto.AUX;
+                // Hardcoded (not supported)
+                final Integer shortTermHistoryIntervalMinutes = 15;
+                // Hardcoded (not supported)
+                final LinkTypeDto preferredLinkType = LinkTypeDto.ETHERNET;
+                // Hardcoded (not supported)
+                final Integer longTermHistoryInterval = 1;
+                // Hardcoded (not supported)
+                final LongTermIntervalTypeDto longTermHistoryIntervalType = LongTermIntervalTypeDto.DAYS;
 
-        for (final DeviceOutputSetting deviceOutputSetting : ssld.getOutputSettings()) {
-            this.checkRelayType(iec61850Client, deviceConnection, deviceOutputSetting);
-            relayMaps.add(mapper.map(deviceOutputSetting, RelayMapDto.class));
-        }
+                final List<RelayMapDto> relayMaps = new ArrayList<>();
 
-        final RelayConfigurationDto relayConfiguration = new RelayConfigurationDto(relayMaps);
+                for (final DeviceOutputSetting deviceOutputSetting : ssld.getOutputSettings()) {
+                    Iec61850GetConfigurationCommand.this.checkRelayType(iec61850Client, deviceConnection,
+                            deviceOutputSetting);
+                    relayMaps.add(mapper.map(deviceOutputSetting, RelayMapDto.class));
+                }
 
-        // PSLD specific => just sending null so it'll be ignored
-        final DaliConfigurationDto daliConfiguration = null;
+                final RelayConfigurationDto relayConfiguration = new RelayConfigurationDto(relayMaps);
 
-        // getting the software configuration values
-        LOGGER.info("Reading the software configuration values");
-        final NodeContainer softwareConfiguration = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
-                LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.SOFTWARE_CONFIGURATION, Fc.CF);
-        iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
-                softwareConfiguration.getFcmodelNode());
+                // PSLD specific => just sending null so it'll be ignored
+                final DaliConfigurationDto daliConfiguration = null;
 
-        String lightTypeValue = softwareConfiguration.getString(SubDataAttribute.LIGHT_TYPE);
-        // Fix for Kaifa bug KI-31
-        if (lightTypeValue == null || lightTypeValue.isEmpty()) {
-            lightTypeValue = "RELAY";
-        }
-        final LightTypeDto lightType = LightTypeDto.valueOf(lightTypeValue);
-        final short astroGateSunRiseOffset = softwareConfiguration.getShort(SubDataAttribute.ASTRONOMIC_SUNRISE_OFFSET)
-                .getValue();
-        final short astroGateSunSetOffset = softwareConfiguration.getShort(SubDataAttribute.ASTRONOMIC_SUNSET_OFFSET)
-                .getValue();
+                // getting the software configuration values
+                LOGGER.info("Reading the software configuration values");
+                final NodeContainer softwareConfiguration = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
+                        LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.SOFTWARE_CONFIGURATION, Fc.CF);
+                iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
+                        softwareConfiguration.getFcmodelNode());
 
-        final ConfigurationDto configuration = new ConfigurationDto(lightType, daliConfiguration, relayConfiguration,
-                shortTermHistoryIntervalMinutes, preferredLinkType, meterType, longTermHistoryInterval,
-                longTermHistoryIntervalType);
+                String lightTypeValue = softwareConfiguration.getString(SubDataAttribute.LIGHT_TYPE);
+                // Fix for Kaifa bug KI-31
+                if (lightTypeValue == null || lightTypeValue.isEmpty()) {
+                    lightTypeValue = "RELAY";
+                }
+                final LightTypeDto lightType = LightTypeDto.valueOf(lightTypeValue);
+                final short astroGateSunRiseOffset = softwareConfiguration.getShort(
+                        SubDataAttribute.ASTRONOMIC_SUNRISE_OFFSET).getValue();
+                final short astroGateSunSetOffset = softwareConfiguration.getShort(
+                        SubDataAttribute.ASTRONOMIC_SUNSET_OFFSET).getValue();
 
-        // getting the registration configuration values
-        LOGGER.info("Reading the registration configuration values");
-        final NodeContainer registration = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
-                LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.REGISTRATION, Fc.CF);
-        iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
-                registration.getFcmodelNode());
+                final ConfigurationDto configuration = new ConfigurationDto(lightType, daliConfiguration,
+                        relayConfiguration, shortTermHistoryIntervalMinutes, preferredLinkType, meterType,
+                        longTermHistoryInterval, longTermHistoryIntervalType);
 
-        final String serverAddress = registration.getString(SubDataAttribute.SERVER_ADDRESS);
-        final int serverPort = registration.getInteger(SubDataAttribute.SERVER_PORT).getValue();
+                // getting the registration configuration values
+                LOGGER.info("Reading the registration configuration values");
+                final NodeContainer registration = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
+                        LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.REGISTRATION, Fc.CF);
+                iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
+                        registration.getFcmodelNode());
 
-        configuration.setOspgIpAddress(serverAddress);
-        configuration.setOsgpPortNumber(serverPort);
+                final String serverAddress = registration.getString(SubDataAttribute.SERVER_ADDRESS);
+                final int serverPort = registration.getInteger(SubDataAttribute.SERVER_PORT).getValue();
 
-        // getting the IP configuration values
-        LOGGER.info("Reading the IP configuration values");
-        final NodeContainer ipConfiguration = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
-                LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.IP_CONFIGURATION, Fc.CF);
-        iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
-                ipConfiguration.getFcmodelNode());
+                configuration.setOspgIpAddress(serverAddress);
+                configuration.setOsgpPortNumber(serverPort);
 
-        final String deviceFixedIpAddress = ipConfiguration.getString(SubDataAttribute.IP_ADDRESS);
-        final String deviceFixedIpNetmask = ipConfiguration.getString(SubDataAttribute.NETMASK);
-        final String deviceFixedIpGateway = ipConfiguration.getString(SubDataAttribute.GATEWAY);
-        final boolean isDhcpEnabled = ipConfiguration.getBoolean(SubDataAttribute.ENABLE_DHCP).getValue();
+                // getting the IP configuration values
+                LOGGER.info("Reading the IP configuration values");
+                final NodeContainer ipConfiguration = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
+                        LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.IP_CONFIGURATION, Fc.CF);
+                iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
+                        ipConfiguration.getFcmodelNode());
 
-        final DeviceFixedIpDto deviceFixedIp = new DeviceFixedIpDto(deviceFixedIpAddress, deviceFixedIpNetmask,
-                deviceFixedIpGateway);
+                final String deviceFixedIpAddress = ipConfiguration.getString(SubDataAttribute.IP_ADDRESS);
+                final String deviceFixedIpNetmask = ipConfiguration.getString(SubDataAttribute.NETMASK);
+                final String deviceFixedIpGateway = ipConfiguration.getString(SubDataAttribute.GATEWAY);
+                final boolean isDhcpEnabled = ipConfiguration.getBoolean(SubDataAttribute.ENABLE_DHCP).getValue();
 
-        configuration.setDeviceFixedIp(deviceFixedIp);
-        configuration.setDhcpEnabled(isDhcpEnabled);
+                final DeviceFixedIpDto deviceFixedIp = new DeviceFixedIpDto(deviceFixedIpAddress, deviceFixedIpNetmask,
+                        deviceFixedIpGateway);
 
-        // setting the software configuration values
-        configuration.setAstroGateSunRiseOffset((int) astroGateSunRiseOffset);
-        configuration.setAstroGateSunSetOffset((int) astroGateSunSetOffset);
+                configuration.setDeviceFixedIp(deviceFixedIp);
+                configuration.setDhcpEnabled(isDhcpEnabled);
 
-        // getting the clock configuration values
-        LOGGER.info("Reading the clock configuration values");
-        final NodeContainer clock = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
-                LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.CLOCK, Fc.CF);
-        iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
-                clock.getFcmodelNode());
+                // setting the software configuration values
+                configuration.setAstroGateSunRiseOffset((int) astroGateSunRiseOffset);
+                configuration.setAstroGateSunSetOffset((int) astroGateSunSetOffset);
 
-        final int timeSyncFrequency = clock.getUnsignedShort(SubDataAttribute.TIME_SYNC_FREQUENCY).getValue();
-        final boolean automaticSummerTimingEnabled = clock.getBoolean(SubDataAttribute.AUTOMATIC_SUMMER_TIMING_ENABLED)
-                .getValue();
-        final String summerTimeDetails = clock.getString(SubDataAttribute.SUMMER_TIME_DETAILS);
-        final String winterTimeDetails = clock.getString(SubDataAttribute.WINTER_TIME_DETAILS);
+                // getting the clock configuration values
+                LOGGER.info("Reading the clock configuration values");
+                final NodeContainer clock = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
+                        LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.CLOCK, Fc.CF);
+                iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
+                        clock.getFcmodelNode());
 
-        configuration.setTimeSyncFrequency(timeSyncFrequency);
-        configuration.setAutomaticSummerTimingEnabled(automaticSummerTimingEnabled);
-        configuration.setSummerTimeDetails(new DaylightSavingTimeTransition(TIME_ZONE_AMSTERDAM, summerTimeDetails)
-        .getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
-        configuration.setWinterTimeDetails(new DaylightSavingTimeTransition(TIME_ZONE_AMSTERDAM, winterTimeDetails)
-        .getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
+                final int timeSyncFrequency = clock.getUnsignedShort(SubDataAttribute.TIME_SYNC_FREQUENCY).getValue();
+                final boolean automaticSummerTimingEnabled = clock.getBoolean(
+                        SubDataAttribute.AUTOMATIC_SUMMER_TIMING_ENABLED).getValue();
+                final String summerTimeDetails = clock.getString(SubDataAttribute.SUMMER_TIME_DETAILS);
+                final String winterTimeDetails = clock.getString(SubDataAttribute.WINTER_TIME_DETAILS);
 
-        return configuration;
+                configuration.setTimeSyncFrequency(timeSyncFrequency);
+                configuration.setAutomaticSummerTimingEnabled(automaticSummerTimingEnabled);
+                configuration.setSummerTimeDetails(new DaylightSavingTimeTransition(TIME_ZONE_AMSTERDAM,
+                        summerTimeDetails).getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
+                configuration.setWinterTimeDetails(new DaylightSavingTimeTransition(TIME_ZONE_AMSTERDAM,
+                        winterTimeDetails).getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
+
+                return configuration;
+            }
+        };
+
+        return iec61850Client.sendCommandWithRetry(function);
     }
 
     private void checkRelayType(final Iec61850Client iec61850Client, final DeviceConnection deviceConnection,

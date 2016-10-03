@@ -16,9 +16,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Function;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalDevice;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalNode;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.NodeContainer;
@@ -39,32 +41,41 @@ public class Iec61850PowerUsageHistoryCommand {
     public List<PowerUsageDataDto> getPowerUsageHistoryDataFromDevice(final Iec61850Client iec61850Client,
             final DeviceConnection deviceConnection,
             final PowerUsageHistoryMessageDataContainerDto powerUsageHistoryContainer,
-            final List<DeviceOutputSetting> deviceOutputSettingsLightRelays) throws NodeReadException {
-        final HistoryTermTypeDto historyTermType = powerUsageHistoryContainer.getHistoryTermType();
-        if (historyTermType != null) {
-            LOGGER.info("device: {}, ignoring HistoryTermType ({}) determining power usage history",
-                    deviceConnection.getDeviceIdentification(), historyTermType);
-        }
-        final TimePeriodDto timePeriod = powerUsageHistoryContainer.getTimePeriod();
+            final List<DeviceOutputSetting> deviceOutputSettingsLightRelays) throws ProtocolAdapterException {
+        final Function<List<PowerUsageDataDto>> function = new Function<List<PowerUsageDataDto>>() {
 
-        final List<PowerUsageDataDto> powerUsageHistoryData = new ArrayList<>();
-        for (final DeviceOutputSetting deviceOutputSetting : deviceOutputSettingsLightRelays) {
-            final List<PowerUsageDataDto> powerUsageData = this.getPowerUsageHistoryDataFromRelay(iec61850Client,
-                    deviceConnection, timePeriod, deviceOutputSetting);
-            powerUsageHistoryData.addAll(powerUsageData);
-        }
-        /*-
-         * This way of gathering leads to PowerUsageData elements per relay.
-         * If it is necessary to only include one PowerUsageData element for
-         * the device, where data for the different relays is combined in
-         * the SsldData.relayData some sort of merge needs to be performed.
-         *
-         * This can either be a rework of the list currently returned, or it
-         * can be a list constructed based on an altered return type from
-         * getPowerUsageHistoryDataFromRelay (for instance a Map of Date to
-         * a Map of Relay Index to Total Lighting Minutes).
-         */
-        return powerUsageHistoryData;
+            @Override
+            public List<PowerUsageDataDto> apply() throws Exception {
+                final HistoryTermTypeDto historyTermType = powerUsageHistoryContainer.getHistoryTermType();
+                if (historyTermType != null) {
+                    LOGGER.info("device: {}, ignoring HistoryTermType ({}) determining power usage history",
+                            deviceConnection.getDeviceIdentification(), historyTermType);
+                }
+                final TimePeriodDto timePeriod = powerUsageHistoryContainer.getTimePeriod();
+
+                final List<PowerUsageDataDto> powerUsageHistoryData = new ArrayList<>();
+                for (final DeviceOutputSetting deviceOutputSetting : deviceOutputSettingsLightRelays) {
+                    final List<PowerUsageDataDto> powerUsageData = Iec61850PowerUsageHistoryCommand.this
+                            .getPowerUsageHistoryDataFromRelay(iec61850Client, deviceConnection, timePeriod,
+                                    deviceOutputSetting);
+                    powerUsageHistoryData.addAll(powerUsageData);
+                }
+                /*-
+                 * This way of gathering leads to PowerUsageData elements per relay.
+                 * If it is necessary to only include one PowerUsageData element for
+                 * the device, where data for the different relays is combined in
+                 * the SsldData.relayData some sort of merge needs to be performed.
+                 *
+                 * This can either be a rework of the list currently returned, or it
+                 * can be a list constructed based on an altered return type from
+                 * getPowerUsageHistoryDataFromRelay (for instance a Map of Date to
+                 * a Map of Relay Index to Total Lighting Minutes).
+                 */
+                return powerUsageHistoryData;
+            }
+        };
+
+        return iec61850Client.sendCommandWithRetry(function);
     }
 
     private List<PowerUsageDataDto> getPowerUsageHistoryDataFromRelay(final Iec61850Client iec61850Client,
