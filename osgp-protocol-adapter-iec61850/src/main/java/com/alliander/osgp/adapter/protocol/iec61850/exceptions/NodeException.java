@@ -32,6 +32,11 @@ public class NodeException extends ProtocolAdapterException {
         this.connectionState = ConnectionState.UNKNOWN;
     }
 
+    public NodeException(final String message, final Throwable throwable, final ConnectionState connectionState) {
+        super(message, throwable);
+        this.connectionState = connectionState;
+    }
+
     public ConnectionState getConnectionState() {
         return this.connectionState;
     }
