@@ -15,18 +15,18 @@ public class FaultResponseParametersDto implements Serializable {
 
     private static final long serialVersionUID = 3530067384508337669L;
 
-    private final List<FaultResponseParameterDto> parameter;
+    private final List<FaultResponseParameterDto> parameterList;
 
-    public FaultResponseParametersDto(final List<FaultResponseParameterDto> parameter) {
-        this.parameter = new ArrayList<>(parameter);
+    public FaultResponseParametersDto(final List<FaultResponseParameterDto> parameterList) {
+        this.parameterList = new ArrayList<>(parameterList);
     }
 
     @Override
     public String toString() {
-        return "FaultResponseParametersDto[" + this.parameter + "]";
+        return "FaultResponseParametersDto[" + this.parameterList + "]";
     }
 
-    public List<FaultResponseParameterDto> getParameter() {
-        return new ArrayList<>(this.parameter);
+    public List<FaultResponseParameterDto> getParameterList() {
+        return new ArrayList<>(this.parameterList);
     }
 }
