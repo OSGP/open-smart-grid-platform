@@ -88,7 +88,7 @@ public class BundleResponseMessageProcessor extends OsgpCoreResponseMessageProce
             return this.faultResponseForFunctionalOrTechnicalException((OsgpException) exception, parameters);
         }
 
-        return new FaultResponseDto(null, defaultMessage, ComponentType.DOMAIN_SMART_METERING.getComponentName(),
+        return new FaultResponseDto(null, defaultMessage, ComponentType.DOMAIN_SMART_METERING.name(),
                 exception.getClass().getName(), exception.getMessage(), new FaultResponseParametersDto(parameters));
     }
 
@@ -106,7 +106,7 @@ public class BundleResponseMessageProcessor extends OsgpCoreResponseMessageProce
         if (exception.getComponentType() == null) {
             component = null;
         } else {
-            component = exception.getComponentType().getComponentName();
+            component = exception.getComponentType().name();
         }
 
         final String innerException;
