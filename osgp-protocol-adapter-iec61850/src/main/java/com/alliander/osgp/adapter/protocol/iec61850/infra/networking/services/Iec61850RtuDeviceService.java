@@ -27,6 +27,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.requests.SetSetPo
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.EmptyDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.GetDataDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ConnectionFailureException;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeWriteException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850ClientAssociation;
@@ -301,8 +302,10 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
                     LogicalNode.LOGICAL_NODE_ZERO, reportName, Fc.BR);
             reportingPv.writeBoolean(SubDataAttribute.ENABLE_REPORTING, true);
         } catch (final NullPointerException e) {
-            LOGGER.debug("Nullpointer exception", e);
+            LOGGER.debug("NullPointerException", e);
             LOGGER.warn("Skip enable reporting for device {}, report {}.", logicalDevice, reportName.getDescription());
+        } catch (final NodeWriteException e) {
+            LOGGER.error("NodeWriteException", e);
         }
 
         LOGGER.info("Allowing device {} to send events", deviceIdentification);
@@ -316,8 +319,10 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
                     LogicalNode.LOGICAL_NODE_ZERO, reportName, Fc.RP);
             reportingPv.writeBoolean(SubDataAttribute.ENABLE_REPORTING, true);
         } catch (final NullPointerException e) {
-            LOGGER.debug("Nullpointer exception", e);
+            LOGGER.debug("NullPointerException", e);
             LOGGER.warn("Skip enable reporting for device {}, report {}.", logicalDevice, reportName.getDescription());
+        } catch (final NodeWriteException e) {
+            LOGGER.error("NodeWriteException", e);
         }
 
         LOGGER.info("Allowing device {} to send events", deviceIdentification);

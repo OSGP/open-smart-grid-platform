@@ -18,6 +18,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeException;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeWriteException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850ClientAssociation;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Connection;
@@ -62,7 +64,8 @@ public class DeviceRegistrationService {
      *            The device identification.
      * @param ipAddress
      *            The IP address of the device.
-     * @Paraam ied The type of IED.
+     * @param ied
+     *            The type of IED.
      *
      * @throws ProtocolAdapterException
      *             In case the connection to the device can not be established.
@@ -74,58 +77,23 @@ public class DeviceRegistrationService {
         final Iec61850ClientAssociation iec61850ClientAssociation = this.iec61850DeviceConnectionService
                 .getIec61850ClientAssociation(deviceIdentification);
         final ServerModel serverModel = this.iec61850DeviceConnectionService.getServerModel(deviceIdentification);
+        final DeviceConnection deviceConnection = new DeviceConnection(new Iec61850Connection(
+                iec61850ClientAssociation, serverModel), deviceIdentification, ied);
 
         final Function<Void> function = new Function<Void>() {
 
             @Override
             public Void apply() throws Exception {
-                final DeviceConnection deviceConnection = new DeviceConnection(new Iec61850Connection(
-                        iec61850ClientAssociation, serverModel), deviceIdentification, IED.FLEX_OVL);
+                DeviceRegistrationService.this.setLocationInformation(deviceConnection);
 
-                // Set the location information for this device.
-                final Ssld ssld = DeviceRegistrationService.this.ssldDataRepository
-                        .findByDeviceIdentification(deviceIdentification);
-                if (ssld != null) {
-                    final Float longitude = ssld.getGpsLongitude();
-                    final Float latitude = ssld.getGpsLatitude();
-                    LOGGER.info("Ssld found for device: {} longitude: {}, latitude: {}", deviceIdentification,
-                            longitude, latitude);
+                DeviceRegistrationService.this.disableRegistration(deviceConnection);
 
-                    if (longitude != null && latitude != null) {
-                        final NodeContainer astronomical = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
-                                LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.ASTRONOMICAL, Fc.CF);
-                        astronomical.writeFloat(SubDataAttribute.GPS_LONGITUDE, ssld.getGpsLongitude());
-                        astronomical.writeFloat(SubDataAttribute.GPS_LATITUDE, ssld.getGpsLatitude());
-                        LOGGER.info("longitude: {}, latitude: {} written for device: {}", longitude, latitude,
-                                deviceIdentification);
-                    }
-                }
-
-                // Set attribute to false in order to signal the device the
-                // registration was successful.
-                final NodeContainer deviceRegistration = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
-                        LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.REGISTRATION, Fc.CF);
-                deviceRegistration.writeBoolean(SubDataAttribute.DEVICE_REGISTRATION_ENABLED, false);
-                LOGGER.info("Registration disabled for device: {}", deviceIdentification);
-
-                // Enable reporting so the device can send reports.
                 if (DeviceRegistrationService.this.isReportingAfterDeviceRegistrationEnabled) {
-                    LOGGER.info("Reporting enabled for device: {}", deviceIdentification);
-                    DeviceRegistrationService.this.iec61850DeviceConnectionService.enableReportingOnDevice(
-                            deviceConnection, deviceIdentification);
-
-                    // Don't disconnect now! The device should be able to send
-                    // reports.
-                    new Timer().schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            DeviceRegistrationService.this.iec61850DeviceConnectionService
-                            .disconnect(deviceIdentification);
-                        }
-                    }, DeviceRegistrationService.this.delayAfterDeviceRegistration);
+                    LOGGER.info("Reporting enabled for device: {}", deviceConnection.getDeviceIdentification());
+                    DeviceRegistrationService.this.enableReporting(deviceConnection);
                 } else {
                     LOGGER.info("Reporting disabled for device: {}", deviceIdentification);
-                    DeviceRegistrationService.this.iec61850DeviceConnectionService.disconnect(deviceIdentification);
+                    DeviceRegistrationService.this.disconnect(deviceConnection);
                 }
 
                 return null;
@@ -133,5 +101,71 @@ public class DeviceRegistrationService {
         };
 
         this.iec61850DeviceConnectionService.sendCommandWithRetry(function);
+    }
+
+    /**
+     * Set the location information for this device. If the osgp_core database
+     * contains longitude and latitude information for the given device, those
+     * values must be saved to the corresponding data-attributes.
+     *
+     * @throws NodeWriteException
+     *             In case writing of the longitude or latitude fails.
+     */
+    protected void setLocationInformation(final DeviceConnection deviceConnection) throws NodeWriteException {
+        final Ssld ssld = DeviceRegistrationService.this.ssldDataRepository.findByDeviceIdentification(deviceConnection
+                .getDeviceIdentification());
+        if (ssld != null) {
+            final Float longitude = ssld.getGpsLongitude();
+            final Float latitude = ssld.getGpsLatitude();
+            LOGGER.info("Ssld found for device: {} longitude: {}, latitude: {}",
+                    deviceConnection.getDeviceIdentification(), longitude, latitude);
+
+            if (longitude != null && latitude != null) {
+                final NodeContainer astronomical = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
+                        LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.ASTRONOMICAL, Fc.CF);
+                astronomical.writeFloat(SubDataAttribute.GPS_LONGITUDE, ssld.getGpsLongitude());
+                astronomical.writeFloat(SubDataAttribute.GPS_LATITUDE, ssld.getGpsLatitude());
+                LOGGER.info("longitude: {}, latitude: {} written for device: {}", longitude, latitude,
+                        deviceConnection.getDeviceIdentification());
+            }
+        }
+    }
+
+    /**
+     * Set attribute to false in order to signal the device the registration was
+     * successful.
+     *
+     * @throws NodeWriteException
+     *             In case writing of the data-attribute fails.
+     */
+    protected void disableRegistration(final DeviceConnection deviceConnection) throws NodeWriteException {
+        final NodeContainer deviceRegistration = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
+                LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.REGISTRATION, Fc.CF);
+        deviceRegistration.writeBoolean(SubDataAttribute.DEVICE_REGISTRATION_ENABLED, false);
+        LOGGER.info("Registration disabled for device: {}", deviceConnection.getDeviceIdentification());
+    }
+
+    /**
+     * Enable reporting so the device can send reports.
+     *
+     * @throws NodeException
+     *             In case writing or reading of data-attributes fails.
+     */
+    protected void enableReporting(final DeviceConnection deviceConnection) throws NodeException {
+        DeviceRegistrationService.this.iec61850DeviceConnectionService.enableReportingOnDevice(deviceConnection,
+                deviceConnection.getDeviceIdentification());
+
+        // Don't disconnect now! The device should be able to send
+        // reports.
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                DeviceRegistrationService.this.disconnect(deviceConnection);
+            }
+        }, DeviceRegistrationService.this.delayAfterDeviceRegistration);
+    }
+
+    private void disconnect(final DeviceConnection deviceConnection) {
+        this.iec61850DeviceConnectionService.disconnect(deviceConnection.getDeviceIdentification());
     }
 }

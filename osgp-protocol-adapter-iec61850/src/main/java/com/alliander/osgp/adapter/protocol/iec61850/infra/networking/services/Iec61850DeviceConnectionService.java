@@ -24,6 +24,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.iec61850.application.services.DeviceManagementService;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeException;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeWriteException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850ClientAssociation;
@@ -72,47 +75,42 @@ public class Iec61850DeviceConnectionService {
         if (this.testIfConnectionIsCachedAndAlive(deviceIdentification, ied, logicalDevice)) {
             return;
         }
-
         final InetAddress inetAddress = this.convertIpAddress(ipAddress);
         if (inetAddress == null) {
             return;
         }
-
         // Connect to obtain ClientAssociation and ServerModel.
         try {
-            // Try to connect.
             LOGGER.info("Trying to connect to deviceIdentification: {} at IP address {} using response time-out: {}",
                     deviceIdentification, ipAddress, this.responseTimeout);
             final DateTime startTime = DateTime.now();
 
+            // Create instance of appropriate event listener.
             final Iec61850ClientBaseEventListener eventListener = Iec61850ClientEventListenerFactory.getInstance()
                     .getEventListener(ied, deviceIdentification, this.deviceManagementService);
 
-            Iec61850ClientAssociation iec61850clientAssociation;
-            switch (ied) {
-            case FLEX_OVL:
-                iec61850clientAssociation = this.iec61850Client.connect(deviceIdentification, inetAddress,
-                        eventListener, this.iec61850SsldPortServer);
-                break;
-            case ZOWN_RTU:
-                iec61850clientAssociation = this.iec61850Client.connect(deviceIdentification, inetAddress,
-                        eventListener, this.iec61850RtuPortServer);
-                break;
-            default:
-                throw new ProtocolAdapterException("Unable to execute Disable Registration for IED "
-                        + ied.getDescription());
+            // For now, the port numbers are defined in the property file. If in
+            // the future a database is added to this component, the port
+            // numbers for particular devices should be saved using the
+            // database.
+            int port = 102;
+            if (IED.FLEX_OVL.equals(ied)) {
+                port = this.iec61850SsldPortServer;
+            } else if (IED.ZOWN_RTU.equals(ied)) {
+                port = this.iec61850RtuPortServer;
             }
 
-            final ClientAssociation clientAssociation = iec61850clientAssociation.getClientAssociation();
-
-            // Set response time-out
+            // Try to connect and receive the ClientAssociation.
+            final Iec61850ClientAssociation iec61850ClientAssociation = this.iec61850Client.connect(
+                    deviceIdentification, inetAddress, eventListener, port);
+            final ClientAssociation clientAssociation = iec61850ClientAssociation.getClientAssociation();
+            // Set response time-out.
             clientAssociation.setResponseTimeout(this.responseTimeout);
-
             // Read the ServerModel, either from the device or from a SCL file.
             final ServerModel serverModel = this.readServerModel(clientAssociation, deviceIdentification);
 
             // Cache the connection.
-            this.cacheIec61850Connection(deviceIdentification, new Iec61850Connection(iec61850clientAssociation,
+            this.cacheIec61850Connection(deviceIdentification, new Iec61850Connection(iec61850ClientAssociation,
                     serverModel));
 
             final DateTime endTime = DateTime.now();
@@ -133,16 +131,14 @@ public class Iec61850DeviceConnectionService {
             if (iec61850Connection != null) {
                 // Already connected, check if connection is still usable.
                 LOGGER.info("Connection found for deviceIdentification: {}", deviceIdentification);
-                boolean isConnectionAlive = false;
-
                 // Read physical name node (only), which is much faster, but
-                // requires manual reads of remote data
+                // requires manual reads of remote data.
                 if (ied != null && logicalDevice != null) {
                     LOGGER.info("Testing if connection is alive using {}{}/{}.{} for deviceIdentification: {}",
                             ied.getDescription(), logicalDevice.getDescription(),
                             LogicalNode.LOGICAL_NODE_ZERO.getDescription(), DataAttribute.NAME_PLATE.getDescription(),
                             deviceIdentification);
-                    isConnectionAlive = this.iec61850Client.readNodeDataValues(
+                    this.iec61850Client.readNodeDataValues(
                             iec61850Connection.getClientAssociation(),
                             (FcModelNode) iec61850Connection.getServerModel().findModelNode(
                                     ied.getDescription() + logicalDevice.getDescription() + "/"
@@ -150,30 +146,20 @@ public class Iec61850DeviceConnectionService {
                                             + DataAttribute.NAME_PLATE.getDescription(), Fc.DC));
                 } else {
                     // Read all data values, which is much slower, but requires
-                    // no manual reads of remote data
+                    // no manual reads of remote data.
                     LOGGER.info(
                             "Testing if connection is alive using readAllDataValues() for deviceIdentification: {}",
                             deviceIdentification);
-                    isConnectionAlive = this.iec61850Client
-                            .readAllDataValues(iec61850Connection.getClientAssociation());
+                    this.iec61850Client.readAllDataValues(iec61850Connection.getClientAssociation());
                 }
-
-                if (isConnectionAlive) {
-                    LOGGER.info("Connection is still active for deviceIdentification: {}", deviceIdentification);
-                    return true;
-                } else {
-                    LOGGER.info(
-                            "Connection is no longer active, removing connection from cache for deviceIdentification: {}",
-                            deviceIdentification);
-                    this.removeIec61850Connection(deviceIdentification);
-                }
+                LOGGER.info("Connection is still active for deviceIdentification: {}", deviceIdentification);
+                return true;
             }
-        } catch (final Exception e) {
-            LOGGER.error(String.format(
-                    "Unexpected exception while trying to find a cached connection for deviceIdentification: %s",
-                    deviceIdentification), e);
+        } catch (final NodeReadException e) {
+            LOGGER.error("Connection is no longer active, removing connection from cache for deviceIdentification: "
+                    + deviceIdentification, e);
+            this.removeIec61850Connection(deviceIdentification);
         }
-
         return false;
     }
 
@@ -196,35 +182,34 @@ public class Iec61850DeviceConnectionService {
         }
     }
 
+    /**
+     * Closes the {@link ClientAssociation}, send a disconnect request and close
+     * the socket.
+     */
     public synchronized void disconnect(final String deviceIdentification) {
-        try {
-            LOGGER.info("Trying to disconnect from deviceIdentification: {}", deviceIdentification);
-            final Iec61850Connection iec61850Connection = this.fetchIec61850Connection(deviceIdentification);
-            if (iec61850Connection != null) {
-                iec61850Connection.getClientAssociation().disconnect();
-                this.removeIec61850Connection(deviceIdentification);
-                LOGGER.info("Disconnected from deviceIdentification: {}", deviceIdentification);
-            } else {
-                LOGGER.info("Unable to disconnect from deviceIdentification: {}, no cached connection was found",
-                        deviceIdentification);
-            }
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during disconnect()", e);
+        LOGGER.info("Trying to disconnect from deviceIdentification: {}", deviceIdentification);
+        final Iec61850Connection iec61850Connection = this.fetchIec61850Connection(deviceIdentification);
+        if (iec61850Connection != null) {
+            iec61850Connection.getClientAssociation().disconnect();
+            this.removeIec61850Connection(deviceIdentification);
+            LOGGER.info("Disconnected from deviceIdentification: {}", deviceIdentification);
+        } else {
+            LOGGER.info("Unable to disconnect from deviceIdentification: {}, no cached connection was found",
+                    deviceIdentification);
         }
     }
 
-    public Iec61850ClientAssociation getIec61850ClientAssociation(final String deviceIdentification)
-            throws ProtocolAdapterException {
+    public Iec61850ClientAssociation getIec61850ClientAssociation(final String deviceIdentification) {
         final Iec61850Connection iec61850Connection = this.fetchIec61850Connection(deviceIdentification);
         return iec61850Connection.getIec61850ClientAssociation();
     }
 
-    public ClientAssociation getClientAssociation(final String deviceIdentification) throws ProtocolAdapterException {
+    public ClientAssociation getClientAssociation(final String deviceIdentification) {
         final Iec61850Connection iec61850Connection = this.fetchIec61850Connection(deviceIdentification);
         return iec61850Connection.getClientAssociation();
     }
 
-    public ServerModel getServerModel(final String deviceIdentification) throws ProtocolAdapterException {
+    public ServerModel getServerModel(final String deviceIdentification) {
         final Iec61850Connection iec61850Connection = this.fetchIec61850Connection(deviceIdentification);
         if (iec61850Connection == null) {
             return null;
@@ -233,17 +218,23 @@ public class Iec61850DeviceConnectionService {
         return iec61850Connection.getServerModel();
     }
 
-    public void enableReportingOnDevice(final DeviceConnection deviceConnection, final String deviceIdentification) {
+    public void enableReportingOnDevice(final DeviceConnection deviceConnection, final String deviceIdentification)
+            throws NodeException {
         this.iec61850Client.enableReportingOnDevice(deviceConnection, deviceIdentification);
     }
 
-    public boolean readAllValues(final String deviceIdentification) throws ProtocolAdapterException {
+    public void clearReportOnDevice(final DeviceConnection deviceConnection, final String deviceIdentification)
+            throws NodeWriteException {
+        this.iec61850Client.clearReportOnDevice(deviceConnection, deviceIdentification);
+    }
+
+    public void readAllValues(final String deviceIdentification) throws NodeReadException {
         final Iec61850Connection iec61850Connection = this.fetchIec61850Connection(deviceIdentification);
         if (iec61850Connection == null) {
-            return false;
+            return;
         }
         final ClientAssociation clientAssociation = iec61850Connection.getClientAssociation();
-        return this.iec61850Client.readAllDataValues(clientAssociation);
+        this.iec61850Client.readAllDataValues(clientAssociation);
     }
 
     public <T> T sendCommandWithRetry(final Function<T> function) throws ProtocolAdapterException {
@@ -254,8 +245,7 @@ public class Iec61850DeviceConnectionService {
         cache.put(deviceIdentification, iec61850Connection);
     }
 
-    private synchronized Iec61850Connection fetchIec61850Connection(final String deviceIdentification)
-            throws ProtocolAdapterException {
+    private synchronized Iec61850Connection fetchIec61850Connection(final String deviceIdentification) {
         final Iec61850Connection iec61850Connection = cache.get(deviceIdentification);
         if (iec61850Connection == null) {
             LOGGER.info("No connection found for device: {}", deviceIdentification);

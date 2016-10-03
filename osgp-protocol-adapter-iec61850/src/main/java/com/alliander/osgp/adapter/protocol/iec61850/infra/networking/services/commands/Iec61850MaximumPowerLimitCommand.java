@@ -11,6 +11,7 @@ import org.joda.time.DateTime;
 import org.openmuc.openiec61850.Fc;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
@@ -23,7 +24,7 @@ public class Iec61850MaximumPowerLimitCommand implements RtuCommand {
 
     @Override
     public MeasurementDto execute(final Iec61850Client client, final DeviceConnection connection,
-            final LogicalDevice logicalDevice) {
+            final LogicalDevice logicalDevice) throws NodeReadException {
         final NodeContainer containingNode = connection.getFcModelNode(logicalDevice,
                 LogicalNode.DER_CONTROLLER_CHARACTERISTICS_ONE, DataAttribute.MAXIMUM_POWER_LIMIT, Fc.CF);
         client.readNodeDataValues(connection.getConnection().getClientAssociation(), containingNode.getFcmodelNode());
@@ -34,7 +35,7 @@ public class Iec61850MaximumPowerLimitCommand implements RtuCommand {
     public MeasurementDto translate(final NodeContainer containingNode) {
 
         return new MeasurementDto(1, DataAttribute.MAXIMUM_POWER_LIMIT.getDescription(), 0,
-                // TODO - Implement when available
+        // TODO - Implement when available
                 new DateTime(), 1);
     }
 

@@ -111,7 +111,8 @@ public class Iec61850ClientSSLDEventListener extends Iec61850ClientBaseEventList
         if (report.isBufOvfl()) {
             this.logger.warn("Buffer Overflow reported for {} - entries within the buffer may have been lost.",
                     reportDescription);
-        } else if (this.firstNewSqNum != null && report.getSqNum() != null && report.getSqNum() < this.firstNewSqNum) {
+        }
+        if (this.firstNewSqNum != null && report.getSqNum() != null && report.getSqNum() < this.firstNewSqNum) {
             skipRecordBecauseOfOldSqNum = true;
         }
         this.logReportDetails(report);
