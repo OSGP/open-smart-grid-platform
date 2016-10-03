@@ -27,7 +27,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 public class RtuSimulator implements ServerEventListener {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(RtuSimulator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RtuSimulator.class);
+
+    private static final String RTU_LOAD1_MMXU = "WAGO61850ServerLOAD1/MMXU";
+    private static final String RTU_LOAD1_MMTR = "WAGO61850ServerLOAD1/MMTR";
 
     private final ServerSap server;
 
@@ -101,6 +104,12 @@ public class RtuSimulator implements ServerEventListener {
         values.add(this.setRandomByte("WAGO61850ServerPV1/LLN0.Mod.stVal", Fc.ST, 1, 2));
         values.add(this.setTime("WAGO61850ServerPV1/LLN0.Mod.t", Fc.ST, timestamp));
 
+        values.add(this.setRandomFloat("WAGO61850ServerPV1/MMXU1.MaxWPhs.mag.f", Fc.MX, 500, 1000));
+        values.add(this.setTime("WAGO61850ServerPV1/MMXU1.MaxWPhs.t", Fc.MX, timestamp));
+
+        values.add(this.setRandomFloat("WAGO61850ServerPV1/MMXU1.MinWPhs.mag.f", Fc.MX, 0, 500));
+        values.add(this.setTime("WAGO61850ServerPV1/MMXU1.MinWPhs.t", Fc.MX, timestamp));
+
         values.add(this.setRandomFloat("WAGO61850ServerPV1/MMXU1.TotW.mag.f", Fc.MX, 0, 1000));
         values.add(this.setTime("WAGO61850ServerPV1/MMXU1.TotW.t", Fc.MX, timestamp));
 
@@ -124,6 +133,12 @@ public class RtuSimulator implements ServerEventListener {
 
         values.add(this.setRandomByte("WAGO61850ServerPV2/LLN0.Mod.stVal", Fc.ST, 1, 2));
         values.add(this.setTime("WAGO61850ServerPV2/LLN0.Mod.t", Fc.ST, timestamp));
+
+        values.add(this.setRandomFloat("WAGO61850ServerPV2/MMXU1.MaxWPhs.mag.f", Fc.MX, 500, 1000));
+        values.add(this.setTime("WAGO61850ServerPV2/MMXU1.MaxWPhs.t", Fc.MX, timestamp));
+
+        values.add(this.setRandomFloat("WAGO61850ServerPV2/MMXU1.MinWPhs.mag.f", Fc.MX, 0, 500));
+        values.add(this.setTime("WAGO61850ServerPV2/MMXU1.MinWPhs.t", Fc.MX, timestamp));
 
         values.add(this.setRandomFloat("WAGO61850ServerPV2/MMXU1.TotW.mag.f", Fc.MX, 0, 1000));
         values.add(this.setTime("WAGO61850ServerPV2/MMXU1.TotW.t", Fc.MX, timestamp));
@@ -149,6 +164,12 @@ public class RtuSimulator implements ServerEventListener {
         values.add(this.setRandomByte("WAGO61850ServerPV3/LLN0.Mod.stVal", Fc.ST, 1, 2));
         values.add(this.setTime("WAGO61850ServerPV3/LLN0.Mod.t", Fc.ST, timestamp));
 
+        values.add(this.setRandomFloat("WAGO61850ServerPV3/MMXU1.MaxWPhs.mag.f", Fc.MX, 500, 1000));
+        values.add(this.setTime("WAGO61850ServerPV3/MMXU1.MaxWPhs.t", Fc.MX, timestamp));
+
+        values.add(this.setRandomFloat("WAGO61850ServerPV3/MMXU1.MinWPhs.mag.f", Fc.MX, 0, 500));
+        values.add(this.setTime("WAGO61850ServerPV3/MMXU1.MinWPhs.t", Fc.MX, timestamp));
+
         values.add(this.setRandomFloat("WAGO61850ServerPV3/MMXU1.TotW.mag.f", Fc.MX, 0, 1000));
         values.add(this.setTime("WAGO61850ServerPV3/MMXU1.TotW.t", Fc.MX, timestamp));
 
@@ -172,6 +193,12 @@ public class RtuSimulator implements ServerEventListener {
 
         values.add(this.setRandomByte("WAGO61850ServerBATTERY1/LLN0.Mod.stVal", Fc.ST, 1, 2));
         values.add(this.setTime("WAGO61850ServerBATTERY1/LLN0.Mod.t", Fc.ST, timestamp));
+
+        values.add(this.setRandomFloat("WAGO61850ServerBATTERY1/MMXU1.MaxWPhs.mag.f", Fc.MX, 500, 1000));
+        values.add(this.setTime("WAGO61850ServerBATTERY1/MMXU1.MaxWPhs.t", Fc.MX, timestamp));
+
+        values.add(this.setRandomFloat("WAGO61850ServerBATTERY1/MMXU1.MinWPhs.mag.f", Fc.MX, 0, 500));
+        values.add(this.setTime("WAGO61850ServerBATTERY1/MMXU1.MinWPhs.t", Fc.MX, timestamp));
 
         values.add(this.setRandomFloat("WAGO61850ServerBATTERY1/MMXU1.TotW.mag.f", Fc.MX, 0, 1000));
         values.add(this.setTime("WAGO61850ServerBATTERY1/MMXU1.TotW.t", Fc.MX, timestamp));
@@ -200,6 +227,12 @@ public class RtuSimulator implements ServerEventListener {
         values.add(this.setRandomByte("WAGO61850ServerBATTERY2/LLN0.Mod.stVal", Fc.ST, 1, 2));
         values.add(this.setTime("WAGO61850ServerBATTERY2/LLN0.Mod.t", Fc.ST, timestamp));
 
+        values.add(this.setRandomFloat("WAGO61850ServerBATTERY2/MMXU1.MaxWPhs.mag.f", Fc.MX, 500, 1000));
+        values.add(this.setTime("WAGO61850ServerBATTERY2/MMXU1.MaxWPhs.t", Fc.MX, timestamp));
+
+        values.add(this.setRandomFloat("WAGO61850ServerBATTERY2/MMXU1.MinWPhs.mag.f", Fc.MX, 0, 500));
+        values.add(this.setTime("WAGO61850ServerBATTERY2/MMXU1.MinWPhs.t", Fc.MX, timestamp));
+
         values.add(this.setRandomFloat("WAGO61850ServerBATTERY2/MMXU1.TotW.mag.f", Fc.MX, 0, 1000));
         values.add(this.setTime("WAGO61850ServerBATTERY2/MMXU1.TotW.t", Fc.MX, timestamp));
 
@@ -219,11 +252,17 @@ public class RtuSimulator implements ServerEventListener {
 
         // Logical Device LOAD1
         for (int i = 1; i <= 5; i++) {
-            values.add(this.setFixedFloat("WAGO61850ServerLOAD1/MMXU" + i + ".TotW.mag.f", Fc.MX, i));
-            values.add(this.setTime("WAGO61850ServerLOAD1/MMXU" + i + ".TotW.t", Fc.MX, timestamp));
+            values.add(this.setRandomFloat(RTU_LOAD1_MMXU + i + ".MaxWPhs.mag.f", Fc.MX, 500, 1000));
+            values.add(this.setTime(RTU_LOAD1_MMXU + i + ".MaxWPhs.t", Fc.MX, timestamp));
 
-            values.add(this.setFixedInt("WAGO61850ServerLOAD1/MMTR" + i + ".TotWh.actVal", Fc.ST, i));
-            values.add(this.setTime("WAGO61850ServerLOAD1/MMTR" + i + ".TotWh.t", Fc.ST, timestamp));
+            values.add(this.setRandomFloat(RTU_LOAD1_MMXU + i + ".MinWPhs.mag.f", Fc.MX, 0, 500));
+            values.add(this.setTime(RTU_LOAD1_MMXU + i + ".MinWPhs.t", Fc.MX, timestamp));
+
+            values.add(this.setFixedFloat(RTU_LOAD1_MMXU + i + ".TotW.mag.f", Fc.MX, i));
+            values.add(this.setTime(RTU_LOAD1_MMXU + i + ".TotW.t", Fc.MX, timestamp));
+
+            values.add(this.setFixedInt(RTU_LOAD1_MMTR + i + ".TotWh.actVal", Fc.ST, i));
+            values.add(this.setTime(RTU_LOAD1_MMTR + i + ".TotWh.t", Fc.ST, timestamp));
         }
 
         this.server.setValues(values);
