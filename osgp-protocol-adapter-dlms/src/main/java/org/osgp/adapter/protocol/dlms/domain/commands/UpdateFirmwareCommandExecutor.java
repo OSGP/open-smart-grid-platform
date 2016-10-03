@@ -1,5 +1,7 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
+import java.util.concurrent.ExecutorService;
+
 import org.openmuc.jdlms.DlmsConnection;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.FirwareImageFactory;
@@ -17,6 +19,9 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
     @Autowired
     private FirwareImageFactory firmwareImageFactory;
 
+    @Autowired
+    private ExecutorService executorService;
+
     public UpdateFirmwareCommandExecutor() {
         super(UpdateFirmwareRequestDto.class);
     }
@@ -25,7 +30,7 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
     public Boolean execute(final DlmsConnection conn, final DlmsDevice device, final String firmwareIdentification)
             throws ProtocolAdapterException {
 
-        final ImageTransfer transfer = new ImageTransfer(conn, firmwareIdentification,
+        final ImageTransfer transfer = new ImageTransfer(this.executorService, conn, firmwareIdentification,
                 this.getImageData(firmwareIdentification));
 
         try {

@@ -7,6 +7,7 @@ import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.MethodParameter;
 import org.openmuc.jdlms.MethodResult;
+import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
@@ -68,7 +69,7 @@ class CosemObjectAccessor {
         return result.getResultData();
     }
 
-    public DataObject callMethod(final int methodId, final DataObject dataObject) {
+    public MethodResultCode callMethod(final int methodId, final DataObject dataObject) {
         final MethodParameter methodParameter = this.createMethodParameter(methodId, dataObject);
 
         MethodResult result = null;
@@ -82,6 +83,6 @@ class CosemObjectAccessor {
 
         }
 
-        return result.getResultData();
+        return result.getResultCode();
     }
 }
