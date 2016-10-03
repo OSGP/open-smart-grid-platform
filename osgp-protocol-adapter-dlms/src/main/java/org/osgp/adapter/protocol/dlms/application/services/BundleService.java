@@ -111,7 +111,7 @@ public class BundleService {
             return this.faultResponseForFunctionalOrTechnicalException((OsgpException) exception, parameters);
         }
 
-        return new FaultResponseDto(null, defaultMessage, ComponentType.PROTOCOL_DLMS.getComponentName(),
+        return new FaultResponseDto(null, defaultMessage, ComponentType.PROTOCOL_DLMS.name(),
                 exception.getClass().getName(), exception.getMessage(), new FaultResponseParametersDto(parameters));
     }
 
@@ -129,7 +129,7 @@ public class BundleService {
         if (exception.getComponentType() == null) {
             component = null;
         } else {
-            component = exception.getComponentType().getComponentName();
+            component = exception.getComponentType().name();
         }
 
         final String innerException;
