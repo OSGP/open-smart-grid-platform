@@ -34,7 +34,7 @@ public class Iec61850UpdateFirmwareCommand {
 
             @Override
             public Void apply() throws Exception {
-                // Getting the functional firmware version
+                // Getting the functional firmware version.
                 LOGGER.info("Reading the functional firmware version");
                 final NodeContainer functionalFirmwareNode = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
                         LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.FUNCTIONAL_FIRMWARE, Fc.CF);
@@ -50,7 +50,7 @@ public class Iec61850UpdateFirmwareCommand {
                         clock.getFcmodelNode());
 
                 final DateTime deviceTime = new DateTime(clock.getDate(SubDataAttribute.CURRENT_TIME));
-                // creating a Date one minute from now
+                // Creating a Date one minute from now.
                 final Date oneMinuteFromNow = deviceTime.plusMinutes(1).toDate();
 
                 LOGGER.info("Updating the firmware download start time to: {}", oneMinuteFromNow);

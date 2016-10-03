@@ -73,8 +73,8 @@ public class Iec61850SetConfigurationCommand {
                     }
                 }
 
-                // checking to see if all register values are null, so that we
-                // don't read the values for no reason
+                // Checking to see if all register values are null, so that we
+                // don't read the values for no reason.
                 if (!(configuration.getOspgIpAddress() == null && configuration.getOsgpPortNumber() == null)) {
 
                     final NodeContainer registration = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
@@ -94,8 +94,9 @@ public class Iec61850SetConfigurationCommand {
 
                 }
 
-                // checking to see if all software config values are null, so
-                // that we don't read the values for no reason
+                // Checking to see if all software configuration values are
+                // null, so
+                // that we don't read the values for no reason.
                 if (!(configuration.getAstroGateSunRiseOffset() == null
                         && configuration.getAstroGateSunSetOffset() == null && configuration.getLightType() == null)) {
 
@@ -123,8 +124,8 @@ public class Iec61850SetConfigurationCommand {
                     }
                 }
 
-                // checking to see if all register values are null, so that we
-                // don't read the values for no reason
+                // Checking to see if all register values are null, so that we
+                // don't read the values for no reason.
                 if (!(configuration.getTimeSyncFrequency() == null
                         && configuration.isAutomaticSummerTimingEnabled() == null
                         && configuration.getSummerTimeDetails() == null && configuration.getWinterTimeDetails() == null)) {
@@ -153,7 +154,7 @@ public class Iec61850SetConfigurationCommand {
                      * number of cases, but to be able to do this accurately in
                      * an international context, DST transition times will
                      * probably have to be based on information about the
-                     * timezone the device is operating in, instead of a
+                     * time-zone the device is operating in, instead of a
                      * particular DateTime provided by the caller without
                      * further information.
                      */
@@ -178,8 +179,8 @@ public class Iec61850SetConfigurationCommand {
                     }
                 }
 
-                // checking to see if all network values are null, so that we
-                // don't read the values for no reason
+                // Checking to see if all network values are null, so that we
+                // don't read the values for no reason.
                 if (!(configuration.isDhcpEnabled() == null && configuration.getDeviceFixedIp() == null)) {
 
                     final NodeContainer ipConfiguration = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
@@ -193,7 +194,7 @@ public class Iec61850SetConfigurationCommand {
                     }
 
                     // All values in DeviceFixedIpDto are non-nullable, so no
-                    // nullchecks are needed.
+                    // null-checks are needed.
                     final DeviceFixedIpDto deviceFixedIp = configuration.getDeviceFixedIp();
 
                     LOGGER.info("Updating deviceFixedIpAddress to {}", configuration.getDeviceFixedIp().getIpAddress());

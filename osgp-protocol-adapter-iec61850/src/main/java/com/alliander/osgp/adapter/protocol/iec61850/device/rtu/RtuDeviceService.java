@@ -19,16 +19,16 @@ public interface RtuDeviceService {
     /**
      * Reads the {@link DataRequestDto} from the device.
      *
-     * Returns a {@link GetDataDeviceResponse} via the deviceResponseHandler's
-     * callback.
+     * @returns a {@link GetDataDeviceResponse} via the deviceResponseHandler's
+     *          callback.
      */
     void getData(GetDataDeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler);
 
     /**
      * Writes the {@link SetPointsRequestDto} to the device.
      *
-     * Returns a {@link DeviceMessageStatus} via the deviceResponseHandler's
-     * callback.
+     * @returns a {@link DeviceMessageStatus} via the deviceResponseHandler's
+     *          callback.
      */
     void setSetPoints(SetSetPointsDeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler);
 }

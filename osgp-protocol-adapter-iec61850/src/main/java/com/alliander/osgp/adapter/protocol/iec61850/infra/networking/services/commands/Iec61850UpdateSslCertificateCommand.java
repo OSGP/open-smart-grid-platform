@@ -31,7 +31,7 @@ public class Iec61850UpdateSslCertificateCommand {
 
     public void pushSslCertificateToDevice(final Iec61850Client iec61850Client,
             final DeviceConnection deviceConnection, final CertificationDto certification)
-            throws ProtocolAdapterException {
+                    throws ProtocolAdapterException {
         final Function<Void> function = new Function<Void>() {
 
             @Override
@@ -43,8 +43,8 @@ public class Iec61850UpdateSslCertificateCommand {
                 iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
                         sslConfiguration.getFcmodelNode());
 
-                // removing trailing and leading slashes (if present) from the
-                // domain and the url
+                // Removing trailing and leading slashes (if present) from the
+                // domain and the URL.
                 String adjustedDomain = certification.getCertificateDomain();
                 if (adjustedDomain.endsWith("/")) {
                     adjustedDomain = adjustedDomain.substring(0, adjustedDomain.length() - 1);

@@ -28,7 +28,7 @@ public class Iec61850SetLightCommand {
 
     public void switchLightRelay(final Iec61850Client iec61850Client, final DeviceConnection deviceConnection,
             final int index, final boolean on) throws ProtocolAdapterException {
-        // Commands don't return anything, so returnType is Void
+        // Commands don't return anything, so returnType is Void.
         final Function<Void> function = new Function<Void>() {
 
             @Override

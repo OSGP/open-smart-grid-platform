@@ -60,16 +60,18 @@ public class Iec61850PowerUsageHistoryCommand {
                                     deviceOutputSetting);
                     powerUsageHistoryData.addAll(powerUsageData);
                 }
-                /*-
-                 * This way of gathering leads to PowerUsageData elements per relay.
-                 * If it is necessary to only include one PowerUsageData element for
-                 * the device, where data for the different relays is combined in
-                 * the SsldData.relayData some sort of merge needs to be performed.
+                /*
+                 * This way of gathering leads to PowerUsageData elements per
+                 * relay. If it is necessary to only include one PowerUsageData
+                 * element for the device, where data for the different relays
+                 * is combined in the SsldData.relayData some sort of merge
+                 * needs to be performed.
                  *
-                 * This can either be a rework of the list currently returned, or it
-                 * can be a list constructed based on an altered return type from
-                 * getPowerUsageHistoryDataFromRelay (for instance a Map of Date to
-                 * a Map of Relay Index to Total Lighting Minutes).
+                 * This can either be a rework of the list currently returned,
+                 * or it can be a list constructed based on an altered return
+                 * type from getPowerUsageHistoryDataFromRelay (for instance a
+                 * Map of Date to a Map of Relay Index to Total Lighting
+                 * Minutes).
                  */
                 return powerUsageHistoryData;
             }
@@ -93,12 +95,12 @@ public class Iec61850PowerUsageHistoryCommand {
 
         final Short lastIndex = onIntervalBuffer.getUnsignedByte(SubDataAttribute.LAST_INDEX).getValue();
 
-        /*-
-         * Last index is the last index written in the 60-entry buffer.
-         * When the last buffer entry is written, the next entry will be placed
-         * at the first position in the buffer (cyclical).
-         * To preserve the order of entries written in the response, iteration
-         * starts with the next index (oldest entry) and loops from there.
+        /*
+         * Last index is the last index written in the 60-entry buffer. When the
+         * last buffer entry is written, the next entry will be placed at the
+         * first position in the buffer (cyclically). To preserve the order of
+         * entries written in the response, iteration starts with the next index
+         * (oldest entry) and loops from there.
          */
         final int numberOfEntries = 60;
         final int idxOldest = (lastIndex + 1) % numberOfEntries;
@@ -124,7 +126,7 @@ public class Iec61850PowerUsageHistoryCommand {
                 continue;
             }
 
-            // MeterType.AUX hardcoded (not supported)
+            // MeterType.AUX hard-coded (not supported).
             final PowerUsageDataDto powerUsageData = new PowerUsageDataDto(date, MeterTypeDto.AUX, 0, 0);
             final List<RelayDataDto> relayDataList = new ArrayList<>();
             final RelayDataDto relayData = new RelayDataDto(relayIndex, totalMinutesOnForDate);

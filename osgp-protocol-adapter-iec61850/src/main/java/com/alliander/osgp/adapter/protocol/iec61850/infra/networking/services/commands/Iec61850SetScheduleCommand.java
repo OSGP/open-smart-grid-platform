@@ -59,7 +59,7 @@ public class Iec61850SetScheduleCommand {
             final SsldDataService ssldDataService) throws ProtocolAdapterException, FunctionalException {
         final String tariffOrLight = relayType.equals(RelayTypeDto.LIGHT) ? "light" : "tariff";
 
-        // Creating a list of all Schedule entries, grouped by relay index
+        // Creating a list of all Schedule entries, grouped by relay index.
         final Map<Integer, List<ScheduleEntry>> relaySchedulesEntries = this.createScheduleEntries(scheduleList, ssld,
                 relayType, ssldDataService);
 
@@ -195,11 +195,11 @@ public class Iec61850SetScheduleCommand {
     }
 
     /*
-     * returns a map of schedule entries, grouped by the internal index
+     * Returns a map of schedule entries, grouped by the internal index.
      */
     private Map<Integer, List<ScheduleEntry>> createScheduleEntries(final List<ScheduleDto> scheduleList,
             final Ssld ssld, final RelayTypeDto relayTypeDto, final SsldDataService ssldDataService)
-            throws FunctionalException {
+                    throws FunctionalException {
         final Map<Integer, List<ScheduleEntry>> relaySchedulesEntries = new HashMap<>();
 
         final RelayType relayType = RelayType.valueOf(relayTypeDto.name());
@@ -212,21 +212,21 @@ public class Iec61850SetScheduleCommand {
                 if (lightValue.getIndex() == 0
                         && (RelayType.TARIFF.equals(relayType) || RelayType.TARIFF_REVERSED.equals(relayType))) {
 
-                    // Index 0 is not allowed for tariff switching
+                    // Index 0 is not allowed for tariff switching.
                     throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
                             ComponentType.PROTOCOL_IEC61850);
 
                 } else if (lightValue.getIndex() == 0 && RelayType.LIGHT.equals(relayType)) {
 
-                    // index == 0, getting all light relays and adding their
-                    // internal indexes to the indexes list
+                    // Index == 0, getting all light relays and adding their
+                    // internal indexes to the indexes list.
                     final List<DeviceOutputSetting> settings = ssldDataService.findByRelayType(ssld, relayType);
 
                     for (final DeviceOutputSetting deviceOutputSetting : settings) {
                         indexes.add(deviceOutputSetting.getInternalId());
                     }
                 } else {
-                    // index != 0, adding just the one index to the list
+                    // Index != 0, adding just the one index to the list.
                     indexes.add(ssldDataService.convertToInternalIndex(ssld, lightValue.getIndex()));
                 }
 
@@ -246,12 +246,12 @@ public class Iec61850SetScheduleCommand {
                     } else {
 
                         // First time we come across this relay, checking its
-                        // type
+                        // type.
                         this.checkRelayForSchedules(
                                 ssldDataService.getDeviceOutputSettingForInternalIndex(ssld, internalIndex)
-                                        .getRelayType(), relayType, internalIndex);
+                                .getRelayType(), relayType, internalIndex);
 
-                        // Adding it to scheduleEntries
+                        // Adding it to scheduleEntries.
                         final List<ScheduleEntry> scheduleEntries = new ArrayList<>();
                         scheduleEntries.add(scheduleEntry);
 
@@ -337,8 +337,10 @@ public class Iec61850SetScheduleCommand {
      *
      * @param time
      *            a time String in the format hh:mm:ss.SSS, hh:mm:ss or hh:mm.
+     * 
      * @return the short value formed by parsing the digits of hhmm from the
      *         given time.
+     * 
      * @throws ProtocolAdapterException
      *             if time is {@code null} or not of the format specified.
      */
@@ -352,7 +354,7 @@ public class Iec61850SetScheduleCommand {
 
     /**
      * Checks to see if the relay has the correct type, throws an exception when
-     * that't not the case
+     * that't not the case.
      */
     private void checkRelay(final RelayType actual, final RelayType expected, final Integer internalAddress)
             throws FunctionalException {
