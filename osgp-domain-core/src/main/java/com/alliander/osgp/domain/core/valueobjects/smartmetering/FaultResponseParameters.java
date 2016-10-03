@@ -15,18 +15,18 @@ public class FaultResponseParameters implements Serializable {
 
     private static final long serialVersionUID = 8795642120627073707L;
 
-    private final List<FaultResponseParameter> parameter;
+    private final List<FaultResponseParameter> parameterList;
 
-    public FaultResponseParameters(final List<FaultResponseParameter> parameter) {
-        this.parameter = new ArrayList<>(parameter);
+    public FaultResponseParameters(final List<FaultResponseParameter> parameterList) {
+        this.parameterList = new ArrayList<>(parameterList);
     }
 
     @Override
     public String toString() {
-        return "FaultResponseParameters[" + this.parameter + "]";
+        return "FaultResponseParameters[" + this.parameterList + "]";
     }
 
-    public List<FaultResponseParameter> getParameter() {
-        return new ArrayList<>(this.parameter);
+    public List<FaultResponseParameter> getParameterList() {
+        return new ArrayList<>(this.parameterList);
     }
 }
