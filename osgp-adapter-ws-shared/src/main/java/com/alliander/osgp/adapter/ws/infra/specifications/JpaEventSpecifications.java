@@ -89,9 +89,9 @@ public class JpaEventSpecifications implements EventSpecifications {
             public Predicate toPredicate(final Root<Event> eventRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
 
-                final Subquery<Integer> subquery = query.subquery(Integer.class);
+                final Subquery<Long> subquery = query.subquery(Long.class);
                 final Root<DeviceAuthorization> deviceAuthorizationRoot = subquery.from(DeviceAuthorization.class);
-                subquery.select(deviceAuthorizationRoot.get(DEVICE).as(Integer.class));
+                subquery.select(deviceAuthorizationRoot.get(DEVICE).get("id").as(Long.class));
                 subquery.where(cb.and(
                         cb.equal(deviceAuthorizationRoot.get("organisation"), organisation.getId()),
                         cb.or(cb.equal(deviceAuthorizationRoot.get("functionGroup"),
