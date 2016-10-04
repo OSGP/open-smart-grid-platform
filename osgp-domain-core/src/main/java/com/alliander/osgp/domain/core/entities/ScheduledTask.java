@@ -142,11 +142,6 @@ public class ScheduledTask extends AbstractEntity {
         this.status = ScheduledTaskStatusType.PENDING;
     }
 
-    public void setFailed(final String errorLog) {
-        this.status = ScheduledTaskStatusType.FAILED;
-        this.errorLog = errorLog;
-    }
-
     public void setComplete() {
         this.status = ScheduledTaskStatusType.COMPLETE;
     }
