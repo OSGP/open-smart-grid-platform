@@ -1,0 +1,1 @@
+Certificates are generated (and copied) from Config/certificates repository

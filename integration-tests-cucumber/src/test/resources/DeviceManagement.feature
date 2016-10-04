@@ -3,8 +3,7 @@ Feature:
   I want to be able to perform DeviceManagement operations on a device
     
 Background:
-    Given a device with DeviceID "TEST1024000000001" 
-    And an organisation with OrganisationID "Infostroom"
+    Given an organisation with OrganisationID "Infostroom"
     
 @SLIM-540 @DeviceManagement
   Scenario: Activate a device

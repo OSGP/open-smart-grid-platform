@@ -1,5 +1,0 @@
-DeviceIdentificationE=TEST1024000000001
-DeviceIdentificationG=TESTG102400000001
-OrganisationIdentification=Infostroom
-CorrelationUid=
-ServiceEndpoint=osgp-tst.cloudapp.net:62443

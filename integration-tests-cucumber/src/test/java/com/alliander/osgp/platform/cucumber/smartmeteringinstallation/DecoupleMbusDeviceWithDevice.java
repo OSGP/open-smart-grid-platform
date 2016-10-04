@@ -8,14 +8,19 @@
  */
 package com.alliander.osgp.platform.cucumber.smartmeteringinstallation;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.domain.core.entities.SmartMeter;
+import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.platform.cucumber.SmartMetering;
 import com.alliander.osgp.platform.cucumber.hooks.CoupleDeviceHooks;
 import com.alliander.osgp.platform.cucumber.hooks.DeviceHooks;
@@ -32,9 +37,6 @@ public class DecoupleMbusDeviceWithDevice extends SmartMetering {
     private static final String PATH_RESULT = "/Envelope/Body/DeCoupleMbusDeviceResponse/Result/text()";
     private static final String PATH_DESCRIPTION = "/Envelope/Body/DeCoupleMbusDeviceResponse/Description/text()";
 
-    private static final String XPATH_MATCHER_RESULT = "OK";
-    private static final String XPATH_MATCHER_NOT_OK_RESULT = "NOT OK";
-
     private static final String TEST_SUITE_XML = "SmartmeterInstallation";
     private static final String TEST_CASE_XML = "638 Decouple M-Bus Device";
     private static final String TEST_CASE_NAME_REQUEST = "DecoupleMbusDevice";
@@ -48,6 +50,9 @@ public class DecoupleMbusDeviceWithDevice extends SmartMetering {
 
     @Autowired
     private CoupleDeviceHooks coupleDeviceHooks;
+
+    @Autowired
+    private SmartMeterRepository smartMeterRepository;
 
     @Autowired
     private DeviceHooks deviceHooks;
@@ -70,41 +75,48 @@ public class DecoupleMbusDeviceWithDevice extends SmartMetering {
     }
 
     @Then("^the response \"([^\"]*)\" is given to the decouple request$")
-    public void theResponseShouldBeGiven(String status) throws Throwable {
+    public void theResponseShouldBeGiven(final String status) throws Throwable {
         PROPERTIES_MAP.put(CORRELATION_UID_LABEL, this.correlationUid);
         this.responseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
-        Assert.assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT, status));
+        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT, status));
     }
 
     @Then("^the decouple request response description contains \"([^\"]*)\"$")
-    public void theDecoupleRequestResponseDescriptionContains(String message) throws Throwable {
+    public void theDecoupleRequestResponseDescriptionContains(final String message) throws Throwable {
         PROPERTIES_MAP.put(CORRELATION_UID_LABEL, this.correlationUid);
         this.responseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
-        Assert.assertTrue(this.runXpathResult.assertXpath(this.response, PATH_DESCRIPTION, message));
+        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_DESCRIPTION, message));
     }
 
     @Then("^the decouple request response description contains 'SmartMeter with id \"([^\"]*)\" could not be found'$")
-    public void theDecoupleRequestResponseDescriptionContainsCouldNotBeFound(String message) throws Throwable {
+    public void theDecoupleRequestResponseDescriptionContainsCouldNotBeFound(final String message) throws Throwable {
         PROPERTIES_MAP.put(CORRELATION_UID_LABEL, this.correlationUid);
         this.responseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
-        Assert.assertTrue(this.runXpathResult.assertXpath(this.response, PATH_DESCRIPTION, message));
+        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_DESCRIPTION, message));
 
     }
 
     @Then("^the mbus device \"([^\"]*)\" isn't coupled to the device \"([^\"]*)\"$")
-    public void theMbusDeviceIsnTCoupledToTheDevice(String mbusDeviceId, String deviceId) {
-        Assert.assertFalse(this.coupleDeviceHooks.areDevicesCoupled(deviceId, mbusDeviceId));
+    public void theMbusDeviceIsnTCoupledToTheDevice(final String mbusDeviceId, final String deviceId) {
+        assertFalse(this.coupleDeviceHooks.areDevicesCoupled(deviceId, mbusDeviceId));
+    }
+
+    @Then("^the channel of device \"([^\"]*)\" is cleared$")
+    public void theChannelOfDeviceIsCleared(final String mbusDeviceId) throws Throwable {
+        final SmartMeter mbusDevice = this.smartMeterRepository.findByDeviceIdentification(mbusDeviceId);
+        assertNull(mbusDevice.getChannel());
     }
 
     @Given("^an inactive mbus device with DeviceID \"([^\"]*)\" on MBUS channel (\\d+)$")
-    public void anInactiveMbusDeviceWithDeviceIDOnMBUSChannel(String mbusDeviceId, Short mbusDeviceChannel) {
+    public void anInactiveMbusDeviceWithDeviceIDOnMBUSChannel(final String mbusDeviceId,
+            final Short mbusDeviceChannel) {
         this.deviceId.setDeviceIdG(mbusDeviceId);
         this.deviceId.setMbusChannel(mbusDeviceChannel);
         this.deviceHooks.deactivateDevice(mbusDeviceId);
     }
 
     @Given("^an active mbus device with DeviceID \"([^\"]*)\" on MBUS channel (\\d+)$")
-    public void anActiveMbusDeviceWithDeviceIDOnMBUSChannel(String mbusDeviceId, Short mbusDeviceChannel) {
+    public void anActiveMbusDeviceWithDeviceIDOnMBUSChannel(final String mbusDeviceId, final Short mbusDeviceChannel) {
         this.deviceId.setDeviceIdG(mbusDeviceId);
         this.deviceId.setMbusChannel(mbusDeviceChannel);
         this.deviceHooks.activateDevice(mbusDeviceId);

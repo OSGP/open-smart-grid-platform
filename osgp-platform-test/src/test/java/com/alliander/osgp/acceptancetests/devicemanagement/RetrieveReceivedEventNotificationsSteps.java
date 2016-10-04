@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.givwenzen.annotations.DomainStep;
 import org.givwenzen.annotations.DomainSteps;
+import org.junit.Assert;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Matchers;
@@ -112,20 +113,36 @@ public class RetrieveReceivedEventNotificationsSteps {
     @Autowired
     private DeviceFunctionMappingRepository deviceFunctionMappingRepositoryMock;
 
+    private boolean firstSetUp = true;
+
     // === SET UP ===
 
     private void setUp() {
-        // init mocks to set ArgumentCaptors
-        MockitoAnnotations.initMocks(this);
-        // reset the mocks
-        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.ssldRepositoryMock,
-                this.organisationRepositoryMock, this.eventRepositoryMock, this.deviceAuthorizationRepositoryMock });
+        try {
+            // init mocks to set ArgumentCaptors
+            MockitoAnnotations.initMocks(this);
 
-        this.deviceManagementEndpoint = new DeviceManagementEndpoint(this.deviceManagementService,
-                this.deviceManagementMapper);
+            if (!this.firstSetUp) {
+                // reset the mocks
+                Mockito.reset(new Object[] { this.deviceRepositoryMock, this.ssldRepositoryMock,
+                        this.organisationRepositoryMock, this.eventRepositoryMock,
+                        this.deviceAuthorizationRepositoryMock, this.deviceFunctionMappingRepositoryMock });
+            }
 
-        this.request = null;
-        this.response = null;
+            this.request = null;
+            this.response = null;
+            this.eventsPage = null;
+            this.pageRequest = null;
+
+            this.deviceManagementMapper.initialize();
+            this.deviceManagementEndpoint = new DeviceManagementEndpoint(this.deviceManagementService,
+                    this.deviceManagementMapper);
+
+        } catch (final Exception e) {
+            LOGGER.error("Exception [{}]: {}", e.getClass().getSimpleName(), e.getMessage());
+        }
+
+        this.firstSetUp = false;
     }
 
     // === GIVEN ===
@@ -140,8 +157,8 @@ public class RetrieveReceivedEventNotificationsSteps {
         this.organisation = new Organisation(organisation, organisation, ORGANISATION_PREFIX,
                 PlatformFunctionGroup.USER);
 
-        when(this.organisationRepositoryMock.findByOrganisationIdentification(organisation)).thenReturn(
-                this.organisation);
+        when(this.organisationRepositoryMock.findByOrganisationIdentification(organisation))
+                .thenReturn(this.organisation);
     }
 
     @DomainStep("an authorized device (.*)")
@@ -160,20 +177,21 @@ public class RetrieveReceivedEventNotificationsSteps {
         authorizations.add(new DeviceAuthorization(this.device, this.organisation, DeviceFunctionGroup.MANAGEMENT));
 
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
-        .thenReturn(authorizations);
+                .thenReturn(authorizations);
 
         final List<DeviceFunction> deviceFunctions = new ArrayList<>();
         deviceFunctions.add(DeviceFunction.GET_EVENT_NOTIFICATIONS);
 
-        when(this.deviceFunctionMappingRepositoryMock.findByDeviceFunctionGroups(any(ArrayList.class))).thenReturn(
-                deviceFunctions);
+        final ArrayList<DeviceFunctionGroup> deviceFunctionGroups = Mockito.any();
+        when(this.deviceFunctionMappingRepositoryMock.findByDeviceFunctionGroups(deviceFunctionGroups))
+                .thenReturn(deviceFunctions);
     }
 
     @DomainStep("a received event notification (.*), (.*) and (.*) from (.*)")
     public void givenAReceivedEventNotificationFrom(final String event, final String description, final String index,
             final String device) {
-        LOGGER.info("GIVEN: a received event notification {}, {} and {} from (.*)", new Object[] { event, description,
-                index, device });
+        LOGGER.info("GIVEN: a received event notification {}, {} and {} from (.*)",
+                new Object[] { event, description, index, device });
 
         this.event = new Event(this.device, EventType.valueOf(event), description, Integer.parseInt(index));
 
@@ -184,7 +202,7 @@ public class RetrieveReceivedEventNotificationsSteps {
         this.eventsPage = new PageImpl<Event>(eventList, this.pageRequest, eventList.size());
 
         when(this.eventRepositoryMock.findAll(Matchers.<Specifications<Event>> any(), any(PageRequest.class)))
-        .thenReturn(this.eventsPage);
+                .thenReturn(this.eventsPage);
     }
 
     @DomainStep("a retrieve event notification request")
@@ -212,8 +230,10 @@ public class RetrieveReceivedEventNotificationsSteps {
         this.request.setDeviceIdentification(this.device.getDeviceIdentification());
 
         this.specifications = Specifications.where(this.eventSpecifications.isAuthorized(this.organisation));
-        this.pageRequest = new PageRequest(Integer.parseInt(requestedPage), Math.min(Integer.parseInt(pageSize),
-                PAGESIZELIMIT), Sort.Direction.DESC, "creationTime");
+        this.pageRequest = new PageRequest(Integer.parseInt(requestedPage) - 1,
+                Math.min(Integer.parseInt(pageSize), PAGESIZELIMIT), Sort.Direction.DESC, "creationTime");
+        LOGGER.info("Page request: number {}, size {}", this.pageRequest.getPageNumber(),
+                this.pageRequest.getPageSize());
     }
 
     @DomainStep("a received event notification at (.*) from (.*)")
@@ -230,7 +250,7 @@ public class RetrieveReceivedEventNotificationsSteps {
         LOGGER.info("events: {}", this.eventsPage.getContent().size());
 
         when(this.eventRepositoryMock.findAll(Matchers.<Specifications<Event>> any(), any(PageRequest.class)))
-        .thenReturn(this.eventsPage);
+                .thenReturn(this.eventsPage);
     }
 
     @DomainStep("(.*) received event notifications")
@@ -238,26 +258,30 @@ public class RetrieveReceivedEventNotificationsSteps {
         LOGGER.info("GIVEN: {} received event notifications", count);
 
         final List<Event> eventList = new ArrayList<Event>();
+        final int pageSize = Math.min(this.request.getPageSize(), PAGESIZELIMIT);
+        int numberOfEvents = 0;
         int totalPages = 0;
         if (count != null && count != "EMPTY") {
-            for (int i = 0; i < Math.min(Integer.parseInt(count), Math.min(this.request.getPageSize(), PAGESIZELIMIT)); i++) {
-                eventList.add(new Event(this.device, this.event.getEventType(), this.event.getDescription(), this.event
-                        .getIndex()));
+            numberOfEvents = Integer.parseInt(count);
+            for (int i = 0; i < Math.min(numberOfEvents, pageSize); i++) {
+                eventList.add(new Event(this.device, this.event.getEventType(), this.event.getDescription(),
+                        this.event.getIndex()));
             }
-            totalPages = Integer.parseInt(count);
+            totalPages = (int) Math.ceil(numberOfEvents / (double) pageSize); // Integer.parseInt(count);
         }
-        this.eventsPage = new PageImpl<Event>(eventList, new PageRequest(this.request.getPage(), Math.min(
-                this.request.getPageSize(), PAGESIZELIMIT)), totalPages);
+        LOGGER.info("Events Page: Page {}, PageSize {}", this.request.getPage() - 1, pageSize);
+        final Pageable pageRequest = new PageRequest(this.request.getPage() - 1, pageSize);
+        this.eventsPage = new PageImpl<Event>(eventList, pageRequest, numberOfEvents);
 
         when(this.eventRepositoryMock.findAll(Matchers.<Specifications<Event>> any(), any(PageRequest.class)))
-        .thenReturn(this.eventsPage);
+                .thenReturn(this.eventsPage);
     }
 
     @DomainStep("the event notification must be filtered on (.*), (.*), and (.*)")
-    public void givenTheEventNotificationMustBeFilteredOn(final String deviceIdentification,
-            final String fromTimestamp, final String untilTimestamp) {
-        LOGGER.info("GIVEN: the event notification must be filtered on {}, {}, and {}", new Object[] {
-                deviceIdentification, fromTimestamp, untilTimestamp });
+    public void givenTheEventNotificationMustBeFilteredOn(final String deviceIdentification, final String fromTimestamp,
+            final String untilTimestamp) {
+        LOGGER.info("GIVEN: the event notification must be filtered on {}, {}, and {}",
+                new Object[] { deviceIdentification, fromTimestamp, untilTimestamp });
 
         // implement filter on fromTimestamp
         // implement filter on untilTimestamp
@@ -265,14 +289,13 @@ public class RetrieveReceivedEventNotificationsSteps {
             this.request.setDeviceIdentification(deviceIdentification);
             when(this.deviceRepositoryMock.findByDeviceIdentification(deviceIdentification)).thenReturn(this.device);
             when(this.ssldRepositoryMock.findByDeviceIdentification(deviceIdentification)).thenReturn(this.device);
-            when(this.ssldRepositoryMock.findOne(1L)).thenReturn(this.device);
+            when(this.ssldRepositoryMock.findOne(any(Long.class))).thenReturn(this.device);
             final List<DeviceAuthorization> authorizations = new ArrayList<DeviceAuthorization>();
             authorizations.add(new DeviceAuthorizationBuilder().withOrganisation(this.organisation)
                     .withDevice(new DeviceBuilder().withDeviceIdentification(deviceIdentification).build())
                     .withFunctionGroup(DeviceFunctionGroup.MANAGEMENT).build());
-            when(
-                    this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(any(Organisation.class),
-                            any(Device.class))).thenReturn(authorizations);
+            when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(any(Organisation.class),
+                    any(Device.class))).thenReturn(authorizations);
         }
     }
 
@@ -284,8 +307,8 @@ public class RetrieveReceivedEventNotificationsSteps {
 
         try {
             // Send the find events request.
-            this.response = this.deviceManagementEndpoint.findEventsRequest(
-                    this.organisation.getOrganisationIdentification(), this.request);
+            this.response = this.deviceManagementEndpoint
+                    .findEventsRequest(this.organisation.getOrganisationIdentification(), this.request);
             if (this.response == null) {
                 LOGGER.info("Response is null");
             }
@@ -321,8 +344,8 @@ public class RetrieveReceivedEventNotificationsSteps {
 
         final boolean sizeCorrect = this.response.getEvents().size() == 1;
 
-        final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Event eventInstance = this.response
-                .getEvents().get(0);
+        final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Event eventInstance = this.response.getEvents()
+                .get(0);
         final boolean deviceIdentificationCorrect = eventInstance.getDeviceIdentification()
                 .equals(deviceIdentification);
         final boolean descriptionCorrect = eventInstance.getDescription().equals(description);
@@ -348,23 +371,21 @@ public class RetrieveReceivedEventNotificationsSteps {
 
         LOGGER.info("THEN: the response should contain {} event notifications", number);
 
-        if (this.response == null) {
-            LOGGER.info("the actual response is null");
-            return false;
-        }
-        if (this.response.getEvents() == null) {
-            LOGGER.info("the events list in the actual response is null");
-            return false;
-        }
-        if (this.response.getEvents().size() != Integer.parseInt(number)) {
-            LOGGER.info("the actual response contains {} events", this.response.getEvents().size());
+        try {
+            Assert.assertNotNull("The actual response is null", this.response);
+            Assert.assertNotNull("The events list in the actual response is null", this.response.getEvents());
+            Assert.assertEquals("The actual number of events does not match the expected number",
+                    Integer.parseInt(number), this.response.getEvents().size());
+        } catch (final Exception e) {
+            LOGGER.error("Exception [{}]: {}", e.getClass().getSimpleName(), e.getMessage());
             return false;
         }
         return true;
     }
 
     /**
-     * Verify that the page object has the correct total values for total entities and total pages.
+     * Verify that the page object has the correct total values for total
+     * entities and total pages.
      *
      * @param totalNofEventNotifications
      * @param totalNofPages
@@ -374,16 +395,13 @@ public class RetrieveReceivedEventNotificationsSteps {
     public boolean andTheResponseShouldContainTotalNumberOfPages(final String totalNofPages) {
         LOGGER.info("THEN: the response should contain total number of pages (.*)", totalNofPages);
 
-        if (this.response == null) {
-            LOGGER.info("the actual response is null");
-            return false;
-        }
-        if (this.response.getPage() == null) {
-            LOGGER.info("the page in the actual response is null");
-            return false;
-        }
-        if (this.response.getPage().getTotalPages() != Integer.parseInt(totalNofPages)) {
-            LOGGER.info("the actual total number of pages is {}", this.response.getPage().getTotalPages());
+        try {
+            Assert.assertNotNull("The actual response is null", this.response);
+            Assert.assertNotNull("The page in the actual response is null", this.response.getPage());
+            Assert.assertEquals("The actual number of total pages does not match the expected number",
+                    Integer.parseInt(totalNofPages), this.response.getPage().getTotalPages());
+        } catch (final Exception e) {
+            LOGGER.error("Exception [{}]: {}", e.getClass().getSimpleName(), e.getMessage());
             return false;
         }
         return true;

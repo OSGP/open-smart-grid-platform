@@ -3,7 +3,7 @@ Feature:
   I want to be able to perform SmartMeteringBundle operations on a device
     
 Background:
-    Given a device with DeviceID "TEST1024000000001" 
+    Given an active device with DeviceID "TEST1024000000001" 
     And an organisation with OrganisationID "Infostroom"
     
 @SLIM-484 @SmartMeterBundle
@@ -25,7 +25,7 @@ Background:
 @SLIM-501 @SmartMeterBundle	
   Scenario:	Retrieve Currently Active Tariff
 	When a retrieve configuration request for OBIS code 0.0.96.14.0.255 is received as part of a bundled request
-	Then "bytes[0, 1]" is part of the response
+	Then "bytes[65, 66]" is part of the response
 	
 @SLIM-526 @SmartMeterBundle
   Scenario: Retrieve the association LN objectlist of a device in a Bundle request
