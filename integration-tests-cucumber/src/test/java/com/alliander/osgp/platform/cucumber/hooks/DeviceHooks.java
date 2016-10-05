@@ -10,6 +10,7 @@ package com.alliander.osgp.platform.cucumber.hooks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.domain.core.entities.Device;
@@ -23,19 +24,22 @@ import com.alliander.osgp.domain.core.repositories.DeviceRepository;
  */
 @Component
 @Configuration
-@PropertySource("file:/etc/osp/osgp-cucumber-response-data-smart-metering.properties")
+@PropertySources({
+    @PropertySource("classpath:osgp-cucumber-response-data-smart-metering.properties"),
+    @PropertySource(value = "classpath:osgp-cucumber-response-data-smart-metering-${env}.properties", ignoreResourceNotFound = true)}
+)
 public class DeviceHooks {
 
     @Autowired
     private DeviceRepository deviceRepository;
 
-    public void deactivateDevice(String deviceId) {
+    public void deactivateDevice(final String deviceId) {
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceId);
         device.setActive(false);
         this.deviceRepository.save(device);
     }
 
-    public void activateDevice(String deviceId) {
+    public void activateDevice(final String deviceId) {
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceId);
         device.setActive(true);
         this.deviceRepository.save(device);

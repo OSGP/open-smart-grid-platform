@@ -11,6 +11,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
@@ -24,6 +25,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement()
 @Import({ PersistenceConfigCore.class, PersistenceConfigResponseData.class, PersistenceConfigResponseDlms.class,
     PersistenceConfigLogging.class })
-@PropertySource("file:/etc/osp/osgp-cucumber-response-data-smart-metering.properties")
+@PropertySources({
+    @PropertySource("classpath:osgp-cucumber-response-data-smart-metering.properties"),
+    @PropertySource(value = "classpath:osgp-cucumber-response-data-smart-metering-${env}.properties", ignoreResourceNotFound = true)}
+)
 public class ApplicationContext {
 }

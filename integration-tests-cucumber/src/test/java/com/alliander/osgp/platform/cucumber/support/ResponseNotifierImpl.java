@@ -19,18 +19,22 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.stereotype.Component;
 
 @Component
 @Configuration
-@PropertySource("file:/etc/osp/osgp-cucumber-response-data-smart-metering.properties")
+@PropertySources({
+    @PropertySource("classpath:osgp-cucumber-response-data-smart-metering.properties"),
+    @PropertySource(value = "classpath:osgp-cucumber-response-data-smart-metering-${env}.properties", ignoreResourceNotFound = true)}
+)
 public class ResponseNotifierImpl implements ResponseNotifier {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ResponseNotifierImpl.class);
 
     private static final int FIRST_WAIT_TIME = 1000;
-    
+
     private Connection connection;
 
     @Value("${cucumber.osgpadapterwssmartmeteringdbs.url}")
@@ -47,14 +51,14 @@ public class ResponseNotifierImpl implements ResponseNotifier {
         Statement statement = null;
         try {
             statement = this.conn().createStatement();
-            
+
             //check if we have (almost) immediate response
             Thread.sleep(FIRST_WAIT_TIME);
             PollResult pollres = this.pollDatabase(statement, correlid);
             if (pollres.equals(PollResult.OK)) {
                 return true;
             }
-            
+
             int delayedtime = 0;
             while (true) {
                 Thread.sleep(timeout);

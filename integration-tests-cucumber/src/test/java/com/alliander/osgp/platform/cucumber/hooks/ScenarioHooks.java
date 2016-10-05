@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.alliander.osgp.domain.core.entities.Device;
@@ -34,7 +35,10 @@ import cucumber.api.java.Before;
  * class for preparing specific scenarios
  *
  */
-@PropertySource("file:/etc/osp/osgp-cucumber-response-data-smart-metering.properties")
+@PropertySources({
+    @PropertySource("classpath:osgp-cucumber-response-data-smart-metering.properties"),
+    @PropertySource(value = "classpath:osgp-cucumber-response-data-smart-metering-${env}.properties", ignoreResourceNotFound = true)}
+)
 public class ScenarioHooks {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ScenarioHooks.class);

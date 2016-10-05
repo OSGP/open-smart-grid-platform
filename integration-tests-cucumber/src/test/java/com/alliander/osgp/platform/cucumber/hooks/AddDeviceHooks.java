@@ -14,6 +14,7 @@ import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.domain.core.entities.Device;
@@ -29,7 +30,10 @@ import com.alliander.osgp.domain.core.repositories.DeviceRepository;
  */
 @Component
 @Configuration
-@PropertySource("file:/etc/osp/osgp-cucumber-response-data-smart-metering.properties")
+@PropertySources({
+    @PropertySource("classpath:osgp-cucumber-response-data-smart-metering.properties"),
+    @PropertySource(value = "classpath:osgp-cucumber-response-data-smart-metering-${env}.properties", ignoreResourceNotFound = true)}
+)
 public class AddDeviceHooks {
 
     @Autowired
