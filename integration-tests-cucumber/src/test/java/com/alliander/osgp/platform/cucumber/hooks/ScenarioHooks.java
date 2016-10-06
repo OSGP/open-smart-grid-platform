@@ -140,5 +140,4 @@ public class ScenarioHooks {
             LOGGER.error("no such device " + deviceId);
         }
     }
-
 }

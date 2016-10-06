@@ -22,10 +22,10 @@ import com.alliander.osgp.platform.cucumber.ApplicationConfig;
 @ComponentScan(basePackages = { "com.alliander.osgp.adapter.ws.smartmetering.domain.entities",
         "com.alliander.osgp.domain.core.repositories", "com.alliander.osgp.domain.core.entities",
         "com.alliander.osgp.logging.domain.repositories", "com.alliander.osgp.platform.cucumber.hooks",
-"com.alliander.osgp.platform.cucumber" })
+        "com.alliander.osgp.platform.cucumber" })
 @EnableTransactionManagement()
 @Import({ PersistenceConfigCore.class, PersistenceConfigResponseData.class, PersistenceConfigResponseDlms.class,
-        PersistenceConfigLogging.class })
+    PersistenceConfigLogging.class })
 @Component
 public class ApplicationContext {
 
