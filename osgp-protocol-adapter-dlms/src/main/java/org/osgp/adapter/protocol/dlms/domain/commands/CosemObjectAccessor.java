@@ -15,6 +15,9 @@ import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
 class CosemObjectAccessor {
 
+    private static final String EXCEPTION_MSG_NO_METHOD_RESULT = "No MethodResult received.";
+    private static final String EXCEPTION_MSG_METHOD_RESULT_NOT_SUCCESS = "Method result code is not success: %s";
+    private static final String EXCEPTION_MSG_NO_GET_RESULT = "No GetResult received while retrieving attribute %s.";
     private final DlmsConnection conn;
     private final ObisCode obisCode;
     private final int classId;
@@ -46,15 +49,23 @@ class CosemObjectAccessor {
         }
 
         if (getResult == null) {
-            throw new ProtocolAdapterException("No GetResult received while retrieving attribute " + attributeId + ".");
+            throw new ProtocolAdapterException(String.format(EXCEPTION_MSG_NO_GET_RESULT, attributeId));
         }
 
         return getResult.getResultData();
     }
 
-    public DataObject callMethod(final int methodId) {
+    public DataObject callMethod(final int methodId) throws ProtocolAdapterException {
         final MethodParameter methodParameter = this.createMethodParameter(methodId);
+        return this.handleMethod(methodParameter);
+    }
 
+    public DataObject callMethod(final int methodId, final DataObject dataObject) throws ProtocolAdapterException {
+        final MethodParameter methodParameter = this.createMethodParameter(methodId, dataObject);
+        return this.handleMethod(methodParameter);
+    }
+
+    private DataObject handleMethod(final MethodParameter methodParameter) throws ProtocolAdapterException {
         MethodResult result = null;
         try {
             result = this.conn.action(methodParameter);
@@ -63,26 +74,14 @@ class CosemObjectAccessor {
         }
 
         if (result == null) {
+            throw new ProtocolAdapterException(EXCEPTION_MSG_NO_METHOD_RESULT);
+        }
 
+        if (result.getResultCode() != MethodResultCode.SUCCESS) {
+            throw new ProtocolAdapterException(String.format(EXCEPTION_MSG_METHOD_RESULT_NOT_SUCCESS, result
+                    .getResultCode().name()));
         }
 
         return result.getResultData();
-    }
-
-    public MethodResultCode callMethod(final int methodId, final DataObject dataObject) {
-        final MethodParameter methodParameter = this.createMethodParameter(methodId, dataObject);
-
-        MethodResult result = null;
-        try {
-            result = this.conn.action(methodParameter);
-        } catch (final IOException e) {
-            throw new ConnectionException(e);
-        }
-
-        if (result == null) {
-
-        }
-
-        return result.getResultCode();
     }
 }

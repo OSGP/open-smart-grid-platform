@@ -9,7 +9,6 @@ import java.util.concurrent.Future;
 
 import org.bouncycastle.util.Arrays;
 import org.openmuc.jdlms.DlmsConnection;
-import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
@@ -22,6 +21,7 @@ class ImageTransfer {
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageTransfer.class);
     private static final int LOGGER_PERCENTAGE_STEP = 5;
 
+    private static final String EXCEPTION_MSG_WAITING_FOR_IMAGE_ACTIVATION = "An error occurred while waiting for image activation status to change.";
     private static final String EXCEPTION_MSG_IMAGE_VERIFY_NOT_CALLED = "Image verify could not be called.";
     private static final String EXCEPTION_MSG_IMAGE_NOT_VERIFIED = "The image could not be verified. Status: ";
     private static final String EXCEPTION_MSG_IMAGE_BLOCK_SIZE_NOT_READ = "Image block size could not be read.";
@@ -110,8 +110,7 @@ class ImageTransfer {
         params.add(DataObject.newUInteger32Data(blockNumber));
         params.add(DataObject.newOctetStringData(transferData));
 
-        final MethodResultCode result = this.cosemObject.callMethod(Method.IMAGE_BLOCK_TRANSFER.getValue(),
-                DataObject.newStructureData(params));
+        this.cosemObject.callMethod(Method.IMAGE_BLOCK_TRANSFER.getValue(), DataObject.newStructureData(params));
     }
 
     private void logUploadPercentage(final int block, final int totalBlocks) {
@@ -140,16 +139,15 @@ class ImageTransfer {
      * Initiates Image transfer.After a successful initiation, the value of the
      * image_transfer_status attribute is (1) Image transfer initiated and the
      * COSEM server is prepared to accept ImageBlocks.
+     *
+     * @throws ProtocolAdapterException
      */
-    public void initiateImageTransfer() {
+    public void initiateImageTransfer() throws ProtocolAdapterException {
         final List<DataObject> params = new ArrayList<>();
         params.add(DataObject.newOctetStringData(this.imageIdentifier.getBytes()));
         params.add(DataObject.newUInteger32Data(this.getImageSize()));
 
-        final MethodResultCode result = this.cosemObject.callMethod(Method.IMAGE_TRANSFER_INITIATE.getValue(),
-                DataObject.newStructureData(params));
-
-        LOGGER.info("Initatiate result: " + result.getCode());
+        this.cosemObject.callMethod(Method.IMAGE_TRANSFER_INITIATE.getValue(), DataObject.newStructureData(params));
     }
 
     /**
@@ -193,18 +191,18 @@ class ImageTransfer {
      * by the client and testing the image transfer status.
      */
     public void verifyImage() throws ProtocolAdapterException {
-        final MethodResultCode verified = this.cosemObject.callMethod(Method.IMAGE_VERIFY.getValue(),
+        final DataObject verified = this.cosemObject.callMethod(Method.IMAGE_VERIFY.getValue(),
                 DataObject.newInteger8Data((byte) 0));
-        if (verified == null) {
+        if (verified == null || !verified.isNumber()) {
             throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_VERIFY_NOT_CALLED);
         }
 
-        if (verified.getCode() == Action_Result.OTHER_REASON) {
+        if ((int) verified.getValue() == Action_Result.OTHER_REASON) {
             final int status = this.getImageTransferStatus();
             throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_NOT_VERIFIED + status);
         }
 
-        if (verified.getCode() == Action_Result.TEMPORARY_FAILURE) {
+        if ((int) verified.getValue() == Action_Result.TEMPORARY_FAILURE) {
             final Future<Integer> newStatus = this.executorService.submit(new ImageTransferStatusChanged(
                     ImageTransferStatus.VERIFICATION_INITIATED));
 
@@ -256,13 +254,13 @@ class ImageTransfer {
      * @throws ProtocolAdapterException
      */
     public void activateImage() throws ProtocolAdapterException {
-        final MethodResultCode imageActivate = this.cosemObject.callMethod(Method.IMAGE_ACTIVATE.getValue(),
+        final DataObject imageActivate = this.cosemObject.callMethod(Method.IMAGE_ACTIVATE.getValue(),
                 DataObject.newInteger8Data((byte) 0));
-        if (imageActivate == null) {
+        if (imageActivate == null || !imageActivate.isNumber()) {
             throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_VERIFY_NOT_CALLED);
         }
 
-        if (imageActivate.getCode() == Action_Result.TEMPORARY_FAILURE) {
+        if ((int) imageActivate.getValue() == Action_Result.TEMPORARY_FAILURE) {
             final Future<Integer> newStatus = this.executorService.submit(new ImageTransferStatusChanged(
                     ImageTransferStatus.ACTIVATION_INITIATED));
 
@@ -270,7 +268,7 @@ class ImageTransfer {
             try {
                 status = newStatus.get();
             } catch (InterruptedException | ExecutionException e) {
-                throw new ProtocolAdapterException("", e);
+                throw new ProtocolAdapterException(EXCEPTION_MSG_WAITING_FOR_IMAGE_ACTIVATION, e);
             }
 
             if (status == ImageTransferStatus.ACTIVATION_FAILED.getValue()) {
@@ -280,7 +278,7 @@ class ImageTransfer {
             return;
         }
 
-        if (imageActivate.getCode() != Action_Result.SUCCESS) {
+        if ((int) imageActivate.getValue() != Action_Result.SUCCESS) {
             throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_TO_ACTIVATE_NOT_OK);
         }
     }
