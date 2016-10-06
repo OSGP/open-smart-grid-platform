@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.SystemService;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
@@ -37,7 +38,7 @@ public class Iec61850RtuSystemService implements SystemService {
 
     @Override
     public List<MeasurementDto> getData(final SystemFilterDto systemFilter, final Iec61850Client client,
-            final DeviceConnection connection) {
+            final DeviceConnection connection) throws NodeReadException {
 
         LOGGER.info("Get data called for logical device {}", DEVICE + this.index);
 

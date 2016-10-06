@@ -65,8 +65,8 @@ public class DeviceManagementService {
 
         final Ssld ssldDevice = this.ssldDataRepository.findByDeviceIdentification(deviceIdentification);
         if (ssldDevice == null) {
-            throw new ProtocolAdapterException(
-                    "Unable to find device using deviceIdentification: " + deviceIdentification);
+            throw new ProtocolAdapterException("Unable to find device using deviceIdentification: "
+                    + deviceIdentification);
         }
 
         LOGGER.info("addEventNotifications called for device {}: {}", deviceIdentification, eventNotifications);
@@ -93,8 +93,8 @@ public class DeviceManagementService {
 
         final Ssld ssldDevice = this.ssldDataRepository.findByDeviceIdentification(deviceIdentification);
         if (ssldDevice == null) {
-            throw new ProtocolAdapterException(
-                    "Unable to find device using deviceIdentification: " + deviceIdentification);
+            throw new ProtocolAdapterException("Unable to find device using deviceIdentification: "
+                    + deviceIdentification);
         }
 
         return ssldDevice.getOutputSettings();
@@ -102,12 +102,15 @@ public class DeviceManagementService {
 
     public void sendMeasurements(final String deviceIdentification, final DataResponseDto response)
             throws ProtocolAdapterException {
-        // Correlation ID is generated @ WS adapter, domain+version is hardcoded
+        // Correlation ID is generated @ WS adapter, domain+version is
+        // hard-coded
         // for now
-        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder().dataObject(response)
-                .deviceMessageMetadata(new DeviceMessageMetadata(deviceIdentification, "no-organisation",
-                        "no-correlationUid", DeviceFunctionDto.GET_DATA.name(), 0))
-                .result(ResponseMessageResultType.OK).domain("MICROGRIDS").domainVersion("1.0").build();
+        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
+                .dataObject(response)
+                .deviceMessageMetadata(
+                        new DeviceMessageMetadata(deviceIdentification, "no-organisation", "no-correlationUid",
+                                DeviceFunctionDto.GET_DATA.name(), 0)).result(ResponseMessageResultType.OK)
+                .domain("MICROGRIDS").domainVersion("1.0").build();
         this.responseSender.send(responseMessage);
     }
 }

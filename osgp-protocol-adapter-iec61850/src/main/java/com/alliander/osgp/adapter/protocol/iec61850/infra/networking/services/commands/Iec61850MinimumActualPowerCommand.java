@@ -12,6 +12,7 @@ import org.joda.time.DateTimeZone;
 import org.openmuc.openiec61850.Fc;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.ByteArrayTranslationService;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
@@ -26,7 +27,7 @@ public class Iec61850MinimumActualPowerCommand implements RtuCommand {
 
     @Override
     public MeasurementDto execute(final Iec61850Client client, final DeviceConnection connection,
-            final LogicalDevice logicalDevice) {
+            final LogicalDevice logicalDevice) throws NodeReadException {
         final NodeContainer containingNode = connection.getFcModelNode(logicalDevice, LogicalNode.MEASUREMENT_ONE,
                 DataAttribute.MIN_ACTUAL_POWER, Fc.MX);
         client.readNodeDataValues(connection.getConnection().getClientAssociation(), containingNode.getFcmodelNode());
@@ -37,7 +38,7 @@ public class Iec61850MinimumActualPowerCommand implements RtuCommand {
     public MeasurementDto translate(final NodeContainer containingNode) {
         return new MeasurementDto(1, DataAttribute.MIN_ACTUAL_POWER.getDescription(),
                 ByteArrayTranslationService.toShort(containingNode.getQuality(SubDataAttribute.QUALITY).getValue()),
-                new DateTime(containingNode.getDate(SubDataAttribute.TIME), DateTimeZone.UTC),
-                containingNode.getChild(SubDataAttribute.MAGNITUDE).getFloat(SubDataAttribute.FLOAT).getFloat());
+                new DateTime(containingNode.getDate(SubDataAttribute.TIME), DateTimeZone.UTC), containingNode
+                        .getChild(SubDataAttribute.MAGNITUDE).getFloat(SubDataAttribute.FLOAT).getFloat());
     }
 }

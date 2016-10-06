@@ -27,6 +27,8 @@ import org.openmuc.openiec61850.ServiceError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeWriteException;
+
 public class NodeContainer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NodeContainer.class);
@@ -49,17 +51,19 @@ public class NodeContainer {
         this.parent = fcmodelNode;
     }
 
-    public void write() {
-        try {
-            this.connection.getConnection().getClientAssociation().setDataValues(this.parent);
-        } catch (final ServiceError e) {
-            LOGGER.error("ServiceError during write()", e);
-        } catch (final IOException e) {
-            // "if a fatal association error occurs. The association object will
-            // be closed and can no longer be used after this exception is
-            // thrown."
-            LOGGER.error("IOException during write()", e);
-        }
+    /**
+     * Write the {@link FcModelNode} which is stored in the
+     * {@link NodeContainer#parent} field.
+     *
+     * @throws NodeWriteException
+     *             In case the write action fails {@link ServiceError} or
+     *             {@link IOException} is thrown by OpenMUC OpenIEC61850.
+     *             {@link NodeWriteException} wraps the thrown exception and
+     *             indicates if the connection with the IED is still usable. See
+     *             {@link ConnectionState}.
+     */
+    public void write() throws NodeWriteException {
+        this.writeNode(this.parent);
     }
 
     /**
@@ -80,7 +84,7 @@ public class NodeContainer {
     /**
      * Writes a String value to the given child on the device
      */
-    public void writeString(final SubDataAttribute child, final String value) {
+    public void writeString(final SubDataAttribute child, final String value) throws NodeWriteException {
         final BdaVisibleString stringNode = (BdaVisibleString) this.parent.getChild(child.getDescription());
 
         LOGGER.info("device: {}, writing {} to {}", this.deviceIdentification, value, child.getDescription());
@@ -107,7 +111,7 @@ public class NodeContainer {
     /**
      * Writes a Date value to the given child on the device
      */
-    public void writeDate(final SubDataAttribute child, final Date value) {
+    public void writeDate(final SubDataAttribute child, final Date value) throws NodeWriteException {
         final BdaTimestamp dBdaTimestamp = (BdaTimestamp) this.parent.getChild(child.getDescription());
 
         LOGGER.info("device: {}, writing {} to {}", this.deviceIdentification, value, child.getDescription());
@@ -119,7 +123,7 @@ public class NodeContainer {
         return (BdaBoolean) this.parent.getChild(child.getDescription());
     }
 
-    public void writeBoolean(final SubDataAttribute child, final boolean value) {
+    public void writeBoolean(final SubDataAttribute child, final boolean value) throws NodeWriteException {
         final BdaBoolean bdaBoolean = (BdaBoolean) this.parent.getChild(child.getDescription());
         bdaBoolean.setValue(value);
         this.writeNode(bdaBoolean);
@@ -129,7 +133,7 @@ public class NodeContainer {
         return (BdaInt8) this.parent.getChild(child.getDescription());
     }
 
-    public void writeByte(final SubDataAttribute child, final byte value) {
+    public void writeByte(final SubDataAttribute child, final byte value) throws NodeWriteException {
         final BdaInt8 bdaByte = (BdaInt8) this.parent.getChild(child.getDescription());
         bdaByte.setValue(value);
         this.writeNode(bdaByte);
@@ -143,7 +147,7 @@ public class NodeContainer {
         return (BdaInt16) this.parent.getChild(child.getDescription());
     }
 
-    public void writeShort(final SubDataAttribute child, final Short value) {
+    public void writeShort(final SubDataAttribute child, final Short value) throws NodeWriteException {
         final BdaInt16 bdaShort = (BdaInt16) this.parent.getChild(child.getDescription());
         bdaShort.setValue(value);
         this.writeNode(bdaShort);
@@ -153,7 +157,7 @@ public class NodeContainer {
         return (BdaInt16U) this.parent.getChild(child.getDescription());
     }
 
-    public void writeUnsignedShort(final SubDataAttribute child, final Integer value) {
+    public void writeUnsignedShort(final SubDataAttribute child, final Integer value) throws NodeWriteException {
         final BdaInt16U bdaUnsignedShort = (BdaInt16U) this.parent.getChild(child.getDescription());
         bdaUnsignedShort.setValue(value);
         this.writeNode(bdaUnsignedShort);
@@ -163,7 +167,7 @@ public class NodeContainer {
         return (BdaInt32) this.parent.getChild(child.getDescription());
     }
 
-    public void writeInteger(final SubDataAttribute child, final Integer value) {
+    public void writeInteger(final SubDataAttribute child, final Integer value) throws NodeWriteException {
         final BdaInt32 bdaInteger = (BdaInt32) this.parent.getChild(child.getDescription());
         bdaInteger.setValue(value);
         this.writeNode(bdaInteger);
@@ -173,7 +177,7 @@ public class NodeContainer {
         return (BdaInt64) this.parent.getChild(child.getDescription());
     }
 
-    public void writeLong(final SubDataAttribute child, final Integer value) {
+    public void writeLong(final SubDataAttribute child, final Integer value) throws NodeWriteException {
         final BdaInt64 bdaInteger = (BdaInt64) this.parent.getChild(child.getDescription());
         bdaInteger.setValue(value);
         this.writeNode(bdaInteger);
@@ -183,7 +187,7 @@ public class NodeContainer {
         return (BdaFloat32) this.parent.getChild(child.getDescription());
     }
 
-    public void writeFloat(final SubDataAttribute child, final Float value) {
+    public void writeFloat(final SubDataAttribute child, final Float value) throws NodeWriteException {
         final BdaFloat32 bdaFloat = (BdaFloat32) this.parent.getChild(child.getDescription());
         bdaFloat.setFloat(value);
         this.writeNode(bdaFloat);
@@ -194,19 +198,20 @@ public class NodeContainer {
     }
 
     /**
-     * Writes the new data of the node to the device
+     * Writes the new data of the node to the device.
      */
-    private void writeNode(final FcModelNode node) {
+    private void writeNode(final FcModelNode node) throws NodeWriteException {
         try {
             this.connection.getConnection().getClientAssociation().setDataValues(node);
         } catch (final ServiceError e) {
             LOGGER.error("ServiceError during writeNode()", e);
+            throw new NodeWriteException(e.getMessage(), e, ConnectionState.OK);
         } catch (final IOException e) {
-
             // "if a fatal association error occurs. The association object will
             // be closed and can no longer be used after this exception is
             // thrown."
             LOGGER.error("IOException during writeNode()", e);
+            throw new NodeWriteException(e.getMessage(), e, ConnectionState.BROKEN);
         }
     }
 

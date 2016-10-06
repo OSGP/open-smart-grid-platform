@@ -11,6 +11,7 @@ import org.joda.time.DateTime;
 import org.openmuc.openiec61850.Fc;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.ByteArrayTranslationService;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
@@ -25,7 +26,7 @@ public class Iec61850ActualPowerLimitCommand implements RtuCommand {
 
     @Override
     public MeasurementDto execute(final Iec61850Client client, final DeviceConnection connection,
-            final LogicalDevice logicalDevice) {
+            final LogicalDevice logicalDevice) throws NodeReadException {
         final NodeContainer containingNode = connection.getFcModelNode(logicalDevice,
                 LogicalNode.DER_SUPERVISORY_CONTROL_ONE, DataAttribute.ACTUAL_POWER_LIMIT, Fc.SV);
         client.readNodeDataValues(connection.getConnection().getClientAssociation(), containingNode.getFcmodelNode());

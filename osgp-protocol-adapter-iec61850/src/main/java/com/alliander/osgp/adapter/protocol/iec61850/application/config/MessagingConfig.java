@@ -16,8 +16,6 @@ import org.apache.activemq.command.ActiveMQDestination;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.apache.activemq.spring.ActiveMQConnectionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -41,8 +39,6 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.OsgpResponse
 @EnableTransactionManagement()
 @PropertySource("file:${osp/osgpAdapterProtocolIec61850/config}")
 public class MessagingConfig {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(MessagingConfig.class);
 
     // JMS Settings
     private static final String PROPERTY_NAME_JMS_ACTIVEMQ_BROKER_URL = "jms.activemq.broker.url";
@@ -411,5 +407,4 @@ public class MessagingConfig {
     public OsgpResponseMessageListener osgpResponseMessageListener() {
         return new OsgpResponseMessageListener();
     }
-
 }

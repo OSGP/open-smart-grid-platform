@@ -18,8 +18,8 @@ public abstract class Iec61850ClientBaseEventListener implements ClientEventList
 
     protected final Logger logger;
 
-    /*
-     * Node names of EvnRpn nodes that occur as members of the report dataset.
+    /**
+     * Node names of EvnRpn nodes that occur as members of the report data-set.
      */
     protected final String deviceIdentification;
     protected final DeviceManagementService deviceManagementService;
@@ -27,7 +27,7 @@ public abstract class Iec61850ClientBaseEventListener implements ClientEventList
 
     public Iec61850ClientBaseEventListener(final String deviceIdentification,
             final DeviceManagementService deviceManagementService, final Class<?> loggerClass)
-            throws ProtocolAdapterException {
+                    throws ProtocolAdapterException {
         this.deviceManagementService = deviceManagementService;
         this.deviceIdentification = deviceIdentification;
         this.logger = LoggerFactory.getLogger(loggerClass);

@@ -12,6 +12,7 @@ import org.joda.time.DateTimeZone;
 import org.openmuc.openiec61850.Fc;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.ByteArrayTranslationService;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
@@ -36,7 +37,7 @@ public class Iec61850LoadTotalEnergyCommand implements RtuCommand {
 
     @Override
     public MeasurementDto execute(final Iec61850Client client, final DeviceConnection connection,
-            final LogicalDevice logicalDevice) {
+            final LogicalDevice logicalDevice) throws NodeReadException {
         final NodeContainer containingNode = connection.getFcModelNode(logicalDevice, this.logicalNode,
                 DataAttribute.TOTAL_ENERGY, Fc.ST);
         client.readNodeDataValues(connection.getConnection().getClientAssociation(), containingNode.getFcmodelNode());
@@ -47,7 +48,7 @@ public class Iec61850LoadTotalEnergyCommand implements RtuCommand {
     public MeasurementDto translate(final NodeContainer containingNode) {
         return new MeasurementDto(this.index, DataAttribute.TOTAL_ENERGY.getDescription(),
                 ByteArrayTranslationService.toShort(containingNode.getQuality(SubDataAttribute.QUALITY).getValue()),
-                new DateTime(containingNode.getDate(SubDataAttribute.TIME), DateTimeZone.UTC),
-                containingNode.getLong(SubDataAttribute.ACTUAL_VALUE).getValue());
+                new DateTime(containingNode.getDate(SubDataAttribute.TIME), DateTimeZone.UTC), containingNode.getLong(
+                        SubDataAttribute.ACTUAL_VALUE).getValue());
     }
 }

@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.adapter.protocol.iec61850.application.services.DeviceRegistrationService;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.OsgpRequestMessageSender;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.IED;
 import com.alliander.osgp.core.db.api.iec61850.entities.Ssld;
@@ -32,7 +33,7 @@ public class Iec61850ChannelHandlerServer extends Iec61850ChannelHandler {
     private OsgpRequestMessageSender osgpRequestMessageSender;
 
     @Autowired
-    private Iec61850Client iec61850Client;
+    private DeviceRegistrationService deviceRegistrationService;
 
     @Autowired
     private String testDeviceId;
@@ -63,7 +64,9 @@ public class Iec61850ChannelHandlerServer extends Iec61850ChannelHandler {
         final IED ied = IED.FLEX_OVL;
         String ipAddress = message.getIpAddress();
 
-        if (this.testDeviceId != null && this.testDeviceIp != null) {
+        // In case the optional properties 'testDeviceId' and 'testDeviceIp' are
+        // set, the values will be used to set an IP address for a device.
+        if (this.testDeviceId != null && this.testDeviceId.equals(deviceIdentification) && this.testDeviceIp != null) {
             LOGGER.info("Using testDeviceId: {} and testDeviceIp: {}", this.testDeviceId, this.testDeviceIp);
             deviceIdentification = this.testDeviceId;
             deviceType = Ssld.SSLD_TYPE;
@@ -80,7 +83,8 @@ public class Iec61850ChannelHandlerServer extends Iec61850ChannelHandler {
         this.osgpRequestMessageSender.send(requestMessage, DeviceFunctionDto.REGISTER_DEVICE.name());
 
         try {
-            this.iec61850Client.disableRegistration(deviceIdentification, InetAddress.getByName(ipAddress), ied);
+            this.deviceRegistrationService.disableRegistration(deviceIdentification, InetAddress.getByName(ipAddress),
+                    ied);
             LOGGER.info("Disabled registration for device: {}, at IP address: {}", deviceIdentification, ipAddress);
         } catch (final Exception e) {
             LOGGER.error("Failed to disable registration for device: {}, at IP address: {}", deviceIdentification,
