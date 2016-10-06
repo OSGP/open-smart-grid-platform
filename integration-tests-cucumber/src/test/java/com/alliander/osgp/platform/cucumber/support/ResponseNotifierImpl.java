@@ -15,21 +15,23 @@ import java.sql.Statement;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.platform.cucumber.ApplicationConfig;
+
 @Component
-@Configuration
-@PropertySource("file:/etc/osp/cucumber-platform-dlms.properties")
 public class ResponseNotifierImpl implements ResponseNotifier {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ResponseNotifierImpl.class);
 
     private static final int FIRST_WAIT_TIME = 1000;
+
+    @Autowired
+    private ApplicationConfig applicationConfig;
 
     private Connection connection;
 
