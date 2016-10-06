@@ -14,6 +14,7 @@ import org.openmuc.openiec61850.Fc;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.ByteArrayTranslationService;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalDevice;
@@ -43,8 +44,9 @@ public class Iec61850LoadMinimumActualPowerCommand implements RtuCommand {
 
     @Override
     public MeasurementDto translate(final NodeContainer containingNode) {
-        return new MeasurementDto(this.index, DataAttribute.MIN_ACTUAL_POWER.getDescription(), 0, new DateTime(
-                containingNode.getDate(SubDataAttribute.TIME), DateTimeZone.UTC), containingNode
-                .getChild(SubDataAttribute.MAGNITUDE).getFloat(SubDataAttribute.FLOAT).getFloat());
+        return new MeasurementDto(this.index, DataAttribute.MIN_ACTUAL_POWER.getDescription(),
+                ByteArrayTranslationService.toShort(containingNode.getQuality(SubDataAttribute.QUALITY).getValue()),
+                new DateTime(containingNode.getDate(SubDataAttribute.TIME), DateTimeZone.UTC), containingNode
+                        .getChild(SubDataAttribute.MAGNITUDE).getFloat(SubDataAttribute.FLOAT).getFloat());
     }
 }

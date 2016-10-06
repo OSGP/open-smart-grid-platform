@@ -2,6 +2,7 @@ package com.alliander.osgp.simulator.protocol.iec61850.server;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -14,6 +15,7 @@ import org.openmuc.openiec61850.BdaFloat32;
 import org.openmuc.openiec61850.BdaInt32;
 import org.openmuc.openiec61850.BdaInt64;
 import org.openmuc.openiec61850.BdaInt8;
+import org.openmuc.openiec61850.BdaQuality;
 import org.openmuc.openiec61850.BdaTimestamp;
 import org.openmuc.openiec61850.Fc;
 import org.openmuc.openiec61850.SclParseException;
@@ -82,56 +84,77 @@ public class RtuSimulator implements ServerEventListener {
     public void generateData() {
         final Date timestamp = new Date();
 
-        final List<BasicDataAttribute> values = new ArrayList<BasicDataAttribute>();
+        final List<BasicDataAttribute> values = new ArrayList<>();
 
         // Logical Device RTU1
+
         values.add(this.setRandomByte("WAGO61850ServerRTU1/LLN0.Health.stVal", Fc.ST, 1, 2));
+        values.add(this.setQuality("WAGO61850ServerRTU1/LLN0.Health.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
         values.add(this.setTime("WAGO61850ServerRTU1/LLN0.Health.t", Fc.ST, timestamp));
 
         values.add(this.setRandomByte("WAGO61850ServerRTU1/LLN0.Beh.stVal", Fc.ST, 1, 2));
+        values.add(this.setQuality("WAGO61850ServerRTU1/LLN0.Beh.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
         values.add(this.setTime("WAGO61850ServerRTU1/LLN0.Beh.t", Fc.ST, timestamp));
 
         values.add(this.setRandomByte("WAGO61850ServerRTU1/LLN0.Mod.stVal", Fc.ST, 1, 2));
+        values.add(this.setQuality("WAGO61850ServerRTU1/LLN0.Mod.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
         values.add(this.setTime("WAGO61850ServerRTU1/LLN0.Mod.t", Fc.ST, timestamp));
 
         // Logical Device PV1
         values.add(this.setRandomByte("WAGO61850ServerPV1/LLN0.Health.stVal", Fc.ST, 1, 2));
+        values.add(this.setQuality("WAGO61850ServerPV1/LLN0.Health.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
         values.add(this.setTime("WAGO61850ServerPV1/LLN0.Health.t", Fc.ST, timestamp));
 
         values.add(this.setRandomByte("WAGO61850ServerPV1/LLN0.Beh.stVal", Fc.ST, 1, 2));
+        values.add(this.setQuality("WAGO61850ServerPV1/LLN0.Beh.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
         values.add(this.setTime("WAGO61850ServerPV1/LLN0.Beh.t", Fc.ST, timestamp));
 
         values.add(this.setRandomByte("WAGO61850ServerPV1/LLN0.Mod.stVal", Fc.ST, 1, 2));
+        values.add(this.setQuality("WAGO61850ServerPV1/LLN0.Mod.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
         values.add(this.setTime("WAGO61850ServerPV1/LLN0.Mod.t", Fc.ST, timestamp));
 
         values.add(this.setRandomFloat("WAGO61850ServerPV1/MMXU1.MaxWPhs.mag.f", Fc.MX, 500, 1000));
+        values.add(this.setQuality("WAGO61850ServerPV1/MMXU1.MaxWPhs.q", Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
         values.add(this.setTime("WAGO61850ServerPV1/MMXU1.MaxWPhs.t", Fc.MX, timestamp));
 
         values.add(this.setRandomFloat("WAGO61850ServerPV1/MMXU1.MinWPhs.mag.f", Fc.MX, 0, 500));
+        values.add(this.setQuality("WAGO61850ServerPV1/MMXU1.MinWPhs.q", Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
         values.add(this.setTime("WAGO61850ServerPV1/MMXU1.MinWPhs.t", Fc.MX, timestamp));
 
         values.add(this.setRandomFloat("WAGO61850ServerPV1/MMXU1.TotW.mag.f", Fc.MX, 0, 1000));
+        values.add(this.setQuality("WAGO61850ServerPV1/MMXU1.TotW.q", Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
         values.add(this.setTime("WAGO61850ServerPV1/MMXU1.TotW.t", Fc.MX, timestamp));
 
         values.add(this.setRandomFloat("WAGO61850ServerPV1/DRCC1.OutWSet.subVal.f", Fc.SV, 0, 1000));
+        values.add(
+                this.setQuality("WAGO61850ServerPV1/DRCC1.OutWSet.subQ", Fc.SV, QualityType.VALIDITY_GOOD.getValue()));
 
         values.add(this.setRandomFloat("WAGO61850ServerPV1/DGEN1.TotWh.mag.f", Fc.MX, 0, 1000));
+        values.add(this.setQuality("WAGO61850ServerPV1/DGEN1.TotWh.q", Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
         values.add(this.setTime("WAGO61850ServerPV1/DGEN1.TotWh.t", Fc.MX, timestamp));
 
         values.add(this.setRandomByte("WAGO61850ServerPV1/DGEN1.GnOpSt.stVal", Fc.ST, 1, 2));
+        values.add(this.setQuality("WAGO61850ServerPV1/DGEN1.GnOpSt.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
         values.add(this.setTime("WAGO61850ServerPV1/DGEN1.GnOpSt.t", Fc.ST, timestamp));
 
         values.add(this.incrementInt("WAGO61850ServerPV1/DGEN1.OpTmsRs.stVal", Fc.ST));
+        values.add(this.setQuality("WAGO61850ServerPV1/DGEN1.OpTmsRs.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
         values.add(this.setTime("WAGO61850ServerPV1/DGEN1.OpTmsRs.t", Fc.ST, timestamp));
 
         // Logical Device PV2
         values.add(this.setRandomByte("WAGO61850ServerPV2/LLN0.Health.stVal", Fc.ST, 1, 2));
+        values.add(this.setQuality("WAGO61850ServerPV2/LLN0.Health.q", Fc.ST,
+                (short) (QualityType.VALIDITY_INVALID.getValue() + QualityType.FAILURE.getValue())));
         values.add(this.setTime("WAGO61850ServerPV2/LLN0.Health.t", Fc.ST, timestamp));
 
         values.add(this.setRandomByte("WAGO61850ServerPV2/LLN0.Beh.stVal", Fc.ST, 1, 2));
+        values.add(this.setQuality("WAGO61850ServerPV2/LLN0.Beh.q", Fc.ST,
+                (short) (QualityType.VALIDITY_INVALID.getValue() + QualityType.FAILURE.getValue())));
         values.add(this.setTime("WAGO61850ServerPV2/LLN0.Beh.t", Fc.ST, timestamp));
 
         values.add(this.setRandomByte("WAGO61850ServerPV2/LLN0.Mod.stVal", Fc.ST, 1, 2));
+        values.add(this.setQuality("WAGO61850ServerPV2/LLN0.Mod.q", Fc.ST,
+                (short) (QualityType.VALIDITY_INVALID.getValue() + QualityType.FAILURE.getValue())));
         values.add(this.setTime("WAGO61850ServerPV2/LLN0.Mod.t", Fc.ST, timestamp));
 
         values.add(this.setRandomFloat("WAGO61850ServerPV2/MMXU1.MaxWPhs.mag.f", Fc.MX, 500, 1000));
@@ -140,58 +163,102 @@ public class RtuSimulator implements ServerEventListener {
         values.add(this.setRandomFloat("WAGO61850ServerPV2/MMXU1.MinWPhs.mag.f", Fc.MX, 0, 500));
         values.add(this.setTime("WAGO61850ServerPV2/MMXU1.MinWPhs.t", Fc.MX, timestamp));
 
+        values.add(this.setRandomFloat("WAGO61850ServerPV2/MMXU1.MaxWPhs.mag.f", Fc.MX, 500, 1000));
+        values.add(this.setQuality("WAGO61850ServerPV2/MMXU1.MaxWPhs.q", Fc.MX,
+                (short) (QualityType.VALIDITY_INVALID.getValue() + QualityType.FAILURE.getValue())));
+        values.add(this.setTime("WAGO61850ServerPV2/MMXU1.MaxWPhs.t", Fc.MX, timestamp));
+
+        values.add(this.setRandomFloat("WAGO61850ServerPV2/MMXU1.MinWPhs.mag.f", Fc.MX, 0, 500));
+        values.add(this.setQuality("WAGO61850ServerPV2/MMXU1.MinWPhs.q", Fc.MX,
+                (short) (QualityType.VALIDITY_INVALID.getValue() + QualityType.FAILURE.getValue())));
+        values.add(this.setTime("WAGO61850ServerPV2/MMXU1.MinWPhs.t", Fc.MX, timestamp));
+
         values.add(this.setRandomFloat("WAGO61850ServerPV2/MMXU1.TotW.mag.f", Fc.MX, 0, 1000));
+        values.add(this.setQuality("WAGO61850ServerPV2/MMXU1.TotW.q", Fc.MX,
+                (short) (QualityType.VALIDITY_INVALID.getValue() + QualityType.FAILURE.getValue())));
         values.add(this.setTime("WAGO61850ServerPV2/MMXU1.TotW.t", Fc.MX, timestamp));
 
         values.add(this.setRandomFloat("WAGO61850ServerPV2/DRCC1.OutWSet.subVal.f", Fc.SV, 0, 1000));
+        values.add(this.setQuality("WAGO61850ServerPV2/DRCC1.OutWSet.subQ", Fc.SV,
+                (short) (QualityType.VALIDITY_INVALID.getValue() + QualityType.FAILURE.getValue())));
 
         values.add(this.setRandomFloat("WAGO61850ServerPV2/DGEN1.TotWh.mag.f", Fc.MX, 0, 1000));
+        values.add(this.setQuality("WAGO61850ServerPV2/DGEN1.TotWh.q", Fc.MX,
+                (short) (QualityType.VALIDITY_INVALID.getValue() + QualityType.FAILURE.getValue())));
         values.add(this.setTime("WAGO61850ServerPV2/DGEN1.TotWh.t", Fc.MX, timestamp));
 
         values.add(this.setRandomByte("WAGO61850ServerPV2/DGEN1.GnOpSt.stVal", Fc.ST, 1, 2));
+        values.add(this.setQuality("WAGO61850ServerPV2/DGEN1.GnOpSt.q", Fc.ST,
+                (short) (QualityType.VALIDITY_INVALID.getValue() + QualityType.FAILURE.getValue())));
         values.add(this.setTime("WAGO61850ServerPV2/DGEN1.GnOpSt.t", Fc.ST, timestamp));
 
         values.add(this.incrementInt("WAGO61850ServerPV2/DGEN1.OpTmsRs.stVal", Fc.ST));
+        values.add(this.setQuality("WAGO61850ServerPV2/DGEN1.OpTmsRs.q", Fc.ST,
+                (short) (QualityType.VALIDITY_INVALID.getValue() + QualityType.FAILURE.getValue())));
         values.add(this.setTime("WAGO61850ServerPV2/DGEN1.OpTmsRs.t", Fc.ST, timestamp));
 
         // Logical Device PV3
         values.add(this.setRandomByte("WAGO61850ServerPV3/LLN0.Health.stVal", Fc.ST, 1, 2));
+        values.add(this.setQuality("WAGO61850ServerPV3/LLN0.Health.q", Fc.ST,
+                (short) (QualityType.VALIDITY_QUESTIONABLE.getValue() + QualityType.INCONSISTANT.getValue())));
         values.add(this.setTime("WAGO61850ServerPV3/LLN0.Health.t", Fc.ST, timestamp));
 
         values.add(this.setRandomByte("WAGO61850ServerPV3/LLN0.Beh.stVal", Fc.ST, 1, 2));
+        values.add(this.setQuality("WAGO61850ServerPV3/LLN0.Beh.q", Fc.ST,
+                (short) (QualityType.VALIDITY_QUESTIONABLE.getValue() + QualityType.INCONSISTANT.getValue())));
         values.add(this.setTime("WAGO61850ServerPV3/LLN0.Beh.t", Fc.ST, timestamp));
 
         values.add(this.setRandomByte("WAGO61850ServerPV3/LLN0.Mod.stVal", Fc.ST, 1, 2));
+        values.add(this.setQuality("WAGO61850ServerPV3/LLN0.Mod.q", Fc.ST,
+                (short) (QualityType.VALIDITY_QUESTIONABLE.getValue() + QualityType.INCONSISTANT.getValue())));
         values.add(this.setTime("WAGO61850ServerPV3/LLN0.Mod.t", Fc.ST, timestamp));
 
         values.add(this.setRandomFloat("WAGO61850ServerPV3/MMXU1.MaxWPhs.mag.f", Fc.MX, 500, 1000));
+        values.add(this.setQuality("WAGO61850ServerPV3/MMXU1.MaxWPhs.q", Fc.MX,
+                (short) (QualityType.VALIDITY_QUESTIONABLE.getValue() + QualityType.INCONSISTANT.getValue())));
         values.add(this.setTime("WAGO61850ServerPV3/MMXU1.MaxWPhs.t", Fc.MX, timestamp));
 
         values.add(this.setRandomFloat("WAGO61850ServerPV3/MMXU1.MinWPhs.mag.f", Fc.MX, 0, 500));
+        values.add(this.setQuality("WAGO61850ServerPV3/MMXU1.MinWPhs.q", Fc.MX,
+                (short) (QualityType.VALIDITY_QUESTIONABLE.getValue() + QualityType.INCONSISTANT.getValue())));
         values.add(this.setTime("WAGO61850ServerPV3/MMXU1.MinWPhs.t", Fc.MX, timestamp));
 
         values.add(this.setRandomFloat("WAGO61850ServerPV3/MMXU1.TotW.mag.f", Fc.MX, 0, 1000));
+        values.add(this.setQuality("WAGO61850ServerPV3/MMXU1.TotW.q", Fc.MX,
+                (short) (QualityType.VALIDITY_QUESTIONABLE.getValue() + QualityType.INCONSISTANT.getValue())));
         values.add(this.setTime("WAGO61850ServerPV3/MMXU1.TotW.t", Fc.MX, timestamp));
 
         values.add(this.setRandomFloat("WAGO61850ServerPV3/DRCC1.OutWSet.subVal.f", Fc.SV, 0, 1000));
+        values.add(this.setQuality("WAGO61850ServerPV3/DRCC1.OutWSet.subQ", Fc.SV,
+                (short) (QualityType.VALIDITY_QUESTIONABLE.getValue() + QualityType.INCONSISTANT.getValue())));
 
         values.add(this.setRandomFloat("WAGO61850ServerPV3/DGEN1.TotWh.mag.f", Fc.MX, 0, 1000));
+        values.add(this.setQuality("WAGO61850ServerPV3/DGEN1.TotWh.q", Fc.MX,
+                (short) (QualityType.VALIDITY_QUESTIONABLE.getValue() + QualityType.INCONSISTANT.getValue())));
         values.add(this.setTime("WAGO61850ServerPV3/DGEN1.TotWh.t", Fc.MX, timestamp));
 
         values.add(this.setRandomByte("WAGO61850ServerPV3/DGEN1.GnOpSt.stVal", Fc.ST, 1, 2));
+        values.add(this.setQuality("WAGO61850ServerPV3/DGEN1.GnOpSt.q", Fc.ST,
+                (short) (QualityType.VALIDITY_QUESTIONABLE.getValue() + QualityType.INCONSISTANT.getValue())));
         values.add(this.setTime("WAGO61850ServerPV3/DGEN1.GnOpSt.t", Fc.ST, timestamp));
 
         values.add(this.incrementInt("WAGO61850ServerPV3/DGEN1.OpTmsRs.stVal", Fc.ST));
+        values.add(this.setQuality("WAGO61850ServerPV3/DGEN1.OpTmsRs.q", Fc.ST,
+                (short) (QualityType.VALIDITY_QUESTIONABLE.getValue() + QualityType.INCONSISTANT.getValue())));
         values.add(this.setTime("WAGO61850ServerPV3/DGEN1.OpTmsRs.t", Fc.ST, timestamp));
 
         // Logical Device BATTERY1
         values.add(this.setRandomByte("WAGO61850ServerBATTERY1/LLN0.Health.stVal", Fc.ST, 1, 2));
+        values.add(
+                this.setQuality("WAGO61850ServerBATTERY1/LLN0.Health.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
         values.add(this.setTime("WAGO61850ServerBATTERY1/LLN0.Health.t", Fc.ST, timestamp));
 
         values.add(this.setRandomByte("WAGO61850ServerBATTERY1/LLN0.Beh.stVal", Fc.ST, 1, 2));
+        values.add(this.setQuality("WAGO61850ServerBATTERY1/LLN0.Beh.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
         values.add(this.setTime("WAGO61850ServerBATTERY1/LLN0.Beh.t", Fc.ST, timestamp));
 
         values.add(this.setRandomByte("WAGO61850ServerBATTERY1/LLN0.Mod.stVal", Fc.ST, 1, 2));
+        values.add(this.setQuality("WAGO61850ServerBATTERY1/LLN0.Mod.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
         values.add(this.setTime("WAGO61850ServerBATTERY1/LLN0.Mod.t", Fc.ST, timestamp));
 
         values.add(this.setRandomFloat("WAGO61850ServerBATTERY1/MMXU1.MaxWPhs.mag.f", Fc.MX, 500, 1000));
@@ -200,54 +267,98 @@ public class RtuSimulator implements ServerEventListener {
         values.add(this.setRandomFloat("WAGO61850ServerBATTERY1/MMXU1.MinWPhs.mag.f", Fc.MX, 0, 500));
         values.add(this.setTime("WAGO61850ServerBATTERY1/MMXU1.MinWPhs.t", Fc.MX, timestamp));
 
+        values.add(this.setRandomFloat("WAGO61850ServerBATTERY1/MMXU1.MaxWPhs.mag.f", Fc.MX, 500, 1000));
+        values.add(this.setQuality("WAGO61850ServerBATTERY1/MMXU1.MaxWPhs.q", Fc.MX,
+                QualityType.VALIDITY_GOOD.getValue()));
+        values.add(this.setTime("WAGO61850ServerBATTERY1/MMXU1.MaxWPhs.t", Fc.MX, timestamp));
+
+        values.add(this.setRandomFloat("WAGO61850ServerBATTERY1/MMXU1.MinWPhs.mag.f", Fc.MX, 0, 500));
+        values.add(this.setQuality("WAGO61850ServerBATTERY1/MMXU1.MinWPhs.q", Fc.MX,
+                QualityType.VALIDITY_GOOD.getValue()));
+        values.add(this.setTime("WAGO61850ServerBATTERY1/MMXU1.MinWPhs.t", Fc.MX, timestamp));
+
         values.add(this.setRandomFloat("WAGO61850ServerBATTERY1/MMXU1.TotW.mag.f", Fc.MX, 0, 1000));
+        values.add(
+                this.setQuality("WAGO61850ServerBATTERY1/MMXU1.TotW.q", Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
         values.add(this.setTime("WAGO61850ServerBATTERY1/MMXU1.TotW.t", Fc.MX, timestamp));
 
         values.add(this.setRandomFloat("WAGO61850ServerBATTERY1/DRCC1.OutWSet.subVal.f", Fc.SV, 0, 1000));
+        values.add(this.setQuality("WAGO61850ServerBATTERY1/DRCC1.OutWSet.subQ", Fc.SV,
+                QualityType.VALIDITY_GOOD.getValue()));
 
         values.add(this.setRandomFloat("WAGO61850ServerBATTERY1/DGEN1.TotWh.mag.f", Fc.MX, 0, 1000));
+        values.add(
+                this.setQuality("WAGO61850ServerBATTERY1/DGEN1.TotWh.q", Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
         values.add(this.setTime("WAGO61850ServerBATTERY1/DGEN1.TotWh.t", Fc.MX, timestamp));
 
         values.add(this.setRandomByte("WAGO61850ServerBATTERY1/DGEN1.GnOpSt.stVal", Fc.ST, 1, 2));
+        values.add(
+                this.setQuality("WAGO61850ServerBATTERY1/DGEN1.GnOpSt.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
         values.add(this.setTime("WAGO61850ServerBATTERY1/DGEN1.GnOpSt.t", Fc.ST, timestamp));
 
         values.add(this.setRandomFloat("WAGO61850ServerBATTERY1/MMXU1.TotPF.mag.f", Fc.MX, 0, 1000));
+        values.add(
+                this.setQuality("WAGO61850ServerBATTERY1/MMXU1.TotPF.q", Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
         values.add(this.setTime("WAGO61850ServerBATTERY1/MMXU1.TotPF.t", Fc.MX, timestamp));
 
         values.add(this.incrementInt("WAGO61850ServerBATTERY1/DGEN1.OpTmsRs.stVal", Fc.ST));
+        values.add(this.setQuality("WAGO61850ServerBATTERY1/DGEN1.OpTmsRs.q", Fc.ST,
+                QualityType.VALIDITY_GOOD.getValue()));
         values.add(this.setTime("WAGO61850ServerBATTERY1/DGEN1.OpTmsRs.t", Fc.ST, timestamp));
 
         // Logical Device BATTERY2
         values.add(this.setRandomByte("WAGO61850ServerBATTERY2/LLN0.Health.stVal", Fc.ST, 1, 2));
+        values.add(this.setQuality("WAGO61850ServerBATTERY2/LLN0.Health.q", Fc.ST,
+                (short) (QualityType.VALIDITY_INVALID.getValue() + QualityType.FAILURE.getValue())));
         values.add(this.setTime("WAGO61850ServerBATTERY2/LLN0.Health.t", Fc.ST, timestamp));
 
         values.add(this.setRandomByte("WAGO61850ServerBATTERY2/LLN0.Beh.stVal", Fc.ST, 1, 2));
+        values.add(this.setQuality("WAGO61850ServerBATTERY2/LLN0.Beh.q", Fc.ST,
+                (short) (QualityType.VALIDITY_INVALID.getValue() + QualityType.FAILURE.getValue())));
         values.add(this.setTime("WAGO61850ServerBATTERY2/LLN0.Beh.t", Fc.ST, timestamp));
 
         values.add(this.setRandomByte("WAGO61850ServerBATTERY2/LLN0.Mod.stVal", Fc.ST, 1, 2));
+        values.add(this.setQuality("WAGO61850ServerBATTERY2/LLN0.Mod.q", Fc.ST,
+                (short) (QualityType.VALIDITY_INVALID.getValue() + QualityType.FAILURE.getValue())));
         values.add(this.setTime("WAGO61850ServerBATTERY2/LLN0.Mod.t", Fc.ST, timestamp));
 
         values.add(this.setRandomFloat("WAGO61850ServerBATTERY2/MMXU1.MaxWPhs.mag.f", Fc.MX, 500, 1000));
+        values.add(this.setQuality("WAGO61850ServerBATTERY2/MMXU1.MaxWPhs.q", Fc.MX,
+                (short) (QualityType.VALIDITY_INVALID.getValue() + QualityType.FAILURE.getValue())));
         values.add(this.setTime("WAGO61850ServerBATTERY2/MMXU1.MaxWPhs.t", Fc.MX, timestamp));
 
         values.add(this.setRandomFloat("WAGO61850ServerBATTERY2/MMXU1.MinWPhs.mag.f", Fc.MX, 0, 500));
+        values.add(this.setQuality("WAGO61850ServerBATTERY2/MMXU1.MinWPhs.q", Fc.MX,
+                (short) (QualityType.VALIDITY_INVALID.getValue() + QualityType.FAILURE.getValue())));
         values.add(this.setTime("WAGO61850ServerBATTERY2/MMXU1.MinWPhs.t", Fc.MX, timestamp));
 
         values.add(this.setRandomFloat("WAGO61850ServerBATTERY2/MMXU1.TotW.mag.f", Fc.MX, 0, 1000));
+        values.add(this.setQuality("WAGO61850ServerBATTERY2/MMXU1.TotW.q", Fc.MX,
+                (short) (QualityType.VALIDITY_INVALID.getValue() + QualityType.FAILURE.getValue())));
         values.add(this.setTime("WAGO61850ServerBATTERY2/MMXU1.TotW.t", Fc.MX, timestamp));
 
         values.add(this.setRandomFloat("WAGO61850ServerBATTERY2/DRCC1.OutWSet.subVal.f", Fc.SV, 0, 1000));
+        values.add(this.setQuality("WAGO61850ServerBATTERY2/DRCC1.OutWSet.subQ", Fc.SV,
+                (short) (QualityType.VALIDITY_INVALID.getValue() + QualityType.FAILURE.getValue())));
 
         values.add(this.setRandomFloat("WAGO61850ServerBATTERY2/DGEN1.TotWh.mag.f", Fc.MX, 0, 1000));
+        values.add(this.setQuality("WAGO61850ServerBATTERY2/DGEN1.TotWh.q", Fc.MX,
+                (short) (QualityType.VALIDITY_INVALID.getValue() + QualityType.FAILURE.getValue())));
         values.add(this.setTime("WAGO61850ServerBATTERY2/DGEN1.TotWh.t", Fc.MX, timestamp));
 
         values.add(this.setRandomByte("WAGO61850ServerBATTERY2/DGEN1.GnOpSt.stVal", Fc.ST, 1, 2));
+        values.add(this.setQuality("WAGO61850ServerBATTERY2/DGEN1.GnOpSt.q", Fc.ST,
+                (short) (QualityType.VALIDITY_INVALID.getValue() + QualityType.FAILURE.getValue())));
         values.add(this.setTime("WAGO61850ServerBATTERY2/DGEN1.GnOpSt.t", Fc.ST, timestamp));
 
         values.add(this.setRandomFloat("WAGO61850ServerBATTERY2/MMXU1.TotPF.mag.f", Fc.MX, 0, 1000));
+        values.add(this.setQuality("WAGO61850ServerBATTERY2/MMXU1.TotPF.q", Fc.MX,
+                (short) (QualityType.VALIDITY_INVALID.getValue() + QualityType.FAILURE.getValue())));
         values.add(this.setTime("WAGO61850ServerBATTERY2/MMXU1.TotPF.t", Fc.MX, timestamp));
 
         values.add(this.incrementInt("WAGO61850ServerBATTERY2/DGEN1.OpTmsRs.stVal", Fc.ST));
+        values.add(this.setQuality("WAGO61850ServerBATTERY2/DGEN1.OpTmsRs.q", Fc.ST,
+                (short) (QualityType.VALIDITY_INVALID.getValue() + QualityType.FAILURE.getValue())));
         values.add(this.setTime("WAGO61850ServerBATTERY2/DGEN1.OpTmsRs.t", Fc.ST, timestamp));
 
         // Logical Device LOAD1
@@ -310,4 +421,15 @@ public class RtuSimulator implements ServerEventListener {
         value.setValue(ThreadLocalRandom.current().nextInt(min, max));
         return value;
     }
+
+    private BasicDataAttribute setQuality(final String node, final Fc fc, final short q) {
+        final BdaQuality value = (BdaQuality) this.serverModel.findModelNode(node, fc);
+        value.setValue(this.shortToByteArray(q));
+        return value;
+    }
+
+    private byte[] shortToByteArray(final short value) {
+        return ByteBuffer.allocate(2).putShort(value).array();
+    }
+
 }
