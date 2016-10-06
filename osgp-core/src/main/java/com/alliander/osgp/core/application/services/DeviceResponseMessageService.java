@@ -125,23 +125,56 @@ public class DeviceResponseMessageService {
             return;
         }
 
-        if (message.getResult() == ResponseMessageResultType.OK
-                && scheduledTask.getStatus() == ScheduledTaskStatusType.PENDING) {
+        if (this.messageIsSuccessful(message, scheduledTask)) {
             this.domainResponseMessageSender.send(message);
+            this.scheduledTaskRepository.delete(scheduledTask);
         } else {
 
-            if (message.getRetryHeader() != null && message.getRetryHeader().shouldRetry()) {
-                scheduledTask.retryOn(message.getRetryHeader().getScheduledRetryTime());
-            } else {
-                this.domainResponseMessageSender.send(message);
-            }
+            this.handleUnsuccessfulScheduledTask(message, scheduledTask);
         }
-        this.scheduledTaskRepository.delete(scheduledTask);
+    }
+
+    private void handleUnsuccessfulScheduledTask(final ProtocolResponseMessage message,
+            final ScheduledTask scheduledTask) {
+        if (this.mustBeRetried(message)) {
+            this.handleMessageRetry(message, scheduledTask);
+        } else {
+            this.domainResponseMessageSender.send(message);
+            this.scheduledTaskRepository.delete(scheduledTask);
+        }
+    }
+
+    private void handleMessageRetry(final ProtocolResponseMessage message, final ScheduledTask scheduledTask) {
+        final String errorMessage = this.determineErrorMessage(message);
+        scheduledTask.setFailed(errorMessage);
+        scheduledTask.retryOn(message.getRetryHeader().getScheduledRetryTime());
+        this.scheduledTaskRepository.save(scheduledTask);
+    }
+
+    private boolean mustBeRetried(final ProtocolResponseMessage message) {
+        return message.getRetryHeader() != null && message.getRetryHeader().shouldRetry();
+    }
+
+    private boolean messageIsSuccessful(final ProtocolResponseMessage message, final ScheduledTask scheduledTask) {
+        return message.getResult() == ResponseMessageResultType.OK
+                && scheduledTask.getStatus() == ScheduledTaskStatusType.PENDING;
+    }
+
+    private String determineErrorMessage(final ProtocolResponseMessage message) {
+        final String errorMessage;
+        if (message.getOsgpException() == null) {
+            errorMessage = "";
+        } else if (message.getOsgpException().getCause() == null) {
+            errorMessage = message.getOsgpException().getMessage();
+        } else {
+            errorMessage = message.getOsgpException().getCause().getMessage();
+        }
+        return errorMessage;
     }
 
     private void handleProtocolResponseMessage(final ProtocolResponseMessage message)
             throws FunctionalException, JMSException {
-        if (message.getRetryHeader() != null && message.getRetryHeader().shouldRetry()) {
+        if (this.mustBeRetried(message)) {
             // Create scheduled task for retries.
             LOGGER.info("Creating a scheduled retry task for message of type {} for device {}.",
                     message.getMessageType(), message.getDeviceIdentification());
