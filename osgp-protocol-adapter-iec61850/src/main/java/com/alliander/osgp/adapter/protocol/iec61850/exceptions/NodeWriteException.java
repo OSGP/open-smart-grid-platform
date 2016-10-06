@@ -31,7 +31,6 @@ public class NodeWriteException extends NodeException {
     }
 
     public NodeWriteException(final String message, final Throwable throwable, final ConnectionState connectionState) {
-        super(message, throwable);
-        this.connectionState = connectionState;
+        super(message, throwable, connectionState);
     }
 }

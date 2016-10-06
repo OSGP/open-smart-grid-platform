@@ -56,150 +56,160 @@ public class Iec61850SetScheduleCommand {
 
     public void setScheduleOnDevice(final Iec61850Client iec61850Client, final DeviceConnection deviceConnection,
             final RelayTypeDto relayType, final List<ScheduleDto> scheduleList, final Ssld ssld,
-            final SsldDataService ssldDataService) throws ProtocolAdapterException, FunctionalException {
+            final SsldDataService ssldDataService) throws ProtocolAdapterException {
         final String tariffOrLight = relayType.equals(RelayTypeDto.LIGHT) ? "light" : "tariff";
 
-        // Creating a list of all Schedule entries, grouped by relay index.
-        final Map<Integer, List<ScheduleEntry>> relaySchedulesEntries = this.createScheduleEntries(scheduleList, ssld,
-                relayType, ssldDataService);
+        try {
+            // Creating a list of all Schedule entries, grouped by relay index.
+            final Map<Integer, List<ScheduleEntry>> relaySchedulesEntries = this.createScheduleEntries(scheduleList,
+                    ssld, relayType, ssldDataService);
 
-        for (final Integer relayIndex : relaySchedulesEntries.keySet()) {
+            for (final Integer relayIndex : relaySchedulesEntries.keySet()) {
 
-            final Function<Void> function = new Function<Void>() {
+                final Function<Void> function = new Function<Void>() {
 
-                @Override
-                public Void apply() throws Exception {
+                    @Override
+                    public Void apply() throws Exception {
 
-                    final List<ScheduleEntry> scheduleEntries = relaySchedulesEntries.get(relayIndex);
-                    final int numberOfScheduleEntries = scheduleEntries.size();
+                        final List<ScheduleEntry> scheduleEntries = relaySchedulesEntries.get(relayIndex);
+                        final int numberOfScheduleEntries = scheduleEntries.size();
 
-                    if (numberOfScheduleEntries > MAX_NUMBER_OF_SCHEDULE_ENTRIES) {
-                        throw new ProtocolAdapterException("Received " + numberOfScheduleEntries + " " + tariffOrLight
-                                + " schedule entries for relay " + relayIndex + " for device "
-                                + ssld.getDeviceIdentification() + ". Setting more than "
-                                + MAX_NUMBER_OF_SCHEDULE_ENTRIES + " is not possible.");
+                        if (numberOfScheduleEntries > MAX_NUMBER_OF_SCHEDULE_ENTRIES) {
+                            throw new ProtocolAdapterException("Received " + numberOfScheduleEntries + " "
+                                    + tariffOrLight + " schedule entries for relay " + relayIndex + " for device "
+                                    + ssld.getDeviceIdentification() + ". Setting more than "
+                                    + MAX_NUMBER_OF_SCHEDULE_ENTRIES + " is not possible.");
+                        }
+
+                        final LogicalNode logicalNode = LogicalNode.getSwitchComponentByIndex(relayIndex);
+                        final NodeContainer schedule = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
+                                logicalNode, DataAttribute.SCHEDULE, Fc.CF);
+                        iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
+                                schedule.getFcmodelNode());
+
+                        // Clear existing schedule by disabling schedule
+                        // entries.
+                        for (int i = 0; i < MAX_NUMBER_OF_SCHEDULE_ENTRIES; i++) {
+                            final String scheduleEntryName = SubDataAttribute.SCHEDULE_ENTRY.getDescription() + (i + 1);
+                            final NodeContainer scheduleNode = schedule.getChild(scheduleEntryName);
+
+                            final boolean enabled = scheduleNode.getBoolean(SubDataAttribute.SCHEDULE_ENABLE)
+                                    .getValue();
+                            LOGGER.info("Checking if schedule entry {} is enabled: {}", i + 1, enabled);
+                            if (enabled) {
+                                LOGGER.info(
+                                        "Disabling schedule entry {} of {} for relay {} before setting new {} schedule",
+                                        i + 1, MAX_NUMBER_OF_SCHEDULE_ENTRIES, relayIndex, tariffOrLight);
+                                scheduleNode.writeBoolean(SubDataAttribute.SCHEDULE_ENABLE, false);
+                            }
+                        }
+
+                        for (int i = 0; i < numberOfScheduleEntries; i++) {
+
+                            LOGGER.info("Writing {} schedule entry {} for relay {}", tariffOrLight, i + 1, relayIndex);
+
+                            final ScheduleEntry scheduleEntry = scheduleEntries.get(i);
+
+                            final String scheduleEntryName = SubDataAttribute.SCHEDULE_ENTRY.getDescription() + (i + 1);
+                            final NodeContainer scheduleNode = schedule.getChild(scheduleEntryName);
+
+                            final BdaBoolean enabled = scheduleNode.getBoolean(SubDataAttribute.SCHEDULE_ENABLE);
+                            if (enabled.getValue() != scheduleEntry.isEnabled()) {
+                                scheduleNode.writeBoolean(SubDataAttribute.SCHEDULE_ENABLE, scheduleEntry.isEnabled());
+                            }
+
+                            final Integer day = scheduleNode.getInteger(SubDataAttribute.SCHEDULE_DAY).getValue();
+                            if (day != scheduleEntry.getDay()) {
+                                scheduleNode.writeInteger(SubDataAttribute.SCHEDULE_DAY, scheduleEntry.getDay());
+                            }
+
+                            /*
+                             * A schedule entry on the platform is about
+                             * switching on a certain time, or on a certain
+                             * trigger. The schedule entries on the device are
+                             * about a period with a time on and a time off. To
+                             * bridge these different approaches, either the on
+                             * or the off values on the device are set to a
+                             * certain default to indicate they are not relevant
+                             * to the schedule entry.
+                             */
+                            int timeOnValue = DEFAULT_SCHEDULE_VALUE;
+                            byte timeOnTypeValue = DEFAULT_SCHEDULE_VALUE;
+                            int timeOffValue = DEFAULT_SCHEDULE_VALUE;
+                            byte timeOffTypeValue = DEFAULT_SCHEDULE_VALUE;
+
+                            if (scheduleEntry.isOn()) {
+                                timeOnValue = scheduleEntry.getTime();
+                                timeOnTypeValue = (byte) scheduleEntry.getTriggerType().getIndex();
+                            } else {
+                                timeOffValue = scheduleEntry.getTime();
+                                timeOffTypeValue = (byte) scheduleEntry.getTriggerType().getIndex();
+                            }
+
+                            final Integer timeOn = scheduleNode.getInteger(SubDataAttribute.SCHEDULE_TIME_ON)
+                                    .getValue();
+                            if (timeOn != timeOnValue) {
+                                scheduleNode.writeInteger(SubDataAttribute.SCHEDULE_TIME_ON, timeOnValue);
+                            }
+
+                            final Byte timeOnActionTime = scheduleNode.getByte(SubDataAttribute.SCHEDULE_TIME_ON_TYPE)
+                                    .getValue();
+                            if (timeOnActionTime != timeOnTypeValue) {
+                                scheduleNode.writeByte(SubDataAttribute.SCHEDULE_TIME_ON_TYPE, timeOnTypeValue);
+                            }
+
+                            final Integer timeOff = scheduleNode.getInteger(SubDataAttribute.SCHEDULE_TIME_OFF)
+                                    .getValue();
+                            if (timeOff != timeOffValue) {
+                                scheduleNode.writeInteger(SubDataAttribute.SCHEDULE_TIME_OFF, timeOffValue);
+                            }
+
+                            final Byte timeOffActionTime = scheduleNode
+                                    .getByte(SubDataAttribute.SCHEDULE_TIME_OFF_TYPE).getValue();
+                            if (timeOffActionTime != timeOffTypeValue) {
+                                scheduleNode.writeByte(SubDataAttribute.SCHEDULE_TIME_OFF_TYPE, timeOffTypeValue);
+                            }
+
+                            final Integer minimumTimeOn = scheduleNode.getUnsignedShort(
+                                    SubDataAttribute.MINIMUM_TIME_ON).getValue();
+                            final Integer newMinimumTimeOn = scheduleEntry.getMinimumLightsOn() / 60;
+                            if (minimumTimeOn != newMinimumTimeOn) {
+                                scheduleNode.writeUnsignedShort(SubDataAttribute.MINIMUM_TIME_ON, newMinimumTimeOn);
+                            }
+
+                            final Integer triggerMinutesBefore = scheduleNode.getUnsignedShort(
+                                    SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_BEFORE).getValue();
+                            if (triggerMinutesBefore != scheduleEntry.getTriggerWindowMinutesBefore()) {
+                                scheduleNode.writeUnsignedShort(SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_BEFORE,
+                                        scheduleEntry.getTriggerWindowMinutesBefore());
+                            }
+
+                            final Integer triggerMinutesAfter = scheduleNode.getUnsignedShort(
+                                    SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_AFTER).getValue();
+                            if (triggerMinutesAfter != scheduleEntry.getTriggerWindowMinutesAfter()) {
+                                scheduleNode.writeUnsignedShort(SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_AFTER,
+                                        scheduleEntry.getTriggerWindowMinutesAfter());
+                            }
+                        }
+
+                        return null;
                     }
 
-                    final LogicalNode logicalNode = LogicalNode.getSwitchComponentByIndex(relayIndex);
-                    final NodeContainer schedule = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING, logicalNode,
-                            DataAttribute.SCHEDULE, Fc.CF);
-                    iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
-                            schedule.getFcmodelNode());
-
-                    // Clear existing schedule by disabling schedule entries.
-                    for (int i = 0; i < MAX_NUMBER_OF_SCHEDULE_ENTRIES; i++) {
-                        final String scheduleEntryName = SubDataAttribute.SCHEDULE_ENTRY.getDescription() + (i + 1);
-                        final NodeContainer scheduleNode = schedule.getChild(scheduleEntryName);
-
-                        final boolean enabled = scheduleNode.getBoolean(SubDataAttribute.SCHEDULE_ENABLE).getValue();
-                        LOGGER.info("Checking if schedule entry {} is enabled: {}", i + 1, enabled);
-                        if (enabled) {
-                            LOGGER.info(
-                                    "Disabling schedule entry {} of {} for relay {} before setting new {} schedule",
-                                    i + 1, MAX_NUMBER_OF_SCHEDULE_ENTRIES, relayIndex, tariffOrLight);
-                            scheduleNode.writeBoolean(SubDataAttribute.SCHEDULE_ENABLE, false);
-                        }
-                    }
-
-                    for (int i = 0; i < numberOfScheduleEntries; i++) {
-
-                        LOGGER.info("Writing {} schedule entry {} for relay {}", tariffOrLight, i + 1, relayIndex);
-
-                        final ScheduleEntry scheduleEntry = scheduleEntries.get(i);
-
-                        final String scheduleEntryName = SubDataAttribute.SCHEDULE_ENTRY.getDescription() + (i + 1);
-                        final NodeContainer scheduleNode = schedule.getChild(scheduleEntryName);
-
-                        final BdaBoolean enabled = scheduleNode.getBoolean(SubDataAttribute.SCHEDULE_ENABLE);
-                        if (enabled.getValue() != scheduleEntry.isEnabled()) {
-                            scheduleNode.writeBoolean(SubDataAttribute.SCHEDULE_ENABLE, scheduleEntry.isEnabled());
-                        }
-
-                        final Integer day = scheduleNode.getInteger(SubDataAttribute.SCHEDULE_DAY).getValue();
-                        if (day != scheduleEntry.getDay()) {
-                            scheduleNode.writeInteger(SubDataAttribute.SCHEDULE_DAY, scheduleEntry.getDay());
-                        }
-
-                        /*
-                         * A schedule entry on the platform is about switching
-                         * on a certain time, or on a certain trigger. The
-                         * schedule entries on the device are about a period
-                         * with a time on and a time off. To bridge these
-                         * different approaches, either the on or the off values
-                         * on the device are set to a certain default to
-                         * indicate they are not relevant to the schedule entry.
-                         */
-                        int timeOnValue = DEFAULT_SCHEDULE_VALUE;
-                        byte timeOnTypeValue = DEFAULT_SCHEDULE_VALUE;
-                        int timeOffValue = DEFAULT_SCHEDULE_VALUE;
-                        byte timeOffTypeValue = DEFAULT_SCHEDULE_VALUE;
-
-                        if (scheduleEntry.isOn()) {
-                            timeOnValue = scheduleEntry.getTime();
-                            timeOnTypeValue = (byte) scheduleEntry.getTriggerType().getIndex();
-                        } else {
-                            timeOffValue = scheduleEntry.getTime();
-                            timeOffTypeValue = (byte) scheduleEntry.getTriggerType().getIndex();
-                        }
-
-                        final Integer timeOn = scheduleNode.getInteger(SubDataAttribute.SCHEDULE_TIME_ON).getValue();
-                        if (timeOn != timeOnValue) {
-                            scheduleNode.writeInteger(SubDataAttribute.SCHEDULE_TIME_ON, timeOnValue);
-                        }
-
-                        final Byte timeOnActionTime = scheduleNode.getByte(SubDataAttribute.SCHEDULE_TIME_ON_TYPE)
-                                .getValue();
-                        if (timeOnActionTime != timeOnTypeValue) {
-                            scheduleNode.writeByte(SubDataAttribute.SCHEDULE_TIME_ON_TYPE, timeOnTypeValue);
-                        }
-
-                        final Integer timeOff = scheduleNode.getInteger(SubDataAttribute.SCHEDULE_TIME_OFF).getValue();
-                        if (timeOff != timeOffValue) {
-                            scheduleNode.writeInteger(SubDataAttribute.SCHEDULE_TIME_OFF, timeOffValue);
-                        }
-
-                        final Byte timeOffActionTime = scheduleNode.getByte(SubDataAttribute.SCHEDULE_TIME_OFF_TYPE)
-                                .getValue();
-                        if (timeOffActionTime != timeOffTypeValue) {
-                            scheduleNode.writeByte(SubDataAttribute.SCHEDULE_TIME_OFF_TYPE, timeOffTypeValue);
-                        }
-
-                        final Integer minimumTimeOn = scheduleNode.getUnsignedShort(SubDataAttribute.MINIMUM_TIME_ON)
-                                .getValue();
-                        final Integer newMinimumTimeOn = scheduleEntry.getMinimumLightsOn() / 60;
-                        if (minimumTimeOn != newMinimumTimeOn) {
-                            scheduleNode.writeUnsignedShort(SubDataAttribute.MINIMUM_TIME_ON, newMinimumTimeOn);
-                        }
-
-                        final Integer triggerMinutesBefore = scheduleNode.getUnsignedShort(
-                                SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_BEFORE).getValue();
-                        if (triggerMinutesBefore != scheduleEntry.getTriggerWindowMinutesBefore()) {
-                            scheduleNode.writeUnsignedShort(SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_BEFORE,
-                                    scheduleEntry.getTriggerWindowMinutesBefore());
-                        }
-
-                        final Integer triggerMinutesAfter = scheduleNode.getUnsignedShort(
-                                SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_AFTER).getValue();
-                        if (triggerMinutesAfter != scheduleEntry.getTriggerWindowMinutesAfter()) {
-                            scheduleNode.writeUnsignedShort(SubDataAttribute.SCHEDULE_TRIGGER_MINUTES_AFTER,
-                                    scheduleEntry.getTriggerWindowMinutesAfter());
-                        }
-                    }
-
-                    return null;
-                }
-            };
-
-            iec61850Client.sendCommandWithRetry(function);
+                };
+                iec61850Client.sendCommandWithRetry(function);
+            }
+        } catch (final FunctionalException e) {
+            throw new ProtocolAdapterException(e.getMessage(), e);
         }
     }
 
-    /*
+    /**
      * Returns a map of schedule entries, grouped by the internal index.
      */
     private Map<Integer, List<ScheduleEntry>> createScheduleEntries(final List<ScheduleDto> scheduleList,
             final Ssld ssld, final RelayTypeDto relayTypeDto, final SsldDataService ssldDataService)
                     throws FunctionalException {
+
         final Map<Integer, List<ScheduleEntry>> relaySchedulesEntries = new HashMap<>();
 
         final RelayType relayType = RelayType.valueOf(relayTypeDto.name());
@@ -249,7 +259,7 @@ public class Iec61850SetScheduleCommand {
                         // type.
                         this.checkRelayForSchedules(
                                 ssldDataService.getDeviceOutputSettingForInternalIndex(ssld, internalIndex)
-                                .getRelayType(), relayType, internalIndex);
+                                        .getRelayType(), relayType, internalIndex);
 
                         // Adding it to scheduleEntries.
                         final List<ScheduleEntry> scheduleEntries = new ArrayList<>();
@@ -337,10 +347,10 @@ public class Iec61850SetScheduleCommand {
      *
      * @param time
      *            a time String in the format hh:mm:ss.SSS, hh:mm:ss or hh:mm.
-     * 
+     *
      * @return the short value formed by parsing the digits of hhmm from the
      *         given time.
-     * 
+     *
      * @throws ProtocolAdapterException
      *             if time is {@code null} or not of the format specified.
      */

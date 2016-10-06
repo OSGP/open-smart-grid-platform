@@ -8,5 +8,7 @@
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper;
 
 public enum ConnectionState {
-    OK, BROKEN, UNKNOWN
+    OK, 
+    BROKEN, 
+    UNKNOWN
 }

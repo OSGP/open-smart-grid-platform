@@ -15,7 +15,6 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.openmuc.openiec61850.ClientAssociation;
 import org.openmuc.openiec61850.ClientSap;
-import org.openmuc.openiec61850.Fc;
 import org.openmuc.openiec61850.FcModelNode;
 import org.openmuc.openiec61850.SclParseException;
 import org.openmuc.openiec61850.ServerModel;
@@ -27,21 +26,13 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.iec61850.application.services.DeviceManagementService;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ConnectionFailureException;
-import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeWriteException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.ConnectionState;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Function;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalDevice;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalNode;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.NodeContainer;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.reporting.Iec61850ClientBaseEventListener;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.reporting.Iec61850ClientEventListenerFactory;
-import com.alliander.osgp.core.db.api.iec61850.repositories.SsldDataRepository;
 
 @Component
 public class Iec61850Client {
@@ -68,9 +59,6 @@ public class Iec61850Client {
 
     @Autowired
     private boolean isReportingAfterDeviceRegistrationEnabled;
-
-    @Autowired
-    private SsldDataRepository ssldDataRepository;
 
     @Autowired
     private DeviceManagementService deviceManagementService;
@@ -100,12 +88,12 @@ public class Iec61850Client {
      *
      * @return An {@link Iec61850ClientAssociation} instance.
      *
-     * @throws ServiceError
+     * @throws ConnectionFailureException
      *             In case the connection to the device could not be
      *             established.
      */
     public Iec61850ClientAssociation connect(final String deviceIdentification, final InetAddress ipAddress,
-            final Iec61850ClientBaseEventListener reportListener, final int port) throws ServiceError {
+            final Iec61850ClientBaseEventListener reportListener, final int port) throws ConnectionFailureException {
         // Alternatively you could use ClientSap(SocketFactory factory) to e.g.
         // connect using SSL.
         final ClientSap clientSap = new ClientSap();
@@ -123,7 +111,7 @@ public class Iec61850Client {
             // using ClientSap.associate() in order to
             // reconnect.
             LOGGER.error("Error connecting to device: " + deviceIdentification, e);
-            return null;
+            throw new ConnectionFailureException(e.getMessage(), e);
         }
 
         LOGGER.info("Connected to device: {}", deviceIdentification);
@@ -198,32 +186,6 @@ public class Iec61850Client {
             LOGGER.error("Error parsing SCL file: " + filePath, e);
             return null;
         }
-    }
-
-    public void enableReportingOnDevice(final DeviceConnection deviceConnection, final String deviceIdentification)
-            throws NodeException {
-        final NodeContainer reporting = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
-                LogicalNode.LOGICAL_NODE_ZERO, DataAttribute.REPORTING, Fc.BR);
-        this.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(), (FcModelNode) reporting
-                .getFcmodelNode().getChild(SubDataAttribute.SEQUENCE_NUMBER.getDescription()));
-
-        final Iec61850ClientBaseEventListener reportListener = deviceConnection.getConnection()
-                .getIec61850ClientAssociation().getReportListener();
-
-        final short sqNum = reporting.getUnsignedByte(SubDataAttribute.SEQUENCE_NUMBER).getValue();
-        reportListener.setSqNum(sqNum);
-        reporting.writeBoolean(SubDataAttribute.ENABLE_REPORTING, true);
-        LOGGER.info("Allowing device {} to send events", deviceIdentification);
-    }
-
-    public void clearReportOnDevice(final DeviceConnection deviceConnection, final String deviceIdentification)
-            throws NodeWriteException {
-        final NodeContainer reporting = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
-                LogicalNode.LOGICAL_NODE_ZERO, DataAttribute.REPORTING, Fc.BR);
-
-        reporting.writeBoolean(SubDataAttribute.ENABLE_REPORTING, false);
-        reporting.writeBoolean(SubDataAttribute.PURGE_BUF, true);
-        LOGGER.info("Cleared event buffer for device: {}", deviceIdentification);
     }
 
     /**

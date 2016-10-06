@@ -45,6 +45,8 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Con
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.IED;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalDevice;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850ClearReportCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850EnableReportingCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850GetConfigurationCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850GetFirmwareVersionCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850GetStatusCommand;
@@ -350,6 +352,8 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
             this.createSuccessfulDefaultResponse(deviceRequest, deviceResponseHandler);
         } catch (final ConnectionFailureException se) {
             this.handleConnectionFailureException(deviceRequest, deviceResponseHandler, se);
+        } catch (final ProtocolAdapterException e) {
+            this.handleProtocolAdapterException(deviceRequest, deviceResponseHandler, e);
         } catch (final Exception e) {
             this.handleException(deviceRequest, deviceResponseHandler, e);
         }
@@ -386,22 +390,18 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
             new Iec61850TransitionCommand().transitionDevice(this.iec61850Client, deviceConnection,
                     deviceRequest.getTransitionTypeContainer());
 
-            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
-                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
-                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.OK);
-            deviceResponseHandler.handleResponse(deviceResponse);
+            this.createSuccessfulDefaultResponse(deviceRequest, deviceResponseHandler);
 
             // Enabling device reporting. This is placed here because this is
             // called twice a day.
-            this.iec61850DeviceConnectionService.enableReportingOnDevice(deviceConnection,
-                    deviceRequest.getDeviceIdentification());
+            new Iec61850EnableReportingCommand().enableReportingOnDeviceWithoutUsingSequenceNumber(this.iec61850Client,
+                    deviceConnection);
             // Don't disconnect now! The device should be able to send reports.
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
                     try {
-                        Iec61850SsldDeviceService.this.iec61850DeviceConnectionService.clearReportOnDevice(
-                                deviceConnection, deviceRequest.getDeviceIdentification());
+                        new Iec61850ClearReportCommand().clearReportOnDevice(deviceConnection);
                     } catch (final ProtocolAdapterException e) {
                         LOGGER.error("Unable to clear report for device: " + deviceRequest.getDeviceIdentification(), e);
                     }
@@ -480,7 +480,7 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
     // PRIVATE DEVICE COMMUNICATION METHODS =
     // ======================================
 
-    private DeviceConnection connectToDevice(final DeviceRequest deviceRequest) throws ProtocolAdapterException {
+    private DeviceConnection connectToDevice(final DeviceRequest deviceRequest) throws ConnectionFailureException {
         this.iec61850DeviceConnectionService.connect(deviceRequest.getIpAddress(),
                 deviceRequest.getDeviceIdentification(), IED.FLEX_OVL, LogicalDevice.LIGHTING);
         final ServerModel serverModel = this.iec61850DeviceConnectionService.getServerModel(deviceRequest
@@ -519,6 +519,16 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
         final EmptyDeviceResponse deviceResponse = this.createDefaultResponse(deviceRequest,
                 DeviceMessageStatus.FAILURE);
         deviceResponseHandler.handleException(connectionFailureException, deviceResponse, true);
+    }
+
+    private void handleProtocolAdapterException(final SetScheduleDeviceRequest deviceRequest,
+            final DeviceResponseHandler deviceResponseHandler, final ProtocolAdapterException protocolAdapterException) {
+        LOGGER.error(
+                "Could complete the request: " + deviceRequest.getMessageType() + " for device: "
+                        + deviceRequest.getDeviceIdentification(), protocolAdapterException);
+        final EmptyDeviceResponse deviceResponse = this.createDefaultResponse(deviceRequest,
+                DeviceMessageStatus.FAILURE);
+        deviceResponseHandler.handleException(protocolAdapterException, deviceResponse, true);
     }
 
     private void handleException(final DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler,

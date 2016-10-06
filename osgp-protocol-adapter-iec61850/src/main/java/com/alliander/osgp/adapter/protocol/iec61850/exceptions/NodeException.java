@@ -20,7 +20,7 @@ public class NodeException extends ProtocolAdapterException {
      */
     private static final long serialVersionUID = 664453423321884118L;
 
-    protected ConnectionState connectionState;
+    private final ConnectionState connectionState;
 
     public NodeException(final String message) {
         super(message);

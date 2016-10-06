@@ -66,7 +66,7 @@ public class Iec61850ChannelHandlerServer extends Iec61850ChannelHandler {
 
         // In case the optional properties 'testDeviceId' and 'testDeviceIp' are
         // set, the values will be used to set an IP address for a device.
-        if (this.testDeviceId != null && this.testDeviceIp != null) {
+        if (this.testDeviceId != null && this.testDeviceId.equals(deviceIdentification) && this.testDeviceIp != null) {
             LOGGER.info("Using testDeviceId: {} and testDeviceIp: {}", this.testDeviceId, this.testDeviceIp);
             deviceIdentification = this.testDeviceId;
             deviceType = Ssld.SSLD_TYPE;

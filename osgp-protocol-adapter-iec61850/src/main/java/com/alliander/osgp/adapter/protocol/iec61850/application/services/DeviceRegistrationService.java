@@ -11,27 +11,25 @@ import java.net.InetAddress;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.openmuc.openiec61850.Fc;
 import org.openmuc.openiec61850.ServerModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeWriteException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850ClientAssociation;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Connection;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Function;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.IED;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalDevice;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalNode;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.NodeContainer;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850DeviceConnectionService;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850ClearReportCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850DisableRegistrationCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850EnableReportingCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850SetGpsCoordinatesCommand;
 import com.alliander.osgp.core.db.api.iec61850.entities.Ssld;
 import com.alliander.osgp.core.db.api.iec61850.repositories.SsldDataRepository;
 
@@ -42,9 +40,6 @@ public class DeviceRegistrationService {
 
     @Autowired
     private Iec61850DeviceConnectionService iec61850DeviceConnectionService;
-
-    @Autowired
-    private DeviceManagementService deviceManagementService;
 
     @Autowired
     private SsldDataRepository ssldDataRepository;
@@ -85,17 +80,33 @@ public class DeviceRegistrationService {
             @Override
             public Void apply() throws Exception {
                 DeviceRegistrationService.this.setLocationInformation(deviceConnection);
-
                 DeviceRegistrationService.this.disableRegistration(deviceConnection);
-
                 if (DeviceRegistrationService.this.isReportingAfterDeviceRegistrationEnabled) {
                     LOGGER.info("Reporting enabled for device: {}", deviceConnection.getDeviceIdentification());
-                    DeviceRegistrationService.this.enableReporting(deviceConnection);
+                    new Iec61850EnableReportingCommand().enableReportingOnDeviceWithoutUsingSequenceNumber(
+                            DeviceRegistrationService.this.iec61850DeviceConnectionService.getIec61850Client(),
+                            deviceConnection);
+                    // Don't disconnect now! The device should be able to send
+                    // reports.
+                    new Timer().schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            try {
+                                new Iec61850ClearReportCommand().clearReportOnDevice(deviceConnection);
+                            } catch (final ProtocolAdapterException e) {
+                                LOGGER.error(
+                                        "Unable to clear report for device: "
+                                                + deviceConnection.getDeviceIdentification(), e);
+                            }
+                            DeviceRegistrationService.this.iec61850DeviceConnectionService.disconnect(deviceConnection
+                                    .getDeviceIdentification());
+                        }
+                    }, DeviceRegistrationService.this.delayAfterDeviceRegistration);
                 } else {
                     LOGGER.info("Reporting disabled for device: {}", deviceIdentification);
-                    DeviceRegistrationService.this.disconnect(deviceConnection);
+                    DeviceRegistrationService.this.iec61850DeviceConnectionService.disconnect(deviceConnection
+                            .getDeviceIdentification());
                 }
-
                 return null;
             }
         };
@@ -121,12 +132,7 @@ public class DeviceRegistrationService {
                     deviceConnection.getDeviceIdentification(), longitude, latitude);
 
             if (longitude != null && latitude != null) {
-                final NodeContainer astronomical = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
-                        LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.ASTRONOMICAL, Fc.CF);
-                astronomical.writeFloat(SubDataAttribute.GPS_LONGITUDE, ssld.getGpsLongitude());
-                astronomical.writeFloat(SubDataAttribute.GPS_LATITUDE, ssld.getGpsLatitude());
-                LOGGER.info("longitude: {}, latitude: {} written for device: {}", longitude, latitude,
-                        deviceConnection.getDeviceIdentification());
+                new Iec61850SetGpsCoordinatesCommand().setGpsCoordinates(deviceConnection, longitude, latitude);
             }
         }
     }
@@ -139,33 +145,6 @@ public class DeviceRegistrationService {
      *             In case writing of the data-attribute fails.
      */
     protected void disableRegistration(final DeviceConnection deviceConnection) throws NodeWriteException {
-        final NodeContainer deviceRegistration = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
-                LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.REGISTRATION, Fc.CF);
-        deviceRegistration.writeBoolean(SubDataAttribute.DEVICE_REGISTRATION_ENABLED, false);
-        LOGGER.info("Registration disabled for device: {}", deviceConnection.getDeviceIdentification());
-    }
-
-    /**
-     * Enable reporting so the device can send reports.
-     *
-     * @throws NodeException
-     *             In case writing or reading of data-attributes fails.
-     */
-    protected void enableReporting(final DeviceConnection deviceConnection) throws NodeException {
-        DeviceRegistrationService.this.iec61850DeviceConnectionService.enableReportingOnDevice(deviceConnection,
-                deviceConnection.getDeviceIdentification());
-
-        // Don't disconnect now! The device should be able to send
-        // reports.
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                DeviceRegistrationService.this.disconnect(deviceConnection);
-            }
-        }, DeviceRegistrationService.this.delayAfterDeviceRegistration);
-    }
-
-    private void disconnect(final DeviceConnection deviceConnection) {
-        this.iec61850DeviceConnectionService.disconnect(deviceConnection.getDeviceIdentification());
+        new Iec61850DisableRegistrationCommand().disableRegistration(deviceConnection);
     }
 }
