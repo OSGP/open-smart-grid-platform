@@ -60,17 +60,17 @@ public class DeviceResponseMessageServiceTest {
     @Autowired
     private int getMaxRetryCount;
 
-    @Before
-    public void initTest() {
-        this.getMaxRetryCount = 1;
-    }
-
     private static final DeviceMessageMetadata DEVICE_MESSAGE_DATA = new DeviceMessageMetadata("deviceId",
             "organisationId", "correlationId", "messageType", 4);
     private static final String DOMAIN = "Domain";
     private static final String DOMAIN_VERSION = "1.0";
     private static final String DATA_OBJECT = "data object";
     private static final Timestamp SCHEDULED_TIME = new Timestamp(Calendar.getInstance().getTime().getTime());
+
+    @Before
+    public void initTest() {
+        this.getMaxRetryCount = 1;
+    }
 
     /**
      * test processMessage with a scheduled task that has been successfull
