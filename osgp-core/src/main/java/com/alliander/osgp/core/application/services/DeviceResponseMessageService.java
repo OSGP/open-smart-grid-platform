@@ -145,8 +145,7 @@ public class DeviceResponseMessageService {
     }
 
     private void handleMessageRetry(final ProtocolResponseMessage message, final ScheduledTask scheduledTask) {
-        final String errorMessage = this.determineErrorMessage(message);
-        scheduledTask.setFailed(errorMessage);
+        scheduledTask.setFailed(this.determineErrorMessage(message));
         scheduledTask.retryOn(message.getRetryHeader().getScheduledRetryTime());
         this.scheduledTaskRepository.save(scheduledTask);
     }
@@ -161,15 +160,13 @@ public class DeviceResponseMessageService {
     }
 
     private String determineErrorMessage(final ProtocolResponseMessage message) {
-        final String errorMessage;
         if (message.getOsgpException() == null) {
-            errorMessage = "";
+            return "";
         } else if (message.getOsgpException().getCause() == null) {
-            errorMessage = message.getOsgpException().getMessage();
+            return message.getOsgpException().getMessage();
         } else {
-            errorMessage = message.getOsgpException().getCause().getMessage();
+            return message.getOsgpException().getCause().getMessage();
         }
-        return errorMessage;
     }
 
     private void handleProtocolResponseMessage(final ProtocolResponseMessage message)
