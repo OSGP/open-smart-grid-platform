@@ -34,7 +34,7 @@ import cucumber.api.java.Before;
  * class for preparing specific scenarios
  *
  */
-@PropertySource("file:/etc/osp/osgp-cucumber-response-data-smart-metering.properties")
+@PropertySource("file:/etc/osp/cucumber-platform-dlms.properties")
 public class ScenarioHooks {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ScenarioHooks.class);

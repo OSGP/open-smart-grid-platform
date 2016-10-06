@@ -20,10 +20,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @ComponentScan(basePackages = { "com.alliander.osgp.adapter.ws.smartmetering.domain.entities",
         "com.alliander.osgp.domain.core.repositories", "com.alliander.osgp.domain.core.entities",
-"com.alliander.osgp.logging.domain.repositories" })
+        "com.alliander.osgp.logging.domain.repositories" })
 @EnableTransactionManagement()
 @Import({ PersistenceConfigCore.class, PersistenceConfigResponseData.class, PersistenceConfigResponseDlms.class,
-    PersistenceConfigLogging.class })
-@PropertySource("file:/etc/osp/osgp-cucumber-response-data-smart-metering.properties")
+        PersistenceConfigLogging.class })
+@PropertySource("file:/etc/osp/cucumber-platform-dlms.properties")
 public class ApplicationContext {
 }

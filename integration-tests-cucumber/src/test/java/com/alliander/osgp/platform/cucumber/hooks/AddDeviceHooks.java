@@ -29,7 +29,7 @@ import com.alliander.osgp.domain.core.repositories.DeviceRepository;
  */
 @Component
 @Configuration
-@PropertySource("file:/etc/osp/osgp-cucumber-response-data-smart-metering.properties")
+@PropertySource("file:/etc/osp/cucumber-platform-dlms.properties")
 public class AddDeviceHooks {
 
     @Autowired

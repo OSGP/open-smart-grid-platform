@@ -23,19 +23,19 @@ import com.alliander.osgp.domain.core.repositories.DeviceRepository;
  */
 @Component
 @Configuration
-@PropertySource("file:/etc/osp/osgp-cucumber-response-data-smart-metering.properties")
+@PropertySource("file:/etc/osp/cucumber-platform-dlms.properties")
 public class DeviceHooks {
 
     @Autowired
     private DeviceRepository deviceRepository;
 
-    public void deactivateDevice(String deviceId) {
+    public void deactivateDevice(final String deviceId) {
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceId);
         device.setActive(false);
         this.deviceRepository.save(device);
     }
 
-    public void activateDevice(String deviceId) {
+    public void activateDevice(final String deviceId) {
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceId);
         device.setActive(true);
         this.deviceRepository.save(device);

@@ -23,14 +23,14 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
- * Base class for PersistenceConfig classes.
- * An application context Java JPA configuration class. The usage of Java
- * configuration requires Spring Framework 3.0
+ * Base class for PersistenceConfig classes. An application context Java JPA
+ * configuration class. The usage of Java configuration requires Spring
+ * Framework 3.0
  */
 @Configuration
 @EnableTransactionManagement()
 @Primary
-@PropertySource("file:/etc/osp/osgp-cucumber-response-data-smart-metering.properties")
+@PropertySource("file:/etc/osp/cucumber-platform-dlms.properties")
 public abstract class AbstractPersistenceConfig {
 
     @Value("${cucumber.dbs.driver}")
@@ -62,15 +62,12 @@ public abstract class AbstractPersistenceConfig {
 
     protected abstract String getEntitymanagerPackagesToScan();
 
-
     @Resource
     protected Environment environment;
 
-  
     public AbstractPersistenceConfig() {
     }
 
-    
     /**
      * Method for creating the Data Source.
      *
@@ -97,8 +94,8 @@ public abstract class AbstractPersistenceConfig {
      * @throws ClassNotFoundException
      *             when class not found
      */
-    protected LocalContainerEntityManagerFactoryBean makeEntityManager(final String unitName, final DataSource dataSource)
-            throws ClassNotFoundException {
+    protected LocalContainerEntityManagerFactoryBean makeEntityManager(final String unitName,
+            final DataSource dataSource) throws ClassNotFoundException {
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 
         entityManagerFactoryBean.setPersistenceUnitName(unitName);
@@ -116,6 +113,5 @@ public abstract class AbstractPersistenceConfig {
 
         return entityManagerFactoryBean;
     }
-    
- 
+
 }
