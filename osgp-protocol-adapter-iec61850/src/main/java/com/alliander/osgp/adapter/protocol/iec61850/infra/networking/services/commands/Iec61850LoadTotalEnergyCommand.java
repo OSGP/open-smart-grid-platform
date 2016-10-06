@@ -13,6 +13,7 @@ import org.openmuc.openiec61850.Fc;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.ByteArrayTranslationService;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalDevice;
@@ -44,7 +45,8 @@ public class Iec61850LoadTotalEnergyCommand implements RtuCommand {
 
     @Override
     public MeasurementDto translate(final NodeContainer containingNode) {
-        return new MeasurementDto(this.index, DataAttribute.TOTAL_ENERGY.getDescription(), 0,
+        return new MeasurementDto(this.index, DataAttribute.TOTAL_ENERGY.getDescription(),
+                ByteArrayTranslationService.toShort(containingNode.getQuality(SubDataAttribute.QUALITY).getValue()),
                 new DateTime(containingNode.getDate(SubDataAttribute.TIME), DateTimeZone.UTC),
                 containingNode.getLong(SubDataAttribute.ACTUAL_VALUE).getValue());
     }

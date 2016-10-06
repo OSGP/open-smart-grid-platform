@@ -19,6 +19,7 @@ import org.openmuc.openiec61850.BdaInt32;
 import org.openmuc.openiec61850.BdaInt64;
 import org.openmuc.openiec61850.BdaInt8;
 import org.openmuc.openiec61850.BdaInt8U;
+import org.openmuc.openiec61850.BdaQuality;
 import org.openmuc.openiec61850.BdaTimestamp;
 import org.openmuc.openiec61850.BdaVisibleString;
 import org.openmuc.openiec61850.FcModelNode;
@@ -186,6 +187,10 @@ public class NodeContainer {
         final BdaFloat32 bdaFloat = (BdaFloat32) this.parent.getChild(child.getDescription());
         bdaFloat.setFloat(value);
         this.writeNode(bdaFloat);
+    }
+
+    public BdaQuality getQuality(final SubDataAttribute child) {
+        return (BdaQuality) this.parent.getChild(child.getDescription());
     }
 
     /**

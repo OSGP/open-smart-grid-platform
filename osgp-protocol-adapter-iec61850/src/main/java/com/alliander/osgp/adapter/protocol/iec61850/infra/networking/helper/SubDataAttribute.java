@@ -245,7 +245,11 @@ public enum SubDataAttribute {
     /**
      * Substitution value
      */
-    SUBSTITUDE_VALUE("subVal");
+    SUBSTITUDE_VALUE("subVal"),
+    /**
+     * Substitution quality
+     */
+    SUBSTITUDE_QUALITY("subQ");
     private String description;
 
     private SubDataAttribute(final String description) {

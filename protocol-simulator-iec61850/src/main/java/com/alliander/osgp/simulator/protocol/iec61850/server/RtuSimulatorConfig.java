@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RtuSimulatorConfig {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(RtuSimulatorConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RtuSimulatorConfig.class);
 
     @Bean
     public RtuSimulator rtuSimulator(@Value("${rtu.icd}") final String icdFilename,
