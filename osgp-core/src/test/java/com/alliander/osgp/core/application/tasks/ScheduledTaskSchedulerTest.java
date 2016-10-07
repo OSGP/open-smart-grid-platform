@@ -13,7 +13,6 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -91,7 +90,7 @@ public class ScheduledTaskSchedulerTest {
         this.scheduler.run();
 
         // check if task is deleted
-        verify(this.scheduledTaskRepository, times(1)).delete(scheduledTask);
+        verify(this.scheduledTaskRepository).delete(scheduledTask);
 
     }
 

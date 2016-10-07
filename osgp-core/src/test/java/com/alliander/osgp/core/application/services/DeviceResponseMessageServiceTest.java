@@ -9,28 +9,27 @@
 package com.alliander.osgp.core.application.services;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.core.domain.model.domain.DomainResponseService;
 import com.alliander.osgp.domain.core.entities.ScheduledTask;
-import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.ScheduledTaskRepository;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
@@ -48,17 +47,8 @@ public class DeviceResponseMessageServiceTest {
     @Mock
     private ScheduledTaskRepository scheduledTaskRepository;
 
-    @Mock
-    private DeviceRequestMessageService deviceRequestMessageService;
-
-    @Mock
-    private DeviceRepository deviceRepository;
-
     @InjectMocks
     private DeviceResponseMessageService deviceResponseMessageService;
-
-    @Autowired
-    private int getMaxRetryCount;
 
     private static final DeviceMessageMetadata DEVICE_MESSAGE_DATA = new DeviceMessageMetadata("deviceId",
             "organisationId", "correlationId", "messageType", 4);
@@ -67,21 +57,14 @@ public class DeviceResponseMessageServiceTest {
     private static final String DATA_OBJECT = "data object";
     private static final Timestamp SCHEDULED_TIME = new Timestamp(Calendar.getInstance().getTime().getTime());
 
-    @Before
-    public void initTest() {
-        this.getMaxRetryCount = 1;
-    }
-
     /**
      * test processMessage with a scheduled task that has been successfull
      */
     @Test
     public void testProcessScheduledMessageSuccess() {
-        final ResponseMessageResultType result = ResponseMessageResultType.OK;
-
         final ProtocolResponseMessage message = new ProtocolResponseMessage.Builder()
-                .deviceMessageMetadata(DEVICE_MESSAGE_DATA).domain(DOMAIN).domainVersion(DOMAIN_VERSION).result(result)
-                .dataObject(DATA_OBJECT).scheduled(true).build();
+                .deviceMessageMetadata(DEVICE_MESSAGE_DATA).domain(DOMAIN).domainVersion(DOMAIN_VERSION)
+                .result(ResponseMessageResultType.OK).dataObject(DATA_OBJECT).scheduled(true).build();
         final ScheduledTask scheduledTask = new ScheduledTask(DEVICE_MESSAGE_DATA, DOMAIN, DOMAIN, DATA_OBJECT,
                 SCHEDULED_TIME);
         scheduledTask.setPending();
@@ -89,8 +72,8 @@ public class DeviceResponseMessageServiceTest {
         this.deviceResponseMessageService.processMessage(message);
 
         // check if message is send and task is deleted
-        verify(this.domainResponseMessageSender, times(1)).send(message);
-        verify(this.scheduledTaskRepository, times(1)).delete(scheduledTask);
+        verify(this.domainResponseMessageSender).send(message);
+        verify(this.scheduledTaskRepository).delete(scheduledTask);
     }
 
     /**
@@ -105,11 +88,14 @@ public class DeviceResponseMessageServiceTest {
 
         // since the retryCount is smaller than the maxRetries, the message
         // should be retried
-        final RetryHeader retryHeader = new RetryHeader(0, this.getMaxRetryCount, scheduledRetryTime);
+        final RetryHeader retryHeader = new RetryHeader(0, 1, scheduledRetryTime);
+
+        final String exceptionMessage = "message";
+        final OsgpException exception = new OsgpException(ComponentType.OSGP_CORE, exceptionMessage);
 
         final ProtocolResponseMessage message = new ProtocolResponseMessage.Builder()
                 .deviceMessageMetadata(DEVICE_MESSAGE_DATA).domain(DOMAIN).domainVersion(DOMAIN_VERSION).result(result)
-                .dataObject(DATA_OBJECT).scheduled(true).retryHeader(retryHeader).build();
+                .dataObject(DATA_OBJECT).scheduled(true).retryHeader(retryHeader).osgpException(exception).build();
         final ScheduledTask scheduledTask = new ScheduledTask(DEVICE_MESSAGE_DATA, DOMAIN, DOMAIN, DATA_OBJECT,
                 SCHEDULED_TIME);
 
@@ -119,9 +105,11 @@ public class DeviceResponseMessageServiceTest {
         // check if the message is not send and the task is not deleted
         verify(this.domainResponseMessageSender, never()).send(message);
         verify(this.scheduledTaskRepository, never()).delete(scheduledTask);
+        verify(this.scheduledTaskRepository).save(scheduledTask);
 
         // check if the scheduled time is updated to the message retry time
         assertEquals(new Timestamp(scheduledRetryTime.getTime()), scheduledTask.getscheduledTime());
+        assertTrue(scheduledTask.getErrorLog().contains(exceptionMessage));
     }
 
     /**
@@ -135,8 +123,7 @@ public class DeviceResponseMessageServiceTest {
         final Date scheduledRetryTime = calendar.getTime();
 
         // since the retryCount equals the maxRetries, the message should fail
-        final RetryHeader retryHeader = new RetryHeader(this.getMaxRetryCount, this.getMaxRetryCount,
-                scheduledRetryTime);
+        final RetryHeader retryHeader = new RetryHeader(1, 1, scheduledRetryTime);
 
         final ProtocolResponseMessage message = new ProtocolResponseMessage.Builder()
                 .deviceMessageMetadata(DEVICE_MESSAGE_DATA).domain(DOMAIN).domainVersion(DOMAIN_VERSION).result(result)
@@ -148,8 +135,8 @@ public class DeviceResponseMessageServiceTest {
         this.deviceResponseMessageService.processMessage(message);
 
         // check if message is send and task is deleted
-        verify(this.domainResponseMessageSender, times(1)).send(message);
-        verify(this.scheduledTaskRepository, times(1)).delete(scheduledTask);
+        verify(this.domainResponseMessageSender).send(message);
+        verify(this.scheduledTaskRepository).delete(scheduledTask);
     }
 
 }
