@@ -39,8 +39,8 @@ public class DeviceResponseMessageService {
 
     // The array of exceptions which have to be retried.
     private static final String[] RETRY_EXCEPTIONS = { "Unable to connect", "ConnectException",
-        "Failed to receive response within timelimit", "Timeout waiting for",
-    "Connection closed by remote host while waiting for association response" };
+            "Failed to receive response within timelimit", "Timeout waiting for",
+            "Connection closed by remote host while waiting for association response" };
 
     @Autowired
     private DomainResponseService domainResponseMessageSender;
@@ -116,8 +116,8 @@ public class DeviceResponseMessageService {
     }
 
     private void handleScheduledTask(final ProtocolResponseMessage message) {
-        final ScheduledTask scheduledTask = this.scheduledTaskRepository.findByCorrelationUid(message
-                .getCorrelationUid());
+        final ScheduledTask scheduledTask = this.scheduledTaskRepository
+                .findByCorrelationUid(message.getCorrelationUid());
 
         if (scheduledTask == null) {
             LOGGER.error("Scheduled task for device [{}] with correlation uid [{}] not found",
@@ -125,29 +125,53 @@ public class DeviceResponseMessageService {
             return;
         }
 
-        if (message.getResult() == ResponseMessageResultType.OK
-                && scheduledTask.getStatus() == ScheduledTaskStatusType.PENDING) {
-            this.scheduledTaskRepository.delete(scheduledTask);
+        if (this.messageIsSuccessful(message, scheduledTask)) {
             this.domainResponseMessageSender.send(message);
+            this.scheduledTaskRepository.delete(scheduledTask);
         } else {
-            final String errorMessage = message.getOsgpException() == null ? ""
-                    : message.getOsgpException().getCause() == null ? message.getOsgpException().getMessage() : message
-                            .getOsgpException().getCause().getMessage();
-            scheduledTask.setFailed(errorMessage);
 
-            if (message.getRetryHeader() != null && message.getRetryHeader().shouldRetry()) {
-                scheduledTask.retryOn(message.getRetryHeader().getScheduledRetryTime());
-            } else {
-                this.domainResponseMessageSender.send(message);
-            }
-
-            this.scheduledTaskRepository.save(scheduledTask);
+            this.handleUnsuccessfulScheduledTask(message, scheduledTask);
         }
     }
 
-    private void handleProtocolResponseMessage(final ProtocolResponseMessage message) throws FunctionalException,
-    JMSException {
-        if (message.getRetryHeader() != null && message.getRetryHeader().shouldRetry()) {
+    private void handleUnsuccessfulScheduledTask(final ProtocolResponseMessage message,
+            final ScheduledTask scheduledTask) {
+        if (this.mustBeRetried(message)) {
+            this.handleMessageRetry(message, scheduledTask);
+        } else {
+            this.domainResponseMessageSender.send(message);
+            this.scheduledTaskRepository.delete(scheduledTask);
+        }
+    }
+
+    private void handleMessageRetry(final ProtocolResponseMessage message, final ScheduledTask scheduledTask) {
+        scheduledTask.setFailed(this.determineErrorMessage(message));
+        scheduledTask.retryOn(message.getRetryHeader().getScheduledRetryTime());
+        this.scheduledTaskRepository.save(scheduledTask);
+    }
+
+    private boolean mustBeRetried(final ProtocolResponseMessage message) {
+        return message.getRetryHeader() != null && message.getRetryHeader().shouldRetry();
+    }
+
+    private boolean messageIsSuccessful(final ProtocolResponseMessage message, final ScheduledTask scheduledTask) {
+        return message.getResult() == ResponseMessageResultType.OK
+                && scheduledTask.getStatus() == ScheduledTaskStatusType.PENDING;
+    }
+
+    private String determineErrorMessage(final ProtocolResponseMessage message) {
+        if (message.getOsgpException() == null) {
+            return "";
+        } else if (message.getOsgpException().getCause() == null) {
+            return message.getOsgpException().getMessage();
+        } else {
+            return message.getOsgpException().getCause().getMessage();
+        }
+    }
+
+    private void handleProtocolResponseMessage(final ProtocolResponseMessage message)
+            throws FunctionalException, JMSException {
+        if (this.mustBeRetried(message)) {
             // Create scheduled task for retries.
             LOGGER.info("Creating a scheduled retry task for message of type {} for device {}.",
                     message.getMessageType(), message.getDeviceIdentification());
