@@ -26,11 +26,13 @@ import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Organisation;
+import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
+import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
@@ -72,6 +74,9 @@ public class DeviceSteps {
 
     @Autowired
     private ProtocolInfoRepository protocolInfoRepository;
+    
+    @Autowired 
+    private SmartMeterRepository smartMeterRepository;
 
     /**
      * Generic method which adds a device using the settings.
@@ -87,8 +92,33 @@ public class DeviceSteps {
         final String deviceIdentification = settings.get("DeviceIdentification");
         Device device = new Device(deviceIdentification);
 
+        updateDevice(device, settings);
+    }
+    
+    @Given("^a smart meter$")
+    public void aSmartMeter(final Map<String, String> settings) {
+    	SmartMeter smartMeter = new SmartMeter(
+        		getString(settings, "DeviceIdentification", Defaults.DEFAULT_DEVICE_IDENTIFICATION),
+        		getString(settings, "Alias", DEFAULT_ALIAS),
+        		getString(settings, "ContainerCity", DEFAULT_CONTAINER_CITY),
+        		getString(settings, "ContainerPostalCode", DEFAULT_CONTAINER_POSTALCODE),
+        		getString(settings, "ContainerStreet", DEFAULT_CONTAINER_STREET),
+        		getString(settings, "ContainerNumber", DEFAULT_CONTAINER_NUMBER),
+        		getString(settings, "ContainerMunicipality", DEFAULT_CONTAINER_MUNICIPALITY),
+        		getFloat(settings, "GPSLatitude", DEFAULT_LATITUDE),
+        		getFloat(settings, "GPSLongitude", DEFAULT_LONGITUDE)
+        		);
+    	
+    	smartMeterRepository.save(smartMeter);
+    	
+    	Device device = deviceRepository.findByDeviceIdentification(getString(settings, "DeviceIdentification", Defaults.DEFAULT_DEVICE_IDENTIFICATION));	
+    	updateDevice(device, settings);
+    	
+    }
+    
+    private void updateDevice(Device device, final Map<String, String> settings) {
+
         // Now set the optional stuff
-        device.setId(getLong(settings, "DeviceId", this.DEFAULT_DEVICE_ID));
         device.setActivated(getBoolean(settings, "IsActivated", this.DEFAULT_IS_ACTIVATED));
         device.setTechnicalInstallationDate(getDate(settings, "TechnicalInstallationDate").toDate());
 
