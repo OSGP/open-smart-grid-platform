@@ -2,6 +2,7 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
 
+import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
@@ -9,14 +10,16 @@ import org.openmuc.jdlms.MethodParameter;
 import org.openmuc.jdlms.MethodResult;
 import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.ObisCode;
+import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
 class CosemObjectAccessor {
 
+    private static final String EXCEPTION_MSG_ACCESS_RESULT_NOT_SUCCESS = "Access result not success: %s";
+    private static final String EXCEPTION_MSG_WRITING_ATTRIBUTE = "An exception occurred while writing attribute %s";
     private static final String EXCEPTION_MSG_NO_METHOD_RESULT = "No MethodResult received.";
-    private static final String EXCEPTION_MSG_METHOD_RESULT_NOT_SUCCESS = "Method result code is not success: %s";
     private static final String EXCEPTION_MSG_NO_GET_RESULT = "No GetResult received while retrieving attribute %s.";
     private final DlmsConnection conn;
     private final ObisCode obisCode;
@@ -55,17 +58,34 @@ class CosemObjectAccessor {
         return getResult.getResultData();
     }
 
-    public DataObject callMethod(final int methodId) throws ProtocolAdapterException {
+    public void writeAttribute(final int attributeId, final DataObject data) throws ProtocolAdapterException {
+        final AttributeAddress attributeAddress = new AttributeAddress(this.classId, this.obisCode, attributeId);
+        final SetParameter setParameter = new SetParameter(attributeAddress, data);
+
+        AccessResultCode accessResultCode = null;
+        try {
+            accessResultCode = this.conn.set(setParameter);
+        } catch (final IOException e) {
+            throw new ProtocolAdapterException(String.format(EXCEPTION_MSG_WRITING_ATTRIBUTE, attributeId));
+        }
+
+        if (accessResultCode != AccessResultCode.SUCCESS) {
+            throw new ProtocolAdapterException(String.format(EXCEPTION_MSG_ACCESS_RESULT_NOT_SUCCESS,
+                    accessResultCode.name()));
+        }
+    }
+
+    public MethodResultCode callMethod(final int methodId) throws ProtocolAdapterException {
         final MethodParameter methodParameter = this.createMethodParameter(methodId);
         return this.handleMethod(methodParameter);
     }
 
-    public DataObject callMethod(final int methodId, final DataObject dataObject) throws ProtocolAdapterException {
+    public MethodResultCode callMethod(final int methodId, final DataObject dataObject) throws ProtocolAdapterException {
         final MethodParameter methodParameter = this.createMethodParameter(methodId, dataObject);
         return this.handleMethod(methodParameter);
     }
 
-    private DataObject handleMethod(final MethodParameter methodParameter) throws ProtocolAdapterException {
+    private MethodResultCode handleMethod(final MethodParameter methodParameter) throws ProtocolAdapterException {
         MethodResult result = null;
         try {
             result = this.conn.action(methodParameter);
@@ -77,11 +97,6 @@ class CosemObjectAccessor {
             throw new ProtocolAdapterException(EXCEPTION_MSG_NO_METHOD_RESULT);
         }
 
-        if (result.getResultCode() != MethodResultCode.SUCCESS) {
-            throw new ProtocolAdapterException(String.format(EXCEPTION_MSG_METHOD_RESULT_NOT_SUCCESS, result
-                    .getResultCode().name()));
-        }
-
-        return result.getResultData();
+        return result.getResultCode();
     }
 }

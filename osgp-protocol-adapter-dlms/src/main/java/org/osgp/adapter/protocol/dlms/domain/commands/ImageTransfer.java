@@ -9,10 +9,10 @@ import java.util.concurrent.Future;
 
 import org.bouncycastle.util.Arrays;
 import org.openmuc.jdlms.DlmsConnection;
+import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
-import org.openmuc.jdlms.internal.asn1.cosem.Action_Result;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -135,6 +135,11 @@ class ImageTransfer {
         return (Boolean) transferEnabled.getValue();
     }
 
+    public void setImageTransferEnabled(final boolean enabled) throws ProtocolAdapterException {
+        final DataObject transferEnabled = DataObject.newBoolData(enabled);
+        this.cosemObject.writeAttribute(Attribute.IMAGE_TRANSFER_ENABLED.getValue(), transferEnabled);
+    }
+
     /**
      * Initiates Image transfer.After a successful initiation, the value of the
      * image_transfer_status attribute is (1) Image transfer initiated and the
@@ -182,6 +187,7 @@ class ImageTransfer {
     public void checkCompleteness() throws ProtocolAdapterException {
         int blockNumber;
         while ((blockNumber = this.getImageFirstNotTransferredBlockNumber()) < this.numberOfBlocks()) {
+            LOGGER.info("Retransferring block {}.", blockNumber);
             this.imageBlockTransfer(blockNumber);
         }
     }
@@ -191,18 +197,18 @@ class ImageTransfer {
      * by the client and testing the image transfer status.
      */
     public void verifyImage() throws ProtocolAdapterException {
-        final DataObject verified = this.cosemObject.callMethod(Method.IMAGE_VERIFY.getValue(),
+        final MethodResultCode verified = this.cosemObject.callMethod(Method.IMAGE_VERIFY.getValue(),
                 DataObject.newInteger8Data((byte) 0));
-        if (verified == null || !verified.isNumber()) {
+        if (verified == null) {
             throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_VERIFY_NOT_CALLED);
         }
 
-        if ((int) verified.getValue() == Action_Result.OTHER_REASON) {
+        if (verified == MethodResultCode.OTHER_REASON) {
             final int status = this.getImageTransferStatus();
             throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_NOT_VERIFIED + status);
         }
 
-        if ((int) verified.getValue() == Action_Result.TEMPORARY_FAILURE) {
+        if (verified == MethodResultCode.TEMPORARY_FAILURE) {
             final Future<Integer> newStatus = this.executorService.submit(new ImageTransferStatusChanged(
                     ImageTransferStatus.VERIFICATION_INITIATED));
 
@@ -241,7 +247,6 @@ class ImageTransfer {
         final List<DataObject> images = (List<DataObject>) imageTransferStatusData.getValue();
         for (final DataObject image : images) {
             // TODO: check values
-
         }
 
         return true;
@@ -254,13 +259,13 @@ class ImageTransfer {
      * @throws ProtocolAdapterException
      */
     public void activateImage() throws ProtocolAdapterException {
-        final DataObject imageActivate = this.cosemObject.callMethod(Method.IMAGE_ACTIVATE.getValue(),
+        final MethodResultCode imageActivate = this.cosemObject.callMethod(Method.IMAGE_ACTIVATE.getValue(),
                 DataObject.newInteger8Data((byte) 0));
-        if (imageActivate == null || !imageActivate.isNumber()) {
+        if (imageActivate == null) {
             throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_VERIFY_NOT_CALLED);
         }
 
-        if ((int) imageActivate.getValue() == Action_Result.TEMPORARY_FAILURE) {
+        if (imageActivate == MethodResultCode.TEMPORARY_FAILURE) {
             final Future<Integer> newStatus = this.executorService.submit(new ImageTransferStatusChanged(
                     ImageTransferStatus.ACTIVATION_INITIATED));
 
@@ -278,7 +283,7 @@ class ImageTransfer {
             return;
         }
 
-        if ((int) imageActivate.getValue() != Action_Result.SUCCESS) {
+        if (imageActivate != MethodResultCode.SUCCESS) {
             throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_TO_ACTIVATE_NOT_OK);
         }
     }

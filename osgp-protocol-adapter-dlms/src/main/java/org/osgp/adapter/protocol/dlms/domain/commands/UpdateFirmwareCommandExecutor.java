@@ -35,7 +35,7 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
 
         try {
             if (!transfer.imageTransferEnabled()) {
-                return false;
+                transfer.setImageTransferEnabled(true);
             }
 
             transfer.initiateImageTransfer();
@@ -49,6 +49,8 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
             }
         } catch (final ProtocolAdapterException e) {
             throw e;
+        } finally {
+            transfer.setImageTransferEnabled(false);
         }
 
         return false;
