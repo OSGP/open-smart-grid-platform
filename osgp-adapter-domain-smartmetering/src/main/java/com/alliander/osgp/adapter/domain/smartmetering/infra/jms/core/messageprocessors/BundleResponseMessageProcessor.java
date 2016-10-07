@@ -81,19 +81,30 @@ public class BundleResponseMessageProcessor extends OsgpCoreResponseMessageProce
                 bundleMessagesResponseDto);
     }
 
-    private FaultResponseDto faultResponseForException(final Exception exception,
+    protected FaultResponseDto faultResponseForException(final Exception exception,
             final List<FaultResponseParameterDto> parameters, final String defaultMessage) {
 
+        final FaultResponseParametersDto faultResponseParameters = this.faultResponseParametersForList(parameters);
+
         if (exception instanceof FunctionalException || exception instanceof TechnicalException) {
-            return this.faultResponseForFunctionalOrTechnicalException((OsgpException) exception, parameters);
+            return this.faultResponseForFunctionalOrTechnicalException((OsgpException) exception,
+                    faultResponseParameters, defaultMessage);
         }
 
         return new FaultResponseDto(null, defaultMessage, ComponentType.DOMAIN_SMART_METERING.name(),
-                exception.getClass().getName(), exception.getMessage(), new FaultResponseParametersDto(parameters));
+                exception.getClass().getName(), exception.getMessage(), faultResponseParameters);
+    }
+
+    private FaultResponseParametersDto faultResponseParametersForList(
+            final List<FaultResponseParameterDto> parameterList) {
+        if (parameterList == null || parameterList.isEmpty()) {
+            return null;
+        }
+        return new FaultResponseParametersDto(parameterList);
     }
 
     private FaultResponseDto faultResponseForFunctionalOrTechnicalException(final OsgpException exception,
-            final List<FaultResponseParameterDto> parameters) {
+            final FaultResponseParametersDto faultResponseParameters, final String defaultMessage) {
 
         final Integer code;
         if (exception instanceof FunctionalException) {
@@ -120,7 +131,13 @@ public class BundleResponseMessageProcessor extends OsgpCoreResponseMessageProce
             innerMessage = cause.getMessage();
         }
 
-        return new FaultResponseDto(code, exception.getMessage(), component, innerException, innerMessage,
-                new FaultResponseParametersDto(parameters));
+        String message;
+        if (exception.getMessage() == null) {
+            message = defaultMessage;
+        } else {
+            message = exception.getMessage();
+        }
+
+        return new FaultResponseDto(code, message, component, innerException, innerMessage, faultResponseParameters);
     }
 }
