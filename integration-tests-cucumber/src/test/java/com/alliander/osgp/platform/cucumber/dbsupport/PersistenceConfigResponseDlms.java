@@ -23,9 +23,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.alliander.osgp.platform.cucumber.ApplicationConfig;
 
-@EnableJpaRepositories(entityManagerFactoryRef = "entityMgrFactDlms",
-    transactionManagerRef = "txMgrDlms",
-    basePackageClasses = { DlmsDeviceRepository.class })
+@EnableJpaRepositories(entityManagerFactoryRef = "entityMgrFactDlms", transactionManagerRef = "txMgrDlms", basePackageClasses = { DlmsDeviceRepository.class })
 @EnableTransactionManagement()
 @Primary
 public class PersistenceConfigResponseDlms extends AbstractPersistenceConfig {
@@ -70,8 +68,8 @@ public class PersistenceConfigResponseDlms extends AbstractPersistenceConfig {
      *             when class not found
      */
     @Bean(name = "entityMgrFactDlms")
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(
-            @Qualifier("dsDlms") final DataSource dataSource) throws ClassNotFoundException {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(@Qualifier("dsDlms") final DataSource dataSource)
+            throws ClassNotFoundException {
 
         return this.makeEntityManager("OSGP_CUCUMBER_DLMS", dataSource);
     }
@@ -86,6 +84,7 @@ public class PersistenceConfigResponseDlms extends AbstractPersistenceConfig {
     @Bean(name = "txMgrDlms")
     public JpaTransactionManager transactionManager(
             @Qualifier("entityMgrFactDlms") final EntityManagerFactory barEntityManagerFactory) {
-        return new JpaTransactionManager(barEntityManagerFactory);    }
+        return new JpaTransactionManager(barEntityManagerFactory);
+    }
 
 }

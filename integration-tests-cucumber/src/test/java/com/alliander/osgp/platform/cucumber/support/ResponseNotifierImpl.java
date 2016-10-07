@@ -50,7 +50,7 @@ public class ResponseNotifierImpl implements ResponseNotifier {
         try {
             statement = this.conn().createStatement();
 
-            //check if we have (almost) immediate response
+            // check if we have (almost) immediate response
             Thread.sleep(FIRST_WAIT_TIME);
             PollResult pollres = this.pollDatabase(statement, correlid);
             if (pollres.equals(PollResult.OK)) {
@@ -86,8 +86,8 @@ public class ResponseNotifierImpl implements ResponseNotifier {
         ResultSet rs = null;
         PollResult result = PollResult.NOT_OK;
         try {
-            rs = statement.executeQuery(
-                    "SELECT count(*) FROM meter_response_data WHERE correlation_uid = '" + correlid + "'");
+            rs = statement.executeQuery("SELECT count(*) FROM meter_response_data WHERE correlation_uid = '" + correlid
+                    + "'");
             while (rs.next()) {
                 if (rs.getInt(1) > 0) {
                     result = PollResult.OK;

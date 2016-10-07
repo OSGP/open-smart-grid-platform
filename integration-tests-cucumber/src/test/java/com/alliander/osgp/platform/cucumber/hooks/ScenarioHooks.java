@@ -34,10 +34,7 @@ import cucumber.api.java.Before;
  * class for preparing specific scenarios
  *
  */
-//@PropertySources({
-//    @PropertySource("classpath:osgp-cucumber-response-data-smart-metering.properties"),
-//    @PropertySource(value = "classpath:osgp-cucumber-response-data-smart-metering-${env}.properties", ignoreResourceNotFound = true)}
-//)
+
 public class ScenarioHooks {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ScenarioHooks.class);
@@ -138,5 +135,4 @@ public class ScenarioHooks {
             LOGGER.error("no such device " + deviceId);
         }
     }
-
 }
