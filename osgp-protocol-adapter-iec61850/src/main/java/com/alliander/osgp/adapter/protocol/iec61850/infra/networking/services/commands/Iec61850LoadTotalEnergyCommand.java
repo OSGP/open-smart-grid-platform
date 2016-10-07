@@ -10,21 +10,24 @@ package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.c
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.openmuc.openiec61850.Fc;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.ByteArrayTranslationService;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalDevice;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalNode;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.NodeContainer;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.QualityConverter;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
 
 public class Iec61850LoadTotalEnergyCommand implements RtuCommand {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850LoadActualPowerCommand.class);
     private static final String NODE = "MMTR";
 
     private LogicalNode logicalNode;
@@ -46,9 +49,20 @@ public class Iec61850LoadTotalEnergyCommand implements RtuCommand {
 
     @Override
     public MeasurementDto translate(final NodeContainer containingNode) {
+        // Load total energy is implemented different on both RTUs
+        // (one uses Int64, the other Int32)
+        // As a workaround first try to read the value as Long
+        // If that fails read the value as Integer
+        long value = 0;
+        try {
+            value = containingNode.getLong(SubDataAttribute.ACTUAL_VALUE).getValue();
+        } catch (final ClassCastException e) {
+            LOGGER.info("Reading long value resulted in class cast exception, trying to read integer value", e);
+            value = containingNode.getInteger(SubDataAttribute.ACTUAL_VALUE).getValue();
+        }
+
         return new MeasurementDto(this.index, DataAttribute.TOTAL_ENERGY.getDescription(),
-                ByteArrayTranslationService.toShort(containingNode.getQuality(SubDataAttribute.QUALITY).getValue()),
-                new DateTime(containingNode.getDate(SubDataAttribute.TIME), DateTimeZone.UTC), containingNode.getLong(
-                        SubDataAttribute.ACTUAL_VALUE).getValue());
+                QualityConverter.toShort(containingNode.getQuality(SubDataAttribute.QUALITY).getValue()),
+                new DateTime(containingNode.getDate(SubDataAttribute.TIME), DateTimeZone.UTC), value);
     }
 }

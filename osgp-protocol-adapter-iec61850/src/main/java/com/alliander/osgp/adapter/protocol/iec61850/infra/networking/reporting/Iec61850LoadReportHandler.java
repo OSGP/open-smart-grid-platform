@@ -24,7 +24,7 @@ public class Iec61850LoadReportHandler implements Iec61850ReportHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850LoadReportHandler.class);
 
     private static final String SYSTEM_TYPE = "LOAD";
-    private static final String NODES_USING_ID = "TotWh,TotW";
+    private static final String NODES_USING_ID = "TotWh,TotW,MaxWPhs,MinWPhs";
 
     private int systemId;
 

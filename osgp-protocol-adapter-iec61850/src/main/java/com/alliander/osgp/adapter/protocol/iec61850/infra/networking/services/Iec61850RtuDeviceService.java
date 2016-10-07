@@ -71,9 +71,9 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
             final ClientAssociation clientAssociation = this.iec61850DeviceConnectionService
                     .getClientAssociation(deviceRequest.getDeviceIdentification());
 
-            final DataResponseDto getDataResponse = this.getData(
-                    new DeviceConnection(new Iec61850Connection(new Iec61850ClientAssociation(clientAssociation, null),
-                            serverModel), deviceRequest.getDeviceIdentification(), IED.ZOWN_RTU), deviceRequest);
+            final DataResponseDto getDataResponse = this.getData(new DeviceConnection(
+                    new Iec61850Connection(new Iec61850ClientAssociation(clientAssociation, null), serverModel),
+                    deviceRequest.getDeviceIdentification(), IED.ZOWN_RTU), deviceRequest);
 
             final GetDataDeviceResponse deviceResponse = new GetDataDeviceResponse(
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
@@ -88,16 +88,14 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
                     deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
 
             deviceResponseHandler.handleException(se, deviceResponse, true);
-            return;
         } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during writeDataValue", e);
+            LOGGER.error("Unexpected exception during Get Data", e);
 
             final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
                     deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
 
             deviceResponseHandler.handleException(e, deviceResponse, false);
-            return;
         }
     }
 
@@ -109,10 +107,17 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
             final ClientAssociation clientAssociation = this.iec61850DeviceConnectionService
                     .getClientAssociation(deviceRequest.getDeviceIdentification());
 
-            this.setSetPoints(new DeviceConnection(new Iec61850Connection(new Iec61850ClientAssociation(
-                    clientAssociation, null), serverModel), deviceRequest.getDeviceIdentification(), IED.ZOWN_RTU),
+            this.setSetPoints(
+                    new DeviceConnection(
+                            new Iec61850Connection(new Iec61850ClientAssociation(clientAssociation, null), serverModel),
+                            deviceRequest.getDeviceIdentification(), IED.ZOWN_RTU),
                     serverModel, clientAssociation, deviceRequest);
 
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.OK);
+
+            deviceResponseHandler.handleResponse(deviceResponse);
         } catch (final ConnectionFailureException se) {
             LOGGER.error("Could not connect to device after all retries", se);
 
@@ -121,23 +126,15 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
                     deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
 
             deviceResponseHandler.handleException(se, deviceResponse, true);
-            return;
         } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during writeDataValue", e);
+            LOGGER.error("Unexpected exception during Set SetPoint", e);
 
             final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
                     deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
 
             deviceResponseHandler.handleException(e, deviceResponse, false);
-            return;
         }
-
-        final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
-                deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
-                deviceRequest.getCorrelationUid(), DeviceMessageStatus.OK);
-
-        deviceResponseHandler.handleResponse(deviceResponse);
     }
 
     private void setSetPoints(final DeviceConnection connection, final ServerModel serverModel,
@@ -238,7 +235,7 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
 
     private void enableRtuReportingOnDevice(final DeviceConnection connection, final String deviceIdentification) {
         Iec61850RtuDeviceService.this.enableStatusReportingOnDevice(connection, deviceIdentification,
-                LogicalDevice.RTU_ONE, DataAttribute.REPORT_RTU_STATUS);
+                LogicalDevice.RTU_ONE, DataAttribute.REPORT_STATUS_ONE);
     }
 
     private void enablePvReportingOnDevice(final DeviceConnection connection, final String deviceIdentification) {

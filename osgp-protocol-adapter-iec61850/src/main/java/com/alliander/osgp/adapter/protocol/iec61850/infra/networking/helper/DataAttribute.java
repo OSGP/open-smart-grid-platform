@@ -161,11 +161,7 @@ public enum DataAttribute {
      * Property of LLN0 Node, ReportMeasurements01, contains the reporting
      * information.
      */
-    REPORT_MEASUREMENTS_ONE("ReportMeasurements01"),
-    /**
-     * RTU status report
-     */
-    REPORT_RTU_STATUS("Status01");
+    REPORT_MEASUREMENTS_ONE("ReportMeasurements01");
 
     private String description;
 

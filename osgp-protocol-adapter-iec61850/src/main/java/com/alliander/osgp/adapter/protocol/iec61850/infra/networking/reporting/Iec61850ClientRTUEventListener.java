@@ -43,7 +43,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
     private static final Map<String, Iec61850ReportHandler> REPORT_HANDLERS;
     static {
         final Map<String, Iec61850ReportHandler> handlers = new HashMap<>();
-        handlers.put("WAGO61850ServerRTU/LLN0$Status", new Iec61850RtuReportHandler(1));
+        handlers.put("WAGO61850ServerRTU1/LLN0$Status", new Iec61850RtuReportHandler(1));
         handlers.put("WAGO61850ServerPV1/LLN0$Status", new Iec61850PvReportHandler(1));
         handlers.put("WAGO61850ServerPV2/LLN0$Status", new Iec61850PvReportHandler(2));
         handlers.put("WAGO61850ServerPV3/LLN0$Status", new Iec61850PvReportHandler(3));
