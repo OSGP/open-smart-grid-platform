@@ -70,7 +70,6 @@
     <modules>
         <module>parent-pa-dlms</module>
         <module>osgp-protocol-adapter-dlms</module>
-        <module>osgp-device-simulator-dlms</module>
         <module>osgp-dlms</module>
         <module>osgp-jasper-interface</module>
         <module>Shared/shared</module>

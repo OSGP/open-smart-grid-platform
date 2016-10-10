@@ -20,19 +20,19 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ObisCodeValuesDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SpecificConfigurationObjectRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SpecificAttributeValueRequestDto;
 
 @Component
-public class GetSpecificConfigurationObjectCommandExecutor extends
-        AbstractCommandExecutor<SpecificConfigurationObjectRequestDto, String> {
+public class GetSpecificAttributeValueCommandExecutor extends
+AbstractCommandExecutor<SpecificAttributeValueRequestDto, String> {
 
     @Autowired
     private DlmsHelperService dlmsHelper;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetSpecificConfigurationObjectCommandExecutor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetSpecificAttributeValueCommandExecutor.class);
 
-    public GetSpecificConfigurationObjectCommandExecutor() {
-        super(SpecificConfigurationObjectRequestDto.class);
+    public GetSpecificAttributeValueCommandExecutor() {
+        super(SpecificAttributeValueRequestDto.class);
     }
 
     @Override
@@ -42,14 +42,14 @@ public class GetSpecificConfigurationObjectCommandExecutor extends
 
     @Override
     public String execute(final DlmsConnection conn, final DlmsDevice device,
-            final SpecificConfigurationObjectRequestDto requestData) throws ProtocolAdapterException {
+            final SpecificAttributeValueRequestDto requestData) throws ProtocolAdapterException {
 
         final ObisCodeValuesDto obisCodeValues = requestData.getObisCode();
         final byte[] obisCodeBytes = { obisCodeValues.getA(), obisCodeValues.getB(), obisCodeValues.getC(),
                 obisCodeValues.getD(), obisCodeValues.getE(), obisCodeValues.getF() };
         final ObisCode obisCode = new ObisCode(obisCodeBytes);
 
-        LOGGER.debug("Get specific configuration object for class id: {}, obis code: {}, attribute id: {}",
+        LOGGER.debug("Get specific attribute value, class id: {}, obis code: {}, attribute id: {}",
                 requestData.getClassId(), obisCode, requestData.getAttribute());
 
         final AttributeAddress attributeAddress = new AttributeAddress(requestData.getClassId(), obisCode,
