@@ -3,6 +3,7 @@
     compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 -->
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
     xmlns:tns="http://www.alliander.com/schemas/osgp/common/2014/10"
+    xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0"
     attributeFormDefault="unqualified" elementFormDefault="qualified"
     targetNamespace="http://www.alliander.com/schemas/osgp/common/2014/10">
 
@@ -75,6 +76,40 @@
                 </xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="FaultResponseData">
+        <xsd:complexContent>
+            <xsd:extension base="tns:Response">
+                <xsd:sequence>
+                    <xsd:element name="Code" type="xsd:int" minOccurs="0" />
+                    <xsd:element name="Message" type="xsd:string" />
+                    <xsd:element name="Component" type="xsd:string" minOccurs="0" />
+                    <xsd:element name="InnerException" type="xsd:string" minOccurs="0" />
+                    <xsd:element name="InnerMessage" type="xsd:string" minOccurs="0" />
+                    <xsd:element name="Parameters" type="tns:FaultResponseParameters" minOccurs="0" />
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="FaultResponseParameters">
+        <xsd:sequence>
+            <xsd:element name="Parameter" type="tns:FaultResponseParameter" maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:appinfo>
+                        <jxb:property name="ParameterList" />
+                    </xsd:appinfo>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="FaultResponseParameter">
+        <xsd:sequence>
+            <xsd:element name="Key" type="xsd:string" />
+            <xsd:element name="Value" type="xsd:string" />
+        </xsd:sequence>
     </xsd:complexType>
 
     <xsd:complexType name="Action" abstract="true">

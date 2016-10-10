@@ -245,6 +245,13 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
+  <xsd:element name="FaultResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:FaultResponseData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
   <xsd:element name="ReadAlarmRegisterResponse">
     <xsd:complexType>
       <xsd:complexContent>
@@ -314,6 +321,7 @@
       <xsd:choice maxOccurs="unbounded">
         <xsd:element ref="tns:FindEventsResponse" />
         <xsd:element ref="tns:ActionResponse" />
+        <xsd:element ref="tns:FaultResponse" />
         <xsd:element ref="tns:ReadAlarmRegisterResponse" />
         <xsd:element ref="tns:ActualMeterReadsResponse" />
         <xsd:element ref="tns:ActualMeterReadsGasResponse" />
