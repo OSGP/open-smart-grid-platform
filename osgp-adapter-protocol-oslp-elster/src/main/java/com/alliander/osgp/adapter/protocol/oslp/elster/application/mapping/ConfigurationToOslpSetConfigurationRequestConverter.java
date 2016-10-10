@@ -94,6 +94,15 @@ public class ConfigurationToOslpSetConfigurationRequestConverter extends
         if (source.isDhcpEnabled() != null) {
             setConfigurationRequest.setIsDhcpEnabled(source.isDhcpEnabled());
         }
+        if (source.isTlsEnabled() != null) {
+            setConfigurationRequest.setIsTlsEnabled(source.isTlsEnabled());
+        }
+        if (source.getTlsPortNumber() != null) {
+            setConfigurationRequest.setOslpBindPortNumber(source.getTlsPortNumber());
+        }
+        if (source.getCommonNameString() != null) {
+            setConfigurationRequest.setCommonNameString(source.getCommonNameString());
+        }
         if (source.getOsgpPortNumber() != null) {
             setConfigurationRequest.setOsgpPortNumber(source.getOsgpPortNumber());
         }
