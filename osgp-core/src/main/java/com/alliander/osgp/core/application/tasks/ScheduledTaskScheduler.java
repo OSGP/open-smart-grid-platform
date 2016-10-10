@@ -50,8 +50,8 @@ public class ScheduledTaskScheduler implements Runnable {
     private void processScheduledTasks(final ScheduledTaskStatusType type) {
         final Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-        final List<ScheduledTask> scheduledTasks = this.scheduledTaskRepository.findByStatusAndScheduledTimeLessThan(
-                type, timestamp);
+        final List<ScheduledTask> scheduledTasks = this.scheduledTaskRepository
+                .findByStatusAndScheduledTimeLessThan(type, timestamp);
 
         for (ScheduledTask scheduledTask : scheduledTasks) {
             LOGGER.info("Processing scheduled task for device [{}] to perform [{}]  ",
@@ -63,8 +63,7 @@ public class ScheduledTaskScheduler implements Runnable {
                 this.deviceRequestMessageService.processMessage(protocolRequestMessage);
             } catch (final FunctionalException e) {
                 LOGGER.error("Processing scheduled task failed.", e);
-                scheduledTask.setFailed(e.getMessage());
-                scheduledTask = this.scheduledTaskRepository.save(scheduledTask);
+                this.scheduledTaskRepository.delete(scheduledTask);
             }
         }
     }

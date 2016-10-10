@@ -132,11 +132,11 @@ public class MicrogridsService {
 
     }
 
-    public String enqueueSetSetPointsRequest(final String organisationIdentification,
-            final String deviceIdentification, final SetPointsRequest setPointsRequest) throws OsgpException {
+    public String enqueueSetSetPointsRequest(final String organisationIdentification, final String deviceIdentification,
+            final SetPointsRequest setPointsRequest) throws OsgpException {
 
-        LOGGER.debug("enqueueSetSetPointsRequest called with organisation {} and device {}",
-                organisationIdentification, deviceIdentification);
+        LOGGER.debug("enqueueSetSetPointsRequest called with organisation {} and device {}", organisationIdentification,
+                deviceIdentification);
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
 
@@ -151,9 +151,8 @@ public class MicrogridsService {
         final RtuDevice device = this.domainHelperService.findDevice(deviceIdentification);
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_SETPOINT);
 
-        final MicrogridsRequestMessage message = new MicrogridsRequestMessage(
-                MicrogridsRequestMessageType.SET_SETPOINT, correlationUid, organisationIdentification,
-                deviceIdentification, setPointsRequest, null);
+        final MicrogridsRequestMessage message = new MicrogridsRequestMessage(MicrogridsRequestMessageType.SET_SETPOINT,
+                correlationUid, organisationIdentification, deviceIdentification, setPointsRequest, null);
 
         try {
             this.requestMessageSender.send(message);
@@ -164,9 +163,9 @@ public class MicrogridsService {
         return correlationUid;
     }
 
-    public EmptyResponse dequeueSetSetPointsResponse(final String correlationUid) throws OsgpException {
+    public EmptyResponse dequeueSetDataResponse(final String correlationUid) throws OsgpException {
 
-        LOGGER.debug("dequeueSetSetPointsRequest called with correlation uid {}", correlationUid);
+        LOGGER.debug("dequeueSetDataRequest called with correlation uid {}", correlationUid);
 
         if (this.stubResponses) {
             return this.getStubbedSetSetPointsResponse(correlationUid);

@@ -23,10 +23,10 @@ import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataAs
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataRequest;
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataResponse;
-import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetSetPointsAsyncRequest;
-import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetSetPointsAsyncResponse;
-import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetSetPointsRequest;
-import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetSetPointsResponse;
+import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataRequest;
+import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataResponse;
 import com.alliander.osgp.adapter.ws.schema.microgrids.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.microgrids.common.OsgpResultType;
 import com.alliander.osgp.domain.microgrids.valueobjects.DataRequest;
@@ -89,8 +89,8 @@ public class AdHocManagementEndpoint {
 
         try {
 
-            final DataResponse dataResponse = this.service.dequeueGetDataResponse(request.getAsyncRequest()
-                    .getCorrelationUid());
+            final DataResponse dataResponse = this.service
+                    .dequeueGetDataResponse(request.getAsyncRequest().getCorrelationUid());
             if (dataResponse != null) {
                 response = this.mapper.map(dataResponse, GetDataResponse.class);
                 response.setResult(OsgpResultType.OK);
@@ -111,15 +111,15 @@ public class AdHocManagementEndpoint {
 
     // === SET SETPOINTS ===
 
-    @PayloadRoot(localPart = "SetSetPointsRequest", namespace = NAMESPACE)
+    @PayloadRoot(localPart = "SetDataRequest", namespace = NAMESPACE)
     @ResponsePayload
-    public SetSetPointsAsyncResponse setSetPoints(@OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetSetPointsRequest request) throws OsgpException {
+    public SetDataAsyncResponse setData(@OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SetDataRequest request) throws OsgpException {
 
-        LOGGER.info("Set SetPoints Request received from organisation: {} for device: {}.", organisationIdentification,
+        LOGGER.info("Set Data Request received from organisation: {} for device: {}.", organisationIdentification,
                 request.getDeviceIdentification());
 
-        final SetSetPointsAsyncResponse response = new SetSetPointsAsyncResponse();
+        final SetDataAsyncResponse response = new SetDataAsyncResponse();
 
         try {
             final SetPointsRequest setPointsRequest = this.mapper.map(request, SetPointsRequest.class);
@@ -136,21 +136,20 @@ public class AdHocManagementEndpoint {
         return response;
     }
 
-    @PayloadRoot(localPart = "SetSetPointsAsyncRequest", namespace = NAMESPACE)
+    @PayloadRoot(localPart = "SetDataAsyncRequest", namespace = NAMESPACE)
     @ResponsePayload
-    public SetSetPointsResponse getSetSetPointsResponse(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetSetPointsAsyncRequest request) throws OsgpException {
+    public SetDataResponse getSetDataResponse(@OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SetDataAsyncRequest request) throws OsgpException {
 
         LOGGER.info("Get Set SetPoints Response received from organisation: {} with correlationUid: {}.",
                 organisationIdentification, request.getAsyncRequest().getCorrelationUid());
 
-        final SetSetPointsResponse response = new SetSetPointsResponse();
+        final SetDataResponse response = new SetDataResponse();
 
         try {
-            final EmptyResponse setPointsResponse = this.service.dequeueSetSetPointsResponse(request.getAsyncRequest()
-                    .getCorrelationUid());
-            if (setPointsResponse != null) {
+            final EmptyResponse setDataResponse = this.service
+                    .dequeueSetDataResponse(request.getAsyncRequest().getCorrelationUid());
+            if (setDataResponse != null) {
                 response.setResult(OsgpResultType.OK);
             } else {
                 response.setResult(OsgpResultType.NOT_FOUND);

@@ -14,8 +14,6 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import ma.glasnost.orika.impl.ConfigurableMapper;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -30,6 +28,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AssociationLnObjectsResponseData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleMessagesResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessagesResponse;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.FaultResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAttributeValuesResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads;
@@ -42,6 +41,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterResponseDt
 import com.alliander.osgp.dto.valueobjects.smartmetering.AssociationLnObjectsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.FaultResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FirmwareVersionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAttributeValuesResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGasResponseDto;
@@ -51,6 +51,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRespo
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
+
+import ma.glasnost.orika.impl.ConfigurableMapper;
 
 @Service(value = "domainSmartMeteringActionMapperResponseService")
 @Validated
@@ -68,9 +70,9 @@ public class ActionMapperResponseService {
     @Autowired
     private CommonMapper commonMapper;
 
-    private static Map<Class<? extends ActionResponseDto>, ConfigurableMapper> classToMapperMap = new HashMap<>();  
+    private static Map<Class<? extends ActionResponseDto>, ConfigurableMapper> classToMapperMap = new HashMap<>();
     private static Map<Class<? extends ActionResponseDto>, Class<? extends ActionResponse>> classMap = new HashMap<>();
-    
+
     /**
      * Specifies to which core value object the DTO object needs to be mapped.
      */
@@ -79,6 +81,7 @@ public class ActionMapperResponseService {
         classMap.put(MeterReadsResponseDto.class, MeterReads.class);
         classMap.put(MeterReadsGasResponseDto.class, MeterReadsGas.class);
         classMap.put(ActionResponseDto.class, ActionResponse.class);
+        classMap.put(FaultResponseDto.class, FaultResponse.class);
         classMap.put(AlarmRegisterResponseDto.class, AlarmRegister.class);
         classMap.put(AdministrativeStatusTypeResponseDto.class, AdministrativeStatusTypeResponse.class);
         classMap.put(PeriodicMeterReadsResponseDto.class, PeriodicMeterReadsContainer.class);
@@ -97,6 +100,7 @@ public class ActionMapperResponseService {
         classToMapperMap.put(MeterReadsResponseDto.class, this.monitoringMapper);
         classToMapperMap.put(MeterReadsGasResponseDto.class, this.monitoringMapper);
         classToMapperMap.put(ActionResponseDto.class, this.commonMapper);
+        classToMapperMap.put(FaultResponseDto.class, this.commonMapper);
         classToMapperMap.put(AlarmRegisterResponseDto.class, this.commonMapper);
         classToMapperMap.put(AdministrativeStatusTypeResponseDto.class, this.configurationMapper);
         classToMapperMap.put(PeriodicMeterReadsResponseDto.class, this.monitoringMapper);
@@ -108,9 +112,9 @@ public class ActionMapperResponseService {
 
     public BundleMessagesResponse mapAllActions(
             final BundleMessagesRequestDto bundleMessageResponseDto)
-            throws FunctionalException {
+                    throws FunctionalException {
 
-        final List<ActionResponse> actionResponseList = new ArrayList<ActionResponse>();
+        final List<ActionResponse> actionResponseList = new ArrayList<>();
 
         for (final ActionResponseDto action : bundleMessageResponseDto.getAllResponses()) {
 
