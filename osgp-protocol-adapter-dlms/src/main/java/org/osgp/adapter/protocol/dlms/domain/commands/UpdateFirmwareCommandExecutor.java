@@ -37,23 +37,32 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
             if (!transfer.imageTransferEnabled()) {
                 transfer.setImageTransferEnabled(true);
             }
+            
+            if (transfer.isImageTransferNotInitiated()) {
+                transfer.initiateImageTransfer();
+            }
 
-            transfer.initiateImageTransfer();
-            transfer.transferImageBlocks();
-            transfer.checkCompleteness();
+            if (transfer.isImageTransferInitiated()) {
+                if (!transfer.isTransferStarted()) {
+                    transfer.transferImageBlocks();
+                }
+                transfer.transferMissingImageBlocks();
+            }
+            
             transfer.verifyImage();
-
-            if (transfer.imageToActivateOk()) {
+            if (transfer.isImageTransferVerified() && transfer.imageToActivateOk()) {
                 transfer.activateImage();
+                transfer.setImageTransferEnabled(false);
                 return true;
+            }
+            else {
+                // Image data is not correct.
+                transfer.setImageTransferEnabled(false);
+                return false;
             }
         } catch (final ProtocolAdapterException e) {
             throw e;
-        } finally {
-            transfer.setImageTransferEnabled(false);
-        }
-
-        return false;
+        } 
     }
 
     private byte[] getImageData(final String firmwareIdentification) throws ProtocolAdapterException {
