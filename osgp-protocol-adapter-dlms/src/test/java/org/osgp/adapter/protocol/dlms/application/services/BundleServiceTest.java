@@ -7,6 +7,11 @@
  */
 package org.osgp.adapter.protocol.dlms.application.services;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +32,11 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActionDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionDtoBuilder;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.FaultResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.FaultResponseParameterDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.OsgpResultTypeDto;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BundleServiceTest {
@@ -39,6 +48,10 @@ public class BundleServiceTest {
 
     @Spy
     private CommandExecutorMapStub bundleCommandExecutorMap = new CommandExecutorMapStub();
+
+    final String defaultMessage = "Unable to handle request";
+    final List<FaultResponseParameterDto> parameters = new ArrayList<>();
+    final ComponentType defaultComponent = ComponentType.PROTOCOL_DLMS;
 
     // ------------------
 
@@ -106,6 +119,63 @@ public class BundleServiceTest {
 
     }
 
+    @Test
+    public void exceptionDetailsWithDefaultComponentInFaultResponse() throws Exception {
+
+        final String message = "Unexpected null/unspecified value for M-Bus Capture Time";
+        final Exception exception = new ProtocolAdapterException(message);
+
+        this.parameters.add(new FaultResponseParameterDto("deviceIdentification", "ESIM1400000000123"));
+        this.parameters.add(new FaultResponseParameterDto("gasDeviceIdentification", "ESIMG140000000841"));
+        this.parameters.add(new FaultResponseParameterDto("channel", "3"));
+
+        final FaultResponseDto faultResponse = this.bundleService.faultResponseForException(exception, this.parameters,
+                this.defaultMessage);
+
+        this.assertResponse(faultResponse, null, this.defaultMessage, this.defaultComponent.name(),
+                exception.getClass().getName(), message, this.parameters);
+    }
+
+    public void assertResponse(final FaultResponseDto actualResponse, final Integer expectedCode,
+            final String expectedMessage, final String expectedComponent, final String expectedInnerException,
+            final String expectedInnerMessage, final List<FaultResponseParameterDto> expectedParameterList) {
+
+        assertNotNull("faultResponse", actualResponse);
+
+        /*
+         * Fault Response should not contain the result fields for a generic
+         * Action Response, and the result should always be NOT OK.
+         */
+        assertNull("exception", actualResponse.getException());
+        assertNull("resultString", actualResponse.getResultString());
+        assertSame("result", OsgpResultTypeDto.NOT_OK, actualResponse.getResult());
+
+        assertEquals("code", expectedCode, actualResponse.getCode());
+        assertEquals("message", expectedMessage, actualResponse.getMessage());
+        assertEquals("component", expectedComponent, actualResponse.getComponent());
+        assertEquals("innerException", expectedInnerException, actualResponse.getInnerException());
+        assertEquals("innerMessage", expectedInnerMessage, actualResponse.getInnerMessage());
+
+        if (expectedParameterList == null || expectedParameterList.isEmpty()) {
+            assertNull("parameters", actualResponse.getParameters());
+        } else {
+            assertNotNull("parameters", actualResponse.getParameters());
+            final List<FaultResponseParameterDto> actualParameterList = actualResponse.getParameters()
+                    .getParameterList();
+            assertNotNull("parameter list", actualParameterList);
+            final int numberOfParameters = expectedParameterList.size();
+            assertEquals("number of parameters", numberOfParameters, actualParameterList.size());
+            for (int i = 0; i < numberOfParameters; i++) {
+                final FaultResponseParameterDto expectedParameter = expectedParameterList.get(i);
+                final FaultResponseParameterDto actualParameter = actualParameterList.get(i);
+                final int parameterNumber = i + 1;
+                assertEquals("parameter key " + parameterNumber, expectedParameter.getKey(), actualParameter.getKey());
+                assertEquals("parameter value " + parameterNumber, expectedParameter.getValue(),
+                        actualParameter.getValue());
+            }
+        }
+    }
+
     private void assertResult(final BundleMessagesRequestDto result) {
         Assert.assertTrue(result != null);
         Assert.assertNotNull(result != null);
@@ -115,13 +185,13 @@ public class BundleServiceTest {
             Assert.assertNotNull(actionDto.getRequest());
             Assert.assertNotNull(actionDto.getResponse());
         }
-    } 
-    
+    }
+
     private BundleMessagesRequestDto callExecutors(final BundleMessagesRequestDto dto) {
         final DlmsDevice device = new DlmsDevice();
         return this.bundleService.callExecutors(null, device, dto);
     }
-    
+
     // ---- private helper methods
 
     private AbstractCommandExecutorStub getStub(final Class<? extends ActionRequestDto> actionRequestDto) {
