@@ -20,14 +20,14 @@ import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 
 @Component
-public class RetrieveConfigurationObjectsResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+public class GetSpecificAttributeValueResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
     @Autowired
     @Qualifier("domainSmartMeteringAdhocService")
     private AdhocService adhocService;
 
-    public RetrieveConfigurationObjectsResponseMessageProcessor() {
-        super(DeviceFunction.GET_CONFIGURATION_OBJECTS);
+    public GetSpecificAttributeValueResponseMessageProcessor() {
+        super(DeviceFunction.GET_SPECIFIC_ATTRIBUTE_VALUE);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class RetrieveConfigurationObjectsResponseMessageProcessor extends OsgpCo
     @Override
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessage responseMessage, final OsgpException osgpException) {
-        this.adhocService.handleRetrieveConfigurationObjectsResponse(deviceMessageMetadata,
+        this.adhocService.handleGetSpecificAttributeValueResponse(deviceMessageMetadata,
                 responseMessage.getResult(), osgpException, (String) responseMessage.getDataObject());
 
     }

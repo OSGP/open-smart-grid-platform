@@ -13,7 +13,7 @@ import java.io.Serializable;
 
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
-public class SpecificConfigurationObjectRequestData implements Serializable, ActionRequest  {
+public class SpecificAttributeValueRequestData implements Serializable, ActionRequest  {
 
     private static final long serialVersionUID = 2732162650167261497L;
 
@@ -22,7 +22,7 @@ public class SpecificConfigurationObjectRequestData implements Serializable, Act
     private ObisCodeValues obisCode;
     
     
-    public SpecificConfigurationObjectRequestData(int classId, int attribute, ObisCodeValues obisCode) {
+    public SpecificAttributeValueRequestData(int classId, int attribute, ObisCodeValues obisCode) {
         super();
         this.classId = classId;
         this.attribute = attribute;
@@ -67,7 +67,7 @@ public class SpecificConfigurationObjectRequestData implements Serializable, Act
             return false;
         if (getClass() != obj.getClass())
             return false;
-        SpecificConfigurationObjectRequestData other = (SpecificConfigurationObjectRequestData) obj;
+        SpecificAttributeValueRequestData other = (SpecificAttributeValueRequestData) obj;
         if (attribute != other.attribute)
             return false;
         if (classId != other.classId)

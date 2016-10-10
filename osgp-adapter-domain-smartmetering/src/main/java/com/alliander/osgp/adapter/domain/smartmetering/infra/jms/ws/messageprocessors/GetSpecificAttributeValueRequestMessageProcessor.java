@@ -15,28 +15,28 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.AdhocService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecificConfigurationObjectRequest;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecificAttributeValueRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
 @Component
-public class GetSpecificConfigurationObjectRequestMessageProcessor extends WebServiceRequestMessageProcessor {
+public class GetSpecificAttributeValueRequestMessageProcessor extends WebServiceRequestMessageProcessor {
 
     @Autowired
     @Qualifier("domainSmartMeteringAdhocService")
     private AdhocService adhocService;
 
-    protected GetSpecificConfigurationObjectRequestMessageProcessor() {
-        super(DeviceFunction.GET_SPECIFIC_CONFIGURATION_OBJECT);
+    protected GetSpecificAttributeValueRequestMessageProcessor() {
+        super(DeviceFunction.GET_SPECIFIC_ATTRIBUTE_VALUE);
     }
 
     @Override
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
             throws FunctionalException {
 
-        final SpecificConfigurationObjectRequest request = (SpecificConfigurationObjectRequest) dataObject;
+        final SpecificAttributeValueRequest request = (SpecificAttributeValueRequest) dataObject;
 
-        this.adhocService.getSpecificConfigurationObject(deviceMessageMetadata, request);
+        this.adhocService.getSpecificAttributeValue(deviceMessageMetadata, request);
     }
 
 }

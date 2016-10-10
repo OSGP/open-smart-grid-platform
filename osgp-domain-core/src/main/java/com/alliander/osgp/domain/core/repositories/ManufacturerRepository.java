@@ -15,7 +15,8 @@ import org.springframework.stereotype.Repository;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 
 @Repository
-public interface ManufacturerRepository extends JpaRepository<Manufacturer, Long>,
-        JpaSpecificationExecutor<Manufacturer> {
+public interface ManufacturerRepository
+		extends JpaRepository<Manufacturer, Long>, JpaSpecificationExecutor<Manufacturer> {
 
+    Manufacturer findByName(String name);
 }

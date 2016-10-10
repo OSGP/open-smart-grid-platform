@@ -29,7 +29,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetConfiguratio
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetFirmwareVersionRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetPeriodicMeterReadsGasRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetPeriodicMeterReadsRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetSpecificConfigurationObjectRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetSpecificAttributeValueRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ReadAlarmRegisterRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetActivityCalendarRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetAdministrativeStatusRequest;
@@ -67,7 +67,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetKeysRequestD
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetPushSetupAlarmRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetPushSetupSmsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequestData;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecificConfigurationObjectRequestData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecificAttributeValueRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.UpdateFirmwareRequestData;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -180,9 +180,9 @@ public class ActionMapperService {
                 this.adhocMapper);
         CLASS_TO_MAPPER_MAP.put(GetAssociationLnObjectsRequest.class, this.adhocMapper);
         CLASS_TO_MAPPER_MAP.put(
-                com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SpecificConfigurationObjectRequestData.class,
+                com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SpecificAttributeValueRequestData.class,
                 this.adhocMapper);
-        CLASS_TO_MAPPER_MAP.put(GetSpecificConfigurationObjectRequest.class, this.adhocMapper);
+        CLASS_TO_MAPPER_MAP.put(GetSpecificAttributeValueRequest.class, this.adhocMapper);
     }
 
     /**
@@ -244,9 +244,8 @@ public class ActionMapperService {
         CLASS_MAP.put(
                 com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetAssociationLnObjectsRequestData.class,
                 GetAssociationLnObjectsRequestData.class);
-        CLASS_MAP.put(
-                com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SpecificConfigurationObjectRequestData.class,
-                SpecificConfigurationObjectRequestData.class);
+        CLASS_MAP.put(com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SpecificAttributeValueRequestData.class,
+                SpecificAttributeValueRequestData.class);
 
         CLASS_MAP.put(SetSpecialDaysRequest.class, SpecialDaysRequestData.class);
         CLASS_MAP.put(ReadAlarmRegisterRequest.class, ReadAlarmRegisterData.class);
@@ -270,7 +269,7 @@ public class ActionMapperService {
         CLASS_MAP.put(UpdateFirmwareRequest.class, UpdateFirmwareRequestData.class);
         CLASS_MAP.put(SetKeysRequest.class, SetKeysRequestData.class);
         CLASS_MAP.put(GetAssociationLnObjectsRequest.class, GetAssociationLnObjectsRequestData.class);
-        CLASS_MAP.put(GetSpecificConfigurationObjectRequest.class, SpecificConfigurationObjectRequestData.class);
+        CLASS_MAP.put(GetSpecificAttributeValueRequest.class, SpecificAttributeValueRequestData.class);
     }
 
     public List<ActionRequest> mapAllActions(final List<? extends Action> actionList) throws FunctionalException {

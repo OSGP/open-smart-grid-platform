@@ -292,7 +292,7 @@ public class FirmwareManagementService {
      */
     @Transactional(value = "writableTransactionManager")
     public void addDeviceModel(@Identification final String organisationIdentification, final String manufacturerId,
-            final String modelCode, final String description) throws FunctionalException {
+            final String modelCode, final String description, final boolean metered) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.CREATE_DEVICE_MODEL);
@@ -313,7 +313,7 @@ public class FirmwareManagementService {
             throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICEMODEL, ComponentType.WS_CORE,
                     new ExistingEntityException(DeviceModel.class, manufacturerId));
         } else {
-            final DeviceModel deviceModel = new DeviceModel(manufacturer, modelCode, description);
+            final DeviceModel deviceModel = new DeviceModel(manufacturer, modelCode, description, false, metered);
             this.deviceModelRepository.save(deviceModel);
         }
     }
@@ -362,7 +362,7 @@ public class FirmwareManagementService {
      */
     @Transactional(value = "writableTransactionManager")
     public void changeDeviceModel(@Identification final String organisationIdentification, final String manufacturer,
-            final String modelCode, final String description) throws FunctionalException {
+            final String modelCode, final String description, final boolean metered) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.CHANGE_DEVICE_MODEL);
@@ -377,7 +377,7 @@ public class FirmwareManagementService {
                     new ExistingEntityException(Manufacturer.class, modelCode));
         } else {
 
-            changedDeviceModel.setDescription(description);
+            changedDeviceModel.updateData(description, metered);
             this.deviceModelRepository.save(changedDeviceModel);
         }
     }

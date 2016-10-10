@@ -47,7 +47,7 @@
         </xsd:complexType>
     </xsd:element>
 
-    <xsd:element name="RetrieveConfigurationObjectsRequest">
+    <xsd:element name="RetrieveAllAttributeValuesRequest">
         <xsd:complexType>
             <xsd:sequence>
                 <xsd:element name="DeviceIdentification"
@@ -56,7 +56,7 @@
         </xsd:complexType>
     </xsd:element>
 
-    <xsd:element name="RetrieveConfigurationObjectsAsyncResponse">
+    <xsd:element name="RetrieveAllAttributeValuesAsyncResponse">
         <xsd:complexType>
             <xsd:complexContent>
                 <xsd:extension base="common:AsyncResponse"></xsd:extension>
@@ -64,7 +64,7 @@
         </xsd:complexType>
     </xsd:element>
 
-    <xsd:element name="RetrieveConfigurationObjectsAsyncRequest">
+    <xsd:element name="RetrieveAllAttributeValuesAsyncRequest">
         <xsd:complexType>
             <xsd:complexContent>
                 <xsd:extension base="common:AsyncRequest"></xsd:extension>
@@ -72,7 +72,7 @@
         </xsd:complexType>
     </xsd:element>
 
-    <xsd:element name="RetrieveConfigurationObjectsResponse">
+    <xsd:element name="RetrieveAllAttributeValuesResponse">
         <xsd:complexType>
             <xsd:sequence>
                 <xsd:element name="Result" type="common:OsgpResultType"
@@ -102,11 +102,11 @@
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
-    <xsd:element name="SpecificConfigurationObjectRequest">
+    <xsd:element name="SpecificAttributeValueRequest">
         <xsd:complexType>
             <xsd:complexContent>
                 <xsd:extension
-                    base="tns:SpecificConfigurationObjectRequestData">
+                    base="tns:SpecificAttributeValueRequestData">
                     <xsd:sequence>
                         <xsd:element name="DeviceIdentification"
                             type="common:DeviceIdentification" />
@@ -115,21 +115,21 @@
             </xsd:complexContent>
         </xsd:complexType>
     </xsd:element>
-    <xsd:element name="SpecificConfigurationObjectAsyncResponse">
+    <xsd:element name="SpecificAttributeValueAsyncResponse">
         <xsd:complexType>
             <xsd:complexContent>
                 <xsd:extension base="common:AsyncResponse"></xsd:extension>
             </xsd:complexContent>
         </xsd:complexType>
     </xsd:element>
-    <xsd:element name="SpecificConfigurationObjectAsyncRequest">
+    <xsd:element name="SpecificAttributeValueAsyncRequest">
         <xsd:complexType>
             <xsd:complexContent>
                 <xsd:extension base="common:AsyncRequest"></xsd:extension>
             </xsd:complexContent>
         </xsd:complexType>
     </xsd:element>
-    <xsd:element name="SpecificConfigurationObjectResponse">
+    <xsd:element name="SpecificAttributeValueResponse">
         <xsd:complexType>
             <xsd:complexContent>
                 <xsd:extension base="common:Response">
@@ -141,7 +141,7 @@
             </xsd:complexContent>
         </xsd:complexType>
     </xsd:element>
-    <xsd:complexType name="SpecificConfigurationObjectRequestData">
+    <xsd:complexType name="SpecificAttributeValueRequestData">
         <xsd:complexContent>
             <xsd:extension base="common:Query">
                 <xsd:sequence>
