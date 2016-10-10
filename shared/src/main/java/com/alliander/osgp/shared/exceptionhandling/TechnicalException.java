@@ -10,7 +10,7 @@ package com.alliander.osgp.shared.exceptionhandling;
 public class TechnicalException extends OsgpException {
 
     /**
-     *
+     * Serial Version UID.
      */
     private static final long serialVersionUID = 215662983108393459L;
 

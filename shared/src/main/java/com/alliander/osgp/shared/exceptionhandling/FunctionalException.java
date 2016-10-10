@@ -10,7 +10,7 @@ package com.alliander.osgp.shared.exceptionhandling;
 public class FunctionalException extends OsgpException {
 
     /**
-     *
+     * Serial Version UID.
      */
     private static final long serialVersionUID = 2879663396838174171L;
 
@@ -20,7 +20,8 @@ public class FunctionalException extends OsgpException {
         this(exceptionType, componentType, null);
     }
 
-    public FunctionalException(final FunctionalExceptionType exceptionType, final ComponentType componentType, final Throwable cause) {
+    public FunctionalException(final FunctionalExceptionType exceptionType, final ComponentType componentType,
+            final Throwable cause) {
         super(componentType, exceptionType.getMessage(), cause);
         this.exceptionType = exceptionType;
     }
