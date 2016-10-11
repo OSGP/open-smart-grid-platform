@@ -55,7 +55,9 @@ class ImageTransfer {
     }
 
     private int numberOfBlocks() throws ProtocolAdapterException {
-        return (int) Math.ceil((double) this.getImageSize() / this.getImageBlockSize());
+        int num = (int) Math.ceil((double) this.getImageSize() / this.getImageBlockSize());
+        LOGGER.info("{} / {} = {}", this.getImageSize(), this.getImageBlockSize(), num);
+        return num;
     }
 
     private int readImageBlockSize() throws ProtocolAdapterException {
@@ -86,20 +88,25 @@ class ImageTransfer {
         return ((Long) imageFirstNotReadBlockNumberData.getValue()).intValue();
     }
 
-    public boolean isImageTransferNotInitiated() throws ProtocolAdapterException {
-        return (this.getImageTransferStatus() == ImageTransferStatus.NOT_INITIATED.getValue());
+    public boolean shouldInitiateTransfer() throws ProtocolAdapterException {
+        return (this.getImageTransferStatus() != ImageTransferStatus.INITIATED.getValue()
+                && this.getImageTransferStatus() != ImageTransferStatus.VERIFICATION_INITIATED.getValue()
+                && this.getImageTransferStatus() != ImageTransferStatus.ACTIVATION_INITIATED.getValue());
     }
     
-    public boolean isImageTransferInitiated() throws ProtocolAdapterException {
+    public boolean shouldTransferImage() throws ProtocolAdapterException {
         return (this.getImageTransferStatus() == ImageTransferStatus.INITIATED.getValue());
     }
     
-    public boolean isImageTransferVerified() throws ProtocolAdapterException {
-        return (this.getImageTransferStatus() == ImageTransferStatus.VERIFICATION_SUCCESSFUL.getValue());
+    public boolean imageIsVerified() throws ProtocolAdapterException {
+        return (this.getImageTransferStatus() == ImageTransferStatus.VERIFICATION_SUCCESSFUL.getValue() 
+                || this.getImageTransferStatus() == ImageTransferStatus.ACTIVATION_INITIATED.getValue()
+                || this.getImageTransferStatus() == ImageTransferStatus.ACTIVATION_SUCCESSFUL.getValue()
+                || this.getImageTransferStatus() == ImageTransferStatus.ACTIVATION_FAILED.getValue());
     }
     
-    public boolean isTransferStarted() throws ProtocolAdapterException {
-        return this.getImageFirstNotTransferredBlockNumber() > 0;
+    public boolean isImageTransferActivated() throws ProtocolAdapterException {
+        return (this.getImageTransferStatus() == ImageTransferStatus.ACTIVATION_SUCCESSFUL.getValue());
     }
 
     private int getImageTransferStatus() throws ProtocolAdapterException {
@@ -135,7 +142,7 @@ class ImageTransfer {
 
     private void logUploadPercentage(final int block, final int totalBlocks) {
         final int step = (int) Math.round((double) totalBlocks / (100 / LOGGER_PERCENTAGE_STEP));
-        if (block % step == 0) {
+        if (step!= 0 && block % step == 0) {
             LOGGER.info("Firmware upload progress {}%. ({} / {})", (block / step) * LOGGER_PERCENTAGE_STEP, block, totalBlocks);
         }
     }
@@ -187,7 +194,7 @@ class ImageTransfer {
         params.add(DataObject.newOctetStringData(this.imageIdentifier.getBytes()));
         params.add(DataObject.newUInteger32Data(this.getImageSize()));
 
-        this.cosemObject.callMethod(Method.IMAGE_TRANSFER_INITIATE.getValue(), DataObject.newStructureData(params));
+        MethodResultCode resultCode = this.cosemObject.callMethod(Method.IMAGE_TRANSFER_INITIATE.getValue(), DataObject.newStructureData(params));
     }
 
     /**
@@ -200,7 +207,7 @@ class ImageTransfer {
      * @throws ProtocolAdapterException
      */
     public void transferImageBlocks() throws ProtocolAdapterException {
-        if (!this.isImageTransferInitiated()) {
+        if (!this.shouldTransferImage()) {
             throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_TRANSFER_NOT_INITIATED);
         }
 
@@ -221,7 +228,7 @@ class ImageTransfer {
      */
     public void transferMissingImageBlocks() throws ProtocolAdapterException {
         int blockNumber;
-        while ((blockNumber = this.getImageFirstNotTransferredBlockNumber()) <= this.numberOfBlocks()) {
+        while ((blockNumber = this.getImageFirstNotTransferredBlockNumber()) < this.numberOfBlocks()) {
             LOGGER.info("Retransferring block {}.", blockNumber);
             this.imageBlockTransfer(blockNumber);
         }
@@ -240,6 +247,12 @@ class ImageTransfer {
 
         if (verified == MethodResultCode.OTHER_REASON) {
             final int status = this.getImageTransferStatus();
+            if (status == ImageTransferStatus.ACTIVATION_SUCCESSFUL.getValue() ||
+                    status == ImageTransferStatus.ACTIVATION_INITIATED.getValue() ||
+                    status == ImageTransferStatus.ACTIVATION_FAILED.getValue()) {
+                return;
+            }
+            
             throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_NOT_VERIFIED + status);
         }
 
