@@ -34,6 +34,9 @@ public class TlsConfigurationValidator implements ConstraintValidator<TlsConfigu
      */
     @Override
     public boolean isValid(final Configuration value, final ConstraintValidatorContext context) {
+        if (value.isTlsEnabled() == null) {
+            return true;
+        }
         if (value.isTlsEnabled()) {
             final Integer tlsPortNumber = value.getTlsPortNumber();
             if (tlsPortNumber > 0 && tlsPortNumber <= 65535) {
