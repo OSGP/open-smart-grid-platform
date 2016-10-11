@@ -21,9 +21,9 @@ import cucumber.api.java.en.When;
 public class FindFraudEventsReads extends AbstractFindEventsReads {
 
     private static final List<EventType> allowed = Collections.unmodifiableList(Arrays.asList(new EventType[] {
-            EventType.TERMINAL_COVER_CLOSED, EventType.TERMINAL_COVER_REMOVED, EventType.STRONG_DC_FIELD_DETECTED,
-            EventType.NO_STRONG_DC_FIELD_ANYMORE, EventType.METER_COVER_CLOSED, EventType.METER_COVER_REMOVED,
-            EventType.FAILED_LOGIN_ATTEMPT, EventType.CONFIGURATION_CHANGE, EventType.EVENTLOG_CLEARED
+            EventType.EVENTLOG_CLEARED, EventType.TERMINAL_COVER_REMOVED, EventType.TERMINAL_COVER_CLOSED,
+            EventType.STRONG_DC_FIELD_DETECTED, EventType.NO_STRONG_DC_FIELD_ANYMORE, EventType.METER_COVER_REMOVED,
+            EventType.METER_COVER_CLOSED, EventType.FAILED_LOGIN_ATTEMPT, EventType.CONFIGURATION_CHANGE
 
     }));
 
