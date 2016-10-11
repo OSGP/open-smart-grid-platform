@@ -36,7 +36,7 @@ import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 public abstract class SoapTestCase {
     private static final Logger LOGGER = LoggerFactory.getLogger(SmartMetering.class);
 
-    protected static final String SOAP_PROJECT_XML = "/etc/osp/soapui/OSGP_SmartMetering_Soapui_Project.xml";
+    protected static final String SOAP_PROJECT_XML = "../cucumber/soap-ui-project/OSGP_SmartMetering_Soapui_Project.xml";
     protected static final String DEVICE_IDENTIFICATION_E_LABEL = "DeviceIdentificationE";
     protected static final String DEVICE_IDENTIFICATION_G_LABEL = "DeviceIdentificationG";
     protected static final String ORGANISATION_IDENTIFICATION_LABEL = "OrganisationIdentification";

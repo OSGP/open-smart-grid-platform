@@ -12,14 +12,13 @@ import java.util.List;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
+import com.alliander.osgp.platform.cucumber.ApplicationConfig;
 
 /**
  * helper class for AddDevice to provide database access. It is used to prepare
@@ -28,9 +27,10 @@ import com.alliander.osgp.domain.core.repositories.DeviceRepository;
  *
  */
 @Component
-@Configuration
-@PropertySource("file:/etc/osp/osgp-cucumber-response-data-smart-metering.properties")
 public class AddDeviceHooks {
+
+    @Autowired
+    private ApplicationConfig applicationConfig;
 
     @Autowired
     private DeviceRepository deviceRepository;

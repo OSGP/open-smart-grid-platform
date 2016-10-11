@@ -15,22 +15,24 @@ import java.sql.Statement;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.platform.cucumber.ApplicationConfig;
+
 @Component
-@Configuration
-@PropertySource("file:/etc/osp/osgp-cucumber-response-data-smart-metering.properties")
 public class ResponseNotifierImpl implements ResponseNotifier {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ResponseNotifierImpl.class);
 
     private static final int FIRST_WAIT_TIME = 1000;
-    
+
+    @Autowired
+    private ApplicationConfig applicationConfig;
+
     private Connection connection;
 
     @Value("${cucumber.osgpadapterwssmartmeteringdbs.url}")
@@ -47,14 +49,14 @@ public class ResponseNotifierImpl implements ResponseNotifier {
         Statement statement = null;
         try {
             statement = this.conn().createStatement();
-            
-            //check if we have (almost) immediate response
+
+            // check if we have (almost) immediate response
             Thread.sleep(FIRST_WAIT_TIME);
             PollResult pollres = this.pollDatabase(statement, correlid);
             if (pollres.equals(PollResult.OK)) {
                 return true;
             }
-            
+
             int delayedtime = 0;
             while (true) {
                 Thread.sleep(timeout);
@@ -84,8 +86,8 @@ public class ResponseNotifierImpl implements ResponseNotifier {
         ResultSet rs = null;
         PollResult result = PollResult.NOT_OK;
         try {
-            rs = statement.executeQuery(
-                    "SELECT count(*) FROM meter_response_data WHERE correlation_uid = '" + correlid + "'");
+            rs = statement.executeQuery("SELECT count(*) FROM meter_response_data WHERE correlation_uid = '" + correlid
+                    + "'");
             while (rs.next()) {
                 if (rs.getInt(1) > 0) {
                     result = PollResult.OK;

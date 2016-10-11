@@ -13,25 +13,25 @@ import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 import org.hibernate.ejb.HibernatePersistence;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import com.alliander.osgp.platform.cucumber.ApplicationConfig;
+
 /**
- * Base class for PersistenceConfig classes.
- * An application context Java JPA configuration class. The usage of Java
- * configuration requires Spring Framework 3.0
+ * Base class for PersistenceConfig classes. An application context Java JPA
+ * configuration class. The usage of Java configuration requires Spring
+ * Framework 3.0
  */
-@Configuration
 @EnableTransactionManagement()
-@Primary
-@PropertySource("file:/etc/osp/osgp-cucumber-response-data-smart-metering.properties")
 public abstract class AbstractPersistenceConfig {
+
+    @Autowired
+    private ApplicationConfig applicationConfig;
 
     @Value("${cucumber.dbs.driver}")
     protected String databaseDriver;
@@ -62,15 +62,12 @@ public abstract class AbstractPersistenceConfig {
 
     protected abstract String getEntitymanagerPackagesToScan();
 
-
     @Resource
     protected Environment environment;
 
-  
     public AbstractPersistenceConfig() {
     }
 
-    
     /**
      * Method for creating the Data Source.
      *
@@ -97,8 +94,8 @@ public abstract class AbstractPersistenceConfig {
      * @throws ClassNotFoundException
      *             when class not found
      */
-    protected LocalContainerEntityManagerFactoryBean makeEntityManager(final String unitName, final DataSource dataSource)
-            throws ClassNotFoundException {
+    protected LocalContainerEntityManagerFactoryBean makeEntityManager(final String unitName,
+            final DataSource dataSource) throws ClassNotFoundException {
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 
         entityManagerFactoryBean.setPersistenceUnitName(unitName);
@@ -116,6 +113,5 @@ public abstract class AbstractPersistenceConfig {
 
         return entityManagerFactoryBean;
     }
-    
- 
+
 }

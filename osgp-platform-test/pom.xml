@@ -295,6 +295,13 @@
       <artifactId>mockito-all</artifactId>
     </dependency>
 
+  <dependency>
+    <groupId>org.fitnesse</groupId>
+    <artifactId>fitnesse</artifactId>
+    <version>20121220</version>
+    <scope>runtime</scope>
+  </dependency>
+
     <dependency>
       <groupId>com.googlecode.givwenzen</groupId>
       <artifactId>givwenzen</artifactId>

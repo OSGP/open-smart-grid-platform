@@ -7,23 +7,28 @@
  */
 package com.alliander.osgp.platform.cucumber.dbsupport;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import com.alliander.osgp.platform.cucumber.ApplicationConfig;
 
 /**
  * An application context Java configuration class. The usage of Java
  * configuration requires Spring Framework 3.0
  */
-@Configuration
 @ComponentScan(basePackages = { "com.alliander.osgp.adapter.ws.smartmetering.domain.entities",
         "com.alliander.osgp.domain.core.repositories", "com.alliander.osgp.domain.core.entities",
-"com.alliander.osgp.logging.domain.repositories" })
+        "com.alliander.osgp.logging.domain.repositories", "com.alliander.osgp.platform.cucumber.hooks",
+        "com.alliander.osgp.platform.cucumber" })
 @EnableTransactionManagement()
 @Import({ PersistenceConfigCore.class, PersistenceConfigResponseData.class, PersistenceConfigResponseDlms.class,
     PersistenceConfigLogging.class })
-@PropertySource("file:/etc/osp/osgp-cucumber-response-data-smart-metering.properties")
+@Component
 public class ApplicationContext {
+
+    @Autowired
+    private ApplicationConfig applicationConfig;
 }

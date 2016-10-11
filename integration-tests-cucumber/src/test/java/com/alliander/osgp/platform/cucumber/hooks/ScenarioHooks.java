@@ -16,13 +16,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
+import com.alliander.osgp.platform.cucumber.ApplicationConfig;
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
 import com.alliander.osgp.platform.cucumber.support.ServiceEndpoint;
 
@@ -34,10 +34,13 @@ import cucumber.api.java.Before;
  * class for preparing specific scenarios
  *
  */
-@PropertySource("file:/etc/osp/osgp-cucumber-response-data-smart-metering.properties")
+
 public class ScenarioHooks {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ScenarioHooks.class);
+
+    @Autowired
+    private ApplicationConfig applicationConfig;
 
     private DeviceRepository deviceRepository;
     private DlmsDeviceRepository dlmsDeviceRepository;
@@ -132,5 +135,4 @@ public class ScenarioHooks {
             LOGGER.error("no such device " + deviceId);
         }
     }
-
 }
