@@ -75,13 +75,7 @@ public class DlmsDeviceSteps {
         // TODO: Set dlms specific device settings
         this.dlmsDeviceRepository.save(dlmsDevice);
         
-        // Now add additional data in the core device.
-        //Device device = deviceRepository.findByDeviceIdentification(deviceIdentification);
-        // TODO: Set the correct gateway
-        //device.updateGatewayDevice(gatewayDevice);
-        //deviceRepository.save(device);
-        
-        
+        // TODO: Set the devicegateway
     }
 
     /**
