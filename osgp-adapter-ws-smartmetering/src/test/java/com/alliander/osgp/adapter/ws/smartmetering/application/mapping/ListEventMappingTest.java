@@ -24,6 +24,11 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventType;
 
 public class ListEventMappingTest {
 
+    private static final String NUMBER_OF_EVENTS = "number of events";
+    private static final String EVENT_CODE_WITH_MAPPING_OF = "eventCode with mapping of ";
+    private static final String EVENT_COUNTER_WITH_MAPPING_OF = "eventCounter with mapping of ";
+    private static final String TIMESTAMP_WITH_MAPPING_OF = "timestamp with mapping of ";
+
     private ManagementMapper managementMapper = new ManagementMapper();
     private static final Integer EVENTCODE = new Integer(10);
     private static final Integer EVENTCOUNTER = new Integer(1);
@@ -158,19 +163,19 @@ public class ListEventMappingTest {
     private void checkEventsMappedToWsSchema(final List<Event> originalEvents,
             final List<com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event> mappedEvents) {
 
-        assertEquals("number of events", originalEvents.size(), mappedEvents.size());
+        assertEquals(NUMBER_OF_EVENTS, originalEvents.size(), mappedEvents.size());
 
         for (int i = 0; i < originalEvents.size(); i++) {
             final Event originalEvent = originalEvents.get(i);
             final com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event mappedEvent = mappedEvents.get(i);
 
-            assertEquals("eventCode with mapping of " + originalEvent, originalEvent.getEventCode().intValue(),
+            assertEquals(EVENT_CODE_WITH_MAPPING_OF + originalEvent, originalEvent.getEventCode().intValue(),
                     EventType.valueOf(mappedEvent.getEventType().name()).getValue());
 
-            assertEquals("eventCounter with mapping of " + originalEvent, originalEvent.getEventCounter(),
+            assertEquals(EVENT_COUNTER_WITH_MAPPING_OF + originalEvent, originalEvent.getEventCounter(),
                     mappedEvent.getEventCounter());
 
-            assertEquals("timestamp with mapping of " + originalEvent, originalEvent.getTimestamp().toString(),
+            assertEquals(TIMESTAMP_WITH_MAPPING_OF + originalEvent, originalEvent.getTimestamp().toString(),
                     new DateTime(mappedEvent.getTimestamp().toGregorianCalendar()).toString());
         }
     }
@@ -179,21 +184,21 @@ public class ListEventMappingTest {
             final List<com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event> originalEvents,
             final List<Event> mappedEvents) {
 
-        assertEquals("number of events", originalEvents.size(), mappedEvents.size());
+        assertEquals(NUMBER_OF_EVENTS, originalEvents.size(), mappedEvents.size());
 
         for (int i = 0; i < originalEvents.size(); i++) {
             final com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event originalEvent = originalEvents
                     .get(i);
             final Event mappedEvent = mappedEvents.get(i);
 
-            assertEquals("eventCode with mapping of " + originalEvent.getEventType(),
+            assertEquals(EVENT_CODE_WITH_MAPPING_OF + originalEvent.getEventType(),
                     EventType.valueOf(originalEvent.getEventType().name()).getValue(),
                     mappedEvent.getEventCode().intValue());
 
-            assertEquals("eventCounter with mapping of " + originalEvent.getEventType(),
+            assertEquals(EVENT_COUNTER_WITH_MAPPING_OF + originalEvent.getEventType(),
                     originalEvent.getEventCounter(), mappedEvent.getEventCounter());
 
-            assertEquals("timestamp with mapping of " + originalEvent.getEventType(),
+            assertEquals(TIMESTAMP_WITH_MAPPING_OF + originalEvent.getEventType(),
                     new DateTime(originalEvent.getTimestamp().toGregorianCalendar()).toString(),
                     mappedEvent.getTimestamp().toString());
         }
