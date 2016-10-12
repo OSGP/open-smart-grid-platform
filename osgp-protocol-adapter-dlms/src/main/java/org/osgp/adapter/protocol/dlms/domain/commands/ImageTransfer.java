@@ -246,13 +246,11 @@ class ImageTransfer {
         }
 
         if (verified == MethodResultCode.OTHER_REASON) {
-            final int status = this.getImageTransferStatus();
-            if (status == ImageTransferStatus.ACTIVATION_SUCCESSFUL.getValue() ||
-                    status == ImageTransferStatus.ACTIVATION_INITIATED.getValue() ||
-                    status == ImageTransferStatus.ACTIVATION_FAILED.getValue()) {
+            // If activation was triggered the device will not verify again.
+            if (this.imageIsVerified()) {
                 return;
             }
-            
+            final int status = this.getImageTransferStatus();
             throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_NOT_VERIFIED + status);
         }
 
@@ -329,6 +327,7 @@ class ImageTransfer {
         }
 
         if (imageActivate == MethodResultCode.TEMPORARY_FAILURE) {
+            // TODO there should be a new connection for every check.
             final Future<Integer> newStatus = this.executorService.submit(new ImageTransferStatusChanged(
                     ImageTransferStatus.ACTIVATION_INITIATED, 10000, 60000));
 

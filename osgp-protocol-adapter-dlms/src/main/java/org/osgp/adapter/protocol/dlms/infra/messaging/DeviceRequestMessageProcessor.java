@@ -152,7 +152,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             if (conn != null) {
                 LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
                 try {
-                    conn.close();
+                    conn.disconnect();
                 } catch (final IOException e) {
                     LOGGER.error("Error while closing connection", e);
                 }
