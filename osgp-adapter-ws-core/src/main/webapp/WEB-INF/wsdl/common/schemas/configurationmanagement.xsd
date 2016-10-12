@@ -127,7 +127,7 @@
       <xsd:element name="CommunicationTimeout" type="xsd:int" minOccurs="0" maxOccurs="1" />
       <xsd:element name="CommunicationNumberOfRetries" type="xsd:int" minOccurs="0" maxOccurs="1" />
       <xsd:element name="CommunicationPauseTimeBetweenConnectionTrials" type="xsd:int" minOccurs="0" maxOccurs="1" />
-      <xsd:element name="OspgIpAddress" type="tns:IPType" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="OsgpIpAddress" type="tns:IPType" minOccurs="0" maxOccurs="1" />
       <xsd:element name="OsgpPortNumber" type="xsd:int" minOccurs="0" maxOccurs="1" />
       <xsd:element name="TestButtonEnabled" type="xsd:boolean" minOccurs="0" maxOccurs="1" />
       <xsd:element name="AutomaticSummerTimingEnabled" type="xsd:boolean" minOccurs="0" maxOccurs="1" />

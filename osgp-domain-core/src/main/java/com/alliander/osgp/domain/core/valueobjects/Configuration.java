@@ -69,7 +69,7 @@ public class Configuration implements Serializable {
 
     private Integer communicationPauseTimeBetweenConnectionTrials;
 
-    private String ospgIpAddress;
+    private String osgpIpAddress;
 
     private Integer osgpPortNumber;
 
@@ -210,12 +210,12 @@ public class Configuration implements Serializable {
         this.communicationPauseTimeBetweenConnectionTrials = communicationPauseTimeBetweenConnectionTrials;
     }
 
-    public String getOspgIpAddress() {
-        return this.ospgIpAddress;
+    public String getOsgpIpAddress() {
+        return this.osgpIpAddress;
     }
 
-    public void setOspgIpAddress(final String ospgIpAddress) {
-        this.ospgIpAddress = ospgIpAddress;
+    public void setOsgpIpAddress(final String osgpIpAddress) {
+        this.osgpIpAddress = osgpIpAddress;
     }
 
     public Integer getOsgpPortNumber() {

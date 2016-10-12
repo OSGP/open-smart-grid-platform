@@ -64,7 +64,7 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.ConfigurationDto, Con
         configuration.setTlsPortNumber(source.getTlsPortNumber());
         configuration.setCommonNameString(source.getCommonNameString());
         configuration.setOsgpPortNumber(source.getOsgpPortNumber());
-        configuration.setOspgIpAddress(source.getOspgIpAddress());
+        configuration.setOsgpIpAddress(source.getOsgpIpAddres());
         configuration.setRelayRefreshing(source.isRelayRefreshing());
         configuration.setSummerTimeDetails(source.getSummerTimeDetails());
         configuration.setSwitchingDelays(source.getSwitchingDelays());
@@ -128,7 +128,7 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.ConfigurationDto, Con
         configuration.setTlsPortNumber(source.getTlsPortNumber());
         configuration.setCommonNameString(source.getCommonNameString());
         configuration.setOsgpPortNumber(source.getOsgpPortNumber());
-        configuration.setOspgIpAddress(source.getOspgIpAddress());
+        configuration.setOsgpIpAddress(source.getOsgpIpAddress());
         configuration.setRelayRefreshing(source.isRelayRefreshing());
         configuration.setSummerTimeDetails(source.getSummerTimeDetails());
         configuration.setSwitchingDelays(source.getSwitchingDelays());

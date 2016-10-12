@@ -22,7 +22,7 @@ import javax.validation.Payload;
 @Documented
 public @interface TlsConfiguration {
 
-    String message() default "If TLS is to be enabled, the port number must be between 1 and 65535.";
+    String message() default "The TLS port number must be between 1 and 65535.";
 
     Class<?>[] groups() default {};
 
