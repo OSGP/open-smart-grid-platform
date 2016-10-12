@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -10,16 +10,10 @@ package org.osgpfoundation.osgp.webdemoapp.application.config;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPException;
 
-import ma.glasnost.orika.MapperFacade;
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
-
 import org.osgpfoundation.osgp.webdemoapp.application.infra.platform.KeyStoreHelper;
 import org.osgpfoundation.osgp.webdemoapp.application.infra.platform.SoapRequestHelper;
 import org.osgpfoundation.osgp.webdemoapp.application.services.OsgpAdminClientSoapService;
 import org.osgpfoundation.osgp.webdemoapp.application.services.OsgpPublicLightingClientSoapService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +23,10 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
+
+import ma.glasnost.orika.MapperFacade;
+import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.impl.DefaultMapperFactory;
 
 /**
  * An application context Java configuration class. The usage of Java
@@ -44,80 +42,103 @@ import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 @ImportResource("classpath:applicationContext.xml")
 public class ApplicationContext {
 
-	private static final String VIEW_RESOLVER_PREFIX = "/WEB-INF/views/";
-	private static final String VIEW_RESOLVER_SUFFIX = ".jsp";
+    private static final String VIEW_RESOLVER_PREFIX = "/WEB-INF/views/";
+    private static final String VIEW_RESOLVER_SUFFIX = ".jsp";
 
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(ApplicationContext.class);
+    /**
+     * Method for resolving views.
+     *
+     * @return ViewResolver
+     */
+    @Bean
+    public ViewResolver viewResolver() {
+        final InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
 
-	/**
-	 * Method for resolving views.
-	 *
-	 * @return ViewResolver
-	 */
-	@Bean
-	public ViewResolver viewResolver() {
-		final InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
+        viewResolver.setViewClass(JstlView.class);
+        viewResolver.setPrefix(VIEW_RESOLVER_PREFIX);
+        viewResolver.setSuffix(VIEW_RESOLVER_SUFFIX);
 
-		viewResolver.setViewClass(JstlView.class);
-		viewResolver.setPrefix(VIEW_RESOLVER_PREFIX);
-		viewResolver.setSuffix(VIEW_RESOLVER_SUFFIX);
+        return viewResolver;
+    }
 
-		return viewResolver;
-	}
+    /**
+     * Bean for PublicLightingSoapClientService
+     *
+     * @return OsgpPublicLightingClientSoapService
+     */
+    @Bean
+    public OsgpPublicLightingClientSoapService publicLightingClientSoapService() {
+        return new OsgpPublicLightingClientSoapService(this.publicLightingAdHocMapperFacade());
+    }
 
-	@Bean
-	public OsgpPublicLightingClientSoapService publicLightingClientSoapService () {
-		return new OsgpPublicLightingClientSoapService(publicLightingAdHocMapperFacade());
-	}
-	
-	@Bean
-	public OsgpAdminClientSoapService osgpAdminClientSoapService () {
-		return new OsgpAdminClientSoapService (adminAdHocMapperFacade());
-	}
+    /**
+     * Bean for AdminClientSoapService
+     *
+     * @return OsgpAdminClientSoapService
+     */
+    @Bean
+    public OsgpAdminClientSoapService osgpAdminClientSoapService() {
+        return new OsgpAdminClientSoapService(this.adminAdHocMapperFacade());
+    }
 
-	
-	@Bean
-	public SoapRequestHelper soapRequestHelper () {
-		return new SoapRequestHelper (messageFactory(),keyStoreHelper());
-	}
-	
-	private KeyStoreHelper keyStoreHelper () {
+    /**
+     * Bean for SoapRequestHelper, contains functions to create
+     * WebServiceTemplates for specific domains.
+     *
+     * @return SoapRequestHelper
+     */
+    @Bean
+    public SoapRequestHelper soapRequestHelper() {
+        return new SoapRequestHelper(this.messageFactory(), this.keyStoreHelper());
+    }
 
-		return new KeyStoreHelper("jks", "/etc/ssl/certs/trust.jks",
-				"123456", "/etc/ssl/certs/test-org.pfx", "pkcs12", "1234");
-	}
-	
-	private SaajSoapMessageFactory messageFactory () {
-		SaajSoapMessageFactory messageFactory = new SaajSoapMessageFactory ();
-		try {
-			messageFactory.setMessageFactory(MessageFactory.newInstance());
-		} catch (SOAPException e) {
-			// TODO Auto-generated catch block
-			System.err.println("Message Facotry failed!");
-			e.printStackTrace();
-		}
-		return messageFactory;
-	}
-	
-	private MapperFacade adminAdHocMapperFacade() {
-		MapperFactory factory = new DefaultMapperFactory.Builder().build();
-		factory.classMap(
-				com.alliander.osgp.platform.ws.schema.admin.devicemanagement.Device.class,
-				org.osgpfoundation.osgp.webdemoapp.domain.Device.class)
-				.byDefault().register();
+    /**
+     * Returns a configured Keystore helper, which contains all security
+     * settings for making singed soap requests.
+     *
+     * @return KeyStoreHelper
+     */
+    private KeyStoreHelper keyStoreHelper() {
+        return new KeyStoreHelper("jks", "/etc/ssl/certs/trust.jks", "123456", "/etc/ssl/certs/test-org.pfx", "pkcs12",
+                "1234");
+    }
 
-		return factory.getMapperFacade();
-	}
-	
-	private MapperFacade publicLightingAdHocMapperFacade() {
-		MapperFactory factory = new DefaultMapperFactory.Builder().build();
-		factory.classMap(
-				com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement.Device.class,
-				org.osgpfoundation.osgp.webdemoapp.domain.Device.class)
-				.byDefault().register();
+    /**
+     * Spring SoapMessageFactory for creating Soap Messages
+     * @return SaajSoapMessageFactory
+     */
+    private SaajSoapMessageFactory messageFactory() {
+        final SaajSoapMessageFactory messageFactory = new SaajSoapMessageFactory();
+        try {
+            messageFactory.setMessageFactory(MessageFactory.newInstance());
+        } catch (final SOAPException e) {
+            e.printStackTrace();
+        }
+        return messageFactory;
+    }
 
-		return factory.getMapperFacade();
-	}
+    /**
+     * Customized mapper facade for Orika
+     * @return MapperFacade
+     */
+    private MapperFacade adminAdHocMapperFacade() {
+        final MapperFactory factory = new DefaultMapperFactory.Builder().build();
+        factory.classMap(com.alliander.osgp.platform.ws.schema.admin.devicemanagement.Device.class,
+                org.osgpfoundation.osgp.webdemoapp.domain.Device.class).byDefault().register();
+
+        return factory.getMapperFacade();
+    }
+
+    /**
+     * Customized mapper facade for Orika
+     * @return MapperFacade
+     */
+    private MapperFacade publicLightingAdHocMapperFacade() {
+        final MapperFactory factory = new DefaultMapperFactory.Builder().build();
+        factory.classMap(com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement.Device.class,
+                org.osgpfoundation.osgp.webdemoapp.domain.Device.class).byDefault().register();
+
+        return factory.getMapperFacade();
+    }
 
 }

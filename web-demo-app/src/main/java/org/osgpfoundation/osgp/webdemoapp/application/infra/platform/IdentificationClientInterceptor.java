@@ -1,3 +1,10 @@
+/**
+ * Copyright 2016 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.osgpfoundation.osgp.webdemoapp.application.infra.platform;
 
 import javax.xml.namespace.QName;
@@ -9,64 +16,67 @@ import org.springframework.ws.soap.SoapHeader;
 import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.SoapMessage;
 
+/**
+ * Customized ClientInterceptor. Defines parameters for Soap request (such as
+ * header, namespace, orgId, etc).
+ *
+ */
 public class IdentificationClientInterceptor implements ClientInterceptor {
-	
-	private String orgId;
-	private String userName;
-	private String appName;
-	private String namespace;
-	private String orgIdHeaderName;
-	private String userNameHeaderName;
-	private String appNameHeaderName;
-	
-	public IdentificationClientInterceptor(String orgId, String userName, String appName, String namespace, String orgIdHeaderName, String userNameHeaderName, String appNameHeaderName) {
-		this.orgId = orgId;
-		this.userName = userName;
-		this.appName = appName;
-		this.namespace = namespace;
-		this.orgIdHeaderName = orgIdHeaderName;
-		this.userNameHeaderName = userNameHeaderName;
-		this.appNameHeaderName = appNameHeaderName;
-		
-	}
 
-	@Override
-	public void afterCompletion(MessageContext arg0, Exception arg1)
-			throws WebServiceClientException {
-		
-	}
+    private String orgId;
+    private String userName;
+    private String appName;
+    private String namespace;
+    private String orgIdHeaderName;
+    private String userNameHeaderName;
+    private String appNameHeaderName;
 
-	@Override
-	public boolean handleFault(MessageContext arg0)
-			throws WebServiceClientException {
-		return true;
-	}
+    public IdentificationClientInterceptor(final String orgId, final String userName, final String appName,
+            final String namespace, final String orgIdHeaderName, final String userNameHeaderName,
+            final String appNameHeaderName) {
+        this.orgId = orgId;
+        this.userName = userName;
+        this.appName = appName;
+        this.namespace = namespace;
+        this.orgIdHeaderName = orgIdHeaderName;
+        this.userNameHeaderName = userNameHeaderName;
+        this.appNameHeaderName = appNameHeaderName;
 
-	@Override
-	public boolean handleRequest(MessageContext msgContext)
-			throws WebServiceClientException {
-		SoapMessage message = (SoapMessage) msgContext.getRequest();
-		SoapHeader header = (SoapHeader) message.getSoapHeader ();
-		
-		QName orgIdHeaderHeaderQName = new QName(this.namespace, this.orgIdHeaderName);
-		SoapHeaderElement orgElement = header.addHeaderElement(orgIdHeaderHeaderQName);
-		orgElement.setText(orgId);
-		
-		QName appNameHeaderQName = new QName(this.namespace, this.appNameHeaderName);
-		SoapHeaderElement appElement = header.addHeaderElement(appNameHeaderQName);
-		appElement.setText(appName);
-		
-		QName userNameHeaderQName = new QName(this.namespace, this.userNameHeaderName);
-		SoapHeaderElement userElement = header.addHeaderElement(userNameHeaderQName);
-		userElement.setText(userName);
-		
-		return true;
-	}
+    }
 
-	@Override
-	public boolean handleResponse(MessageContext arg0)
-			throws WebServiceClientException {
-		return true;
-	}
+    @Override
+    public void afterCompletion(final MessageContext arg0, final Exception arg1) throws WebServiceClientException {
+
+    }
+
+    @Override
+    public boolean handleFault(final MessageContext arg0) throws WebServiceClientException {
+        return true;
+    }
+
+    @Override
+    public boolean handleRequest(final MessageContext msgContext) throws WebServiceClientException {
+        final SoapMessage message = (SoapMessage) msgContext.getRequest();
+        final SoapHeader header = message.getSoapHeader();
+
+        final QName orgIdHeaderHeaderQName = new QName(this.namespace, this.orgIdHeaderName);
+        final SoapHeaderElement orgElement = header.addHeaderElement(orgIdHeaderHeaderQName);
+        orgElement.setText(this.orgId);
+
+        final QName appNameHeaderQName = new QName(this.namespace, this.appNameHeaderName);
+        final SoapHeaderElement appElement = header.addHeaderElement(appNameHeaderQName);
+        appElement.setText(this.appName);
+
+        final QName userNameHeaderQName = new QName(this.namespace, this.userNameHeaderName);
+        final SoapHeaderElement userElement = header.addHeaderElement(userNameHeaderQName);
+        userElement.setText(this.userName);
+
+        return true;
+    }
+
+    @Override
+    public boolean handleResponse(final MessageContext arg0) throws WebServiceClientException {
+        return true;
+    }
 
 }
