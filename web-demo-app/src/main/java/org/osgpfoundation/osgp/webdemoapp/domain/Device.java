@@ -6,7 +6,7 @@ package org.osgpfoundation.osgp.webdemoapp.domain;
 
 
 /**
- * An entity class which contains the information of a single device.
+ * An entity class which contains the data of a single device.
  */
 public class Device  {
 

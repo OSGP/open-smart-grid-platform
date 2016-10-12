@@ -1,4 +1,4 @@
-package org.osgpfoundation.osgp.webdemoapp.application.services;
+package org.osgpfoundation.osgp.webdemoapp.application.infra.platform;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;

@@ -14,10 +14,10 @@ import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
 
-import org.osgpfoundation.osgp.webdemoapp.application.services.KeyStoreHelper;
+import org.osgpfoundation.osgp.webdemoapp.application.infra.platform.KeyStoreHelper;
+import org.osgpfoundation.osgp.webdemoapp.application.infra.platform.SoapRequestHelper;
 import org.osgpfoundation.osgp.webdemoapp.application.services.OsgpAdminClientSoapService;
 import org.osgpfoundation.osgp.webdemoapp.application.services.OsgpPublicLightingClientSoapService;
-import org.osgpfoundation.osgp.webdemoapp.application.services.SoapRequestHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
