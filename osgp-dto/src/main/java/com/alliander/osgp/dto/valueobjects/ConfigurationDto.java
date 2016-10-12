@@ -53,7 +53,7 @@ public class ConfigurationDto implements Serializable {
 
     private Integer communicationPauseTimeBetweenConnectionTrials;
 
-    private String ospgIpAddress;
+    private String osgpIpAddress;
 
     private Integer osgpPortNumber;
 
@@ -194,12 +194,12 @@ public class ConfigurationDto implements Serializable {
         this.communicationPauseTimeBetweenConnectionTrials = communicationPauseTimeBetweenConnectionTrials;
     }
 
-    public String getOspgIpAddress() {
-        return this.ospgIpAddress;
+    public String getOsgpIpAddres() {
+        return this.osgpIpAddress;
     }
 
-    public void setOspgIpAddress(final String ospgIpAddress) {
-        this.ospgIpAddress = ospgIpAddress;
+    public void setOsgpIpAddress(final String osgpIpAddress) {
+        this.osgpIpAddress = osgpIpAddress;
     }
 
     public Integer getOsgpPortNumber() {
