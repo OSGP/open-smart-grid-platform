@@ -21,99 +21,137 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
+import com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement.DeviceStatus;
+
 /**
- * Handles requests for the application home page.
+ * Handles requests for the public lighting domain
  */
 @Controller
 public class PublicLightingController {
 
-	@Autowired
-	OsgpPublicLightingClientSoapService osgpPublicLightingClientSoapService;
+    @Autowired
+    private OsgpPublicLightingClientSoapService osgpPublicLightingClientSoapService;
 
-	/**
-	 * Simply selects the home view to render by returning its name.
-	 */
-	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String home() {
-		return "home";
-	}
+    /**
+     * Redirects requests made to '/' to home.
+     */
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public String home() {
+        return "home";
+    }
 
-	@RequestMapping(value = "/list", method = RequestMethod.GET)
-	public ModelAndView showDeviceList() {
+    /**
+     * Makes a SOAP request to the platform which returns a list of devices.
+     * Adds the list to the Model of the View.
+     *
+     * The list.jsp page shows the list.
+     *
+     * @return ModelAndView
+     */
+    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    public ModelAndView showDeviceList() {
 
-		List<Device> list = osgpPublicLightingClientSoapService
-				.findAllDevicesRequest();
+        final List<Device> list = this.osgpPublicLightingClientSoapService.findAllDevicesRequest();
 
-		ModelAndView model = new ModelAndView("list");
-		model.addObject("deviceList", list);
+        final ModelAndView model = new ModelAndView("list");
+        model.addObject("deviceList", list);
 
-		return model;
-	}
+        return model;
+    }
 
-	@RequestMapping(value = "/device", method = RequestMethod.GET)
-	public ModelAndView deviceDetails() {
+    /**
+     * Process requests to view device details. This function will use the
+     * SoapClient to make the request to the platform, this returns a
+     * correlationId. The correlationId is passed back to the device-status
+     * view, where it will poll the platform on a 2 second interval until the
+     * status request is ready.
+     *
+     * @param deviceId
+     * @return ModelAndView
+     */
+    @RequestMapping(value = "/deviceDetails/{deviceId}", method = RequestMethod.GET)
+    public ModelAndView devicesDetails(@PathVariable final String deviceId) {
+        final ModelAndView modelView = new ModelAndView("device-status");
+        try {
+            String correlationId;
+            correlationId = this.osgpPublicLightingClientSoapService.getDeviceStatus(deviceId);
+            modelView.addObject("correlationId", correlationId);
+        } catch (final SoapFaultClientException e) {
+            return this.error(e.getFaultStringOrReason());
+        } catch (final NullPointerException e) {
+            return this.error("A response from the platform returned 'null'");
+        }
+        return modelView;
+    }
 
-		ModelAndView model = new ModelAndView("device");
+    /**
+     * Receives a Switch request for a light device. Sends the request to the
+     * platform by using the SoapService. Some checks on the parameters of the
+     * request: LightValue must be between 0 and 100. If light is turned off, do
+     * not send a lightvalue to the platform.
+     *
+     * Returns a View with the request parameters in a device object.
+     *
+     * @param deviceStatus
+     * @return ModelAndView
+     */
+    @RequestMapping(value = "/doSwitchDevice", method = RequestMethod.POST)
+    public ModelAndView addDevice(@ModelAttribute("SpringWeb") final DeviceLightStatus deviceStatus) {
+        final ModelAndView modelView = new ModelAndView("switch-result");
+        try {
+            if (deviceStatus.isLightOn() && (deviceStatus.getLightValue() > 0 && deviceStatus.getLightValue() <= 100)) {
+                this.osgpPublicLightingClientSoapService.setLightRequest(deviceStatus.getDeviceId(),
+                        deviceStatus.getLightValue(), deviceStatus.isLightOn());
+            } else if (!deviceStatus.isLightOn()) {
+                this.osgpPublicLightingClientSoapService.switchLightRequest(deviceStatus.getDeviceId(),
+                        deviceStatus.isLightOn());
+            } else {
+                return this.error("LightValue must be a number between 1 - 100");
+            }
 
-		return model;
-	}
+        } catch (final SoapFaultClientException e) {
+            return this.error(e.getFaultStringOrReason());
+        }
 
-	@RequestMapping(value = "/deviceDetails/{deviceId}", method = RequestMethod.GET)
-	public ModelAndView devicesDetails(@PathVariable String deviceId) {
-		ModelAndView modelView = new ModelAndView("device");
+        modelView.addObject("device", deviceStatus);
 
-		try {
-			DeviceLightStatus deviceStatus = null;
-			deviceStatus = osgpPublicLightingClientSoapService
-					.getDeviceStatus(deviceId);
-			modelView.addObject("device", deviceStatus);
-		} catch (SoapFaultClientException e) {
-			return this.error(e.getFaultStringOrReason());
-			// modelView.addObject("errorMessage",
-			// "Is the device registered in the Platform?");
-		} catch (NullPointerException e) {
-			return this.error("A response from the platform returned 'null'");
-			// modelView.addObject("errorMessage",
-			// "The Soap Request returned null, is the platform running?");
-		}
+        return modelView;
+    }
 
-		modelView.addObject("command", new DeviceLightStatus());
+    /**
+     * Creates a view to show the device details from a async GetStatus request.
+     * This function is called from the async controller as soon as the
+     * getStatus request is processed by the platform
+     *
+     * @param deviceStatus
+     * @param deviceIdentification
+     * @return ModelAndView
+     */
+    public ModelAndView getStatusRequest(final DeviceStatus deviceStatus, final String deviceIdentification) {
+        final ModelAndView modelView = new ModelAndView("device");
+        final DeviceLightStatus deviceLightStatus = new DeviceLightStatus();
 
-		return modelView;
-	}
+        deviceLightStatus.setDeviceId(deviceIdentification);
+        deviceLightStatus.setLightValue(deviceStatus.getLightValues().get(0).getDimValue());
+        deviceLightStatus.setLightOn(deviceStatus.getLightValues().get(0).isOn());
 
-	@RequestMapping(value = "/doSwitchDevice", method = RequestMethod.POST)
-	public ModelAndView addDevice(
-			@ModelAttribute("SpringWeb") DeviceLightStatus deviceStatus) {
-		ModelAndView modelView = new ModelAndView("switch-result");
-		try {
-			if (deviceStatus.isLightOn() && ( deviceStatus.getLightValue() > 0 && deviceStatus.getLightValue() <= 100 )) {
-				osgpPublicLightingClientSoapService.setLightRequest(
-						deviceStatus.getDeviceId(),
-						deviceStatus.getLightValue(), deviceStatus.isLightOn());
-			} else if (!deviceStatus.isLightOn()) {
-				osgpPublicLightingClientSoapService.switchLightRequest(
-						deviceStatus.getDeviceId(), deviceStatus.isLightOn());
-			} else {
-				return this.error("LightValue must be a number between 1 - 100");
-			}
+        modelView.addObject("command", new DeviceLightStatus());
+        modelView.addObject("device", deviceLightStatus);
 
-		} catch (SoapFaultClientException e) {
-			return this.error(e.getFaultStringOrReason());
-		}
+        return modelView;
+    }
 
-		modelView.addObject("device", deviceStatus);
+    /**
+     * Displays an error message.
+     * @param error
+     * @return ModelAndView
+     */
+    public ModelAndView error(final String error) {
+        final ModelAndView modelView = new ModelAndView("error");
 
-		return modelView;
-	}
-	
-	public ModelAndView error(String error) {
-		ModelAndView modelView = new ModelAndView("error");
-	
-		modelView.addObject("error", error);
-	
-		return modelView;
-	}
+        modelView.addObject("error", error);
 
+        return modelView;
+    }
 
 }

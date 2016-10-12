@@ -2,9 +2,7 @@ package org.osgpfoundation.osgp.webdemoapp.application.services;
 
 import java.util.List;
 
-import ma.glasnost.orika.MapperFacade;
-
-import org.osgpfoundation.osgp.webdemoapp.domain.DeviceLightStatus;
+import org.osgpfoundation.osgp.webdemoapp.application.infra.platform.SoapRequestHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
@@ -16,134 +14,143 @@ import com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement.GetS
 import com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement.GetStatusRequest;
 import com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement.GetStatusResponse;
 import com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement.LightValue;
-import com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement.OsgpResultType;
 import com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement.SetLightAsyncResponse;
 import com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement.SetLightRequest;
 
+import ma.glasnost.orika.MapperFacade;
+
+/**
+ * Handles communication with the platform using SOAP.
+ *
+ */
 public class OsgpPublicLightingClientSoapService {
 
-	@Autowired
-	private SoapRequestHelper soapRequestHelper;
+    @Autowired
+    private SoapRequestHelper soapRequestHelper;
 
-	private MapperFacade publicLightingAdHocMapperFacade;
+    private MapperFacade publicLightingAdHocMapperFacade;
 
-	public OsgpPublicLightingClientSoapService(MapperFacade mapper) {
-		this.publicLightingAdHocMapperFacade = mapper;
-	}
+    public OsgpPublicLightingClientSoapService(final MapperFacade mapper) {
+        this.publicLightingAdHocMapperFacade = mapper;
+    }
 
-	public List<org.osgpfoundation.osgp.webdemoapp.domain.Device> findAllDevicesRequest() {
-		FindAllDevicesRequest findAllDevicesRequest = new FindAllDevicesRequest();
+    /**
+     * Creates a WebServiceTemplate with a FindAllDevices Request using the
+     * SoapRequestHelper class. Sends the request to the Platform, and returns
+     * the List with Devices from the Response (after it is converted by Orika).
+     *
+     * @return a list of devices
+     */
+    public List<org.osgpfoundation.osgp.webdemoapp.domain.Device> findAllDevicesRequest() {
+        final FindAllDevicesRequest findAllDevicesRequest = new FindAllDevicesRequest();
 
-		WebServiceTemplate template = this.soapRequestHelper
-				.createPublicLightingRequest();
+        final WebServiceTemplate template = this.soapRequestHelper.createPublicLightingRequest();
 
-		FindAllDevicesResponse response = (FindAllDevicesResponse) template
-				.marshalSendAndReceive(findAllDevicesRequest);
+        final FindAllDevicesResponse response = (FindAllDevicesResponse) template
+                .marshalSendAndReceive(findAllDevicesRequest);
 
-		List<org.osgpfoundation.osgp.webdemoapp.domain.Device> result = publicLightingAdHocMapperFacade
-				.mapAsList(response.getDevicePage().getDevices(),
-						org.osgpfoundation.osgp.webdemoapp.domain.Device.class);
+        final List<org.osgpfoundation.osgp.webdemoapp.domain.Device> result = this.publicLightingAdHocMapperFacade
+                .mapAsList(response.getDevicePage().getDevices(),
+                        org.osgpfoundation.osgp.webdemoapp.domain.Device.class);
 
-		return result;
-	}
+        return result;
+    }
 
-	public String setLightRequest(String deviceId, int dimValue, boolean lightOn) {
-		SetLightRequest request = new SetLightRequest();
-		LightValue lightValue = new LightValue();
-		lightValue.setDimValue(dimValue);
-		lightValue.setOn(lightOn);
+    /**
+     * Creates a WebServiceTemplate and a SetLightRequest with the parameters
+     * deviceId, dimValue and LightOn. Sends the SetLightRequest to the platform
+     * using the WebServiceTemplate. Returns the response (CorrelationId) from
+     * the Platform.
+     *
+     * @param deviceId
+     * @param dimValue
+     * @param lightOn
+     * @return correlation id
+     */
+    public String setLightRequest(final String deviceId, final int dimValue, final boolean lightOn) {
+        final SetLightRequest request = new SetLightRequest();
+        final LightValue lightValue = new LightValue();
+        lightValue.setDimValue(dimValue);
+        lightValue.setOn(lightOn);
 
-		WebServiceTemplate template = this.soapRequestHelper
-				.createPublicLightingRequest();
+        final WebServiceTemplate template = this.soapRequestHelper.createPublicLightingRequest();
 
-		request.setDeviceIdentification(deviceId);
-		request.getLightValue().add(lightValue);
+        request.setDeviceIdentification(deviceId);
+        request.getLightValue().add(lightValue);
 
-		SetLightAsyncResponse response = (SetLightAsyncResponse) template
-				.marshalSendAndReceive(request);
+        final SetLightAsyncResponse response = (SetLightAsyncResponse) template.marshalSendAndReceive(request);
 
-		return response.getAsyncResponse().getCorrelationUid();
-	}
-	
-	public String switchLightRequest(String deviceId, boolean lightOn) {
-		SetLightRequest request = new SetLightRequest();
-		LightValue lightValue = new LightValue();
-		lightValue.setOn(lightOn);
+        return response.getAsyncResponse().getCorrelationUid();
+    }
 
-		WebServiceTemplate template = this.soapRequestHelper
-				.createPublicLightingRequest();
+    /**
+     * Creates a SetLight request using the parameters deviceId and lightOn.
+     * Sends the request to the platform using the WebServiceTemplate.
+     *
+     * Returns the CorrelationId response from the Platform.
+     *
+     * @param deviceId
+     * @param lightOn
+     * @return
+     */
+    public String switchLightRequest(final String deviceId, final boolean lightOn) {
+        final SetLightRequest request = new SetLightRequest();
+        final LightValue lightValue = new LightValue();
+        lightValue.setOn(lightOn);
 
-		request.setDeviceIdentification(deviceId);
-		request.getLightValue().add(lightValue);
+        final WebServiceTemplate template = this.soapRequestHelper.createPublicLightingRequest();
 
-		SetLightAsyncResponse response = (SetLightAsyncResponse) template
-				.marshalSendAndReceive(request);
+        request.setDeviceIdentification(deviceId);
+        request.getLightValue().add(lightValue);
 
-		return response.getAsyncResponse().getCorrelationUid();
-	}
+        final SetLightAsyncResponse response = (SetLightAsyncResponse) template.marshalSendAndReceive(request);
 
-	public DeviceLightStatus getDeviceStatus(String deviceId) {
-		WebServiceTemplate requestTemplate = this.soapRequestHelper
-				.createPublicLightingRequest();
+        return response.getAsyncResponse().getCorrelationUid();
+    }
 
-		GetStatusRequest request = new GetStatusRequest();
-		request.setDeviceIdentification(deviceId);
-		GetStatusAsyncResponse asyncStatusResponse = null;
+    /**
+     * Creates a getDeviceStatus request with the parameter deviceId. Sends it
+     * to the Platform using a WebServiceTemplate.
+     *
+     * Returns the CorrelationId response from the platform.
+     *
+     * @param deviceId
+     * @return
+     */
+    public String getDeviceStatus(final String deviceId) {
+        final WebServiceTemplate requestTemplate = this.soapRequestHelper.createPublicLightingRequest();
 
-		asyncStatusResponse = (GetStatusAsyncResponse) requestTemplate
-				.marshalSendAndReceive(request);
+        final GetStatusRequest request = new GetStatusRequest();
+        request.setDeviceIdentification(deviceId);
+        GetStatusAsyncResponse asyncStatusResponse = null;
 
-		WebServiceTemplate responseTemplate = this.soapRequestHelper
-				.createPublicLightingRequest();
+        asyncStatusResponse = (GetStatusAsyncResponse) requestTemplate.marshalSendAndReceive(request);
 
-		GetStatusAsyncRequest asyncStatusRequest = new GetStatusAsyncRequest();
+        return asyncStatusResponse.getAsyncResponse().getCorrelationUid();
+    }
 
-		AsyncRequest asyncRequest = new AsyncRequest();
+    /**
+     * Async request. Sends a GetStatusAsyncRequest to the platform using the
+     * deviceId and correlationId parameters.
+     *
+     * Returns the response from the Platform.
+     *
+     * @param deviceId
+     * @param correlationId
+     * @return
+     */
+    public GetStatusResponse getGetStatusResponse(final String deviceId, final String correlationId) {
+        final AsyncRequest asyncRequest = new AsyncRequest();
+        final GetStatusAsyncRequest asyncStatusRequest = new GetStatusAsyncRequest();
 
-		asyncRequest.setCorrelationUid(asyncStatusResponse.getAsyncResponse()
-				.getCorrelationUid());
-		asyncRequest.setDeviceId(asyncStatusResponse.getAsyncResponse()
-				.getDeviceId());
+        asyncRequest.setCorrelationUid(correlationId);
+        asyncRequest.setDeviceId(deviceId);
 
-		asyncStatusRequest.setAsyncRequest(asyncRequest);
+        asyncStatusRequest.setAsyncRequest(asyncRequest);
 
-		DeviceLightStatus deviceStatus = null;
+        final WebServiceTemplate template = this.soapRequestHelper.createPublicLightingRequest();
 
-		boolean responseReceived = false;
-		int i = 0;
-
-		while (!responseReceived || i < 10) {
-			GetStatusResponse response = (GetStatusResponse) responseTemplate
-					.marshalSendAndReceive(asyncStatusRequest);
-			OsgpResultType result = response.getResult();
-			if (result.value().equals("OK")) {
-				responseReceived = true;
-				deviceStatus = processStatusResponse(response.getDeviceStatus()
-						.getLightValues().get(0), asyncStatusResponse
-						.getAsyncResponse().getDeviceId());
-				break;
-			} else {
-				// Wait a while for response
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException ie) {
-					ie.printStackTrace();
-				}
-				i++;
-			}
-		}
-		return deviceStatus;
-	}
-
-	private DeviceLightStatus processStatusResponse(LightValue lightValue,
-			String deviceId) {
-		DeviceLightStatus deviceStatus = new DeviceLightStatus();
-
-		deviceStatus.setLightValue(lightValue.getDimValue());
-		deviceStatus.setLightOn(lightValue.isOn());
-		deviceStatus.setDeviceId(deviceId);
-
-		return deviceStatus;
-	}
+        return (GetStatusResponse) template.marshalSendAndReceive(asyncStatusRequest);
+    }
 
 }
