@@ -106,9 +106,9 @@ public class ConfigurationToOslpSetConfigurationRequestConverter extends
         if (source.getOsgpPortNumber() != null) {
             setConfigurationRequest.setOsgpPortNumber(source.getOsgpPortNumber());
         }
-        if (source.getOspgIpAddress() != null) {
+        if (source.getOsgpIpAddres() != null) {
             setConfigurationRequest
-                    .setOspgIpAddress(this.convertTextualIpAddressToByteString(source.getOspgIpAddress()));
+                    .setOspgIpAddress(this.convertTextualIpAddressToByteString(source.getOsgpIpAddres()));
         }
         if (source.isRelayRefreshing() != null) {
             setConfigurationRequest.setRelayRefreshing(source.isRelayRefreshing());

@@ -90,7 +90,7 @@ public class OslpGetConfigurationResponseToConfigurationConverter extends
         configuration.setCommunicationPauseTimeBetweenConnectionTrials(source
                 .getCommunicationPauseTimeBetweenConnectionTrials());
         if (source.getOspgIpAddress() != null && !source.getOspgIpAddress().isEmpty()) {
-            configuration.setOspgIpAddress(this.convertIpAddress(source.getOspgIpAddress()));
+            configuration.setOsgpIpAddress(this.convertIpAddress(source.getOspgIpAddress()));
         }
         configuration.setOsgpPortNumber(source.getOsgpPortNumber());
         configuration.setTestButtonEnabled(source.getIsTestButtonEnabled());
