@@ -7,14 +7,11 @@
         http://www.apache.org/licenses/LICENSE-2.0
 
 -->
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-  xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10"
-  xmlns:tns="http://www.alliander.com/schemas/osgp/configurationmanagement/2014/10"
-  attributeFormDefault="unqualified" elementFormDefault="qualified"
-  targetNamespace="http://www.alliander.com/schemas/osgp/configurationmanagement/2014/10">
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10"
+  xmlns:tns="http://www.alliander.com/schemas/osgp/configurationmanagement/2014/10" attributeFormDefault="unqualified"
+  elementFormDefault="qualified" targetNamespace="http://www.alliander.com/schemas/osgp/configurationmanagement/2014/10">
 
-  <xsd:import namespace="http://www.alliander.com/schemas/osgp/common/2014/10"
-    schemaLocation="common.xsd" />
+  <xsd:import namespace="http://www.alliander.com/schemas/osgp/common/2014/10" schemaLocation="common.xsd" />
 
   <xsd:element name="SetConfigurationRequest">
     <xsd:complexType>
@@ -123,14 +120,17 @@
       <xsd:element name="LongTermHistoryIntervalType" type="tns:LongTermIntervalType" minOccurs="0" maxOccurs="1" />
       <xsd:element name="TimeSyncFrequency" type="xsd:int" minOccurs="0" maxOccurs="1" />
       <xsd:element name="DeviceFixedIp" type="tns:DeviceFixedIp" minOccurs="0" maxOccurs="1" />
-      <xsd:element name="IsDhcpEnabled" type="xsd:boolean" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="DhcpEnabled" type="xsd:boolean" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="TlsEnabled" type="xsd:boolean" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="TlsPortNumber" type="xsd:int" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="CommonNameString" type="tns:CommonName" minOccurs="0" maxOccurs="1" />
       <xsd:element name="CommunicationTimeout" type="xsd:int" minOccurs="0" maxOccurs="1" />
       <xsd:element name="CommunicationNumberOfRetries" type="xsd:int" minOccurs="0" maxOccurs="1" />
       <xsd:element name="CommunicationPauseTimeBetweenConnectionTrials" type="xsd:int" minOccurs="0" maxOccurs="1" />
-      <xsd:element name="OspgIpAddress" type="tns:IPType" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="OsgpIpAddress" type="tns:IPType" minOccurs="0" maxOccurs="1" />
       <xsd:element name="OsgpPortNumber" type="xsd:int" minOccurs="0" maxOccurs="1" />
-      <xsd:element name="IsTestButtonEnabled" type="xsd:boolean" minOccurs="0" maxOccurs="1" />
-      <xsd:element name="IsAutomaticSummerTimingEnabled" type="xsd:boolean" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="TestButtonEnabled" type="xsd:boolean" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="AutomaticSummerTimingEnabled" type="xsd:boolean" minOccurs="0" maxOccurs="1" />
       <xsd:element name="AstroGateSunRiseOffset" type="xsd:int" minOccurs="0" maxOccurs="1" />
       <xsd:element name="AstroGateSunSetOffset" type="xsd:int" minOccurs="0" maxOccurs="1" />
       <xsd:sequence>
@@ -140,7 +140,7 @@
         <xsd:element name="RelayLinking" type="tns:RelayMatrix" minOccurs="0" maxOccurs="unbounded" />
       </xsd:sequence>
       <xsd:element name="RelayRefreshing" type="xsd:boolean" minOccurs="0" maxOccurs="1" />
-      <xsd:element name="SummerTimeDetails" type="xsd:dateTime" minOccurs="0" maxOccurs="1" >
+      <xsd:element name="SummerTimeDetails" type="xsd:dateTime" minOccurs="0" maxOccurs="1">
         <xsd:annotation>
           <xsd:documentation>Start of DST / SummerTime. Last Sunday of March for Europe.</xsd:documentation>
         </xsd:annotation>
@@ -217,9 +217,9 @@
     <xsd:sequence>
       <xsd:element name="Index">
         <xsd:annotation>
-	       <xsd:documentation>
-	          The Index is the external id of a device output setting. This is the index used by the end user and in SOAP messages.
-           </xsd:documentation>
+          <xsd:documentation>
+            The Index is the external id of a device output setting. This is the index used by the end user and in SOAP messages.
+          </xsd:documentation>
         </xsd:annotation>
         <xsd:simpleType>
           <xsd:restriction base="xsd:int">
@@ -230,9 +230,9 @@
       </xsd:element>
       <xsd:element name="Address">
         <xsd:annotation>
-	       <xsd:documentation>
-	               The Address is the internal id of a device output setting. This is the index of the relay that is actually switched.
-           </xsd:documentation>
+          <xsd:documentation>
+            The Address is the internal id of a device output setting. This is the index of the relay that is actually switched.
+          </xsd:documentation>
         </xsd:annotation>
         <xsd:simpleType>
           <xsd:restriction base="xsd:int">
@@ -272,10 +272,11 @@
       <xsd:element name="MasterRelayIndex" type="tns:RelayMatrixIndex" minOccurs="1" maxOccurs="1" />
       <xsd:element name="MasterRelayOn" type="xsd:boolean" minOccurs="1" maxOccurs="1" />
       <xsd:sequence>
-        <xsd:element name="IndicesOfControlledRelaysOn" type="tns:RelayMatrixIndex" minOccurs="0" maxOccurs="4"/>
+        <xsd:element name="IndicesOfControlledRelaysOn" type="tns:RelayMatrixIndex" minOccurs="0" maxOccurs="4" />
       </xsd:sequence>
       <xsd:sequence>
-        <xsd:element name="IndicesOfControlledRelaysOff" type="tns:RelayMatrixIndex" minOccurs="0" maxOccurs="4" />
+        <xsd:element name="IndicesOfControlledRelaysOff" type="tns:RelayMatrixIndex" minOccurs="0"
+          maxOccurs="4" />
       </xsd:sequence>
     </xsd:sequence>
   </xsd:complexType>
@@ -297,15 +298,23 @@
 
   <xsd:simpleType name="IPType">
     <xsd:restriction base="xsd:string">
-      <xsd:pattern
-        value="((1?[0-9]?[0-9]|2[0-4][0-9]|25[0-5]).){3}(1?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])" />
+      <xsd:pattern value="((1?[0-9]?[0-9]|2[0-4][0-9]|25[0-5]).){3}(1?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])" />
     </xsd:restriction>
   </xsd:simpleType>
-  
-    <xsd:simpleType name="ConfigurationBank">
+
+  <xsd:simpleType name="ConfigurationBank">
     <xsd:restriction base="xsd:int">
       <xsd:minInclusive value="0" />
       <xsd:maxInclusive value="1" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="CommonName">
+    <xsd:restriction base="xsd:normalizedString">
+      <xsd:minLength value="1" />
+      <xsd:maxLength value="25" />
+      <!-- This regex pattern will match any word or words separated by spaces. The total length of the string may be 25. -->
+      <xsd:pattern value="[\w\s]{1,25}" />
     </xsd:restriction>
   </xsd:simpleType>
 </xsd:schema>
