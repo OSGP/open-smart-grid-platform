@@ -75,16 +75,16 @@ public class Iec61850SetConfigurationCommand {
 
                 // Checking to see if all register values are null, so that we
                 // don't read the values for no reason.
-                if (!(configuration.getOspgIpAddress() == null && configuration.getOsgpPortNumber() == null)) {
+                if (!(configuration.getOsgpIpAddres() == null && configuration.getOsgpPortNumber() == null)) {
 
                     final NodeContainer registration = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
                             LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.REGISTRATION, Fc.CF);
                     iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
                             registration.getFcmodelNode());
 
-                    if (configuration.getOspgIpAddress() != null) {
-                        LOGGER.info("Updating OspgIpAddress to {}", configuration.getOspgIpAddress());
-                        registration.writeString(SubDataAttribute.SERVER_ADDRESS, configuration.getOspgIpAddress());
+                    if (configuration.getOsgpIpAddres() != null) {
+                        LOGGER.info("Updating OspgIpAddress to {}", configuration.getOsgpIpAddres());
+                        registration.writeString(SubDataAttribute.SERVER_ADDRESS, configuration.getOsgpIpAddres());
                     }
 
                     if (configuration.getOsgpPortNumber() != null) {
