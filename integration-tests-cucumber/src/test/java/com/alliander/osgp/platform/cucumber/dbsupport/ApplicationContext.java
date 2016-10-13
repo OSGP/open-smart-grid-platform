@@ -7,13 +7,10 @@
  */
 package com.alliander.osgp.platform.cucumber.dbsupport;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import com.alliander.osgp.platform.cucumber.ApplicationConfig;
 
 /**
  * An application context Java configuration class. The usage of Java
@@ -29,6 +26,4 @@ import com.alliander.osgp.platform.cucumber.ApplicationConfig;
 @Component
 public class ApplicationContext {
 
-    @Autowired
-    private ApplicationConfig applicationConfig;
 }

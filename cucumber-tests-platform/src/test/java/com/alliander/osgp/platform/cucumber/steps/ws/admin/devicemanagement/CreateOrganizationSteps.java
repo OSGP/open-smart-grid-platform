@@ -25,7 +25,12 @@ import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
  */
 public class CreateOrganizationSteps extends AdminStepsBase {
     
-    private static final String TEST_SUITE = "DeviceManagement";
+    protected CreateOrganizationSteps() throws Throwable {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	private static final String TEST_SUITE = "DeviceManagement";
     private static final String TEST_CASE_NAME = "AT Create a new organization";
     private static final String TEST_CASE_NAME_REQUEST = "CreateOrganization";
     private static final String TEST_CASE_UNAUTHORIZED_NAME_REQUEST = "CreateOrganizationAsUnAuthorizedOrganization";

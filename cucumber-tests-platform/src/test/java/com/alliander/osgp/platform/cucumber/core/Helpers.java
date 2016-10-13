@@ -85,10 +85,10 @@ public class Helpers {
     }
 
     /**
-     *
-     * @param settings
-     * @param key
-     * @param defaultValue
+     * Get the boolean value of the given key in the settings. If it didn't exist return the defaultValue.
+     * @param settings The settings to get the value from.
+     * @param key The key to get the boolean from.
+     * @param defaultValue The default value if the key wasn't found.
      * @return
      */
     public static Boolean getBoolean(final Map<String, String> settings, final String key, final Boolean defaultValue) {
@@ -96,12 +96,7 @@ public class Helpers {
             return defaultValue;
         }
 
-        final Boolean value = Boolean.parseBoolean(settings.get(key));
-        if (value != null) {
-            return value;
-        } else {
-            return defaultValue;
-        }
+        return Boolean.parseBoolean(settings.get(key));
     }
 
     /**

@@ -36,10 +36,5 @@ public abstract class SmartMeteringStepsBase extends SoapUiRunner {
             final String testCaseNameRequest, final String testCaseXml, final String testSuiteXml) throws Throwable {
 
         super.requestRunner(testStepStatus, propertiesMap, testCaseNameRequest, testCaseXml, testSuiteXml);
-
-        // Save the returned CorrelationUid in the Scenario related context for further use.
-        saveCorrelationUidInScenarioContext(
-            this.runXpathResult.getValue(this.response, PATH_CORRELATION_UID),
-            getString(propertiesMap, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
     }
 }

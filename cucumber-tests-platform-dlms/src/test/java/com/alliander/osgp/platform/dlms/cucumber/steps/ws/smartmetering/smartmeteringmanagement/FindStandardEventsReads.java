@@ -3,6 +3,9 @@
  */
 package com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.smartmeteringmanagement;
 
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
+import static com.alliander.osgp.platform.cucumber.core.Helpers.saveCorrelationUidInScenarioContext;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -10,6 +13,7 @@ import java.util.Map;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.EventLogCategory;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.EventType;
+import com.alliander.osgp.platform.cucumber.steps.Defaults;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -34,6 +38,11 @@ public class FindStandardEventsReads extends AbstractFindEventsReads {
     @Override
     public void receivingAFindStandardEventsRequest(final Map<String, String> requestData) throws Throwable {
         super.receivingAFindStandardEventsRequest(requestData);
+
+        // Save the returned CorrelationUid in the Scenario related context for further use.
+        saveCorrelationUidInScenarioContext(
+            this.runXpathResult.getValue(this.response, PATH_CORRELATION_UID),
+            getString(PROPERTIES_MAP, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
     }
 
     @Then("^standard events should be returned$")

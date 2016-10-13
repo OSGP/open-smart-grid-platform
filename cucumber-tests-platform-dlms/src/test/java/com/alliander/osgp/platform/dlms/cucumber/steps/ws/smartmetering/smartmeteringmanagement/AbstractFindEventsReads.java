@@ -46,7 +46,7 @@ public abstract class AbstractFindEventsReads extends SmartMeteringStepsBase {
     public void eventsShouldBeReturned() throws Throwable {
         PROPERTIES_MAP.put(CORRELATION_UID_LABEL, ScenarioContext.Current().get("CorrelationUid").toString());
 
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE + this.getEventLogCategory(), TEST_CASE_XML, TEST_SUITE_XML);
+        this.waitForResponse(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE + this.getEventLogCategory(), TEST_CASE_XML, TEST_SUITE_XML);
 
         this.checkResponse(this.getAllowedEventTypes());
     }
