@@ -88,6 +88,6 @@
 
 		<!-- obsolete but yet in because the cucumber-tests-platform-dlms project 
 			is not yet working well -->
-		<module>integration-tests-cucumber</module>
+		<!--module>integration-tests-cucumber</module-->
 	</modules>
 </project>
