@@ -48,15 +48,16 @@ public class DeviceSteps {
     public static String DEFAULT_DEVICE_TYPE = "OSLP";
     public static String DEFAULT_PROTOCOL = "OSLP";
     public static String DEFAULT_PROTOCOL_VERSION = "1.0";
-    private Long DEFAULT_DEVICE_ID = new java.util.Random().nextLong();
-    private Boolean DEFAULT_IS_ACTIVATED = true;
-    private Boolean DEFAULT_ACTIVE = true;
-    private String DEFAULT_ALIAS = "";
-    private String DEFAULT_CONTAINER_CITY = "";
-    private String DEFAULT_CONTAINER_POSTALCODE = "";
-    private String DEFAULT_CONTAINER_STREET = "";
-    private String DEFAULT_CONTAINER_NUMBER = "";
-    private String DEFAULT_CONTAINER_MUNICIPALITY = "";
+    @SuppressWarnings("unused")
+	private Long DEFAULT_DEVICE_ID = new java.util.Random().nextLong();
+    private static Boolean DEFAULT_IS_ACTIVATED = true;
+    private static Boolean DEFAULT_ACTIVE = true;
+    private static String DEFAULT_ALIAS = "";
+    private static String DEFAULT_CONTAINER_CITY = "";
+    private static String DEFAULT_CONTAINER_POSTALCODE = "";
+    private static String DEFAULT_CONTAINER_STREET = "";
+    private static String DEFAULT_CONTAINER_NUMBER = "";
+    private static String DEFAULT_CONTAINER_MUNICIPALITY = "";
     private Float DEFAULT_LATITUDE = new Float(0);
     private Float DEFAULT_LONGITUDE = new Float(0);
 
@@ -119,7 +120,7 @@ public class DeviceSteps {
     private void updateDevice(Device device, final Map<String, String> settings) {
 
         // Now set the optional stuff
-        device.setActivated(getBoolean(settings, "IsActivated", this.DEFAULT_IS_ACTIVATED));
+        device.setActivated(getBoolean(settings, "IsActivated", DEFAULT_IS_ACTIVATED));
         device.setTechnicalInstallationDate(getDate(settings, "TechnicalInstallationDate").toDate());
 
         final DeviceModel deviceModel = this.deviceModelRepository
@@ -135,16 +136,16 @@ public class DeviceSteps {
                 getString(settings, "DeviceType", DeviceSteps.DEFAULT_DEVICE_TYPE));
 
         device.setVersion(getLong(settings, "Version"));
-        device.setActive(getBoolean(settings, "Active", this.DEFAULT_ACTIVE));
+        device.setActive(getBoolean(settings, "Active", DEFAULT_ACTIVE));
         device.addOrganisation(getString(settings, "Organization", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
-        device.updateMetaData(getString(settings, "alias", this.DEFAULT_ALIAS),
-                getString(settings, "containerCity", this.DEFAULT_CONTAINER_CITY),
-                getString(settings, "containerPostalCode", this.DEFAULT_CONTAINER_POSTALCODE),
-                getString(settings, "containerStreet", this.DEFAULT_CONTAINER_STREET),
-                getString(settings, "containerNumber", this.DEFAULT_CONTAINER_NUMBER),
-                getString(settings, "containerMunicipality", this.DEFAULT_CONTAINER_MUNICIPALITY),
-                getFloat(settings, "gpsLatitude", this.DEFAULT_LATITUDE),
-                getFloat(settings, "gpsLongitude", this.DEFAULT_LONGITUDE));
+        device.updateMetaData(getString(settings, "alias", DEFAULT_ALIAS),
+                getString(settings, "containerCity", DEFAULT_CONTAINER_CITY),
+                getString(settings, "containerPostalCode", DEFAULT_CONTAINER_POSTALCODE),
+                getString(settings, "containerStreet", DEFAULT_CONTAINER_STREET),
+                getString(settings, "containerNumber", DEFAULT_CONTAINER_NUMBER),
+                getString(settings, "containerMunicipality", DEFAULT_CONTAINER_MUNICIPALITY),
+                getFloat(settings, "gpsLatitude", DEFAULT_LATITUDE),
+                getFloat(settings, "gpsLongitude", DEFAULT_LONGITUDE));
 
         device = this.deviceRepository.save(device);
 

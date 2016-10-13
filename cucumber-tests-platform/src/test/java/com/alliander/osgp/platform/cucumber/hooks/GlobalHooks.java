@@ -36,7 +36,7 @@ public class GlobalHooks {
                 }
             });
 
-            // TODO: Do the global stuff which has to be executed only once here.
+            // Do the global stuff which has to be executed only once here.
         	databaseSteps.prepareDatabaseForTestRun();
 
             executedOnce = true;

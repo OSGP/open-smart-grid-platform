@@ -298,7 +298,6 @@
   <dependency>
     <groupId>org.fitnesse</groupId>
     <artifactId>fitnesse</artifactId>
-    <version>20121220</version>
     <scope>runtime</scope>
   </dependency>
 

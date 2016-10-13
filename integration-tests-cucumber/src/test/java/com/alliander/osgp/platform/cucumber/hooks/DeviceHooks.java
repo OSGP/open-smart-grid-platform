@@ -24,9 +24,6 @@ import com.alliander.osgp.platform.cucumber.ApplicationConfig;
 public class DeviceHooks {
 
     @Autowired
-    private ApplicationConfig applicationConfig;
-
-    @Autowired
     private DeviceRepository deviceRepository;
 
     public void deactivateDevice(final String deviceId) {
