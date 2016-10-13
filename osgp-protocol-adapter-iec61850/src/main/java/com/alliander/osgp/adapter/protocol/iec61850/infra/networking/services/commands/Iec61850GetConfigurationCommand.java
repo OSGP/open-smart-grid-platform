@@ -49,7 +49,7 @@ public class Iec61850GetConfigurationCommand {
 
     public ConfigurationDto getConfigurationFromDevice(final Iec61850Client iec61850Client,
             final DeviceConnection deviceConnection, final Ssld ssld, final Iec61850Mapper mapper)
-                    throws ProtocolAdapterException {
+            throws ProtocolAdapterException {
         final Function<ConfigurationDto> function = new Function<ConfigurationDto>() {
 
             @Override
@@ -114,7 +114,7 @@ public class Iec61850GetConfigurationCommand {
                 final String serverAddress = registration.getString(SubDataAttribute.SERVER_ADDRESS);
                 final int serverPort = registration.getInteger(SubDataAttribute.SERVER_PORT).getValue();
 
-                configuration.setOspgIpAddress(serverAddress);
+                configuration.setOsgpIpAddress(serverAddress);
                 configuration.setOsgpPortNumber(serverPort);
 
                 // getting the IP configuration values
