@@ -12,11 +12,11 @@ import java.util.Collections;
 import java.util.List;
 
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,7 +84,7 @@ public class GetAssociationLnObjectsCommandExecutor extends AbstractCommandExecu
     }
 
     @Override
-    public AssociationLnListTypeDto execute(final DlmsConnection conn, final DlmsDevice device, final Void object)
+    public AssociationLnListTypeDto execute(final DeviceConnector conn, final DlmsDevice device, final Void object)
             throws ProtocolAdapterException {
 
         final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
@@ -92,7 +92,7 @@ public class GetAssociationLnObjectsCommandExecutor extends AbstractCommandExecu
         LOGGER.debug("Retrieving Association LN objects for class id: {}, obis code: {}, attribute id: {}", CLASS_ID,
                 OBIS_CODE, ATTRIBUTE_ID);
 
-        final List<GetResult> getResultList = this.dlmsHelperService.getAndCheck(conn, device,
+        final List<GetResult> getResultList = this.dlmsHelperService.getAndCheck(conn.connection(), device,
                 "Association LN Objects", attributeAddress);
 
         final DataObject resultData = getResultList.get(0).getResultData();

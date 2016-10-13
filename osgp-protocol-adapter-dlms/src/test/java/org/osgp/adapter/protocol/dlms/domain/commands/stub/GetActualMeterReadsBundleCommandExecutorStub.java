@@ -7,8 +7,8 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands.stub;
 
-import org.openmuc.jdlms.DlmsConnection;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
@@ -17,7 +17,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 public class GetActualMeterReadsBundleCommandExecutorStub extends AbstractCommandExecutorStub {
 
     @Override
-    public ActionResponseDto executeBundleAction(final DlmsConnection conn, final DlmsDevice device,
+    public ActionResponseDto executeBundleAction(final DeviceConnector conn, final DlmsDevice device,
             final ActionRequestDto actionRequestDto) throws ProtocolAdapterException {
         return this.doExecute(conn, device, actionRequestDto);
     }

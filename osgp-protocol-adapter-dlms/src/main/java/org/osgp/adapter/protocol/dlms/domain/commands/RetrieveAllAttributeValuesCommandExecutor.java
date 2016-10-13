@@ -18,6 +18,7 @@ import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -69,7 +70,7 @@ public class RetrieveAllAttributeValuesCommandExecutor extends AbstractCommandEx
     }
 
     @Override
-    public String execute(final DlmsConnection conn, final DlmsDevice device, final DataObject object)
+    public String execute(final DeviceConnector conn, final DlmsDevice device, final DataObject object)
             throws ProtocolAdapterException {
 
         final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
@@ -77,7 +78,7 @@ public class RetrieveAllAttributeValuesCommandExecutor extends AbstractCommandEx
         LOGGER.debug("Retrieving all attribute values for class id: {}, obis code: {}, attribute id: {}", CLASS_ID,
                 OBIS_CODE, ATTRIBUTE_ID);
 
-        final DataObject objectList = this.dlmsHelper.getAttributeValue(conn, attributeAddress);
+        final DataObject objectList = this.dlmsHelper.getAttributeValue(conn.connection(), attributeAddress);
 
         if (!objectList.isComplex()) {
             this.throwUnexpectedTypeProtocolAdapterException();
@@ -88,7 +89,7 @@ public class RetrieveAllAttributeValuesCommandExecutor extends AbstractCommandEx
         this.logAllObisCodes(allObisCodes);
 
         try {
-            final String output = this.createOutput(conn, allObisCodes);
+            final String output = this.createOutput(conn.connection(), allObisCodes);
 
             LOGGER.debug("Total output is: {}", output);
 

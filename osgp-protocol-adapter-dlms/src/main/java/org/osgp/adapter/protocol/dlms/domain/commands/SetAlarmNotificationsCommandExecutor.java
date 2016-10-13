@@ -21,6 +21,7 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -71,11 +72,11 @@ public class SetAlarmNotificationsCommandExecutor extends
     }
 
     @Override
-    public AccessResultCode execute(final DlmsConnection conn, final DlmsDevice device,
+    public AccessResultCode execute(final DeviceConnector conn, final DlmsDevice device,
             final AlarmNotificationsDto alarmNotifications) throws ProtocolAdapterException {
 
         try {
-            final AlarmNotificationsDto alarmNotificationsOnDevice = this.retrieveCurrentAlarmNotifications(conn);
+            final AlarmNotificationsDto alarmNotificationsOnDevice = this.retrieveCurrentAlarmNotifications(conn.connection());
 
             LOGGER.info("Alarm Filter on device before setting notifications: {}", alarmNotificationsOnDevice);
 
@@ -84,7 +85,7 @@ public class SetAlarmNotificationsCommandExecutor extends
 
             LOGGER.info("Modified Alarm Filter long value for device: {}", alarmFilterLongValue);
 
-            return this.writeUpdatedAlarmNotifications(conn, alarmFilterLongValue);
+            return this.writeUpdatedAlarmNotifications(conn.connection(), alarmFilterLongValue);
         } catch (IOException | TimeoutException e) {
             throw new ConnectionException(e);
         }

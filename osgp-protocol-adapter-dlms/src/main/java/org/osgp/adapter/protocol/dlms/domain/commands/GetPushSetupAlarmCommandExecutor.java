@@ -10,10 +10,10 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 import java.util.List;
 
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,12 +41,12 @@ public class GetPushSetupAlarmCommandExecutor extends GetPushSetupCommandExecuto
     private DlmsHelperService dlmsHelperService;
 
     @Override
-    public PushSetupAlarmDto execute(final DlmsConnection conn, final DlmsDevice device, final Void useless)
+    public PushSetupAlarmDto execute(final DeviceConnector conn, final DlmsDevice device, final Void useless)
             throws ProtocolAdapterException {
 
         LOGGER.info("Retrieving Push Setup Alarm");
 
-        final List<GetResult> getResultList = this.dlmsHelperService.getWithList(conn, device, ATTRIBUTE_ADDRESSES);
+        final List<GetResult> getResultList = this.dlmsHelperService.getWithList(conn.connection(), device, ATTRIBUTE_ADDRESSES);
 
         GetPushSetupCommandExecutor.checkResultList(getResultList, ATTRIBUTE_ADDRESSES);
 

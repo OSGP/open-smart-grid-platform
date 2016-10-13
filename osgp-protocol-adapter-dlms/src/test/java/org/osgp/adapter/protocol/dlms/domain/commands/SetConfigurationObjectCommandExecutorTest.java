@@ -30,13 +30,13 @@ import org.mockito.internal.util.reflection.Whitebox;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.BitString;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagDto;
@@ -68,7 +68,7 @@ public class SetConfigurationObjectCommandExecutorTest {
     }
 
     @Mock
-    private DlmsConnection connMock;
+    private DeviceConnector connMock;
 
     @Mock
     private List<GetResult> getResultListMock;
@@ -120,7 +120,7 @@ public class SetConfigurationObjectCommandExecutorTest {
 
         final List<AccessResultCode> accessResultCodeList =  new ArrayList<>();
         accessResultCodeList.add(AccessResultCode.SUCCESS);
-        when(this.connMock.set(eq(false), Matchers.anyListOf(SetParameter.class))).thenReturn(accessResultCodeList);
+        when(this.connMock.connection().set(eq(false), Matchers.anyListOf(SetParameter.class))).thenReturn(accessResultCodeList);
 
         final DlmsDevice device = this.getDlmsDevice();
         final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
@@ -154,10 +154,10 @@ public class SetConfigurationObjectCommandExecutorTest {
     }
 
     private void mockRetrievalOfCurrentConfigurationObject() throws IOException, TimeoutException, DecoderException {
-        when(this.connMock.get(eq(false), Matchers.anyListOf(AttributeAddress.class))).thenReturn(this.getResultListMock);
-        when(this.connMock.get(eq(false), Matchers.any(AttributeAddress.class))).thenReturn(this.getResultMock);
-        when(this.connMock.get(eq(Matchers.anyListOf(AttributeAddress.class)))).thenReturn(this.getResultListMock);
-        when(this.connMock.get(eq(Matchers.any(AttributeAddress.class)))).thenReturn(this.getResultMock);
+        when(this.connMock.connection().get(eq(false), Matchers.anyListOf(AttributeAddress.class))).thenReturn(this.getResultListMock);
+        when(this.connMock.connection().get(eq(false), Matchers.any(AttributeAddress.class))).thenReturn(this.getResultMock);
+        when(this.connMock.connection().get(eq(Matchers.anyListOf(AttributeAddress.class)))).thenReturn(this.getResultListMock);
+        when(this.connMock.connection().get(eq(Matchers.any(AttributeAddress.class)))).thenReturn(this.getResultMock);
 
         when(this.getResultMock.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
         when(this.getResultMock.getResultData()).thenReturn(this.resultDataObjectMock);

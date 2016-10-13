@@ -7,9 +7,9 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands.stub;
 
-import org.openmuc.jdlms.DlmsConnection;
 import org.osgp.adapter.protocol.dlms.domain.commands.CommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
@@ -21,7 +21,7 @@ public abstract class AbstractCommandExecutorStub implements CommandExecutor<Obj
     private ProtocolAdapterException protocolAdapterException;
     private RuntimeException runtimeException;
 
-    protected ActionResponseDto doExecute(final DlmsConnection conn, final DlmsDevice device,
+    protected ActionResponseDto doExecute(final DeviceConnector conn, final DlmsDevice device,
             final ActionRequestDto object) throws ProtocolAdapterException {
 
         if (this.runtimeException != null) {
@@ -70,8 +70,8 @@ public abstract class AbstractCommandExecutorStub implements CommandExecutor<Obj
     }
 
     @Override
-    public Object execute(final DlmsConnection conn, final DlmsDevice device, final Object object)
+    public Object execute(final DeviceConnector conn, final DlmsDevice device, final Object object)
             throws ProtocolAdapterException {
-        throw new AssertionError("execute(DlmsConnection, DlmsDevice, Object) called by " + this.getClass().getName());
+        throw new AssertionError("execute(DeviceConnector, DlmsDevice, Object) called by " + this.getClass().getName());
     }
 }

@@ -10,10 +10,10 @@ package org.osgp.adapter.protocol.dlms.application.services;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openmuc.jdlms.DlmsConnection;
 import org.osgp.adapter.protocol.dlms.domain.commands.CommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.CommandExecutorMap;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -40,7 +40,7 @@ public class BundleService {
     @Autowired
     private CommandExecutorMap bundleCommandExecutorMap;
 
-    public BundleMessagesRequestDto callExecutors(final DlmsConnection conn, final DlmsDevice device,
+    public BundleMessagesRequestDto callExecutors(final DeviceConnector conn, final DlmsDevice device,
             final BundleMessagesRequestDto bundleMessagesRequest) {
 
         final List<ActionDto> actionList = bundleMessagesRequest.getActionList();

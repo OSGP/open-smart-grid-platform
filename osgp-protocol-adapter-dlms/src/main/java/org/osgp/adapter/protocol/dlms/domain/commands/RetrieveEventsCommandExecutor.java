@@ -16,13 +16,13 @@ import java.util.List;
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.application.mapping.DataObjectToEventListConverter;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -77,7 +77,7 @@ public class RetrieveEventsCommandExecutor extends AbstractCommandExecutor<FindE
     }
 
     @Override
-    public List<EventDto> execute(final DlmsConnection conn, final DlmsDevice device,
+    public List<EventDto> execute(final DeviceConnector conn, final DlmsDevice device,
             final FindEventsRequestDto findEventsQuery) throws ProtocolAdapterException {
 
         final SelectiveAccessDescription selectiveAccessDescription = this.getSelectiveAccessDescription(
@@ -89,7 +89,7 @@ public class RetrieveEventsCommandExecutor extends AbstractCommandExecutor<FindE
 
         GetResult getResult;
         try {
-            getResult = conn.get(eventLogBuffer);
+            getResult = conn.connection().get(eventLogBuffer);
         } catch (final IOException e) {
             throw new ConnectionException(e);
         }

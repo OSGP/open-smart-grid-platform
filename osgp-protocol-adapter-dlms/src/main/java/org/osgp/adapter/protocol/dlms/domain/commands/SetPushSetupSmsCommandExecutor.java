@@ -11,11 +11,11 @@ import java.io.IOException;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -55,14 +55,14 @@ public class SetPushSetupSmsCommandExecutor extends SetPushSetupCommandExecutor<
     }
 
     @Override
-    public AccessResultCode execute(final DlmsConnection conn, final DlmsDevice device,
+    public AccessResultCode execute(final DeviceConnector conn, final DlmsDevice device,
             final PushSetupSmsDto pushSetupSms) throws ProtocolAdapterException {
 
         final SetParameter setParameterSendDestinationAndMethod = this.getSetParameter(pushSetupSms);
 
         AccessResultCode resultCode;
         try {
-            resultCode = conn.set(setParameterSendDestinationAndMethod);
+            resultCode = conn.connection().set(setParameterSendDestinationAndMethod);
         } catch (final IOException e) {
             throw new ConnectionException(e);
         }

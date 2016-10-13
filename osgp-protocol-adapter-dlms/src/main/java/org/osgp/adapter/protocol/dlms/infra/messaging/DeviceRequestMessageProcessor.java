@@ -14,9 +14,9 @@ import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.openmuc.jdlms.DlmsConnection;
 import org.osgp.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
 import org.osgp.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -115,7 +115,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         LOGGER.debug("Processing {} request message", this.deviceRequestMessageType.name());
         final DlmsDeviceMessageMetadata messageMetadata = new DlmsDeviceMessageMetadata();
 
-        DlmsConnection conn = null;
+        DeviceConnector conn = null;
         DlmsDevice device = null;
 
         final boolean isScheduled = message.propertyExists(Constants.IS_SCHEDULED)
@@ -166,7 +166,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
      * queue. This response object can also be null for methods that don't
      * provide result data.
      *
-     * @param DlmsConnection
+     * @param DeviceConnector
      *            the connection to the device.
      * @param device
      *            the device.
@@ -177,7 +177,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
      * @throws ProtocolAdapterException
      * @throws SessionProviderException
      */
-    protected Serializable handleMessage(final DlmsConnection conn, final DlmsDevice device,
+    protected Serializable handleMessage(final DeviceConnector conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
         throw new UnsupportedOperationException(
                 "handleMessage(DlmsConnection, DlmsDevice, Serializable) should be overriden by a subclass, or usesDeviceConnection should return false.");

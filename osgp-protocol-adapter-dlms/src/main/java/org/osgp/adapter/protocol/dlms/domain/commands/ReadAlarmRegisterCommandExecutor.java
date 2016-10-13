@@ -16,6 +16,7 @@ import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -62,9 +63,9 @@ public class ReadAlarmRegisterCommandExecutor extends
     }
 
     @Override
-    public AlarmRegisterResponseDto execute(final DlmsConnection conn, final DlmsDevice device,
+    public AlarmRegisterResponseDto execute(final DeviceConnector conn, final DlmsDevice device,
             final ReadAlarmRegisterRequestDto object) throws ProtocolAdapterException {
-        return new AlarmRegisterResponseDto(this.retrieveAlarmRegister(conn));
+        return new AlarmRegisterResponseDto(this.retrieveAlarmRegister(conn.connection()));
     }
 
     private Set<AlarmTypeDto> retrieveAlarmRegister(final DlmsConnection conn) throws ProtocolAdapterException {

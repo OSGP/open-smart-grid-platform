@@ -22,7 +22,6 @@ import org.osgp.adapter.protocol.dlms.application.threads.RecoverKeyProcessIniti
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
-import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,18 +44,15 @@ public class Hls5Connector {
 
     private final RecoverKeyProcessInitiator recoverKeyProcessInitiator;
 
-    private final DlmsDeviceRepository dlmsDeviceRepository;
 
     private DlmsDevice device;
 
     @Autowired
     private EncryptionService encryptionService;
 
-    public Hls5Connector(final RecoverKeyProcessInitiator recoverKeyProcessInitiator,
-            final DlmsDeviceRepository dlmsDeviceRepository, final int responseTimeout, final int logicalDeviceAddress,
+    public Hls5Connector(final RecoverKeyProcessInitiator recoverKeyProcessInitiator, final int responseTimeout, final int logicalDeviceAddress,
             final int clientAccessPoint) {
         this.recoverKeyProcessInitiator = recoverKeyProcessInitiator;
-        this.dlmsDeviceRepository = dlmsDeviceRepository;
         this.responseTimeout = responseTimeout;
         this.logicalDeviceAddress = logicalDeviceAddress;
         this.clientAccessPoint = clientAccessPoint;

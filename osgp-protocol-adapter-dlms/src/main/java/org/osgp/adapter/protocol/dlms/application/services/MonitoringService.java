@@ -9,13 +9,13 @@ package org.osgp.adapter.protocol.dlms.application.services;
 
 import java.io.Serializable;
 
-import org.openmuc.jdlms.DlmsConnection;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetActualMeterReadsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetActualMeterReadsGasCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsGasCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.ReadAlarmRegisterCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +52,7 @@ public class MonitoringService {
 
     // === REQUEST PERIODIC METER DATA ===
 
-    public Serializable requestPeriodicMeterReads(final DlmsConnection conn, final DlmsDevice device,
+    public Serializable requestPeriodicMeterReads(final DeviceConnector conn, final DlmsDevice device,
             final PeriodicMeterReadsRequestDto periodicMeterReadsQuery) throws ProtocolAdapterException {
 
         Serializable response = null;
@@ -66,7 +66,7 @@ public class MonitoringService {
 
     }
 
-    public Serializable requestActualMeterReads(final DlmsConnection conn, final DlmsDevice device,
+    public Serializable requestActualMeterReads(final DeviceConnector conn, final DlmsDevice device,
             final ActualMeterReadsQueryDto actualMeterReadsRequest) throws ProtocolAdapterException {
 
         Serializable response = null;
@@ -79,7 +79,7 @@ public class MonitoringService {
         return response;
     }
 
-    public AlarmRegisterResponseDto requestReadAlarmRegister(final DlmsConnection conn, final DlmsDevice device,
+    public AlarmRegisterResponseDto requestReadAlarmRegister(final DeviceConnector conn, final DlmsDevice device,
             final ReadAlarmRegisterRequestDto readAlarmRegisterRequest) throws ProtocolAdapterException {
 
         return this.readAlarmRegisterCommandExecutor.execute(conn, device, readAlarmRegisterRequest);

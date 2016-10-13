@@ -12,7 +12,6 @@ import java.io.IOException;
 import javax.inject.Provider;
 import javax.naming.OperationNotSupportedException;
 
-import org.openmuc.jdlms.DlmsConnection;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -37,11 +36,12 @@ public class DlmsConnectionFactory {
      * @throws IOException
      * @throws OperationNotSupportedException
      */
-    public DlmsConnection getConnection(final DlmsDevice device) throws TechnicalException {
+    public DeviceConnector getConnection(final DlmsDevice device) throws TechnicalException {
         if (device.isHls5Active()) {
             final Hls5Connector connector = this.hls5ConnectorProvider.get();
-            connector.setDevice(device);
-            return connector.connect();
+            DeviceConnector connection = new DeviceConnector(connector, device);
+            connection.connect();
+            return connection;
         } else {
             throw new UnsupportedOperationException("Only HLS 5 connections are currently supported");
         }

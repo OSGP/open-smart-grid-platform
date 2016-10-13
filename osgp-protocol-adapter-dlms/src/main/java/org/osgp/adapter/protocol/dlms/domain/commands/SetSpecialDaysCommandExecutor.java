@@ -13,11 +13,11 @@ import java.util.List;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +61,7 @@ public class SetSpecialDaysCommandExecutor extends AbstractCommandExecutor<List<
     }
 
     @Override
-    public AccessResultCode execute(final DlmsConnection conn, final DlmsDevice device,
+    public AccessResultCode execute(final DeviceConnector conn, final DlmsDevice device,
             final List<SpecialDayDto> specialDays) throws ProtocolAdapterException {
 
         final List<DataObject> specialDayEntries = new ArrayList<>();
@@ -84,7 +84,7 @@ public class SetSpecialDaysCommandExecutor extends AbstractCommandExecutor<List<
         final SetParameter request = new SetParameter(specialDaysTableEntries, entries);
 
         try {
-            return conn.set(request);
+            return conn.connection().set(request);
         } catch (final IOException e) {
             throw new ConnectionException(e);
         }

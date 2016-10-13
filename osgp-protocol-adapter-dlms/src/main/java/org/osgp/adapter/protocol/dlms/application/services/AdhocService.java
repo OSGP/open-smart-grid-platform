@@ -10,12 +10,12 @@ package org.osgp.adapter.protocol.dlms.application.services;
 import java.io.Serializable;
 
 import org.openmuc.jdlms.AccessResultCode;
-import org.openmuc.jdlms.DlmsConnection;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAssociationLnObjectsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetSpecificAttributeValueCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.RetrieveAllAttributeValuesCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SynchronizeTimeCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,7 +41,7 @@ public class AdhocService {
 
     // === REQUEST Synchronize Time DATA ===
 
-    public void synchronizeTime(final DlmsConnection conn, final DlmsDevice device,
+    public void synchronizeTime(final DeviceConnector conn, final DlmsDevice device,
             final SynchronizeTimeRequestDto synchronizeTimeRequestDataDto) throws ProtocolAdapterException {
         final AccessResultCode accessResultCode = this.synchronizeTimeCommandExecutor.execute(conn, device,
                 synchronizeTimeRequestDataDto);
@@ -51,18 +51,18 @@ public class AdhocService {
         }
     }
 
-    public String retrieveAllAttributeValues(final DlmsConnection conn, final DlmsDevice device)
+    public String retrieveAllAttributeValues(final DeviceConnector conn, final DlmsDevice device)
             throws ProtocolAdapterException {
 
         return this.retrieveAllAttributeValuesCommandExecutor.execute(conn, device, null);
     }
 
-    public AssociationLnListTypeDto getAssociationLnObjects(final DlmsConnection conn, final DlmsDevice device)
+    public AssociationLnListTypeDto getAssociationLnObjects(final DeviceConnector conn, final DlmsDevice device)
             throws ProtocolAdapterException {
         return this.getAssociationLnObjectsCommandExecutor.execute(conn, device, null);
     }
 
-    public Serializable getSpecificAttributeValue(final DlmsConnection conn, final DlmsDevice device,
+    public Serializable getSpecificAttributeValue(final DeviceConnector conn, final DlmsDevice device,
             final SpecificAttributeValueRequestDto specificAttributeValueRequestDataDto)
             throws ProtocolAdapterException {
         return this.getSpecificAttributeValueCommandExecutor.execute(conn, device,

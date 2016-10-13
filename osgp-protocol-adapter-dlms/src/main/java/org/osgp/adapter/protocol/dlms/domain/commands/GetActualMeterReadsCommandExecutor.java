@@ -11,10 +11,10 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,7 +100,7 @@ public class GetActualMeterReadsCommandExecutor extends
     }
 
     @Override
-    public MeterReadsResponseDto execute(final DlmsConnection conn, final DlmsDevice device,
+    public MeterReadsResponseDto execute(final DeviceConnector conn, final DlmsDevice device,
             final ActualMeterReadsQueryDto actualMeterReadsQuery) throws ProtocolAdapterException {
 
         if (actualMeterReadsQuery != null && actualMeterReadsQuery.isMbusQuery()) {
@@ -108,7 +108,7 @@ public class GetActualMeterReadsCommandExecutor extends
         }
 
         LOGGER.info("Retrieving actual energy reads");
-        final List<GetResult> getResultList = this.dlmsHelperService.getAndCheck(conn, device,
+        final List<GetResult> getResultList = this.dlmsHelperService.getAndCheck(conn.connection(), device,
                 "retrieve actual meter reads", ATTRIBUTE_ADDRESSES);
 
         final CosemDateTimeDto cosemDateTime = this.dlmsHelperService.readDateTime(getResultList.get(INDEX_TIME),

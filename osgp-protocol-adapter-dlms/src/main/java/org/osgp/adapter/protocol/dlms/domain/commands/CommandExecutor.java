@@ -7,8 +7,8 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
-import org.openmuc.jdlms.DlmsConnection;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
@@ -25,7 +25,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
  */
 public interface CommandExecutor<T, R> {
 
-    R execute(DlmsConnection conn, DlmsDevice device, T object) throws ProtocolAdapterException;
+    R execute(DeviceConnector conn, DlmsDevice device, T object) throws ProtocolAdapterException;
 
     /**
      * If a CommandExecutor gets called from an action that is part of a bundle,
@@ -35,7 +35,7 @@ public interface CommandExecutor<T, R> {
      * @see #fromBundleRequestInput(ActionRequestDto)
      * @see #asBundleResponse(Object)
      */
-    ActionResponseDto executeBundleAction(DlmsConnection conn, DlmsDevice device, ActionRequestDto actionRequestDto)
+    ActionResponseDto executeBundleAction(DeviceConnector conn, DlmsDevice device, ActionRequestDto actionRequestDto)
             throws ProtocolAdapterException;
 
     T fromBundleRequestInput(ActionRequestDto bundleInput) throws ProtocolAdapterException;

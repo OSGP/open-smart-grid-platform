@@ -1,5 +1,6 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -8,14 +9,16 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
+import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
 class ImageTransfer {
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageTransfer.class);
@@ -35,19 +38,42 @@ class ImageTransfer {
     private static final ObisCode OBIS_CODE = new ObisCode("0.0.44.0.0.255");
 
     private final ExecutorService executorService;
+    private final DeviceConnector connector;
     private final String imageIdentifier;
     private final byte[] data;
-    private final CosemObjectAccessor cosemObject;
+    private CosemObjectAccessor cosemObject;
     private int imageBlockSize;
     private boolean imageBlockSizeRead;
 
-    public ImageTransfer(final ExecutorService executor, final DlmsConnection conn, final String imageIdentifier,
-            final byte[] data) {
+    public ImageTransfer(final ExecutorService executor, final DeviceConnector connector, final String imageIdentifier,
+            final byte[] data) throws ProtocolAdapterException {
         this.executorService = executor;
+        this.connector = connector;
         this.imageIdentifier = imageIdentifier;
         this.data = data;
         this.imageBlockSizeRead = false;
-        this.cosemObject = new CosemObjectAccessor(conn, OBIS_CODE, CLASS_ID);
+        
+        this.connect();
+    }
+    
+    private void disconnect() throws ProtocolAdapterException {
+        try {
+            this.connector.disconnect();
+        } catch (IOException e) {
+            throw new ProtocolAdapterException("", e);
+        }
+        this.cosemObject = null;
+    }
+    
+    private void connect() throws ProtocolAdapterException {
+        if (!this.connector.isConnected()) {
+            try {
+                this.connector.connect();
+            } catch (TechnicalException e) {
+                throw new ProtocolAdapterException("", e);
+            }
+        }
+        this.cosemObject = new CosemObjectAccessor(connector.connection(), OBIS_CODE, CLASS_ID);
     }
 
     private int getImageSize() {
@@ -156,11 +182,6 @@ class ImageTransfer {
         
         return true;
     }
-    
-    private boolean isUploadedImage(final byte[] identifier) {
-        // TODO check Image Identifier.
-        return true;
-    }
 
     /**
      * Check image transfer enabled value of the COSEM server.
@@ -194,7 +215,7 @@ class ImageTransfer {
         params.add(DataObject.newOctetStringData(this.imageIdentifier.getBytes()));
         params.add(DataObject.newUInteger32Data(this.getImageSize()));
 
-        MethodResultCode resultCode = this.cosemObject.callMethod(Method.IMAGE_TRANSFER_INITIATE.getValue(), DataObject.newStructureData(params));
+        this.cosemObject.callMethod(Method.IMAGE_TRANSFER_INITIATE.getValue(), DataObject.newStructureData(params));
     }
 
     /**
@@ -297,14 +318,10 @@ class ImageTransfer {
             @SuppressWarnings("unchecked")
             List<DataObject> imageData = (List<DataObject>) image.getValue();
             
-            if (this.isUploadedImage((byte[]) imageData.get(1).getValue())) {
+            if (this.isSignature((byte[]) imageData.get(2).getValue())) {
                 imageWasReturned = true;
                 // Check image_size
                 if ((Long) imageData.get(0).getValue() != this.data.length) {
-                    return false;
-                }
-                // Check image_signature
-                if (!this.isSignature((byte[]) imageData.get(2).getValue())) {
                     return false;
                 }
             }
@@ -329,7 +346,7 @@ class ImageTransfer {
         if (imageActivate == MethodResultCode.TEMPORARY_FAILURE) {
             // TODO there should be a new connection for every check.
             final Future<Integer> newStatus = this.executorService.submit(new ImageTransferStatusChanged(
-                    ImageTransferStatus.ACTIVATION_INITIATED, 10000, 60000));
+                    ImageTransferStatus.ACTIVATION_INITIATED, 60000, 120000, true));
 
             int status;
             try {
@@ -358,19 +375,33 @@ class ImageTransfer {
         private final ImageTransferStatus imageTransferStatus;
         private final int sleep;
         private final int timeout;
-        
+        private final boolean disconnect;
         private int slept = 0;
 
         public ImageTransferStatusChanged(final ImageTransferStatus imageTransferStatus, int sleep, int timeout) {
+            this(imageTransferStatus, sleep, timeout, false);
+        }
+        
+        public ImageTransferStatusChanged(final ImageTransferStatus imageTransferStatus, int sleep, int timeout, boolean disconnect) {
             this.imageTransferStatus = imageTransferStatus;
             this.sleep = sleep;
             this.timeout = timeout;
+            this.disconnect = disconnect;
         }
 
         @Override
         public Integer call() throws Exception {
             int status = 0;
-            while (this.slept < this.timeout && (status = ImageTransfer.this.getImageTransferStatus()) == this.imageTransferStatus.getValue()) {
+            while (this.slept < this.timeout) {
+                status = ImageTransfer.this.getImageTransferStatus();
+                if (status != this.imageTransferStatus.getValue()) {
+                    return status;
+                }
+                
+                if (disconnect) {
+                    ImageTransfer.this.disconnect();
+                }
+                
                 LOGGER.info("Waiting for status change.");
                 int doSleep;
                 if (this.slept + this.sleep < timeout) {
@@ -381,6 +412,10 @@ class ImageTransfer {
                 }
                 Thread.sleep(doSleep);
                 this.slept += doSleep;
+                
+                if (disconnect) {
+                    ImageTransfer.this.connect();
+                }
             }
 
             return status;

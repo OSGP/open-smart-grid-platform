@@ -23,6 +23,7 @@ import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.BitString;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -89,15 +90,15 @@ public class SetConfigurationObjectCommandExecutor extends
     }
 
     @Override
-    public AccessResultCode execute(final DlmsConnection conn, final DlmsDevice device,
+    public AccessResultCode execute(final DeviceConnector conn, final DlmsDevice device,
             final ConfigurationObjectDto configurationObject) throws ProtocolAdapterException {
 
         try {
-            final ConfigurationObjectDto configurationObjectOnDevice = this.retrieveConfigurationObject(conn);
+            final ConfigurationObjectDto configurationObjectOnDevice = this.retrieveConfigurationObject(conn.connection());
 
             final SetParameter setParameter = this.buildSetParameter(configurationObject, configurationObjectOnDevice);
 
-            return conn.set(setParameter);
+            return conn.connection().set(setParameter);
         } catch (IOException | TimeoutException e) {
             throw new ConnectionException(e);
         }

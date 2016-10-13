@@ -20,6 +20,7 @@ import org.openmuc.jdlms.SecurityUtils.KeyId;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
+import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -96,7 +97,7 @@ AbstractCommandExecutor<ReplaceKeyCommandExecutor.KeyWrapper, DlmsDevice> {
     }
 
     @Override
-    public ActionResponseDto executeBundleAction(final DlmsConnection conn, final DlmsDevice device,
+    public ActionResponseDto executeBundleAction(final DeviceConnector conn, final DlmsDevice device,
             final ActionRequestDto actionRequestDto) throws ProtocolAdapterException {
 
         this.checkActionRequestType(actionRequestDto);
@@ -116,14 +117,14 @@ AbstractCommandExecutor<ReplaceKeyCommandExecutor.KeyWrapper, DlmsDevice> {
     }
 
     @Override
-    public DlmsDevice execute(final DlmsConnection conn, final DlmsDevice device,
+    public DlmsDevice execute(final DeviceConnector conn, final DlmsDevice device,
             final ReplaceKeyCommandExecutor.KeyWrapper keyWrapper) throws ProtocolAdapterException {
 
         // Add the new key and store in the repo
         DlmsDevice devicePostSave = this.storeNewKey(device, keyWrapper.getBytes(), keyWrapper.getSecurityKeyType());
 
         // Send the key to the device.
-        this.sendToDevice(conn, devicePostSave, keyWrapper);
+        this.sendToDevice(conn.connection(), devicePostSave, keyWrapper);
 
         // Update key status
         devicePostSave = this.storeNewKeyState(devicePostSave, keyWrapper.getSecurityKeyType());

@@ -8,10 +8,10 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +41,7 @@ AbstractCommandExecutor<SpecificAttributeValueRequestDto, String> {
     }
 
     @Override
-    public String execute(final DlmsConnection conn, final DlmsDevice device,
+    public String execute(final DeviceConnector conn, final DlmsDevice device,
             final SpecificAttributeValueRequestDto requestData) throws ProtocolAdapterException {
 
         final ObisCodeValuesDto obisCodeValues = requestData.getObisCode();
@@ -55,7 +55,7 @@ AbstractCommandExecutor<SpecificAttributeValueRequestDto, String> {
         final AttributeAddress attributeAddress = new AttributeAddress(requestData.getClassId(), obisCode,
                 requestData.getAttribute());
 
-        final DataObject attributeValue = this.dlmsHelper.getAttributeValue(conn, attributeAddress);
+        final DataObject attributeValue = this.dlmsHelper.getAttributeValue(conn.connection(), attributeAddress);
         return this.dlmsHelper.getDebugInfo(attributeValue);
     }
 
