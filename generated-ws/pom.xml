@@ -9,9 +9,9 @@
 
     <parent>
         <groupId>org.osgpfoundation.osgp</groupId>
-        <artifactId>parent-os-demo-app</artifactId>
+        <artifactId>parent-os-webapps</artifactId>
         <version>4.0.0-SNAPSHOT</version>
-        <relativePath>../parent-os-demo-app/pom.xml</relativePath>
+        <relativePath>../parent-os-webapps/pom.xml</relativePath>
     </parent>
 
     <dependencies>
@@ -61,7 +61,6 @@
                             <clearOutputDir>false</clearOutputDir>
                         </configuration>
 		    </execution>
-
                     <execution>
                         <id>public-lighting-ad-hoc-management</id>
                         <goals>
@@ -77,10 +76,7 @@
                             <!-- USE THIS FOR ALL EXECUTIONS EXCEPT THE FIRST -->
                             <clearOutputDir>false</clearOutputDir>
                         </configuration>
-                    </execution>
-
-
-                    
+                    </execution>                    
                 </executions>
             </plugin>
         </plugins>
