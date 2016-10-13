@@ -16,7 +16,7 @@ public class TlsConfigurationValidator implements ConstraintValidator<TlsConfigu
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * javax.validation.ConstraintValidator#initialize(java.lang.annotation.
      * Annotation)
@@ -28,7 +28,7 @@ public class TlsConfigurationValidator implements ConstraintValidator<TlsConfigu
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see javax.validation.ConstraintValidator#isValid(java.lang.Object,
      * javax.validation.ConstraintValidatorContext)
      */
@@ -52,6 +52,9 @@ public class TlsConfigurationValidator implements ConstraintValidator<TlsConfigu
     }
 
     private boolean checkTlsPortNumber(final Integer tlsPortNumber) {
+        if (tlsPortNumber == null) {
+            return true;
+        }
         if (tlsPortNumber > 0 && tlsPortNumber <= 65535) {
             return true;
         }
