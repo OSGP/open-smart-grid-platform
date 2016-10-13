@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
-import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -105,7 +104,7 @@ public class DlmsHelperService {
             throw new ConnectionException(e);
         } catch (final Exception e) {
             throw new ProtocolAdapterException("Error retrieving attribute value for {" + attributeAddress.getClassId()
-            + "," + attributeAddress.getInstanceId().toObisCode() + "," + attributeAddress.getId() + "}.", e);
+                    + "," + attributeAddress.getInstanceId().toObisCode() + "," + attributeAddress.getId() + "}.", e);
         }
     }
 
@@ -166,15 +165,11 @@ public class DlmsHelperService {
             } else {
                 return this.getWithListWorkaround(conn, params);
             }
-        } catch (IOException | TimeoutException e) {
+        } catch (IOException e) {
             throw new ConnectionException(e);
         } catch (final Exception e) {
             throw new ProtocolAdapterException("Error retrieving values with-list.", e);
         }
-    }
-
-    public DataObject getClockDefinition() {
-        return DataObjectDefinitions.getClockDefinition();
     }
 
     /**
@@ -223,21 +218,16 @@ public class DlmsHelperService {
         return new DlmsMeterValueDto(scaledValue, unit);
     }
 
-    public DataObject getAMRProfileDefinition() {
-        return DataObjectDefinitions.getAMRProfileDefinition();
-    }
-
     /**
      * Workaround method mimicking a Get-Request with-list for devices that do
      * not support the actual functionality from DLMS.
      *
      * @throws IOException
-     * @throws TimeoutException
      *
      * @see #getWithList(DlmsConnection, DlmsDevice, AttributeAddress...)
      */
     private List<GetResult> getWithListWorkaround(final DlmsConnection conn, final AttributeAddress... params)
-            throws IOException, TimeoutException {
+            throws IOException {
         final List<GetResult> getResultList = new ArrayList<>();
         for (final AttributeAddress param : params) {
             getResultList.add(conn.get(param));
@@ -732,8 +722,8 @@ public class DlmsHelperService {
         final StringBuilder sb = new StringBuilder();
 
         sb.append("logical name: ").append(logicalNameValue[0] & 0xFF).append('-').append(logicalNameValue[1] & 0xFF)
-        .append(':').append(logicalNameValue[2] & 0xFF).append('.').append(logicalNameValue[3] & 0xFF)
-        .append('.').append(logicalNameValue[4] & 0xFF).append('.').append(logicalNameValue[5] & 0xFF);
+                .append(':').append(logicalNameValue[2] & 0xFF).append('.').append(logicalNameValue[3] & 0xFF)
+                .append('.').append(logicalNameValue[4] & 0xFF).append('.').append(logicalNameValue[5] & 0xFF);
 
         return sb.toString();
     }
@@ -759,10 +749,10 @@ public class DlmsHelperService {
         final int clockStatus = bb.get();
 
         sb.append("year=").append(year).append(", month=").append(monthOfYear).append(", day=").append(dayOfMonth)
-        .append(", weekday=").append(dayOfWeek).append(", hour=").append(hourOfDay).append(", minute=")
-        .append(minuteOfHour).append(", second=").append(secondOfMinute).append(", hundredths=")
-        .append(hundredthsOfSecond).append(", deviation=").append(deviation).append(", clockstatus=")
-        .append(clockStatus);
+                .append(", weekday=").append(dayOfWeek).append(", hour=").append(hourOfDay).append(", minute=")
+                .append(minuteOfHour).append(", second=").append(secondOfMinute).append(", hundredths=")
+                .append(hundredthsOfSecond).append(", deviation=").append(deviation).append(", clockstatus=")
+                .append(clockStatus);
 
         return sb.toString();
     }

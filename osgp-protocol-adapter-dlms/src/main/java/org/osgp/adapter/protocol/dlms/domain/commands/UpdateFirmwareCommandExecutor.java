@@ -1,7 +1,5 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
-import java.util.concurrent.ExecutorService;
-
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
 import org.osgp.adapter.protocol.dlms.domain.factories.FirwareImageFactory;
@@ -19,9 +17,6 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
     @Autowired
     private FirwareImageFactory firmwareImageFactory;
 
-    @Autowired
-    private ExecutorService executorService;
-
     public UpdateFirmwareCommandExecutor() {
         super(UpdateFirmwareRequestDto.class);
     }
@@ -30,14 +25,14 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
     public Boolean execute(final DeviceConnector conn, final DlmsDevice device, final String firmwareIdentification)
             throws ProtocolAdapterException {
 
-        final ImageTransfer transfer = new ImageTransfer(this.executorService, conn, firmwareIdentification,
+        final ImageTransfer transfer = new ImageTransfer(conn, firmwareIdentification,
                 this.getImageData(firmwareIdentification));
 
         try {
             if (!transfer.imageTransferEnabled()) {
                 transfer.setImageTransferEnabled(true);
             }
-            
+
             if (transfer.shouldInitiateTransfer()) {
                 transfer.initiateImageTransfer();
             }
@@ -46,23 +41,23 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
                 transfer.transferImageBlocks();
                 transfer.transferMissingImageBlocks();
             }
-            
+
             if (!transfer.imageIsVerified()) {
                 transfer.verifyImage();
             }
-            
-            if (!transfer.isImageTransferActivated() && transfer.imageIsVerified() && transfer.imageToActivateOk()) {
+
+            if (transfer.imageIsVerified() && transfer.imageToActivateOk()) {
                 transfer.activateImage();
                 transfer.setImageTransferEnabled(false);
                 return true;
-            }
-            else {
+            } else {
                 // Image data is not correct.
+                transfer.setImageTransferEnabled(false);
                 return false;
             }
         } catch (final ProtocolAdapterException e) {
             throw e;
-        } 
+        }
     }
 
     private byte[] getImageData(final String firmwareIdentification) throws ProtocolAdapterException {

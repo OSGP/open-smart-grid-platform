@@ -259,8 +259,11 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
          */
         final List<GetResult> getResultList = new ArrayList<>(profileBufferAndScalerUnit.length);
         for (final AttributeAddress address : profileBufferAndScalerUnit) {
-            getResultList.addAll(this.dlmsHelperService.getAndCheck(conn.connection(), device, "retrieve periodic meter reads for "
-                    + periodType + ", channel " + periodicMeterReadsQuery.getChannel(), address));
+            getResultList.addAll(this.dlmsHelperService.getAndCheck(
+                    conn.connection(),
+                    device,
+                    "retrieve periodic meter reads for " + periodType + ", channel "
+                            + periodicMeterReadsQuery.getChannel(), address));
         }
 
         final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads = new ArrayList<>();
@@ -336,7 +339,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
     private void processNextPeriodicMeterReadsForInterval(
             final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads,
             final List<DataObject> bufferedObjects, final DateTime bufferedDateTime, final List<GetResult> results)
-                    throws ProtocolAdapterException {
+            throws ProtocolAdapterException {
 
         final AmrProfileStatusCodeDto amrProfileStatusCode = this.readAmrProfileStatusCode(bufferedObjects
                 .get(BUFFER_INDEX_AMR_STATUS));
@@ -355,7 +358,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
         final PeriodicMeterReadsGasResponseItemDto nextPeriodicMeterReads = new PeriodicMeterReadsGasResponseItemDto(
                 bufferedDateTime.toDate(), this.dlmsHelperService.getScaledMeterValue(gasValue,
                         results.get(RESULT_INDEX_SCALER_UNIT).getResultData(), GAS_VALUE), captureTime,
-                        amrProfileStatusCode);
+                amrProfileStatusCode);
         periodicMeterReads.add(nextPeriodicMeterReads);
     }
 
@@ -393,7 +396,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
         final PeriodicMeterReadsGasResponseItemDto nextPeriodicMeterReads = new PeriodicMeterReadsGasResponseItemDto(
                 bufferedDateTime.toDate(), this.dlmsHelperService.getScaledMeterValue(gasValue,
                         results.get(RESULT_INDEX_SCALER_UNIT).getResultData(), GAS_VALUE), captureTime,
-                        amrProfileStatusCode);
+                amrProfileStatusCode);
         periodicMeterReads.add(nextPeriodicMeterReads);
     }
 
@@ -449,7 +452,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
 
     private AttributeAddress[] getProfileBufferAndScalerUnit(final PeriodTypeDto periodType, final ChannelDto channel,
             final DateTime beginDateTime, final DateTime endDateTime, final boolean isSelectingValuesSupported)
-                    throws ProtocolAdapterException {
+            throws ProtocolAdapterException {
 
         final SelectiveAccessDescription access = this.getSelectiveAccessDescription(channel, periodType,
                 beginDateTime, endDateTime, isSelectingValuesSupported);
@@ -507,7 +510,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
          * value to determine which elements from the buffered array should be
          * retrieved.
          */
-        final DataObject clockDefinition = this.dlmsHelperService.getClockDefinition();
+        final DataObject clockDefinition = DataObjectDefinitions.getClockDefinition();
         final DataObject fromValue = this.dlmsHelperService.asDataObject(beginDateTime);
         final DataObject toValue = this.dlmsHelperService.asDataObject(endDateTime);
 
@@ -564,7 +567,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
          * {4,0-4.24.2.1.255,5,0}  -  M-Bus Master Value 1 Channel 4 Capture time
          */
 
-        objectDefinitions.add(this.dlmsHelperService.getClockDefinition());
+        objectDefinitions.add(DataObjectDefinitions.getClockDefinition());
 
         this.addMBusMasterValue1(objectDefinitions, channel);
         this.addMBusMasterValue1CaptureTime(objectDefinitions, channel);
@@ -593,9 +596,9 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
          * {4,0-4.24.2.1.255,5,0}  -  M-Bus Master Value 1 Channel 4 Capture time
          */
 
-        objectDefinitions.add(this.dlmsHelperService.getClockDefinition());
+        objectDefinitions.add(DataObjectDefinitions.getClockDefinition());
 
-        objectDefinitions.add(this.dlmsHelperService.getAMRProfileDefinition());
+        objectDefinitions.add(DataObjectDefinitions.getAMRProfileDefinition());
 
         this.addMBusMasterValue1(objectDefinitions, channel);
         this.addMBusMasterValue1CaptureTime(objectDefinitions, channel);
@@ -638,6 +641,6 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
         objectDefinitions.add(DataObject.newStructureData(Arrays.asList(DataObject.newUInteger16Data(CLASS_ID_MBUS),
                 DataObject.newOctetStringData(OBIS_BYTES_M_BUS_MASTER_VALUE_1_CHANNEL_MAP.get(channel
                         .getChannelNumber())), DataObject.newInteger8Data(ATTRIBUTE_M_BUS_MASTER_VALUE_CAPTURE_TIME),
-                        DataObject.newUInteger16Data(0))));
+                DataObject.newUInteger16Data(0))));
     }
 }
