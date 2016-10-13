@@ -21,12 +21,14 @@ import cucumber.api.java.en.When;
 public class FindStandardEventsReads extends AbstractFindEventsReads {
 
     private static final List<EventType> allowed = Collections.unmodifiableList(Arrays.asList(new EventType[] {
-            EventType.EVENTLOG_CLEARED, EventType.POWER_FAILURE, EventType.POWER_RETURNED,
+            EventType.EVENTLOG_CLEARED, EventType.POWER_FAILURE, EventType.POWER_RETURNED, EventType.CLOCK_UPDATE,
             EventType.CLOCK_ADJUSTED_OLD_TIME, EventType.CLOCK_ADJUSTED_NEW_TIME, EventType.CLOCK_INVALID,
             EventType.REPLACE_BATTERY, EventType.BATTERY_VOLTAGE_LOW, EventType.TARIFF_ACTIVATED,
-            EventType.PASSIVE_TARIFF_UPDATED, EventType.ERROR_REGISTER_CLEARED, EventType.ALARM_REGISTER_CLEARED,
-            EventType.WATCHDOG_ERROR, EventType.FIRMWARE_READY_FOR_ACTIVATION, EventType.FIRMWARE_ACTIVATED,
-            EventType.SUCCESSFUL_SELFCHECK_AFTER_FIRMWARE_UPDATE, EventType.CLOCK_UPDATE }));
+            EventType.ERROR_REGISTER_CLEARED, EventType.ALARM_REGISTER_CLEARED, EventType.HARDWARE_ERROR_PROGRAM_MEMORY,
+            EventType.HARDWARE_ERROR_RAM, EventType.HARDWARE_ERROR_NV_MEMORY, EventType.WATCHDOG_ERROR,
+            EventType.HARDWARE_ERROR_MEASUREMENT_SYSTEM, EventType.FIRMWARE_READY_FOR_ACTIVATION,
+            EventType.FIRMWARE_ACTIVATED, EventType.PASSIVE_TARIFF_UPDATED,
+            EventType.SUCCESSFUL_SELFCHECK_AFTER_FIRMWARE_UPDATE }));
 
     @Override
     protected String getEventLogCategory() {
