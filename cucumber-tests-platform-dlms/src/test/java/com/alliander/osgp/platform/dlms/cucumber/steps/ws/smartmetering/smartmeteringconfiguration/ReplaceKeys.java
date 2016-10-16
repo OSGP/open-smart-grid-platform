@@ -36,7 +36,7 @@ public class ReplaceKeys extends SmartMeteringStepsBase {
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_GETRESPONSE_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
 
-        Assert.assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT, Defaults.EXPECTED_RESULT));
+        Assert.assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT, Defaults.EXPECTED_RESULT_OK));
     }
 
     @And("^the new keys are stored in the osgp_adapter_protocol_dlms database security_key table$")

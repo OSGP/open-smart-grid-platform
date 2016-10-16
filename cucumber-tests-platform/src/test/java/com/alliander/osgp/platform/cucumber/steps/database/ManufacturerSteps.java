@@ -7,16 +7,20 @@
  */
 package com.alliander.osgp.platform.cucumber.steps.database;
 
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getBoolean;
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
+
 import java.util.Map;
 
+import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.repositories.ManufacturerRepository;
+import com.alliander.osgp.platform.cucumber.steps.Defaults;
 
 import cucumber.api.java.en.Given;
-import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
-import static com.alliander.osgp.platform.cucumber.core.Helpers.getBoolean;
+import cucumber.api.java.en.Then;
 
 /**
  * The manufacturer related steps.
@@ -45,5 +49,24 @@ public class ManufacturerSteps {
     			getBoolean(settings, "UsePrefix", DEFAULT_USEPREFIX));
 
 		repo.save(entity);
+	}
+    
+    /**
+     * Verify whether the entity is created as expected.
+     * @param expectedEntity
+     * @throws Throwable
+     */
+	@Then("^the entity manufacturer exists$")
+	public void the_entity_manufacturer_exists(final Map<String, String> expectedEntity) throws Throwable {
+		// TODO: Wait until the stuff is created.
+        Manufacturer entity = repo.findByName(
+        		getString(expectedEntity, "Name", Defaults.DEFAULT_MANUFACTURER_NAME));
+
+        Assert.assertEquals(
+        		getString(expectedEntity, "ManufacturerId", Defaults.DEFAULT_MANUFACTURER_ID),
+        		entity.getManufacturerId());
+        Assert.assertEquals(
+        		getBoolean(expectedEntity, "UsesPrefix", Defaults.DEFAULT_MANUFACTURER_USE_PREFIX), 
+        		entity.isUsePrefix());
 	}
 }

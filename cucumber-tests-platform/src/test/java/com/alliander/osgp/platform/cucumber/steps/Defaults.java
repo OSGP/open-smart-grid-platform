@@ -21,9 +21,11 @@ public class Defaults {
 	public static final String DEFAULT_PREFIX = "MAA";
 	public static final String DEFAULT_MANUFACTURER_ID = "Test";
 	public static final String DEFAULT_MANUFACTURER_NAME = "Test Manufacturer";
+	public static final Boolean DEFAULT_MANUFACTURER_USE_PREFIX = false;
 	public static final String DEFAULT_DEVICE_MODEL_MODEL_CODE = "TestModel";
 	public static final String DEFAULT_DEVICE_MODEL_DESCRIPTION = "Test Model";
     public static final String DEFAULT_DEVICE_IDENTIFICATION = "TD01"; // Test Device  01
+	public static final Boolean DEFAULT_DEVICE_MODEL_METERED = true;
 
     // Expected values
     public static final String EXPECTED_RESULT_OK = "OK";
