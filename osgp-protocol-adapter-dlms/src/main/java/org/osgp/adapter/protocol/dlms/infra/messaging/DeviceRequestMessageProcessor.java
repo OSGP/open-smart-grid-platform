@@ -118,8 +118,8 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         DeviceConnector conn = null;
         DlmsDevice device = null;
 
-        final boolean isScheduled = message.propertyExists(Constants.IS_SCHEDULED)
-                ? message.getBooleanProperty(Constants.IS_SCHEDULED) : false;
+        final boolean isScheduled = message.propertyExists(Constants.IS_SCHEDULED) ? message
+                .getBooleanProperty(Constants.IS_SCHEDULED) : false;
 
         try {
             // Handle message
@@ -183,8 +183,8 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
                 "handleMessage(DlmsConnection, DlmsDevice, Serializable) should be overriden by a subclass, or usesDeviceConnection should return false.");
     }
 
-    protected Serializable handleMessage(final Serializable requestObject)
-            throws OsgpException, ProtocolAdapterException {
+    protected Serializable handleMessage(final Serializable requestObject) throws OsgpException,
+            ProtocolAdapterException {
         throw new UnsupportedOperationException(
                 "handleMessage(Serializable) should be overriden by a subclass, or usesDeviceConnection should return true.");
     }
@@ -209,9 +209,10 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).domain(dlmsDeviceMessageMetadata.getDomain())
-                .domainVersion(dlmsDeviceMessageMetadata.getDomainVersion()).result(result).osgpException(osgpException)
-                .dataObject(responseObject).retryCount(dlmsDeviceMessageMetadata.getRetryCount())
-                .retryHeader(retryHeader).scheduled(isScheduled).build();
+                .domainVersion(dlmsDeviceMessageMetadata.getDomainVersion()).result(result)
+                .osgpException(osgpException).dataObject(responseObject)
+                .retryCount(dlmsDeviceMessageMetadata.getRetryCount()).retryHeader(retryHeader).scheduled(isScheduled)
+                .build();
 
         responseMessageSender.send(responseMessage);
     }

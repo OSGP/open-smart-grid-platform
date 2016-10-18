@@ -1,5 +1,7 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
+import java.util.List;
+
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
 import org.osgp.adapter.protocol.dlms.domain.factories.FirwareImageFactory;
@@ -7,56 +9,57 @@ import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.UpdateFirmwareRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.UpdateFirmwareResponseDto;
 
 @Component
-public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<String, Boolean> {
+public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<String, List<FirmwareVersionDto>> {
 
     @Autowired
     private FirwareImageFactory firmwareImageFactory;
+
+    @Autowired
+    GetFirmwareVersionsCommandExecutor getFirmwareVersionsCommandExecutor;
 
     public UpdateFirmwareCommandExecutor() {
         super(UpdateFirmwareRequestDto.class);
     }
 
     @Override
-    public Boolean execute(final DeviceConnector conn, final DlmsDevice device, final String firmwareIdentification)
-            throws ProtocolAdapterException {
+    public List<FirmwareVersionDto> execute(final DeviceConnector conn, final DlmsDevice device,
+            final String firmwareIdentification) throws ProtocolAdapterException {
 
         final ImageTransfer transfer = new ImageTransfer(conn, firmwareIdentification,
                 this.getImageData(firmwareIdentification));
 
-        try {
-            if (!transfer.imageTransferEnabled()) {
-                transfer.setImageTransferEnabled(true);
-            }
+        if (!transfer.imageTransferEnabled()) {
+            transfer.setImageTransferEnabled(true);
+        }
 
-            if (transfer.shouldInitiateTransfer()) {
-                transfer.initiateImageTransfer();
-            }
+        if (transfer.shouldInitiateTransfer()) {
+            transfer.initiateImageTransfer();
+        }
 
-            if (transfer.shouldTransferImage()) {
-                transfer.transferImageBlocks();
-                transfer.transferMissingImageBlocks();
-            }
+        if (transfer.shouldTransferImage()) {
+            transfer.transferImageBlocks();
+            transfer.transferMissingImageBlocks();
+        }
 
-            if (!transfer.imageIsVerified()) {
-                transfer.verifyImage();
-            }
+        if (!transfer.imageIsVerified()) {
+            transfer.verifyImage();
+        }
 
-            if (transfer.imageIsVerified() && transfer.imageToActivateOk()) {
-                transfer.activateImage();
-                transfer.setImageTransferEnabled(false);
-                return true;
-            } else {
-                // Image data is not correct.
-                transfer.setImageTransferEnabled(false);
-                return false;
-            }
-        } catch (final ProtocolAdapterException e) {
-            throw e;
+        if (transfer.imageIsVerified() && transfer.imageToActivateOk()) {
+            transfer.activateImage();
+            transfer.setImageTransferEnabled(false);
+            return getFirmwareVersionsCommandExecutor.execute(conn, device, null);
+        } else {
+            // Image data is not correct.
+            transfer.setImageTransferEnabled(false);
+            throw new ProtocolAdapterException("An unknown error occurred while updating firmware.");
         }
     }
 
@@ -70,11 +73,9 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
     }
 
     @Override
-    public ActionResponseDto asBundleResponse(final Boolean executionResult) throws ProtocolAdapterException {
-        if (executionResult) {
-            return new ActionResponseDto("Update firmware was successful");
-        } else {
-            throw new ProtocolAdapterException("Update firmware was not successful");
-        }
+    public ActionResponseDto asBundleResponse(final List<FirmwareVersionDto> executionResult)
+            throws ProtocolAdapterException {
+
+        return new UpdateFirmwareResponseDto(executionResult);
     }
 }

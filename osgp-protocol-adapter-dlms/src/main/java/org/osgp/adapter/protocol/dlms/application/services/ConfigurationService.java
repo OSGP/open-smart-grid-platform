@@ -185,8 +185,8 @@ public class ConfigurationService {
         }
     }
 
-    public AdministrativeStatusTypeDto requestGetAdministrativeStatus(final DeviceConnector conn, final DlmsDevice device)
-            throws ProtocolAdapterException {
+    public AdministrativeStatusTypeDto requestGetAdministrativeStatus(final DeviceConnector conn,
+            final DlmsDevice device) throws ProtocolAdapterException {
 
         return this.getAdministrativeStatusCommandExecutor.execute(conn, device, null);
     }
@@ -276,14 +276,10 @@ public class ConfigurationService {
         }
     }
 
-    public void updateFirmware(final DeviceConnector conn, final DlmsDevice device, final String firmwareIdentifier)
-            throws ProtocolAdapterException {
+    public List<FirmwareVersionDto> updateFirmware(final DeviceConnector conn, final DlmsDevice device,
+            final String firmwareIdentifier) throws ProtocolAdapterException {
         LOGGER.info("Updating firmware of device {} to firmware with identifier {}", device, firmwareIdentifier);
 
-        final boolean result = this.updateFirmwareCommandExecutor.execute(conn, device, firmwareIdentifier);
-
-        if (!result) {
-            throw new ProtocolAdapterException("Firmware was not updates successfully.");
-        }
+        return this.updateFirmwareCommandExecutor.execute(conn, device, firmwareIdentifier);
     }
 }
