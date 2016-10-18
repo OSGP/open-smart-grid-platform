@@ -134,7 +134,7 @@
     </wsdl:message>
 
 
-    <wsdl:portType name="SmartmetermonitoringPort">
+    <wsdl:portType name="SmartMeteringMonitoringPort">
 
         <wsdl:operation name="GetPeriodicMeterReads">
             <wsdl:input message="tns:PeriodicMeterReadsRequest" name="PeriodicMeterReadsRequest">
@@ -218,7 +218,7 @@
 
     </wsdl:portType>
 
-    <wsdl:binding name="SmartmetermonitoringPortSoap11" type="tns:SmartmetermonitoringPort">
+    <wsdl:binding name="SmartMeteringMonitoringPortSoap11" type="tns:SmartMeteringMonitoringPort">
         <soap:binding style="document"
                               transport="http://schemas.xmlsoap.org/soap/http" />
 
@@ -361,9 +361,9 @@
             </wsdl:output>
         </wsdl:operation>
     </wsdl:binding>
-    <wsdl:service name="SmartmetermonitoringPortService">
-        <wsdl:port binding="tns:SmartmetermonitoringPortSoap11"
-                           name="SmartmetermonitoringPortSoap11">
+    <wsdl:service name="SmartMeteringMonitoringPortService">
+        <wsdl:port binding="tns:SmartMeteringMonitoringPortSoap11"
+                           name="SmartMeteringMonitoringPortSoap11">
             <soap:address
                 location="http://localhost:8080/osgp-adapter-ws-smartmetering/smartMetering/monitoringService/" />
         </wsdl:port>
