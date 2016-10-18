@@ -39,7 +39,13 @@ public class ConfigurationDto implements Serializable {
 
     private DeviceFixedIpDto deviceFixedIp;
 
-    private Boolean isDhcpEnabled;
+    private Boolean dhcpEnabled;
+
+    private Boolean tlsEnabled;
+
+    private Integer tlsPortNumber;
+
+    private String commonNameString;
 
     private Integer communicationTimeout;
 
@@ -47,13 +53,13 @@ public class ConfigurationDto implements Serializable {
 
     private Integer communicationPauseTimeBetweenConnectionTrials;
 
-    private String ospgIpAddress;
+    private String osgpIpAddress;
 
     private Integer osgpPortNumber;
 
-    private Boolean isTestButtonEnabled;
+    private Boolean testButtonEnabled;
 
-    private Boolean isAutomaticSummerTimingEnabled;
+    private Boolean automaticSummerTimingEnabled;
 
     private Integer astroGateSunRiseOffset;
 
@@ -132,11 +138,35 @@ public class ConfigurationDto implements Serializable {
     }
 
     public Boolean isDhcpEnabled() {
-        return this.isDhcpEnabled;
+        return this.dhcpEnabled;
     }
 
-    public void setDhcpEnabled(final Boolean isDhcpEnabled) {
-        this.isDhcpEnabled = isDhcpEnabled;
+    public void setDhcpEnabled(final Boolean dhcpEnabled) {
+        this.dhcpEnabled = dhcpEnabled;
+    }
+
+    public Boolean isTlsEnabled() {
+        return this.tlsEnabled;
+    }
+
+    public void setTlsEnabled(final Boolean tlsEnabled) {
+        this.tlsEnabled = tlsEnabled;
+    }
+
+    public Integer getTlsPortNumber() {
+        return this.tlsPortNumber;
+    }
+
+    public void setTlsPortNumber(final Integer tlsPortNumber) {
+        this.tlsPortNumber = tlsPortNumber;
+    }
+
+    public String getCommonNameString() {
+        return this.commonNameString;
+    }
+
+    public void setCommonNameString(final String commonNameString) {
+        this.commonNameString = commonNameString;
     }
 
     public Integer getCommunicationTimeout() {
@@ -164,12 +194,12 @@ public class ConfigurationDto implements Serializable {
         this.communicationPauseTimeBetweenConnectionTrials = communicationPauseTimeBetweenConnectionTrials;
     }
 
-    public String getOspgIpAddress() {
-        return this.ospgIpAddress;
+    public String getOsgpIpAddres() {
+        return this.osgpIpAddress;
     }
 
-    public void setOspgIpAddress(final String ospgIpAddress) {
-        this.ospgIpAddress = ospgIpAddress;
+    public void setOsgpIpAddress(final String osgpIpAddress) {
+        this.osgpIpAddress = osgpIpAddress;
     }
 
     public Integer getOsgpPortNumber() {
@@ -181,19 +211,19 @@ public class ConfigurationDto implements Serializable {
     }
 
     public Boolean isTestButtonEnabled() {
-        return this.isTestButtonEnabled;
+        return this.testButtonEnabled;
     }
 
-    public void setTestButtonEnabled(final Boolean isTestButtonEnabled) {
-        this.isTestButtonEnabled = isTestButtonEnabled;
+    public void setTestButtonEnabled(final Boolean testButtonEnabled) {
+        this.testButtonEnabled = testButtonEnabled;
     }
 
     public Boolean isAutomaticSummerTimingEnabled() {
-        return this.isAutomaticSummerTimingEnabled;
+        return this.automaticSummerTimingEnabled;
     }
 
-    public void setAutomaticSummerTimingEnabled(final Boolean isAutomaticSummerTimingEnabled) {
-        this.isAutomaticSummerTimingEnabled = isAutomaticSummerTimingEnabled;
+    public void setAutomaticSummerTimingEnabled(final Boolean automaticSummerTimingEnabled) {
+        this.automaticSummerTimingEnabled = automaticSummerTimingEnabled;
     }
 
     public void setRelayLinking(final List<RelayMatrixDto> relayLinking) {
