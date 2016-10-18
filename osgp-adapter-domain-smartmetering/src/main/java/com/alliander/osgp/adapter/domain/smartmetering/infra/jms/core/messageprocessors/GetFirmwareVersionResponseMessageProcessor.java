@@ -45,6 +45,7 @@ public class GetFirmwareVersionResponseMessageProcessor extends OsgpCoreResponse
             final ResponseMessage responseMessage, final OsgpException osgpException) throws FunctionalException {
 
         if (responseMessage.getDataObject() instanceof ArrayList) {
+            @SuppressWarnings("unchecked")
             final List<FirmwareVersionDto> firmwareVersionList = (List<FirmwareVersionDto>) responseMessage
                     .getDataObject();
 

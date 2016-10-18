@@ -14,6 +14,8 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import ma.glasnost.orika.impl.ConfigurableMapper;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -40,11 +42,10 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.UpdateFirmwareResponse;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
-
-import ma.glasnost.orika.impl.ConfigurableMapper;
 
 @Service(value = "wsSmartMeteringActionResponseMapperService")
 @Validated
@@ -84,6 +85,7 @@ public class ActionMapperResponseService {
         CLASS_TO_MAPPER_MAP.put(PeriodicMeterReadsContainerGas.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(GetAttributeValuesResponse.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(FirmwareVersionResponse.class, this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(UpdateFirmwareResponse.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(AssociationLnObjectsResponseData.class, this.adhocMapper);
     }
 
@@ -113,6 +115,8 @@ public class ActionMapperResponseService {
                 com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetConfigurationResponse.class);
         CLASS_MAP.put(FirmwareVersionResponse.class,
                 com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetFirmwareVersionResponse.class);
+        CLASS_MAP.put(UpdateFirmwareResponse.class,
+                com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.UpdateFirmwareResponse.class);
         CLASS_MAP.put(AssociationLnObjectsResponseData.class,
                 com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.AssociationLnObjectsResponse.class);
 

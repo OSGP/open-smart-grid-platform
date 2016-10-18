@@ -29,6 +29,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotificati
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersion;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetKeysRequestData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.UpdateFirmwareResponse;
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto;
@@ -406,10 +407,10 @@ public class ConfigurationService {
         }
 
         this.osgpCoreRequestMessageSender
-        .send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata
-                .getOrganisationIdentification(), gatewayDevice.getDeviceIdentification(), gatewayDevice
-                .getIpAddress(), new GMeterInfoDto(gasDevice.getChannel(), gasDevice.getDeviceIdentification())),
-                deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
+                .send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata
+                        .getOrganisationIdentification(), gatewayDevice.getDeviceIdentification(), gatewayDevice
+                        .getIpAddress(), new GMeterInfoDto(gasDevice.getChannel(), gasDevice.getDeviceIdentification())),
+                        deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
                         deviceMessageMetadata.getScheduleTime());
     }
 
@@ -548,7 +549,8 @@ public class ConfigurationService {
     }
 
     public void handleUpdateFirmwareResponse(final DeviceMessageMetadata deviceMessageMetadata,
-            final ResponseMessageResultType deviceResult, final OsgpException exception) {
+            final ResponseMessageResultType deviceResult, final OsgpException exception,
+            final List<FirmwareVersionDto> firmwareVersionList) {
 
         LOGGER.info("handleUpdateFirmwareResponse for MessageType: {}", deviceMessageMetadata.getMessageType());
 
@@ -558,9 +560,14 @@ public class ConfigurationService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
+        final List<FirmwareVersion> firmwareVersions = this.configurationMapper.mapAsList(firmwareVersionList,
+                FirmwareVersion.class);
+
+        final UpdateFirmwareResponse updateFirmwareResponse = new UpdateFirmwareResponse(firmwareVersions);
+
         this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                result, exception, null, deviceMessageMetadata.getMessagePriority()), deviceMessageMetadata
-                .getMessageType());
+                result, exception, updateFirmwareResponse, deviceMessageMetadata.getMessagePriority()),
+                deviceMessageMetadata.getMessageType());
     }
 }
