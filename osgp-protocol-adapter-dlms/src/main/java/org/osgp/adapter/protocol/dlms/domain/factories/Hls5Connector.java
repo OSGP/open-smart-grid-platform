@@ -14,7 +14,6 @@ import java.net.UnknownHostException;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.openmuc.jdlms.AuthenticationMechanism;
-import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.SecuritySuite;
 import org.openmuc.jdlms.SecuritySuite.EncryptionMechanism;
 import org.openmuc.jdlms.TcpConnectionBuilder;
@@ -22,8 +21,9 @@ import org.osgp.adapter.protocol.dlms.application.threads.RecoverKeyProcessIniti
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
-import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
+import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsLogItemRequestMessageSender;
+import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,18 +45,17 @@ public class Hls5Connector {
 
     private final RecoverKeyProcessInitiator recoverKeyProcessInitiator;
 
-    private final DlmsDeviceRepository dlmsDeviceRepository;
-
     private DlmsDevice device;
 
     @Autowired
     private EncryptionService encryptionService;
 
-    public Hls5Connector(final RecoverKeyProcessInitiator recoverKeyProcessInitiator,
-            final DlmsDeviceRepository dlmsDeviceRepository, final int responseTimeout, final int logicalDeviceAddress,
-            final int clientAccessPoint) {
+    @Autowired
+    private DlmsLogItemRequestMessageSender dlmsLogItemRequestMessageSender;
+
+    public Hls5Connector(final RecoverKeyProcessInitiator recoverKeyProcessInitiator, final int responseTimeout,
+            final int logicalDeviceAddress, final int clientAccessPoint) {
         this.recoverKeyProcessInitiator = recoverKeyProcessInitiator;
-        this.dlmsDeviceRepository = dlmsDeviceRepository;
         this.responseTimeout = responseTimeout;
         this.logicalDeviceAddress = logicalDeviceAddress;
         this.clientAccessPoint = clientAccessPoint;
@@ -66,7 +65,7 @@ public class Hls5Connector {
         this.device = device;
     }
 
-    public DlmsConnection connect() throws TechnicalException {
+    public DlmsConnectionHolder connect() throws TechnicalException {
 
         // Make sure neither device or device.getIpAddress() is null.
         this.checkDevice();
@@ -118,7 +117,7 @@ public class Hls5Connector {
      *             When there are problems reading the security and
      *             authorisation keys.
      */
-    private DlmsConnection createConnection() throws IOException, TechnicalException {
+    private DlmsConnectionHolder createConnection() throws IOException, TechnicalException {
         final SecurityKey validAuthenticationKey = this.getSecurityKey(SecurityKeyType.E_METER_AUTHENTICATION);
         final SecurityKey validEncryptionKey = this.getSecurityKey(SecurityKeyType.E_METER_ENCRYPTION);
 
@@ -153,7 +152,16 @@ public class Hls5Connector {
             tcpConnectionBuilder.setChallengeLength(challengeLength);
         }
 
-        return tcpConnectionBuilder.build();
+        final DlmsMessageListener dlmsMessageListener;
+        if (this.device.isInDebugMode()) {
+            dlmsMessageListener = new DlmsMessageListener(this.device.getDeviceIdentification(),
+                    this.dlmsLogItemRequestMessageSender);
+            tcpConnectionBuilder.setRawMessageListener(dlmsMessageListener);
+        } else {
+            dlmsMessageListener = null;
+        }
+
+        return new DlmsConnectionHolder(tcpConnectionBuilder.build(), dlmsMessageListener);
     }
 
     private void setOptionalValues(final TcpConnectionBuilder tcpConnectionBuilder) {

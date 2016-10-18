@@ -14,6 +14,7 @@ import java.util.List;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.SetParameter;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -29,7 +30,7 @@ public class DataObjectAttrExecutors {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataObjectAttrExecutors.class);
 
-    private final List<DataObjectAttrExecutor> dataObjectAttrExecutorList = new ArrayList<DataObjectAttrExecutor>();
+    private final List<DataObjectAttrExecutor> dataObjectAttrExecutorList = new ArrayList<>();
     private String errString = "";
     private boolean containsError;
     private final boolean stopOnNoSuccess;
@@ -53,15 +54,15 @@ public class DataObjectAttrExecutors {
 
     /**
      * @param conn
-     *            : the active {@link DlmsConnection} to send the
-     *            {@link SetParameter} to.
+     *            : the {@link DlmsConnectionHolder} with the active connection
+     *            to send the {@link SetParameter} to.
      * @throws IOException
      *             is thrown when an error occurs with the connection to the
      *             dlms device
      * @throws ProtocolAdapterException
      *             when one or more of the set commands fail
      */
-    public void execute(final DlmsConnection conn) throws ProtocolAdapterException {
+    public void execute(final DlmsConnectionHolder conn) throws ProtocolAdapterException {
 
         try {
             for (final DataObjectAttrExecutor dataObjectAttrExecutor : this.dataObjectAttrExecutorList) {

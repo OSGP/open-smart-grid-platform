@@ -13,11 +13,11 @@ import java.util.List;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,12 +61,16 @@ public class SetSpecialDaysCommandExecutor extends AbstractCommandExecutor<List<
     }
 
     @Override
-    public AccessResultCode execute(final DlmsConnection conn, final DlmsDevice device,
+    public AccessResultCode execute(final DlmsConnectionHolder conn, final DlmsDevice device,
             final List<SpecialDayDto> specialDays) throws ProtocolAdapterException {
+
+        final StringBuilder specialDayData = new StringBuilder();
 
         final List<DataObject> specialDayEntries = new ArrayList<>();
         int i = 0;
         for (final SpecialDayDto specialDay : specialDays) {
+
+            specialDayData.append(", " + specialDay.getDayId() + " => " + specialDay.getSpecialDayDate());
 
             final List<DataObject> specDayEntry = new ArrayList<>();
             specDayEntry.add(DataObject.newUInteger16Data(i));
@@ -83,8 +87,20 @@ public class SetSpecialDaysCommandExecutor extends AbstractCommandExecutor<List<
 
         final SetParameter request = new SetParameter(specialDaysTableEntries, entries);
 
+        if (conn.hasDlmsMessageListener()) {
+            String specialDayValues;
+            if (specialDayData.length() == 0) {
+                specialDayValues = "";
+            } else {
+                specialDayValues = ", values [" + specialDayData.substring(2) + "]";
+            }
+            conn.getDlmsMessageListener().setDescription(
+                    "SetSpecialDays" + specialDayValues + ", set attribute: "
+                            + this.describeAttributes(specialDaysTableEntries));
+        }
+
         try {
-            return conn.set(request);
+            return conn.getConnection().set(request);
         } catch (final IOException e) {
             throw new ConnectionException(e);
         }

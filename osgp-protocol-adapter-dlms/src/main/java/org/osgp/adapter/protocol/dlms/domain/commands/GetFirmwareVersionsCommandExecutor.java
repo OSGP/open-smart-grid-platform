@@ -11,10 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -68,10 +68,15 @@ public class GetFirmwareVersionsCommandExecutor extends AbstractCommandExecutor<
     }
 
     @Override
-    public List<FirmwareVersionDto> execute(final DlmsConnection conn, final DlmsDevice device, final Void useless)
-            throws ProtocolAdapterException {
+    public List<FirmwareVersionDto> execute(final DlmsConnectionHolder conn, final DlmsDevice device,
+            final Void useless) throws ProtocolAdapterException {
 
         final List<FirmwareVersionDto> resultList = new ArrayList<>();
+
+        if (conn.hasDlmsMessageListener()) {
+            conn.getDlmsMessageListener().setDescription(
+                    "GetFirmwareVersions, retrieve attributes: " + this.describeAttributes(ATTRIBUTE_ADDRESSES));
+        }
 
         final List<GetResult> getResultList = this.dlmsHelperService.getAndCheck(conn, device,
                 "retrieve firmware versions", ATTRIBUTE_ADDRESSES);

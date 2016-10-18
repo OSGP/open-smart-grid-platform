@@ -16,13 +16,13 @@ import java.util.concurrent.TimeoutException;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.BitString;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -89,7 +89,7 @@ public class SetConfigurationObjectCommandExecutor extends
     }
 
     @Override
-    public AccessResultCode execute(final DlmsConnection conn, final DlmsDevice device,
+    public AccessResultCode execute(final DlmsConnectionHolder conn, final DlmsDevice device,
             final ConfigurationObjectDto configurationObject) throws ProtocolAdapterException {
 
         try {
@@ -97,7 +97,12 @@ public class SetConfigurationObjectCommandExecutor extends
 
             final SetParameter setParameter = this.buildSetParameter(configurationObject, configurationObjectOnDevice);
 
-            return conn.set(setParameter);
+            if (conn.hasDlmsMessageListener()) {
+                conn.getDlmsMessageListener().setDescription("SetConfigurationObject, set attribute: "
+                        + this.describeAttributes(new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID)));
+            }
+
+            return conn.getConnection().set(setParameter);
         } catch (IOException | TimeoutException e) {
             throw new ConnectionException(e);
         }
@@ -205,15 +210,21 @@ public class SetConfigurationObjectCommandExecutor extends
         return null;
     }
 
-    private ConfigurationObjectDto retrieveConfigurationObject(final DlmsConnection conn) throws IOException,
-            TimeoutException, ProtocolAdapterException {
+    private ConfigurationObjectDto retrieveConfigurationObject(final DlmsConnectionHolder conn)
+            throws IOException, TimeoutException, ProtocolAdapterException {
 
         final AttributeAddress configurationObjectValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
+
+        if (conn.hasDlmsMessageListener()) {
+            conn.getDlmsMessageListener()
+                    .setDescription("SetConfigurationObject retrieve current value, retrieve attribute: "
+                            + this.describeAttributes(configurationObjectValue));
+        }
 
         LOGGER.info(
                 "Retrieving current configuration object by issuing get request for class id: {}, obis code: {}, attribute id: {}",
                 CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
-        final GetResult getResult = conn.get(configurationObjectValue);
+        final GetResult getResult = conn.getConnection().get(configurationObjectValue);
 
         if (getResult == null) {
             throw new ProtocolAdapterException("No result received while retrieving current configuration object.");

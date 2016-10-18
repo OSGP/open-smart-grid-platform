@@ -14,10 +14,10 @@ import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.openmuc.jdlms.DlmsConnection;
 import org.osgp.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.exceptions.RetryableException;
@@ -115,7 +115,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         LOGGER.debug("Processing {} request message", this.deviceRequestMessageType.name());
         final DlmsDeviceMessageMetadata messageMetadata = new DlmsDeviceMessageMetadata();
 
-        DlmsConnection conn = null;
+        DlmsConnectionHolder conn = null;
         DlmsDevice device = null;
 
         final boolean isScheduled = message.propertyExists(Constants.IS_SCHEDULED)
@@ -132,6 +132,9 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             if (this.usesDeviceConnection()) {
                 device = this.domainHelperService.findDlmsDevice(messageMetadata);
                 conn = this.dlmsConnectionFactory.getConnection(device);
+                if (conn.hasDlmsMessageListener()) {
+                    conn.getDlmsMessageListener().setMessageMetadata(messageMetadata);
+                }
                 response = this.handleMessage(conn, device, message.getObject());
             } else {
                 response = this.handleMessage(message.getObject());
@@ -152,7 +155,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             if (conn != null) {
                 LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
                 try {
-                    conn.close();
+                    conn.getConnection().close();
                 } catch (final IOException e) {
                     LOGGER.error("Error while closing connection", e);
                 }
@@ -177,7 +180,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
      * @throws ProtocolAdapterException
      * @throws SessionProviderException
      */
-    protected Serializable handleMessage(final DlmsConnection conn, final DlmsDevice device,
+    protected Serializable handleMessage(final DlmsConnectionHolder conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
         throw new UnsupportedOperationException(
                 "handleMessage(DlmsConnection, DlmsDevice, Serializable) should be overriden by a subclass, or usesDeviceConnection should return false.");

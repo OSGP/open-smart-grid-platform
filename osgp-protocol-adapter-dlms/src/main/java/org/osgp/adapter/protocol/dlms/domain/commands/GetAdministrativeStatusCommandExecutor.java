@@ -10,12 +10,12 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 import java.io.IOException;
 
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.application.mapping.ConfigurationMapper;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -61,23 +61,28 @@ public class GetAdministrativeStatusCommandExecutor extends AbstractCommandExecu
     }
 
     @Override
-    public AdministrativeStatusTypeDto execute(final DlmsConnection conn, final DlmsDevice device, final Void useless)
-            throws ProtocolAdapterException {
+    public AdministrativeStatusTypeDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
+            final Void useless) throws ProtocolAdapterException {
 
         final AttributeAddress getParameter = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
+
+        if (conn.hasDlmsMessageListener()) {
+            conn.getDlmsMessageListener().setDescription(
+                    "GetAdministrativeStatus, retrieve attribute: " + this.describeAttributes(getParameter));
+        }
 
         LOGGER.info(
                 "Retrieving current administrative status by issuing get request for class id: {}, obis code: {}, attribute id: {}",
                 CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
-        GetResult getResult=null;
+        GetResult getResult = null;
         try {
-            getResult = conn.get(getParameter);
+            getResult = conn.getConnection().get(getParameter);
         } catch (final IOException e) {
             throw new ConnectionException(e);
         }
 
-        if (getResult==null) {
+        if (getResult == null) {
             throw new ProtocolAdapterException("No GetResult received while retrieving administrative status.");
         }
 
