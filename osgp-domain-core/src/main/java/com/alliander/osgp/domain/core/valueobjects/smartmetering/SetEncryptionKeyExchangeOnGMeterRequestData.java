@@ -9,13 +9,14 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 public class SetEncryptionKeyExchangeOnGMeterRequestData implements Serializable, ActionRequest {
 
     private static final long serialVersionUID = 3965412208032103531L;
 
-    private String deviceIdentification;
+    private final String deviceIdentification;
 
     public SetEncryptionKeyExchangeOnGMeterRequestData(final String deviceIdentification) {
         super();
@@ -31,4 +32,8 @@ public class SetEncryptionKeyExchangeOnGMeterRequestData implements Serializable
         // No validation needed
     }
 
+    @Override
+    public DeviceFunction getDeviceFunction() {
+        return DeviceFunction.SET_ENCRYPTION_KEY_EXCHANGE_ON_G_METER;
+    }
 }

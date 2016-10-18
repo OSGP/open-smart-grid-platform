@@ -10,6 +10,7 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 /**
@@ -55,4 +56,8 @@ public class PeriodicMeterReadsGasRequestData implements Serializable, ActionReq
         // Validation not necessary
     }
 
+    @Override
+    public DeviceFunction getDeviceFunction() {
+        return DeviceFunction.REQUEST_PERIODIC_METER_DATA;
+    }
 }

@@ -17,6 +17,6 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 public class SpecialDaysResponseMessageProcessor extends DomainResponseMessageProcessor {
 
     protected SpecialDaysResponseMessageProcessor() {
-        super(DeviceFunction.REQUEST_SPECIAL_DAYS);
+        super(DeviceFunction.SET_SPECIAL_DAYS);
     }
 }

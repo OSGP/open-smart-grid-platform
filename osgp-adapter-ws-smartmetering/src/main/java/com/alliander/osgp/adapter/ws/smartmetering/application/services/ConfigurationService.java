@@ -88,7 +88,7 @@ public class ConfigurationService {
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
+        .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
@@ -194,7 +194,7 @@ public class ConfigurationService {
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(AdministrativeStatusType.UNDEFINED).build();
+        .deviceMessageMetadata(deviceMessageMetadata).request(AdministrativeStatusType.UNDEFINED).build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
@@ -214,7 +214,7 @@ public class ConfigurationService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
-        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.REQUEST_SPECIAL_DAYS);
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_SPECIAL_DAYS);
 
         LOGGER.debug("enqueueSetSpecialDaysRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -228,7 +228,7 @@ public class ConfigurationService {
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
+        .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
@@ -262,7 +262,7 @@ public class ConfigurationService {
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
+        .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
@@ -296,7 +296,7 @@ public class ConfigurationService {
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(pushSetupAlarm).build();
+        .deviceMessageMetadata(deviceMessageMetadata).request(pushSetupAlarm).build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
@@ -330,7 +330,7 @@ public class ConfigurationService {
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(pushSetupSms).build();
+        .deviceMessageMetadata(deviceMessageMetadata).request(pushSetupSms).build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
@@ -364,7 +364,7 @@ public class ConfigurationService {
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(alarmSwitches).build();
+        .deviceMessageMetadata(deviceMessageMetadata).request(alarmSwitches).build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
@@ -423,7 +423,7 @@ public class ConfigurationService {
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(activityCalendar).build();
+        .deviceMessageMetadata(deviceMessageMetadata).request(activityCalendar).build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
@@ -457,7 +457,7 @@ public class ConfigurationService {
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(keySet).build();
+        .deviceMessageMetadata(deviceMessageMetadata).request(keySet).build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);

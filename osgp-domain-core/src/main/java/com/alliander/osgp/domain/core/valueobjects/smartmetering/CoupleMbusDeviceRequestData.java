@@ -10,6 +10,7 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -50,7 +51,7 @@ public class CoupleMbusDeviceRequestData implements Serializable, ActionRequest 
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionRequest#
      * validate()
@@ -63,6 +64,11 @@ public class CoupleMbusDeviceRequestData implements Serializable, ActionRequest 
                             + this.channel));
         }
 
+    }
+
+    @Override
+    public DeviceFunction getDeviceFunction() {
+        return DeviceFunction.COUPLE_MBUS_DEVICE;
     }
 
 }

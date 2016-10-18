@@ -28,7 +28,7 @@ public class SpecialDaysRequestMessageProcessor extends WebServiceRequestMessage
     private ConfigurationService configurationService;
 
     protected SpecialDaysRequestMessageProcessor() {
-        super(DeviceFunction.REQUEST_SPECIAL_DAYS);
+        super(DeviceFunction.SET_SPECIAL_DAYS);
     }
 
     @Override

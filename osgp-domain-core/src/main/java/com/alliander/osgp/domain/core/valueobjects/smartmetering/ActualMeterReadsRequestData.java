@@ -9,6 +9,7 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 public class ActualMeterReadsRequestData implements Serializable, ActionRequest {
@@ -18,6 +19,11 @@ public class ActualMeterReadsRequestData implements Serializable, ActionRequest 
     @Override
     public void validate() throws FunctionalException {
         // no validation needed
+    }
+
+    @Override
+    public DeviceFunction getDeviceFunction() {
+        return DeviceFunction.REQUEST_ACTUAL_METER_DATA;
     }
 
 }
