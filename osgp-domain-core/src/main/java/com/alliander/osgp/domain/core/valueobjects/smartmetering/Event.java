@@ -27,6 +27,13 @@ public class Event implements Serializable {
         this.eventCounter = eventCounter;
     }
 
+    @Override
+    public String toString() {
+        return String.format("Event[time=%s, code=%s, type=%s%s]", this.timestamp, this.eventCode,
+                this.eventCode == null ? null : EventType.getValue(this.eventCode.intValue()),
+                        this.eventCounter == null ? "" : ", counter=" + this.eventCounter);
+    }
+
     public DateTime getTimestamp() {
         return this.timestamp;
     }

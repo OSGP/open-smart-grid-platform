@@ -11,15 +11,15 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.EventType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.Event;
+
+import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.metadata.Type;
 
 public class EventConverter extends
         BidirectionalConverter<Event, com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event> {
@@ -59,7 +59,7 @@ public class EventConverter extends
 
         final DateTime timestamp = new DateTime(source.getTimestamp().toGregorianCalendar().getTime());
         final Integer eventCode = com.alliander.osgp.domain.core.valueobjects.smartmetering.EventType.valueOf(
-                source.getEventType().toString()).ordinal();
+                source.getEventType().toString()).getValue();
         return new Event(timestamp, eventCode, source.getEventCounter());
     }
 }

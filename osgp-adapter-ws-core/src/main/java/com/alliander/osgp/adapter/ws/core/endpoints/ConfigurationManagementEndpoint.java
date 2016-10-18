@@ -80,24 +80,13 @@ public class ConfigurationManagementEndpoint {
 
         try {
             // Get the request parameters, make sure that they are in UTC.
-            // Maybe add an adapter to the service, so that all datetime are
-            // converted to utc automatically.
+            // Maybe add an adapter to the service, so that all date-time are
+            // converted to UTC automatically.
             final DateTime scheduleTime = request.getScheduledTime() == null ? null : new DateTime(request
                     .getScheduledTime().toGregorianCalendar()).toDateTime(DateTimeZone.UTC);
 
             final Configuration configuration = this.configurationManagementMapper.map(request.getConfiguration(),
                     Configuration.class);
-            if (request.getConfiguration() != null
-                    && request.getConfiguration().isIsAutomaticSummerTimingEnabled() != null) {
-                configuration.setAutomaticSummerTimingEnabled(request.getConfiguration()
-                        .isIsAutomaticSummerTimingEnabled());
-            }
-            if (request.getConfiguration() != null && request.getConfiguration().isIsDhcpEnabled() != null) {
-                configuration.setDhcpEnabled(request.getConfiguration().isIsDhcpEnabled());
-            }
-            if (request.getConfiguration() != null && request.getConfiguration().isIsTestButtonEnabled() != null) {
-                configuration.setTestButtonEnabled(request.getConfiguration().isIsTestButtonEnabled());
-            }
 
             final String correlationUid = this.configurationManagementService.enqueueSetConfigurationRequest(
                     organisationIdentification, request.getDeviceIdentification(), configuration, scheduleTime);
@@ -189,17 +178,10 @@ public class ConfigurationManagementEndpoint {
 
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
-
                 if (message.getDataObject() != null) {
                     final Configuration configuration = (Configuration) message.getDataObject();
-                    if (configuration != null) {
-                        response.setConfiguration(this.configurationManagementMapper.map(configuration,
-                                com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.Configuration.class));
-                        response.getConfiguration().setIsAutomaticSummerTimingEnabled(
-                                configuration.isAutomaticSummerTimingEnabled());
-                        response.getConfiguration().setIsDhcpEnabled(configuration.isDhcpEnabled());
-                        response.getConfiguration().setIsTestButtonEnabled(configuration.isTestButtonEnabled());
-                    }
+                    response.setConfiguration(this.configurationManagementMapper.map(configuration,
+                            com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.Configuration.class));
                 }
             } else {
                 LOGGER.debug("Get Configuration data is null");
