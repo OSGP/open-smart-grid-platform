@@ -1,0 +1,1 @@
+alter table dlms_device add in_debug_mode boolean not null default false;

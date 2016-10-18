@@ -78,6 +78,9 @@ public class DlmsDevice extends AbstractEntity {
     @Column
     private Long logicalId;
 
+    @Column
+    private boolean inDebugMode;
+
     // -- This comes from: Core Device.
 
     @Transient
@@ -97,9 +100,10 @@ public class DlmsDevice extends AbstractEntity {
 
     @Override
     public String toString() {
-        return String.format("DlmsDevice[deviceId=%s, hls3=%b, hls4=%b, hls5=%b, ipAddress=%s, port=%s, logicalId=%s, clientId=%s]",
-                this.deviceIdentification, this.hls3Active, this.hls4Active, this.hls5Active,
-                this.ipAddress, this.port, this.logicalId, this.clientId);
+        return String.format(
+                "DlmsDevice[deviceId=%s, hls3=%b, hls4=%b, hls5=%b, ipAddress=%s, port=%s, logicalId=%s, clientId=%s]",
+                this.deviceIdentification, this.hls3Active, this.hls4Active, this.hls5Active, this.ipAddress, this.port,
+                this.logicalId, this.clientId);
     }
 
     @Override
@@ -240,6 +244,14 @@ public class DlmsDevice extends AbstractEntity {
 
     public void setLogicalId(final Long logicalId) {
         this.logicalId = logicalId;
+    }
+
+    public boolean isInDebugMode() {
+        return this.inDebugMode;
+    }
+
+    public void setInDebugMode(final boolean inDebugMode) {
+        this.inDebugMode = inDebugMode;
     }
 
     /**
