@@ -1,0 +1,1 @@
+ALTER TABLE rtu_response_data ADD CONSTRAINT "rtu_response_data_correlation_uid_key" UNIQUE( "correlation_uid" );
