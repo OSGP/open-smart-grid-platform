@@ -244,6 +244,9 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         try {
             final MeterResponseData meterResponseData = this.configurationService.dequeueUpdateFirmwareResponse(request
                     .getCorrelationUid());
+
+            this.throwExceptionIfResultNotOk(meterResponseData, "updating firmware.");
+
             if (meterResponseData != null) {
                 response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
 
