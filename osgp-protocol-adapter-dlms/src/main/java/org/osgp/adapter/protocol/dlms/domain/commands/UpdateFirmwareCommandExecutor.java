@@ -7,6 +7,8 @@ import javax.annotation.PostConstruct;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
 import org.osgp.adapter.protocol.dlms.domain.factories.FirwareImageFactory;
+import org.osgp.adapter.protocol.dlms.exceptions.FirmwareImageFactoryException;
+import org.osgp.adapter.protocol.dlms.exceptions.ImageTransferException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +22,10 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.UpdateFirmwareResponseD
 
 @Component
 public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<String, List<FirmwareVersionDto>> {
+
+    private static final String EXCEPTION_MSG_UPDATE_FAILED = "Upgrade of firmware did not succeed.";
+
+    private static final String EXCEPTION_MSG_INSTALLATION_FILE_NOT_AVAILABLE = "Installation file is not available.";
 
     @Autowired
     private FirwareImageFactory firmwareImageFactory;
@@ -63,36 +69,44 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
         final ImageTransfer transfer = new ImageTransfer(conn, imageTransferProperties, firmwareIdentification,
                 this.getImageData(firmwareIdentification));
 
-        if (!transfer.imageTransferEnabled()) {
-            transfer.setImageTransferEnabled(true);
-        }
+        try {
+            if (!transfer.imageTransferEnabled()) {
+                transfer.setImageTransferEnabled(true);
+            }
 
-        if (transfer.shouldInitiateTransfer()) {
-            transfer.initiateImageTransfer();
-        }
+            if (transfer.shouldInitiateTransfer()) {
+                transfer.initiateImageTransfer();
+            }
 
-        if (transfer.shouldTransferImage()) {
-            transfer.transferImageBlocks();
-            transfer.transferMissingImageBlocks();
-        }
+            if (transfer.shouldTransferImage()) {
+                transfer.transferImageBlocks();
+                transfer.transferMissingImageBlocks();
+            }
 
-        if (!transfer.imageIsVerified()) {
-            transfer.verifyImage();
-        }
+            if (!transfer.imageIsVerified()) {
+                transfer.verifyImage();
+            }
 
-        if (transfer.imageIsVerified() && transfer.imageToActivateOk()) {
-            transfer.activateImage();
+            if (transfer.imageIsVerified() && transfer.imageToActivateOk()) {
+                transfer.activateImage();
+                return getFirmwareVersionsCommandExecutor.execute(conn, device, null);
+            } else {
+                // Image data is not correct.
+                throw new ProtocolAdapterException("An unknown error occurred while updating firmware.");
+            }
+        } catch (ImageTransferException | ProtocolAdapterException e) {
+            throw new ProtocolAdapterException(EXCEPTION_MSG_UPDATE_FAILED, e);
+        } finally {
             transfer.setImageTransferEnabled(false);
-            return getFirmwareVersionsCommandExecutor.execute(conn, device, null);
-        } else {
-            // Image data is not correct.
-            transfer.setImageTransferEnabled(false);
-            throw new ProtocolAdapterException("An unknown error occurred while updating firmware.");
         }
     }
 
     private byte[] getImageData(final String firmwareIdentification) throws ProtocolAdapterException {
-        return this.firmwareImageFactory.getFirmwareImage(firmwareIdentification);
+        try {
+            return this.firmwareImageFactory.getFirmwareImage(firmwareIdentification);
+        } catch (FirmwareImageFactoryException e) {
+            throw new ProtocolAdapterException(EXCEPTION_MSG_INSTALLATION_FILE_NOT_AVAILABLE, e);
+        }
     }
 
     @Override

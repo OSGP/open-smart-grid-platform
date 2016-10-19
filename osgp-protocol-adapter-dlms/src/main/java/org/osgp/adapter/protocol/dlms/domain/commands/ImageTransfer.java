@@ -14,6 +14,7 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
 import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
+import org.osgp.adapter.protocol.dlms.exceptions.ImageTransferException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -153,8 +154,10 @@ class ImageTransfer {
     /**
      * The Image is verified. This is done by invoking the image_verify method
      * by the client and testing the image transfer status.
+     * 
+     * @throws ImageTransferException
      */
-    public void verifyImage() throws ProtocolAdapterException {
+    public void verifyImage() throws ProtocolAdapterException, ImageTransferException {
         final MethodResultCode verified = this.imageTransferCosem.callMethod(Method.IMAGE_VERIFY.getValue(),
                 DataObject.newInteger8Data((byte) 0));
         if (verified == null) {
@@ -167,7 +170,7 @@ class ImageTransfer {
                 return;
             }
             final int status = this.getImageTransferStatus();
-            throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_NOT_VERIFIED + status);
+            throw new ImageTransferException(EXCEPTION_MSG_IMAGE_NOT_VERIFIED + status);
         }
 
         if (verified == MethodResultCode.TEMPORARY_FAILURE) {
@@ -183,7 +186,7 @@ class ImageTransfer {
             }
 
             if (status == ImageTransferStatus.VERIFICATION_FAILED.getValue()) {
-                throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_NOT_VERIFIED);
+                throw new ImageTransferException(EXCEPTION_MSG_IMAGE_NOT_VERIFIED);
             }
 
             return;
@@ -232,7 +235,7 @@ class ImageTransfer {
      *
      * @throws ProtocolAdapterException
      */
-    public void activateImage() throws ProtocolAdapterException {
+    public void activateImage() throws ProtocolAdapterException, ImageTransferException {
         final MethodResultCode imageActivate = this.imageTransferCosem.callMethod(Method.IMAGE_ACTIVATE.getValue(),
                 DataObject.newInteger8Data((byte) 0));
         if (imageActivate == null) {
@@ -252,18 +255,18 @@ class ImageTransfer {
             }
 
             if (status == ImageTransferStatus.ACTIVATION_FAILED.getValue()) {
-                throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_TO_ACTIVATE_NOT_OK);
+                throw new ImageTransferException(EXCEPTION_MSG_IMAGE_TO_ACTIVATE_NOT_OK);
             }
 
             if (status == ImageTransferStatus.ACTIVATION_INITIATED.getValue()) {
-                throw new ProtocolAdapterException(EXCEPTION_MSG_ACTIVATION_TAKING_TOO_LONG);
+                throw new ImageTransferException(EXCEPTION_MSG_ACTIVATION_TAKING_TOO_LONG);
             }
 
             return;
         }
 
         if (imageActivate != MethodResultCode.SUCCESS) {
-            throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_ACTIVATE_NOT_SUCCESS);
+            throw new ImageTransferException(EXCEPTION_MSG_IMAGE_ACTIVATE_NOT_SUCCESS);
         }
     }
 
