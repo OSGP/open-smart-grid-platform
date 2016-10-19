@@ -2,11 +2,14 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
 import org.osgp.adapter.protocol.dlms.domain.factories.FirwareImageFactory;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
@@ -24,15 +27,40 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
     @Autowired
     GetFirmwareVersionsCommandExecutor getFirmwareVersionsCommandExecutor;
 
+    @Value("${command.updatefirmware.activationstatuscheck.interval}")
+    private int activationStatusCheckInterval;
+
+    @Value("${command.updatefirmware.activationstatuscheck.timeout}")
+    private int activationStatusCheckTimeout;
+
+    @Value("${command.updatefirmware.verificationstatuscheck.interval}")
+    private int verificationStatusCheckInterval;
+
+    @Value("${command.updatefirmware.verificationstatuscheck.timeout}")
+    private int verificationStatusCheckTimeout;
+
+    private ImageTransfer.ImageTranferProperties imageTransferProperties;
+
     public UpdateFirmwareCommandExecutor() {
         super(UpdateFirmwareRequestDto.class);
+    }
+
+    @PostConstruct
+    public void init() {
+        this.imageTransferProperties = new ImageTransfer.ImageTranferProperties();
+        this.imageTransferProperties.setActivationStatusCheckInterval(this.activationStatusCheckInterval);
+        this.imageTransferProperties.setActivationStatusCheckTimeout(this.activationStatusCheckTimeout);
+        this.imageTransferProperties.setVerificationStatusCheckInterval(this.verificationStatusCheckInterval);
+        this.imageTransferProperties.setVerificationStatusCheckTimeout(this.verificationStatusCheckTimeout);
+
+        super.init();
     }
 
     @Override
     public List<FirmwareVersionDto> execute(final DeviceConnector conn, final DlmsDevice device,
             final String firmwareIdentification) throws ProtocolAdapterException {
 
-        final ImageTransfer transfer = new ImageTransfer(conn, firmwareIdentification,
+        final ImageTransfer transfer = new ImageTransfer(conn, imageTransferProperties, firmwareIdentification,
                 this.getImageData(firmwareIdentification));
 
         if (!transfer.imageTransferEnabled()) {

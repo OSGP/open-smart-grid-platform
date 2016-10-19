@@ -38,14 +38,16 @@ class ImageTransfer {
     private static final ObisCode OBIS_CODE = new ObisCode("0.0.44.0.0.255");
     private static final ExecutorService EXECUTOR_SERVICE = Executors.newSingleThreadExecutor();
 
+    private final ImageTranferProperties properties;
     private final String imageIdentifier;
     private final byte[] imageData;
     private final CosemObjectAccessor imageTransferCosem;
     private int imageBlockSize;
     private boolean imageBlockSizeReadFlag;
 
-    public ImageTransfer(final DeviceConnector connector, final String imageIdentifier, final byte[] imageData)
-            throws ProtocolAdapterException {
+    public ImageTransfer(final DeviceConnector connector, ImageTranferProperties properties,
+            final String imageIdentifier, final byte[] imageData) throws ProtocolAdapterException {
+        this.properties = properties;
         this.imageIdentifier = imageIdentifier;
         this.imageData = imageData;
         this.imageBlockSizeReadFlag = false;
@@ -170,7 +172,8 @@ class ImageTransfer {
 
         if (verified == MethodResultCode.TEMPORARY_FAILURE) {
             final Future<Integer> newStatus = EXECUTOR_SERVICE.submit(new ImageTransferStatusChangeWatcher(
-                    ImageTransferStatus.VERIFICATION_INITIATED, 10000, 60000));
+                    ImageTransferStatus.VERIFICATION_INITIATED, properties.getVerificationStatusCheckInterval(),
+                    properties.verificationStatusCheckTimeout));
 
             int status;
             try {
@@ -238,7 +241,8 @@ class ImageTransfer {
 
         if (imageActivate == MethodResultCode.TEMPORARY_FAILURE) {
             final Future<Integer> newStatus = EXECUTOR_SERVICE.submit(new ImageTransferStatusChangeWatcher(
-                    ImageTransferStatus.ACTIVATION_INITIATED, 60000, 120000, true));
+                    ImageTransferStatus.ACTIVATION_INITIATED, properties.getActivationStatusCheckInterval(), properties
+                            .getActivationStatusCheckTimeout(), true));
 
             int status;
             try {
@@ -362,6 +366,45 @@ class ImageTransfer {
         }
 
         return true;
+    }
+
+    static class ImageTranferProperties {
+        private int verificationStatusCheckInterval;
+        private int verificationStatusCheckTimeout;
+        private int activationStatusCheckInterval;
+        private int activationStatusCheckTimeout;
+
+        public int getVerificationStatusCheckInterval() {
+            return verificationStatusCheckInterval;
+        }
+
+        public void setVerificationStatusCheckInterval(int verificationStatusCheckInterval) {
+            this.verificationStatusCheckInterval = verificationStatusCheckInterval;
+        }
+
+        public int getVerificationStatusCheckTimeout() {
+            return verificationStatusCheckTimeout;
+        }
+
+        public void setVerificationStatusCheckTimeout(int verificationStatusCheckTimeout) {
+            this.verificationStatusCheckTimeout = verificationStatusCheckTimeout;
+        }
+
+        public int getActivationStatusCheckInterval() {
+            return activationStatusCheckInterval;
+        }
+
+        public void setActivationStatusCheckInterval(int activationStatusCheckInterval) {
+            this.activationStatusCheckInterval = activationStatusCheckInterval;
+        }
+
+        public int getActivationStatusCheckTimeout() {
+            return activationStatusCheckTimeout;
+        }
+
+        public void setActivationStatusCheckTimeout(int activationStatusCheckTimeout) {
+            this.activationStatusCheckTimeout = activationStatusCheckTimeout;
+        }
     }
 
     private class ImageTransferStatusChangeWatcher implements Callable<Integer> {
