@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -202,6 +203,9 @@ public class Device implements Serializable {
     @Column()
     protected Date technicalInstallationDate;
 
+    @OneToMany(mappedBy = "device", cascade = CascadeType.ALL)
+    private List<DeviceFirmware> deviceFirmwares = new ArrayList<>();
+
     public Device() {
         // Default constructor
     }
@@ -224,8 +228,7 @@ public class Device implements Serializable {
         this.gpsLongitude = gpsLongitude;
     }
 
-    public DeviceAuthorization addAuthorization(final Organisation organisation,
-            final DeviceFunctionGroup functionGroup) {
+    public DeviceAuthorization addAuthorization(final Organisation organisation, final DeviceFunctionGroup functionGroup) {
         final DeviceAuthorization authorization = new DeviceAuthorization(this, organisation, functionGroup);
         this.authorizations.add(authorization);
         return authorization;
@@ -470,4 +473,17 @@ public class Device implements Serializable {
         this.deviceModel = deviceModel;
     }
 
+    public void setFirmware(final Firmware firmware, final String installedBy) {
+        for (DeviceFirmware deviceFirmware : this.deviceFirmwares) {
+            deviceFirmware.setActive(false);
+        }
+        DeviceFirmware newDeviceFirmware = new DeviceFirmware();
+        newDeviceFirmware.setActive(true);
+        newDeviceFirmware.setDevice(this);
+        newDeviceFirmware.setFirmware(firmware);
+        newDeviceFirmware.setInstallationDate(new Date());
+        newDeviceFirmware.setInstalledBy(installedBy);
+
+        this.deviceFirmwares.add(newDeviceFirmware);
+    }
 }
