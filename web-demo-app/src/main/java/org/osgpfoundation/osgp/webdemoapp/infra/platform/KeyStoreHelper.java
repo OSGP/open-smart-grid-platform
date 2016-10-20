@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.osgpfoundation.osgp.webdemoapp.application.infra.platform;
+package org.osgpfoundation.osgp.webdemoapp.infra.platform;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -44,7 +44,6 @@ public class KeyStoreHelper {
             this.keyStoreFactory.afterPropertiesSet();
             this.trustStoreFactory.afterPropertiesSet();
         } catch (GeneralSecurityException | IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -59,6 +58,10 @@ public class KeyStoreHelper {
 
     public String getKeyStorePw() {
         return this.keyStorePw;
+    }
+    
+    public char[] getKeyStorePwAsChar() {
+        return this.keyStorePw.toCharArray();
     }
 
 }
