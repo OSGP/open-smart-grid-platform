@@ -7,6 +7,8 @@
  */
 package org.osgp.adapter.protocol.dlms.infra.messaging;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.apache.commons.lang3.StringUtils;
 import org.openmuc.jdlms.RawMessageData;
 import org.openmuc.jdlms.RawMessageData.MessageSource;
@@ -24,6 +26,8 @@ public class DlmsMessageListener implements RawMessageListener {
     private DlmsDeviceMessageMetadata messageMetadata;
     private String description;
 
+    private AtomicInteger numberOfCapturedMessages = new AtomicInteger(0);
+
     public DlmsMessageListener(final String deviceIdentification,
             final DlmsLogItemRequestMessageSender dlmsLogItemRequestMessageSender) {
         this.deviceIdentification = deviceIdentification;
@@ -33,14 +37,17 @@ public class DlmsMessageListener implements RawMessageListener {
     @Override
     public void messageCaptured(final RawMessageData rawMessageData) {
 
+        final int sequenceNumber = this.numberOfCapturedMessages.incrementAndGet();
+
         final boolean incoming = MessageSource.SERVER == rawMessageData.getMessageSource();
         final byte[] encodedMessage = rawMessageData.getMessage();
         final String decodedMessage = rawMessageData.getApdu().toString().trim();
 
-        this.logMessage(incoming, encodedMessage, decodedMessage);
+        this.logMessage(incoming, encodedMessage, decodedMessage, sequenceNumber);
     }
 
-    public void logMessage(final boolean incoming, final byte[] encodedMessage, final String decodedMessage) {
+    public void logMessage(final boolean incoming, final byte[] encodedMessage, final String decodedMessage,
+            final int sequenceNumber) {
 
         final String communicationDirection;
         if (incoming) {
@@ -61,9 +68,10 @@ public class DlmsMessageListener implements RawMessageListener {
 
         final String decodedMessageWithDescription;
         if (this.hasDescription()) {
-            decodedMessageWithDescription = String.format("%s%n%n%s", this.getDescription(), decodedMessage);
+            decodedMessageWithDescription = String.format("%s%n%n%s", this.getDescription(sequenceNumber),
+                    decodedMessage);
         } else {
-            decodedMessageWithDescription = decodedMessage;
+            decodedMessageWithDescription = String.format("[%d]%n%s", sequenceNumber, decodedMessage);
         }
 
         final DlmsLogItemRequestMessage dlmsLogItemRequestMessage = new DlmsLogItemRequestMessage(
@@ -85,7 +93,7 @@ public class DlmsMessageListener implements RawMessageListener {
         return this.hasMessageMetadata() || this.description != null;
     }
 
-    public String getDescription() {
+    public String getDescription(final int sequenceNumber) {
         final StringBuilder sb = new StringBuilder();
         if (this.hasMessageMetadata()) {
             sb.append(this.messageMetadata.getMessageType());
@@ -94,8 +102,9 @@ public class DlmsMessageListener implements RawMessageListener {
                 sb.append(" - ");
             }
         }
+        sb.append('[').append(sequenceNumber).append(']');
         if (this.description != null) {
-            sb.append(this.description);
+            sb.append(' ').append(this.description);
         }
         return sb.toString();
     }
@@ -106,5 +115,9 @@ public class DlmsMessageListener implements RawMessageListener {
         } else {
             this.description = description.trim();
         }
+    }
+
+    public int getNumberOfCapturedMessages() {
+        return this.numberOfCapturedMessages.get();
     }
 }
