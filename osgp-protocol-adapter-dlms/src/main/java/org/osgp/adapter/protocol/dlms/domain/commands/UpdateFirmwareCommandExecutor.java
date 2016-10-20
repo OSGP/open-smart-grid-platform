@@ -52,6 +52,7 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
     }
 
     @PostConstruct
+    @Override
     public void init() {
         this.imageTransferProperties = new ImageTransfer.ImageTranferProperties();
         this.imageTransferProperties.setActivationStatusCheckInterval(this.activationStatusCheckInterval);
@@ -70,34 +71,48 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
                 this.getImageData(firmwareIdentification));
 
         try {
-            if (!transfer.imageTransferEnabled()) {
-                transfer.setImageTransferEnabled(true);
-            }
-
-            if (transfer.shouldInitiateTransfer()) {
-                transfer.initiateImageTransfer();
-            }
-
-            if (transfer.shouldTransferImage()) {
-                transfer.transferImageBlocks();
-                transfer.transferMissingImageBlocks();
-            }
-
-            if (!transfer.imageIsVerified()) {
-                transfer.verifyImage();
-            }
-
-            if (transfer.imageIsVerified() && transfer.imageToActivateOk()) {
-                transfer.activateImage();
-                return getFirmwareVersionsCommandExecutor.execute(conn, device, null);
-            } else {
-                // Image data is not correct.
-                throw new ProtocolAdapterException("An unknown error occurred while updating firmware.");
-            }
+            this.prepare(transfer);
+            this.transfer(transfer);
+            this.verify(transfer);
+            return this.activate(conn, device, transfer);
         } catch (ImageTransferException | ProtocolAdapterException e) {
             throw new ProtocolAdapterException(EXCEPTION_MSG_UPDATE_FAILED, e);
         } finally {
             transfer.setImageTransferEnabled(false);
+        }
+    }
+
+    private void prepare(final ImageTransfer transfer) throws ProtocolAdapterException {
+        if (!transfer.imageTransferEnabled()) {
+            transfer.setImageTransferEnabled(true);
+        }
+
+        if (transfer.shouldInitiateTransfer()) {
+            transfer.initiateImageTransfer();
+        }
+    }
+
+    private void transfer(final ImageTransfer transfer) throws ProtocolAdapterException {
+        if (transfer.shouldTransferImage()) {
+            transfer.transferImageBlocks();
+            transfer.transferMissingImageBlocks();
+        }
+    }
+
+    private void verify(final ImageTransfer transfer) throws ProtocolAdapterException, ImageTransferException {
+        if (!transfer.imageIsVerified()) {
+            transfer.verifyImage();
+        }
+    }
+
+    private List<FirmwareVersionDto> activate(final DeviceConnector conn, final DlmsDevice device,
+            final ImageTransfer transfer) throws ProtocolAdapterException, ImageTransferException {
+        if (transfer.imageIsVerified() && transfer.imageToActivateOk()) {
+            transfer.activateImage();
+            return getFirmwareVersionsCommandExecutor.execute(conn, device, null);
+        } else {
+            // Image data is not correct.
+            throw new ProtocolAdapterException("An unknown error occurred while updating firmware.");
         }
     }
 

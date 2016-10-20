@@ -174,22 +174,7 @@ class ImageTransfer {
         }
 
         if (verified == MethodResultCode.TEMPORARY_FAILURE) {
-            final Future<Integer> newStatus = EXECUTOR_SERVICE.submit(new ImageTransferStatusChangeWatcher(
-                    ImageTransferStatus.VERIFICATION_INITIATED, properties.getVerificationStatusCheckInterval(),
-                    properties.verificationStatusCheckTimeout));
-
-            int status;
-            try {
-                status = newStatus.get();
-            } catch (InterruptedException | ExecutionException e) {
-                throw new ProtocolAdapterException("", e);
-            }
-
-            if (status == ImageTransferStatus.VERIFICATION_FAILED.getValue()) {
-                throw new ImageTransferException(EXCEPTION_MSG_IMAGE_NOT_VERIFIED);
-            }
-
-            return;
+            this.waitForImageVerification();
         }
     }
 
@@ -215,13 +200,13 @@ class ImageTransfer {
         final List<DataObject> images = (List<DataObject>) imageTransferStatusData.getValue();
         for (final DataObject image : images) {
             @SuppressWarnings("unchecked")
-            List<DataObject> imageData = (List<DataObject>) image.getValue();
+            List<DataObject> imageDetails = (List<DataObject>) image.getValue();
 
             // Match image by signature.
-            if (this.isSignature((byte[]) imageData.get(2).getValue())) {
+            if (this.isSignature((byte[]) imageDetails.get(2).getValue())) {
                 imageWasReturned = true;
                 // Check image_size
-                if ((Long) imageData.get(0).getValue() != this.imageData.length) {
+                if ((Long) imageDetails.get(0).getValue() != this.imageData.length) {
                     return false;
                 }
             }
@@ -243,30 +228,52 @@ class ImageTransfer {
         }
 
         if (imageActivate == MethodResultCode.TEMPORARY_FAILURE) {
-            final Future<Integer> newStatus = EXECUTOR_SERVICE.submit(new ImageTransferStatusChangeWatcher(
-                    ImageTransferStatus.ACTIVATION_INITIATED, properties.getActivationStatusCheckInterval(), properties
-                            .getActivationStatusCheckTimeout(), true));
-
-            int status;
-            try {
-                status = newStatus.get();
-            } catch (InterruptedException | ExecutionException e) {
-                throw new ProtocolAdapterException(EXCEPTION_MSG_WAITING_FOR_IMAGE_ACTIVATION, e);
-            }
-
-            if (status == ImageTransferStatus.ACTIVATION_FAILED.getValue()) {
-                throw new ImageTransferException(EXCEPTION_MSG_IMAGE_TO_ACTIVATE_NOT_OK);
-            }
-
-            if (status == ImageTransferStatus.ACTIVATION_INITIATED.getValue()) {
-                throw new ImageTransferException(EXCEPTION_MSG_ACTIVATION_TAKING_TOO_LONG);
-            }
-
+            this.waitForImageActivation();
             return;
         }
 
         if (imageActivate != MethodResultCode.SUCCESS) {
             throw new ImageTransferException(EXCEPTION_MSG_IMAGE_ACTIVATE_NOT_SUCCESS);
+        }
+    }
+
+    private void waitForImageVerification() throws ProtocolAdapterException, ImageTransferException {
+        final Future<Integer> newStatus = EXECUTOR_SERVICE.submit(new ImageTransferStatusChangeWatcher(
+                ImageTransferStatus.VERIFICATION_INITIATED, properties.getVerificationStatusCheckInterval(),
+                properties.verificationStatusCheckTimeout));
+
+        int status;
+        try {
+            status = newStatus.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new ProtocolAdapterException("", e);
+        }
+
+        if (status == ImageTransferStatus.VERIFICATION_FAILED.getValue()) {
+            throw new ImageTransferException(EXCEPTION_MSG_IMAGE_NOT_VERIFIED);
+        }
+
+        return;
+    }
+
+    private void waitForImageActivation() throws ProtocolAdapterException, ImageTransferException {
+        final Future<Integer> newStatus = EXECUTOR_SERVICE.submit(new ImageTransferStatusChangeWatcher(
+                ImageTransferStatus.ACTIVATION_INITIATED, properties.getActivationStatusCheckInterval(), properties
+                        .getActivationStatusCheckTimeout(), true));
+
+        int status;
+        try {
+            status = newStatus.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new ProtocolAdapterException(EXCEPTION_MSG_WAITING_FOR_IMAGE_ACTIVATION, e);
+        }
+
+        if (status == ImageTransferStatus.ACTIVATION_FAILED.getValue()) {
+            throw new ImageTransferException(EXCEPTION_MSG_IMAGE_TO_ACTIVATE_NOT_OK);
+        }
+
+        if (status == ImageTransferStatus.ACTIVATION_INITIATED.getValue()) {
+            throw new ImageTransferException(EXCEPTION_MSG_ACTIVATION_TAKING_TOO_LONG);
         }
     }
 
@@ -331,10 +338,9 @@ class ImageTransfer {
     }
 
     private void imageBlockTransfer(final int blockNumber) throws ProtocolAdapterException {
-        final int imageBlockSize = this.getImageBlockSize();
-        final int startIndex = imageBlockSize * blockNumber;
+        final int startIndex = this.getImageBlockSize() * blockNumber;
 
-        int endIndex = startIndex + imageBlockSize;
+        int endIndex = startIndex + this.getImageBlockSize();
         // Do not transfer data with padded 0 bytes.
         endIndex = (endIndex <= this.imageData.length) ? endIndex : this.imageData.length;
         byte[] transferData = Arrays.copyOfRange(this.imageData, startIndex, endIndex);
@@ -481,14 +487,14 @@ class ImageTransfer {
         ACTIVATION_SUCCESSFUL(6),
         ACTIVATION_FAILED(7);
 
-        private final int imageTransferStatus;
+        private final int value;
 
         private ImageTransferStatus(final int imageTransferStatus) {
-            this.imageTransferStatus = imageTransferStatus;
+            this.value = imageTransferStatus;
         }
 
         private int getValue() {
-            return this.imageTransferStatus;
+            return this.value;
         }
     }
 
@@ -535,5 +541,5 @@ class ImageTransfer {
         private int getValue() {
             return this.methodId;
         }
-    };
+    }
 }

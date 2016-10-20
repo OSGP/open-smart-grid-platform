@@ -83,7 +83,7 @@ class CosemObjectAccessor {
         try {
             accessResultCode = this.connector.connection().set(setParameter);
         } catch (final IOException e) {
-            throw new ProtocolAdapterException(String.format(EXCEPTION_MSG_WRITING_ATTRIBUTE, attributeId));
+            throw new ProtocolAdapterException(String.format(EXCEPTION_MSG_WRITING_ATTRIBUTE, attributeId), e);
         }
 
         if (accessResultCode != AccessResultCode.SUCCESS) {
