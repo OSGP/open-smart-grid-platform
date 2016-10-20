@@ -31,7 +31,7 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
     private FirwareImageFactory firmwareImageFactory;
 
     @Autowired
-    GetFirmwareVersionsCommandExecutor getFirmwareVersionsCommandExecutor;
+    private GetFirmwareVersionsCommandExecutor getFirmwareVersionsCommandExecutor;
 
     @Value("${command.updatefirmware.activationstatuscheck.interval}")
     private int activationStatusCheckInterval;
