@@ -97,7 +97,7 @@
         </wsdl:part>
     </wsdl:message>
     
-    <wsdl:portType name="SmartmeteradhocPort">
+    <wsdl:portType name="SmartMeteringAdhocPort">
         <wsdl:operation name="SynchronizeTime">
             <wsdl:input message="tns:SynchronizeTimeRequest" name="SynchronizeTimeRequest" />
             <wsdl:output message="tns:SynchronizeTimeAsyncResponse" name="SynchronizeTimeAsyncResponse" />
@@ -139,7 +139,7 @@
         </wsdl:operation>        
     </wsdl:portType>
     
-    <wsdl:binding name="SmartmeteradhocPortSoap11" type="tns:SmartmeteradhocPort">
+    <wsdl:binding name="SmartMeteringAdhocPortSoap11" type="tns:SmartMeteringAdhocPort">
         <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
         <wsdl:operation name="SynchronizeTime">
             <soap:operation soapAction="" />
@@ -246,8 +246,8 @@
         </wsdl:operation>
     </wsdl:binding>
     
-    <wsdl:service name="SmartmeteradhocPortService">
-        <wsdl:port binding="tns:SmartmeteradhocPortSoap11" name="SmartmeteradhocPortSoap11">
+    <wsdl:service name="SmartMeteringAdhocPortService">
+        <wsdl:port binding="tns:SmartMeteringAdhocPortSoap11" name="SmartMeteringAdhocPortSoap11">
             <soap:address
                 location="http://localhost:8080/osgp-adapter-ws-smartmetering/smartMetering/adhocService/" />
         </wsdl:port>

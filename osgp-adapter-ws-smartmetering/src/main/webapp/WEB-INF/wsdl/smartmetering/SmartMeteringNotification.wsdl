@@ -34,7 +34,7 @@
         </wsdl:part>
     </wsdl:message>
     
-    <wsdl:portType name="SmartmeterNotificationPort">
+    <wsdl:portType name="SmartMeteringNotificationPort">
    
         <wsdl:operation name="SendNotification">
             <wsdl:input message="tns:SendNotificationRequest" name="SendNotificationRequest">
@@ -45,7 +45,7 @@
 
     </wsdl:portType>
     
-    <wsdl:binding name="SmartmeterNotificationPortSoap11" type="tns:SmartmeterNotificationPort">
+    <wsdl:binding name="SmartMeteringNotificationPortSoap11" type="tns:SmartMeteringNotificationPort">
         <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
 
         <wsdl:operation name="SendNotification">
@@ -62,8 +62,8 @@
         </wsdl:operation>
 
     </wsdl:binding>
-    <wsdl:service name="SmartmeterNotificationPortService">
-        <wsdl:port binding="tns:SmartmeterNotificationPortSoap11" name="SmartmeterNotificationPortSoap11">
+    <wsdl:service name="SmartMeteringNotificationPortService">
+        <wsdl:port binding="tns:SmartMeteringNotificationPortSoap11" name="SmartMeteringNotificationPortSoap11">
             <soap:address
                 location="http://localhost:8080/osgp-adapter-ws-smartmetering/smartMetering/notificationService/" />
         </wsdl:port>
