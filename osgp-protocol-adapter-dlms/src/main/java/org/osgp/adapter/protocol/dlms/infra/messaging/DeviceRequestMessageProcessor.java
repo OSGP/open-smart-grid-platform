@@ -55,6 +55,9 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
     protected MessageProcessorMap dlmsRequestMessageProcessorMap;
 
     @Autowired
+    private DlmsLogItemRequestMessageSender dlmsLogItemRequestMessageSender;
+
+    @Autowired
     protected OsgpExceptionConverter osgpExceptionConverter;
 
     @Autowired
@@ -131,10 +134,16 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             Serializable response = null;
             if (this.usesDeviceConnection()) {
                 device = this.domainHelperService.findDlmsDevice(messageMetadata);
-                conn = this.dlmsConnectionFactory.getConnection(device);
-                if (conn.hasDlmsMessageListener()) {
-                    conn.getDlmsMessageListener().setMessageMetadata(messageMetadata);
+                final DlmsMessageListener dlmsMessageListener;
+                if (device.isInDebugMode()) {
+                    dlmsMessageListener = new DlmsMessageListener(device.getDeviceIdentification(),
+                            this.dlmsLogItemRequestMessageSender);
+                    dlmsMessageListener.setMessageMetadata(messageMetadata);
+                    dlmsMessageListener.setDescription("Create connection");
+                } else {
+                    dlmsMessageListener = null;
                 }
+                conn = this.dlmsConnectionFactory.getConnection(device, dlmsMessageListener);
                 response = this.handleMessage(conn, device, message.getObject());
             } else {
                 response = this.handleMessage(message.getObject());
@@ -154,6 +163,9 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         } finally {
             if (conn != null) {
                 LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
+                if (conn.hasDlmsMessageListener()) {
+                    conn.getDlmsMessageListener().setDescription("Close connection");
+                }
                 try {
                     conn.getConnection().close();
                 } catch (final IOException e) {

@@ -22,7 +22,6 @@ import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
-import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsLogItemRequestMessageSender;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,12 +45,10 @@ public class Hls5Connector {
     private final RecoverKeyProcessInitiator recoverKeyProcessInitiator;
 
     private DlmsDevice device;
+    private DlmsMessageListener dlmsMessageListener;
 
     @Autowired
     private EncryptionService encryptionService;
-
-    @Autowired
-    private DlmsLogItemRequestMessageSender dlmsLogItemRequestMessageSender;
 
     public Hls5Connector(final RecoverKeyProcessInitiator recoverKeyProcessInitiator, final int responseTimeout,
             final int logicalDeviceAddress, final int clientAccessPoint) {
@@ -63,6 +60,10 @@ public class Hls5Connector {
 
     public void setDevice(final DlmsDevice device) {
         this.device = device;
+    }
+
+    public void setDlmsMessageListener(final DlmsMessageListener dlmsMessageListener) {
+        this.dlmsMessageListener = dlmsMessageListener;
     }
 
     public DlmsConnectionHolder connect() throws TechnicalException {
@@ -152,16 +153,11 @@ public class Hls5Connector {
             tcpConnectionBuilder.setChallengeLength(challengeLength);
         }
 
-        final DlmsMessageListener dlmsMessageListener;
         if (this.device.isInDebugMode()) {
-            dlmsMessageListener = new DlmsMessageListener(this.device.getDeviceIdentification(),
-                    this.dlmsLogItemRequestMessageSender);
-            tcpConnectionBuilder.setRawMessageListener(dlmsMessageListener);
-        } else {
-            dlmsMessageListener = null;
+            tcpConnectionBuilder.setRawMessageListener(this.dlmsMessageListener);
         }
 
-        return new DlmsConnectionHolder(tcpConnectionBuilder.build(), dlmsMessageListener);
+        return new DlmsConnectionHolder(tcpConnectionBuilder.build(), this.dlmsMessageListener);
     }
 
     private void setOptionalValues(final TcpConnectionBuilder tcpConnectionBuilder) {
