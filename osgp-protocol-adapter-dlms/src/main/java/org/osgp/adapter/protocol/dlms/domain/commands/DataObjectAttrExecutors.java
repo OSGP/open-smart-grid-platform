@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openmuc.jdlms.AccessResultCode;
+import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.SetParameter;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
@@ -117,4 +118,12 @@ public class DataObjectAttrExecutors {
         return this.containsError;
     }
 
+    public String describeAttributes() {
+        final int numberOfAttributes = this.dataObjectAttrExecutorList.size();
+        final AttributeAddress[] attributeAddresses = new AttributeAddress[numberOfAttributes];
+        for (int i = 0; i < numberOfAttributes; i++) {
+            attributeAddresses[i] = this.dataObjectAttrExecutorList.get(i).getAttrAddress();
+        }
+        return JdlmsObjectToStringUtil.describeAttributes(attributeAddresses);
+    }
 }
