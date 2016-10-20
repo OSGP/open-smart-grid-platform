@@ -30,6 +30,7 @@ import org.mockito.internal.util.reflection.Whitebox;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
+import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
@@ -71,8 +72,11 @@ public class SetConfigurationObjectCommandExecutorTest {
     private DeviceConnector connMock;
 
     @Mock
+    private DlmsConnection dlmsConnMock;
+
+    @Mock
     private List<GetResult> getResultListMock;
-    
+
     @Mock
     private GetResult getResultMock;
 
@@ -101,13 +105,17 @@ public class SetConfigurationObjectCommandExecutorTest {
     private SetConfigurationObjectCommandExecutor executor;
 
     /*
-     * This test was refactored because in the new jdlms-1.0.0.jar, the interface to DlmsConnection (was ClientConnection) was changed significantly.
-     * As a result, in this test the ArgumentCapture could not be used anymore, hence this test is not completely identical with the orginal version.
-     * A mockito expert may try to fix this.     
+     * This test was refactored because in the new jdlms-1.0.0.jar, the
+     * interface to DlmsConnection (was ClientConnection) was changed
+     * significantly. As a result, in this test the ArgumentCapture could not be
+     * used anymore, hence this test is not completely identical with the
+     * orginal version. A mockito expert may try to fix this.
      */
     @Test
-    public void testForbiddenFlagsAreNotSet()
-            throws IOException, TimeoutException, ProtocolAdapterException, DecoderException {
+    public void testForbiddenFlagsAreNotSet() throws IOException, TimeoutException, ProtocolAdapterException,
+            DecoderException {
+
+        when(this.connMock.connection()).thenReturn(this.dlmsConnMock);
 
         // Prepare new configuration object list to be set
         final List<ConfigurationFlagDto> configurationFlagList = this.getAllForbiddenFlags();
@@ -118,9 +126,10 @@ public class SetConfigurationObjectCommandExecutorTest {
         // Mock the retrieval of the current ConfigurationObject
         this.mockRetrievalOfCurrentConfigurationObject();
 
-        final List<AccessResultCode> accessResultCodeList =  new ArrayList<>();
+        final List<AccessResultCode> accessResultCodeList = new ArrayList<>();
         accessResultCodeList.add(AccessResultCode.SUCCESS);
-        when(this.connMock.connection().set(eq(false), Matchers.anyListOf(SetParameter.class))).thenReturn(accessResultCodeList);
+        when(this.connMock.connection().set(eq(false), Matchers.anyListOf(SetParameter.class))).thenReturn(
+                accessResultCodeList);
 
         final DlmsDevice device = this.getDlmsDevice();
         final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
@@ -128,7 +137,7 @@ public class SetConfigurationObjectCommandExecutorTest {
         // Run test
         this.executor.execute(this.connMock, device, configurationObject);
 
-        DataObject obj1 = DataObject.newInteger16Data((short)10);
+        DataObject obj1 = DataObject.newInteger16Data((short) 10);
         DataObject obj2 = DataObject.newBoolData(true);
         List<DataObject> dataobjects = new ArrayList<>();
         dataobjects.add(obj1);
@@ -136,10 +145,10 @@ public class SetConfigurationObjectCommandExecutorTest {
         DataObject dataObject = DataObject.newStructureData(dataobjects);
 
         SetParameter capturedSetParameter = new SetParameter(attributeAddress, dataObject);
-                
+
         // Verify AttributeAddress
-        final AttributeAddress capturedAttributeAddress = (AttributeAddress) Whitebox
-                .getInternalState(capturedSetParameter, "attributeAddress");
+        final AttributeAddress capturedAttributeAddress = (AttributeAddress) Whitebox.getInternalState(
+                capturedSetParameter, "attributeAddress");
 
         final int resultingClassId = (Integer) Whitebox.getInternalState(capturedAttributeAddress, "classId");
         final ObisCode resultingObisCode = (ObisCode) Whitebox.getInternalState(capturedAttributeAddress, "instanceId");
@@ -154,9 +163,12 @@ public class SetConfigurationObjectCommandExecutorTest {
     }
 
     private void mockRetrievalOfCurrentConfigurationObject() throws IOException, TimeoutException, DecoderException {
-        when(this.connMock.connection().get(eq(false), Matchers.anyListOf(AttributeAddress.class))).thenReturn(this.getResultListMock);
-        when(this.connMock.connection().get(eq(false), Matchers.any(AttributeAddress.class))).thenReturn(this.getResultMock);
-        when(this.connMock.connection().get(eq(Matchers.anyListOf(AttributeAddress.class)))).thenReturn(this.getResultListMock);
+        when(this.connMock.connection().get(eq(false), Matchers.anyListOf(AttributeAddress.class))).thenReturn(
+                this.getResultListMock);
+        when(this.connMock.connection().get(eq(false), Matchers.any(AttributeAddress.class))).thenReturn(
+                this.getResultMock);
+        when(this.connMock.connection().get(eq(Matchers.anyListOf(AttributeAddress.class)))).thenReturn(
+                this.getResultListMock);
         when(this.connMock.connection().get(eq(Matchers.any(AttributeAddress.class)))).thenReturn(this.getResultMock);
 
         when(this.getResultMock.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
