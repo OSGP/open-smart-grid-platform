@@ -37,6 +37,6 @@ public class SpecialDaysRequestMessageProcessor extends WebServiceRequestMessage
 
         final SpecialDaysRequest specialDaysRequest = (SpecialDaysRequest) dataObject;
 
-        this.configurationService.requestSpecialDays(deviceMessageMetadata, specialDaysRequest);
+        this.configurationService.setSpecialDays(deviceMessageMetadata, specialDaysRequest);
     }
 }
