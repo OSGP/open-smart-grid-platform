@@ -28,7 +28,7 @@ public class SpecialDaysResponseMessageProcessor extends OsgpCoreResponseMessage
     private ConfigurationService configurationService;
 
     protected SpecialDaysResponseMessageProcessor() {
-        super(DeviceFunction.REQUEST_SPECIAL_DAYS);
+        super(DeviceFunction.SET_SPECIAL_DAYS);
     }
 
     @Override

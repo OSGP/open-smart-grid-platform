@@ -9,6 +9,7 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 public interface ActionRequest extends Serializable {
@@ -19,4 +20,9 @@ public interface ActionRequest extends Serializable {
      *             is thrown when the validation is not ok.
      */
     void validate() throws FunctionalException;
+
+    /**
+     * @returns the appropriate {@link DeviceFunction} for the object
+     */
+    DeviceFunction getDeviceFunction();
 }

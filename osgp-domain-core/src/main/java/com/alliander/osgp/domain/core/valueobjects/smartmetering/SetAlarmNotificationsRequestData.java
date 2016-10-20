@@ -11,6 +11,7 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 public class SetAlarmNotificationsRequestData implements Serializable, ActionRequest {
@@ -30,5 +31,10 @@ public class SetAlarmNotificationsRequestData implements Serializable, ActionReq
     @Override
     public void validate() throws FunctionalException {
         // No validation needed
+    }
+
+    @Override
+    public DeviceFunction getDeviceFunction() {
+        return DeviceFunction.SET_ALARM_NOTIFICATIONS;
     }
 }

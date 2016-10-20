@@ -11,6 +11,7 @@ import java.io.Serializable;
 
 import org.joda.time.DateTime;
 
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -46,7 +47,7 @@ public class FindEventsRequestData implements Serializable, ActionRequest {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionValueObject
      * #validate()
@@ -60,4 +61,8 @@ public class FindEventsRequestData implements Serializable, ActionRequest {
         }
     }
 
+    @Override
+    public DeviceFunction getDeviceFunction() {
+        return DeviceFunction.FIND_EVENTS;
+    }
 }

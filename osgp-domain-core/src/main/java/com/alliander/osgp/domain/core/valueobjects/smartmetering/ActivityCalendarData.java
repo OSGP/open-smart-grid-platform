@@ -9,13 +9,14 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 public class ActivityCalendarData implements Serializable, ActionRequest {
 
     private static final long serialVersionUID = 4760320198627332239L;
 
-    private ActivityCalendar activityCalendar;
+    private final ActivityCalendar activityCalendar;
 
     public ActivityCalendarData(final ActivityCalendar activityCalendar) {
         this.activityCalendar = activityCalendar;
@@ -28,6 +29,11 @@ public class ActivityCalendarData implements Serializable, ActionRequest {
     @Override
     public void validate() throws FunctionalException {
         // No validation needed
+    }
+
+    @Override
+    public DeviceFunction getDeviceFunction() {
+        return DeviceFunction.SET_ACTIVITY_CALENDAR;
     }
 
 }
