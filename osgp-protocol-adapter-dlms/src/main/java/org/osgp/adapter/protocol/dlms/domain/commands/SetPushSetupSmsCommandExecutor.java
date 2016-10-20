@@ -60,9 +60,10 @@ public class SetPushSetupSmsCommandExecutor extends SetPushSetupCommandExecutor<
 
         final SetParameter setParameterSendDestinationAndMethod = this.getSetParameter(pushSetupSms);
 
-        conn.getDlmsMessageListener().setDescription(
-                "SetPushSetupSms configure send destination and method, set attribute: " + this.describeAttributes(
-                        new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_SEND_DESTINATION_AND_METHOD)));
+        conn.getDlmsMessageListener()
+                .setDescription("SetPushSetupSms configure send destination and method, set attribute: "
+                        + JdlmsObjectToStringUtil.describeAttributes(
+                                new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_SEND_DESTINATION_AND_METHOD)));
 
         AccessResultCode resultCode;
         try {

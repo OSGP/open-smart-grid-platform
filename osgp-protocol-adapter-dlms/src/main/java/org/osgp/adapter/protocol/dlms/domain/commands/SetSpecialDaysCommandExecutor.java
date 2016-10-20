@@ -94,7 +94,7 @@ public class SetSpecialDaysCommandExecutor extends AbstractCommandExecutor<List<
             specialDayValues = ", values [" + specialDayData.substring(2) + "]";
         }
         conn.getDlmsMessageListener().setDescription("SetSpecialDays" + specialDayValues + ", set attribute: "
-                + this.describeAttributes(specialDaysTableEntries));
+                + JdlmsObjectToStringUtil.describeAttributes(specialDaysTableEntries));
 
         try {
             return conn.getConnection().set(request);

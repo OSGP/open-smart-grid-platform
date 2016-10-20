@@ -69,8 +69,8 @@ AbstractCommandExecutor<SynchronizeTimeRequestDto, AccessResultCode> {
 
         final SetParameter setParameter = new SetParameter(clockTime, time);
 
-        conn.getDlmsMessageListener()
-                .setDescription("SynchronizeTime to " + dt + ", set attribute: " + this.describeAttributes(clockTime));
+        conn.getDlmsMessageListener().setDescription("SynchronizeTime to " + dt + ", set attribute: "
+                + JdlmsObjectToStringUtil.describeAttributes(clockTime));
 
         try {
             return conn.getConnection().set(setParameter);

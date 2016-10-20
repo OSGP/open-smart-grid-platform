@@ -99,7 +99,7 @@ public class SetActivityCalendarCommandExecutor extends AbstractCommandExecutor<
         }
         conn.getDlmsMessageListener()
                 .setDescription("SetActivityCalendar for calendar " + activityCalendar.getCalendarName()
-                        + ", set attributes: " + this.describeAttributes(attributeAddresses));
+                        + ", set attributes: " + JdlmsObjectToStringUtil.describeAttributes(attributeAddresses));
 
         dataObjectExecutors.execute(conn);
 

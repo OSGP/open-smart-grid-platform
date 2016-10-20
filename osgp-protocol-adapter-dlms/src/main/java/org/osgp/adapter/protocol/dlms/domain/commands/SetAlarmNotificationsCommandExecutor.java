@@ -97,7 +97,7 @@ public class SetAlarmNotificationsCommandExecutor extends
 
         conn.getDlmsMessageListener()
         .setDescription("SetAlarmNotifications retrieve current value, retrieve attribute: "
-                + this.describeAttributes(alarmFilterValue));
+                + JdlmsObjectToStringUtil.describeAttributes(alarmFilterValue));
 
         LOGGER.info(
                 "Retrieving current alarm filter by issuing get request for class id: {}, obis code: {}, attribute id: {}",
@@ -120,7 +120,7 @@ public class SetAlarmNotificationsCommandExecutor extends
         final SetParameter setParameter = new SetParameter(alarmFilterValue, value);
 
         conn.getDlmsMessageListener().setDescription("SetAlarmNotifications write updated value " + alarmFilterLongValue
-                + ", set attribute: " + this.describeAttributes(alarmFilterValue));
+                + ", set attribute: " + JdlmsObjectToStringUtil.describeAttributes(alarmFilterValue));
 
         return conn.getConnection().set(setParameter);
     }

@@ -55,8 +55,8 @@ AbstractCommandExecutor<SpecificAttributeValueRequestDto, String> {
         final AttributeAddress attributeAddress = new AttributeAddress(requestData.getClassId(), obisCode,
                 requestData.getAttribute());
 
-        conn.getDlmsMessageListener().setDescription(
-                "GetSpecificAttributeValue, retrieve attribute: " + this.describeAttributes(attributeAddress));
+        conn.getDlmsMessageListener().setDescription("GetSpecificAttributeValue, retrieve attribute: "
+                + JdlmsObjectToStringUtil.describeAttributes(attributeAddress));
 
         final DataObject attributeValue = this.dlmsHelper.getAttributeValue(conn, attributeAddress);
         return this.dlmsHelper.getDebugInfo(attributeValue);

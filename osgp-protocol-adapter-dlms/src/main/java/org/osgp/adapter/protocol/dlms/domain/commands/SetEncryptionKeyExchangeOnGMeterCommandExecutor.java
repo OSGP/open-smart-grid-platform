@@ -114,8 +114,9 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor extends
             final MethodParameter methodTransferKey = this.getTransferKeyToMBusMethodParameter(obisCode,
                     decryptedMasterKey, decryptedEncryptionKey);
 
-            conn.getDlmsMessageListener().setDescription("SetEncryptionKeyExchangeOnGMeter for channel "
-                    + protocolMeterInfo.getChannel() + ", call method: " + this.describeMethod(methodTransferKey));
+            conn.getDlmsMessageListener()
+                    .setDescription("SetEncryptionKeyExchangeOnGMeter for channel " + protocolMeterInfo.getChannel()
+                            + ", call method: " + JdlmsObjectToStringUtil.describeMethod(methodTransferKey));
 
             MethodResult methodResultCode = conn.getConnection().action(methodTransferKey);
             this.checkMethodResultCode(methodResultCode, "getTransferKeyToMBusMethodParameter");

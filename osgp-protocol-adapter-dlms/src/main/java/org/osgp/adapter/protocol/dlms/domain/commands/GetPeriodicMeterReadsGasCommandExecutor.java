@@ -263,7 +263,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
             conn.getDlmsMessageListener()
                     .setDescription("GetPeriodicMeterReadsGas for channel " + periodicMeterReadsQuery.getChannel()
                             + ", " + periodType + " from " + beginDateTime + " until " + endDateTime
-                            + ", retrieve attribute: " + this.describeAttributes(address));
+                            + ", retrieve attribute: " + JdlmsObjectToStringUtil.describeAttributes(address));
 
             getResultList.addAll(this.dlmsHelperService.getAndCheck(conn, device, "retrieve periodic meter reads for "
                     + periodType + ", channel " + periodicMeterReadsQuery.getChannel(), address));

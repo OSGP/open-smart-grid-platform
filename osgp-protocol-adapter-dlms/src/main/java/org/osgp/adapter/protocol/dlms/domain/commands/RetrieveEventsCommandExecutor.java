@@ -90,7 +90,7 @@ public class RetrieveEventsCommandExecutor extends AbstractCommandExecutor<FindE
         conn.getDlmsMessageListener()
                 .setDescription("RetrieveEvents for " + findEventsQuery.getEventLogCategory() + " from "
                         + findEventsQuery.getFrom() + " until " + findEventsQuery.getUntil() + ", retrieve attribute: "
-                        + this.describeAttributes(eventLogBuffer));
+                        + JdlmsObjectToStringUtil.describeAttributes(eventLogBuffer));
 
         GetResult getResult;
         try {

@@ -44,8 +44,8 @@ public class GetPushSetupAlarmCommandExecutor extends GetPushSetupCommandExecuto
     public PushSetupAlarmDto execute(final DlmsConnectionHolder conn, final DlmsDevice device, final Void useless)
             throws ProtocolAdapterException {
 
-        conn.getDlmsMessageListener().setDescription(
-                "GetPushSetupAlarm, retrieve attributes: " + this.describeAttributes(ATTRIBUTE_ADDRESSES));
+        conn.getDlmsMessageListener().setDescription("GetPushSetupAlarm, retrieve attributes: "
+                + JdlmsObjectToStringUtil.describeAttributes(ATTRIBUTE_ADDRESSES));
 
         LOGGER.info("Retrieving Push Setup Alarm");
 

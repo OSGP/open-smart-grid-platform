@@ -71,8 +71,8 @@ public class ReadAlarmRegisterCommandExecutor extends
 
         final AttributeAddress alarmRegisterValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
-        conn.getDlmsMessageListener().setDescription(
-                "ReadAlarmRegister, retrieve attribute: " + this.describeAttributes(alarmRegisterValue));
+        conn.getDlmsMessageListener().setDescription("ReadAlarmRegister, retrieve attribute: "
+                + JdlmsObjectToStringUtil.describeAttributes(alarmRegisterValue));
 
         GetResult getResult = null;
         try {

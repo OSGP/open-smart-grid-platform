@@ -89,8 +89,8 @@ public class GetAssociationLnObjectsCommandExecutor extends AbstractCommandExecu
 
         final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
-        conn.getDlmsMessageListener().setDescription(
-                "GetAssociationLnObjects, retrieve attribute: " + this.describeAttributes(attributeAddress));
+        conn.getDlmsMessageListener().setDescription("GetAssociationLnObjects, retrieve attribute: "
+                + JdlmsObjectToStringUtil.describeAttributes(attributeAddress));
 
         LOGGER.debug("Retrieving Association LN objects for class id: {}, obis code: {}, attribute id: {}", CLASS_ID,
                 OBIS_CODE, ATTRIBUTE_ID);

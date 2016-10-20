@@ -79,7 +79,7 @@ public class SetAdministrativeStatusCommandExecutor extends
         final SetParameter setParameter = new SetParameter(attributeAddress, value);
 
         conn.getDlmsMessageListener().setDescription("SetAdminstrativeStatus to " + administrativeStatusType
-                + ", set attribute: " + this.describeAttributes(attributeAddress));
+                + ", set attribute: " + JdlmsObjectToStringUtil.describeAttributes(attributeAddress));
 
         try {
             return conn.getConnection().set(setParameter);

@@ -10,8 +10,6 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 import javax.annotation.PostConstruct;
 
 import org.openmuc.jdlms.AccessResultCode;
-import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.MethodParameter;
 import org.openmuc.jdlms.MethodResultCode;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
@@ -131,32 +129,5 @@ public abstract class AbstractCommandExecutor<T, R> implements CommandExecutor<T
         if (MethodResultCode.SUCCESS != methodResultCode) {
             throw new ProtocolAdapterException("MethodResultCode: " + methodResultCode);
         }
-    }
-
-    protected String describeAttributes(final AttributeAddress... attributeAddresses) {
-
-        if (attributeAddresses == null || attributeAddresses.length == 0) {
-            return "";
-        }
-
-        final StringBuilder sb = new StringBuilder();
-        for (final AttributeAddress attributeAddress : attributeAddresses) {
-            sb.append(", {").append(attributeAddress.getClassId()).append(',').append(attributeAddress.getInstanceId())
-            .append(',').append(attributeAddress.getId()).append('}');
-        }
-        return sb.substring(2);
-    }
-
-    protected String describeMethod(final MethodParameter methodParameter) {
-
-        if (methodParameter == null) {
-            return "";
-        }
-
-        final StringBuilder sb = new StringBuilder();
-        sb.append('{').append(methodParameter.getClassId()).append(',').append(methodParameter.getInstanceId())
-                .append(',').append(methodParameter.getId()).append('}');
-
-        return sb.toString();
     }
 }

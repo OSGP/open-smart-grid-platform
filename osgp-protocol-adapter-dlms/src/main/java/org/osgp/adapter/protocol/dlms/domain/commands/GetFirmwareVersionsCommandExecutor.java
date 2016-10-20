@@ -73,8 +73,8 @@ public class GetFirmwareVersionsCommandExecutor extends AbstractCommandExecutor<
 
         final List<FirmwareVersionDto> resultList = new ArrayList<>();
 
-        conn.getDlmsMessageListener().setDescription(
-                "GetFirmwareVersions, retrieve attributes: " + this.describeAttributes(ATTRIBUTE_ADDRESSES));
+        conn.getDlmsMessageListener().setDescription("GetFirmwareVersions, retrieve attributes: "
+                + JdlmsObjectToStringUtil.describeAttributes(ATTRIBUTE_ADDRESSES));
 
         final List<GetResult> getResultList = this.dlmsHelperService.getAndCheck(conn, device,
                 "retrieve firmware versions", ATTRIBUTE_ADDRESSES);
