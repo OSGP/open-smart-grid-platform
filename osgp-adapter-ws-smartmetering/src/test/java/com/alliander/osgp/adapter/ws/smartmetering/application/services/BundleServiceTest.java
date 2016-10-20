@@ -8,7 +8,7 @@
 package com.alliander.osgp.adapter.ws.smartmetering.application.services;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -61,11 +61,16 @@ public class BundleServiceTest {
 
     private Organisation organisation;
     private Device device;
+    private List<ActionRequest> actionRequestMockList;
 
     @Before
-    public void prepareTest() {
+    public void prepareTest() throws FunctionalException {
         this.organisation = new Organisation(ORGANISATION_IDENTIFICATION, NAME, PREFIX, FUNCTION_GROEP);
         this.device = new Device(DEVICE_IDENTIFICATION);
+        this.actionRequestMockList = this.createActionRequestMockList();
+        when(this.domainHelperService.findOrganisation(ORGANISATION_IDENTIFICATION)).thenReturn(this.organisation);
+        when(this.domainHelperService.findActiveDevice(DEVICE_IDENTIFICATION)).thenReturn(this.device);
+
     }
 
     /**
@@ -77,15 +82,9 @@ public class BundleServiceTest {
      */
     @Test
     public void testAllOperationsAreAllowed() throws FunctionalException {
-
-        // Prepare test
-        final List<ActionRequest> actionRequestList = this.createActionRequestMockList();
-        when(this.domainHelperService.findOrganisation(ORGANISATION_IDENTIFICATION)).thenReturn(this.organisation);
-        when(this.domainHelperService.findActiveDevice(DEVICE_IDENTIFICATION)).thenReturn(this.device);
-
         // Run the test
-        this.bundleService.enqueueBundleRequest(ORGANISATION_IDENTIFICATION, DEVICE_IDENTIFICATION, actionRequestList,
-                1);
+        this.bundleService.enqueueBundleRequest(ORGANISATION_IDENTIFICATION, DEVICE_IDENTIFICATION,
+                this.actionRequestMockList, 1);
 
         // Verify the test
         final ArgumentCaptor<SmartMeteringRequestMessage> message = ArgumentCaptor
@@ -98,11 +97,11 @@ public class BundleServiceTest {
 
         final BundleMessageRequest requestMessage = (BundleMessageRequest) message.getValue().getRequest();
         final List<ActionRequest> actionList = requestMessage.getBundleList();
-        assertEquals(actionList.size(), actionRequestList.size());
-        for (final ActionRequest ar : actionList) {
-            assertTrue(actionRequestList.contains(ar));
-        }
+        assertEquals(actionList.size(), this.actionRequestMockList.size());
 
+        for (int i = 0; i < actionList.size(); i++) {
+            assertEquals(this.actionRequestMockList.get(i), actionList.get(i));
+        }
     }
 
     /**
@@ -117,20 +116,16 @@ public class BundleServiceTest {
     public void testExceptionWhenOperationNotAllowed() throws FunctionalException {
 
         // Prepare test
-        final List<ActionRequest> actionRequestMockList = this.createActionRequestMockList();
-        when(this.domainHelperService.findOrganisation(ORGANISATION_IDENTIFICATION)).thenReturn(this.organisation);
-        when(this.domainHelperService.findActiveDevice(DEVICE_IDENTIFICATION)).thenReturn(this.device);
-
         final FunctionalException fe = new FunctionalException(FunctionalExceptionType.UNAUTHORIZED,
                 ComponentType.WS_SMART_METERING);
-
         doThrow(fe).when(this.domainHelperService).isAllowed(this.organisation, this.device,
                 DeviceFunction.REQUEST_PERIODIC_METER_DATA);
 
         // Run the test
         try {
             this.bundleService.enqueueBundleRequest(ORGANISATION_IDENTIFICATION, DEVICE_IDENTIFICATION,
-                    actionRequestMockList, 1);
+                    this.actionRequestMockList, 1);
+            fail();
         } catch (final FunctionalException e) {
             // Verify the test
             assertEquals(fe, e);
@@ -147,11 +142,6 @@ public class BundleServiceTest {
     @Test
     public void testExceptionWhenBundleIsNotAllowed() throws FunctionalException {
 
-        // Prepare test
-        final List<ActionRequest> actionRequestMockList = this.createActionRequestMockList();
-        when(this.domainHelperService.findOrganisation(ORGANISATION_IDENTIFICATION)).thenReturn(this.organisation);
-        when(this.domainHelperService.findActiveDevice(DEVICE_IDENTIFICATION)).thenReturn(this.device);
-
         final FunctionalException fe = new FunctionalException(FunctionalExceptionType.UNAUTHORIZED,
                 ComponentType.WS_SMART_METERING);
 
@@ -161,7 +151,7 @@ public class BundleServiceTest {
         // Run the test
         try {
             this.bundleService.enqueueBundleRequest(ORGANISATION_IDENTIFICATION, DEVICE_IDENTIFICATION,
-                    actionRequestMockList, 1);
+                    this.actionRequestMockList, 1);
         } catch (final FunctionalException e) {
             // Verify the test
             assertEquals(fe, e);
