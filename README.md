@@ -29,7 +29,6 @@ Also make sure that the following information is added to vhost.conf:
 
 Under ```<VirtualHost>```
 ```xml
-    Redirect permanent /web-device-simulator https://localhost/web-device-simulator
     Redirect permanent /web-demo-app https://localhost/web-demo-app
 ```
 
