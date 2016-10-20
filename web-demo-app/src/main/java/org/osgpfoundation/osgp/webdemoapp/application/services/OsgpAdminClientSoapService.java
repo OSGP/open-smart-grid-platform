@@ -7,7 +7,7 @@
  */
 package org.osgpfoundation.osgp.webdemoapp.application.services;
 
-import org.osgpfoundation.osgp.webdemoapp.application.infra.platform.SoapRequestHelper;
+import org.osgpfoundation.osgp.webdemoapp.infra.platform.SoapRequestHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.client.core.WebServiceTemplate;
 

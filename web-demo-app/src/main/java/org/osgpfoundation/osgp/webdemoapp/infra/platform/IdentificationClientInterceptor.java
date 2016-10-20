@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.osgpfoundation.osgp.webdemoapp.application.infra.platform;
+package org.osgpfoundation.osgp.webdemoapp.infra.platform;
 
 import javax.xml.namespace.QName;
 

@@ -10,10 +10,10 @@ package org.osgpfoundation.osgp.webdemoapp.application.config;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPException;
 
-import org.osgpfoundation.osgp.webdemoapp.application.infra.platform.KeyStoreHelper;
-import org.osgpfoundation.osgp.webdemoapp.application.infra.platform.SoapRequestHelper;
 import org.osgpfoundation.osgp.webdemoapp.application.services.OsgpAdminClientSoapService;
 import org.osgpfoundation.osgp.webdemoapp.application.services.OsgpPublicLightingClientSoapService;
+import org.osgpfoundation.osgp.webdemoapp.infra.platform.KeyStoreHelper;
+import org.osgpfoundation.osgp.webdemoapp.infra.platform.SoapRequestHelper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
