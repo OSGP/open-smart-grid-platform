@@ -90,18 +90,16 @@ public class SetActivityCalendarCommandExecutor extends AbstractCommandExecutor<
                 .addExecutor(this.getWeekProfileTableExecutor(weekProfileSet))
                 .addExecutor(this.getDayProfileTablePassiveExecutor(dayProfileSet));
 
-        if (conn.hasDlmsMessageListener()) {
-            final List<DataObjectAttrExecutor> dataObjectAttrExecutorList = dataObjectExecutors
-                    .getDataObjectAttrExecutorList();
-            final int numberOfAttributes = dataObjectAttrExecutorList.size();
-            final AttributeAddress[] attributeAddresses = new AttributeAddress[numberOfAttributes];
-            for (int i = 0; i < numberOfAttributes; i++) {
-                attributeAddresses[i] = dataObjectAttrExecutorList.get(i).getAttrAddress();
-            }
-            conn.getDlmsMessageListener()
-                    .setDescription("SetActivityCalendar for calendar " + activityCalendar.getCalendarName()
-                            + ", set attributes: " + this.describeAttributes(attributeAddresses));
+        final List<DataObjectAttrExecutor> dataObjectAttrExecutorList = dataObjectExecutors
+                .getDataObjectAttrExecutorList();
+        final int numberOfAttributes = dataObjectAttrExecutorList.size();
+        final AttributeAddress[] attributeAddresses = new AttributeAddress[numberOfAttributes];
+        for (int i = 0; i < numberOfAttributes; i++) {
+            attributeAddresses[i] = dataObjectAttrExecutorList.get(i).getAttrAddress();
         }
+        conn.getDlmsMessageListener()
+                .setDescription("SetActivityCalendar for calendar " + activityCalendar.getCalendarName()
+                        + ", set attributes: " + this.describeAttributes(attributeAddresses));
 
         dataObjectExecutors.execute(conn);
 

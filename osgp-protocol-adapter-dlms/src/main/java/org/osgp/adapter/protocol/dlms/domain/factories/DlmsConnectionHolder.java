@@ -8,6 +8,8 @@
 package org.osgp.adapter.protocol.dlms.domain.factories;
 
 import org.openmuc.jdlms.DlmsConnection;
+import org.openmuc.jdlms.RawMessageData;
+import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 
 public class DlmsConnectionHolder {
@@ -15,9 +17,35 @@ public class DlmsConnectionHolder {
     private final DlmsConnection dlmsConnection;
     private final DlmsMessageListener dlmsMessageListener;
 
+    private static final DlmsMessageListener DO_NOTHING_LISTENER = new DlmsMessageListener() {
+
+        @Override
+        public void messageCaptured(final RawMessageData rawMessageData) {
+            // Do nothing.
+        }
+
+        @Override
+        public void setMessageMetadata(final DlmsDeviceMessageMetadata messageMetadata) {
+            // Do nothing.
+        }
+
+        @Override
+        public void setDescription(final String description) {
+            // Do nothing.
+        }
+    };
+
     public DlmsConnectionHolder(final DlmsConnection dlmsConnection, final DlmsMessageListener dlmsMessageListener) {
         this.dlmsConnection = dlmsConnection;
-        this.dlmsMessageListener = dlmsMessageListener;
+        if (dlmsMessageListener == null) {
+            this.dlmsMessageListener = DO_NOTHING_LISTENER;
+        } else {
+            this.dlmsMessageListener = dlmsMessageListener;
+        }
+    }
+
+    public DlmsConnectionHolder(final DlmsConnection dlmsConnection) {
+        this(dlmsConnection, null);
     }
 
     public DlmsConnection getConnection() {
@@ -25,7 +53,7 @@ public class DlmsConnectionHolder {
     }
 
     public boolean hasDlmsMessageListener() {
-        return this.dlmsMessageListener != null;
+        return DO_NOTHING_LISTENER != this.dlmsMessageListener;
     }
 
     public DlmsMessageListener getDlmsMessageListener() {

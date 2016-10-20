@@ -39,6 +39,7 @@ import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto;
@@ -73,6 +74,9 @@ public class SetConfigurationObjectCommandExecutorTest {
 
     @Mock
     private DlmsConnection connMock;
+
+    @Mock
+    private DlmsMessageListener listenerMock;
 
     @Mock
     private List<GetResult> getResultListMock;
@@ -127,6 +131,7 @@ public class SetConfigurationObjectCommandExecutorTest {
         when(this.connMock.set(eq(false), Matchers.anyListOf(SetParameter.class))).thenReturn(accessResultCodeList);
 
         when(this.connectionHolderMock.getConnection()).thenReturn(this.connMock);
+        when(this.connectionHolderMock.getDlmsMessageListener()).thenReturn(this.listenerMock);
 
         final DlmsDevice device = this.getDlmsDevice();
         final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);

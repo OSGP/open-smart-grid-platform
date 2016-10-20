@@ -74,10 +74,8 @@ public class RetrieveAllAttributeValuesCommandExecutor extends AbstractCommandEx
 
         final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
-        if (conn.hasDlmsMessageListener()) {
-            conn.getDlmsMessageListener().setDescription(
-                    "RetrieveAllAttributeValues, retrieve attribute: " + this.describeAttributes(attributeAddress));
-        }
+        conn.getDlmsMessageListener().setDescription(
+                "RetrieveAllAttributeValues, retrieve attribute: " + this.describeAttributes(attributeAddress));
 
         LOGGER.debug("Retrieving all attribute values for class id: {}, obis code: {}, attribute id: {}", CLASS_ID,
                 OBIS_CODE, ATTRIBUTE_ID);
@@ -154,10 +152,8 @@ public class RetrieveAllAttributeValuesCommandExecutor extends AbstractCommandEx
         final AttributeAddress attributeAddress = new AttributeAddress(classNumber, new ObisCode(obisCodeByteArray),
                 attributeValue);
 
-        if (conn.hasDlmsMessageListener()) {
-            conn.getDlmsMessageListener().setDescription(
-                    "RetrieveAllAttributeValues, retrieve attribute: " + this.describeAttributes(attributeAddress));
-        }
+        conn.getDlmsMessageListener().setDescription(
+                "RetrieveAllAttributeValues, retrieve attribute: " + this.describeAttributes(attributeAddress));
 
         LOGGER.debug("Retrieving configuration objects data for class id: {}, obis code: {}, attribute id: {}",
                 classNumber, obisCodeByteArray, attributeValue);

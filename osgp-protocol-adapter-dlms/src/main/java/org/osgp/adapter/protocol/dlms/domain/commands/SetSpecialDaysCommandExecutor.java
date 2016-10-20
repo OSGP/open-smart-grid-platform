@@ -87,17 +87,14 @@ public class SetSpecialDaysCommandExecutor extends AbstractCommandExecutor<List<
 
         final SetParameter request = new SetParameter(specialDaysTableEntries, entries);
 
-        if (conn.hasDlmsMessageListener()) {
-            String specialDayValues;
-            if (specialDayData.length() == 0) {
-                specialDayValues = "";
-            } else {
-                specialDayValues = ", values [" + specialDayData.substring(2) + "]";
-            }
-            conn.getDlmsMessageListener().setDescription(
-                    "SetSpecialDays" + specialDayValues + ", set attribute: "
-                            + this.describeAttributes(specialDaysTableEntries));
+        String specialDayValues;
+        if (specialDayData.length() == 0) {
+            specialDayValues = "";
+        } else {
+            specialDayValues = ", values [" + specialDayData.substring(2) + "]";
         }
+        conn.getDlmsMessageListener().setDescription("SetSpecialDays" + specialDayValues + ", set attribute: "
+                + this.describeAttributes(specialDaysTableEntries));
 
         try {
             return conn.getConnection().set(request);

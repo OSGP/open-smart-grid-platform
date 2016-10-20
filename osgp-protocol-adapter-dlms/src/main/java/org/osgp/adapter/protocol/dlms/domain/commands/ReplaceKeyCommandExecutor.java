@@ -154,10 +154,8 @@ AbstractCommandExecutor<ReplaceKeyCommandExecutor.KeyWrapper, DlmsDevice> {
             final MethodParameter methodParameterAuth = SecurityUtils.keyChangeMethodParamFor(decryptedMasterKey,
                     decryptedKey, keyWrapper.getKeyId());
 
-            if (conn.hasDlmsMessageListener()) {
-                conn.getDlmsMessageListener().setDescription("ReplaceKey for " + keyWrapper.securityKeyType + " "
-                        + keyWrapper.getKeyId() + ", call method: " + this.describeMethod(methodParameterAuth));
-            }
+            conn.getDlmsMessageListener().setDescription("ReplaceKey for " + keyWrapper.securityKeyType + " "
+                    + keyWrapper.getKeyId() + ", call method: " + this.describeMethod(methodParameterAuth));
 
             final MethodResultCode methodResultCode = conn.getConnection().action(methodParameterAuth).getResultCode();
 

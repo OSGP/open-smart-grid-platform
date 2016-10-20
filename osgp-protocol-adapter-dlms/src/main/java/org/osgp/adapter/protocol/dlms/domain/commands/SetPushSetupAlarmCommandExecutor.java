@@ -60,12 +60,9 @@ public class SetPushSetupAlarmCommandExecutor extends SetPushSetupCommandExecuto
 
         final SetParameter setParameterSendDestinationAndMethod = this.getSetParameter(pushSetupAlarm);
 
-        if (conn.hasDlmsMessageListener()) {
-            conn.getDlmsMessageListener()
-                    .setDescription("SetPushSetupAlarm configure send destination and method, set attribute: "
-                            + this.describeAttributes(new AttributeAddress(CLASS_ID, OBIS_CODE,
-                                    ATTRIBUTE_ID_SEND_DESTINATION_AND_METHOD)));
-        }
+        conn.getDlmsMessageListener().setDescription(
+                "SetPushSetupAlarm configure send destination and method, set attribute: " + this.describeAttributes(
+                        new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_SEND_DESTINATION_AND_METHOD)));
 
         AccessResultCode resultCode;
         try {

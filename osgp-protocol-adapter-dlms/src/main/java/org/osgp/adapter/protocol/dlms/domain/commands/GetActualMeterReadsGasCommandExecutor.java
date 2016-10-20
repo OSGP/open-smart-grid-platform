@@ -80,11 +80,9 @@ public class GetActualMeterReadsGasCommandExecutor extends
         final AttributeAddress scalerUnit = new AttributeAddress(CLASS_ID_MBUS,
                 this.masterValueForChannel(actualMeterReadsRequest.getChannel()), ATTRIBUTE_ID_SCALER_UNIT);
 
-        if (conn.hasDlmsMessageListener()) {
-            conn.getDlmsMessageListener()
-                    .setDescription("GetActualMeterReadsGas for channel " + actualMeterReadsRequest.getChannel()
-                            + ", retrieve attributes: " + this.describeAttributes(mbusValue, mbusTime, scalerUnit));
-        }
+        conn.getDlmsMessageListener()
+                .setDescription("GetActualMeterReadsGas for channel " + actualMeterReadsRequest.getChannel()
+                        + ", retrieve attributes: " + this.describeAttributes(mbusValue, mbusTime, scalerUnit));
 
         final List<GetResult> getResultList = this.dlmsHelperService.getAndCheck(conn, device,
                 "retrieve actual meter reads for mbus " + actualMeterReadsRequest.getChannel(), mbusValue, mbusTime,

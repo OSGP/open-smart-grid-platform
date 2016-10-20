@@ -107,10 +107,8 @@ public class GetActualMeterReadsCommandExecutor extends
             throw new IllegalArgumentException("ActualMeterReadsQuery object for energy reads should not be about gas.");
         }
 
-        if (conn.hasDlmsMessageListener()) {
-            conn.getDlmsMessageListener().setDescription(
-                    "GetActualMeterReads retrieve attributes: " + this.describeAttributes(ATTRIBUTE_ADDRESSES));
-        }
+        conn.getDlmsMessageListener().setDescription(
+                "GetActualMeterReads retrieve attributes: " + this.describeAttributes(ATTRIBUTE_ADDRESSES));
 
         LOGGER.info("Retrieving actual energy reads");
         final List<GetResult> getResultList = this.dlmsHelperService.getAndCheck(conn, device,

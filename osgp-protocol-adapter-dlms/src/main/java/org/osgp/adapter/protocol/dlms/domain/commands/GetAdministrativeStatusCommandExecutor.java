@@ -66,10 +66,8 @@ public class GetAdministrativeStatusCommandExecutor extends AbstractCommandExecu
 
         final AttributeAddress getParameter = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
-        if (conn.hasDlmsMessageListener()) {
-            conn.getDlmsMessageListener().setDescription(
-                    "GetAdministrativeStatus, retrieve attribute: " + this.describeAttributes(getParameter));
-        }
+        conn.getDlmsMessageListener().setDescription(
+                "GetAdministrativeStatus, retrieve attribute: " + this.describeAttributes(getParameter));
 
         LOGGER.info(
                 "Retrieving current administrative status by issuing get request for class id: {}, obis code: {}, attribute id: {}",

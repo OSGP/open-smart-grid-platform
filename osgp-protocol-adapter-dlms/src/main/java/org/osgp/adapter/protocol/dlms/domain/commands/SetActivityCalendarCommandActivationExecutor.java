@@ -37,10 +37,8 @@ public class SetActivityCalendarCommandActivationExecutor extends AbstractComman
         LOGGER.info("ACTIVATING PASSIVE CALENDAR");
         final MethodParameter method = new MethodParameter(CLASS_ID, OBIS_CODE, METHOD_ID_ACTIVATE_PASSIVE_CALENDAR);
 
-        if (conn.hasDlmsMessageListener()) {
-            conn.getDlmsMessageListener()
-                    .setDescription("SetActivityCalendarActivation, call method: " + this.describeMethod(method));
-        }
+        conn.getDlmsMessageListener()
+                .setDescription("SetActivityCalendarActivation, call method: " + this.describeMethod(method));
 
         MethodResult methodResultCode = null;
         try {

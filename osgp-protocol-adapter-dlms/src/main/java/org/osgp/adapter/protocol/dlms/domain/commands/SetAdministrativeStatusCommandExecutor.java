@@ -78,10 +78,8 @@ public class SetAdministrativeStatusCommandExecutor extends
 
         final SetParameter setParameter = new SetParameter(attributeAddress, value);
 
-        if (conn.hasDlmsMessageListener()) {
-            conn.getDlmsMessageListener().setDescription("SetAdminstrativeStatus to " + administrativeStatusType
-                    + ", set attribute: " + this.describeAttributes(attributeAddress));
-        }
+        conn.getDlmsMessageListener().setDescription("SetAdminstrativeStatus to " + administrativeStatusType
+                + ", set attribute: " + this.describeAttributes(attributeAddress));
 
         try {
             return conn.getConnection().set(setParameter);

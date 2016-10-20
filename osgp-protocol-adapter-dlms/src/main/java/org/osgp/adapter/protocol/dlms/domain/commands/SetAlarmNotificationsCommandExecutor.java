@@ -95,11 +95,9 @@ public class SetAlarmNotificationsCommandExecutor extends
 
         final AttributeAddress alarmFilterValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
-        if (conn.hasDlmsMessageListener()) {
-            conn.getDlmsMessageListener()
-                    .setDescription("SetAlarmNotifications retrieve current value, retrieve attribute: "
-                            + this.describeAttributes(alarmFilterValue));
-        }
+        conn.getDlmsMessageListener()
+        .setDescription("SetAlarmNotifications retrieve current value, retrieve attribute: "
+                + this.describeAttributes(alarmFilterValue));
 
         LOGGER.info(
                 "Retrieving current alarm filter by issuing get request for class id: {}, obis code: {}, attribute id: {}",
@@ -121,10 +119,8 @@ public class SetAlarmNotificationsCommandExecutor extends
 
         final SetParameter setParameter = new SetParameter(alarmFilterValue, value);
 
-        if (conn.hasDlmsMessageListener()) {
-            conn.getDlmsMessageListener().setDescription("SetAlarmNotifications write updated value "
-                    + alarmFilterLongValue + ", set attribute: " + this.describeAttributes(alarmFilterValue));
-        }
+        conn.getDlmsMessageListener().setDescription("SetAlarmNotifications write updated value " + alarmFilterLongValue
+                + ", set attribute: " + this.describeAttributes(alarmFilterValue));
 
         return conn.getConnection().set(setParameter);
     }

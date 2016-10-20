@@ -123,11 +123,9 @@ public class GetPeriodicMeterReadsCommandExecutor extends
         final List<GetResult> getResultList = new ArrayList<>(profileBufferAndScalerUnit.length);
         for (final AttributeAddress address : profileBufferAndScalerUnit) {
 
-            if (conn.hasDlmsMessageListener()) {
-                conn.getDlmsMessageListener()
-                        .setDescription("GetPeriodicMeterReads " + periodType + " from " + beginDateTime + " until "
-                                + endDateTime + ", retrieve attribute: " + this.describeAttributes(address));
-            }
+            conn.getDlmsMessageListener()
+                    .setDescription("GetPeriodicMeterReads " + periodType + " from " + beginDateTime + " until "
+                            + endDateTime + ", retrieve attribute: " + this.describeAttributes(address));
 
             getResultList.addAll(this.dlmsHelperService.getAndCheck(conn, device, "retrieve periodic meter reads for "
                     + periodType, address));

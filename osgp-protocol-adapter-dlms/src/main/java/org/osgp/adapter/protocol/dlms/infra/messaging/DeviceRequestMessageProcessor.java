@@ -134,9 +134,9 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             Serializable response = null;
             if (this.usesDeviceConnection()) {
                 device = this.domainHelperService.findDlmsDevice(messageMetadata);
-                final DlmsMessageListener dlmsMessageListener;
+                final LoggingDlmsMessageListener dlmsMessageListener;
                 if (device.isInDebugMode()) {
-                    dlmsMessageListener = new DlmsMessageListener(device.getDeviceIdentification(),
+                    dlmsMessageListener = new LoggingDlmsMessageListener(device.getDeviceIdentification(),
                             this.dlmsLogItemRequestMessageSender);
                     dlmsMessageListener.setMessageMetadata(messageMetadata);
                     dlmsMessageListener.setDescription("Create connection");
@@ -163,9 +163,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         } finally {
             if (conn != null) {
                 LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
-                if (conn.hasDlmsMessageListener()) {
-                    conn.getDlmsMessageListener().setDescription("Close connection");
-                }
+                conn.getDlmsMessageListener().setDescription("Close connection");
                 try {
                     conn.getConnection().close();
                 } catch (final IOException e) {

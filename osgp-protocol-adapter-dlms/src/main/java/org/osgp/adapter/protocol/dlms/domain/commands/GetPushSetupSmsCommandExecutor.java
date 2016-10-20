@@ -47,10 +47,8 @@ public class GetPushSetupSmsCommandExecutor extends GetPushSetupCommandExecutor<
     public PushSetupSmsDto execute(final DlmsConnectionHolder conn, final DlmsDevice device, final Void useless)
             throws ProtocolAdapterException {
 
-        if (conn.hasDlmsMessageListener()) {
-            conn.getDlmsMessageListener().setDescription(
-                    "GetPushSetupSms, retrieve attributes: " + this.describeAttributes(ATTRIBUTE_ADDRESSES));
-        }
+        conn.getDlmsMessageListener().setDescription(
+                "GetPushSetupSms, retrieve attributes: " + this.describeAttributes(ATTRIBUTE_ADDRESSES));
 
         LOGGER.info("Retrieving Push Setup SMS");
 

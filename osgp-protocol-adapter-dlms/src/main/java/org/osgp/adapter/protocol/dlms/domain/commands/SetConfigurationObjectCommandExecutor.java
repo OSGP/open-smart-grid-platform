@@ -97,10 +97,8 @@ public class SetConfigurationObjectCommandExecutor extends
 
             final SetParameter setParameter = this.buildSetParameter(configurationObject, configurationObjectOnDevice);
 
-            if (conn.hasDlmsMessageListener()) {
-                conn.getDlmsMessageListener().setDescription("SetConfigurationObject, set attribute: "
-                        + this.describeAttributes(new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID)));
-            }
+            conn.getDlmsMessageListener().setDescription("SetConfigurationObject, set attribute: "
+                    + this.describeAttributes(new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID)));
 
             return conn.getConnection().set(setParameter);
         } catch (IOException | TimeoutException e) {
@@ -215,11 +213,9 @@ public class SetConfigurationObjectCommandExecutor extends
 
         final AttributeAddress configurationObjectValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
-        if (conn.hasDlmsMessageListener()) {
-            conn.getDlmsMessageListener()
-                    .setDescription("SetConfigurationObject retrieve current value, retrieve attribute: "
-                            + this.describeAttributes(configurationObjectValue));
-        }
+        conn.getDlmsMessageListener()
+                .setDescription("SetConfigurationObject retrieve current value, retrieve attribute: "
+                        + this.describeAttributes(configurationObjectValue));
 
         LOGGER.info(
                 "Retrieving current configuration object by issuing get request for class id: {}, obis code: {}, attribute id: {}",

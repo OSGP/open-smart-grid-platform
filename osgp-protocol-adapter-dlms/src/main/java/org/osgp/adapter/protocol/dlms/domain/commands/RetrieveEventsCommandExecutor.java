@@ -87,12 +87,10 @@ public class RetrieveEventsCommandExecutor extends AbstractCommandExecutor<FindE
                 EVENT_LOG_CATEGORY_OBISCODE_MAP.get(findEventsQuery.getEventLogCategory()), ATTRIBUTE_ID,
                 selectiveAccessDescription);
 
-        if (conn.hasDlmsMessageListener()) {
-            conn.getDlmsMessageListener()
-                    .setDescription("RetrieveEvents for " + findEventsQuery.getEventLogCategory() + " from "
-                            + findEventsQuery.getFrom() + " until " + findEventsQuery.getUntil()
-                            + ", retrieve attribute: " + this.describeAttributes(eventLogBuffer));
-        }
+        conn.getDlmsMessageListener()
+                .setDescription("RetrieveEvents for " + findEventsQuery.getEventLogCategory() + " from "
+                        + findEventsQuery.getFrom() + " until " + findEventsQuery.getUntil() + ", retrieve attribute: "
+                        + this.describeAttributes(eventLogBuffer));
 
         GetResult getResult;
         try {
