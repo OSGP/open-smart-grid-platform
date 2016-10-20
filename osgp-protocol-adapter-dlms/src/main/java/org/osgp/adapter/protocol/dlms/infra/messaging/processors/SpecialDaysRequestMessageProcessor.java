@@ -32,7 +32,7 @@ public class SpecialDaysRequestMessageProcessor extends DeviceRequestMessageProc
     private ConfigurationService configurationService;
 
     public SpecialDaysRequestMessageProcessor() {
-        super(DeviceRequestMessageType.REQUEST_SPECIAL_DAYS);
+        super(DeviceRequestMessageType.SET_SPECIAL_DAYS);
     }
 
     @Override
@@ -40,7 +40,7 @@ public class SpecialDaysRequestMessageProcessor extends DeviceRequestMessageProc
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
         final SpecialDaysRequestDto specialDaysRequest = (SpecialDaysRequestDto) requestObject;
 
-        this.configurationService.requestSpecialDays(conn, device, specialDaysRequest);
+        this.configurationService.setSpecialDays(conn, device, specialDaysRequest);
         return null;
     }
 }
