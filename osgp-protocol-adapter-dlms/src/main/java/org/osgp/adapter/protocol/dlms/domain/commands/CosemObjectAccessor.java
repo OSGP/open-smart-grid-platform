@@ -11,7 +11,7 @@ import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
@@ -26,11 +26,11 @@ class CosemObjectAccessor {
     private static final String EXCEPTION_MSG_NO_METHOD_RESULT = "No MethodResult received.";
     private static final String EXCEPTION_MSG_NO_GET_RESULT = "No GetResult received while retrieving attribute %s.";
 
-    private final DeviceConnector connector;
+    private final DlmsConnectionHolder connector;
     private final ObisCode obisCode;
     private final int classId;
 
-    public CosemObjectAccessor(final DeviceConnector connector, final ObisCode obisCode, final int classId) {
+    public CosemObjectAccessor(final DlmsConnectionHolder connector, final ObisCode obisCode, final int classId) {
         this.connector = connector;
         this.obisCode = obisCode;
         this.classId = classId;
@@ -63,7 +63,7 @@ class CosemObjectAccessor {
     public DataObject readAttribute(final int attributeId) throws ProtocolAdapterException {
         GetResult getResult = null;
         try {
-            getResult = this.connector.connection().get(this.createAttributeAddress(attributeId));
+            getResult = this.connector.getConnection().get(this.createAttributeAddress(attributeId));
         } catch (final IOException e) {
             throw new ConnectionException(e);
         }
@@ -81,7 +81,7 @@ class CosemObjectAccessor {
 
         AccessResultCode accessResultCode = null;
         try {
-            accessResultCode = this.connector.connection().set(setParameter);
+            accessResultCode = this.connector.getConnection().set(setParameter);
         } catch (final IOException e) {
             throw new ProtocolAdapterException(String.format(EXCEPTION_MSG_WRITING_ATTRIBUTE, attributeId), e);
         }
@@ -117,7 +117,7 @@ class CosemObjectAccessor {
     private MethodResultCode handleMethod(final MethodParameter methodParameter) throws ProtocolAdapterException {
         MethodResult result = null;
         try {
-            result = this.connector.connection().action(methodParameter);
+            result = this.connector.getConnection().action(methodParameter);
         } catch (final IOException e) {
             throw new ConnectionException(e);
         }

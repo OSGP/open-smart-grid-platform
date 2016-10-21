@@ -5,7 +5,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.domain.factories.FirwareImageFactory;
 import org.osgp.adapter.protocol.dlms.exceptions.FirmwareImageFactoryException;
 import org.osgp.adapter.protocol.dlms.exceptions.ImageTransferException;
@@ -64,9 +64,8 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
     }
 
     @Override
-    public List<FirmwareVersionDto> execute(final DeviceConnector conn, final DlmsDevice device,
-            final String firmwareIdentification) throws ProtocolAdapterException {
-
+    public List<FirmwareVersionDto> execute(DlmsConnectionHolder conn, DlmsDevice device, String firmwareIdentification)
+            throws ProtocolAdapterException {
         final ImageTransfer transfer = new ImageTransfer(conn, imageTransferProperties, firmwareIdentification,
                 this.getImageData(firmwareIdentification));
 
@@ -105,7 +104,7 @@ public class UpdateFirmwareCommandExecutor extends AbstractCommandExecutor<Strin
         }
     }
 
-    private List<FirmwareVersionDto> activate(final DeviceConnector conn, final DlmsDevice device,
+    private List<FirmwareVersionDto> activate(final DlmsConnectionHolder conn, final DlmsDevice device,
             final ImageTransfer transfer) throws ProtocolAdapterException, ImageTransferException {
         if (transfer.imageIsVerified() && transfer.imageToActivateOk()) {
             transfer.activateImage();

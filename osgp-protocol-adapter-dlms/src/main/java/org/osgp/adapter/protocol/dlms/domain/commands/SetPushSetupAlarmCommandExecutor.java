@@ -15,7 +15,7 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -55,14 +55,19 @@ public class SetPushSetupAlarmCommandExecutor extends SetPushSetupCommandExecuto
     }
 
     @Override
-    public AccessResultCode execute(final DeviceConnector conn, final DlmsDevice device,
+    public AccessResultCode execute(final DlmsConnectionHolder conn, final DlmsDevice device,
             final PushSetupAlarmDto pushSetupAlarm) throws ProtocolAdapterException {
 
         final SetParameter setParameterSendDestinationAndMethod = this.getSetParameter(pushSetupAlarm);
 
+        conn.getDlmsMessageListener()
+                .setDescription("SetPushSetupAlarm configure send destination and method, set attribute: "
+                        + JdlmsObjectToStringUtil.describeAttributes(
+                                new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_SEND_DESTINATION_AND_METHOD)));
+
         AccessResultCode resultCode;
         try {
-            resultCode = conn.connection().set(setParameterSendDestinationAndMethod);
+            resultCode = conn.getConnection().set(setParameterSendDestinationAndMethod);
         } catch (final IOException e) {
             throw new ConnectionException(e);
         }

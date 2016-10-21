@@ -13,12 +13,11 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -70,15 +69,18 @@ public class RetrieveAllAttributeValuesCommandExecutor extends AbstractCommandEx
     }
 
     @Override
-    public String execute(final DeviceConnector conn, final DlmsDevice device, final DataObject object)
+    public String execute(final DlmsConnectionHolder conn, final DlmsDevice device, final DataObject object)
             throws ProtocolAdapterException {
 
         final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
+        conn.getDlmsMessageListener().setDescription("RetrieveAllAttributeValues, retrieve attribute: "
+                + JdlmsObjectToStringUtil.describeAttributes(attributeAddress));
+
         LOGGER.debug("Retrieving all attribute values for class id: {}, obis code: {}, attribute id: {}", CLASS_ID,
                 OBIS_CODE, ATTRIBUTE_ID);
 
-        final DataObject objectList = this.dlmsHelper.getAttributeValue(conn.connection(), attributeAddress);
+        final DataObject objectList = this.dlmsHelper.getAttributeValue(conn, attributeAddress);
 
         if (!objectList.isComplex()) {
             this.throwUnexpectedTypeProtocolAdapterException();
@@ -89,7 +91,7 @@ public class RetrieveAllAttributeValuesCommandExecutor extends AbstractCommandEx
         this.logAllObisCodes(allObisCodes);
 
         try {
-            final String output = this.createOutput(conn.connection(), allObisCodes);
+            final String output = this.createOutput(conn, allObisCodes);
 
             LOGGER.debug("Total output is: {}", output);
 
@@ -108,7 +110,7 @@ public class RetrieveAllAttributeValuesCommandExecutor extends AbstractCommandEx
         }
     }
 
-    private String createOutput(final DlmsConnection conn, final List<ClassIdObisAttr> allObisCodes)
+    private String createOutput(final DlmsConnectionHolder conn, final List<ClassIdObisAttr> allObisCodes)
             throws ProtocolAdapterException, IOException, TimeoutException {
         String output = "";
         int index = 1;
@@ -121,7 +123,7 @@ public class RetrieveAllAttributeValuesCommandExecutor extends AbstractCommandEx
         return output;
     }
 
-    private String getAllDataFromObisCode(final DlmsConnection conn, final ClassIdObisAttr obisAttr)
+    private String getAllDataFromObisCode(final DlmsConnectionHolder conn, final ClassIdObisAttr obisAttr)
             throws ProtocolAdapterException, IOException, TimeoutException {
         String output = "";
 
@@ -135,8 +137,9 @@ public class RetrieveAllAttributeValuesCommandExecutor extends AbstractCommandEx
         return output;
     }
 
-    private String getAllDataFromAttribute(final DlmsConnection conn, final int classNumber, final DataObject obisCode,
-            final int attributeValue) throws ProtocolAdapterException, IOException, TimeoutException {
+    private String getAllDataFromAttribute(final DlmsConnectionHolder conn, final int classNumber,
+            final DataObject obisCode, final int attributeValue)
+                    throws ProtocolAdapterException, IOException, TimeoutException {
 
         if (!obisCode.isByteArray()) {
             this.throwUnexpectedTypeProtocolAdapterException();
@@ -149,9 +152,12 @@ public class RetrieveAllAttributeValuesCommandExecutor extends AbstractCommandEx
         final AttributeAddress attributeAddress = new AttributeAddress(classNumber, new ObisCode(obisCodeByteArray),
                 attributeValue);
 
+        conn.getDlmsMessageListener().setDescription("RetrieveAllAttributeValues, retrieve attribute: "
+                + JdlmsObjectToStringUtil.describeAttributes(attributeAddress));
+
         LOGGER.debug("Retrieving configuration objects data for class id: {}, obis code: {}, attribute id: {}",
                 classNumber, obisCodeByteArray, attributeValue);
-        final GetResult getResult = conn.get(attributeAddress);
+        final GetResult getResult = conn.getConnection().get(attributeAddress);
 
         LOGGER.debug("ResultCode: {}", getResult.getResultCode());
 

@@ -13,7 +13,7 @@ import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
-import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ImageTransferException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -46,7 +46,7 @@ class ImageTransfer {
     private int imageBlockSize;
     private boolean imageBlockSizeReadFlag;
 
-    public ImageTransfer(final DeviceConnector connector, ImageTranferProperties properties,
+    public ImageTransfer(final DlmsConnectionHolder connector, ImageTranferProperties properties,
             final String imageIdentifier, final byte[] imageData) throws ProtocolAdapterException {
         this.properties = properties;
         this.imageIdentifier = imageIdentifier;

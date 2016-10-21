@@ -11,7 +11,7 @@ import java.io.Serializable;
 
 import org.osgp.adapter.protocol.dlms.application.services.AdhocService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
@@ -29,7 +29,7 @@ public class RetrieveAllAttributeValuesRequestMessageProcessor extends DeviceReq
     }
 
     @Override
-    protected Serializable handleMessage(final DeviceConnector conn, final DlmsDevice device,
+    protected Serializable handleMessage(final DlmsConnectionHolder conn, final DlmsDevice device,
             final Serializable requestObject) throws ProtocolAdapterException {
 
         return this.adhocService.retrieveAllAttributeValues(conn, device);

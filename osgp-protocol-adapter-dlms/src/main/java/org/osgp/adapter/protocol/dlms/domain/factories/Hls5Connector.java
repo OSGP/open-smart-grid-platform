@@ -23,6 +23,7 @@ import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
+import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,62 +45,54 @@ public class Hls5Connector {
 
     private final RecoverKeyProcessInitiator recoverKeyProcessInitiator;
 
-
-    private DlmsDevice device;
-
     @Autowired
     private EncryptionService encryptionService;
 
-    public Hls5Connector(final RecoverKeyProcessInitiator recoverKeyProcessInitiator, final int responseTimeout, final int logicalDeviceAddress,
-            final int clientAccessPoint) {
+    public Hls5Connector(final RecoverKeyProcessInitiator recoverKeyProcessInitiator, final int responseTimeout,
+            final int logicalDeviceAddress, final int clientAccessPoint) {
         this.recoverKeyProcessInitiator = recoverKeyProcessInitiator;
         this.responseTimeout = responseTimeout;
         this.logicalDeviceAddress = logicalDeviceAddress;
         this.clientAccessPoint = clientAccessPoint;
     }
 
-    public void setDevice(final DlmsDevice device) {
-        this.device = device;
-    }
-
-    public DlmsConnection connect() throws TechnicalException {
+    public DlmsConnection connect(final DlmsDevice device, final DlmsMessageListener dlmsMessageListener)
+            throws TechnicalException {
 
         // Make sure neither device or device.getIpAddress() is null.
-        this.checkDevice();
-        this.checkIpAddress();
+        this.checkDevice(device);
+        this.checkIpAddress(device);
 
         try {
-            return this.createConnection();
+            return this.createConnection(device, dlmsMessageListener);
         } catch (final UnknownHostException e) {
-            LOGGER.warn("The IP address is not found: {}", this.device.getIpAddress(), e);
+            LOGGER.warn("The IP address is not found: {}", device.getIpAddress(), e);
             // Unknown IP, unrecoverable.
             throw new TechnicalException(ComponentType.PROTOCOL_DLMS, "The IP address is not found: "
-                    + this.device.getIpAddress());
+                    + device.getIpAddress());
         } catch (final IOException e) {
-            if (this.device.hasNewSecurityKey()) {
+            if (device.hasNewSecurityKey()) {
                 // Queue key recovery process.
-                this.recoverKeyProcessInitiator.initiate(this.device.getDeviceIdentification(),
-                        this.device.getIpAddress());
+                this.recoverKeyProcessInitiator.initiate(device.getDeviceIdentification(), device.getIpAddress());
             }
             throw new ConnectionException(e);
         } catch (final EncrypterException e) {
-            LOGGER.error("decryption on security keys went wrong for device: {}",
-                    this.device.getDeviceIdentification(), e);
+            LOGGER.error("decryption on security keys went wrong for device: {}", device.getDeviceIdentification(), e);
             throw new TechnicalException(ComponentType.PROTOCOL_DLMS,
-                    "decryption on security keys went wrong for device: " + this.device.getDeviceIdentification());
+                    "decryption on security keys went wrong for device: " + device.getDeviceIdentification());
         }
     }
 
-    private void checkDevice() {
-        if (this.device == null) {
+    private void checkDevice(final DlmsDevice device) {
+        if (device == null) {
             throw new IllegalStateException("Can not connect because no device is set.");
         }
     }
 
-    private void checkIpAddress() throws TechnicalException {
-        if (this.device.getIpAddress() == null) {
+    private void checkIpAddress(final DlmsDevice device) throws TechnicalException {
+        if (device.getIpAddress() == null) {
             throw new TechnicalException(ComponentType.PROTOCOL_DLMS, "Unable to get HLS5 connection for device "
-                    + this.device.getDeviceIdentification() + ", because the IP address is not set.");
+                    + device.getDeviceIdentification() + ", because the IP address is not set.");
         }
     }
 
@@ -114,9 +107,10 @@ public class Hls5Connector {
      *             When there are problems reading the security and
      *             authorisation keys.
      */
-    private DlmsConnection createConnection() throws IOException, TechnicalException {
-        final SecurityKey validAuthenticationKey = this.getSecurityKey(SecurityKeyType.E_METER_AUTHENTICATION);
-        final SecurityKey validEncryptionKey = this.getSecurityKey(SecurityKeyType.E_METER_ENCRYPTION);
+    private DlmsConnection createConnection(final DlmsDevice device, final DlmsMessageListener dlmsMessageListener)
+            throws IOException, TechnicalException {
+        final SecurityKey validAuthenticationKey = this.getSecurityKey(device, SecurityKeyType.E_METER_AUTHENTICATION);
+        final SecurityKey validEncryptionKey = this.getSecurityKey(device, SecurityKeyType.E_METER_ENCRYPTION);
 
         // Decode the key from Hexstring to bytes
         byte[] authenticationKey = null;
@@ -138,26 +132,30 @@ public class Hls5Connector {
                 .setEncryptionMechanism(EncryptionMechanism.AES_GMC_128).build();
 
         // Setup connection to device
-        final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(InetAddress.getByName(this.device
+        final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(InetAddress.getByName(device
                 .getIpAddress())).setSecuritySuite(securitySuite).setResponseTimeout(this.responseTimeout)
                 .setLogicalDeviceId(this.logicalDeviceAddress).setClientId(this.clientAccessPoint);
 
-        this.setOptionalValues(tcpConnectionBuilder);
+        this.setOptionalValues(device, tcpConnectionBuilder);
 
-        final Integer challengeLength = this.device.getChallengeLength();
+        final Integer challengeLength = device.getChallengeLength();
         if (challengeLength != null) {
             tcpConnectionBuilder.setChallengeLength(challengeLength);
+        }
+
+        if (device.isInDebugMode()) {
+            tcpConnectionBuilder.setRawMessageListener(dlmsMessageListener);
         }
 
         return tcpConnectionBuilder.build();
     }
 
-    private void setOptionalValues(final TcpConnectionBuilder tcpConnectionBuilder) {
-        if (this.device.getPort() != null) {
-            tcpConnectionBuilder.setTcpPort(this.device.getPort().intValue());
+    private void setOptionalValues(final DlmsDevice device, final TcpConnectionBuilder tcpConnectionBuilder) {
+        if (device.getPort() != null) {
+            tcpConnectionBuilder.setTcpPort(device.getPort().intValue());
         }
-        if (this.device.getLogicalId() != null) {
-            tcpConnectionBuilder.setLogicalDeviceId(this.device.getLogicalId().intValue());
+        if (device.getLogicalId() != null) {
+            tcpConnectionBuilder.setLogicalDeviceId(device.getLogicalId().intValue());
         }
     }
 
@@ -169,11 +167,12 @@ public class Hls5Connector {
      * @throws TechnicalException
      *             when there is no valid key of the given type.
      */
-    private SecurityKey getSecurityKey(final SecurityKeyType securityKeyType) throws TechnicalException {
-        final SecurityKey securityKey = this.device.getValidSecurityKey(securityKeyType);
+    private SecurityKey getSecurityKey(final DlmsDevice device, final SecurityKeyType securityKeyType)
+            throws TechnicalException {
+        final SecurityKey securityKey = device.getValidSecurityKey(securityKeyType);
         if (securityKey == null) {
             throw new TechnicalException(ComponentType.PROTOCOL_DLMS, String.format(
-                    "There is no valid key for device '%s' of type '%s'.", this.device.getDeviceIdentification(),
+                    "There is no valid key for device '%s' of type '%s'.", device.getDeviceIdentification(),
                     securityKeyType.name()));
         }
 

@@ -12,8 +12,7 @@ import java.util.List;
 
 import org.osgp.adapter.protocol.dlms.domain.commands.RetrieveEventsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
-import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,15 +32,9 @@ public class ManagementService {
     @Autowired
     private RetrieveEventsCommandExecutor retrieveEventsCommandExecutor;
 
-    @Autowired
-    private DomainHelperService domainHelperService;
-
-    @Autowired
-    private DlmsConnectionFactory dlmsConnectionFactory;
-
     // === FIND EVENTS ===
 
-    public EventMessageDataResponseDto findEvents(final DeviceConnector conn, final DlmsDevice device,
+    public EventMessageDataResponseDto findEvents(final DlmsConnectionHolder conn, final DlmsDevice device,
             final FindEventsRequestList findEventsQueryMessageDataContainer)
             throws ProtocolAdapterException {
 

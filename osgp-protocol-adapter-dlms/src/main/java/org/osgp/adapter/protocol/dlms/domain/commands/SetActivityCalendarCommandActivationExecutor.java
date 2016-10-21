@@ -14,7 +14,7 @@ import org.openmuc.jdlms.MethodResult;
 import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.ObisCode;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -31,14 +31,18 @@ public class SetActivityCalendarCommandActivationExecutor extends AbstractComman
     private static final int METHOD_ID_ACTIVATE_PASSIVE_CALENDAR = 1;
 
     @Override
-    public MethodResultCode execute(final DeviceConnector conn, final DlmsDevice device, final Void v)
+    public MethodResultCode execute(final DlmsConnectionHolder conn, final DlmsDevice device, final Void v)
             throws ProtocolAdapterException {
 
         LOGGER.info("ACTIVATING PASSIVE CALENDAR");
         final MethodParameter method = new MethodParameter(CLASS_ID, OBIS_CODE, METHOD_ID_ACTIVATE_PASSIVE_CALENDAR);
+
+        conn.getDlmsMessageListener().setDescription(
+                "SetActivityCalendarActivation, call method: " + JdlmsObjectToStringUtil.describeMethod(method));
+
         MethodResult methodResultCode = null;
         try {
-            methodResultCode = conn.connection().action(method);
+            methodResultCode = conn.getConnection().action(method);
         } catch (final IOException e) {
             throw new ConnectionException(e);
         }

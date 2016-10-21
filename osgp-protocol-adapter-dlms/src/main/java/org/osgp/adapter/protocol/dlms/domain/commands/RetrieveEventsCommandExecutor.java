@@ -22,7 +22,7 @@ import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.application.mapping.DataObjectToEventListConverter;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -77,7 +77,7 @@ public class RetrieveEventsCommandExecutor extends AbstractCommandExecutor<FindE
     }
 
     @Override
-    public List<EventDto> execute(final DeviceConnector conn, final DlmsDevice device,
+    public List<EventDto> execute(final DlmsConnectionHolder conn, final DlmsDevice device,
             final FindEventsRequestDto findEventsQuery) throws ProtocolAdapterException {
 
         final SelectiveAccessDescription selectiveAccessDescription = this.getSelectiveAccessDescription(
@@ -87,14 +87,19 @@ public class RetrieveEventsCommandExecutor extends AbstractCommandExecutor<FindE
                 EVENT_LOG_CATEGORY_OBISCODE_MAP.get(findEventsQuery.getEventLogCategory()), ATTRIBUTE_ID,
                 selectiveAccessDescription);
 
+        conn.getDlmsMessageListener()
+                .setDescription("RetrieveEvents for " + findEventsQuery.getEventLogCategory() + " from "
+                        + findEventsQuery.getFrom() + " until " + findEventsQuery.getUntil() + ", retrieve attribute: "
+                        + JdlmsObjectToStringUtil.describeAttributes(eventLogBuffer));
+
         GetResult getResult;
         try {
-            getResult = conn.connection().get(eventLogBuffer);
+            getResult = conn.getConnection().get(eventLogBuffer);
         } catch (final IOException e) {
             throw new ConnectionException(e);
         }
 
-        if (getResult==null) {
+        if (getResult == null) {
             throw new ProtocolAdapterException("No GetResult received while retrieving event register "
                     + findEventsQuery.getEventLogCategory());
         }
@@ -139,5 +144,5 @@ public class RetrieveEventsCommandExecutor extends AbstractCommandExecutor<FindE
 
         return new SelectiveAccessDescription(accessSelector, accessParameter);
     }
-    
+
 }

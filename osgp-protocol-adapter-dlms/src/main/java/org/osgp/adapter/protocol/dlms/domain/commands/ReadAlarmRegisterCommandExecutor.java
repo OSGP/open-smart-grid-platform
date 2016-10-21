@@ -11,12 +11,11 @@ import java.io.IOException;
 import java.util.Set;
 
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -63,23 +62,26 @@ public class ReadAlarmRegisterCommandExecutor extends
     }
 
     @Override
-    public AlarmRegisterResponseDto execute(final DeviceConnector conn, final DlmsDevice device,
+    public AlarmRegisterResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
             final ReadAlarmRegisterRequestDto object) throws ProtocolAdapterException {
-        return new AlarmRegisterResponseDto(this.retrieveAlarmRegister(conn.connection()));
+        return new AlarmRegisterResponseDto(this.retrieveAlarmRegister(conn));
     }
 
-    private Set<AlarmTypeDto> retrieveAlarmRegister(final DlmsConnection conn) throws ProtocolAdapterException {
+    private Set<AlarmTypeDto> retrieveAlarmRegister(final DlmsConnectionHolder conn) throws ProtocolAdapterException {
 
         final AttributeAddress alarmRegisterValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
-        GetResult getResult=null;
+        conn.getDlmsMessageListener().setDescription("ReadAlarmRegister, retrieve attribute: "
+                + JdlmsObjectToStringUtil.describeAttributes(alarmRegisterValue));
+
+        GetResult getResult = null;
         try {
-            getResult = conn.get(alarmRegisterValue);
+            getResult = conn.getConnection().get(alarmRegisterValue);
         } catch (final IOException e) {
             throw new ConnectionException(e);
         }
 
-        if (getResult==null) {
+        if (getResult == null) {
             throw new ProtocolAdapterException("No GetResult received while retrieving alarm register.");
         }
 

@@ -21,7 +21,7 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,7 +103,7 @@ public class GetPeriodicMeterReadsCommandExecutor extends
     }
 
     @Override
-    public PeriodicMeterReadsResponseDto execute(final DeviceConnector conn, final DlmsDevice device,
+    public PeriodicMeterReadsResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
             final PeriodicMeterReadsRequestDto periodicMeterReadsRequest) throws ProtocolAdapterException {
 
         final PeriodTypeDto periodType = periodicMeterReadsRequest.getPeriodType();
@@ -122,8 +122,13 @@ public class GetPeriodicMeterReadsCommandExecutor extends
          */
         final List<GetResult> getResultList = new ArrayList<>(profileBufferAndScalerUnit.length);
         for (final AttributeAddress address : profileBufferAndScalerUnit) {
-            getResultList.addAll(this.dlmsHelperService.getAndCheck(conn.connection(), device,
-                    "retrieve periodic meter reads for " + periodType, address));
+
+            conn.getDlmsMessageListener().setDescription(
+                    "GetPeriodicMeterReads " + periodType + " from " + beginDateTime + " until " + endDateTime
+                            + ", retrieve attribute: " + JdlmsObjectToStringUtil.describeAttributes(address));
+
+            getResultList.addAll(this.dlmsHelperService.getAndCheck(conn, device, "retrieve periodic meter reads for "
+                    + periodType, address));
         }
 
         final List<PeriodicMeterReadsResponseItemDto> periodicMeterReads = new ArrayList<>();
@@ -223,7 +228,7 @@ public class GetPeriodicMeterReadsCommandExecutor extends
                 "positiveActiveEnergyTariff1");
         final DlmsMeterValueDto positiveActiveEnergyTariff2 = this.dlmsHelperService.getScaledMeterValue(
                 bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_2), results.get(RESULT_INDEX_IMPORT_2_OR_EXPORT)
-                        .getResultData(), "positiveActiveEnergyTariff2");
+                .getResultData(), "positiveActiveEnergyTariff2");
         final DlmsMeterValueDto negativeActiveEnergyTariff1 = this.dlmsHelperService.getScaledMeterValue(
                 bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_1), results.get(RESULT_INDEX_EXPORT).getResultData(),
                 "negativeActiveEnergyTariff1");
@@ -272,7 +277,7 @@ public class GetPeriodicMeterReadsCommandExecutor extends
                 "positiveActiveEnergyTariff1");
         final DlmsMeterValueDto positiveActiveEnergyTariff2 = this.dlmsHelperService.getScaledMeterValue(
                 bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_2 - 1), results.get(RESULT_INDEX_IMPORT_2_OR_EXPORT)
-                        .getResultData(), "positiveActiveEnergyTariff2");
+                .getResultData(), "positiveActiveEnergyTariff2");
         final DlmsMeterValueDto negativeActiveEnergyTariff1 = this.dlmsHelperService.getScaledMeterValue(
                 bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_1 - 1), results.get(RESULT_INDEX_EXPORT).getResultData(),
                 "negativeActiveEnergyTariff1");
@@ -288,7 +293,7 @@ public class GetPeriodicMeterReadsCommandExecutor extends
 
     private AttributeAddress[] getProfileBufferAndScalerUnit(final PeriodTypeDto periodType,
             final DateTime beginDateTime, final DateTime endDateTime, final boolean isSelectingValuesSupported)
-            throws ProtocolAdapterException {
+                    throws ProtocolAdapterException {
 
         final SelectiveAccessDescription access = this.getSelectiveAccessDescription(periodType, beginDateTime,
                 endDateTime, isSelectingValuesSupported);
@@ -352,7 +357,7 @@ public class GetPeriodicMeterReadsCommandExecutor extends
          * value to determine which elements from the buffered array should be
          * retrieved.
          */
-        final DataObject clockDefinition = DataObjectDefinitions.getClockDefinition();
+        final DataObject clockDefinition = this.dlmsHelperService.getClockDefinition();
 
         final DataObject fromValue = this.dlmsHelperService.asDataObject(beginDateTime);
         final DataObject toValue = this.dlmsHelperService.asDataObject(endDateTime);
@@ -412,9 +417,9 @@ public class GetPeriodicMeterReadsCommandExecutor extends
          * {4,0-4.24.2.1.255,5,0}  -  M-Bus Master Value 1 Channel 4 Capture time
          */
 
-        objectDefinitions.add(DataObjectDefinitions.getClockDefinition());
+        objectDefinitions.add(this.dlmsHelperService.getClockDefinition());
 
-        objectDefinitions.add(DataObjectDefinitions.getAMRProfileDefinition());
+        objectDefinitions.add(this.dlmsHelperService.getAMRProfileDefinition());
 
         this.addActiveEnergyImportRate1(objectDefinitions);
         this.addActiveEnergyImportRate2(objectDefinitions);
@@ -443,7 +448,7 @@ public class GetPeriodicMeterReadsCommandExecutor extends
          * {4,0-4.24.2.1.255,5,0}  -  M-Bus Master Value 1 Channel 4 Capture time
          */
 
-        objectDefinitions.add(DataObjectDefinitions.getClockDefinition());
+        objectDefinitions.add(this.dlmsHelperService.getClockDefinition());
 
         this.addActiveEnergyImportRate1(objectDefinitions);
         this.addActiveEnergyImportRate2(objectDefinitions);

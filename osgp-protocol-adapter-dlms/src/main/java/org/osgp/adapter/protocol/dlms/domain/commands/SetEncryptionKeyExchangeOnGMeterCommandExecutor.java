@@ -24,7 +24,7 @@ import org.osgp.adapter.protocol.dlms.application.models.ProtocolMeterInfo;
 import org.osgp.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
-import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -98,7 +98,7 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor extends
     }
 
     @Override
-    public MethodResultCode execute(final DeviceConnector conn, final DlmsDevice device,
+    public MethodResultCode execute(final DlmsConnectionHolder conn, final DlmsDevice device,
             final ProtocolMeterInfo protocolMeterInfo) throws ProtocolAdapterException {
         try {
             LOGGER.debug("SetEncryptionKeyExchangeOnGMeterCommandExecutor.execute called");
@@ -114,14 +114,18 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor extends
             final MethodParameter methodTransferKey = this.getTransferKeyToMBusMethodParameter(obisCode,
                     decryptedMasterKey, decryptedEncryptionKey);
 
-            MethodResult methodResultCode = conn.connection().action(methodTransferKey);
+            conn.getDlmsMessageListener()
+                    .setDescription("SetEncryptionKeyExchangeOnGMeter for channel " + protocolMeterInfo.getChannel()
+                            + ", call method: " + JdlmsObjectToStringUtil.describeMethod(methodTransferKey));
+
+            MethodResult methodResultCode = conn.getConnection().action(methodTransferKey);
             this.checkMethodResultCode(methodResultCode, "getTransferKeyToMBusMethodParameter");
             LOGGER.info("Success!: Finished calling getTransferKeyToMBusMethodParameter class_id {} obis_code {}",
                     CLASS_ID, obisCode);
 
             final MethodParameter methodSetEncryptionKey = this.getSetEncryptionKeyMethodParameter(obisCode,
                     decryptedEncryptionKey);
-            methodResultCode = conn.connection().action(methodSetEncryptionKey);
+            methodResultCode = conn.getConnection().action(methodSetEncryptionKey);
             this.checkMethodResultCode(methodResultCode, "getSetEncryptionKeyMethodParameter");
             LOGGER.info("Success!: Finished calling setEncryptionKey class_id {} obis_code {}", CLASS_ID, obisCode);
 

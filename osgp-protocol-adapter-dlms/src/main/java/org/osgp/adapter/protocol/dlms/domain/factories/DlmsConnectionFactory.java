@@ -12,7 +12,9 @@ import java.io.IOException;
 import javax.inject.Provider;
 import javax.naming.OperationNotSupportedException;
 
+import org.openmuc.jdlms.DlmsConnection;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -32,16 +34,24 @@ public class DlmsConnectionFactory {
      *            The device to connect to. This reference can be updated when
      *            the invalid but correctable connection credentials are
      *            detected.
-     * @return an open connection
+     * @param dlmsMessageListener
+     *            A message listener that will be provided to the
+     *            {@link DlmsConnection} that is initialized if the given
+     *            {@code device} is in {@link DlmsDevice#isInDebugMode() debug
+     *            mode}. If this is {@code null} no DLMS device communication
+     *            debug logging will be done.
+     * @return a holder providing access to an open DLMS connection as well as
+     *         an optional message listener active in the connection.
      * @throws IOException
      * @throws OperationNotSupportedException
      */
-    public DeviceConnector getConnection(final DlmsDevice device) throws TechnicalException {
+    public DlmsConnectionHolder getConnection(final DlmsDevice device, final DlmsMessageListener dlmsMessageListener)
+            throws TechnicalException {
         if (device.isHls5Active()) {
-            final Hls5Connector connector = this.hls5ConnectorProvider.get();
-            DeviceConnector connection = new DeviceConnector(connector, device);
-            connection.connect();
-            return connection;
+            final DlmsConnectionHolder holder = new DlmsConnectionHolder(this.hls5ConnectorProvider.get(), device,
+                    dlmsMessageListener);
+            holder.connect();
+            return holder;
         } else {
             throw new UnsupportedOperationException("Only HLS 5 connections are currently supported");
         }

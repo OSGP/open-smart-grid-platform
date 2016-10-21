@@ -15,8 +15,7 @@ import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsComma
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsGasCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.ReadAlarmRegisterCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
-import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,12 +27,6 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterReques
 
 @Service(value = "dlmsDeviceMonitoringService")
 public class MonitoringService {
-
-    @Autowired
-    private DomainHelperService domainHelperService;
-
-    @Autowired
-    private DlmsConnectionFactory dlmsConnectionFactory;
 
     @Autowired
     private GetPeriodicMeterReadsCommandExecutor getPeriodicMeterReadsCommandExecutor;
@@ -52,7 +45,7 @@ public class MonitoringService {
 
     // === REQUEST PERIODIC METER DATA ===
 
-    public Serializable requestPeriodicMeterReads(final DeviceConnector conn, final DlmsDevice device,
+    public Serializable requestPeriodicMeterReads(final DlmsConnectionHolder conn, final DlmsDevice device,
             final PeriodicMeterReadsRequestDto periodicMeterReadsQuery) throws ProtocolAdapterException {
 
         Serializable response = null;
@@ -66,7 +59,7 @@ public class MonitoringService {
 
     }
 
-    public Serializable requestActualMeterReads(final DeviceConnector conn, final DlmsDevice device,
+    public Serializable requestActualMeterReads(final DlmsConnectionHolder conn, final DlmsDevice device,
             final ActualMeterReadsQueryDto actualMeterReadsRequest) throws ProtocolAdapterException {
 
         Serializable response = null;
@@ -79,7 +72,7 @@ public class MonitoringService {
         return response;
     }
 
-    public AlarmRegisterResponseDto requestReadAlarmRegister(final DeviceConnector conn, final DlmsDevice device,
+    public AlarmRegisterResponseDto requestReadAlarmRegister(final DlmsConnectionHolder conn, final DlmsDevice device,
             final ReadAlarmRegisterRequestDto readAlarmRegisterRequest) throws ProtocolAdapterException {
 
         return this.readAlarmRegisterCommandExecutor.execute(conn, device, readAlarmRegisterRequest);

@@ -16,7 +16,7 @@ import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.application.mapping.ConfigurationMapper;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.domain.factories.DeviceConnector;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -65,7 +65,7 @@ public class SetAdministrativeStatusCommandExecutor extends
     }
 
     @Override
-    public AccessResultCode execute(final DeviceConnector conn, final DlmsDevice device,
+    public AccessResultCode execute(final DlmsConnectionHolder conn, final DlmsDevice device,
             final AdministrativeStatusTypeDto administrativeStatusType) throws ProtocolAdapterException {
 
         LOGGER.info(
@@ -78,8 +78,11 @@ public class SetAdministrativeStatusCommandExecutor extends
 
         final SetParameter setParameter = new SetParameter(attributeAddress, value);
 
+        conn.getDlmsMessageListener().setDescription("SetAdminstrativeStatus to " + administrativeStatusType
+                + ", set attribute: " + JdlmsObjectToStringUtil.describeAttributes(attributeAddress));
+
         try {
-            return conn.connection().set(setParameter);
+            return conn.getConnection().set(setParameter);
         } catch (final IOException e) {
             throw new ConnectionException(e);
         }

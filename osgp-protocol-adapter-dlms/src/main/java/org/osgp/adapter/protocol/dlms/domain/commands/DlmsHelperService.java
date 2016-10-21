@@ -19,13 +19,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.BitString;
 import org.openmuc.jdlms.datatypes.CosemDate;
@@ -35,6 +35,7 @@ import org.openmuc.jdlms.datatypes.CosemTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -86,12 +87,12 @@ public class DlmsHelperService {
      * @throws ConnectionException
      * @throws ProtocolAdapterException
      */
-    public DataObject getAttributeValue(final DlmsConnection conn, final AttributeAddress attributeAddress)
+    public DataObject getAttributeValue(final DlmsConnectionHolder conn, final AttributeAddress attributeAddress)
             throws ProtocolAdapterException {
         Objects.requireNonNull(conn, "conn must not be null");
         Objects.requireNonNull(attributeAddress, "attributeAddress must not be null");
         try {
-            final GetResult getResult = conn.get(attributeAddress);
+            final GetResult getResult = conn.getConnection().get(attributeAddress);
             final AccessResultCode resultCode = getResult.getResultCode();
             if (AccessResultCode.SUCCESS == resultCode) {
                 return getResult.getResultData();
@@ -104,7 +105,7 @@ public class DlmsHelperService {
             throw new ConnectionException(e);
         } catch (final Exception e) {
             throw new ProtocolAdapterException("Error retrieving attribute value for {" + attributeAddress.getClassId()
-                    + "," + attributeAddress.getInstanceId().toObisCode() + "," + attributeAddress.getId() + "}.", e);
+            + "," + attributeAddress.getInstanceId().toObisCode() + "," + attributeAddress.getId() + "}.", e);
         }
     }
 
@@ -119,8 +120,8 @@ public class DlmsHelperService {
      * @return
      * @throws ProtocolAdapterException
      */
-    public List<GetResult> getAndCheck(final DlmsConnection conn, final DlmsDevice device, final String description,
-            final AttributeAddress... params) throws ProtocolAdapterException {
+    public List<GetResult> getAndCheck(final DlmsConnectionHolder conn, final DlmsDevice device,
+            final String description, final AttributeAddress... params) throws ProtocolAdapterException {
         final List<GetResult> getResults = this.getWithList(conn, device, params);
         this.checkResultList(getResults, params.length, description);
         return getResults;
@@ -157,19 +158,23 @@ public class DlmsHelperService {
         }
     }
 
-    public List<GetResult> getWithList(final DlmsConnection conn, final DlmsDevice device,
+    public List<GetResult> getWithList(final DlmsConnectionHolder conn, final DlmsDevice device,
             final AttributeAddress... params) throws ProtocolAdapterException {
         try {
             if (device.isWithListSupported()) {
-                return conn.get(Arrays.asList(params));
+                return conn.getConnection().get(Arrays.asList(params));
             } else {
                 return this.getWithListWorkaround(conn, params);
             }
-        } catch (IOException e) {
+        } catch (IOException | TimeoutException e) {
             throw new ConnectionException(e);
         } catch (final Exception e) {
             throw new ProtocolAdapterException("Error retrieving values with-list.", e);
         }
+    }
+
+    public DataObject getClockDefinition() {
+        return DataObjectDefinitions.getClockDefinition();
     }
 
     /**
@@ -218,19 +223,24 @@ public class DlmsHelperService {
         return new DlmsMeterValueDto(scaledValue, unit);
     }
 
+    public DataObject getAMRProfileDefinition() {
+        return DataObjectDefinitions.getAMRProfileDefinition();
+    }
+
     /**
      * Workaround method mimicking a Get-Request with-list for devices that do
      * not support the actual functionality from DLMS.
      *
      * @throws IOException
+     * @throws TimeoutException
      *
-     * @see #getWithList(DlmsConnection, DlmsDevice, AttributeAddress...)
+     * @see #getWithList(DlmsConnectionHolder, DlmsDevice, AttributeAddress...)
      */
-    private List<GetResult> getWithListWorkaround(final DlmsConnection conn, final AttributeAddress... params)
-            throws IOException {
+    private List<GetResult> getWithListWorkaround(final DlmsConnectionHolder conn, final AttributeAddress... params)
+            throws IOException, TimeoutException {
         final List<GetResult> getResultList = new ArrayList<>();
         for (final AttributeAddress param : params) {
-            getResultList.add(conn.get(param));
+            getResultList.add(conn.getConnection().get(param));
         }
         return getResultList;
     }
@@ -722,8 +732,8 @@ public class DlmsHelperService {
         final StringBuilder sb = new StringBuilder();
 
         sb.append("logical name: ").append(logicalNameValue[0] & 0xFF).append('-').append(logicalNameValue[1] & 0xFF)
-                .append(':').append(logicalNameValue[2] & 0xFF).append('.').append(logicalNameValue[3] & 0xFF)
-                .append('.').append(logicalNameValue[4] & 0xFF).append('.').append(logicalNameValue[5] & 0xFF);
+        .append(':').append(logicalNameValue[2] & 0xFF).append('.').append(logicalNameValue[3] & 0xFF)
+        .append('.').append(logicalNameValue[4] & 0xFF).append('.').append(logicalNameValue[5] & 0xFF);
 
         return sb.toString();
     }
@@ -749,10 +759,10 @@ public class DlmsHelperService {
         final int clockStatus = bb.get();
 
         sb.append("year=").append(year).append(", month=").append(monthOfYear).append(", day=").append(dayOfMonth)
-                .append(", weekday=").append(dayOfWeek).append(", hour=").append(hourOfDay).append(", minute=")
-                .append(minuteOfHour).append(", second=").append(secondOfMinute).append(", hundredths=")
-                .append(hundredthsOfSecond).append(", deviation=").append(deviation).append(", clockstatus=")
-                .append(clockStatus);
+        .append(", weekday=").append(dayOfWeek).append(", hour=").append(hourOfDay).append(", minute=")
+        .append(minuteOfHour).append(", second=").append(secondOfMinute).append(", hundredths=")
+        .append(hundredthsOfSecond).append(", deviation=").append(deviation).append(", clockstatus=")
+        .append(clockStatus);
 
         return sb.toString();
     }
