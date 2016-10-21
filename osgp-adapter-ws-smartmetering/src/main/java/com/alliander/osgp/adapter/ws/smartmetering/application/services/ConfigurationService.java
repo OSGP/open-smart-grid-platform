@@ -224,7 +224,7 @@ public class ConfigurationService {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.REQUEST_SPECIAL_DAYS.toString(), messagePriority, scheduleTime);
+                SmartMeteringRequestMessageType.SET_SPECIAL_DAYS.toString(), messagePriority, scheduleTime);
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
