@@ -16,12 +16,12 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,7 +103,7 @@ public class GetPeriodicMeterReadsCommandExecutor extends
     }
 
     @Override
-    public PeriodicMeterReadsResponseDto execute(final DlmsConnection conn, final DlmsDevice device,
+    public PeriodicMeterReadsResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
             final PeriodicMeterReadsRequestDto periodicMeterReadsRequest) throws ProtocolAdapterException {
 
         final PeriodTypeDto periodType = periodicMeterReadsRequest.getPeriodType();
@@ -122,6 +122,11 @@ public class GetPeriodicMeterReadsCommandExecutor extends
          */
         final List<GetResult> getResultList = new ArrayList<>(profileBufferAndScalerUnit.length);
         for (final AttributeAddress address : profileBufferAndScalerUnit) {
+
+            conn.getDlmsMessageListener().setDescription(
+                    "GetPeriodicMeterReads " + periodType + " from " + beginDateTime + " until " + endDateTime
+                            + ", retrieve attribute: " + JdlmsObjectToStringUtil.describeAttributes(address));
+
             getResultList.addAll(this.dlmsHelperService.getAndCheck(conn, device, "retrieve periodic meter reads for "
                     + periodType, address));
         }

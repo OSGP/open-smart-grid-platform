@@ -15,12 +15,12 @@ import java.util.concurrent.TimeoutException;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -71,7 +71,7 @@ public class SetAlarmNotificationsCommandExecutor extends
     }
 
     @Override
-    public AccessResultCode execute(final DlmsConnection conn, final DlmsDevice device,
+    public AccessResultCode execute(final DlmsConnectionHolder conn, final DlmsDevice device,
             final AlarmNotificationsDto alarmNotifications) throws ProtocolAdapterException {
 
         try {
@@ -90,15 +90,19 @@ public class SetAlarmNotificationsCommandExecutor extends
         }
     }
 
-    public AlarmNotificationsDto retrieveCurrentAlarmNotifications(final DlmsConnection conn) throws IOException,
-    TimeoutException, ProtocolAdapterException {
+    public AlarmNotificationsDto retrieveCurrentAlarmNotifications(final DlmsConnectionHolder conn)
+            throws IOException, TimeoutException, ProtocolAdapterException {
 
         final AttributeAddress alarmFilterValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
+
+        conn.getDlmsMessageListener()
+        .setDescription("SetAlarmNotifications retrieve current value, retrieve attribute: "
+                + JdlmsObjectToStringUtil.describeAttributes(alarmFilterValue));
 
         LOGGER.info(
                 "Retrieving current alarm filter by issuing get request for class id: {}, obis code: {}, attribute id: {}",
                 CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
-        final GetResult getResult = conn.get(alarmFilterValue);
+        final GetResult getResult = conn.getConnection().get(alarmFilterValue);
 
         if (getResult == null) {
             throw new ProtocolAdapterException("No GetResult received while retrieving current alarm filter.");
@@ -107,15 +111,18 @@ public class SetAlarmNotificationsCommandExecutor extends
         return this.alarmNotifications(getResult.getResultData());
     }
 
-    public AccessResultCode writeUpdatedAlarmNotifications(final DlmsConnection conn, final long alarmFilterLongValue)
-            throws IOException, TimeoutException {
+    public AccessResultCode writeUpdatedAlarmNotifications(final DlmsConnectionHolder conn,
+            final long alarmFilterLongValue) throws IOException, TimeoutException {
 
         final AttributeAddress alarmFilterValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
         final DataObject value = DataObject.newUInteger32Data(alarmFilterLongValue);
 
         final SetParameter setParameter = new SetParameter(alarmFilterValue, value);
 
-        return conn.set(setParameter);
+        conn.getDlmsMessageListener().setDescription("SetAlarmNotifications write updated value " + alarmFilterLongValue
+                + ", set attribute: " + JdlmsObjectToStringUtil.describeAttributes(alarmFilterValue));
+
+        return conn.getConnection().set(setParameter);
     }
 
     public AlarmNotificationsDto alarmNotifications(final DataObject alarmFilter) throws ProtocolAdapterException {

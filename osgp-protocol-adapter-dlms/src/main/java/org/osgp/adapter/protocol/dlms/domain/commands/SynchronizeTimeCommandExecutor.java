@@ -12,11 +12,11 @@ import java.io.IOException;
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +59,7 @@ AbstractCommandExecutor<SynchronizeTimeRequestDto, AccessResultCode> {
     }
 
     @Override
-    public AccessResultCode execute(final DlmsConnection conn, final DlmsDevice device,
+    public AccessResultCode execute(final DlmsConnectionHolder conn, final DlmsDevice device,
             final SynchronizeTimeRequestDto synchronizeTimeRequestDto) throws ProtocolAdapterException {
         final AttributeAddress clockTime = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
@@ -69,8 +69,11 @@ AbstractCommandExecutor<SynchronizeTimeRequestDto, AccessResultCode> {
 
         final SetParameter setParameter = new SetParameter(clockTime, time);
 
+        conn.getDlmsMessageListener().setDescription("SynchronizeTime to " + dt + ", set attribute: "
+                + JdlmsObjectToStringUtil.describeAttributes(clockTime));
+
         try {
-            return conn.set(setParameter);
+            return conn.getConnection().set(setParameter);
         } catch (final IOException e) {
             throw new ConnectionException(e);
         }

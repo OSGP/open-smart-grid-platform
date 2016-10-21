@@ -23,13 +23,27 @@ public class DlmsLogItemRequestMessage {
 
     private String deviceIdentification;
 
+    private String organisationIdentification;
+
     private boolean valid;
 
     private int payloadMessageSerializedSize;
 
+    public DlmsLogItemRequestMessage(final String deviceIdentification, final String organisationIdentification,
+            final boolean incoming, final byte[] encodedMessage, final String decodedMessage) {
+        this.deviceIdentification = deviceIdentification;
+        this.organisationIdentification = organisationIdentification;
+        this.incoming = incoming;
+        this.valid = true;
+        this.payloadMessageSerializedSize = encodedMessage.length;
+        this.encodedMessage = StringUtils.substring(bytesToCArray(encodedMessage), 0, MAX_MESSAGE_LENGTH);
+        this.decodedMessage = StringUtils.substring(decodedMessage, 0, MAX_MESSAGE_LENGTH);
+    }
+
     public DlmsLogItemRequestMessage(final String deviceIdentification, final boolean incoming, final boolean valid,
             final DlmsPushNotification message, final int payloadMessageSerializedSize) {
         this.deviceIdentification = deviceIdentification;
+        this.organisationIdentification = null;
         this.incoming = incoming;
         this.valid = valid;
         this.payloadMessageSerializedSize = payloadMessageSerializedSize;
@@ -53,6 +67,14 @@ public class DlmsLogItemRequestMessage {
 
     public String getDeviceIdentification() {
         return this.deviceIdentification;
+    }
+
+    public boolean hasOrganisationIdentification() {
+        return this.organisationIdentification != null;
+    }
+
+    public String getOrganisationIdentification() {
+        return this.organisationIdentification;
     }
 
     private static String bytesToCArray(final byte[] bytes) {
