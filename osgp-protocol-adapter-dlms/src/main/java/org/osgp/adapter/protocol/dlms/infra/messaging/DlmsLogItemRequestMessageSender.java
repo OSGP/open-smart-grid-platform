@@ -44,6 +44,10 @@ public class DlmsLogItemRequestMessageSender {
                         dlmsLogItemRequestMessage.getDecodedMessage());
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
                         dlmsLogItemRequestMessage.getDeviceIdentification());
+                if (dlmsLogItemRequestMessage.hasOrganisationIdentification()) {
+                    objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
+                            dlmsLogItemRequestMessage.getOrganisationIdentification());
+                }
                 objectMessage.setStringProperty(Constants.IS_VALID, dlmsLogItemRequestMessage.isValid().toString());
                 objectMessage.setIntProperty(Constants.PAYLOAD_MESSAGE_SERIALIZED_SIZE,
                         dlmsLogItemRequestMessage.getPayloadMessageSerializedSize());

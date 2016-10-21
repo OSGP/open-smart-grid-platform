@@ -26,7 +26,6 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.BitString;
 import org.openmuc.jdlms.datatypes.CosemDate;
@@ -36,6 +35,7 @@ import org.openmuc.jdlms.datatypes.CosemTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -87,12 +87,12 @@ public class DlmsHelperService {
      * @throws ConnectionException
      * @throws ProtocolAdapterException
      */
-    public DataObject getAttributeValue(final DlmsConnection conn, final AttributeAddress attributeAddress)
+    public DataObject getAttributeValue(final DlmsConnectionHolder conn, final AttributeAddress attributeAddress)
             throws ProtocolAdapterException {
         Objects.requireNonNull(conn, "conn must not be null");
         Objects.requireNonNull(attributeAddress, "attributeAddress must not be null");
         try {
-            final GetResult getResult = conn.get(attributeAddress);
+            final GetResult getResult = conn.getConnection().get(attributeAddress);
             final AccessResultCode resultCode = getResult.getResultCode();
             if (AccessResultCode.SUCCESS == resultCode) {
                 return getResult.getResultData();
@@ -120,8 +120,8 @@ public class DlmsHelperService {
      * @return
      * @throws ProtocolAdapterException
      */
-    public List<GetResult> getAndCheck(final DlmsConnection conn, final DlmsDevice device, final String description,
-            final AttributeAddress... params) throws ProtocolAdapterException {
+    public List<GetResult> getAndCheck(final DlmsConnectionHolder conn, final DlmsDevice device,
+            final String description, final AttributeAddress... params) throws ProtocolAdapterException {
         final List<GetResult> getResults = this.getWithList(conn, device, params);
         this.checkResultList(getResults, params.length, description);
         return getResults;
@@ -158,11 +158,11 @@ public class DlmsHelperService {
         }
     }
 
-    public List<GetResult> getWithList(final DlmsConnection conn, final DlmsDevice device,
+    public List<GetResult> getWithList(final DlmsConnectionHolder conn, final DlmsDevice device,
             final AttributeAddress... params) throws ProtocolAdapterException {
         try {
             if (device.isWithListSupported()) {
-                return conn.get(Arrays.asList(params));
+                return conn.getConnection().get(Arrays.asList(params));
             } else {
                 return this.getWithListWorkaround(conn, params);
             }
@@ -234,13 +234,13 @@ public class DlmsHelperService {
      * @throws IOException
      * @throws TimeoutException
      *
-     * @see #getWithList(DlmsConnection, DlmsDevice, AttributeAddress...)
+     * @see #getWithList(DlmsConnectionHolder, DlmsDevice, AttributeAddress...)
      */
-    private List<GetResult> getWithListWorkaround(final DlmsConnection conn, final AttributeAddress... params)
+    private List<GetResult> getWithListWorkaround(final DlmsConnectionHolder conn, final AttributeAddress... params)
             throws IOException, TimeoutException {
         final List<GetResult> getResultList = new ArrayList<>();
         for (final AttributeAddress param : params) {
-            getResultList.add(conn.get(param));
+            getResultList.add(conn.getConnection().get(param));
         }
         return getResultList;
     }

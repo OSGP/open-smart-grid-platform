@@ -37,7 +37,9 @@ import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.BitString;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto;
@@ -56,7 +58,7 @@ public class SetConfigurationObjectCommandExecutorTest {
     private static final ObisCode OBIS_CODE = new ObisCode("0.1.94.31.3.255");
     private static final int ATTRIBUTE_ID = 2;
 
-    private static final List<ConfigurationFlagTypeDto> FLAGS_TYPES_FORBIDDEN_TO_SET = new ArrayList<ConfigurationFlagTypeDto>();
+    private static final List<ConfigurationFlagTypeDto> FLAGS_TYPES_FORBIDDEN_TO_SET = new ArrayList<>();
     static {
         FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagTypeDto.PO_ENABLE);
         FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagTypeDto.HLS_3_ON_P_3_ENABLE);
@@ -68,11 +70,17 @@ public class SetConfigurationObjectCommandExecutorTest {
     }
 
     @Mock
+    private DlmsConnectionHolder connectionHolderMock;
+
+    @Mock
     private DlmsConnection connMock;
 
     @Mock
+    private DlmsMessageListener listenerMock;
+
+    @Mock
     private List<GetResult> getResultListMock;
-    
+
     @Mock
     private GetResult getResultMock;
 
@@ -103,7 +111,7 @@ public class SetConfigurationObjectCommandExecutorTest {
     /*
      * This test was refactored because in the new jdlms-1.0.0.jar, the interface to DlmsConnection (was ClientConnection) was changed significantly.
      * As a result, in this test the ArgumentCapture could not be used anymore, hence this test is not completely identical with the orginal version.
-     * A mockito expert may try to fix this.     
+     * A mockito expert may try to fix this.
      */
     @Test
     public void testForbiddenFlagsAreNotSet()
@@ -122,21 +130,24 @@ public class SetConfigurationObjectCommandExecutorTest {
         accessResultCodeList.add(AccessResultCode.SUCCESS);
         when(this.connMock.set(eq(false), Matchers.anyListOf(SetParameter.class))).thenReturn(accessResultCodeList);
 
+        when(this.connectionHolderMock.getConnection()).thenReturn(this.connMock);
+        when(this.connectionHolderMock.getDlmsMessageListener()).thenReturn(this.listenerMock);
+
         final DlmsDevice device = this.getDlmsDevice();
         final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
         // Run test
-        this.executor.execute(this.connMock, device, configurationObject);
+        this.executor.execute(this.connectionHolderMock, device, configurationObject);
 
-        DataObject obj1 = DataObject.newInteger16Data((short)10);
-        DataObject obj2 = DataObject.newBoolData(true);
-        List<DataObject> dataobjects = new ArrayList<>();
+        final DataObject obj1 = DataObject.newInteger16Data((short)10);
+        final DataObject obj2 = DataObject.newBoolData(true);
+        final List<DataObject> dataobjects = new ArrayList<>();
         dataobjects.add(obj1);
         dataobjects.add(obj2);
-        DataObject dataObject = DataObject.newStructureData(dataobjects);
+        final DataObject dataObject = DataObject.newStructureData(dataobjects);
 
-        SetParameter capturedSetParameter = new SetParameter(attributeAddress, dataObject);
-                
+        final SetParameter capturedSetParameter = new SetParameter(attributeAddress, dataObject);
+
         // Verify AttributeAddress
         final AttributeAddress capturedAttributeAddress = (AttributeAddress) Whitebox
                 .getInternalState(capturedSetParameter, "attributeAddress");
@@ -176,7 +187,7 @@ public class SetConfigurationObjectCommandExecutorTest {
     }
 
     private List<ConfigurationFlagDto> getAllForbiddenFlags() {
-        final List<ConfigurationFlagDto> listOfConfigurationFlags = new ArrayList<ConfigurationFlagDto>();
+        final List<ConfigurationFlagDto> listOfConfigurationFlags = new ArrayList<>();
 
         for (final ConfigurationFlagTypeDto confFlagType : FLAGS_TYPES_FORBIDDEN_TO_SET) {
             listOfConfigurationFlags.add(new ConfigurationFlagDto(confFlagType, false));

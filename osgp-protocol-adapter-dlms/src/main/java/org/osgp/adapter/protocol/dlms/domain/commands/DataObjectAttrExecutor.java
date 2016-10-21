@@ -15,6 +15,7 @@ import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,8 +35,8 @@ public class DataObjectAttrExecutor {
     private final int attributeId;
     private AccessResultCode resultCode;
 
-    public DataObjectAttrExecutor(String name, AttributeAddress attrAddress, DataObject value, int classId,
-            ObisCode obisCode, int attributeId) {
+    public DataObjectAttrExecutor(final String name, final AttributeAddress attrAddress, final DataObject value, final int classId,
+            final ObisCode obisCode, final int attributeId) {
         this.name = name;
         this.attrAddress = attrAddress;
         this.value = value;
@@ -68,9 +69,9 @@ public class DataObjectAttrExecutor {
      *             is thrown when an error occurs with the connection to the
      *             dlms device
      */
-    public AccessResultCode executeSet(DlmsConnection conn) throws IOException {
+    public AccessResultCode executeSet(final DlmsConnectionHolder conn) throws IOException {
         LOGGER.info("WRITING {}", this.name);
-        this.resultCode = conn.set(new SetParameter(this.getAttrAddress(), this.getValue()));
+        this.resultCode = conn.getConnection().set(new SetParameter(this.getAttrAddress(), this.getValue()));
         return this.resultCode;
     }
 

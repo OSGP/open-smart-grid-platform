@@ -12,7 +12,6 @@ import java.util.Date;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
-import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.MethodParameter;
 import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.SecurityUtils;
@@ -20,6 +19,7 @@ import org.openmuc.jdlms.SecurityUtils.KeyId;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -96,7 +96,7 @@ AbstractCommandExecutor<ReplaceKeyCommandExecutor.KeyWrapper, DlmsDevice> {
     }
 
     @Override
-    public ActionResponseDto executeBundleAction(final DlmsConnection conn, final DlmsDevice device,
+    public ActionResponseDto executeBundleAction(final DlmsConnectionHolder conn, final DlmsDevice device,
             final ActionRequestDto actionRequestDto) throws ProtocolAdapterException {
 
         this.checkActionRequestType(actionRequestDto);
@@ -116,7 +116,7 @@ AbstractCommandExecutor<ReplaceKeyCommandExecutor.KeyWrapper, DlmsDevice> {
     }
 
     @Override
-    public DlmsDevice execute(final DlmsConnection conn, final DlmsDevice device,
+    public DlmsDevice execute(final DlmsConnectionHolder conn, final DlmsDevice device,
             final ReplaceKeyCommandExecutor.KeyWrapper keyWrapper) throws ProtocolAdapterException {
 
         // Add the new key and store in the repo
@@ -143,7 +143,7 @@ AbstractCommandExecutor<ReplaceKeyCommandExecutor.KeyWrapper, DlmsDevice> {
      * @throws IOException
      * @throws ProtocolAdapterException
      */
-    private void sendToDevice(final DlmsConnection conn, final DlmsDevice device,
+    private void sendToDevice(final DlmsConnectionHolder conn, final DlmsDevice device,
             final ReplaceKeyCommandExecutor.KeyWrapper keyWrapper) throws ProtocolAdapterException {
         try {
             // Decrypt the cipher text using the private key.
@@ -153,7 +153,12 @@ AbstractCommandExecutor<ReplaceKeyCommandExecutor.KeyWrapper, DlmsDevice> {
 
             final MethodParameter methodParameterAuth = SecurityUtils.keyChangeMethodParamFor(decryptedMasterKey,
                     decryptedKey, keyWrapper.getKeyId());
-            final MethodResultCode methodResultCode = conn.action(methodParameterAuth).getResultCode();
+
+            conn.getDlmsMessageListener().setDescription("ReplaceKey for " + keyWrapper.securityKeyType + " "
+                    + keyWrapper.getKeyId() + ", call method: "
+                    + JdlmsObjectToStringUtil.describeMethod(methodParameterAuth));
+
+            final MethodResultCode methodResultCode = conn.getConnection().action(methodParameterAuth).getResultCode();
 
             if (!MethodResultCode.SUCCESS.equals(methodResultCode)) {
                 throw new ProtocolAdapterException("AccessResultCode for replace keys was not SUCCESS: "
@@ -162,9 +167,9 @@ AbstractCommandExecutor<ReplaceKeyCommandExecutor.KeyWrapper, DlmsDevice> {
 
             // Update key of current connection
             if (keyWrapper.securityKeyType == SecurityKeyType.E_METER_AUTHENTICATION) {
-                conn.changeClientGlobalAuthenticationKey(decryptedKey);
+                conn.getConnection().changeClientGlobalAuthenticationKey(decryptedKey);
             } else if (keyWrapper.securityKeyType == SecurityKeyType.E_METER_ENCRYPTION) {
-                conn.changeClientGlobalEncryptionKey(decryptedKey);
+                conn.getConnection().changeClientGlobalEncryptionKey(decryptedKey);
             }
         } catch (final IOException e) {
             throw new ConnectionException(e);

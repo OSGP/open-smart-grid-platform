@@ -10,9 +10,9 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 import javax.annotation.PostConstruct;
 
 import org.openmuc.jdlms.AccessResultCode;
-import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.MethodResultCode;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +58,7 @@ public abstract class AbstractCommandExecutor<T, R> implements CommandExecutor<T
     }
 
     @Override
-    public ActionResponseDto executeBundleAction(final DlmsConnection conn, final DlmsDevice device,
+    public ActionResponseDto executeBundleAction(final DlmsConnectionHolder conn, final DlmsDevice device,
             final ActionRequestDto actionRequestDto) throws ProtocolAdapterException {
 
         if (this.bundleExecutorMapKey == null) {

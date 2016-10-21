@@ -13,11 +13,11 @@ import java.util.Set;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.application.mapping.ConfigurationMapper;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,7 +76,7 @@ public class SetActivityCalendarCommandExecutor extends AbstractCommandExecutor<
     }
 
     @Override
-    public AccessResultCode execute(final DlmsConnection conn, final DlmsDevice device,
+    public AccessResultCode execute(final DlmsConnectionHolder conn, final DlmsDevice device,
             final ActivityCalendarDto activityCalendar) throws ProtocolAdapterException {
         LOGGER.debug("SetActivityCalendarCommandExecutor.execute {} called", activityCalendar.getCalendarName());
 
@@ -89,6 +89,11 @@ public class SetActivityCalendarCommandExecutor extends AbstractCommandExecutor<
                 .addExecutor(this.getSeasonProfileExecutor(seasonProfileList))
                 .addExecutor(this.getWeekProfileTableExecutor(weekProfileSet))
                 .addExecutor(this.getDayProfileTablePassiveExecutor(dayProfileSet));
+
+        conn.getDlmsMessageListener()
+                .setDescription("SetActivityCalendar for calendar " + activityCalendar.getCalendarName()
+                        + ", set attributes: " + dataObjectExecutors.describeAttributes());
+
         dataObjectExecutors.execute(conn);
 
         LOGGER.info("Finished setting the passive activity calendar");

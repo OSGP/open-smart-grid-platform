@@ -11,10 +11,10 @@ import java.util.Date;
 import java.util.List;
 
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +62,7 @@ public class GetActualMeterReadsGasCommandExecutor extends
     }
 
     @Override
-    public MeterReadsGasResponseDto execute(final DlmsConnection conn, final DlmsDevice device,
+    public MeterReadsGasResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
             final ActualMeterReadsQueryDto actualMeterReadsRequest) throws ProtocolAdapterException {
 
         final ObisCode obisCodeMbusMasterValue = this.masterValueForChannel(actualMeterReadsRequest.getChannel());
@@ -79,6 +79,11 @@ public class GetActualMeterReadsGasCommandExecutor extends
 
         final AttributeAddress scalerUnit = new AttributeAddress(CLASS_ID_MBUS,
                 this.masterValueForChannel(actualMeterReadsRequest.getChannel()), ATTRIBUTE_ID_SCALER_UNIT);
+
+        conn.getDlmsMessageListener()
+                .setDescription("GetActualMeterReadsGas for channel " + actualMeterReadsRequest.getChannel()
+                        + ", retrieve attributes: "
+                        + JdlmsObjectToStringUtil.describeAttributes(mbusValue, mbusTime, scalerUnit));
 
         final List<GetResult> getResultList = this.dlmsHelperService.getAndCheck(conn, device,
                 "retrieve actual meter reads for mbus " + actualMeterReadsRequest.getChannel(), mbusValue, mbusTime,
