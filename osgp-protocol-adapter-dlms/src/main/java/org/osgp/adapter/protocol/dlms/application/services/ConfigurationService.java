@@ -91,7 +91,7 @@ public class ConfigurationService {
     @Autowired
     private ReplaceKeyCommandExecutor replaceKeyCommandExecutor;
 
-    public void requestSpecialDays(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public void setSpecialDays(final DlmsConnectionHolder conn, final DlmsDevice device,
             final SpecialDaysRequestDto specialDaysRequest) throws ProtocolAdapterException {
 
         // The Special days towards the Smart Meter
@@ -170,8 +170,7 @@ public class ConfigurationService {
     }
 
     public AdministrativeStatusTypeDto requestGetAdministrativeStatus(final DlmsConnectionHolder conn,
-            final DlmsDevice device)
-            throws ProtocolAdapterException {
+            final DlmsDevice device) throws ProtocolAdapterException {
 
         return this.getAdministrativeStatusCommandExecutor.execute(conn, device, null);
     }
@@ -206,7 +205,7 @@ public class ConfigurationService {
         this.setActivityCalendarCommandExecutor.execute(conn, device, activityCalendar);
 
         return "Set Activity Calendar Result is OK for device id: " + device.getDeviceIdentification()
-        + " calendar name: " + activityCalendar.getCalendarName();
+                + " calendar name: " + activityCalendar.getCalendarName();
 
     }
 
@@ -225,8 +224,7 @@ public class ConfigurationService {
     }
 
     public void setPushSetupSms(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final PushSetupSmsDto pushSetupSms)
-            throws ProtocolAdapterException {
+            final PushSetupSmsDto pushSetupSms) throws ProtocolAdapterException {
 
         LOGGER.info("Push Setup Sms to set on the device: {}", pushSetupSms);
 
