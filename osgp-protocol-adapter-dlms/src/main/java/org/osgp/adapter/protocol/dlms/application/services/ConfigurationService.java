@@ -95,7 +95,7 @@ public class ConfigurationService {
     @Autowired
     private UpdateFirmwareCommandExecutor updateFirmwareCommandExecutor;
 
-    public void requestSpecialDays(final DlmsConnectionHolder conn, final DlmsDevice device,
+    public void setSpecialDays(final DlmsConnectionHolder conn, final DlmsDevice device,
             final SpecialDaysRequestDto specialDaysRequest) throws ProtocolAdapterException {
 
         // The Special days towards the Smart Meter
