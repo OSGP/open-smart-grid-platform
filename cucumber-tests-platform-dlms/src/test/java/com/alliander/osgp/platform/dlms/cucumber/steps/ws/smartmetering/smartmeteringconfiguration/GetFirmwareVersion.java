@@ -40,7 +40,7 @@ public class GetFirmwareVersion extends SmartMeteringStepsBase {
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_GETRESPONSE_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
 
-        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_STATUS, Defaults.EXPECTED_RESULT));
+        assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_STATUS, Defaults.EXPECTED_RESULT_OK));
 
         this.runXpathResult.assertXpathList(this.response, PATH_RESULT_FIRMWAREVERSION_TYPE,
                 XPATH_MATCHER_FIRMWAREVERSION_TYPE, 3);

@@ -21,7 +21,12 @@ import cucumber.api.java.en.When;
 
 public class DeactivateDeviceSteps extends AdminStepsBase {
 
-    private static final String TEST_SUITE = "DeviceManagement";
+    protected DeactivateDeviceSteps() throws Throwable {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	private static final String TEST_SUITE = "DeviceManagement";
     private static final String TEST_CASE_NAME = "281 Deactivate device";
     private static final String TEST_CASE_NAME_REQUEST = "DeactivateDevice - Request 1";
 

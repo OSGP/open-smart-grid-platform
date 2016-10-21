@@ -4,10 +4,13 @@
 package com.alliander.osgp.platform.dlms.cucumber.steps.database;
 
 import static com.alliander.osgp.platform.cucumber.core.Helpers.cleanRepoAbstractEntity;
+import static com.alliander.osgp.platform.cucumber.core.Helpers.cleanRepoSerializable;
 
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 
 /**
  * 
@@ -17,6 +20,9 @@ public class DlmsDatabaseSteps {
 	
 	@Autowired
 	private DlmsDeviceRepository dlmsDeviceRepo;
+	
+	@Autowired
+	private SmartMeterRepository smartMeterRepo;
 
 	/**
 	 * Before each scenario dlms related stuff needs to be removed. 
@@ -24,6 +30,7 @@ public class DlmsDatabaseSteps {
 	public void prepareDatabaseForScenario() {
 		// Remove all data from previous scenario.
         cleanRepoAbstractEntity(this.dlmsDeviceRepo);
+        cleanRepoSerializable(this.smartMeterRepo);
         
         insertDefaultData();
 	}

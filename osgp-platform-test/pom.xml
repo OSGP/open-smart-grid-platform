@@ -15,7 +15,7 @@
   <parent>
     <groupId>com.alliander.osgp</groupId>
     <artifactId>parent-integration-tests</artifactId>
-    <version>4.2.0-SNAPSHOT</version>
+    <version>4.3.0-SNAPSHOT</version>
     <relativePath>../parent-integration-tests/pom.xml</relativePath>
   </parent>
 
@@ -298,7 +298,6 @@
   <dependency>
     <groupId>org.fitnesse</groupId>
     <artifactId>fitnesse</artifactId>
-    <version>20121220</version>
     <scope>runtime</scope>
   </dependency>
 

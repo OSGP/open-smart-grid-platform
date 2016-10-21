@@ -7,17 +7,24 @@
  */
 package com.alliander.osgp.platform.cucumber.steps.database;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
+import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.ManufacturerRepository;
+import com.alliander.osgp.domain.core.valueobjects.PlatformDomain;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 
 import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
+
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getLong;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getBoolean;
@@ -56,4 +63,29 @@ public class DeviceModelSteps {
 		
 		repo.save(entity);
 	}
+    
+    /**
+     * Generic method to check if the device model is created as expected in the database.
+     * 
+     * @param expectedEntity The expected settings.
+     * @throws Throwable
+     */
+    @Then("^the entity device model exists$")
+    public void thenTheEntityDeviceModelExists(final Map<String, String> expectedEntity) throws Throwable {
+    	
+    	// TODO: Wait until the stuff is created.
+        DeviceModel entity = repo.findByModelCode(
+        		getString(expectedEntity, "ModelCode", Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
+
+        Assert.assertEquals(
+        		getString(expectedEntity, "ManufacturerId", Defaults.DEFAULT_MANUFACTURER_ID),
+        		entity.getManufacturerId().getManufacturerId());
+        Assert.assertEquals(
+        		getString(expectedEntity, "Description", Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION), 
+        		entity.getDescription());
+        Assert.assertEquals(
+        		getBoolean(expectedEntity, "Metered", Defaults.DEFAULT_DEVICE_MODEL_METERED), 
+        		entity.isMetered());
+    }
+    
 }

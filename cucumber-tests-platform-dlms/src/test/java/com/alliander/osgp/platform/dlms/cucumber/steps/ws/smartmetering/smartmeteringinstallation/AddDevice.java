@@ -54,6 +54,6 @@ public class AddDevice extends SmartMeteringStepsBase {
 
     @Then("^the get add device request response should be ok$")
     public void the_get_add_device_request_response_should_be_ok() throws Throwable {
-        Assert.assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT, Defaults.EXPECTED_RESULT));
+        Assert.assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT, Defaults.EXPECTED_RESULT_OK));
     }
 }
