@@ -62,7 +62,6 @@
         </wsdl:part>
     </wsdl:message> 
     
-    
     <wsdl:message name="SetSpecialDaysRequest">
         <wsdl:part element="smconf:SetSpecialDaysRequest" name="SetSpecialDaysRequest">
         </wsdl:part>

@@ -7,7 +7,6 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.messageprocessors;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +42,7 @@ public class UpdateFirmwareResponseMessageProcessor extends OsgpCoreResponseMess
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessage responseMessage, final OsgpException osgpException) throws FunctionalException {
 
-        if (responseMessage.getDataObject() instanceof ArrayList) {
+        if (responseMessage.getDataObject() instanceof List) {
             @SuppressWarnings("unchecked")
             final List<FirmwareVersionDto> firmwareVersionList = (List<FirmwareVersionDto>) responseMessage
                     .getDataObject();

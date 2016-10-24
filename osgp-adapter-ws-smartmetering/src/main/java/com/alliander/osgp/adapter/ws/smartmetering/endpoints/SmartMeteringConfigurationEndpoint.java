@@ -131,8 +131,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         LOGGER.info("GetFirmwareVersion Request received from organisation {} for device {}.",
                 organisationIdentification, request.getDeviceIdentification());
 
-        final GetFirmwareVersionAsyncResponse response = new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ObjectFactory()
-                .createGetFirmwareVersionAsyncResponse();
+        final GetFirmwareVersionAsyncResponse response = new GetFirmwareVersionAsyncResponse();
 
         try {
             final String correlationUid = this.configurationService.enqueueGetFirmwareRequest(
@@ -174,8 +173,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         LOGGER.info("GetFirmwareVersionResponse Request received from organisation {} for device: {}.",
                 organisationIdentification, request.getDeviceIdentification());
 
-        final GetFirmwareVersionResponse response = new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ObjectFactory()
-                .createGetFirmwareVersionResponse();
+        final GetFirmwareVersionResponse response = new GetFirmwareVersionResponse();
 
         try {
             final MeterResponseData meterResponseData = this.configurationService.dequeueGetFirmwareResponse(request
@@ -210,8 +208,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         LOGGER.info("UpdateFirmware Request received from organisation {} for device {}.", organisationIdentification,
                 request.getDeviceIdentification());
 
-        final UpdateFirmwareAsyncResponse response = new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ObjectFactory()
-                .createUpdateFirmwareAsyncResponse();
+        final UpdateFirmwareAsyncResponse response = new UpdateFirmwareAsyncResponse();
 
         try {
             final String correlationUid = this.configurationService.enqueueUpdateFirmwareRequest(
@@ -238,14 +235,13 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         LOGGER.info("GetUpdateFirmwareResponse Request received from organisation {} for device: {}.",
                 organisationIdentification, request.getDeviceIdentification());
 
-        final com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareResponse response = new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ObjectFactory()
-                .createUpdateFirmwareResponse();
+        final com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareResponse response = new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareResponse();
 
         try {
             final MeterResponseData meterResponseData = this.configurationService.dequeueUpdateFirmwareResponse(request
                     .getCorrelationUid());
 
-            this.throwExceptionIfResultNotOk(meterResponseData, "updating firmware.");
+            this.throwExceptionIfResultNotOk(meterResponseData, "updating firmware");
 
             if (meterResponseData != null) {
                 response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
@@ -326,8 +322,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
                 MessagePriorityEnum.getMessagePriority(messagePriority),
                 this.configurationMapper.map(scheduleTime, Long.class));
 
-        final GetAdministrativeStatusAsyncResponse asyncResponse = new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ObjectFactory()
-                .createGetAdministrativeStatusAsyncResponse();
+        final GetAdministrativeStatusAsyncResponse asyncResponse = new GetAdministrativeStatusAsyncResponse();
 
         asyncResponse.setCorrelationUid(correlationUid);
         asyncResponse.setDeviceIdentification(request.getDeviceIdentification());

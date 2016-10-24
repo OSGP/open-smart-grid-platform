@@ -18,7 +18,7 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
 /**
- * Class for processing common get firmware request messages
+ * Class for processing update firmware request messages
  */
 @Component
 public class UpdateFirmwareRequestMessageProcessor extends WebServiceRequestMessageProcessor {

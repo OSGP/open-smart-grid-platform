@@ -133,7 +133,6 @@ public class ActionMapperService {
         CLASS_MAP.put(SynchronizeTimeRequestData.class, SynchronizeTimeRequestDto.class);
         CLASS_MAP.put(GetConfigurationRequestData.class, GetAttributeValuesRequestDto.class);
         CLASS_MAP.put(GetFirmwareVersionRequestData.class, GetFirmwareVersionRequestDto.class);
-
         CLASS_MAP.put(UpdateFirmwareRequestData.class, UpdateFirmwareRequestDto.class);
         CLASS_MAP.put(SetKeysRequestData.class, SetKeysRequestDto.class);
         CLASS_MAP.put(SpecificAttributeValueRequestData.class, SpecificAttributeValueRequestDto.class);

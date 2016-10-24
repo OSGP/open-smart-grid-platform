@@ -86,20 +86,20 @@
          </xsd:sequence>
       </xsd:complexType>
    </xsd:element>
-   <xsd:element name="UpdateFirmwareAsyncResponse">
-      <xsd:complexType>
-         <xsd:complexContent>
+  <xsd:element name="UpdateFirmwareAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
         <xsd:extension base="common:AsyncResponse"></xsd:extension>
       </xsd:complexContent>
-      </xsd:complexType>
-   </xsd:element>   
-   <xsd:element name="UpdateFirmwareAsyncRequest">
-      <xsd:complexType>
-         <xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="UpdateFirmwareAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
         <xsd:extension base="common:AsyncRequest"></xsd:extension>
       </xsd:complexContent>
-      </xsd:complexType>
-   </xsd:element>
+    </xsd:complexType>
+  </xsd:element>
   <xsd:element name="UpdateFirmwareResponse">
     <xsd:complexType>
       <xsd:sequence>
@@ -115,7 +115,7 @@
 
   <xsd:complexType name="UpdateFirmwareRequestData">
     <xsd:complexContent>
-      <xsd:extension base="common:Query">
+      <xsd:extension base="common:Command">
         <xsd:sequence>
           <xsd:element name="FirmwareIdentification">
             <xsd:simpleType>

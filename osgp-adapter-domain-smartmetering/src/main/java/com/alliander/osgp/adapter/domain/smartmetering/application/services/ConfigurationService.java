@@ -587,7 +587,9 @@ public class ConfigurationService {
     private void storeFirmware(final SmartMeter smartMeteringDevice, final List<FirmwareVersion> firmwareVersions,
             final String organisationIdentification) throws FunctionalException {
         if (firmwareVersions.size() != 3) {
-            LOGGER.error("Firmware can not be determined because to few module firmware versions were returned.");
+            LOGGER.error(
+                    "Firmware can not be determined because 3 module firmware versions are expected, but {} were returned.",
+                    firmwareVersions.size());
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_FIRMWARE, ComponentType.DOMAIN_SMART_METERING);
         }
 
@@ -604,13 +606,18 @@ public class ConfigurationService {
                 func = firmwareVersion.getVersion();
                 break;
             default:
+                LOGGER.error("Cannot handle firmware version type: {}", firmwareVersion.getType().name());
+                throw new FunctionalException(FunctionalExceptionType.UNKNOWN_FIRMWARE,
+                        ComponentType.DOMAIN_SMART_METERING);
             }
         }
 
         List<Firmware> firmwares = this.firmwareRepository
                 .findByModuleVersionCommAndModuleVersionMaAndModuleVersionFunc(comm, ma, func);
         if (firmwares.size() != 1) {
-            LOGGER.error("Non existing combination of firmware modules returned by device.");
+            LOGGER.error(
+                    "Non registered combination of firmware modules returned by device: Communication Module Active - {}, Module Active - {}, Active - {}.",
+                    comm, ma, func);
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_FIRMWARE, ComponentType.DOMAIN_SMART_METERING);
         }
 
