@@ -3,23 +3,20 @@
  */
 package com.alliander.osgp.platform.dlms.cucumber.steps.database.device;
 
-import static com.alliander.osgp.platform.cucumber.core.Helpers.getFloat;
-import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getBoolean;
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 
 import java.util.Map;
 
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
-import com.alliander.osgp.domain.core.entities.Device;
-import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
-import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.database.DeviceSteps;
 
 import cucumber.api.java.en.And;
