@@ -11,11 +11,7 @@ public class UpdateFirmwareRequestDto implements ActionRequestDto {
 
     private static final long serialVersionUID = 4779593744529504287L;
 
-    private String firmwareIdentification;
-
-    public UpdateFirmwareRequestDto() {
-        // Default constructor
-    }
+    private final String firmwareIdentification;
 
     public UpdateFirmwareRequestDto(final String firmwareIdentification) {
         this.firmwareIdentification = firmwareIdentification;
