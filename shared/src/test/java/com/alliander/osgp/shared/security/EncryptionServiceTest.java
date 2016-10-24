@@ -16,6 +16,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.alliander.osgp.shared.security.EncryptionService;
+
 public class EncryptionServiceTest {
 
     private static final String SRC_TEST_RESOURCES_SECRET = "src/test/resources/secret";
