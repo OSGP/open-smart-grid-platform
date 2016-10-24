@@ -355,7 +355,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
     @PayloadRoot(localPart = "SetSpecialDaysRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
     @ResponsePayload
-    public SetSpecialDaysAsyncResponse requestSpecialDaysData(
+    public SetSpecialDaysAsyncResponse setSpecialDaysData(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SetSpecialDaysRequest request, @MessagePriority final String messagePriority,
             @ScheduleTime final String scheduleTime) throws OsgpException {

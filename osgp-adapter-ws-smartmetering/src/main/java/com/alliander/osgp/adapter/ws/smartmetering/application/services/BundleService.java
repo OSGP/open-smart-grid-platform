@@ -64,14 +64,8 @@ public class BundleService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
-        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.HANDLE_BUNDLED_ACTIONS);
-
         LOGGER.info("Bundle request called with organisation {}", organisationIdentification);
-
-        for (final ActionRequest action : actionList) {
-
-            action.validate();
-        }
+        this.checkIfBundleIsAllowed(actionList, organisation, device);
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
@@ -90,6 +84,29 @@ public class BundleService {
         this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
+    }
+
+    /**
+     * checks if the bundle and the {@link ActionRequest}s in the bundle are
+     * allowed and valid
+     *
+     * @param actionList
+     *            the {@link List} of {@link ActionRequest}s in the bundle
+     * @param organisation
+     *            the organisation to check
+     * @param device
+     *            the device to check
+     * @throws FunctionalException
+     *             when either the bundle or the actions in the bundle are not
+     *             allowed, or when the action is not valid
+     */
+    private void checkIfBundleIsAllowed(final List<ActionRequest> actionList, final Organisation organisation,
+            final Device device) throws FunctionalException {
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.HANDLE_BUNDLED_ACTIONS);
+        for (final ActionRequest action : actionList) {
+            this.domainHelperService.isAllowed(organisation, device, action.getDeviceFunction());
+            action.validate();
+        }
     }
 
 }

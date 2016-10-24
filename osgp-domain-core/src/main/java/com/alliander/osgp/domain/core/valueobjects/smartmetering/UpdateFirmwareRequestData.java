@@ -9,6 +9,7 @@
  */
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 public class UpdateFirmwareRequestData implements ActionRequest {
@@ -29,5 +30,10 @@ public class UpdateFirmwareRequestData implements ActionRequest {
 
     public String getFirmwareIdentification() {
         return this.firmwareIdentification;
+    }
+
+    @Override
+    public DeviceFunction getDeviceFunction() {
+        return DeviceFunction.UPDATE_FIRMWARE;
     }
 }

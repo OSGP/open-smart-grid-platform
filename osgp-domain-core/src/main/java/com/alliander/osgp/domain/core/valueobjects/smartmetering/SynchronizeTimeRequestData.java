@@ -9,6 +9,7 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -40,11 +41,16 @@ public class SynchronizeTimeRequestData implements Serializable, ActionRequest {
 
     @Override
     public void validate() throws FunctionalException {
-        if ((this.deviation < MIN_DEVIATION || this.deviation > MAX_DEVIATION)
-                && this.deviation != DEVIATION_NOT_SPECIFIED) {
+        if (((this.deviation < MIN_DEVIATION) || (this.deviation > MAX_DEVIATION))
+                && (this.deviation != DEVIATION_NOT_SPECIFIED)) {
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
                     ComponentType.DOMAIN_SMART_METERING, new IllegalArgumentException(
                             "Deviation not in range [-720..720]: " + this.deviation));
         }
+    }
+
+    @Override
+    public DeviceFunction getDeviceFunction() {
+        return DeviceFunction.SYNCHRONIZE_TIME;
     }
 }

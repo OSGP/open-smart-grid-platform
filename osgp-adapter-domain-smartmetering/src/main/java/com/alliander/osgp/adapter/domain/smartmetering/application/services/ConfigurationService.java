@@ -85,12 +85,12 @@ public class ConfigurationService {
         // Parameterless constructor required for transactions...
     }
 
-    public void requestSpecialDays(
+    public void setSpecialDays(
             final DeviceMessageMetadata deviceMessageMetadata,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest specialDaysRequestValueObject)
             throws FunctionalException {
 
-        LOGGER.info("requestSpecialDays for organisationIdentification: {} for deviceIdentification: {}",
+        LOGGER.info("setSpecialDays for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
         final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceMessageMetadata

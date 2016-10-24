@@ -9,13 +9,14 @@
  */
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 public class SetPushSetupSmsRequestData implements ActionRequest {
 
     private static final long serialVersionUID = 6093319027662713873L;
 
-    private PushSetupSms pushSetupSms;
+    private final PushSetupSms pushSetupSms;
 
     public SetPushSetupSmsRequestData(final PushSetupSms pushSetupSms) {
         this.pushSetupSms = pushSetupSms;
@@ -29,5 +30,10 @@ public class SetPushSetupSmsRequestData implements ActionRequest {
     public void validate() throws FunctionalException {
         // No validation needed
 
+    }
+
+    @Override
+    public DeviceFunction getDeviceFunction() {
+        return DeviceFunction.SET_PUSH_SETUP_SMS;
     }
 }

@@ -79,7 +79,7 @@
         </wsdl:part>
     </wsdl:message>
 
-    <wsdl:portType name="SmartmeterInstallationPort">
+    <wsdl:portType name="SmartMeteringInstallationPort">
    
         <wsdl:operation name="AddDevice">
             <wsdl:input message="tns:AddDeviceRequest" name="AddDeviceRequest">
@@ -124,7 +124,7 @@
 
     </wsdl:portType>
     
-    <wsdl:binding name="SmartmeterInstallationPortSoap11" type="tns:SmartmeterInstallationPort">
+    <wsdl:binding name="SmartMeteringInstallationPortSoap11" type="tns:SmartMeteringInstallationPort">
         <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
 
         <wsdl:operation name="AddDevice">
@@ -212,8 +212,8 @@
         </wsdl:operation>
 
     </wsdl:binding>
-    <wsdl:service name="SmartmeterInstallationPortService">
-        <wsdl:port binding="tns:SmartmeterInstallationPortSoap11" name="SmartmeterInstallationPortSoap11">
+    <wsdl:service name="SmartMeteringInstallationPortService">
+        <wsdl:port binding="tns:SmartMeteringInstallationPortSoap11" name="SmartMeteringInstallationPortSoap11">
             <soap:address
                 location="http://localhost:8080/osgp-adapter-ws-smartmetering/smartMetering/installationService/" />
         </wsdl:port>

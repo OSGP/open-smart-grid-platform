@@ -246,7 +246,7 @@ public class ConfigurationService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
-        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.REQUEST_SPECIAL_DAYS);
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_SPECIAL_DAYS);
 
         LOGGER.debug("enqueueSetSpecialDaysRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -256,7 +256,7 @@ public class ConfigurationService {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.REQUEST_SPECIAL_DAYS.toString(), messagePriority, scheduleTime);
+                SmartMeteringRequestMessageType.SET_SPECIAL_DAYS.toString(), messagePriority, scheduleTime);
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()

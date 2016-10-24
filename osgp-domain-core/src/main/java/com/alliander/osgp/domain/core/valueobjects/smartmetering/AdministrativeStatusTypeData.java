@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 public class AdministrativeStatusTypeData implements ActionRequest {
@@ -26,6 +27,11 @@ public class AdministrativeStatusTypeData implements ActionRequest {
     @Override
     public void validate() throws FunctionalException {
         // No validation needed
+    }
+
+    @Override
+    public DeviceFunction getDeviceFunction() {
+        return DeviceFunction.SET_ADMINISTRATIVE_STATUS;
     }
 
 }

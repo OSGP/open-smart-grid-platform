@@ -13,13 +13,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 public class SpecialDaysRequestData implements Serializable, ActionRequest {
 
     private static final long serialVersionUID = -5161574052268470981L;
 
-    private List<SpecialDay> specialDays;
+    private final List<SpecialDay> specialDays;
 
     public SpecialDaysRequestData(final List<SpecialDay> specialDays) {
         super();
@@ -35,4 +36,8 @@ public class SpecialDaysRequestData implements Serializable, ActionRequest {
         // Validation not necessary
     }
 
+    @Override
+    public DeviceFunction getDeviceFunction() {
+        return DeviceFunction.SET_SPECIAL_DAYS;
+    }
 }

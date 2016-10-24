@@ -9,15 +9,16 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 public class SetKeysRequestData implements Serializable, ActionRequest {
 
     private static final long serialVersionUID = 1573954141584647005L;
 
-    private byte[] authenticationKey;
+    private final byte[] authenticationKey;
 
-    private byte[] encryptionKey;
+    private final byte[] encryptionKey;
 
     public SetKeysRequestData(final byte[] authenticationKey, final byte[] encryptionKey) {
         this.authenticationKey = authenticationKey;
@@ -35,5 +36,10 @@ public class SetKeysRequestData implements Serializable, ActionRequest {
     @Override
     public void validate() throws FunctionalException {
         // No validation needed
+    }
+
+    @Override
+    public DeviceFunction getDeviceFunction() {
+        return DeviceFunction.REPLACE_KEYS;
     }
 }

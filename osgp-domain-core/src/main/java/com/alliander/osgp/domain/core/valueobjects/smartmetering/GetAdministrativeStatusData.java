@@ -9,6 +9,7 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 public class GetAdministrativeStatusData implements Serializable, ActionRequest {
@@ -20,4 +21,8 @@ public class GetAdministrativeStatusData implements Serializable, ActionRequest 
         // no validation needed
     }
 
+    @Override
+    public DeviceFunction getDeviceFunction() {
+        return DeviceFunction.GET_ADMINISTRATIVE_STATUS;
+    }
 }

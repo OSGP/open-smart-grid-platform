@@ -7,13 +7,14 @@
  */
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 public class SetPushSetupAlarmRequestData implements ActionRequest {
 
     private static final long serialVersionUID = -5185544572873050431L;
 
-    private PushSetupAlarm pushSetupAlarm;
+    private final PushSetupAlarm pushSetupAlarm;
 
     public SetPushSetupAlarmRequestData(final PushSetupAlarm pushSetupAlarm) {
         this.pushSetupAlarm = pushSetupAlarm;
@@ -28,4 +29,8 @@ public class SetPushSetupAlarmRequestData implements ActionRequest {
         // No validation needed
     };
 
+    @Override
+    public DeviceFunction getDeviceFunction() {
+        return DeviceFunction.SET_PUSH_SETUP_ALARM;
+    }
 }
