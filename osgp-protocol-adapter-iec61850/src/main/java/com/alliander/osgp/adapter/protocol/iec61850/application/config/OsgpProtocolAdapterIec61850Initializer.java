@@ -38,7 +38,7 @@ public class OsgpProtocolAdapterIec61850Initializer implements WebApplicationIni
             final Context initialContext = new InitialContext();
 
             final String logLocation = (String) initialContext
-                    .lookup("java:comp/env/osp/osgpAdapterProtocolIec61850/log-config");
+                    .lookup("java:comp/env/osgp/AdapterProtocolIec61850/log-config");
             LogbackConfigurer.initLogging(logLocation);
 
             final AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();

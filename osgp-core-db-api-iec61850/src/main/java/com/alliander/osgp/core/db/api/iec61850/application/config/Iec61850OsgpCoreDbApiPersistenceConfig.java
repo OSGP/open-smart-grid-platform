@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -33,7 +34,11 @@ import com.zaxxer.hikari.HikariDataSource;
 @EnableJpaRepositories(entityManagerFactoryRef = "iec61850OsgpCoreDbApiEntityManagerFactory", basePackageClasses = { SsldDataRepository.class })
 @Configuration
 @EnableTransactionManagement()
-@PropertySource("file:${osp/osgpCoreDbApiIec61850/config}")
+@PropertySources({
+	@PropertySource("classpath:osgp-core-db-api-iec61850.properties"),
+	@PropertySource(value = "${osgp/CoreDbApiIEC61850/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+})
 public class Iec61850OsgpCoreDbApiPersistenceConfig {
 
     private static final String PROPERTY_NAME_DATABASE_DRIVER = "db.api.driver";

@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -38,7 +39,11 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.RegisterDev
 
 @Configuration
 @EnableTransactionManagement()
-@PropertySource("file:${osp/osgpAdapterProtocolIec61850/config}")
+@PropertySources({
+	@PropertySource("classpath:osgp-adapter-protocol-iec61850.properties"),
+	@PropertySource(value = "${osgp/AdapterProtocolIec61850/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+})
 public class Iec61850Config {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850Config.class);
