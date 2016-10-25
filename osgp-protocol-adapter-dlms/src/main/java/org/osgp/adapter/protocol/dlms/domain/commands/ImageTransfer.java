@@ -96,7 +96,10 @@ class ImageTransfer {
      * @throws ProtocolAdapterException
      */
     public boolean imageTransferEnabled() throws ProtocolAdapterException {
-        this.imageTransferCosem.createAttributeAddress(Attribute.IMAGE_TRANSFER_ENABLED);
+        this.connector.getDlmsMessageListener().setDescription(
+                "ImageTransfer read image_transfer_enabled, read attribute: "
+                        + JdlmsObjectToStringUtil.describeAttributes(this.imageTransferCosem
+                                .createAttributeAddress(Attribute.IMAGE_TRANSFER_ENABLED)));
 
         final DataObject transferEnabled = this.imageTransferCosem.readAttribute(Attribute.IMAGE_TRANSFER_ENABLED);
         if (transferEnabled == null || !transferEnabled.isBoolean()) {
@@ -107,6 +110,13 @@ class ImageTransfer {
     }
 
     public void setImageTransferEnabled(final boolean enabled) throws ProtocolAdapterException {
+        this.connector.getDlmsMessageListener().setDescription(
+                "ImageTransfer set image_transfer_enabled to "
+                        + (enabled ? "TRUE" : "FALSE")
+                        + ", write attribute: "
+                        + JdlmsObjectToStringUtil.describeAttributes(this.imageTransferCosem
+                                .createAttributeAddress(Attribute.IMAGE_TRANSFER_ENABLED)));
+
         final DataObject transferEnabled = DataObject.newBoolData(enabled);
         this.imageTransferCosem.writeAttribute(Attribute.IMAGE_TRANSFER_ENABLED, transferEnabled);
     }
@@ -122,6 +132,13 @@ class ImageTransfer {
         final List<DataObject> params = new ArrayList<>();
         params.add(DataObject.newOctetStringData(this.imageIdentifier.getBytes()));
         params.add(DataObject.newUInteger32Data(this.getImageSize()));
+
+        this.connector.getDlmsMessageListener().setDescription(
+                "ImageTransfer call image_transfer_initiate "
+                        + params.toString()
+                        + ", call method: "
+                        + JdlmsObjectToStringUtil.describeMethod(this.imageTransferCosem.createMethodParameter(
+                                Method.IMAGE_TRANSFER_INITIATE, DataObject.newStructureData(params))));
 
         this.imageTransferCosem.callMethod(Method.IMAGE_TRANSFER_INITIATE, DataObject.newStructureData(params));
     }
@@ -170,6 +187,12 @@ class ImageTransfer {
      * @throws ImageTransferException
      */
     public void verifyImage() throws ProtocolAdapterException, ImageTransferException {
+        this.connector.getDlmsMessageListener().setDescription(
+                "ImageTransfer call image_verify "
+                        + ", call method: "
+                        + JdlmsObjectToStringUtil.describeMethod(this.imageTransferCosem.createMethodParameter(
+                                Method.IMAGE_VERIFY, DataObject.newInteger8Data((byte) 0))));
+
         final MethodResultCode verified = this.imageTransferCosem.callMethod(Method.IMAGE_VERIFY,
                 DataObject.newInteger8Data((byte) 0));
         if (verified == null) {
@@ -202,6 +225,11 @@ class ImageTransfer {
      * @throws ProtocolAdapterException
      */
     public boolean imageToActivateOk() throws ProtocolAdapterException {
+        this.connector.getDlmsMessageListener().setDescription(
+                "ImageTransfer read image_to_activate_info, read attribute: "
+                        + JdlmsObjectToStringUtil.describeAttributes(this.imageTransferCosem
+                                .createAttributeAddress(Attribute.IMAGE_TO_ACTIVATE_INFO)));
+
         final DataObject imageTransferStatusData = this.imageTransferCosem
                 .readAttribute(Attribute.IMAGE_TO_ACTIVATE_INFO);
 
@@ -235,6 +263,12 @@ class ImageTransfer {
      * @throws ProtocolAdapterException
      */
     public void activateImage() throws ProtocolAdapterException, ImageTransferException {
+        this.connector.getDlmsMessageListener().setDescription(
+                "ImageTransfer call image_activate "
+                        + ", call method: "
+                        + JdlmsObjectToStringUtil.describeMethod(this.imageTransferCosem.createMethodParameter(
+                                Method.IMAGE_ACTIVATE, DataObject.newInteger8Data((byte) 0))));
+
         final MethodResultCode imageActivate = this.imageTransferCosem.callMethod(Method.IMAGE_ACTIVATE,
                 DataObject.newInteger8Data((byte) 0));
         if (imageActivate == null) {
@@ -302,6 +336,11 @@ class ImageTransfer {
     }
 
     private int readImageBlockSize() throws ProtocolAdapterException {
+        this.connector.getDlmsMessageListener().setDescription(
+                "ImageTransfer read image_block_size, read attribute: "
+                        + JdlmsObjectToStringUtil.describeAttributes(this.imageTransferCosem
+                                .createAttributeAddress(Attribute.IMAGE_BLOCK_SIZE)));
+
         final DataObject imageBlockSizeData = this.imageTransferCosem.readAttribute(Attribute.IMAGE_BLOCK_SIZE);
         if (imageBlockSizeData == null || !imageBlockSizeData.isNumber()) {
             throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_BLOCK_SIZE_NOT_READ);
@@ -320,6 +359,11 @@ class ImageTransfer {
     }
 
     private int getImageFirstNotTransferredBlockNumber() throws ProtocolAdapterException {
+        this.connector.getDlmsMessageListener().setDescription(
+                "ImageTransfer read image_first_not_transferred_block_number, read attribute: "
+                        + JdlmsObjectToStringUtil.describeAttributes(this.imageTransferCosem
+                                .createAttributeAddress(Attribute.IMAGE_FIRST_NOT_TRANSFERRED_BLOCK_NUMBER)));
+
         final DataObject imageFirstNotReadBlockNumberData = this.imageTransferCosem
                 .readAttribute(Attribute.IMAGE_FIRST_NOT_TRANSFERRED_BLOCK_NUMBER);
         if (imageFirstNotReadBlockNumberData == null || !imageFirstNotReadBlockNumberData.isNumber()) {
@@ -341,6 +385,11 @@ class ImageTransfer {
     }
 
     private int getImageTransferStatus() throws ProtocolAdapterException {
+        this.connector.getDlmsMessageListener().setDescription(
+                "ImageTransfer read image_transfer_status, read attribute: "
+                        + JdlmsObjectToStringUtil.describeAttributes(this.imageTransferCosem
+                                .createAttributeAddress(Attribute.IMAGE_TRANSFER_STATUS)));
+
         final DataObject imageTransferStatusData = this.imageTransferCosem
                 .readAttribute(Attribute.IMAGE_TRANSFER_STATUS);
         if (imageTransferStatusData == null || !imageTransferStatusData.isNumber()) {
@@ -361,6 +410,13 @@ class ImageTransfer {
         final List<DataObject> params = new ArrayList<>();
         params.add(DataObject.newUInteger32Data(blockNumber));
         params.add(DataObject.newOctetStringData(transferData));
+
+        this.connector.getDlmsMessageListener().setDescription(
+                "ImageTransfer call image_block_transfer "
+                        + params.toString()
+                        + ", call method: "
+                        + JdlmsObjectToStringUtil.describeMethod(this.imageTransferCosem.createMethodParameter(
+                                Method.IMAGE_BLOCK_TRANSFER, DataObject.newStructureData(params))));
 
         this.imageTransferCosem.callMethod(Method.IMAGE_BLOCK_TRANSFER, DataObject.newStructureData(params));
     }

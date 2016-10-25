@@ -75,13 +75,13 @@ class CosemObjectAccessor {
     }
 
     public MethodResultCode callMethod(final CosemObjectMethod methodId) throws ProtocolAdapterException {
-        final MethodParameter methodParameter = this.createMethodParameter(methodId.getValue());
+        final MethodParameter methodParameter = this.createMethodParameter(methodId);
         return this.handleMethod(methodParameter);
     }
 
     public MethodResultCode callMethod(final CosemObjectMethod methodId, final DataObject dataObject)
             throws ProtocolAdapterException {
-        final MethodParameter methodParameter = this.createMethodParameter(methodId.getValue(), dataObject);
+        final MethodParameter methodParameter = this.createMethodParameter(methodId, dataObject);
         return this.handleMethod(methodParameter);
     }
 
@@ -89,12 +89,12 @@ class CosemObjectAccessor {
         return new AttributeAddress(this.classId, this.obisCode, attributeId.getValue());
     }
 
-    private MethodParameter createMethodParameter(final int methodId, final DataObject dataObject) {
-        return new MethodParameter(this.classId, this.obisCode, methodId, dataObject);
+    public MethodParameter createMethodParameter(final CosemObjectMethod methodId, final DataObject dataObject) {
+        return new MethodParameter(this.classId, this.obisCode, methodId.getValue(), dataObject);
     }
 
-    private MethodParameter createMethodParameter(final int methodId) {
-        return new MethodParameter(this.classId, this.obisCode, methodId);
+    public MethodParameter createMethodParameter(final CosemObjectMethod methodId) {
+        return new MethodParameter(this.classId, this.obisCode, methodId.getValue());
     }
 
     private MethodResultCode handleMethod(final MethodParameter methodParameter) throws ProtocolAdapterException {
