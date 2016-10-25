@@ -3,12 +3,8 @@
  */
 package com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering;
 
-import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
-import static com.alliander.osgp.platform.cucumber.core.Helpers.saveCorrelationUidInScenarioContext;
-
 import java.util.Map;
 
-import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.dlms.cucumber.SoapUiRunner;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 

@@ -21,7 +21,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 
 @EnableJpaRepositories(entityManagerFactoryRef = "entityMgrLogging", transactionManagerRef = "txMgrLogging", basePackageClasses = { DeviceLogItemRepository.class })
-public class PersistenceConfigLogging extends AbstractPersistenceConfig {
+public class PersistenceConfigLogging extends AbstractConfig {
 
     @Value("${cucumber.osgploggingdbs.url}")
     private String databaseUrl;

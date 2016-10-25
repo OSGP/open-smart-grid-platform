@@ -22,7 +22,7 @@ public class ScenarioHooks {
 
     @Autowired
     private DatabaseSteps databaseSteps;
-
+    
     /**
      * Executed before each scenario.
      *

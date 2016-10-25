@@ -14,28 +14,26 @@ import javax.sql.DataSource;
 
 import org.hibernate.ejb.HibernatePersistence;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * Base class for PersistenceConfig classes.
- * An application context Java JPA configuration class. The usage of Java
- * configuration requires Spring Framework 3.0
+ * An application context Java JPA configuration class.
  */
 @Configuration
-@EnableTransactionManagement()
-@Primary
-@PropertySources({
+@PropertySources({ 
 	@PropertySource("classpath:cucumber-platform.properties"),
-	@PropertySource(value = "file:/etc/osp/cucumber-platform.properties", ignoreResourceNotFound = true)
+	@PropertySource(value = "file:/etc/osp/cucumber-platform.properties", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:/etc/osp/global.cucumber.properties", ignoreResourceNotFound = true),
 })
-public abstract class AbstractPersistenceConfig {
+public abstract class AbstractConfig {
 
     @Value("${cucumber.dbs.driver}")
     protected String databaseDriver;
@@ -73,7 +71,7 @@ public abstract class AbstractPersistenceConfig {
     /**
      * Default constructor
      */
-    public AbstractPersistenceConfig() {
+    public AbstractConfig() {
     	// Default constructor
     }
 
@@ -124,5 +122,11 @@ public abstract class AbstractPersistenceConfig {
         return entityManagerFactoryBean;
     }
     
+    // To resolve ${} in @Value
+    @Bean
+    public static PropertySourcesPlaceholderConfigurer propertyConfigInDev() {
+        return new PropertySourcesPlaceholderConfigurer();
+    }
+
  
 }

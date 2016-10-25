@@ -42,21 +42,21 @@ public class DatabaseSteps {
     @Autowired 
     private OslpDeviceRepository oslpDeviceRepo;
 
-    /**
-     * 
-     */
-	public void prepareDatabaseForTestRun() {
-		// Remove all data from previous scenario.
+	public void prepareDatabaseForScenario() {
+		Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+		LOGGER.info(this.getClass() + ": prepareDatabaseForScenario");
+		
         cleanRepoAbstractEntity(this.oslpDeviceRepo);
         cleanRepoAbstractEntity(this.deviceAuthorizationRepo);
         cleanRepoSerializable(this.deviceRepo);
         cleanRepoSerializable(this.deviceModelRepo);
         cleanRepoSerializable(this.manufacturerRepo);
 		for(Organisation org : this.organizationRepo.findAll()) {
-			if (!org.getOrganisationIdentification().equals("test-org") && 
-					!org.getOrganisationIdentification().equals("FlexOvlProject") &&
-					!org.getOrganisationIdentification().equals("GemeenteArnhem") &&
-					!org.getOrganisationIdentification().equals("LianderNetManagement")) {
+			String orgName = org.getOrganisationIdentification(); 
+			if (!orgName.equals("test-org") && 
+					!orgName.equals("FlexOvlProject") &&
+					!orgName.equals("GemeenteArnhem") &&
+					!orgName.equals("LianderNetManagement")) {
 				this.organizationRepo.delete(org);
 			}
 		}
@@ -104,25 +104,5 @@ public class DatabaseSteps {
         		Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION,
         		true);
         this.deviceModelRepo.save(deviceModel);
-	}
-
-	public void prepareDatabaseForScenario() {
-		Logger LOGGER = LoggerFactory.getLogger(this.getClass());
-		LOGGER.info(this.getClass() + ": prepareDatabaseForScenario");
-		
-        cleanRepoAbstractEntity(this.oslpDeviceRepo);
-        cleanRepoAbstractEntity(this.deviceAuthorizationRepo);
-        cleanRepoSerializable(this.deviceRepo);
-        cleanRepoSerializable(this.deviceModelRepo);
-        cleanRepoSerializable(this.manufacturerRepo);
-		for(Organisation org : this.organizationRepo.findAll()) {
-			String orgName = org.getOrganisationIdentification(); 
-			if (!orgName.equals("test-org") && 
-					!orgName.equals("FlexOvlProject") &&
-					!orgName.equals("GemeenteArnhem") &&
-					!orgName.equals("LianderNetManagement")) {
-				this.organizationRepo.delete(org);
-			}
-		}
 	}
 }

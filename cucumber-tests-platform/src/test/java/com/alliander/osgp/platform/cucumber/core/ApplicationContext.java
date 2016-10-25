@@ -10,13 +10,10 @@ package com.alliander.osgp.platform.cucumber.core;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
- * An application context Java configuration class. The usage of Java
- * configuration requires Spring Framework 4.0
+ * An application context Java configuration class.
  */
 @Configuration
 @ComponentScan(basePackages = { "com.alliander.osgp.adapter.ws.smartmetering.domain.entities",
@@ -28,10 +25,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement()
 @Import({ PersistenceConfigCore.class, PersistenceConfigResponseData.class, PersistenceConfigResponseDlms.class,
         PersistenceConfigLogging.class, PersistenceConfigResponseOslp.class })
-@PropertySources({ 
-		@PropertySource("classpath:cucumber-platform.properties"),
-        @PropertySource(value = "file:/etc/osp/cucumber-platform.properties", ignoreResourceNotFound = true)}
-)
 public class ApplicationContext {
 
 }

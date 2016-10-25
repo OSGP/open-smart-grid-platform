@@ -19,9 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 
 import com.alliander.osgp.platform.cucumber.support.RunXpathResult;
 import com.alliander.osgp.platform.cucumber.support.TestCaseResult;
@@ -38,10 +35,6 @@ import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
  * Super class for SOAP UI runner implementations. Each Runner will be called
  * from a subclass.
  */
-@Configuration
-@PropertySources({ @PropertySource("classpath:cucumber-platform.properties"),
-    	@PropertySource(value = "file:/etc/osp/cucumber-platform.properties", ignoreResourceNotFound = true) 
-})
 public abstract class SoapUiRunner {
 
     /**

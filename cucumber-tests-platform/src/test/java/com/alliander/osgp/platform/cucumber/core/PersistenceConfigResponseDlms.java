@@ -14,26 +14,14 @@ import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @EnableJpaRepositories(entityManagerFactoryRef = "entityMgrFactDlms", 
     transactionManagerRef = "txMgrDlms",
     basePackageClasses = { DlmsDeviceRepository.class })
-@Configuration
-@EnableTransactionManagement()
-@Primary
-@PropertySources({
-	@PropertySource("classpath:cucumber-platform.properties"),
-    @PropertySource(value = "file:/etc/osp/cucumber-platform.properties", ignoreResourceNotFound = true)}
-)
-public class PersistenceConfigResponseDlms extends AbstractPersistenceConfig {
+public class PersistenceConfigResponseDlms extends AbstractConfig {
 
     public PersistenceConfigResponseDlms() {
     }

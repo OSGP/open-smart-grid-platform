@@ -42,7 +42,7 @@ Alternatively each developer/tester can run the automatic tests on his own envir
 ### How to implement.
 There are a few rules on how to implement the automatic tests.
 
-* Only add new tests in the integration-tests-cucumber project!
+* Only add new tests in the cucumber-tests-* project!
 * When writing the feature files, always meantion the Feature on top and add a little description like "As a ..., I want to ..., In order to". Via this way you think a little more about what you are going to do.
 * When writing the scenarios, keep in mind that each scenario should stand on its one. Don't ever make a scenario dependent on another.
 * When writing the scenarios, please try to write functional scenarios. A person with less technical background should be able to read those scenarios as well. Also have a look at the already created scenarios for reference.
