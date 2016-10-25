@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,7 +88,7 @@ public class AdHocManagementService extends AbstractService {
     public void handleGetStatusResponse(final com.alliander.osgp.dto.valueobjects.DeviceStatusDto deviceStatusDto,
             final DomainType allowedDomainType, final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
-            final ResponseMessageResultType deviceResult, final OsgpException exception) {
+            final ResponseMessageResultType deviceResult, final OsgpException exception) throws OsgpException {
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = exception;
@@ -123,8 +124,8 @@ public class AdHocManagementService extends AbstractService {
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            osgpException = new TechnicalException(ComponentType.DOMAIN_TARIFF_SWITCHING,
-                    "Exception occurred while getting device status", e);
+            osgpException = new TechnicalException(ComponentType.DOMAIN_TARIFF_SWITCHING, StringUtils.isBlank(e.getCause().getMessage()) == true ? e.getMessage() : e.getCause().getMessage(), e);
+
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,

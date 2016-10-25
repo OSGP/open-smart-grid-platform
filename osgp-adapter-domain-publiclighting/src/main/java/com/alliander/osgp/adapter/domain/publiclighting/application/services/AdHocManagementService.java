@@ -14,6 +14,7 @@ import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -117,7 +118,7 @@ public class AdHocManagementService extends AbstractService {
     public void handleGetStatusResponse(final com.alliander.osgp.dto.valueobjects.DeviceStatusDto deviceStatusDto,
             final DomainType allowedDomainType, final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
-            final ResponseMessageResultType deviceResult, final OsgpException exception) {
+            final ResponseMessageResultType deviceResult, final OsgpException exception) throws OsgpException {
 
         LOGGER.info("handleResponse for MessageType: {}", messageType);
 
@@ -152,13 +153,10 @@ public class AdHocManagementService extends AbstractService {
                 osgpException = new TechnicalException(ComponentType.DOMAIN_PUBLIC_LIGHTING,
                         "Device was not able to report status", new NoDeviceResponseException());
             }
-        } catch (final OsgpException ex) {
-            osgpException = ex;
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            osgpException = new TechnicalException(ComponentType.DOMAIN_PUBLIC_LIGHTING,
-                    "Exception occurred while getting device status", e);
+            osgpException = new TechnicalException(ComponentType.DOMAIN_PUBLIC_LIGHTING, StringUtils.isBlank(e.getCause().getMessage()) == true ? e.getMessage() : e.getCause().getMessage(), e);
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
