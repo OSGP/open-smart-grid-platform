@@ -23,6 +23,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 
 import com.alliander.osgp.shared.security.CertificateHelper;
@@ -35,7 +36,11 @@ import com.alliander.osgp.signing.server.domain.exceptions.SigningServerExceptio
 @Configuration
 @ComponentScan(basePackages = { "com.alliander.osgp.signing.server" })
 @Import({ MessagingConfig.class })
-@PropertySource("file:${osp/signingServer/config}")
+@PropertySources({
+	@PropertySource("classpath:signing-server.properties"),
+	@PropertySource(value = "${osgp/SigningServer/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+})
 public class ApplicationContext {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);

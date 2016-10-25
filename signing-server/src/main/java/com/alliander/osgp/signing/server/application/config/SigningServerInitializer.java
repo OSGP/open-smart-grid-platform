@@ -38,7 +38,7 @@ public class SigningServerInitializer implements WebApplicationInitializer {
 
             final Context initialContext = new InitialContext();
 
-            final String logLocation = (String) initialContext.lookup("java:comp/env/osp/signingServer/log-config");
+            final String logLocation = (String) initialContext.lookup("java:comp/env/osgp/SigningServer/log-config");
             LogbackConfigurer.initLogging(logLocation);
 
             final AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();

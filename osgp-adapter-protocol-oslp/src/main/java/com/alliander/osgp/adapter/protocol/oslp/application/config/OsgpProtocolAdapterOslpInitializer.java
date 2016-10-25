@@ -39,7 +39,7 @@ public class OsgpProtocolAdapterOslpInitializer implements WebApplicationInitial
             final Context initialContext = new InitialContext();
 
             final String logLocation = (String) initialContext
-                    .lookup("java:comp/env/osp/osgpAdapterProtocolOslp/log-config");
+                    .lookup("java:comp/env/osgp/AdapterProtocolOslp/log-config");
             LogbackConfigurer.initLogging(logLocation);
 
             final AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();

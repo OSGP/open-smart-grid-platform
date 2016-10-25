@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -39,7 +40,11 @@ import com.zaxxer.hikari.HikariDataSource;
 @EnableJpaRepositories(entityManagerFactoryRef = "oslpEntityManagerFactory", basePackageClasses = { OslpDeviceRepository.class })
 @Configuration
 @EnableTransactionManagement()
-@PropertySource("file:${osp/osgpAdapterProtocolOslpElster/config}")
+@PropertySources({
+	@PropertySource("classpath:osgp-adapter-protocol-oslp-elster.properties"),
+	@PropertySource(value = "${osgp/AdapterProtocolOslpElster/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+})
 public class OslpPersistenceConfig {
 
     private static final String PROPERTY_NAME_DATABASE_DRIVER = "db.driver";

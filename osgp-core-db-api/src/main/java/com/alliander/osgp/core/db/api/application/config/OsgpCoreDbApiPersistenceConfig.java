@@ -19,10 +19,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.alliander.osgp.core.db.api.exceptions.CoreDbApiException;
@@ -33,7 +35,11 @@ import com.zaxxer.hikari.HikariDataSource;
 @EnableJpaRepositories(entityManagerFactoryRef = "osgpCoreDbApiEntityManagerFactory", basePackageClasses = { DeviceDataRepository.class })
 @Configuration
 @EnableTransactionManagement()
-@PropertySource("file:${osp/osgpCoreDbApi/config}")
+@PropertySources({
+	@PropertySource("classpath:osgp-core-db-api.properties"),
+	@PropertySource(value = "${osgp/CoreDbApi/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+})
 public class OsgpCoreDbApiPersistenceConfig {
 
     private static final String PROPERTY_NAME_DATABASE_DRIVER = "db.api.driver";

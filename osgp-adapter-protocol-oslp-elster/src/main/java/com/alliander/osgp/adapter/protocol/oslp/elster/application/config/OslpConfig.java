@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -48,7 +49,11 @@ import com.alliander.osgp.oslp.OslpUtils;
  */
 @Configuration
 @EnableTransactionManagement()
-@PropertySource("file:${osp/osgpAdapterProtocolOslpElster/config}")
+@PropertySources({
+	@PropertySource("classpath:osgp-adapter-protocol-oslp-elster.properties"),
+	@PropertySource(value = "${osgp/AdapterProtocolOslpElster/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+})
 public class OslpConfig {
     private static final String PROPERTY_NAME_OSLP_TIMEOUT_CONNECT = "oslp.timeout.connect";
     private static final String PROPERTY_NAME_OSLP_PORT_CLIENT = "oslp.port.client";

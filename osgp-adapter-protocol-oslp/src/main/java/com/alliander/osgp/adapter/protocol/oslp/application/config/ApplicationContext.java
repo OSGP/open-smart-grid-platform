@@ -19,6 +19,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -34,7 +35,11 @@ import com.alliander.osgp.shared.application.config.PagingSettings;
 @ComponentScan(basePackages = { "com.alliander.osgp.adapter.protocol.oslp", "com.alliander.osgp.core.db.api" })
 @EnableTransactionManagement()
 @Import({ MessagingConfig.class, OslpConfig.class, OslpPersistenceConfig.class, OsgpCoreDbApiPersistenceConfig.class })
-@PropertySource("file:${osp/osgpAdapterProtocolOslp/config}")
+@PropertySources({
+	@PropertySource("classpath:osgp-adapter-protocol-oslp.properties"),
+	@PropertySource(value = "${osgp/AdapterProtocolOslp/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+})
 public class ApplicationContext {
 
     private static final String PROPERTY_NAME_FIRMWARE_DOMAIN = "firmware.domain";
