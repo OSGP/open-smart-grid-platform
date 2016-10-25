@@ -58,7 +58,18 @@ public class DlmsConnectionHolder implements AutoCloseable {
         this(connector, device, null);
     }
 
+    /**
+     * Returns the current connection, obtained by calling {@link #connect()
+     * connect}.
+     *
+     * @throws IllegalStateException
+     *             when there is no connection available.
+     * @return
+     */
     public DlmsConnection getConnection() {
+        if (!this.isConnected()) {
+            throw new IllegalStateException("There is no connection available.");
+        }
         return this.dlmsConnection;
     }
 
@@ -70,6 +81,13 @@ public class DlmsConnectionHolder implements AutoCloseable {
         return this.dlmsMessageListener;
     }
 
+    /**
+     * Disconnects from the device, and releases the internal connection
+     * reference.
+     *
+     * @throws IOException
+     *             When an exception occurs while disconnecting.
+     */
     public void disconnect() throws IOException {
         if (this.dlmsConnection != null) {
             this.dlmsConnection.disconnect();
@@ -81,6 +99,14 @@ public class DlmsConnectionHolder implements AutoCloseable {
         return this.dlmsConnection != null;
     }
 
+    /**
+     * Obtains a new connection with a device. A connection should be obtained
+     * before {@link #getConnection() getConnection} is called.
+     *
+     * @Throws IllegalStateException When there is already a connection set.
+     * @throws TechnicalException
+     *             When an exceptions occurs while creating the exception.
+     */
     public void connect() throws TechnicalException {
         if (this.dlmsConnection != null) {
             throw new IllegalStateException("Cannot create a new connection because a connection already exists.");

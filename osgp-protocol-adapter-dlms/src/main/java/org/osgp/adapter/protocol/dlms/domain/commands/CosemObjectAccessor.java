@@ -1,3 +1,10 @@
+/**
+ * Copyright 2016 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
@@ -15,16 +22,12 @@ import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
-import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
-
 class CosemObjectAccessor {
 
-    private static final String EXCEPTION_MSG_CONNECT = "An error occurred while connecting with the device.";
-    private static final String EXCEPTION_MSG_DISCONNECT = "An exception occurred while disconnecting from the device.";
-    private static final String EXCEPTION_MSG_ACCESS_RESULT_NOT_SUCCESS = "Access result not success: %s";
-    private static final String EXCEPTION_MSG_WRITING_ATTRIBUTE = "An exception occurred while writing attribute %s";
+    private static final String EXCEPTION_MSG_ACCESS_RESULT_NOT_SUCCESS = "Access result not success but '%s'  while writing attribute %s, classId %s, obisCode %s.";
+    private static final String EXCEPTION_MSG_WRITING_ATTRIBUTE = "An exception occurred while writing attribute %s, classId %s, obisCode %s.";
     private static final String EXCEPTION_MSG_NO_METHOD_RESULT = "No MethodResult received.";
-    private static final String EXCEPTION_MSG_NO_GET_RESULT = "No GetResult received while retrieving attribute %s.";
+    private static final String EXCEPTION_MSG_NO_GET_RESULT = "No GetResult received while retrieving attribute %s, classId %s, obisCode %s.";
 
     private final DlmsConnectionHolder connector;
     private final ObisCode obisCode;
@@ -36,31 +39,7 @@ class CosemObjectAccessor {
         this.classId = classId;
     }
 
-    /**
-     * Close the current connection with the device.
-     */
-    public void disconnect() {
-        try {
-            this.connector.disconnect();
-        } catch (IOException e) {
-            throw new ConnectionException(EXCEPTION_MSG_DISCONNECT, e);
-        }
-    }
-
-    /*
-     * Create a new connection with the device if not connected already.
-     */
-    public void connect() throws ProtocolAdapterException {
-        if (!this.connector.isConnected()) {
-            try {
-                this.connector.connect();
-            } catch (TechnicalException e) {
-                throw new ProtocolAdapterException(EXCEPTION_MSG_CONNECT, e);
-            }
-        }
-    }
-
-    public DataObject readAttribute(final int attributeId) throws ProtocolAdapterException {
+    public DataObject readAttribute(final CosemObjectAttribute attributeId) throws ProtocolAdapterException {
         GetResult getResult = null;
         try {
             getResult = this.connector.getConnection().get(this.createAttributeAddress(attributeId));
@@ -69,41 +48,45 @@ class CosemObjectAccessor {
         }
 
         if (getResult == null) {
-            throw new ProtocolAdapterException(String.format(EXCEPTION_MSG_NO_GET_RESULT, attributeId));
+            throw new ProtocolAdapterException(String.format(EXCEPTION_MSG_NO_GET_RESULT, attributeId, this.classId,
+                    this.obisCode));
         }
 
         return getResult.getResultData();
     }
 
-    public void writeAttribute(final int attributeId, final DataObject data) throws ProtocolAdapterException {
-        final AttributeAddress attributeAddress = new AttributeAddress(this.classId, this.obisCode, attributeId);
+    public void writeAttribute(final CosemObjectAttribute attributeId, final DataObject data)
+            throws ProtocolAdapterException {
+        final AttributeAddress attributeAddress = this.createAttributeAddress(attributeId);
         final SetParameter setParameter = new SetParameter(attributeAddress, data);
 
         AccessResultCode accessResultCode = null;
         try {
             accessResultCode = this.connector.getConnection().set(setParameter);
         } catch (final IOException e) {
-            throw new ProtocolAdapterException(String.format(EXCEPTION_MSG_WRITING_ATTRIBUTE, attributeId), e);
+            throw new ProtocolAdapterException(String.format(EXCEPTION_MSG_WRITING_ATTRIBUTE, attributeId,
+                    this.classId, this.obisCode), e);
         }
 
         if (accessResultCode != AccessResultCode.SUCCESS) {
             throw new ProtocolAdapterException(String.format(EXCEPTION_MSG_ACCESS_RESULT_NOT_SUCCESS,
-                    accessResultCode.name()));
+                    accessResultCode.name(), attributeId, this.classId, this.obisCode));
         }
     }
 
-    public MethodResultCode callMethod(final int methodId) throws ProtocolAdapterException {
-        final MethodParameter methodParameter = this.createMethodParameter(methodId);
+    public MethodResultCode callMethod(final CosemObjectMethod methodId) throws ProtocolAdapterException {
+        final MethodParameter methodParameter = this.createMethodParameter(methodId.getValue());
         return this.handleMethod(methodParameter);
     }
 
-    public MethodResultCode callMethod(final int methodId, final DataObject dataObject) throws ProtocolAdapterException {
-        final MethodParameter methodParameter = this.createMethodParameter(methodId, dataObject);
+    public MethodResultCode callMethod(final CosemObjectMethod methodId, final DataObject dataObject)
+            throws ProtocolAdapterException {
+        final MethodParameter methodParameter = this.createMethodParameter(methodId.getValue(), dataObject);
         return this.handleMethod(methodParameter);
     }
 
-    private AttributeAddress createAttributeAddress(final int attributeId) {
-        return new AttributeAddress(this.classId, this.obisCode, attributeId);
+    AttributeAddress createAttributeAddress(final CosemObjectAttribute attributeId) {
+        return new AttributeAddress(this.classId, this.obisCode, attributeId.getValue());
     }
 
     private MethodParameter createMethodParameter(final int methodId, final DataObject dataObject) {

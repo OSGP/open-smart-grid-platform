@@ -1,3 +1,10 @@
+/**
+ * Copyright 2016 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.osgp.adapter.protocol.dlms.domain.factories;
 
 import java.io.ByteArrayOutputStream;
@@ -17,7 +24,7 @@ import org.springframework.stereotype.Component;
 public class FirwareImageFactory {
 
     private static final String EXCEPTION_MSG_INVALID_HTTP_RESPONSE_CODE = "Invalid HTTP response code: ";
-    private static final String EXCEPTION_MSG_MALFORMED_URL = "Could not download firmware, Malformed URL:";
+    private static final String EXCEPTION_MSG_MALFORMED_URL = "Could not download firmware, Malformed URL: ";
     private static final String EXCEPTION_MSG_FIRMWARE_NOT_RETRIEVED = "Firmware could not be retrieved.";
 
     @Value("${firmware.url}")
@@ -25,8 +32,8 @@ public class FirwareImageFactory {
 
     @PostConstruct
     public void init() {
-        // URL should always and in a slash
-        if (this.url.substring(this.url.length() - 1) != "/") {
+        // URL should always end in a slash
+        if (!this.url.endsWith("/")) {
             this.url += "/";
         }
     }
@@ -37,7 +44,7 @@ public class FirwareImageFactory {
             this.checkUrl(downloadUrl);
             return this.download(downloadUrl);
         } catch (final MalformedURLException e) {
-            throw new FirmwareImageFactoryException(EXCEPTION_MSG_MALFORMED_URL + this.url + firmwareIdentification);
+            throw new FirmwareImageFactoryException(EXCEPTION_MSG_MALFORMED_URL + this.url + firmwareIdentification, e);
         } catch (final IOException e) {
             throw new FirmwareImageFactoryException(EXCEPTION_MSG_FIRMWARE_NOT_RETRIEVED, e);
         }

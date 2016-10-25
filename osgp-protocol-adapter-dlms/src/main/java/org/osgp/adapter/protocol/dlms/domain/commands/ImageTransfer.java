@@ -1,5 +1,13 @@
+/**
+ * Copyright 2016 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,6 +26,8 @@ import org.osgp.adapter.protocol.dlms.exceptions.ImageTransferException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
 class ImageTransfer {
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageTransfer.class);
@@ -42,23 +52,25 @@ class ImageTransfer {
     private final ImageTranferProperties properties;
     private final String imageIdentifier;
     private final byte[] imageData;
+    private final DlmsConnectionHolder connector;
     private final CosemObjectAccessor imageTransferCosem;
     private int imageBlockSize;
     private boolean imageBlockSizeReadFlag;
 
-    public ImageTransfer(final DlmsConnectionHolder connector, ImageTranferProperties properties,
+    public ImageTransfer(final DlmsConnectionHolder connector, final ImageTranferProperties properties,
             final String imageIdentifier, final byte[] imageData) throws ProtocolAdapterException {
         this.properties = properties;
         this.imageIdentifier = imageIdentifier;
         this.imageData = imageData;
         this.imageBlockSizeReadFlag = false;
+        this.connector = connector;
         this.imageTransferCosem = new CosemObjectAccessor(connector, OBIS_CODE, CLASS_ID);
     }
 
     /**
      * Call before initiating transfer to make sure the process is not already
      * enabled and might be resumed.
-     * 
+     *
      * @return Should initiate transfer
      * @throws ProtocolAdapterException
      */
@@ -84,8 +96,9 @@ class ImageTransfer {
      * @throws ProtocolAdapterException
      */
     public boolean imageTransferEnabled() throws ProtocolAdapterException {
-        final DataObject transferEnabled = this.imageTransferCosem.readAttribute(Attribute.IMAGE_TRANSFER_ENABLED
-                .getValue());
+        this.imageTransferCosem.createAttributeAddress(Attribute.IMAGE_TRANSFER_ENABLED);
+
+        final DataObject transferEnabled = this.imageTransferCosem.readAttribute(Attribute.IMAGE_TRANSFER_ENABLED);
         if (transferEnabled == null || !transferEnabled.isBoolean()) {
             throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_TRANSFER_ENABLED_NOT_READ);
         }
@@ -95,7 +108,7 @@ class ImageTransfer {
 
     public void setImageTransferEnabled(final boolean enabled) throws ProtocolAdapterException {
         final DataObject transferEnabled = DataObject.newBoolData(enabled);
-        this.imageTransferCosem.writeAttribute(Attribute.IMAGE_TRANSFER_ENABLED.getValue(), transferEnabled);
+        this.imageTransferCosem.writeAttribute(Attribute.IMAGE_TRANSFER_ENABLED, transferEnabled);
     }
 
     /**
@@ -110,8 +123,7 @@ class ImageTransfer {
         params.add(DataObject.newOctetStringData(this.imageIdentifier.getBytes()));
         params.add(DataObject.newUInteger32Data(this.getImageSize()));
 
-        this.imageTransferCosem.callMethod(Method.IMAGE_TRANSFER_INITIATE.getValue(),
-                DataObject.newStructureData(params));
+        this.imageTransferCosem.callMethod(Method.IMAGE_TRANSFER_INITIATE, DataObject.newStructureData(params));
     }
 
     /**
@@ -154,28 +166,30 @@ class ImageTransfer {
     /**
      * The Image is verified. This is done by invoking the image_verify method
      * by the client and testing the image transfer status.
-     * 
+     *
      * @throws ImageTransferException
      */
     public void verifyImage() throws ProtocolAdapterException, ImageTransferException {
-        final MethodResultCode verified = this.imageTransferCosem.callMethod(Method.IMAGE_VERIFY.getValue(),
+        final MethodResultCode verified = this.imageTransferCosem.callMethod(Method.IMAGE_VERIFY,
                 DataObject.newInteger8Data((byte) 0));
         if (verified == null) {
             throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_VERIFY_NOT_CALLED);
         }
 
-        if (verified == MethodResultCode.OTHER_REASON) {
-            // If activation was triggered the device will not verify again.
-            if (this.imageIsVerified()) {
-                return;
-            }
-            final int status = this.getImageTransferStatus();
-            throw new ImageTransferException(EXCEPTION_MSG_IMAGE_NOT_VERIFIED + status);
+        if (verified == MethodResultCode.SUCCESS) {
+            return;
         }
 
         if (verified == MethodResultCode.TEMPORARY_FAILURE) {
             this.waitForImageVerification();
         }
+
+        // If activation was triggered the device will not verify again.
+        if (this.imageIsVerified()) {
+            return;
+        }
+        final int status = this.getImageTransferStatus();
+        throw new ImageTransferException(EXCEPTION_MSG_IMAGE_NOT_VERIFIED + status);
     }
 
     /**
@@ -189,7 +203,7 @@ class ImageTransfer {
      */
     public boolean imageToActivateOk() throws ProtocolAdapterException {
         final DataObject imageTransferStatusData = this.imageTransferCosem
-                .readAttribute(Attribute.IMAGE_TO_ACTIVATE_INFO.getValue());
+                .readAttribute(Attribute.IMAGE_TO_ACTIVATE_INFO);
 
         if (imageTransferStatusData.getType() != Type.ARRAY) {
             throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_TO_ACTIVATE_NOT_OK);
@@ -200,7 +214,7 @@ class ImageTransfer {
         final List<DataObject> images = (List<DataObject>) imageTransferStatusData.getValue();
         for (final DataObject image : images) {
             @SuppressWarnings("unchecked")
-            List<DataObject> imageDetails = (List<DataObject>) image.getValue();
+            final List<DataObject> imageDetails = (List<DataObject>) image.getValue();
 
             // Match image by signature.
             if (this.isSignature((byte[]) imageDetails.get(2).getValue())) {
@@ -221,7 +235,7 @@ class ImageTransfer {
      * @throws ProtocolAdapterException
      */
     public void activateImage() throws ProtocolAdapterException, ImageTransferException {
-        final MethodResultCode imageActivate = this.imageTransferCosem.callMethod(Method.IMAGE_ACTIVATE.getValue(),
+        final MethodResultCode imageActivate = this.imageTransferCosem.callMethod(Method.IMAGE_ACTIVATE,
                 DataObject.newInteger8Data((byte) 0));
         if (imageActivate == null) {
             throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_VERIFY_NOT_CALLED);
@@ -239,8 +253,8 @@ class ImageTransfer {
 
     private void waitForImageVerification() throws ProtocolAdapterException, ImageTransferException {
         final Future<Integer> newStatus = EXECUTOR_SERVICE.submit(new ImageTransferStatusChangeWatcher(
-                ImageTransferStatus.VERIFICATION_INITIATED, properties.getVerificationStatusCheckInterval(),
-                properties.verificationStatusCheckTimeout));
+                ImageTransferStatus.VERIFICATION_INITIATED, properties.getVerificationStatusCheckInterval(), properties
+                .getVerificationStatusCheckTimeout()));
 
         int status;
         try {
@@ -259,7 +273,7 @@ class ImageTransfer {
     private void waitForImageActivation() throws ProtocolAdapterException, ImageTransferException {
         final Future<Integer> newStatus = EXECUTOR_SERVICE.submit(new ImageTransferStatusChangeWatcher(
                 ImageTransferStatus.ACTIVATION_INITIATED, properties.getActivationStatusCheckInterval(), properties
-                        .getActivationStatusCheckTimeout(), true));
+                .getActivationStatusCheckTimeout(), true));
 
         int status;
         try {
@@ -282,14 +296,13 @@ class ImageTransfer {
     }
 
     private int numberOfBlocks() throws ProtocolAdapterException {
-        int blocks = (int) Math.ceil((double) this.getImageSize() / this.getImageBlockSize());
+        final int blocks = (int) Math.ceil((double) this.getImageSize() / this.getImageBlockSize());
         LOGGER.info("Calculated number of blocks: {} / {} = {}", this.getImageSize(), this.getImageBlockSize(), blocks);
         return blocks;
     }
 
     private int readImageBlockSize() throws ProtocolAdapterException {
-        final DataObject imageBlockSizeData = this.imageTransferCosem.readAttribute(Attribute.IMAGE_BLOCK_SIZE
-                .getValue());
+        final DataObject imageBlockSizeData = this.imageTransferCosem.readAttribute(Attribute.IMAGE_BLOCK_SIZE);
         if (imageBlockSizeData == null || !imageBlockSizeData.isNumber()) {
             throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_BLOCK_SIZE_NOT_READ);
         }
@@ -308,7 +321,7 @@ class ImageTransfer {
 
     private int getImageFirstNotTransferredBlockNumber() throws ProtocolAdapterException {
         final DataObject imageFirstNotReadBlockNumberData = this.imageTransferCosem
-                .readAttribute(Attribute.IMAGE_FIRST_NOT_TRANSFERRED_BLOCK_NUMBER.getValue());
+                .readAttribute(Attribute.IMAGE_FIRST_NOT_TRANSFERRED_BLOCK_NUMBER);
         if (imageFirstNotReadBlockNumberData == null || !imageFirstNotReadBlockNumberData.isNumber()) {
             throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_FIRST_NOT_TRANSFERRED_BLOCK_NUMBER_NOT_READ);
         }
@@ -316,9 +329,9 @@ class ImageTransfer {
         return ((Long) imageFirstNotReadBlockNumberData.getValue()).intValue();
     }
 
-    private boolean isImageTransferStatusIn(ImageTransferStatus... statuses) throws ProtocolAdapterException {
-        int currentStatus = this.getImageTransferStatus();
-        for (ImageTransferStatus status : statuses) {
+    private boolean isImageTransferStatusIn(final ImageTransferStatus... statuses) throws ProtocolAdapterException {
+        final int currentStatus = this.getImageTransferStatus();
+        for (final ImageTransferStatus status : statuses) {
             if (currentStatus == status.getValue()) {
                 return true;
             }
@@ -329,7 +342,7 @@ class ImageTransfer {
 
     private int getImageTransferStatus() throws ProtocolAdapterException {
         final DataObject imageTransferStatusData = this.imageTransferCosem
-                .readAttribute(Attribute.IMAGE_TRANSFER_STATUS.getValue());
+                .readAttribute(Attribute.IMAGE_TRANSFER_STATUS);
         if (imageTransferStatusData == null || !imageTransferStatusData.isNumber()) {
             throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_TRANSFER_STATUS_NOT_READ);
         }
@@ -343,13 +356,13 @@ class ImageTransfer {
         int endIndex = startIndex + this.getImageBlockSize();
         // Do not transfer data with padded 0 bytes.
         endIndex = (endIndex <= this.imageData.length) ? endIndex : this.imageData.length;
-        byte[] transferData = Arrays.copyOfRange(this.imageData, startIndex, endIndex);
+        final byte[] transferData = Arrays.copyOfRange(this.imageData, startIndex, endIndex);
 
         final List<DataObject> params = new ArrayList<>();
         params.add(DataObject.newUInteger32Data(blockNumber));
         params.add(DataObject.newOctetStringData(transferData));
 
-        this.imageTransferCosem.callMethod(Method.IMAGE_BLOCK_TRANSFER.getValue(), DataObject.newStructureData(params));
+        this.imageTransferCosem.callMethod(Method.IMAGE_BLOCK_TRANSFER, DataObject.newStructureData(params));
     }
 
     private void logUploadPercentage(final int block, final int totalBlocks) {
@@ -362,7 +375,7 @@ class ImageTransfer {
 
     /**
      * Compare the signature with the first bytes of the image data.
-     * 
+     *
      * @param signature
      *            Signature retrieved from device.
      * @return Signature matches.
@@ -387,7 +400,7 @@ class ImageTransfer {
             return verificationStatusCheckInterval;
         }
 
-        public void setVerificationStatusCheckInterval(int verificationStatusCheckInterval) {
+        public void setVerificationStatusCheckInterval(final int verificationStatusCheckInterval) {
             this.verificationStatusCheckInterval = verificationStatusCheckInterval;
         }
 
@@ -395,7 +408,7 @@ class ImageTransfer {
             return verificationStatusCheckTimeout;
         }
 
-        public void setVerificationStatusCheckTimeout(int verificationStatusCheckTimeout) {
+        public void setVerificationStatusCheckTimeout(final int verificationStatusCheckTimeout) {
             this.verificationStatusCheckTimeout = verificationStatusCheckTimeout;
         }
 
@@ -403,7 +416,7 @@ class ImageTransfer {
             return activationStatusCheckInterval;
         }
 
-        public void setActivationStatusCheckInterval(int activationStatusCheckInterval) {
+        public void setActivationStatusCheckInterval(final int activationStatusCheckInterval) {
             this.activationStatusCheckInterval = activationStatusCheckInterval;
         }
 
@@ -411,7 +424,7 @@ class ImageTransfer {
             return activationStatusCheckTimeout;
         }
 
-        public void setActivationStatusCheckTimeout(int activationStatusCheckTimeout) {
+        public void setActivationStatusCheckTimeout(final int activationStatusCheckTimeout) {
             this.activationStatusCheckTimeout = activationStatusCheckTimeout;
         }
     }
@@ -423,13 +436,13 @@ class ImageTransfer {
         private final boolean disconnectWhileWaiting;
         private int slept = 0;
 
-        public ImageTransferStatusChangeWatcher(final ImageTransferStatus imageTransferStatus, int pollingInterval,
-                int timeout) {
+        public ImageTransferStatusChangeWatcher(final ImageTransferStatus imageTransferStatus,
+                final int pollingInterval, final int timeout) {
             this(imageTransferStatus, pollingInterval, timeout, false);
         }
 
         public ImageTransferStatusChangeWatcher(final ImageTransferStatus imageTransferStatusWaitingFor,
-                int pollingInterval, int timeout, boolean disconnectWhileWaiting) {
+                final int pollingInterval, final int timeout, final boolean disconnectWhileWaiting) {
             this.imageTransferStatusWaitingFor = imageTransferStatusWaitingFor;
             this.pollingInterval = pollingInterval;
             this.timeout = timeout;
@@ -450,8 +463,8 @@ class ImageTransfer {
                 }
 
                 LOGGER.info("Waiting for status change.");
-                int doSleep = (this.slept + this.pollingInterval < this.timeout) ? this.pollingInterval : this.timeout
-                        - this.slept;
+                final int doSleep = (this.slept + this.pollingInterval < this.timeout) ? this.pollingInterval
+                        : this.timeout - this.slept;
                 Thread.sleep(doSleep);
                 this.slept += doSleep;
 
@@ -464,12 +477,12 @@ class ImageTransfer {
             return status;
         }
 
-        private void connect() throws ProtocolAdapterException {
-            ImageTransfer.this.imageTransferCosem.connect();
+        private void connect() throws TechnicalException {
+            ImageTransfer.this.connector.connect();
         }
 
-        private void disconnect() throws ProtocolAdapterException {
-            ImageTransfer.this.imageTransferCosem.disconnect();
+        private void disconnect() throws IOException {
+            ImageTransfer.this.connector.disconnect();
         }
     }
 
@@ -502,7 +515,7 @@ class ImageTransfer {
      * Attributes of Image transfer IC definition.
      *
      */
-    private enum Attribute {
+    private enum Attribute implements CosemObjectAttribute {
         LOGICAL_NAME(1),
         IMAGE_BLOCK_SIZE(2),
         IMAGE_TRANSFERRED_BLOCKS_STATUS(3),
@@ -517,7 +530,8 @@ class ImageTransfer {
             this.attributeId = attributeId;
         }
 
-        private int getValue() {
+        @Override
+        public int getValue() {
             return this.attributeId;
         }
     }
@@ -526,7 +540,7 @@ class ImageTransfer {
      * Methods of Image transfer IC definition.
      *
      */
-    private enum Method {
+    private enum Method implements CosemObjectMethod {
         IMAGE_TRANSFER_INITIATE(1),
         IMAGE_BLOCK_TRANSFER(2),
         IMAGE_VERIFY(3),
@@ -538,7 +552,8 @@ class ImageTransfer {
             this.methodId = methodId;
         }
 
-        private int getValue() {
+        @Override
+        public int getValue() {
             return this.methodId;
         }
     }
