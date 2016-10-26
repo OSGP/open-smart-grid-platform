@@ -7,6 +7,9 @@
  */
 package com.alliander.osgp.domain.microgrids.repositories;
 
+import java.util.Date;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -17,4 +20,6 @@ public interface RtuDeviceRepository extends JpaRepository<RtuDevice, Long> {
     RtuDevice findById(long id);
 
     RtuDevice findByDeviceIdentification(String deviceIdentification);
+
+    List<RtuDevice> findByIsActiveAndLastCommunicationTimeBefore(boolean active, Date lastCommunicationTime);
 }
