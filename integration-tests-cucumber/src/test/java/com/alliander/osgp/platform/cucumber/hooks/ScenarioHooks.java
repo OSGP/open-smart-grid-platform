@@ -22,7 +22,7 @@ import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
-import com.alliander.osgp.platform.cucumber.ApplicationConfig;
+import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
 import com.alliander.osgp.platform.cucumber.support.ServiceEndpoint;
 
@@ -39,12 +39,12 @@ public class ScenarioHooks {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ScenarioHooks.class);
 
-    @Autowired
-    private ApplicationConfig applicationConfig;
-
     private DeviceRepository deviceRepository;
     private DlmsDeviceRepository dlmsDeviceRepository;
     private DeviceAuthorizationRepository deviceAuthorizationRepository;
+
+    @Autowired
+    private DeviceLogItemRepository deviceLogItemRepository;
 
     @Autowired
     private DeviceId deviceId;
@@ -84,6 +84,12 @@ public class ScenarioHooks {
         LOGGER.info("Resetting database after runnign scenario @SLIM-511");
         this.setDeviceIsActivateState(this.deviceId.getDeviceIdE(), true);
         LOGGER.info("Database settings are reset after @SLIM-511");
+    }
+
+    @Before
+    public void deleteDeviceLogItems(final Scenario scenario) {
+        LOGGER.info("Deleting device log items before running scenario {}", scenario.getName());
+        this.deviceLogItemRepository.deleteAllInBatch();
     }
 
     private void deleteDevicesFromPlatform(final List<String> deviceIdList) {

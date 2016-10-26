@@ -43,6 +43,18 @@ public class Device {
         this.deviceHooks.activateDevice(deviceId);
     }
 
+    @Given("^an active device with DeviceID \"([^\"]*)\" in debug mode$")
+    public void anActiveDeviceWithDeviceIdInDebugMode(final String deviceId) throws Throwable {
+        this.anActiveDeviceWithDeviceID(deviceId);
+        this.deviceHooks.debugDevice(deviceId, true);
+    }
+
+    @Given("^an active device with DeviceID \"([^\"]*)\" not in debug mode$")
+    public void anActiveDeviceWithDeviceIdNotInDebugMode(final String deviceId) throws Throwable {
+        this.anActiveDeviceWithDeviceID(deviceId);
+        this.deviceHooks.debugDevice(deviceId, false);
+    }
+
     @Given("^an unknown mbus device with DeviceID \"([^\"]*)\"$")
     public void anUnknownMbusDeviceWithDeviceID(final String mbusDevice) throws Throwable {
         this.deviceId.setDeviceIdG(mbusDevice);
