@@ -30,8 +30,8 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 @Configuration
 @PropertySources({ 
 	@PropertySource("classpath:cucumber-platform.properties"),
-	@PropertySource(value = "file:/etc/osp/cucumber-platform.properties", ignoreResourceNotFound = true),
-	@PropertySource(value = "file:/etc/osp/global.cucumber.properties", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:/etc/osp/test/cucumber-platform.properties", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:/etc/osp/test/global-cucumber.properties", ignoreResourceNotFound = true),
 })
 public abstract class AbstractConfig {
 
