@@ -36,7 +36,7 @@ public class Iec61850AlarmCommand implements RtuCommand {
         map.put(2, DataAttribute.ALARM_TWO);
         map.put(3, DataAttribute.ALARM_THREE);
         map.put(4, DataAttribute.ALARM_FOUR);
-    };
+    }
 
     private int alarmIndex;
 
