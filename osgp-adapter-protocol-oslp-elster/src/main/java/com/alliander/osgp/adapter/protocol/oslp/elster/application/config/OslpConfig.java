@@ -51,8 +51,8 @@ import com.alliander.osgp.oslp.OslpUtils;
 @EnableTransactionManagement()
 @PropertySources({
 	@PropertySource("classpath:osgp-adapter-protocol-oslp-elster.properties"),
-	@PropertySource(value = "${osgp/AdapterProtocolOslpElster/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:{osgp/AdapterProtocolOslpElster/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 })
 public class OslpConfig {
     private static final String PROPERTY_NAME_OSLP_TIMEOUT_CONNECT = "oslp.timeout.connect";

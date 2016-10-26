@@ -38,8 +38,8 @@ import com.alliander.osgp.signing.server.domain.exceptions.SigningServerExceptio
 @Import({ MessagingConfig.class })
 @PropertySources({
 	@PropertySource("classpath:signing-server.properties"),
-	@PropertySource(value = "${osgp/SigningServer/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/SigningServer/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 })
 public class ApplicationContext {
 

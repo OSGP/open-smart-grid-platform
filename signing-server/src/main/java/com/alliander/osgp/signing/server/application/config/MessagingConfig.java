@@ -37,8 +37,8 @@ import com.alliander.osgp.signing.server.infra.messaging.SigningServerResponseMe
 @EnableTransactionManagement()
 @PropertySources({
 	@PropertySource("classpath:signing-server.properties"),
-	@PropertySource(value = "${osgp/SigningServer/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/SigningServer/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 })
 public class MessagingConfig {
 
