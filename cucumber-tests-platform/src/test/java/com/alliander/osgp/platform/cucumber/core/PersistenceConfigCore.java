@@ -24,7 +24,7 @@ import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 @EnableJpaRepositories(entityManagerFactoryRef = "entityMgrCore",  
     transactionManagerRef = "txMgrCore",
     basePackageClasses = { DeviceRepository.class, DeviceAuthorizationRepository.class })
-public class PersistenceConfigCore extends AbstractConfig {
+public class PersistenceConfigCore extends ApplicationConfiguration {
 
     @Value("${cucumber.osgpcoredbs.url}")
     private String databaseUrl;

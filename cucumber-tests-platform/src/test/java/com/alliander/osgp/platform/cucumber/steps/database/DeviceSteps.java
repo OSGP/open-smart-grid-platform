@@ -44,7 +44,8 @@ import cucumber.api.java.en.Then;
 @Transactional("txMgrCore")
 public class DeviceSteps {
 
-    public static String DEFAULT_DEVICE_IDENTIFICATION = "test-device";
+    private static final String DEFAULT_SUPPLIER = "Kaifa";
+	public static String DEFAULT_DEVICE_IDENTIFICATION = "test-device";
     public static String DEFAULT_DEVICE_TYPE = "OSLP";
     public static String DEFAULT_PROTOCOL = "OSLP";
     public static String DEFAULT_PROTOCOL_VERSION = "1.0";
@@ -109,6 +110,8 @@ public class DeviceSteps {
         		getFloat(settings, "GPSLatitude", DEFAULT_LATITUDE),
         		getFloat(settings, "GPSLongitude", DEFAULT_LONGITUDE)
         		);
+    	
+    	smartMeter.setSupplier(getString(settings, "Supplier", DEFAULT_SUPPLIER));
     	
     	smartMeterRepository.save(smartMeter);
     	

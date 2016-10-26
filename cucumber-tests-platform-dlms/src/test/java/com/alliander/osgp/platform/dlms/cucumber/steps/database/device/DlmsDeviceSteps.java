@@ -67,7 +67,7 @@ public class DlmsDeviceSteps {
         		getString(settings, "CommunicationMethod", DEFAULT_COMMUNICATION_METHOD));
         dlmsDevice.setIpAddressIsStatic(
         		getBoolean(settings, "IpAddressIsStatic", DEFAULT_IP_ADDRESS_IS_STATIC));
-        dlmsDevice.setPort(4059L);
+
         // TODO: Set dlms specific device settings
         this.dlmsDeviceRepository.save(dlmsDevice);
         
