@@ -94,7 +94,11 @@ public enum LogicalNode {
     /**
      * DRCC, DER Supervisory Control
      */
-    DER_SUPERVISORY_CONTROL_ONE("DRCC1");
+    DER_SUPERVISORY_CONTROL_ONE("DRCC1"),
+    /**
+     * GGIO, Generic Process I/O
+     */
+    GENERIC_PROCESS_I_O("GGIO1");
 
     private final String description;
 
