@@ -22,6 +22,7 @@ import org.osgp.adapter.protocol.dlms.domain.commands.SetEncryptionKeyExchangeOn
 import org.osgp.adapter.protocol.dlms.domain.commands.SetPushSetupAlarmCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetPushSetupSmsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetSpecialDaysCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.UpdateFirmwareCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
@@ -90,6 +91,9 @@ public class ConfigurationService {
 
     @Autowired
     private ReplaceKeyCommandExecutor replaceKeyCommandExecutor;
+
+    @Autowired
+    private UpdateFirmwareCommandExecutor updateFirmwareCommandExecutor;
 
     public void setSpecialDays(final DlmsConnectionHolder conn, final DlmsDevice device,
             final SpecialDaysRequestDto specialDaysRequest) throws ProtocolAdapterException {
@@ -190,7 +194,7 @@ public class ConfigurationService {
         final ProtocolMeterInfo protocolMeterInfo = new ProtocolMeterInfo(gMeterInfo.getChannel(),
                 gMeterInfo.getDeviceIdentification(), gMeterDevice.getValidSecurityKey(
                         SecurityKeyType.G_METER_ENCRYPTION).getKey(), gMeterDevice.getValidSecurityKey(
-                                SecurityKeyType.G_METER_MASTER).getKey());
+                        SecurityKeyType.G_METER_MASTER).getKey());
 
         this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, protocolMeterInfo);
 
@@ -258,6 +262,13 @@ public class ConfigurationService {
             LOGGER.error("Unexpected exception during replaceKeys.", e);
             throw e;
         }
+    }
+
+    public List<FirmwareVersionDto> updateFirmware(final DlmsConnectionHolder conn, final DlmsDevice device,
+            final String firmwareIdentifier) throws ProtocolAdapterException {
+        LOGGER.info("Updating firmware of device {} to firmware with identifier {}", device, firmwareIdentifier);
+
+        return this.updateFirmwareCommandExecutor.execute(conn, device, firmwareIdentifier);
     }
 
 }

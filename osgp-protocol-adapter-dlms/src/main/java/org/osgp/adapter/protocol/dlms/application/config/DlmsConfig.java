@@ -127,7 +127,6 @@ public class DlmsConfig {
     }
 
     @Bean
-    @Scope("prototype")
     @Autowired
     public Hls5Connector hls5Connector(final RecoverKeyProcessInitiator recoverKeyProcessInitiator,
             @Value("${jdlms.response_timeout}") final int responseTimeout,

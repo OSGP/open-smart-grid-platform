@@ -48,10 +48,10 @@ public class DlmsConnectionFactory {
     public DlmsConnectionHolder getConnection(final DlmsDevice device, final DlmsMessageListener dlmsMessageListener)
             throws TechnicalException {
         if (device.isHls5Active()) {
-            final Hls5Connector connector = this.hls5ConnectorProvider.get();
-            connector.setDevice(device);
-            connector.setDlmsMessageListener(dlmsMessageListener);
-            return connector.connect();
+            final DlmsConnectionHolder holder = new DlmsConnectionHolder(this.hls5ConnectorProvider.get(), device,
+                    dlmsMessageListener);
+            holder.connect();
+            return holder;
         } else {
             throw new UnsupportedOperationException("Only HLS 5 connections are currently supported");
         }
