@@ -37,7 +37,17 @@ public class RtuResponseDataService {
      * @param responseData
      */
     public void enqueue(final RtuResponseData responseData) {
-        this.responseDataRepository.save(responseData);
+        // Check if response data is already present.
+        // This might happen when the message processor is retrying to process a
+        // queue message.
+        final RtuResponseData existing = this.responseDataRepository
+                .findSingleResultByCorrelationUid(responseData.getCorrelationUid());
+        if (existing == null) {
+            this.responseDataRepository.save(responseData);
+        } else {
+            LOGGER.warn("Response data with correlation uid {} already present. Skipping save action",
+                    responseData.getCorrelationUid());
+        }
     }
 
     /**
