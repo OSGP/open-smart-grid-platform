@@ -77,6 +77,10 @@ public enum DataAttribute {
      */
     SOFTWARE_CONFIGURATION("SWCf"),
     /**
+     * Property of CSLC Node, TLS configuration.
+     */
+    TLS_CONFIGURATION("TlsCf"),
+    /**
      * Property of XSWC Node, SwitchType.
      */
     SWITCH_TYPE("SwType"),
