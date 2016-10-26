@@ -69,6 +69,75 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
+  
+  <xsd:element name="UpdateFirmwareRequest">
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element name="DeviceIdentification" type="common:Identification" />
+            <xsd:element name="FirmwareIdentification">
+               <xsd:simpleType>
+                  <xsd:restriction base="xsd:normalizedString">
+                     <xsd:minLength value="1"/>
+                     <xsd:maxLength value="255"/>
+                     <xsd:pattern value="[^ ]{0,255}"/>
+                  </xsd:restriction>
+               </xsd:simpleType>
+            </xsd:element>
+         </xsd:sequence>
+      </xsd:complexType>
+   </xsd:element>
+  <xsd:element name="UpdateFirmwareAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="UpdateFirmwareAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="UpdateFirmwareResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Result" type="common:OsgpResultType"
+          minOccurs="1" />
+        <xsd:sequence>
+          <xsd:element name="FirmwareVersion" type="tns:FirmwareVersion"
+            minOccurs="1" maxOccurs="unbounded" />
+        </xsd:sequence>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="UpdateFirmwareRequestData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Command">
+        <xsd:sequence>
+          <xsd:element name="FirmwareIdentification">
+            <xsd:simpleType>
+              <xsd:restriction base="xsd:normalizedString">
+                <xsd:minLength value="1" />
+                <xsd:maxLength value="255" />
+                <xsd:pattern value="[^ ]{0,255}" />
+              </xsd:restriction>
+            </xsd:simpleType>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="UpdateFirmwareResponseData"> 
+    <xsd:complexContent>
+      <xsd:extension base="tns:GetFirmwareVersionResponseData">
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  
+  
 
   <xsd:complexType name="FirmwareVersion">
     <xsd:sequence>
