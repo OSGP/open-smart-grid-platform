@@ -40,8 +40,8 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.OsgpResponse
 @EnableTransactionManagement()
 @PropertySources({
 	@PropertySource("classpath:osgp-adapter-protocol-iec61850.properties"),
-	@PropertySource(value = "${osgp/AdapterProtocolIec61850/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/AdapterProtocolIec61850/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 })
 public class MessagingConfig {
 

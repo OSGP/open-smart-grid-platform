@@ -36,8 +36,8 @@ import com.zaxxer.hikari.HikariDataSource;
 @EnableTransactionManagement()
 @PropertySources({
 	@PropertySource("classpath:osgp-core-db-api-iec61850.properties"),
-	@PropertySource(value = "${osgp/CoreDbApiIEC61850/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/CoreDbApiIEC61850/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 })
 public class Iec61850OsgpCoreDbApiPersistenceConfig {
 

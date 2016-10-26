@@ -31,8 +31,8 @@ import com.alliander.osgp.core.db.api.iec61850.application.config.Iec61850OsgpCo
 @Import({ MessagingConfig.class, Iec61850OsgpCoreDbApiPersistenceConfig.class, Iec61850Config.class })
 @PropertySources({
 	@PropertySource("classpath:osgp-adapter-protocol-iec61850.properties"),
-	@PropertySource(value = "${osgp/AdapterProtocolIec61850/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/AdapterProtocolIec61850/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 })
 public class ApplicationContext {
 
