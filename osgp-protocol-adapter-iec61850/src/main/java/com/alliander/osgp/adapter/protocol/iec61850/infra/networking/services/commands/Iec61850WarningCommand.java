@@ -36,7 +36,7 @@ public class Iec61850WarningCommand implements RtuCommand {
         map.put(2, DataAttribute.WARNING_TWO);
         map.put(3, DataAttribute.WARNING_THREE);
         map.put(4, DataAttribute.WARNING_FOUR);
-    };
+    }
 
     private int warningIndex;
 
