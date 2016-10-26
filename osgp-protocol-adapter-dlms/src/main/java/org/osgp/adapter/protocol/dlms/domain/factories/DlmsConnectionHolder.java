@@ -115,8 +115,14 @@ public class DlmsConnectionHolder implements AutoCloseable {
         this.dlmsConnection = connector.connect(device, dlmsMessageListener);
     }
 
+    /**
+     * Closes the connection with the device and releases the internal
+     * connection reference. The connection will be closed, but no disconnection
+     * message will be sent to the device.
+     */
     @Override
     public void close() throws Exception {
-        this.disconnect();
+        this.dlmsConnection.close();
+        this.dlmsConnection = null;
     }
 }
