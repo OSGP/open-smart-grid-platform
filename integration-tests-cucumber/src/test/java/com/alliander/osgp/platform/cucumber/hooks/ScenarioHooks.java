@@ -55,9 +55,17 @@ public class ScenarioHooks {
     @Value("${service.endpoint.host}")
     private String serviceEndpointHost;
 
+    @Value("${alarm.notifications.host}")
+    private String alarmNotificationsHost;
+
+    @Value("${alarm.notifications.port}")
+    private int alarmNotificationsPort;
+
     @Before()
     public void setServiceEndpoint() {
         this.serviceEndpoint.setServiceEndpoint(this.serviceEndpointHost);
+        this.serviceEndpoint.setAlarmNotificationsHost(this.alarmNotificationsHost);
+        this.serviceEndpoint.setAlarmNotificationsPort(this.alarmNotificationsPort);
     }
 
     @Before("@SLIM-218")
