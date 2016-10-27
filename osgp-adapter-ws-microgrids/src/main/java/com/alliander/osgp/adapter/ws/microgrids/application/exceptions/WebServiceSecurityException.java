@@ -1,4 +1,4 @@
-package com.alliander.osgp.adapter.ws.microgrids.exceptions;
+package com.alliander.osgp.adapter.ws.microgrids.application.exceptions;
 
 
 public class WebServiceSecurityException extends WebServiceException {

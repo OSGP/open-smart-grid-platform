@@ -32,7 +32,6 @@ import com.alliander.osgp.adapter.ws.schema.microgrids.common.OsgpResultType;
 import com.alliander.osgp.domain.microgrids.valueobjects.DataRequest;
 import com.alliander.osgp.domain.microgrids.valueobjects.DataResponse;
 import com.alliander.osgp.domain.microgrids.valueobjects.EmptyResponse;
-import com.alliander.osgp.domain.microgrids.valueobjects.SetPointsRequest;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
@@ -109,7 +108,7 @@ public class AdHocManagementEndpoint {
         return response;
     }
 
-    // === SET SETPOINTS ===
+    // === SET DATA ===
 
     @PayloadRoot(localPart = "SetDataRequest", namespace = NAMESPACE)
     @ResponsePayload
@@ -122,9 +121,9 @@ public class AdHocManagementEndpoint {
         final SetDataAsyncResponse response = new SetDataAsyncResponse();
 
         try {
-            final SetPointsRequest setPointsRequest = this.mapper.map(request, SetPointsRequest.class);
+            final SetDataRequest setDataRequest = this.mapper.map(request, SetDataRequest.class);
             final String correlationUid = this.service.enqueueSetSetPointsRequest(organisationIdentification,
-                    request.getDeviceIdentification(), setPointsRequest);
+                    request.getDeviceIdentification(), setDataRequest);
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);

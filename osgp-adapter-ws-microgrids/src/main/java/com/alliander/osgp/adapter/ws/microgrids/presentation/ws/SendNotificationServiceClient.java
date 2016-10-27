@@ -12,7 +12,7 @@ import java.security.GeneralSecurityException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alliander.osgp.adapter.ws.microgrids.exceptions.WebServiceSecurityException;
+import com.alliander.osgp.adapter.ws.microgrids.application.exceptions.WebServiceSecurityException;
 import com.alliander.osgp.adapter.ws.schema.microgrids.notification.Notification;
 import com.alliander.osgp.adapter.ws.schema.microgrids.notification.SendNotificationRequest;
 

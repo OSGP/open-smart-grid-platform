@@ -10,18 +10,18 @@ package com.alliander.osgp.domain.microgrids.valueobjects;
 import java.io.Serializable;
 import java.util.List;
 
-public class SetPointsRequest implements Serializable {
+public class SetDataRequest implements Serializable {
 
     private static final long serialVersionUID = -6528597730317108512L;
 
-    private final List<SetPointSystemIdentifier> setPointSystemIdentifiers;
+    private final List<SetDataSystemIdentifier> setDataSystemIdentifiers;
 
-    public SetPointsRequest(final List<SetPointSystemIdentifier> setPointSystemIdentifiers) {
+    public SetDataRequest(final List<SetDataSystemIdentifier> setDataSystemIdentifiers) {
         super();
-        this.setPointSystemIdentifiers = setPointSystemIdentifiers;
+        this.setDataSystemIdentifiers = setDataSystemIdentifiers;
     }
 
-    public List<SetPointSystemIdentifier> getSetPointSystemIdentifiers() {
-        return this.setPointSystemIdentifiers;
+    public List<SetDataSystemIdentifier> getSetDataSystemIdentifiers() {
+        return this.setDataSystemIdentifiers;
     }
 }

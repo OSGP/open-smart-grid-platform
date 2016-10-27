@@ -33,7 +33,7 @@ import com.alliander.osgp.domain.microgrids.valueobjects.EmptyResponse;
 import com.alliander.osgp.domain.microgrids.valueobjects.Measurement;
 import com.alliander.osgp.domain.microgrids.valueobjects.MeasurementFilter;
 import com.alliander.osgp.domain.microgrids.valueobjects.MeasurementResultSystemIdentifier;
-import com.alliander.osgp.domain.microgrids.valueobjects.SetPointsRequest;
+import com.alliander.osgp.domain.microgrids.valueobjects.SetDataRequest;
 import com.alliander.osgp.domain.microgrids.valueobjects.SystemFilter;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -133,7 +133,7 @@ public class MicrogridsService {
     }
 
     public String enqueueSetSetPointsRequest(final String organisationIdentification, final String deviceIdentification,
-            final SetPointsRequest setPointsRequest) throws OsgpException {
+            final SetDataRequest setPointsRequest) throws OsgpException {
 
         LOGGER.debug("enqueueSetSetPointsRequest called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);

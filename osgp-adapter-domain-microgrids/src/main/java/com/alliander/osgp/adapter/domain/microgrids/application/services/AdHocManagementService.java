@@ -21,11 +21,11 @@ import com.alliander.osgp.domain.microgrids.entities.RtuDevice;
 import com.alliander.osgp.domain.microgrids.valueobjects.DataRequest;
 import com.alliander.osgp.domain.microgrids.valueobjects.DataResponse;
 import com.alliander.osgp.domain.microgrids.valueobjects.EmptyResponse;
-import com.alliander.osgp.domain.microgrids.valueobjects.SetPointsRequest;
+import com.alliander.osgp.domain.microgrids.valueobjects.SetDataRequest;
 import com.alliander.osgp.dto.valueobjects.microgrids.DataRequestDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.DataResponseDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.EmptyResponseDto;
-import com.alliander.osgp.dto.valueobjects.microgrids.SetPointsRequestDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.SetDataRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -108,7 +108,7 @@ public class AdHocManagementService extends AbstractService {
     // === SET SETPOINTS ===
 
     public void handleSetPointsRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final String messageType, final SetPointsRequest setPointsRequest)
+            final String correlationUid, final String messageType, final SetDataRequest setPointsRequest)
             throws FunctionalException {
 
         LOGGER.info("Set setpoints for device [{}] with correlation id [{}]", deviceIdentification, correlationUid);
@@ -116,7 +116,7 @@ public class AdHocManagementService extends AbstractService {
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        final SetPointsRequestDto dto = this.mapper.map(setPointsRequest, SetPointsRequestDto.class);
+        final SetDataRequestDto dto = this.mapper.map(setPointsRequest, SetDataRequestDto.class);
 
         this.osgpCoreRequestMessageSender.send(
                 new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, dto), messageType,

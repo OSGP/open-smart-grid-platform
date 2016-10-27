@@ -7,8 +7,8 @@ import com.alliander.osgp.domain.microgrids.valueobjects.DataRequest;
 import com.alliander.osgp.domain.microgrids.valueobjects.DataResponse;
 import com.alliander.osgp.domain.microgrids.valueobjects.Measurement;
 import com.alliander.osgp.domain.microgrids.valueobjects.MeasurementResultSystemIdentifier;
-import com.alliander.osgp.domain.microgrids.valueobjects.SetPointSystemIdentifier;
-import com.alliander.osgp.domain.microgrids.valueobjects.SetPointsRequest;
+import com.alliander.osgp.domain.microgrids.valueobjects.SetDataRequest;
+import com.alliander.osgp.domain.microgrids.valueobjects.SetDataSystemIdentifier;
 import com.alliander.osgp.domain.microgrids.valueobjects.SystemFilter;
 import com.alliander.osgp.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
 
@@ -26,6 +26,7 @@ public class MicrogridsMapper extends ConfigurableMapper {
     @Override
     public void configure(final MapperFactory mapperFactory) {
         mapperFactory.getConverterFactory().registerConverter(new PassThroughConverter(DateTime.class));
+        mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
 
         mapperFactory
                 .classMap(com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SystemFilter.class,
@@ -51,13 +52,12 @@ public class MicrogridsMapper extends ConfigurableMapper {
                 .field("measurementResultSystemIdentifiers", SYSTEM).byDefault().register();
 
         mapperFactory.classMap(com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataRequest.class,
-                SetPointsRequest.class).field(SYSTEM, "setPointSystemIdentifiers").byDefault().register();
+                SetDataRequest.class).field(SYSTEM, "setDataSystemIdentifiers").byDefault().register();
 
         mapperFactory
                 .classMap(com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataSystemIdentifier.class,
-                        SetPointSystemIdentifier.class)
-                .field(TYPE, SYSTEM_TYPE).byDefault().register();
-
-        mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
+                        SetDataSystemIdentifier.class)
+                .field(TYPE, SYSTEM_TYPE).field("setPoint", "setPoints").field("profile", "profiles").byDefault()
+                .register();
     }
 }

@@ -20,7 +20,7 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 
-import com.alliander.osgp.adapter.ws.microgrids.exceptions.WebServiceSecurityException;
+import com.alliander.osgp.adapter.ws.microgrids.application.exceptions.WebServiceSecurityException;
 
 public class WebServiceTemplateFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceTemplateFactory.class);
