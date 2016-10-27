@@ -3,7 +3,7 @@ Feature:
   I want the platform to collect detailed DLMS communication logs for a device in debug mode
 
 Background:
-    Give an organisation with OrganisationID "Infostroom"
+    Given an organisation with OrganisationID "Infostroom"
 
 Scenario: DLMS device log information is collected for a device in debug mode.
     Given an active device with DeviceID "TEST1024000000001" in debug mode
