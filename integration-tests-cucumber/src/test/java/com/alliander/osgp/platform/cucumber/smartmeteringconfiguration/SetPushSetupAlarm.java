@@ -49,8 +49,8 @@ public class SetPushSetupAlarm extends SmartMetering {
     private static final Logger LOGGER = LoggerFactory.getLogger(SetPushSetupAlarm.class);
     private static final Map<String, String> PROPERTIES_MAP = new HashMap<>();
 
-    private static final String KnownDevice = "E9998000014123414";
-    private static final String UnknownDevice = "Z9876543210123456";
+    private static final String KNOWN_DEVICE = "E9998000014123414";
+    private static final String UNKNOWN_DEVICE = "Z9876543210123456";
 
     @Autowired
     private DeviceId deviceId;
@@ -67,8 +67,10 @@ public class SetPushSetupAlarm extends SmartMetering {
     @When("^an alarm notification is received from a known device$")
     public void anAlarmNotificationIsReceivedFromAKnownDevice() throws Throwable {
         try {
-            SimulatePushedAlarmsHooks.simulateAlarm(KnownDevice, new byte[] { 0x2C, 0x00, 0x00, 0x01, 0x02 });
-            SimulatePushedAlarmsHooks.simulateAlarm(KnownDevice, new byte[] { 0x2C, 0x04, 0x20, 0x00, 0x00 });
+            SimulatePushedAlarmsHooks.simulateAlarm(KNOWN_DEVICE, new byte[] { 0x2C, 0x00, 0x00, 0x01, 0x02 },
+                    this.serviceEndpoint.getAlarmNotificationsHost(), this.serviceEndpoint.getAlarmNotificationsPort());
+            SimulatePushedAlarmsHooks.simulateAlarm(KNOWN_DEVICE, new byte[] { 0x2C, 0x04, 0x20, 0x00, 0x00 },
+                    this.serviceEndpoint.getAlarmNotificationsHost(), this.serviceEndpoint.getAlarmNotificationsPort());
         } catch (final Exception e) {
             LOGGER.error("Error occured simulateAlarm: ", e);
         }
@@ -94,7 +96,7 @@ public class SetPushSetupAlarm extends SmartMetering {
         final Pattern responsePattern = Pattern.compile(XPATH_MATCHER_PUSH_NOTIFICATION);
 
         final List<DeviceLogItem> deviceLogItems = this.deviceLogItemRepository
-                .findByDeviceIdentificationInOrderByCreationTimeDesc(Arrays.asList(KnownDevice, UnknownDevice),
+                .findByDeviceIdentificationInOrderByCreationTimeDesc(Arrays.asList(KNOWN_DEVICE, UNKNOWN_DEVICE),
                         new PageRequest(0, 2)).getContent();
         for (int i = 0; i < 2; i++) {
             final DeviceLogItem item = deviceLogItems.get(i);
@@ -110,8 +112,10 @@ public class SetPushSetupAlarm extends SmartMetering {
     @When("^an alarm notification is received from an unknown device$")
     public void anAlarmNotificationIsReceivedFromAnUnknownDevice() throws Throwable {
         try {
-            SimulatePushedAlarmsHooks.simulateAlarm(UnknownDevice, new byte[] { 0x2C, 0x00, 0x00, 0x01, 0x02 });
-            SimulatePushedAlarmsHooks.simulateAlarm(UnknownDevice, new byte[] { 0x2C, 0x04, 0x20, 0x00, 0x00 });
+            SimulatePushedAlarmsHooks.simulateAlarm(UNKNOWN_DEVICE, new byte[] { 0x2C, 0x00, 0x00, 0x01, 0x02 },
+                    this.serviceEndpoint.getAlarmNotificationsHost(), this.serviceEndpoint.getAlarmNotificationsPort());
+            SimulatePushedAlarmsHooks.simulateAlarm(UNKNOWN_DEVICE, new byte[] { 0x2C, 0x04, 0x20, 0x00, 0x00 },
+                    this.serviceEndpoint.getAlarmNotificationsHost(), this.serviceEndpoint.getAlarmNotificationsPort());
         } catch (final Exception e) {
             LOGGER.error("Error occured simulateAlarm: ", e);
         }
