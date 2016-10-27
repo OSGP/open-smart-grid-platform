@@ -5,7 +5,6 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-
 package com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices;
 
 import java.nio.ByteBuffer;

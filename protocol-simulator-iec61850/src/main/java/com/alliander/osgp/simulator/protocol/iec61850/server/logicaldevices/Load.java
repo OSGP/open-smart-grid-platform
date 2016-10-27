@@ -5,7 +5,6 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-
 package com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices;
 
 import java.util.ArrayList;
@@ -18,20 +17,11 @@ import org.openmuc.openiec61850.ServerModel;
 
 import com.alliander.osgp.simulator.protocol.iec61850.server.QualityType;
 
-/**
- * @author sander
- *
- */
 public class Load extends LogicalDevice {
 
     private static final String MMXU = "MMXU";
     private static final String MMTR = "MMTR";
 
-    /**
-     * @param physicalDeviceName
-     * @param logicalDeviceName
-     * @param serverModel
-     */
     public Load(final String physicalDeviceName, final String logicalDeviceName, final ServerModel serverModel) {
         super(physicalDeviceName, logicalDeviceName, serverModel);
     }

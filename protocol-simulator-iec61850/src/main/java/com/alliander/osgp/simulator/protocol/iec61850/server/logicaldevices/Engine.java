@@ -5,7 +5,6 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-
 package com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices;
 
 import java.util.ArrayList;
@@ -20,11 +19,6 @@ import com.alliander.osgp.simulator.protocol.iec61850.server.QualityType;
 
 public class Engine extends LogicalDevice {
 
-    /**
-     * @param physicalDeviceName
-     * @param logicalDeviceName
-     * @param serverModel
-     */
     public Engine(final String physicalDeviceName, final String logicalDeviceName, final ServerModel serverModel) {
         super(physicalDeviceName, logicalDeviceName, serverModel);
     }
