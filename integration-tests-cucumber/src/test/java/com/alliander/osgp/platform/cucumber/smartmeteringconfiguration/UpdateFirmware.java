@@ -84,7 +84,7 @@ public class UpdateFirmware extends SmartMetering {
                 XPATH_MATCHER_FIRMWAREVERSION_VERSION, 3);
     }
 
-    @Then("^the database should be updated so it indicates that device (.+) is using firmware version KFPP_V(\\d+)FF$")
+    @Then("^the database should be updated so it indicates that device (.+) is using firmware version (.+)$")
     public void theDatabaseShouldBeUpdatedSoItIndicatesThatDeviceEIsUsingFirmwareVersion(
             final String deviceIdentification, final String firmwareVersion) throws Throwable {
         // Write code here that turns the phrase above into concrete actions
@@ -102,7 +102,8 @@ public class UpdateFirmware extends SmartMetering {
 
         this.responseRunner(PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, LOGGER);
 
-        this.runXpathResult.assertXpath(this.response, PATH_SOAP_FAULT_FAULTSTRING, message);
+        assertTrue("Message '" + message + "' not found in response.",
+                this.runXpathResult.assertXpath(this.response, PATH_SOAP_FAULT_FAULTSTRING, message));
     }
 
     @Given("^the installation file is corrupt$")
@@ -114,8 +115,7 @@ public class UpdateFirmware extends SmartMetering {
 
     @When("^the upgrade of firmware did not succeed$")
     public void theUpgradeOfFirmwareDidNotSucceed() throws Throwable {
-        // Check response for NOT OK
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+        // Not influenced by cucumber at this time. Nothing can be done here to
+        // make the update fail.
     }
 }
