@@ -7,12 +7,13 @@
  */
 package com.alliander.osgp.platform.cucumber.hooks;
 
+import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
-import com.alliander.osgp.platform.cucumber.ApplicationConfig;
 
 /**
  * helper class for devices to provide database access. It is used to prepare
@@ -26,6 +27,9 @@ public class DeviceHooks {
     @Autowired
     private DeviceRepository deviceRepository;
 
+    @Autowired
+    private DlmsDeviceRepository dlmsDeviceRepository;
+
     public void deactivateDevice(final String deviceId) {
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceId);
         device.setActive(false);
@@ -36,5 +40,11 @@ public class DeviceHooks {
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceId);
         device.setActive(true);
         this.deviceRepository.save(device);
+    }
+
+    public void debugDevice(final String deviceId, final boolean inDebugMode) {
+        final DlmsDevice device = this.dlmsDeviceRepository.findByDeviceIdentification(deviceId);
+        device.setInDebugMode(inDebugMode);
+        this.dlmsDeviceRepository.save(device);
     }
 }
