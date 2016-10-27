@@ -13,9 +13,6 @@ import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
-import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
-import com.alliander.osgp.domain.core.repositories.DeviceRepository;
-import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.platform.cucumber.steps.database.DeviceSteps;
 
 import cucumber.api.java.en.And;
@@ -28,28 +25,10 @@ public class DlmsDeviceSteps {
 
     private static final String DEFAULT_COMMUNICATION_METHOD = "GPRS";
 	private static final Boolean DEFAULT_IP_ADDRESS_IS_STATIC = true;
-	private static final String DEFAULT_ALIAS = "Test";
-	private static final String DEFAULT_CONTAINER_CITY = "Esloo";
-	private static final String DEFAULT_CONTAINER_POSTAL_CODE = "6171 AE";
-	private static final String DEFAULT_CONTAINER_STREET = "Mauritsweg";
-	private static final String DEFAULT_CONTAINER_NUMBER = "109";
-	private static final String DEFAULT_CONTAINER_MUNICIPALITY = "Stein";
-	private static final Float DEFAULT_GPSLATITUDE = 5.0F;
-	private static final Float DEFAULT_GPSLONGITUDE = 5.0F;
-	private static final Boolean DEFAULT_ACTIVE = true;
-
-	@Autowired
-    private DeviceRepository deviceRepository;
 
     @Autowired
     private DlmsDeviceRepository dlmsDeviceRepository;
     
-    @Autowired
-    private DeviceAuthorizationRepository deviceAuthorizationRepository;
-    
-    @Autowired
-    private SmartMeterRepository smartMeterRepository;
-
     @Autowired
     private DeviceSteps deviceSteps;
 
