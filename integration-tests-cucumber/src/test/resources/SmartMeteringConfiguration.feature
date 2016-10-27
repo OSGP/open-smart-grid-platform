@@ -64,28 +64,30 @@ Feature: Smartmetering Configuration
     When the get firmware version request is received
     Then the firmware version result should be returned
 
+  
   Scenario: successful upgrade of firmware
-    Given a request for a firmware upgrade for device E0030003000000115 from a client
+    Given a request for a firmware upgrade for device TEST1024000000001 from a client
     And the installation file of version KFPP_V060100FF is available
     When the request for a firmware upgrade is received
     Then firmware should be updated
-    And the database should be updated so it indicates that device E0030003000000115 is using firmware version KFPP_V060100FF
+    And the database should be updated so it indicates that device TEST1024000000001 is using firmware version KFPP_V060100FF
 
+  @testnow
   Scenario: upgrade of firmware, installation file not available
-    Given a request for a firmware upgrade for device E0030003000000115 from a client
-    And the installation file of version KFPP_V060100FF is not available
+    Given a request for a firmware upgrade for device TEST1024000000001 from a client
+    And the installation file of version KFPP_V060100FA is not available
     When the request for a firmware upgrade is received
     Then the message "Installation file is not available" should be given
 
   Scenario: upgrade of firmware, corrupt installation file
-    Given a request for a firmware upgrade for device E0030003000000115 from a client
+    Given a request for a firmware upgrade for device TEST1024000000001 from a client
     And the installation file of version KFPP_V060100FC is available
     And the installation file is corrupt
     When the request for a firmware upgrade is received
     Then the message "Upgrade of firmware did not succeed" should be given
 
   Scenario: unsuccessful upgrade of firmware
-    Given a request for a firmware upgrade for device E0030003000000116 from a client
+    Given a request for a firmware upgrade for device TEST1024000000001 from a client
     And the installation file of version KFPP_V060100FF is available
     When the request for a firmware upgrade is received
     And the upgrade of firmware did not succeed
