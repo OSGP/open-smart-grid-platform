@@ -52,7 +52,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
         handlers.put("WAGO61850ServerENGINE1/LLN0$Status", new Iec61850EngineReportHandler(1));
         handlers.put("WAGO61850ServerENGINE2/LLN0$Status", new Iec61850EngineReportHandler(2));
         handlers.put("WAGO61850ServerENGINE3/LLN0$Status", new Iec61850EngineReportHandler(3));
-        handlers.put("WAGO61850ServerLOAD1/LLN0$Status", new Iec61850EngineReportHandler(1));
+        handlers.put("WAGO61850ServerLOAD1/LLN0$Status", new Iec61850LoadReportHandler(1));
 
         handlers.put("WAGO61850ServerPV1/LLN0$Measurements", new Iec61850PvReportHandler(1));
         handlers.put("WAGO61850ServerPV2/LLN0$Measurements", new Iec61850PvReportHandler(2));
@@ -76,24 +76,14 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
         final DateTime timeOfEntry = report.getTimeOfEntry() == null ? null
                 : new DateTime(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET);
 
-        final String reportDescription = String.format("device: %s, reportId: %s, timeOfEntry: %s, sqNum: %s%s%s",
-                this.deviceIdentification, report.getRptId(), timeOfEntry == null ? "-" : timeOfEntry,
-                report.getSqNum(), report.getSubSqNum() == null ? "" : " subSqNum: " + report.getSubSqNum(),
-                report.isMoreSegmentsFollow() ? " (more segments follow for this sqNum)" : "");
+        final String reportDescription = this.getReportDescription(report, timeOfEntry);
 
         this.logger.info("newReport for {}", reportDescription);
-        boolean skipRecordBecauseOfOldSqNum = false;
 
         if (report.isBufOvfl()) {
             this.logger.warn("Buffer Overflow reported for {} - entries within the buffer may have been lost.",
                     reportDescription);
-        } else if (this.firstNewSqNum != null && report.getSqNum() != null) {
-            if (report.getSqNum() < this.firstNewSqNum) {
-                skipRecordBecauseOfOldSqNum = true;
-            }
-        }
-
-        if (skipRecordBecauseOfOldSqNum) {
+        } else if (this.skipRecordBecauseOfOldSqNum(report)) {
             this.logger.warn("Skipping report because SqNum: {} is less than what should be the first new value: {}",
                     report.getSqNum(), this.firstNewSqNum);
             return;
@@ -111,6 +101,17 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
         } catch (final ProtocolAdapterException e) {
             this.logger.warn("Unable to process report, discarding report", e);
         }
+    }
+
+    private String getReportDescription(final Report report, final DateTime timeOfEntry) {
+        return String.format("device: %s, reportId: %s, timeOfEntry: %s, sqNum: %s%s%s", this.deviceIdentification,
+                report.getRptId(), timeOfEntry == null ? "-" : timeOfEntry, report.getSqNum(),
+                report.getSubSqNum() == null ? "" : " subSqNum: " + report.getSubSqNum(),
+                report.isMoreSegmentsFollow() ? " (more segments follow for this sqNum)" : "");
+    }
+
+    private boolean skipRecordBecauseOfOldSqNum(final Report report) {
+        return this.firstNewSqNum != null && report.getSqNum() != null && report.getSqNum() < this.firstNewSqNum;
     }
 
     private void processDataSet(final DataSet dataSet, final String reportDescription,
