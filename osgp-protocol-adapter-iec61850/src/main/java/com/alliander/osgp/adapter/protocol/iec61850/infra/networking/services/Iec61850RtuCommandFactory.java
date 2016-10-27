@@ -16,9 +16,13 @@ import org.slf4j.LoggerFactory;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuCommandFactory;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850AlarmCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850AlarmOtherCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850BehaviourCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850HealthCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850ModeCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850WarningCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850WarningOtherCommand;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementFilterDto;
 
 public class Iec61850RtuCommandFactory implements RtuCommandFactory {
@@ -33,6 +37,16 @@ public class Iec61850RtuCommandFactory implements RtuCommandFactory {
         this.rtuCommandMap.put(DataAttribute.BEHAVIOR, new Iec61850BehaviourCommand());
         this.rtuCommandMap.put(DataAttribute.HEALTH, new Iec61850HealthCommand());
         this.rtuCommandMap.put(DataAttribute.MODE, new Iec61850ModeCommand());
+        this.rtuCommandMap.put(DataAttribute.ALARM_ONE, new Iec61850AlarmCommand(1));
+        this.rtuCommandMap.put(DataAttribute.ALARM_TWO, new Iec61850AlarmCommand(2));
+        this.rtuCommandMap.put(DataAttribute.ALARM_THREE, new Iec61850AlarmCommand(3));
+        this.rtuCommandMap.put(DataAttribute.ALARM_FOUR, new Iec61850AlarmCommand(4));
+        this.rtuCommandMap.put(DataAttribute.ALARM_OTHER, new Iec61850AlarmOtherCommand());
+        this.rtuCommandMap.put(DataAttribute.WARNING_ONE, new Iec61850WarningCommand(1));
+        this.rtuCommandMap.put(DataAttribute.WARNING_TWO, new Iec61850WarningCommand(2));
+        this.rtuCommandMap.put(DataAttribute.WARNING_THREE, new Iec61850WarningCommand(3));
+        this.rtuCommandMap.put(DataAttribute.WARNING_FOUR, new Iec61850WarningCommand(4));
+        this.rtuCommandMap.put(DataAttribute.WARNING_OTHER, new Iec61850WarningOtherCommand());
     }
 
     public static Iec61850RtuCommandFactory getInstance() {
