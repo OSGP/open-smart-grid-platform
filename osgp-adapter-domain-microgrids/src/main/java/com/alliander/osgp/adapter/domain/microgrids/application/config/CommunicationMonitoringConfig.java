@@ -41,13 +41,15 @@ public class CommunicationMonitoringConfig {
     private static final String PROPERTY_NAME_SCHEDULER_POOL_SIZE = "communication.monitoring.scheduler.pool.size";
     private static final String PROPERTY_NAME_SCHEDULER_THREAD_NAME_PREFIX = "communication.monitoring.scheduler.thread.name.prefix";
     private static final String PROPERTY_NAME_MAXIMUM_TIME_WITHOUT_COMMUNICATION = "communication.monitoring.maximum.time.without.communication";
+    private static final String PROPERTY_NAME_LAST_COMMUNICATION_UPDATE_INTERVAL = "communication.monitoring.last.communication.update.interval";
 
     private static final Boolean DEFAULT_COMMUNICATION_MONITORING_ENABLED = true;
     private static final Integer DEFAULT_MINIMUM_TIME_BETWEEN_RUNS = 2;
     private static final String DEFAULT_CRON_EXPRESSION = "0 */5 * * * *";
     private static final Integer DEFAULT_POOL_SIZE = 1;
     private static final String DEFAULT_THREAD_NAME_PREFIX = "microgrids-communication-monitoring-";
-    private static final Integer DEFAULT_MAXIMUM_TIME_WITHOUT_COMMUNICATION = 15;
+    private static final Integer DEFAULT_MAXIMUM_TIME_WITHOUT_COMMUNICATION = 15; // minutes
+    private static final Integer DEFAULT_LAST_COMMUNICATION_UPDATE_INTERVAL = 30; // seconds
 
     @Resource
     private Environment environment;
@@ -85,10 +87,10 @@ public class CommunicationMonitoringConfig {
         LOGGER.info("Initializing Minimum Time Between Runs bean.");
         final String value = this.environment.getProperty(PROPERTY_NAME_MINIMUM_TIME_BETWEEN_RUNS);
         if (StringUtils.isNotBlank(value) && StringUtils.isNumeric(value)) {
-            LOGGER.debug("Using value {} for minimum time between runs.", value);
+            LOGGER.info("Using value {} for minimum time between runs.", value);
             return Integer.parseInt(value);
         } else {
-            LOGGER.debug("Using default value {} for minimum time between runs.", DEFAULT_MINIMUM_TIME_BETWEEN_RUNS);
+            LOGGER.info("Using default value {} for minimum time between runs.", DEFAULT_MINIMUM_TIME_BETWEEN_RUNS);
             return DEFAULT_MINIMUM_TIME_BETWEEN_RUNS;
         }
     }
@@ -98,12 +100,26 @@ public class CommunicationMonitoringConfig {
         LOGGER.info("Initializing Maximum Time Without Communication bean.");
         final String value = this.environment.getProperty(PROPERTY_NAME_MAXIMUM_TIME_WITHOUT_COMMUNICATION);
         if (StringUtils.isNotBlank(value) && StringUtils.isNumeric(value)) {
-            LOGGER.debug("Using value {} for maximum time without communication.", value);
+            LOGGER.info("Using value {} for maximum time without communication.", value);
             return Integer.parseInt(value);
         } else {
-            LOGGER.debug("Using default value {} for maximum time without communication.",
+            LOGGER.info("Using default value {} for maximum time without communication.",
                     DEFAULT_MAXIMUM_TIME_WITHOUT_COMMUNICATION);
             return DEFAULT_MAXIMUM_TIME_WITHOUT_COMMUNICATION;
+        }
+    }
+
+    @Bean
+    public Integer lastCommunicationUpdateInterval() {
+        LOGGER.info("Initializing Last Communication Update Interval bean.");
+        final String value = this.environment.getProperty(PROPERTY_NAME_LAST_COMMUNICATION_UPDATE_INTERVAL);
+        if (StringUtils.isNotBlank(value) && StringUtils.isNumeric(value)) {
+            LOGGER.info("Using value {} for last communication update interval.", value);
+            return Integer.parseInt(value);
+        } else {
+            LOGGER.info("Using default value {} for last communication update interval.",
+                    DEFAULT_LAST_COMMUNICATION_UPDATE_INTERVAL);
+            return DEFAULT_LAST_COMMUNICATION_UPDATE_INTERVAL;
         }
     }
 
