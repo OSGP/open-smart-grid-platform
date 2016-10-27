@@ -165,7 +165,47 @@ public enum DataAttribute {
      * Property of LLN0 Node, ReportMeasurements01, contains the reporting
      * information.
      */
-    REPORT_MEASUREMENTS_ONE("ReportMeasurements01");
+    REPORT_MEASUREMENTS_ONE("ReportMeasurements01"),
+    /**
+     * Alarm 1
+     */
+    ALARM_ONE("Alm1"),
+    /**
+     * Alarm 2
+     */
+    ALARM_TWO("Alm2"),
+    /**
+     * Alarm 3
+     */
+    ALARM_THREE("Alm3"),
+    /**
+     * Alarm 4
+     */
+    ALARM_FOUR("Alm4"),
+    /**
+     * Other Alarms
+     */
+    ALARM_OTHER("IntIn1"),
+    /**
+     * Warning 1
+     */
+    WARNING_ONE("Wrn1"),
+    /**
+     * Warning 2
+     */
+    WARNING_TWO("Wrn2"),
+    /**
+     * Warning 3
+     */
+    WARNING_THREE("Wrn3"),
+    /**
+     * Warning 4
+     */
+    WARNING_FOUR("Wrn4"),
+    /**
+     * Other warnings
+     */
+    WARNING_OTHER("IntIn2");
 
     private String description;
 
