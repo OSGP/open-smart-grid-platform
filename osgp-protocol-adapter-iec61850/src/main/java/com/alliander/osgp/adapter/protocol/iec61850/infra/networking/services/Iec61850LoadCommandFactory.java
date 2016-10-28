@@ -16,6 +16,8 @@ import org.slf4j.LoggerFactory;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuCommandFactory;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850AlarmCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850AlarmOtherCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850BehaviourCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850HealthCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850LoadActualPowerCommand;
@@ -23,6 +25,8 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.co
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850LoadMinimumActualPowerCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850LoadTotalEnergyCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850ModeCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850WarningCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850WarningOtherCommand;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementFilterDto;
 
 public class Iec61850LoadCommandFactory implements RtuCommandFactory {
@@ -52,6 +56,17 @@ public class Iec61850LoadCommandFactory implements RtuCommandFactory {
             this.rtuCommandMap.put(DataAttribute.TOTAL_ENERGY.getDescription() + i,
                     new Iec61850LoadTotalEnergyCommand(i));
         }
+
+        this.rtuCommandMap.put(DataAttribute.ALARM_ONE.getDescription(), new Iec61850AlarmCommand(1));
+        this.rtuCommandMap.put(DataAttribute.ALARM_TWO.getDescription(), new Iec61850AlarmCommand(2));
+        this.rtuCommandMap.put(DataAttribute.ALARM_THREE.getDescription(), new Iec61850AlarmCommand(3));
+        this.rtuCommandMap.put(DataAttribute.ALARM_FOUR.getDescription(), new Iec61850AlarmCommand(4));
+        this.rtuCommandMap.put(DataAttribute.ALARM_OTHER.getDescription(), new Iec61850AlarmOtherCommand());
+        this.rtuCommandMap.put(DataAttribute.WARNING_ONE.getDescription(), new Iec61850WarningCommand(1));
+        this.rtuCommandMap.put(DataAttribute.WARNING_TWO.getDescription(), new Iec61850WarningCommand(2));
+        this.rtuCommandMap.put(DataAttribute.WARNING_THREE.getDescription(), new Iec61850WarningCommand(3));
+        this.rtuCommandMap.put(DataAttribute.WARNING_FOUR.getDescription(), new Iec61850WarningCommand(4));
+        this.rtuCommandMap.put(DataAttribute.WARNING_OTHER.getDescription(), new Iec61850WarningOtherCommand());
     }
 
     public static Iec61850LoadCommandFactory getInstance() {
@@ -82,6 +97,7 @@ public class Iec61850LoadCommandFactory implements RtuCommandFactory {
     }
 
     private boolean useFilterId(final DataAttribute da) {
-        return da != DataAttribute.BEHAVIOR && da != DataAttribute.HEALTH && da != DataAttribute.MODE;
+        return da == DataAttribute.ACTUAL_POWER || da == DataAttribute.MAX_ACTUAL_POWER
+                || da == DataAttribute.MIN_ACTUAL_POWER || da == DataAttribute.TOTAL_ENERGY;
     }
 }

@@ -217,6 +217,19 @@ public enum SubDataAttribute {
      */
     URL("url"),
     /**
+     * Attribute of Property TLSCf, used to read or set the port number used for
+     * TLS.
+     */
+    TLS_PORT_NUMBER("port"),
+    /**
+     * Attribute of Property TLSCf, used to enable or disable TLS.
+     */
+    TLS_ENABLED("enbTls"),
+    /**
+     * Attribute of Property TLSCf, used to read the value of the common name.
+     */
+    TLS_COMMON_NAME("comName"),
+    /**
      * End of summer time.
      */
     WINTER_TIME_DETAILS("dstEndT"),
