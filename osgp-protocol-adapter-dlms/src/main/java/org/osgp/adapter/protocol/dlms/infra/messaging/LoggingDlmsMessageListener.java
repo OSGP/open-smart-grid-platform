@@ -40,7 +40,11 @@ public class LoggingDlmsMessageListener implements DlmsMessageListener {
 
         final boolean incoming = MessageSource.SERVER == rawMessageData.getMessageSource();
         final byte[] encodedMessage = rawMessageData.getMessage();
-        final String decodedMessage = rawMessageData.getApdu().toString().trim();
+
+        String decodedMessage = "";
+        if (rawMessageData.getApdu() != null) {
+            decodedMessage = rawMessageData.getApdu().toString().trim();
+        }
 
         this.logMessage(incoming, encodedMessage, decodedMessage, sequenceNumber);
     }
