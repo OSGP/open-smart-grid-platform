@@ -1,17 +1,17 @@
 [submodule "Shared"]
 	path = Shared
 	url = https://github.com/OSGP/Shared.git
-	branch = development
+	branch = OP-384_Decrease_the_number_of_property_files
 [submodule "Protocol-Adapter-OSLP"]
 	path = Protocol-Adapter-OSLP
 	url = https://github.com/OSGP/Protocol-Adapter-OSLP.git
-	branch = development
+	branch = OP-384_Decrease_the_number_of_property_files
 [submodule "Platform"]
 	path = Platform
 	url = https://github.com/OSGP/Platform.git
-	branch = development 
+	branch = OP-384_Decrease_the_number_of_property_files 
 [submodule "Protocol-Adapter-DLMS"]
 	path = Protocol-Adapter-DLMS
 	url = https://github.com/OSGP/Protocol-Adapter-DLMS.git
-	branch = development
+	branch = OP-384_Decrease_the_number_of_property_files
 
