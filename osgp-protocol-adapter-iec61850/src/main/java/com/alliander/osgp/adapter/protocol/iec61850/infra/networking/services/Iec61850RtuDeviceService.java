@@ -71,9 +71,9 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
             final ClientAssociation clientAssociation = this.iec61850DeviceConnectionService
                     .getClientAssociation(deviceRequest.getDeviceIdentification());
 
-            final DataResponseDto getDataResponse = this.getData(new DeviceConnection(
-                    new Iec61850Connection(new Iec61850ClientAssociation(clientAssociation, null), serverModel),
-                    deviceRequest.getDeviceIdentification(), IED.ZOWN_RTU), deviceRequest);
+            final DataResponseDto getDataResponse = this.getData(
+                    new DeviceConnection(new Iec61850Connection(new Iec61850ClientAssociation(clientAssociation, null),
+                            serverModel), deviceRequest.getDeviceIdentification(), IED.ZOWN_RTU), deviceRequest);
 
             final GetDataDeviceResponse deviceResponse = new GetDataDeviceResponse(
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
@@ -107,11 +107,9 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
             final ClientAssociation clientAssociation = this.iec61850DeviceConnectionService
                     .getClientAssociation(deviceRequest.getDeviceIdentification());
 
-            this.setSetPoints(
-                    new DeviceConnection(
-                            new Iec61850Connection(new Iec61850ClientAssociation(clientAssociation, null), serverModel),
-                            deviceRequest.getDeviceIdentification(), IED.ZOWN_RTU),
-                    serverModel, clientAssociation, deviceRequest);
+            this.setSetPoints(new DeviceConnection(new Iec61850Connection(new Iec61850ClientAssociation(
+                    clientAssociation, null), serverModel), deviceRequest.getDeviceIdentification(), IED.ZOWN_RTU),
+                            serverModel, clientAssociation, deviceRequest);
 
             final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
@@ -139,7 +137,7 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
 
     private void setSetPoints(final DeviceConnection connection, final ServerModel serverModel,
             final ClientAssociation clientAssociation, final SetSetPointsDeviceRequest deviceRequest)
-            throws ProtocolAdapterException {
+                    throws ProtocolAdapterException {
 
         final SetPointsRequestDto setPointsRequest = deviceRequest.getSetPointsRequest();
 
@@ -158,7 +156,7 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
             }
         };
 
-        this.iec61850Client.sendCommandWithRetry(function);
+        this.iec61850Client.sendCommandWithRetry(function, deviceRequest.getDeviceIdentification());
     }
 
     // ======================================
@@ -211,7 +209,7 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
             }
         };
 
-        return this.iec61850Client.sendCommandWithRetry(function);
+        return this.iec61850Client.sendCommandWithRetry(function, deviceRequest.getDeviceIdentification());
     }
 
     // ===========================

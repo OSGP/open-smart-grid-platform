@@ -11,13 +11,14 @@ import java.io.Serializable;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
-import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
+import javax.jms.Session;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jms.listener.SessionAwareMessageListener;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -31,7 +32,7 @@ import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 @Component(value = "iec61850RequestsMessageListener")
-public class DeviceRequestMessageListener implements MessageListener {
+public class DeviceRequestMessageListener implements SessionAwareMessageListener<Message> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceRequestMessageListener.class);
 
@@ -42,8 +43,15 @@ public class DeviceRequestMessageListener implements MessageListener {
     @Autowired
     private DeviceResponseMessageSender deviceResponseMessageSender;
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.springframework.jms.listener.SessionAwareMessageListener#onMessage
+     * (javax.jms.Message, javax.jms.Session)
+     */
     @Override
-    public void onMessage(final Message message) {
+    public void onMessage(final Message message, final Session session) throws JMSException {
         final ObjectMessage objectMessage = (ObjectMessage) message;
         String messageType = null;
 
@@ -53,9 +61,6 @@ public class DeviceRequestMessageListener implements MessageListener {
             final MessageProcessor processor = this.iec61850RequestMessageProcessorMap
                     .getMessageProcessor(objectMessage);
             processor.processMessage(objectMessage);
-        } catch (final JMSException ex) {
-            LOGGER.error("Unexpected JMSException during onMessage(Message)", ex);
-            this.sendException(objectMessage, ex, "JMSException while processing message");
         } catch (final IllegalArgumentException e) {
             LOGGER.error("Unexpected IllegalArgumentException during onMessage(Message)", e);
             this.sendException(objectMessage, new NotSupportedException(ComponentType.PROTOCOL_IEC61850, messageType),

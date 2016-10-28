@@ -8,7 +8,6 @@
 package com.alliander.osgp.adapter.protocol.iec61850.application.config;
 
 import javax.annotation.Resource;
-import javax.jms.MessageListener;
 
 import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.broker.region.policy.RedeliveryPolicyMap;
@@ -26,6 +25,7 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageListener;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceResponseMessageSender;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.Iec61850LogItemRequestMessageSender;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.OsgpRequestMessageSender;
@@ -124,7 +124,7 @@ public class MessagingConfig {
 
     @Autowired
     @Qualifier("iec61850RequestsMessageListener")
-    private MessageListener iec61850RequestsMessageListener;
+    private DeviceRequestMessageListener iec61850RequestsMessageListener;
 
     // === JMS SETTINGS ===
 
@@ -174,7 +174,6 @@ public class MessagingConfig {
                 .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_BACK_OFF_MULTIPLIER)));
         redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(this.environment
                 .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_USE_EXPONENTIAL_BACK_OFF)));
-
         return redeliveryPolicy;
     }
 
@@ -183,6 +182,12 @@ public class MessagingConfig {
     @Bean
     public ActiveMQDestination iec61850RequestsQueue() {
         return new ActiveMQQueue(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_IEC61850_REQUESTS_QUEUE));
+    }
+
+    @Bean
+    public int maxRedeliveriesForIec61850Requests() {
+        return Integer.parseInt(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_IEC61850_REQUESTS_MAXIMUM_REDELIVERIES));
     }
 
     @Bean

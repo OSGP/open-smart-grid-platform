@@ -18,9 +18,9 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.requests.GetPowerUsageHistoryDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.GetPowerUsageHistoryDeviceResponse;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.SsldDeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceResponseMessageSender;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.SsldDeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
 import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryMessageDataContainerDto;
 import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryResponseMessageDataContainerDto;
@@ -49,7 +49,7 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends S
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) {
+    public void processMessage(final ObjectMessage message) throws JMSException {
         LOGGER.debug("Processing public lighting get power usage history request message");
 
         String correlationUid = null;
@@ -124,6 +124,18 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends S
                             requestMessageData.getDomainVersion(), requestMessageData.getMessageType(),
                             requestMessageData.isScheduled(), requestMessageData.getRetryCount());
                 }
+            }
+
+            @Override
+            public void handleConnectionFailure(final Throwable t, final DeviceResponse deviceResponse)
+                    throws JMSException {
+                final int jmsxDeliveryCount = PublicLightingGetPowerUsageHistoryRequestMessageProcessor.this
+                        .getJmsXdeliveryCount(message);
+                PublicLightingGetPowerUsageHistoryRequestMessageProcessor.this.checkForRedelivery(
+                        new ConnectionFailureException(ComponentType.PROTOCOL_IEC61850, t.getMessage()),
+                        requestMessageData.getCorrelationUid(), requestMessageData.getOrganisationIdentification(),
+                        requestMessageData.getDeviceIdentification(), requestMessageData.getDomain(),
+                        requestMessageData.getDomainVersion(), requestMessageData.getMessageType(), jmsxDeliveryCount);
             }
         };
 

@@ -17,8 +17,8 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.SsldDeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.SsldDeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.ConnectionFailureException;
@@ -105,6 +105,18 @@ public class CommonStopDeviceTestRequestMessageProcessor extends SsldDeviceReque
                             requestMessageData.getDomainVersion(), requestMessageData.getMessageType(),
                             requestMessageData.isScheduled(), requestMessageData.getRetryCount());
                 }
+            }
+
+            @Override
+            public void handleConnectionFailure(final Throwable t, final DeviceResponse deviceResponse)
+                    throws JMSException {
+                final int jmsxDeliveryCount = CommonStopDeviceTestRequestMessageProcessor.this
+                        .getJmsXdeliveryCount(message);
+                CommonStopDeviceTestRequestMessageProcessor.this.checkForRedelivery(new ConnectionFailureException(
+                        ComponentType.PROTOCOL_IEC61850, t.getMessage()), requestMessageData.getCorrelationUid(),
+                        requestMessageData.getOrganisationIdentification(), requestMessageData
+                                .getDeviceIdentification(), requestMessageData.getDomain(), requestMessageData
+                                .getDomainVersion(), requestMessageData.getMessageType(), jmsxDeliveryCount);
             }
         };
 

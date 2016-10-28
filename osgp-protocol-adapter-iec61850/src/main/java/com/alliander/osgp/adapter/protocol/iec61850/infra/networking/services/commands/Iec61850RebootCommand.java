@@ -55,6 +55,6 @@ public class Iec61850RebootCommand {
             }
         };
 
-        iec61850Client.sendCommandWithRetry(function);
+        iec61850Client.sendCommandWithRetry(function, deviceConnection.getDeviceIdentification());
     }
 }

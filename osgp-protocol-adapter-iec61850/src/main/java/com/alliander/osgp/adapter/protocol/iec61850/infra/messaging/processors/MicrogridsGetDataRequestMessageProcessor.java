@@ -47,8 +47,8 @@ public class MicrogridsGetDataRequestMessageProcessor extends RtuDeviceRequestMe
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) {
-        LOGGER.info("Processing microgrids get data request message");
+    public void processMessage(final ObjectMessage message) throws JMSException {
+        LOGGER.debug("Processing microgrids get data request message");
 
         String correlationUid = null;
         String domain = null;
@@ -70,9 +70,9 @@ public class MicrogridsGetDataRequestMessageProcessor extends RtuDeviceRequestMe
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
             ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
             retryCount = message.getIntProperty(Constants.RETRY_COUNT);
-            isScheduled = message.propertyExists(Constants.IS_SCHEDULED)
-                    ? message.getBooleanProperty(Constants.IS_SCHEDULED) : false;
-            getDataRequest = (DataRequestDto) message.getObject();
+            isScheduled = message.propertyExists(Constants.IS_SCHEDULED) ? message
+                    .getBooleanProperty(Constants.IS_SCHEDULED) : false;
+                    getDataRequest = (DataRequestDto) message.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -101,14 +101,13 @@ public class MicrogridsGetDataRequestMessageProcessor extends RtuDeviceRequestMe
             }
 
             @Override
-            public void handleException(final Throwable t, final DeviceResponse deviceResponse,
-                    final boolean expected) {
+            public void handleException(final Throwable t, final DeviceResponse deviceResponse, final boolean expected) {
                 if (expected) {
-                    MicrogridsGetDataRequestMessageProcessor.this.handleExpectedError(
-                            new ConnectionFailureException(ComponentType.PROTOCOL_IEC61850, t.getMessage()),
-                            requestMessageData.getCorrelationUid(), requestMessageData.getOrganisationIdentification(),
-                            requestMessageData.getDeviceIdentification(), requestMessageData.getDomain(),
-                            requestMessageData.getDomainVersion(), requestMessageData.getMessageType());
+                    MicrogridsGetDataRequestMessageProcessor.this.handleExpectedError(new ConnectionFailureException(
+                            ComponentType.PROTOCOL_IEC61850, t.getMessage()), requestMessageData.getCorrelationUid(),
+                            requestMessageData.getOrganisationIdentification(), requestMessageData
+                                    .getDeviceIdentification(), requestMessageData.getDomain(), requestMessageData
+                                    .getDomainVersion(), requestMessageData.getMessageType());
                 } else {
                     MicrogridsGetDataRequestMessageProcessor.this.handleUnExpectedError(deviceResponse, t,
                             requestMessageData.getMessageData(), requestMessageData.getDomain(),
@@ -117,6 +116,17 @@ public class MicrogridsGetDataRequestMessageProcessor extends RtuDeviceRequestMe
                 }
             }
 
+            @Override
+            public void handleConnectionFailure(final Throwable t, final DeviceResponse deviceResponse)
+                    throws JMSException {
+                final int jmsxDeliveryCount = MicrogridsGetDataRequestMessageProcessor.this
+                        .getJmsXdeliveryCount(message);
+                MicrogridsGetDataRequestMessageProcessor.this.checkForRedelivery(new ConnectionFailureException(
+                        ComponentType.PROTOCOL_IEC61850, t.getMessage()), requestMessageData.getCorrelationUid(),
+                        requestMessageData.getOrganisationIdentification(), requestMessageData
+                                .getDeviceIdentification(), requestMessageData.getDomain(), requestMessageData
+                                .getDomainVersion(), requestMessageData.getMessageType(), jmsxDeliveryCount);
+            }
         };
 
         final GetDataDeviceRequest deviceRequest = new GetDataDeviceRequest(organisationIdentification,
@@ -151,5 +161,4 @@ public class MicrogridsGetDataRequestMessageProcessor extends RtuDeviceRequestMe
 
         responseMessageSender.send(responseMessage);
     }
-
 }

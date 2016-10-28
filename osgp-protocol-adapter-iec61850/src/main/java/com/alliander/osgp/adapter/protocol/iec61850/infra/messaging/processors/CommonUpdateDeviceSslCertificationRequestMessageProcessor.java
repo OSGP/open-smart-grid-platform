@@ -17,8 +17,8 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.requests.UpdateDeviceSslCertificationDeviceRequest;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.SsldDeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.SsldDeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
 import com.alliander.osgp.dto.valueobjects.CertificationDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -41,7 +41,7 @@ public class CommonUpdateDeviceSslCertificationRequestMessageProcessor extends S
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) {
+    public void processMessage(final ObjectMessage message) throws JMSException {
         LOGGER.debug("Processing common update device ssl certification message");
 
         String correlationUid = null;
@@ -109,6 +109,18 @@ public class CommonUpdateDeviceSslCertificationRequestMessageProcessor extends S
                             requestMessageData.getDomainVersion(), requestMessageData.getMessageType(),
                             requestMessageData.isScheduled(), requestMessageData.getRetryCount());
                 }
+            }
+
+            @Override
+            public void handleConnectionFailure(final Throwable t, final DeviceResponse deviceResponse)
+                    throws JMSException {
+                final int jmsxDeliveryCount = CommonUpdateDeviceSslCertificationRequestMessageProcessor.this
+                        .getJmsXdeliveryCount(message);
+                CommonUpdateDeviceSslCertificationRequestMessageProcessor.this.checkForRedelivery(
+                        new ConnectionFailureException(ComponentType.PROTOCOL_IEC61850, t.getMessage()),
+                        requestMessageData.getCorrelationUid(), requestMessageData.getOrganisationIdentification(),
+                        requestMessageData.getDeviceIdentification(), requestMessageData.getDomain(),
+                        requestMessageData.getDomainVersion(), requestMessageData.getMessageType(), jmsxDeliveryCount);
             }
         };
 

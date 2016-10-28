@@ -49,7 +49,7 @@ public class Iec61850GetConfigurationCommand {
 
     public ConfigurationDto getConfigurationFromDevice(final Iec61850Client iec61850Client,
             final DeviceConnection deviceConnection, final Ssld ssld, final Iec61850Mapper mapper)
-            throws ProtocolAdapterException {
+                    throws ProtocolAdapterException {
         final Function<ConfigurationDto> function = new Function<ConfigurationDto>() {
 
             @Override
@@ -163,7 +163,7 @@ public class Iec61850GetConfigurationCommand {
             }
         };
 
-        return iec61850Client.sendCommandWithRetry(function);
+        return iec61850Client.sendCommandWithRetry(function, deviceConnection.getDeviceIdentification());
     }
 
     private void checkRelayType(final Iec61850Client iec61850Client, final DeviceConnection deviceConnection,

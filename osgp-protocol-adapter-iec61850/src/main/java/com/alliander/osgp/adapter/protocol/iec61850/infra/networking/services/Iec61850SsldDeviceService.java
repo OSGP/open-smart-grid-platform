@@ -12,7 +12,8 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.openmuc.openiec61850.ServerModel;
+import javax.jms.JMSException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,8 +41,6 @@ import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.EventTyp
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ConnectionFailureException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850ClientAssociation;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Connection;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.IED;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalDevice;
@@ -91,7 +90,7 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
     @Autowired
     private Iec61850Mapper mapper;
 
-    // Timeout between the SetLight and getStatus during the device self-test
+    // Timeout between the setLight and getStatus during the device self-test
     @Autowired
     private int selftestTimeout;
 
@@ -99,9 +98,11 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
     private int disconnectDelay;
 
     @Override
-    public void getStatus(final DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler) {
+    public void getStatus(final DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler)
+            throws JMSException {
+        DeviceConnection deviceConnection = null;
         try {
-            final DeviceConnection deviceConnection = this.connectToDevice(deviceRequest);
+            deviceConnection = this.connectToDevice(deviceRequest);
 
             // Getting the SSLD for the device output-settings.
             final Ssld ssld = this.ssldDataService.findDevice(deviceRequest.getDeviceIdentification());
@@ -119,14 +120,15 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
         } catch (final Exception e) {
             this.handleException(deviceRequest, deviceResponseHandler, e);
         }
-        this.iec61850DeviceConnectionService.disconnect(deviceRequest.getDeviceIdentification());
+        this.iec61850DeviceConnectionService.disconnect(deviceConnection, deviceRequest);
     }
 
     @Override
     public void getPowerUsageHistory(final GetPowerUsageHistoryDeviceRequest deviceRequest,
-            final DeviceResponseHandler deviceResponseHandler) {
+            final DeviceResponseHandler deviceResponseHandler) throws JMSException {
+        DeviceConnection deviceConnection = null;
         try {
-            final DeviceConnection deviceConnection = this.connectToDevice(deviceRequest);
+            deviceConnection = this.connectToDevice(deviceRequest);
 
             // Getting the SSLD for the device output-settings.
             final Ssld ssld = this.ssldDataService.findDevice(deviceRequest.getDeviceIdentification());
@@ -148,68 +150,122 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
         } catch (final Exception e) {
             this.handleException(deviceRequest, deviceResponseHandler, e);
         }
-        this.iec61850DeviceConnectionService.disconnect(deviceRequest.getDeviceIdentification());
+        this.iec61850DeviceConnectionService.disconnect(deviceConnection, deviceRequest);
     }
 
     @Override
-    public void setLight(final SetLightDeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler) {
+    public void setLight(final SetLightDeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler)
+            throws JMSException {
+        DeviceConnection deviceConnection = null;
         try {
-            final DeviceConnection deviceConnection = this.connectToDevice(deviceRequest);
+            deviceConnection = this.connectToDevice(deviceRequest);
 
             // Getting the SSLD for the device output-settings.
             final Ssld ssld = this.ssldDataService.findDevice(deviceRequest.getDeviceIdentification());
+            final List<DeviceOutputSetting> deviceOutputSettings = this.ssldDataService.findByRelayType(ssld,
+                    RelayType.LIGHT);
+            final List<LightValueDto> lightValues = deviceRequest.getLightValuesContainer().getLightValues();
+            List<LightValueDto> relaysWithInternalIdToSwitch;
+
+            // Check if external index 0 is used.
+            final LightValueDto index0LightValue = this.checkForIndex0(lightValues);
+            if (index0LightValue != null) {
+                // If external index 0 is used, create a list of all light
+                // relays according to the device output settings.
+                relaysWithInternalIdToSwitch = this.createListOfInternalIndicesToSwitch(deviceOutputSettings,
+                        index0LightValue.isOn());
+            } else {
+                // Else, create a list of internal indices based on the given
+                // external indices in the light values list.
+                relaysWithInternalIdToSwitch = this.createListOfInternalIndicesToSwitch(deviceOutputSettings,
+                        lightValues);
+            }
+
+            // Switch light relays based on internal indices.
             final Iec61850SetLightCommand iec61850SetLightCommand = new Iec61850SetLightCommand();
-
-            for (final LightValueDto lightValue : deviceRequest.getLightValuesContainer().getLightValues()) {
-                // for index 0, only devices LIGHT RelayTypes have to be
-                // switched
-                boolean switchAllLightRelays = false;
-                if (lightValue == null) {
-                    switchAllLightRelays = true;
-                } else if (lightValue.getIndex() == null) {
-                    switchAllLightRelays = true;
-                } else if (lightValue.getIndex() == 0) {
-                    switchAllLightRelays = true;
-                }
-
-                LOGGER.info("switchAllLightRelays: {}", switchAllLightRelays);
-
-                if (switchAllLightRelays) {
-                    for (final DeviceOutputSetting deviceOutputSetting : this.ssldDataService.findByRelayType(ssld,
-                            RelayType.LIGHT)) {
-                        iec61850SetLightCommand.switchLightRelay(this.iec61850Client, deviceConnection,
-                                deviceOutputSetting.getInternalId(), lightValue.isOn());
-                    }
-                } else {
-
-                    final DeviceOutputSetting deviceOutputSetting = this.ssldDataService
-                            .getDeviceOutputSettingForExternalIndex(ssld, lightValue.getIndex());
-
-                    if (deviceOutputSetting != null) {
-
-                        // You can only switch LIGHT relays that are used
-                        this.checkRelay(deviceOutputSetting.getRelayType(), RelayType.LIGHT,
-                                deviceOutputSetting.getInternalId());
-
-                        iec61850SetLightCommand.switchLightRelay(this.iec61850Client, deviceConnection,
-                                deviceOutputSetting.getInternalId(), lightValue.isOn());
-                    }
+            for (final LightValueDto relayWithInternalIdToSwitch : relaysWithInternalIdToSwitch) {
+                LOGGER.info("Trying to switch light relay with internal index: {} for device: {}",
+                        relayWithInternalIdToSwitch.getIndex(), deviceRequest.getDeviceIdentification());
+                if (!iec61850SetLightCommand.switchLightRelay(this.iec61850Client, deviceConnection,
+                        relayWithInternalIdToSwitch.getIndex(), relayWithInternalIdToSwitch.isOn())) {
+                    throw new ProtocolAdapterException(String.format(
+                            "Failed to switch light relay with internal index: %d for device: %s",
+                            relayWithInternalIdToSwitch.getIndex(), deviceRequest.getDeviceIdentification()));
                 }
             }
+
             this.createSuccessfulDefaultResponse(deviceRequest, deviceResponseHandler);
         } catch (final ConnectionFailureException se) {
             this.handleConnectionFailureException(deviceRequest, deviceResponseHandler, se);
         } catch (final Exception e) {
             this.handleException(deviceRequest, deviceResponseHandler, e);
         }
-        this.iec61850DeviceConnectionService.disconnect(deviceRequest.getDeviceIdentification());
+        this.iec61850DeviceConnectionService.disconnect(deviceConnection, deviceRequest);
+    }
+
+    private LightValueDto checkForIndex0(final List<LightValueDto> lightValues) {
+        for (final LightValueDto lightValue : lightValues) {
+            if (lightValue == null) {
+                break;
+            }
+            if (lightValue.getIndex() == null) {
+                return lightValue;
+            }
+            if (lightValue.getIndex() == 0) {
+                return lightValue;
+            }
+        }
+        return null;
+    }
+
+    private List<LightValueDto> createListOfInternalIndicesToSwitch(
+            final List<DeviceOutputSetting> deviceOutputSettings, final boolean on) {
+        LOGGER.info("creating list of internal indices using device output settings");
+        final List<LightValueDto> relaysWithInternalIdToSwitch = new ArrayList<>();
+        for (final DeviceOutputSetting deviceOutputSetting : deviceOutputSettings) {
+            if (RelayType.LIGHT.equals(deviceOutputSetting.getRelayType())) {
+                final LightValueDto relayWithInternalIdToSwitch = new LightValueDto(
+                        deviceOutputSetting.getInternalId(), on, null);
+                relaysWithInternalIdToSwitch.add(relayWithInternalIdToSwitch);
+            }
+        }
+        return relaysWithInternalIdToSwitch;
+    }
+
+    private List<LightValueDto> createListOfInternalIndicesToSwitch(
+            final List<DeviceOutputSetting> deviceOutputSettings, final List<LightValueDto> lightValues)
+            throws FunctionalException {
+        LOGGER.info("creating list of internal indices using device output settings and external indices from light values");
+        final List<LightValueDto> relaysWithInternalIdToSwitch = new ArrayList<>();
+        for (final LightValueDto lightValue : lightValues) {
+            if (lightValue == null) {
+                break;
+            }
+            DeviceOutputSetting deviceOutputSettingForExternalId = null;
+            for (final DeviceOutputSetting deviceOutputSetting : deviceOutputSettings) {
+                if (deviceOutputSetting.getExternalId() == lightValue.getIndex()) {
+                    // You can only switch LIGHT relays that are used.
+                    this.checkRelay(deviceOutputSetting.getRelayType(), RelayType.LIGHT,
+                            deviceOutputSetting.getInternalId());
+                    deviceOutputSettingForExternalId = deviceOutputSetting;
+                }
+            }
+            if (deviceOutputSettingForExternalId == null) {
+                break;
+            }
+            final LightValueDto relayWithInternalIdToSwitch = new LightValueDto(
+                    deviceOutputSettingForExternalId.getInternalId(), lightValue.isOn(), lightValue.getDimValue());
+            relaysWithInternalIdToSwitch.add(relayWithInternalIdToSwitch);
+        }
+        return relaysWithInternalIdToSwitch;
     }
 
     @Override
     public void setConfiguration(final SetConfigurationDeviceRequest deviceRequest,
-            final DeviceResponseHandler deviceResponseHandler) {
+            final DeviceResponseHandler deviceResponseHandler) throws JMSException {
+        DeviceConnection deviceConnection = null;
         try {
-            final DeviceConnection deviceConnection = this.connectToDevice(deviceRequest);
+            deviceConnection = this.connectToDevice(deviceRequest);
             final ConfigurationDto configuration = deviceRequest.getConfiguration();
 
             // Ignoring required, unused fields DALI-configuration, meterType,
@@ -224,13 +280,15 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
         } catch (final Exception e) {
             this.handleException(deviceRequest, deviceResponseHandler, e);
         }
-        this.iec61850DeviceConnectionService.disconnect(deviceRequest.getDeviceIdentification());
+        this.iec61850DeviceConnectionService.disconnect(deviceConnection, deviceRequest);
     }
 
     @Override
-    public void getConfiguration(final DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler) {
+    public void getConfiguration(final DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler)
+            throws JMSException {
+        DeviceConnection deviceConnection = null;
         try {
-            final DeviceConnection deviceConnection = this.connectToDevice(deviceRequest);
+            deviceConnection = this.connectToDevice(deviceRequest);
 
             // Getting the SSLD for the device output-settings.
             final Ssld ssld = this.ssldDataService.findDevice(deviceRequest.getDeviceIdentification());
@@ -249,13 +307,15 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
         } catch (final Exception e) {
             this.handleException(deviceRequest, deviceResponseHandler, e);
         }
-        this.iec61850DeviceConnectionService.disconnect(deviceRequest.getDeviceIdentification());
+        this.iec61850DeviceConnectionService.disconnect(deviceConnection, deviceRequest);
     }
 
     @Override
-    public void setReboot(final DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler) {
+    public void setReboot(final DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler)
+            throws JMSException {
+        DeviceConnection deviceConnection = null;
         try {
-            final DeviceConnection deviceConnection = this.connectToDevice(deviceRequest);
+            deviceConnection = this.connectToDevice(deviceRequest);
 
             new Iec61850RebootCommand().rebootDevice(this.iec61850Client, deviceConnection);
 
@@ -265,17 +325,18 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
         } catch (final Exception e) {
             this.handleException(deviceRequest, deviceResponseHandler, e);
         }
-        this.iec61850DeviceConnectionService.disconnect(deviceRequest.getDeviceIdentification());
+        this.iec61850DeviceConnectionService.disconnect(deviceConnection, deviceRequest);
     }
 
     @Override
     public void runSelfTest(final DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler,
-            final boolean startOfTest) {
+            final boolean startOfTest) throws JMSException {
         // Assuming all goes well.
         final DeviceMessageStatus status = DeviceMessageStatus.OK;
+        DeviceConnection deviceConnection = null;
 
         try {
-            final DeviceConnection deviceConnection = this.connectToDevice(deviceRequest);
+            deviceConnection = this.connectToDevice(deviceRequest);
 
             // Getting the SSLD for the device output-settings.
             final Ssld ssld = this.ssldDataService.findDevice(deviceRequest.getDeviceIdentification());
@@ -292,23 +353,23 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
             for (final DeviceOutputSetting deviceOutputSetting : this.ssldDataService.findByRelayType(ssld,
                     RelayType.LIGHT)) {
                 lightRelays.add(deviceOutputSetting.getExternalId());
-                iec61850SetLightCommand.switchLightRelay(this.iec61850Client, deviceConnection,
-                        deviceOutputSetting.getInternalId(), startOfTest);
+                if (!iec61850SetLightCommand.switchLightRelay(this.iec61850Client, deviceConnection,
+                        deviceOutputSetting.getInternalId(), startOfTest)) {
+                    throw new ProtocolAdapterException(String.format(
+                            "Failed to switch light relay during self-test with internal index: %d for device: %s",
+                            deviceOutputSetting.getInternalId(), deviceRequest.getDeviceIdentification()));
+                }
             }
 
             // Sleep and wait.
             try {
-                LOGGER.info("Waiting {} seconds before getting the device status", this.selftestTimeout / 1000);
+                LOGGER.info("Waiting {} milliseconds before getting the device status", this.selftestTimeout);
                 Thread.sleep(this.selftestTimeout);
             } catch (final InterruptedException e) {
                 LOGGER.error("An error occured during the device selftest timeout.", e);
                 throw new TechnicalException(ComponentType.PROTOCOL_IEC61850,
                         "An error occured during the device selftest timeout.");
             }
-
-            // Reconnecting to the device.
-            this.iec61850DeviceConnectionService.connect(deviceRequest.getIpAddress(),
-                    deviceRequest.getDeviceIdentification(), IED.FLEX_OVL, LogicalDevice.LIGHTING);
 
             // Getting the status.
             final DeviceStatusDto deviceStatus = new Iec61850GetStatusCommand().getStatusFromDevice(
@@ -333,14 +394,15 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
         } catch (final Exception e) {
             this.handleException(deviceRequest, deviceResponseHandler, e);
         }
-        this.iec61850DeviceConnectionService.disconnect(deviceRequest.getDeviceIdentification());
+        this.iec61850DeviceConnectionService.disconnect(deviceConnection, deviceRequest);
     }
 
     @Override
     public void setSchedule(final SetScheduleDeviceRequest deviceRequest,
-            final DeviceResponseHandler deviceResponseHandler) {
+            final DeviceResponseHandler deviceResponseHandler) throws JMSException {
+        DeviceConnection deviceConnection = null;
         try {
-            final DeviceConnection deviceConnection = this.connectToDevice(deviceRequest);
+            deviceConnection = this.connectToDevice(deviceRequest);
 
             // Getting the SSLD for the device output-settings.
             final Ssld ssld = this.ssldDataService.findDevice(deviceRequest.getDeviceIdentification());
@@ -357,13 +419,15 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
         } catch (final Exception e) {
             this.handleException(deviceRequest, deviceResponseHandler, e);
         }
-        this.iec61850DeviceConnectionService.disconnect(deviceRequest.getDeviceIdentification());
+        this.iec61850DeviceConnectionService.disconnect(deviceConnection, deviceRequest);
     }
 
     @Override
-    public void getFirmwareVersion(final DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler) {
+    public void getFirmwareVersion(final DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler)
+            throws JMSException {
+        DeviceConnection deviceConnection = null;
         try {
-            final DeviceConnection deviceConnection = this.connectToDevice(deviceRequest);
+            deviceConnection = this.connectToDevice(deviceRequest);
 
             final List<FirmwareVersionDto> firmwareVersions = new Iec61850GetFirmwareVersionCommand()
             .getFirmwareVersionFromDevice(this.iec61850Client, deviceConnection);
@@ -378,12 +442,12 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
         } catch (final Exception e) {
             this.handleException(deviceRequest, deviceResponseHandler, e);
         }
-        this.iec61850DeviceConnectionService.disconnect(deviceRequest.getDeviceIdentification());
+        this.iec61850DeviceConnectionService.disconnect(deviceConnection, deviceRequest);
     }
 
     @Override
     public void setTransition(final SetTransitionDeviceRequest deviceRequest,
-            final DeviceResponseHandler deviceResponseHandler) {
+            final DeviceResponseHandler deviceResponseHandler) throws JMSException {
         try {
             final DeviceConnection deviceConnection = this.connectToDevice(deviceRequest);
 
@@ -405,22 +469,25 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
                     } catch (final ProtocolAdapterException e) {
                         LOGGER.error("Unable to clear report for device: " + deviceRequest.getDeviceIdentification(), e);
                     }
-                    Iec61850SsldDeviceService.this.iec61850DeviceConnectionService.disconnect(deviceRequest
-                            .getDeviceIdentification());
+                    Iec61850SsldDeviceService.this.iec61850DeviceConnectionService.disconnect(deviceConnection,
+                            deviceRequest);
                 }
             }, this.disconnectDelay);
         } catch (final ConnectionFailureException se) {
             this.handleConnectionFailureException(deviceRequest, deviceResponseHandler, se);
+            this.iec61850DeviceConnectionService.disconnect(deviceRequest.getDeviceIdentification());
         } catch (final Exception e) {
             this.handleException(deviceRequest, deviceResponseHandler, e);
+            this.iec61850DeviceConnectionService.disconnect(deviceRequest.getDeviceIdentification());
         }
     }
 
     @Override
     public void updateFirmware(final UpdateFirmwareDeviceRequest deviceRequest,
-            final DeviceResponseHandler deviceResponseHandler) {
+            final DeviceResponseHandler deviceResponseHandler) throws JMSException {
+        DeviceConnection deviceConnection = null;
         try {
-            final DeviceConnection deviceConnection = this.connectToDevice(deviceRequest);
+            deviceConnection = this.connectToDevice(deviceRequest);
 
             new Iec61850UpdateFirmwareCommand().pushFirmwareToDevice(this.iec61850Client, deviceConnection,
                     deviceRequest.getFirmwareDomain().concat(deviceRequest.getFirmwareUrl()));
@@ -431,14 +498,15 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
         } catch (final Exception e) {
             this.handleException(deviceRequest, deviceResponseHandler, e);
         }
-        this.iec61850DeviceConnectionService.disconnect(deviceRequest.getDeviceIdentification());
+        this.iec61850DeviceConnectionService.disconnect(deviceConnection, deviceRequest);
     }
 
     @Override
     public void updateDeviceSslCertification(final UpdateDeviceSslCertificationDeviceRequest deviceRequest,
-            final DeviceResponseHandler deviceResponseHandler) {
+            final DeviceResponseHandler deviceResponseHandler) throws JMSException {
+        DeviceConnection deviceConnection = null;
         try {
-            final DeviceConnection deviceConnection = this.connectToDevice(deviceRequest);
+            deviceConnection = this.connectToDevice(deviceRequest);
 
             new Iec61850UpdateSslCertificateCommand().pushSslCertificateToDevice(this.iec61850Client, deviceConnection,
                     deviceRequest.getCertification());
@@ -449,20 +517,19 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
         } catch (final Exception e) {
             this.handleException(deviceRequest, deviceResponseHandler, e);
         }
-        this.iec61850DeviceConnectionService.disconnect(deviceRequest.getDeviceIdentification());
+        this.iec61850DeviceConnectionService.disconnect(deviceConnection, deviceRequest);
     }
 
     @Override
     public void setEventNotifications(final SetEventNotificationsDeviceRequest deviceRequest,
-            final DeviceResponseHandler deviceResponseHandler) {
-        LOGGER.info("Called setEventNotifications, doing nothing for now and returning OK");
-
+            final DeviceResponseHandler deviceResponseHandler) throws JMSException {
         final List<EventNotificationTypeDto> eventNotifications = deviceRequest.getEventNotificationsContainer()
                 .getEventNotifications();
         final String filter = EventType.getEventTypeFilterMaskForNotificationTypes(eventNotifications);
 
+        DeviceConnection deviceConnection = null;
         try {
-            final DeviceConnection deviceConnection = this.connectToDevice(deviceRequest);
+            deviceConnection = this.connectToDevice(deviceRequest);
 
             new Iec61850SetEventNotificationFilterCommand().setEventNotificationFilterOnDevice(this.iec61850Client,
                     deviceConnection, filter);
@@ -473,7 +540,7 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
         } catch (final Exception e) {
             this.handleException(deviceRequest, deviceResponseHandler, e);
         }
-        this.iec61850DeviceConnectionService.disconnect(deviceRequest.getDeviceIdentification());
+        this.iec61850DeviceConnectionService.disconnect(deviceConnection, deviceRequest);
     }
 
     // ======================================
@@ -481,14 +548,8 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
     // ======================================
 
     private DeviceConnection connectToDevice(final DeviceRequest deviceRequest) throws ConnectionFailureException {
-        this.iec61850DeviceConnectionService.connect(deviceRequest.getIpAddress(),
+        return this.iec61850DeviceConnectionService.connectWithoutConnectionCashing(deviceRequest.getIpAddress(),
                 deviceRequest.getDeviceIdentification(), IED.FLEX_OVL, LogicalDevice.LIGHTING);
-        final ServerModel serverModel = this.iec61850DeviceConnectionService.getServerModel(deviceRequest
-                .getDeviceIdentification());
-        final Iec61850ClientAssociation iec61850ClientAssociation = this.iec61850DeviceConnectionService
-                .getIec61850ClientAssociation(deviceRequest.getDeviceIdentification());
-        return new DeviceConnection(new Iec61850Connection(iec61850ClientAssociation, serverModel),
-                deviceRequest.getDeviceIdentification(), IED.FLEX_OVL);
     }
 
     // ========================
@@ -514,11 +575,12 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
 
     private void handleConnectionFailureException(final DeviceRequest deviceRequest,
             final DeviceResponseHandler deviceResponseHandler,
-            final ConnectionFailureException connectionFailureException) {
-        LOGGER.error("Could not connect to device after all retries", connectionFailureException);
+            final ConnectionFailureException connectionFailureException) throws JMSException {
+        LOGGER.error("Could not connect to device", connectionFailureException);
         final EmptyDeviceResponse deviceResponse = this.createDefaultResponse(deviceRequest,
                 DeviceMessageStatus.FAILURE);
-        deviceResponseHandler.handleException(connectionFailureException, deviceResponse, true);
+        deviceResponseHandler.handleConnectionFailure(new Exception(connectionFailureException.getCause()),
+                deviceResponse);
     }
 
     private void handleProtocolAdapterException(final SetScheduleDeviceRequest deviceRequest,

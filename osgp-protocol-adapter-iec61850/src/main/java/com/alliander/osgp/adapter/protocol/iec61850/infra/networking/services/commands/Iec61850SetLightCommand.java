@@ -26,54 +26,58 @@ public class Iec61850SetLightCommand {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850SetLightCommand.class);
 
-    public void switchLightRelay(final Iec61850Client iec61850Client, final DeviceConnection deviceConnection,
+    public Boolean switchLightRelay(final Iec61850Client iec61850Client, final DeviceConnection deviceConnection,
             final int index, final boolean on) throws ProtocolAdapterException {
         // Commands don't return anything, so returnType is Void.
-        final Function<Void> function = new Function<Void>() {
+        final Function<Boolean> function = new Function<Boolean>() {
 
             @Override
-            public Void apply() throws Exception {
+            public Boolean apply() throws Exception {
 
-                final LogicalNode logicalNode = LogicalNode.getSwitchComponentByIndex(index);
+                try {
+                    final LogicalNode logicalNode = LogicalNode.getSwitchComponentByIndex(index);
 
-                // Check if CfSt.enbOper [CF] is set to true. If it is not
-                // set to true, the relay can not be operated.
-                final NodeContainer masterControl = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
-                        logicalNode, DataAttribute.MASTER_CONTROL, Fc.CF);
-                iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
-                        masterControl.getFcmodelNode());
+                    // Check if CfSt.enbOper [CF] is set to true. If it is not
+                    // set to true, the relay can not be operated.
+                    final NodeContainer masterControl = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
+                            logicalNode, DataAttribute.MASTER_CONTROL, Fc.CF);
+                    iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
+                            masterControl.getFcmodelNode());
 
-                final BdaBoolean enbOper = masterControl.getBoolean(SubDataAttribute.ENABLE_OPERATION);
-                if (enbOper.getValue()) {
-                    LOGGER.info("masterControl.enbOper is true, switching of relay is enabled");
-                } else {
-                    LOGGER.info("masterControl.enbOper is false, switching of relay is disabled");
-                    // Set the value to true.
-                    enbOper.setValue(true);
-                    masterControl.write();
+                    final BdaBoolean enbOper = masterControl.getBoolean(SubDataAttribute.ENABLE_OPERATION);
+                    if (enbOper.getValue()) {
+                        LOGGER.info("masterControl.enbOper is true, switching of relay is enabled");
+                    } else {
+                        LOGGER.info("masterControl.enbOper is false, switching of relay is disabled");
+                        // Set the value to true.
+                        enbOper.setValue(true);
+                        masterControl.write();
 
-                    LOGGER.info("set masterControl.enbOper to true to enable switching");
+                        LOGGER.info("set masterControl.enbOper to true to enable switching");
+                    }
+
+                    // Switch the relay using Pos.Oper.ctlVal [CO].
+                    final NodeContainer position = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING, logicalNode,
+                            DataAttribute.POSITION, Fc.CO);
+                    iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
+                            position.getFcmodelNode());
+
+                    final NodeContainer operation = position.getChild(SubDataAttribute.OPERATION);
+
+                    final BdaBoolean controlValue = operation.getBoolean(SubDataAttribute.CONTROL_VALUE);
+
+                    LOGGER.info(String.format("Switching relay %d %s", index, on ? "on" : "off"));
+                    controlValue.setValue(on);
+                    operation.write();
+
+                    return true;
+                } catch (final Exception e) {
+                    LOGGER.error("Exception during switchLightRelay()", e);
+                    return false;
                 }
-
-                // Switch the relay using Pos.Oper.ctlVal [CO].
-                final NodeContainer position = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING, logicalNode,
-                        DataAttribute.POSITION, Fc.CO);
-                iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
-                        position.getFcmodelNode());
-
-                final NodeContainer operation = position.getChild(SubDataAttribute.OPERATION);
-
-                final BdaBoolean controlValue = operation.getBoolean(SubDataAttribute.CONTROL_VALUE);
-
-                LOGGER.info(String.format("Switching relay %d %s", index, on ? "on" : "off"));
-                controlValue.setValue(on);
-                operation.write();
-
-                // return null == Void
-                return null;
             }
         };
 
-        iec61850Client.sendCommandWithRetry(function);
+        return iec61850Client.sendCommandWithRetry(function, deviceConnection.getDeviceIdentification());
     }
 }

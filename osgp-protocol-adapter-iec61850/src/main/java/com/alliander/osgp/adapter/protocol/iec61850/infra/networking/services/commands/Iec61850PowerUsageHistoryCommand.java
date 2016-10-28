@@ -66,7 +66,7 @@ public class Iec61850PowerUsageHistoryCommand {
                  * element for the device, where data for the different relays
                  * is combined in the SsldData.relayData some sort of merge
                  * needs to be performed.
-                 *
+                 * 
                  * This can either be a rework of the list currently returned,
                  * or it can be a list constructed based on an altered return
                  * type from getPowerUsageHistoryDataFromRelay (for instance a
@@ -77,7 +77,7 @@ public class Iec61850PowerUsageHistoryCommand {
             }
         };
 
-        return iec61850Client.sendCommandWithRetry(function);
+        return iec61850Client.sendCommandWithRetry(function, deviceConnection.getDeviceIdentification());
     }
 
     private List<PowerUsageDataDto> getPowerUsageHistoryDataFromRelay(final Iec61850Client iec61850Client,

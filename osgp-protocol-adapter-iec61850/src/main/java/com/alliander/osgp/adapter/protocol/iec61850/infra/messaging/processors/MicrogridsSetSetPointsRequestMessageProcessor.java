@@ -40,8 +40,8 @@ public class MicrogridsSetSetPointsRequestMessageProcessor extends RtuDeviceRequ
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) {
-        LOGGER.info("Processing microgrids get data request message");
+    public void processMessage(final ObjectMessage message) throws JMSException {
+        LOGGER.debug("Processing microgrids get data request message");
 
         String correlationUid = null;
         String domain = null;
@@ -63,9 +63,9 @@ public class MicrogridsSetSetPointsRequestMessageProcessor extends RtuDeviceRequ
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
             ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
             retryCount = message.getIntProperty(Constants.RETRY_COUNT);
-            isScheduled = message.propertyExists(Constants.IS_SCHEDULED)
-                    ? message.getBooleanProperty(Constants.IS_SCHEDULED) : false;
-            setSetPointsRequest = (SetPointsRequestDto) message.getObject();
+            isScheduled = message.propertyExists(Constants.IS_SCHEDULED) ? message
+                    .getBooleanProperty(Constants.IS_SCHEDULED) : false;
+                    setSetPointsRequest = (SetPointsRequestDto) message.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -94,8 +94,7 @@ public class MicrogridsSetSetPointsRequestMessageProcessor extends RtuDeviceRequ
             }
 
             @Override
-            public void handleException(final Throwable t, final DeviceResponse deviceResponse,
-                    final boolean expected) {
+            public void handleException(final Throwable t, final DeviceResponse deviceResponse, final boolean expected) {
                 if (expected) {
                     MicrogridsSetSetPointsRequestMessageProcessor.this.handleExpectedError(
                             new ConnectionFailureException(ComponentType.PROTOCOL_IEC61850, t.getMessage()),
@@ -110,6 +109,17 @@ public class MicrogridsSetSetPointsRequestMessageProcessor extends RtuDeviceRequ
                 }
             }
 
+            @Override
+            public void handleConnectionFailure(final Throwable t, final DeviceResponse deviceResponse)
+                    throws JMSException {
+                final int jmsxDeliveryCount = MicrogridsSetSetPointsRequestMessageProcessor.this
+                        .getJmsXdeliveryCount(message);
+                MicrogridsSetSetPointsRequestMessageProcessor.this.checkForRedelivery(new ConnectionFailureException(
+                        ComponentType.PROTOCOL_IEC61850, t.getMessage()), requestMessageData.getCorrelationUid(),
+                        requestMessageData.getOrganisationIdentification(), requestMessageData
+                        .getDeviceIdentification(), requestMessageData.getDomain(), requestMessageData
+                        .getDomainVersion(), requestMessageData.getMessageType(), jmsxDeliveryCount);
+            }
         };
 
         final SetSetPointsDeviceRequest deviceRequest = new SetSetPointsDeviceRequest(organisationIdentification,
