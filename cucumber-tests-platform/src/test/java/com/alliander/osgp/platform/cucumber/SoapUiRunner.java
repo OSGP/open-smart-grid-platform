@@ -19,10 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 
+import com.alliander.osgp.platform.cucumber.support.ApplicationConfig;
 import com.alliander.osgp.platform.cucumber.support.RunXpathResult;
 import com.alliander.osgp.platform.cucumber.support.TestCaseResult;
 import com.alliander.osgp.platform.cucumber.support.TestCaseRunner;
@@ -38,15 +36,11 @@ import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
  * Super class for SOAP UI runner implementations. Each Runner will be called
  * from a subclass.
  */
-@Configuration
-@PropertySources({ @PropertySource("classpath:cucumber-platform.properties"),
-    	@PropertySource(value = "file:/etc/osp/cucumber-platform.properties", ignoreResourceNotFound = true) 
-})
 public abstract class SoapUiRunner {
 
-    /**
-     * The url of the server to test. Default to localhost:443.
-     */
+    @Autowired
+    protected ApplicationConfig applicationConfig;
+
     @Value("${serviceEndpoint}")
     private String serviceEndpoint;
 
@@ -67,7 +61,7 @@ public abstract class SoapUiRunner {
     public    static final String CORRELATION_UID_LABEL = "CorrelationUid";
     protected static final String DEVICE_TYPE_LABEL = "DeviceType";
 
-    protected static final String PATH_DEVICE_IDENTIFICATION = "//*[local-name()='DeviceId']/text()";
+    protected static final String PATH_DEVICE_IDENTIFICATION = "//*[local-name()='DeviceIdentification']/text()";
     protected static final String PATH_CORRELATION_UID = "//*[local-name()='CorrelationUid']/text()";
     protected static final String PATH_RESULT = "//*[local-name()='Result']/text()";
 
@@ -90,7 +84,7 @@ public abstract class SoapUiRunner {
 
     /**
      * Create the WSDL project based on the given SoapUI project.
-     * 
+     *
      * @throws Throwable.
      */
     @PostConstruct
@@ -170,20 +164,20 @@ public abstract class SoapUiRunner {
         final boolean flag2 = xml.indexOf(testCaseXml) > 0;
         final boolean flag3 = xml.indexOf(testSuiteXml) > 0;
         if (!flag1 || !flag2 || !flag3) {
-            this.LOGGER.error(String.format(ERRMSG, xml, testSuiteXml, testCaseXml, testCaseNameRequest));
+        //    this.LOGGER.error(String.format(ERRMSG, xml, testSuiteXml, testCaseXml, testCaseNameRequest));
         }
     }
 
     /**
-     * Wait for a response. 
-     * @note In order to get the actual response from the device of the original request to the platform, 
-     * we need to poll for it. Newer devices use notification services though, and thus they don't need 
+     * Wait for a response.
+     * @note In order to get the actual response from the device of the original request to the platform,
+     * we need to poll for it. Newer devices use notification services though, and thus they don't need
      * to poll for it using this method.
      * @param propertiesMap
      * @param testCaseResultName
      * @param testCaseResultReqXML
      * @param testSuiteXML
-     * @throws Throwable 
+     * @throws Throwable
      */
     public void waitForResponse(final TestStepStatus testStepStatus, final Map<String, String> propertiesMap, final String testCaseResultNameRequest,
                 final String testCaseResultReqXml, final String testSuiteXml) throws Throwable {
@@ -193,13 +187,13 @@ public abstract class SoapUiRunner {
             if (count > 120) {
                 Assert.fail("Failed to retieve a response");
             }
-    
+
             // Wait for next try to retrieve a response
             count++;
             Thread.sleep(1000);
-    
+
             this.requestRunner(testStepStatus, propertiesMap, testCaseResultNameRequest,
                     testCaseResultReqXml, testSuiteXml);
-        } while (!this.runXpathResult.assertXpath(this.response, PATH_RESULT, "OK")); 
+        } while (!this.runXpathResult.assertXpath(this.response, PATH_RESULT, "OK"));
     }
 }

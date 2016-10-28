@@ -36,7 +36,7 @@ public class FindCommunicationEventsReads extends AbstractFindEventsReads {
 
     @Then("^communication events should be returned$")
     @Override
-    public void eventsShouldBeReturned() throws Throwable {
+    public void eventsShouldBeReturned(final Map<String, String> settings) throws Throwable {
     }
 
     @Override

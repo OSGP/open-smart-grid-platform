@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
+import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.cucumber.steps.ws.publiclighting.PublicLightingStepsBase;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
@@ -36,7 +37,7 @@ public class SetLightSteps extends PublicLightingStepsBase {
     private static final String TEST_CASE_RESULT_NAME_REQUEST = "GetSetLightResponse - Request 1";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetLightSteps.class);
-    
+
     private static final String ON_LABEL = "On";
     private static final String DEFAULT_ON = "true";
 
@@ -67,15 +68,15 @@ public class SetLightSteps extends PublicLightingStepsBase {
     public void thenTheSetLightResponseContains(final Map<String, String> expectedResponseData)
             throws Throwable {
         this.runXpathResult.assertXpath(this.response, PATH_DEVICE_IDENTIFICATION,
-                getString(expectedResponseData, "DeviceIdentification", Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+                getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
         this.runXpathResult.assertNotNull(this.response, PATH_CORRELATION_UID);
 
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.
         saveCorrelationUidInScenarioContext(this.runXpathResult.getValue(this.response, PATH_CORRELATION_UID),
-                getString(expectedResponseData, "OrganizationIdentification",
+                getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
                         Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
-        
+
         LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get("CorrelationUid") + "]");
     }
 

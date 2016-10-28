@@ -11,12 +11,12 @@ import cucumber.api.junit.Cucumber;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(
-		features = "src/test/resources/features", 
-		tags = { }, 
-		plugin = { 
+		features = "src/test/resources/features",
+		tags = { "@TEST" },
+		plugin = {
 				"pretty",
-				"html:target/output/Cucumber-report", 
-				"html:target/output/Cucumber-html-report.html" }, 
+				"html:target/output/Cucumber-report",
+				"html:target/output/Cucumber-html-report.html" },
 		snippets = SnippetType.CAMELCASE)
 public class AcceptanceTests {
 

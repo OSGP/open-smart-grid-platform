@@ -11,10 +11,10 @@ package com.alliander.osgp.platform.cucumber.steps;
  * Defaults within the database.
  */
 public class Defaults {
-	
+
 	// Labels
 	public static final String DEVICE_IDENTIFICATION_LABEL = "DeviceIdentification";
-	
+
 	// Values
 	public static final String DEFAULT_ORGANIZATION_DESCRIPTION = "Test Organization";
 	public static final String DEFAULT_ORGANIZATION_IDENTIFICATION = "test-org";
@@ -29,4 +29,14 @@ public class Defaults {
 
     // Expected values
     public static final String EXPECTED_RESULT_OK = "OK";
+
+    public static final String DEFAULT_PERIOD_TYPE = "INTERVAL";
+
+    public static final String DEFAULT_BEGIN_DATE = "";
+
+    public static final String DEFAULT_END_DATE = "";
+
+    public static final String DEFAULT_DEVICE_TYPE = "SMART_METER_E";
+
+    public static final Boolean DEFAULT_INDEBUGMODE = false;
 }

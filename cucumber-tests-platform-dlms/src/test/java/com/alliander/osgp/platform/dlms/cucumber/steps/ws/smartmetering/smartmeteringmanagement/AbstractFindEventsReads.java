@@ -3,6 +3,8 @@
  */
 package com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.smartmeteringmanagement;
 
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +13,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.junit.Assert;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
@@ -21,6 +22,8 @@ import org.xml.sax.SAXException;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.EventType;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
+import com.alliander.osgp.platform.cucumber.steps.Defaults;
+import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.SmartMeteringStepsBase;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
@@ -37,16 +40,18 @@ public abstract class AbstractFindEventsReads extends SmartMeteringStepsBase {
     protected abstract String getEventLogCategory();
 
     public void receivingAFindStandardEventsRequest(final Map<String, String> requestData) throws Throwable {
-        PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_LABEL, requestData.get("DeviceIdentification"));
+        PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_LABEL, getString(requestData, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST + this.getEventLogCategory(),
                 TEST_CASE_XML, TEST_SUITE_XML);
     }
 
-    public void eventsShouldBeReturned() throws Throwable {
-        PROPERTIES_MAP.put(CORRELATION_UID_LABEL, ScenarioContext.Current().get("CorrelationUid").toString());
+    public void eventsShouldBeReturned(final Map<String, String> settings) throws Throwable {
+        PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_LABEL, getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+        PROPERTIES_MAP.put(CORRELATION_UID_LABEL, ScenarioContext.Current().get(CORRELATION_UID_LABEL).toString());
 
-        this.waitForResponse(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE + this.getEventLogCategory(), TEST_CASE_XML, TEST_SUITE_XML);
+        //this.waitForResponse(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE + this.getEventLogCategory(), TEST_CASE_XML, TEST_SUITE_XML);
+        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE + this.getEventLogCategory(), TEST_CASE_XML, TEST_SUITE_XML);
 
         this.checkResponse(this.getAllowedEventTypes());
     }

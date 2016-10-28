@@ -85,6 +85,28 @@ public class Helpers {
     }
 
     /**
+     * Get a long value for the key from the settings.
+     *
+     * @param settings
+     *            The settings to get the key from.
+     * @param key
+     *            The key
+     * @param defaultValue
+     *            The default value if the key wasn't found.
+     * @return The long
+     */
+    public static Short getShort(final Map<String, String> settings, final String key, final Short defaultValue) {
+
+        if (!settings.containsKey(key)) {
+            return defaultValue;
+        }
+
+        final Short value = Short.parseShort(settings.get(key));
+        return value;
+    }
+
+
+    /**
      * Get the boolean value of the given key in the settings. If it didn't exist return the defaultValue.
      * @param settings The settings to get the value from.
      * @param key The key to get the boolean from.
@@ -168,70 +190,70 @@ public class Helpers {
         if (organizationIdentification == null || organizationIdentification.isEmpty()) {
             organizationIdentification = Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION;
         }
-        
+
         // Validate the correlation-id starts with correct organization
         Assert.isTrue(correlationUid.startsWith(organizationIdentification));
         ScenarioContext.Current().put("CorrelationUid", correlationUid);
     }
 
     /**
-     * When running automatic tests, it might be that not each project is started in tomcat. When 
+     * When running automatic tests, it might be that not each project is started in tomcat. When
      * the repo's are cleared at the beginning of a test run, you get some exceptions when the database wasn't
-     * found. Therefore this method is created to ignore that. 
+     * found. Therefore this method is created to ignore that.
      * @param repo The repository to remove.
      */
     public static <T extends AbstractEntity> void cleanRepoAbstractEntity(final JpaRepository<T, Long> repo) {
         try {
-            repo.deleteAll();
+            repo.deleteAllInBatch();
         } catch (final Exception e) {
-
+            System.err.println(e);
         }
     }
 
     /**
-     * When running automatic tests, it might be that not each project is started in tomcat. When 
+     * When running automatic tests, it might be that not each project is started in tomcat. When
      * the repo's are cleared at the beginning of a test run, you get some exceptions when the database wasn't
-     * found. Therefore this method is created to ignore that. 
+     * found. Therefore this method is created to ignore that.
      * @param repo
      */
     public static <T extends Serializable> void cleanRepoSerializable(final JpaRepository<T, Long> repo) {
         try {
-            repo.deleteAll();
+            repo.deleteAllInBatch();
         } catch (final Exception e) {
-
+            System.err.println(e);
         }
     }
-    
+
     /**
      * This is a generic method which will translate the given string to a datetime.
      * Supported:
      *   now + 3 months
      *   tomorrow - 1 year
      *   yesterday + 2 weeks
-     *    
+     *
      * @param dateString
      * @return
      * @throws Exception
      */
 	public static DateTime getDateTime(final String dateString) throws Exception {
-		
+
 		DateTime retval;
-		
-		String pattern = "([a-z]*)[ ]*([+-]?)[ ]*([0-9]*)[ ]*([a-z]*)";
-		Pattern r = Pattern.compile(pattern);
-		Matcher m = r.matcher(dateString);
-		
+
+		final String pattern = "([a-z]*)[ ]*([+-]?)[ ]*([0-9]*)[ ]*([a-z]*)";
+		final Pattern r = Pattern.compile(pattern);
+		final Matcher m = r.matcher(dateString);
+
 		if (m.groupCount() != 4) {
 			throw new Exception("Incorrect dateString [" + dateString + "]");
 		}
-		
+
 		m.find();
-         
-		String when = m.group(1).toLowerCase();
-		String op = m.group(2);
-		Integer numberToAddOrSubstract = Integer.parseInt(m.group(3));
-		String what = m.group(4);
-		
+
+		final String when = m.group(1).toLowerCase();
+		final String op = m.group(2);
+		final Integer numberToAddOrSubstract = Integer.parseInt(m.group(3));
+		final String what = m.group(4);
+
 		switch (when) {
 		case "tomorrow":
 			retval = DateTime.now().plusDays(1);
@@ -279,7 +301,7 @@ public class Helpers {
 				retval = retval.minusYears(numberToAddOrSubstract);
 			}
 		}
-		
+
 		return retval;
 	}
 }

@@ -7,6 +7,9 @@
  */
 package com.alliander.osgp.platform.cucumber.steps.database;
 
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getEnum;
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -19,9 +22,8 @@ import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.valueobjects.PlatformDomain;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
+import com.alliander.osgp.platform.cucumber.steps.Keys;
 
-import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
-import static com.alliander.osgp.platform.cucumber.core.Helpers.getEnum;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
@@ -51,7 +53,7 @@ public class OrganizationSteps {
     @Given("^an organization$")
     public void anOrganization(Map<String, String> settings) throws Throwable {
     	Organisation entity = new Organisation(
-			getString(settings, "OrganizationIdentification", DEFAULT_ORGANIZATION), 
+			getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION, DEFAULT_ORGANIZATION), 
 			getString(settings, "Name", DEFAULT_NAME), 
 			getString(settings, "Prefix", DEFAULT_PREFIX), 
 			getEnum(settings, "PlatformFunctionGroup", PlatformFunctionGroup.class, DEFAULT_PLATFORM_FUNCTION_GROUP));
@@ -64,7 +66,7 @@ public class OrganizationSteps {
 
     	// Save the created id for the organization in the scenario context.
     	Organisation savedEntity = repo.findByName(getString(settings, "Name", DEFAULT_NAME));
-    	ScenarioContext.Current().put("OrganizationIdentification", savedEntity.getOrganisationIdentification());
+    	ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, savedEntity.getOrganisationIdentification());
     }
 
     /**
@@ -77,7 +79,7 @@ public class OrganizationSteps {
     public void thenTheEntityOrganizationExists(Map<String, String> expectedEntity) throws Throwable {
     	
     	// TODO: Wait until the stuff is created.
-        Organisation entity = repo.findByOrganisationIdentification(expectedEntity.get("OrganizationIdentification"));
+        Organisation entity = repo.findByOrganisationIdentification(expectedEntity.get(Keys.KEY_ORGANIZATION_IDENTIFICATION));
         
         Assert.assertEquals(expectedEntity.get("Name"), entity.getName());
         Assert.assertEquals(expectedEntity.get("Prefix"), entity.getPrefix());

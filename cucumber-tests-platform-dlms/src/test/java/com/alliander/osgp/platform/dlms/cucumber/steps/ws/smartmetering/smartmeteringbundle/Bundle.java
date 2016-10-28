@@ -3,18 +3,21 @@
  */
 package com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.smartmeteringbundle;
 
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.NodeList;
 
-import com.alliander.osgp.platform.cucumber.steps.Defaults;
-import com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.SmartMeteringStepsBase;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
+import com.alliander.osgp.platform.cucumber.steps.Defaults;
+import com.alliander.osgp.platform.cucumber.steps.Keys;
+import com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.SmartMeteringStepsBase;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
 import cucumber.api.java.en.And;
@@ -31,9 +34,9 @@ public class Bundle extends SmartMeteringStepsBase {
     private static final List<String> REQUEST_ACTIONS = new ArrayList<>();
 
     @When("^a bundled request message is received$")
-    public void aBundledRequestMessageIsReceived() throws Throwable {
-        PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_LABEL, ScenarioContext.Current().get("DeviceIdentification", Defaults.DEFAULT_DEVICE_IDENTIFICATION).toString());
-        PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, ScenarioContext.Current().get("OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION).toString());
+    public void aBundledRequestMessageIsReceived(final Map<String, String> settings) throws Throwable {
+        PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_LABEL, getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+        PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
 
@@ -58,7 +61,8 @@ public class Bundle extends SmartMeteringStepsBase {
     }
 
     @And("^the operations in the bundled request message will be executed from top to bottom$")
-    public void theRequestsInTheBundledRequestMessageWillBeExecutedFromTopToBottom() throws Throwable {
+    public void theRequestsInTheBundledRequestMessageWillBeExecutedFromTopToBottom(final Map<String, String> settings) throws Throwable {
+        PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_LABEL, getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
         PROPERTIES_MAP.put(CORRELATION_UID_LABEL, ScenarioContext.Current().get("CorrelationUid").toString());
         PROPERTIES_MAP.put(MAX_TIME, "180000");
 

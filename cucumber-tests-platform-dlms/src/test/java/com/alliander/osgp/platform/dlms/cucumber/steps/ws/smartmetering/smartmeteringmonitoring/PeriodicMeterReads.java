@@ -3,11 +3,15 @@
  */
 package com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.smartmeteringmonitoring;
 
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 import static org.junit.Assert.assertTrue;
 
-import com.alliander.osgp.platform.cucumber.steps.Defaults;
-import com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.SmartMeteringStepsBase;
+import java.util.Map;
+
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
+import com.alliander.osgp.platform.cucumber.steps.Defaults;
+import com.alliander.osgp.platform.cucumber.steps.Keys;
+import com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.SmartMeteringStepsBase;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
 import cucumber.api.java.en.Then;
@@ -31,16 +35,15 @@ public class PeriodicMeterReads extends SmartMeteringStepsBase {
     private static final String TEST_CASE_NAME_GETRESPONSE_REQUEST = "GetPeriodicMeterReadsResponse - Request 1";
 
     @When("^the get periodic meter reads request is received$")
-    public void theGetPeriodicMeterReadsRequestIsReceived() throws Throwable {
-
-        PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_LABEL, ScenarioContext.Current().get("DeviceIdentification", Defaults.DEFAULT_DEVICE_IDENTIFICATION).toString());
-        PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, ScenarioContext.Current().get("OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION).toString());
-
+    public void theGetPeriodicMeterReadsRequestIsReceived(final Map<String, String> settings) throws Throwable {
+        PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_LABEL, getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+        PROPERTIES_MAP.put(ORGANISATION_IDENTIFICATION_LABEL, getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }
 
     @Then("^the periodic meter reads result should be returned$")
-    public void thePeriodicMeterReadsResultShouldBeReturned() throws Throwable {
+    public void thePeriodicMeterReadsResultShouldBeReturned(final Map<String, String> settings) throws Throwable {
+        PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_LABEL, getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
         PROPERTIES_MAP.put(CORRELATION_UID_LABEL, ScenarioContext.Current().get("CorrelationUid").toString());
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_GETRESPONSE_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);

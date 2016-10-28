@@ -14,6 +14,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.junit.Assert;
+import org.springframework.stereotype.Component;
 import org.xml.sax.SAXException;
 
 import com.alliander.osgp.platform.cucumber.support.RunXpathResult;
@@ -21,17 +22,18 @@ import com.alliander.osgp.platform.cucumber.support.RunXpathResult;
 /**
  * Class with generic response steps
  */
+@Component
 public class ResponseSteps {
-    
+
     /**
 	 * Verify the response in case of an error.
 	 * @param expectedResult
-     * @throws IOException 
-     * @throws SAXException 
-     * @throws ParserConfigurationException 
-     * @throws XPathExpressionException 
+     * @throws IOException
+     * @throws SAXException
+     * @throws ParserConfigurationException
+     * @throws XPathExpressionException
 	 */
-	public static void VerifyFaultResponse(RunXpathResult runXpathResult, String response, Map<String, String> expectedResult) throws XPathExpressionException, ParserConfigurationException, SAXException, IOException {
+	public static void VerifyFaultResponse(final RunXpathResult runXpathResult, final String response, final Map<String, String> expectedResult) throws XPathExpressionException, ParserConfigurationException, SAXException, IOException {
 
 		// First check the common stuff.
 		if (expectedResult.containsKey("FaultCode")) {
@@ -40,11 +42,11 @@ public class ResponseSteps {
 		if (expectedResult.containsKey("FaultString")) {
 			Assert.assertTrue(runXpathResult.assertXpath(response, "/Envelope/Body/Fault/faultstring", expectedResult.get("FaultString")));
 		}
-		
+
 		// Now check the test case depended response types.
 		if (expectedResult.containsKey("FaultType")) {
 			if (expectedResult.get("FaultType").equals("ValidationError")) {
-				String[] validationErrors = expectedResult.get("ValidationErrors").split(";");
+				final String[] validationErrors = expectedResult.get("ValidationErrors").split(";");
 				// TODO: Validation exact number of validation errors to be the same.
 				//Assert.assertEquals(validationErrors.size(), runXpathResult.);
 				for (int i = 1; i <= validationErrors.length; i++) {

@@ -86,12 +86,5 @@
 			all tests are moved to the cucumber projects -->
 		<module>osgp-platform-test</module>
 
-		<!-- obsolete but yet in because the cucumber-tests-platform-dlms project 
-			is not yet working well -->
-		<!--
-			Cucumber integration tests fail because SOAP certificate is not
-			configured properly yet for the Jenkins build.
-		<module>integration-tests-cucumber</module>
-		-->
 	</modules>
 </project>

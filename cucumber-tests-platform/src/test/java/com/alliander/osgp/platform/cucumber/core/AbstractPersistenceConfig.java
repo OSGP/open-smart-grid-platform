@@ -13,15 +13,16 @@ import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 import org.hibernate.ejb.HibernatePersistence;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import com.alliander.osgp.platform.cucumber.support.ApplicationConfig;
 
 /**
  * Base class for PersistenceConfig classes.
@@ -31,11 +32,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableTransactionManagement()
 @Primary
-@PropertySources({
-	@PropertySource("classpath:cucumber-platform.properties"),
-	@PropertySource(value = "file:/etc/osp/cucumber-platform.properties", ignoreResourceNotFound = true)
-})
 public abstract class AbstractPersistenceConfig {
+
+    @Autowired
+    protected ApplicationConfig applicationConfig;
 
     @Value("${cucumber.dbs.driver}")
     protected String databaseDriver;
@@ -69,7 +69,7 @@ public abstract class AbstractPersistenceConfig {
 
     @Resource
     protected Environment environment;
-  
+
     /**
      * Default constructor
      */
@@ -77,7 +77,7 @@ public abstract class AbstractPersistenceConfig {
     	// Default constructor
     }
 
-    
+
     /**
      * Method for creating the Data Source.
      *
@@ -123,6 +123,6 @@ public abstract class AbstractPersistenceConfig {
 
         return entityManagerFactoryBean;
     }
-    
- 
+
+
 }

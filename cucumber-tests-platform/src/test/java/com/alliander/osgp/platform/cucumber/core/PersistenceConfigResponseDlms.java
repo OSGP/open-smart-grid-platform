@@ -11,29 +11,29 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-@EnableJpaRepositories(entityManagerFactoryRef = "entityMgrFactDlms", 
+import com.alliander.osgp.platform.cucumber.support.ApplicationConfig;
+
+@EnableJpaRepositories(entityManagerFactoryRef = "entityMgrFactDlms",
     transactionManagerRef = "txMgrDlms",
     basePackageClasses = { DlmsDeviceRepository.class })
 @Configuration
 @EnableTransactionManagement()
 @Primary
-@PropertySources({
-	@PropertySource("classpath:cucumber-platform.properties"),
-    @PropertySource(value = "file:/etc/osp/cucumber-platform.properties", ignoreResourceNotFound = true)}
-)
 public class PersistenceConfigResponseDlms extends AbstractPersistenceConfig {
+
+    @Autowired
+    protected ApplicationConfig applicationConfig;
 
     public PersistenceConfigResponseDlms() {
     }
@@ -43,15 +43,15 @@ public class PersistenceConfigResponseDlms extends AbstractPersistenceConfig {
 
     @Value("${entitymanager.packages.to.scan.dlms}")
     private String entitymanagerPackagesToScan;
-  
+
     @Override
     protected String getDatabaseUrl() {
-        return databaseUrl;
+        return this.databaseUrl;
     }
 
     @Override
     protected String getEntitymanagerPackagesToScan() {
-        return entitymanagerPackagesToScan;
+        return this.entitymanagerPackagesToScan;
     }
 
     /**
@@ -59,9 +59,9 @@ public class PersistenceConfigResponseDlms extends AbstractPersistenceConfig {
      *
      * @return DataSource
      */
-    @Bean(name = "dsDlms")    
+    @Bean(name = "dsDlms")
     public DataSource dataSource() {
-        return makeDataSource();
+        return this.makeDataSource();
     }
 
     /**
@@ -73,9 +73,9 @@ public class PersistenceConfigResponseDlms extends AbstractPersistenceConfig {
      */
     @Bean(name = "entityMgrFactDlms")
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(
-            @Qualifier("dsDlms") DataSource dataSource) throws ClassNotFoundException {
+            @Qualifier("dsDlms") final DataSource dataSource) throws ClassNotFoundException {
 
-        return makeEntityManager("OSGP_CUCUMBER_DLMS", dataSource);
+        return this.makeEntityManager("OSGP_CUCUMBER_DLMS", dataSource);
     }
 
     /**
@@ -85,9 +85,9 @@ public class PersistenceConfigResponseDlms extends AbstractPersistenceConfig {
      * @throws ClassNotFoundException
      *             when class not found
      */
-    @Bean(name = "txMgrDlms")    
+    @Bean(name = "txMgrDlms")
     public JpaTransactionManager transactionManager(
-            @Qualifier("entityMgrFactDlms") EntityManagerFactory barEntityManagerFactory) {
+            @Qualifier("entityMgrFactDlms") final EntityManagerFactory barEntityManagerFactory) {
         return new JpaTransactionManager(barEntityManagerFactory);    }
 
 }

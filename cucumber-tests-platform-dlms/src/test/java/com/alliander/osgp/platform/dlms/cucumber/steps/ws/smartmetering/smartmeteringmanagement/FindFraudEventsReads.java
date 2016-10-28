@@ -37,8 +37,8 @@ public class FindFraudEventsReads extends AbstractFindEventsReads {
 
     @Then("^fraud events should be returned$")
     @Override
-    public void eventsShouldBeReturned() throws Throwable {
-        super.eventsShouldBeReturned();
+    public void eventsShouldBeReturned(final Map<String, String> settings) throws Throwable {
+        super.eventsShouldBeReturned(settings);
     }
 
     @Override

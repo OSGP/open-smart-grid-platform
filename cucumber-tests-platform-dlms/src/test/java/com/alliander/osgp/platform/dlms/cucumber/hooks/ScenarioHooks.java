@@ -28,7 +28,7 @@ public class ScenarioHooks {
      */
     @Before
     public void beforeScenario() {
-    	databaseSteps.prepareDatabaseForScenario();
+    	this.databaseSteps.prepareDatabaseForScenario();
     }
 
     /**

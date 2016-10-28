@@ -9,16 +9,17 @@
  */
 package com.alliander.osgp.platform.cucumber.steps.ws.admin.devicemanagement;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
-
 import java.util.Map;
 
 import org.junit.Assert;
 
+import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.cucumber.steps.common.ResponseSteps;
 import com.alliander.osgp.platform.cucumber.steps.ws.admin.AdminStepsBase;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
+
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
 
 /**
  * Class with all the remove organization requests steps
@@ -38,7 +39,7 @@ public class RemoveOrganizationSteps extends AdminStepsBase {
     public void receiving_a_remove_organization_request(Map<String, String> requestParameters) throws Throwable {
 
         // Required parameters
-        PROPERTIES_MAP.put("__ORGANIZATION_IDENTIFICATION__", requestParameters.get("OrganizationIdentification"));
+        PROPERTIES_MAP.put("__ORGANIZATION_IDENTIFICATION__", requestParameters.get(Keys.KEY_ORGANIZATION_IDENTIFICATION));
     
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_NAME, TEST_SUITE);
     }

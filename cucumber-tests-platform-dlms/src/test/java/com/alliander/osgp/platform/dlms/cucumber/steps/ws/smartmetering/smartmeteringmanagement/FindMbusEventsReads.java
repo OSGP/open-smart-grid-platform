@@ -47,8 +47,8 @@ public class FindMbusEventsReads extends AbstractFindEventsReads {
 
     @Then("^mbus events should be returned$")
     @Override
-    public void eventsShouldBeReturned() throws Throwable {
-        super.eventsShouldBeReturned();
+    public void eventsShouldBeReturned(final Map<String, String> settings) throws Throwable {
+        super.eventsShouldBeReturned(settings);
     }
 
     @Override
