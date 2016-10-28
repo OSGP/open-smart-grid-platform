@@ -79,25 +79,6 @@
 			<artifactId>jstl</artifactId>
 		</dependency>
 
-		<!-- Logging dependencies -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-		</dependency>
-
-		<!-- Testing Dependencies -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<!-- Joda time -->
-		<dependency>
-			<groupId>joda-time</groupId>
-			<artifactId>joda-time</artifactId>
-		</dependency>
-
 		<!-- Apache HTTP client -->
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
