@@ -70,45 +70,7 @@
 				</configuration>
 				<version>2.19.1</version>
 			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>1.9</version>
-				<executions>
-					<execution>
-						<id>add-source</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>add-source</goal>
-						</goals>
-						<configuration>
-							<sources>
-								<source>${project.basedir}/target/generated/src/main/java</source>
-							</sources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
 			
-			<plugin>
-	            <groupId>org.codehaus.mojo</groupId>
-	            <artifactId>jaxws-maven-plugin</artifactId>
-	            <version>1.12</version>
-	            <configuration>
-	                <wsdlDirectory>${project.basedir}/../../Platform/osgp-adapter-ws-admin/src/main/webapp/WEB-INF/wsdl/admin/</wsdlDirectory>
-	                <packageName>com.alliander.definitions.osgp.admin.devicemanagement_v1</packageName>
-	                <keep>true</keep>
-	                <sourceDestDir>${project.basedir}/target/generated/src/main/java</sourceDestDir>
-	            </configuration>
-	            <executions>
-	                <execution>
-	                    <goals>
-	                        <goal>wsimport</goal>
-	                    </goals>
-	                </execution>
-	            </executions>
-	        </plugin>
 		</plugins>
 	</build>
 
