@@ -12,6 +12,7 @@ import java.util.TimeZone;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import javax.naming.NameNotFoundException;
 import javax.naming.NamingException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -37,9 +38,14 @@ public class OsgpProtocolAdapterIec61850Initializer implements WebApplicationIni
 
             final Context initialContext = new InitialContext();
 
-            final String logLocation = (String) initialContext
-                    .lookup("java:comp/env/osgp/AdapterProtocolIec61850/log-config");
-            LogbackConfigurer.initLogging(logLocation);
+            try {
+                final String logLocation = (String) initialContext
+                        .lookup("java:comp/env/osgp/AdapterProtocolIec61850/log-config");
+                LogbackConfigurer.initLogging(logLocation);
+            } catch (final NameNotFoundException | FileNotFoundException | JoranException e) {
+                // Do nothing, if the file referred in context.xml is not found,
+                // the default logback.xml will be used.
+            }
 
             final AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
             rootContext.register(ApplicationContext.class);
@@ -48,10 +54,6 @@ public class OsgpProtocolAdapterIec61850Initializer implements WebApplicationIni
 
         } catch (final NamingException e) {
             throw new ServletException("naming exception", e);
-        } catch (final FileNotFoundException e) {
-            throw new ServletException("Logging file not found", e);
-        } catch (final JoranException e) {
-            throw new ServletException("Logback exception", e);
         }
     }
 }
