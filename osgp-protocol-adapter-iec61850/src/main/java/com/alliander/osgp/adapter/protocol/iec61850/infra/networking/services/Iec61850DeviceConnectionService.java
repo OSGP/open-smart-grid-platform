@@ -67,22 +67,21 @@ public class Iec61850DeviceConnectionService {
     @Autowired
     private boolean isIcdFileUsed;
 
-    public synchronized DeviceConnection connectWithoutConnectionCashing(final String ipAddress,
-            final String deviceIdentification, final IED ied, final LogicalDevice logicalDevice)
-            throws ConnectionFailureException {
+    public DeviceConnection connectWithoutConnectionCaching(final String ipAddress, final String deviceIdentification,
+            final IED ied, final LogicalDevice logicalDevice) throws ConnectionFailureException {
         return this.connect(ipAddress, deviceIdentification, ied, logicalDevice, false);
     }
 
-    public synchronized DeviceConnection connect(final String ipAddress, final String deviceIdentification,
-            final IED ied, final LogicalDevice logicalDevice) throws ConnectionFailureException {
+    public DeviceConnection connect(final String ipAddress, final String deviceIdentification, final IED ied,
+            final LogicalDevice logicalDevice) throws ConnectionFailureException {
         return this.connect(ipAddress, deviceIdentification, ied, logicalDevice, true);
     }
 
     public synchronized DeviceConnection connect(final String ipAddress, final String deviceIdentification,
             final IED ied, final LogicalDevice logicalDevice, final boolean cacheConnection)
                     throws ConnectionFailureException {
-        LOGGER.info("Trying to find connection in cache for deviceIdentification: {}", deviceIdentification);
-
+        // When connection-caching is used, check if a connection is available
+        // an usable for the given deviceIdentification.
         if (cacheConnection && this.testIfConnectionIsCachedAndAlive(deviceIdentification, ied, logicalDevice)) {
             return new DeviceConnection(this.fetchIec61850Connection(deviceIdentification), deviceIdentification, ied);
         }
@@ -149,6 +148,7 @@ public class Iec61850DeviceConnectionService {
     private boolean testIfConnectionIsCachedAndAlive(final String deviceIdentification, final IED ied,
             final LogicalDevice logicalDevice) {
         try {
+            LOGGER.info("Trying to find connection in cache for deviceIdentification: {}", deviceIdentification);
             final Iec61850Connection iec61850Connection = this.fetchIec61850Connection(deviceIdentification);
             if (iec61850Connection != null) {
                 // Already connected, check if connection is still usable.

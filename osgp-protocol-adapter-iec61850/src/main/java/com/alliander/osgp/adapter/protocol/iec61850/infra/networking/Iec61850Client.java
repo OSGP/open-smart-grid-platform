@@ -256,7 +256,7 @@ public class Iec61850Client {
         } catch (final ConnectionFailureException e) {
             throw e;
         } catch (final Exception e) {
-            throw new ProtocolAdapterException("Could not execute command", e);
+            throw new ProtocolAdapterException(e == null ? "Could not execute command" : e.getMessage(), e);
         }
 
         return output;
@@ -283,7 +283,7 @@ public class Iec61850Client {
                 this.sendCommandWithRetry(function, deviceIdentification, retryCount + 1);
             }
         } catch (final Exception e) {
-            throw new ProtocolAdapterException("Could not execute command", e);
+            throw new ProtocolAdapterException(e == null ? "Could not execute command" : e.getMessage(), e);
         }
 
         return output;

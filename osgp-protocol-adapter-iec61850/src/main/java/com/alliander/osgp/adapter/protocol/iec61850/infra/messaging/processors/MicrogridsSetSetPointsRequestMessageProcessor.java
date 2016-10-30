@@ -14,15 +14,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
-import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.requests.SetSetPointsDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.RtuDeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850DeviceResponseHandler;
 import com.alliander.osgp.dto.valueobjects.microgrids.SetPointsRequestDto;
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
-import com.alliander.osgp.shared.exceptionhandling.ConnectionFailureException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
@@ -81,52 +78,15 @@ public class MicrogridsSetSetPointsRequestMessageProcessor extends RtuDeviceRequ
         final RequestMessageData requestMessageData = new RequestMessageData(null, domain, domainVersion, messageType,
                 retryCount, isScheduled, correlationUid, organisationIdentification, deviceIdentification);
 
-        LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
+        this.printDomainInfo(messageType, domain, domainVersion);
 
-        final DeviceResponseHandler deviceResponseHandler = new DeviceResponseHandler() {
-
-            @Override
-            public void handleResponse(final DeviceResponse deviceResponse) {
-                MicrogridsSetSetPointsRequestMessageProcessor.this.handleEmptyDeviceResponse(deviceResponse,
-                        MicrogridsSetSetPointsRequestMessageProcessor.this.responseMessageSender,
-                        requestMessageData.getDomain(), requestMessageData.getDomainVersion(),
-                        requestMessageData.getMessageType(), requestMessageData.getRetryCount());
-            }
-
-            @Override
-            public void handleException(final Throwable t, final DeviceResponse deviceResponse, final boolean expected) {
-                if (expected) {
-                    MicrogridsSetSetPointsRequestMessageProcessor.this.handleExpectedError(
-                            new ConnectionFailureException(ComponentType.PROTOCOL_IEC61850, t.getMessage()),
-                            requestMessageData.getCorrelationUid(), requestMessageData.getOrganisationIdentification(),
-                            requestMessageData.getDeviceIdentification(), requestMessageData.getDomain(),
-                            requestMessageData.getDomainVersion(), requestMessageData.getMessageType());
-                } else {
-                    MicrogridsSetSetPointsRequestMessageProcessor.this.handleUnExpectedError(deviceResponse, t,
-                            requestMessageData.getMessageData(), requestMessageData.getDomain(),
-                            requestMessageData.getDomainVersion(), requestMessageData.getMessageType(),
-                            requestMessageData.isScheduled(), requestMessageData.getRetryCount());
-                }
-            }
-
-            @Override
-            public void handleConnectionFailure(final Throwable t, final DeviceResponse deviceResponse)
-                    throws JMSException {
-                final int jmsxDeliveryCount = MicrogridsSetSetPointsRequestMessageProcessor.this
-                        .getJmsXdeliveryCount(message);
-                MicrogridsSetSetPointsRequestMessageProcessor.this.checkForRedelivery(new ConnectionFailureException(
-                        ComponentType.PROTOCOL_IEC61850, t.getMessage()), requestMessageData.getCorrelationUid(),
-                        requestMessageData.getOrganisationIdentification(), requestMessageData
-                        .getDeviceIdentification(), requestMessageData.getDomain(), requestMessageData
-                        .getDomainVersion(), requestMessageData.getMessageType(), jmsxDeliveryCount);
-            }
-        };
+        final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this.createIec61850DeviceResponseHandler(
+                requestMessageData, message);
 
         final SetSetPointsDeviceRequest deviceRequest = new SetSetPointsDeviceRequest(organisationIdentification,
                 deviceIdentification, correlationUid, setSetPointsRequest, domain, domainVersion, messageType,
                 ipAddress, retryCount, isScheduled);
 
-        this.deviceService.setSetPoints(deviceRequest, deviceResponseHandler);
+        this.deviceService.setSetPoints(deviceRequest, iec61850DeviceResponseHandler);
     }
-
 }

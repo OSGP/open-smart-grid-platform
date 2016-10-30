@@ -235,8 +235,8 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
     private List<LightValueDto> createListOfInternalIndicesToSwitch(
             final List<DeviceOutputSetting> deviceOutputSettings, final List<LightValueDto> lightValues)
             throws FunctionalException {
-        LOGGER.info("creating list of internal indices using device output settings and external indices from light values");
         final List<LightValueDto> relaysWithInternalIdToSwitch = new ArrayList<>();
+        LOGGER.info("creating list of internal indices using device output settings and external indices from light values");
         for (final LightValueDto lightValue : lightValues) {
             if (lightValue == null) {
                 break;
@@ -250,12 +250,11 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
                     deviceOutputSettingForExternalId = deviceOutputSetting;
                 }
             }
-            if (deviceOutputSettingForExternalId == null) {
-                break;
+            if (deviceOutputSettingForExternalId != null) {
+                final LightValueDto relayWithInternalIdToSwitch = new LightValueDto(
+                        deviceOutputSettingForExternalId.getInternalId(), lightValue.isOn(), lightValue.getDimValue());
+                relaysWithInternalIdToSwitch.add(relayWithInternalIdToSwitch);
             }
-            final LightValueDto relayWithInternalIdToSwitch = new LightValueDto(
-                    deviceOutputSettingForExternalId.getInternalId(), lightValue.isOn(), lightValue.getDimValue());
-            relaysWithInternalIdToSwitch.add(relayWithInternalIdToSwitch);
         }
         return relaysWithInternalIdToSwitch;
     }
@@ -362,14 +361,7 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
             }
 
             // Sleep and wait.
-            try {
-                LOGGER.info("Waiting {} milliseconds before getting the device status", this.selftestTimeout);
-                Thread.sleep(this.selftestTimeout);
-            } catch (final InterruptedException e) {
-                LOGGER.error("An error occured during the device selftest timeout.", e);
-                throw new TechnicalException(ComponentType.PROTOCOL_IEC61850,
-                        "An error occured during the device selftest timeout.");
-            }
+            this.selfTestSleep();
 
             // Getting the status.
             final DeviceStatusDto deviceStatus = new Iec61850GetStatusCommand().getStatusFromDevice(
@@ -395,6 +387,17 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
             this.handleException(deviceRequest, deviceResponseHandler, e);
         }
         this.iec61850DeviceConnectionService.disconnect(deviceConnection, deviceRequest);
+    }
+
+    private void selfTestSleep() throws TechnicalException {
+        try {
+            LOGGER.info("Waiting {} milliseconds before getting the device status", this.selftestTimeout);
+            Thread.sleep(this.selftestTimeout);
+        } catch (final InterruptedException e) {
+            LOGGER.error("An InterruptedException occurred during the device selftest timeout.", e);
+            throw new TechnicalException(ComponentType.PROTOCOL_IEC61850,
+                    "An error occurred during the device selftest timeout.");
+        }
     }
 
     @Override
@@ -548,7 +551,7 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
     // ======================================
 
     private DeviceConnection connectToDevice(final DeviceRequest deviceRequest) throws ConnectionFailureException {
-        return this.iec61850DeviceConnectionService.connectWithoutConnectionCashing(deviceRequest.getIpAddress(),
+        return this.iec61850DeviceConnectionService.connectWithoutConnectionCaching(deviceRequest.getIpAddress(),
                 deviceRequest.getDeviceIdentification(), IED.FLEX_OVL, LogicalDevice.LIGHTING);
     }
 
@@ -579,8 +582,7 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
         LOGGER.error("Could not connect to device", connectionFailureException);
         final EmptyDeviceResponse deviceResponse = this.createDefaultResponse(deviceRequest,
                 DeviceMessageStatus.FAILURE);
-        deviceResponseHandler.handleConnectionFailure(new Exception(connectionFailureException.getCause()),
-                deviceResponse);
+        deviceResponseHandler.handleConnectionFailure(connectionFailureException, deviceResponse);
     }
 
     private void handleProtocolAdapterException(final SetScheduleDeviceRequest deviceRequest,

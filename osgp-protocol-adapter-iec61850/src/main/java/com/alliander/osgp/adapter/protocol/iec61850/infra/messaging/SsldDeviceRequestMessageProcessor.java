@@ -9,6 +9,8 @@ package com.alliander.osgp.adapter.protocol.iec61850.infra.messaging;
 
 import javax.annotation.PostConstruct;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
@@ -28,6 +30,8 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageSender;
  * MessageProcessors after dependency injection has completed.
  */
 public abstract class SsldDeviceRequestMessageProcessor extends BaseMessageProcessor {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SsldDeviceRequestMessageProcessor.class);
 
     @Autowired
     protected SsldDeviceService deviceService;
@@ -59,6 +63,7 @@ public abstract class SsldDeviceRequestMessageProcessor extends BaseMessageProce
     protected void handleGetStatusDeviceResponse(final DeviceResponse deviceResponse,
             final ResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
             final String messageType, final int retryCount) {
+        LOGGER.info("Handling getStatusDeviceResponse for device: {}", deviceResponse.getDeviceIdentification());
 
         final GetStatusDeviceResponse response = (GetStatusDeviceResponse) deviceResponse;
         final DeviceStatusDto status = response.getDeviceStatus();
