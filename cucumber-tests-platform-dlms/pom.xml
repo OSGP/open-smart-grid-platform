@@ -43,21 +43,6 @@
 				</configuration>
 			</plugin>
 			<plugin>
-<<<<<<< HEAD
-=======
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.0.2</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>test-jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
->>>>>>> development
 				<groupId>com.smartbear.soapui</groupId>
 				<artifactId>soapui-maven-plugin</artifactId>
 				<version>5.1.3</version>
@@ -129,11 +114,7 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
-<<<<<<< HEAD
-			<version>4.2.0.RELEASE</version>
-=======
 			<version>4.3.3.RELEASE</version>
->>>>>>> development
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -183,7 +164,6 @@
 
 		<!-- OSGP -->
 		<dependency>
-<<<<<<< HEAD
 			<groupId>com.alliander.osgp</groupId>
 			<artifactId>osgp-dto</artifactId>
 		</dependency>
@@ -194,8 +174,6 @@
 
 		<!-- Cucumber platform -->
 		<dependency>
-=======
->>>>>>> development
 			<groupId>com.alliander</groupId>
 			<artifactId>cucumber-tests-platform</artifactId>
 			<version>1.0-SNAPSHOT</version>
