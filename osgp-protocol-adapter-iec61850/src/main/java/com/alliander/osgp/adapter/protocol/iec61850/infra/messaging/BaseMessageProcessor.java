@@ -157,7 +157,7 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
         final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage.Builder().domain(domain)
                 .domainVersion(domainVersion).deviceMessageMetadata(deviceMessageMetadata)
                 .result(ResponseMessageResultType.NOT_OK).osgpException(ex).retryCount(retryCount)
-                .dataObject(messageData).build();
+                .dataObject(messageData).scheduled(isScheduled).build();
         this.responseMessageSender.send(protocolResponseMessage);
     }
 

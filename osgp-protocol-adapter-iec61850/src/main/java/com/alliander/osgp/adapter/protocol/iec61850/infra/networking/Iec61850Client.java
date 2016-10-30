@@ -277,8 +277,7 @@ public class Iec61850Client {
             output = function.apply();
         } catch (final ProtocolAdapterException e) {
             if (retryCount >= this.maxRetryCount) {
-                throw new ConnectionFailureException(
-                        "Could not send command after " + this.maxRetryCount + " attempts", e);
+                throw e;
             } else {
                 this.sendCommandWithRetry(function, deviceIdentification, retryCount + 1);
             }

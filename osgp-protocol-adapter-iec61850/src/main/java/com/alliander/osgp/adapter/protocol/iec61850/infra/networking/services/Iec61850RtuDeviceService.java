@@ -10,6 +10,8 @@ package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.jms.JMSException;
+
 import org.openmuc.openiec61850.ClientAssociation;
 import org.openmuc.openiec61850.Fc;
 import org.openmuc.openiec61850.ServerModel;
@@ -64,7 +66,8 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
     private Iec61850Client iec61850Client;
 
     @Override
-    public void getData(final GetDataDeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler) {
+    public void getData(final GetDataDeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler)
+            throws JMSException {
         try {
             final ServerModel serverModel = this.connectAndRetrieveServerModel(deviceRequest);
 
@@ -87,7 +90,7 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
                     deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
 
-            deviceResponseHandler.handleException(se, deviceResponse, true);
+            deviceResponseHandler.handleConnectionFailure(se, deviceResponse);
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during Get Data", e);
 
@@ -95,13 +98,13 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
                     deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
 
-            deviceResponseHandler.handleException(e, deviceResponse, false);
+            deviceResponseHandler.handleException(e, deviceResponse);
         }
     }
 
     @Override
     public void setSetPoints(final SetSetPointsDeviceRequest deviceRequest,
-            final DeviceResponseHandler deviceResponseHandler) {
+            final DeviceResponseHandler deviceResponseHandler) throws JMSException {
         try {
             final ServerModel serverModel = this.connectAndRetrieveServerModel(deviceRequest);
             final ClientAssociation clientAssociation = this.iec61850DeviceConnectionService
@@ -109,7 +112,7 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
 
             this.setSetPoints(new DeviceConnection(new Iec61850Connection(new Iec61850ClientAssociation(
                     clientAssociation, null), serverModel), deviceRequest.getDeviceIdentification(), IED.ZOWN_RTU),
-                            serverModel, clientAssociation, deviceRequest);
+                    serverModel, clientAssociation, deviceRequest);
 
             final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
@@ -123,7 +126,7 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
                     deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
 
-            deviceResponseHandler.handleException(se, deviceResponse, true);
+            deviceResponseHandler.handleConnectionFailure(se, deviceResponse);
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during Set SetPoint", e);
 
@@ -131,13 +134,13 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
                     deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
 
-            deviceResponseHandler.handleException(e, deviceResponse, false);
+            deviceResponseHandler.handleException(e, deviceResponse);
         }
     }
 
     private void setSetPoints(final DeviceConnection connection, final ServerModel serverModel,
             final ClientAssociation clientAssociation, final SetSetPointsDeviceRequest deviceRequest)
-                    throws ProtocolAdapterException {
+            throws ProtocolAdapterException {
 
         final SetPointsRequestDto setPointsRequest = deviceRequest.getSetPointsRequest();
 

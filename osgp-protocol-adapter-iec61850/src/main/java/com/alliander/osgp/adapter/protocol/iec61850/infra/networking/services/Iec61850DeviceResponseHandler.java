@@ -76,7 +76,6 @@ public class Iec61850DeviceResponseHandler implements DeviceResponseHandler {
         Objects.requireNonNull(t, "handleConnectionFailure() Throwable t may not be null");
         final ConnectionFailureException connectionFailureException = new ConnectionFailureException(
                 ComponentType.PROTOCOL_IEC61850, t.getMessage());
-
         this.messageProcessor.checkForRedelivery(this.deviceMessageMetadata, connectionFailureException,
                 this.domainInformation.getDomain(), this.domainInformation.getDomainVersion(), this.jmsxDeliveryCount);
     }
@@ -87,23 +86,13 @@ public class Iec61850DeviceResponseHandler implements DeviceResponseHandler {
      * @see
      * com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler
      * #handleException(java.lang.Throwable,
-     * com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse,
-     * boolean)
+     * com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse)
      */
     @Override
-    public void handleException(final Throwable t, final DeviceResponse deviceResponse, final boolean expected) {
+    public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
         Objects.requireNonNull(t, "handleException() Throwable t may not be null");
-        if (expected) {
-            this.messageProcessor.handleExpectedError(
-                    new ConnectionFailureException(ComponentType.PROTOCOL_IEC61850, t.getMessage()),
-                    this.deviceMessageMetadata.getCorrelationUid(),
-                    this.deviceMessageMetadata.getOrganisationIdentification(),
-                    this.deviceMessageMetadata.getDeviceIdentification(), this.domainInformation.getDomain(),
-                    this.domainInformation.getDomainVersion(), this.deviceMessageMetadata.getMessageType());
-        } else {
-            this.messageProcessor.handleUnExpectedError(deviceResponse, t, this.messageData,
-                    this.domainInformation.getDomain(), this.domainInformation.getDomainVersion(),
-                    this.deviceMessageMetadata.getMessageType(), this.isScheduled, this.retryCount);
-        }
+        this.messageProcessor.handleUnExpectedError(deviceResponse, t, this.messageData,
+                this.domainInformation.getDomain(), this.domainInformation.getDomainVersion(),
+                this.deviceMessageMetadata.getMessageType(), this.isScheduled, this.retryCount);
     }
 }

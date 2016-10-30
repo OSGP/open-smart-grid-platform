@@ -22,8 +22,9 @@ import org.springframework.jms.listener.SessionAwareMessageListener;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.NotSupportedException;
-import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
@@ -54,18 +55,22 @@ public class DeviceRequestMessageListener implements SessionAwareMessageListener
     public void onMessage(final Message message, final Session session) throws JMSException {
         final ObjectMessage objectMessage = (ObjectMessage) message;
         String messageType = null;
-
+        MessageProcessor processor = null;
         try {
             messageType = message.getJMSType();
             LOGGER.info("Received message of type: {}", messageType);
-            final MessageProcessor processor = this.iec61850RequestMessageProcessorMap
-                    .getMessageProcessor(objectMessage);
-            processor.processMessage(objectMessage);
-        } catch (final IllegalArgumentException e) {
-            LOGGER.error("Unexpected IllegalArgumentException during onMessage(Message)", e);
-            this.sendException(objectMessage, new NotSupportedException(ComponentType.PROTOCOL_IEC61850, messageType),
-                    "Unsupported device function: " + messageType);
+            processor = this.iec61850RequestMessageProcessorMap.getMessageProcessor(objectMessage);
+        } catch (final IllegalArgumentException | JMSException e) {
+            LOGGER.error("Unexpected IllegalArgumentException | JMSExceptionduring during onMessage(Message)", e);
+            this.createAndSendException(objectMessage, messageType);
+            return;
         }
+        processor.processMessage(objectMessage);
+    }
+
+    private void createAndSendException(final ObjectMessage objectMessage, final String messageType) {
+        this.sendException(objectMessage, new NotSupportedException(ComponentType.PROTOCOL_IEC61850, messageType),
+                "Unsupported device function: " + messageType);
     }
 
     private void sendException(final ObjectMessage objectMessage, final Exception exception, final String errorMessage) {
@@ -73,8 +78,8 @@ public class DeviceRequestMessageListener implements SessionAwareMessageListener
             final String domain = objectMessage.getStringProperty(Constants.DOMAIN);
             final String domainVersion = objectMessage.getStringProperty(Constants.DOMAIN_VERSION);
             final ResponseMessageResultType result = ResponseMessageResultType.NOT_OK;
-            final OsgpException osgpException = new OsgpException(ComponentType.PROTOCOL_IEC61850, errorMessage,
-                    exception);
+            final FunctionalException osgpException = new FunctionalException(
+                    FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION, ComponentType.PROTOCOL_IEC61850, exception);
             final Serializable dataObject = objectMessage.getObject();
 
             final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(objectMessage);

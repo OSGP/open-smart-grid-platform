@@ -15,6 +15,6 @@ public interface DeviceResponseHandler {
 
     void handleConnectionFailure(Throwable t, DeviceResponse deviceResponse) throws JMSException;
 
-    void handleException(Throwable t, DeviceResponse deviceResponse, boolean expected);
+    void handleException(Throwable t, DeviceResponse deviceResponse);
 
 }

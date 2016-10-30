@@ -114,7 +114,6 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
                     deviceRequest.getCorrelationUid(), deviceStatus);
 
             deviceResponseHandler.handleResponse(deviceResponse);
-            this.iec61850DeviceConnectionService.disconnect(deviceRequest.getDeviceIdentification());
         } catch (final ConnectionFailureException se) {
             this.handleConnectionFailureException(deviceRequest, deviceResponseHandler, se);
         } catch (final Exception e) {
@@ -136,15 +135,14 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
                     ssld, RelayType.LIGHT);
 
             final List<PowerUsageDataDto> powerUsageHistoryData = new Iec61850PowerUsageHistoryCommand()
-                    .getPowerUsageHistoryDataFromDevice(this.iec61850Client, deviceConnection,
-                            deviceRequest.getPowerUsageHistoryContainer(), deviceOutputSettingsLightRelays);
+            .getPowerUsageHistoryDataFromDevice(this.iec61850Client, deviceConnection,
+                    deviceRequest.getPowerUsageHistoryContainer(), deviceOutputSettingsLightRelays);
 
             final GetPowerUsageHistoryDeviceResponse deviceResponse = new GetPowerUsageHistoryDeviceResponse(
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
                     deviceRequest.getCorrelationUid(), DeviceMessageStatus.OK, powerUsageHistoryData);
 
             deviceResponseHandler.handleResponse(deviceResponse);
-            this.iec61850DeviceConnectionService.disconnect(deviceRequest.getDeviceIdentification());
         } catch (final ConnectionFailureException se) {
             this.handleConnectionFailureException(deviceRequest, deviceResponseHandler, se);
         } catch (final Exception e) {
@@ -234,7 +232,7 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
 
     private List<LightValueDto> createListOfInternalIndicesToSwitch(
             final List<DeviceOutputSetting> deviceOutputSettings, final List<LightValueDto> lightValues)
-            throws FunctionalException {
+                    throws FunctionalException {
         final List<LightValueDto> relaysWithInternalIdToSwitch = new ArrayList<>();
         LOGGER.info("creating list of internal indices using device output settings and external indices from light values");
         for (final LightValueDto lightValue : lightValues) {
@@ -300,7 +298,6 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
                     deviceRequest.getCorrelationUid(), DeviceMessageStatus.OK, configuration);
 
             deviceResponseHandler.handleResponse(response);
-            this.iec61850DeviceConnectionService.disconnect(deviceRequest.getDeviceIdentification());
         } catch (final ConnectionFailureException se) {
             this.handleConnectionFailureException(deviceRequest, deviceResponseHandler, se);
         } catch (final Exception e) {
@@ -433,7 +430,7 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
             deviceConnection = this.connectToDevice(deviceRequest);
 
             final List<FirmwareVersionDto> firmwareVersions = new Iec61850GetFirmwareVersionCommand()
-            .getFirmwareVersionFromDevice(this.iec61850Client, deviceConnection);
+                    .getFirmwareVersionFromDevice(this.iec61850Client, deviceConnection);
 
             final GetFirmwareVersionDeviceResponse deviceResponse = new GetFirmwareVersionDeviceResponse(
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
@@ -451,8 +448,10 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
     @Override
     public void setTransition(final SetTransitionDeviceRequest deviceRequest,
             final DeviceResponseHandler deviceResponseHandler) throws JMSException {
+        DeviceConnection devCon = null;
         try {
             final DeviceConnection deviceConnection = this.connectToDevice(deviceRequest);
+            devCon = deviceConnection;
 
             new Iec61850TransitionCommand().transitionDevice(this.iec61850Client, deviceConnection,
                     deviceRequest.getTransitionTypeContainer());
@@ -478,10 +477,10 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
             }, this.disconnectDelay);
         } catch (final ConnectionFailureException se) {
             this.handleConnectionFailureException(deviceRequest, deviceResponseHandler, se);
-            this.iec61850DeviceConnectionService.disconnect(deviceRequest.getDeviceIdentification());
+            this.iec61850DeviceConnectionService.disconnect(devCon, deviceRequest);
         } catch (final Exception e) {
             this.handleException(deviceRequest, deviceResponseHandler, e);
-            this.iec61850DeviceConnectionService.disconnect(deviceRequest.getDeviceIdentification());
+            this.iec61850DeviceConnectionService.disconnect(devCon, deviceRequest);
         }
     }
 
@@ -592,7 +591,7 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
                         + deviceRequest.getDeviceIdentification(), protocolAdapterException);
         final EmptyDeviceResponse deviceResponse = this.createDefaultResponse(deviceRequest,
                 DeviceMessageStatus.FAILURE);
-        deviceResponseHandler.handleException(protocolAdapterException, deviceResponse, true);
+        deviceResponseHandler.handleException(protocolAdapterException, deviceResponse);
     }
 
     private void handleException(final DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler,
@@ -600,7 +599,7 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
         LOGGER.error("Unexpected exception", exception);
         final EmptyDeviceResponse deviceResponse = this.createDefaultResponse(deviceRequest,
                 DeviceMessageStatus.FAILURE);
-        deviceResponseHandler.handleException(exception, deviceResponse, false);
+        deviceResponseHandler.handleException(exception, deviceResponse);
     }
 
     // ========================

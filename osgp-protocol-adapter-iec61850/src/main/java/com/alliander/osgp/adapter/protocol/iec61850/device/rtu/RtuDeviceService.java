@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.device.rtu;
 
+import javax.jms.JMSException;
+
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceMessageStatus;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.requests.GetDataDeviceRequest;
@@ -22,7 +24,7 @@ public interface RtuDeviceService {
      * @returns a {@link GetDataDeviceResponse} via the deviceResponseHandler's
      *          callback.
      */
-    void getData(GetDataDeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler);
+    void getData(GetDataDeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler) throws JMSException;
 
     /**
      * Writes the {@link SetPointsRequestDto} to the device.
@@ -30,5 +32,6 @@ public interface RtuDeviceService {
      * @returns a {@link DeviceMessageStatus} via the deviceResponseHandler's
      *          callback.
      */
-    void setSetPoints(SetSetPointsDeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler);
+    void setSetPoints(SetSetPointsDeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler)
+            throws JMSException;
 }
