@@ -69,11 +69,10 @@ public class DeviceRequestMessageListener implements SessionAwareMessageListener
     }
 
     private void createAndSendException(final ObjectMessage objectMessage, final String messageType) {
-        this.sendException(objectMessage, new NotSupportedException(ComponentType.PROTOCOL_IEC61850, messageType),
-                "Unsupported device function: " + messageType);
+        this.sendException(objectMessage, new NotSupportedException(ComponentType.PROTOCOL_IEC61850, messageType));
     }
 
-    private void sendException(final ObjectMessage objectMessage, final Exception exception, final String errorMessage) {
+    private void sendException(final ObjectMessage objectMessage, final Exception exception) {
         try {
             final String domain = objectMessage.getStringProperty(Constants.DOMAIN);
             final String domainVersion = objectMessage.getStringProperty(Constants.DOMAIN_VERSION);
