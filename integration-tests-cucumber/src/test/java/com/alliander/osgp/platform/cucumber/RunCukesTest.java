@@ -16,9 +16,8 @@ import cucumber.api.SnippetType;
 import cucumber.api.junit.Cucumber;
 
 @RunWith(Cucumber.class)
-@CucumberOptions(features = "src/test/resources/", tags = { "~@SLIM-256", "~@SLIM-484", "~@SLIM-150", "~@SLIM-441",
-        "~@SLIM-540", "~@SLIM-281" }, plugin = { "pretty", "html:target/output/Cucumber-report",
-        "html:target/output/Cucumber-html-report.html" }, snippets = SnippetType.CAMELCASE)
+@CucumberOptions(features = "src/test/resources/", tags = { "~@SLIM-256" }, plugin = { "pretty",
+        "html:target/output/Cucumber-report", "html:target/output/Cucumber-html-report.html" }, snippets = SnippetType.CAMELCASE)
 public class RunCukesTest {
 
 }

@@ -8,7 +8,7 @@
 
 package com.alliander.osgp.platform.cucumber.smartmeteringbundle;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,6 +40,23 @@ public class Bundle extends SmartMetering {
     private static final Map<String, String> PROPERTIES_MAP = new HashMap<>();
     private static final List<String> REQUEST_ACTIONS = new ArrayList<>();
 
+    private static final Map<String, String> REQUEST_RESPONSE_PAIRS = new HashMap<>();
+    static {
+        REQUEST_RESPONSE_PAIRS.put("FindEventsRequest", "FindEventsResponse");
+        REQUEST_RESPONSE_PAIRS.put("SetSpecialDaysRequest", "ActionResponse");
+        REQUEST_RESPONSE_PAIRS.put("GetSpecificAttributeValueRequest", "ActionResponse");
+        REQUEST_RESPONSE_PAIRS.put("ReadAlarmRegisterRequest", "ReadAlarmRegisterResponse");
+        REQUEST_RESPONSE_PAIRS.put("SetAdministrativeStatusRequest", "ActionResponse");
+        REQUEST_RESPONSE_PAIRS.put("GetActualMeterReadsRequest", "ActualMeterReadsResponse");
+        REQUEST_RESPONSE_PAIRS.put("GetAdministrativeStatusRequest", "AdministrativeStatusResponse");
+        REQUEST_RESPONSE_PAIRS.put("GetPeriodicMeterReadsRequest", "PeriodicMeterReadsResponse");
+        REQUEST_RESPONSE_PAIRS.put("SetActivityCalendarRequest", "ActionResponse");
+        REQUEST_RESPONSE_PAIRS.put("SetAlarmNotificationsRequest", "ActionResponse");
+        REQUEST_RESPONSE_PAIRS.put("SetConfigurationObjectRequest", "ActionResponse");
+        REQUEST_RESPONSE_PAIRS.put("SetPushSetupAlarmRequest", "ActionResponse");
+        REQUEST_RESPONSE_PAIRS.put("SynchronizeTimeRequest", "ActionResponse");
+    }
+
     @Autowired
     private DeviceId deviceId;
 
@@ -59,22 +76,8 @@ public class Bundle extends SmartMetering {
 
         final NodeList nodeList = this.runXpathResult.getNodeList(this.request, "//Actions/*");
         for (int nodeId = 0; nodeId < nodeList.getLength(); nodeId++) {
-            REQUEST_ACTIONS.add(this.formatAction(nodeList.item(nodeId).getNodeName(), "Request"));
+            REQUEST_ACTIONS.add(this.removeNamespace(nodeList.item(nodeId).getNodeName()));
         }
-    }
-
-    /**
-     * An action is in the node list in the form of <ns1:FindEventsRequest> or
-     * <ns2:FindEventsResponseData> We want to loose the namespace and postfix
-     */
-    private String formatAction(final String input, final String postfix) {
-        final String request = input.split(":")[1];
-        if (request.indexOf(postfix) > 0) {
-            return request.substring(0, request.indexOf(postfix));
-        } else {
-            return request;
-        }
-
     }
 
     @And("^the operations in the bundled request message will be executed from top to bottom$")
@@ -88,17 +91,10 @@ public class Bundle extends SmartMetering {
         final NodeList nodeList = this.runXpathResult.getNodeList(this.response, "//AllResponses/*");
         for (int nodeId = 0; nodeId < nodeList.getLength(); nodeId++) {
 
-            final String responseAction = this.formatAction(nodeList.item(nodeId).getNodeName(), "ResponseData");
-            LOGGER.debug("requestAction:{}", REQUEST_ACTIONS.get(nodeId));
-            LOGGER.debug("responseAction:{}", responseAction);
+            final String responseAction = this.removeNamespace(nodeList.item(nodeId).getNodeName());
+            final String matchingResponse = REQUEST_RESPONSE_PAIRS.get(REQUEST_ACTIONS.get(nodeId));
+            assertEquals(matchingResponse, responseAction);
 
-            // For several requests we get an ActionResponseData tag, instead of
-            // a tag with the name of the action.
-            // Other requests miss "Read" or "Get" if we compare them to the
-            // input action. We will allow those situations.
-            assertTrue("Action".equals(responseAction) || REQUEST_ACTIONS.get(nodeId).equals(responseAction)
-                    || REQUEST_ACTIONS.get(nodeId).equals("Read" + responseAction)
-                    || REQUEST_ACTIONS.get(nodeId).equals("Get" + responseAction));
         }
     }
 
@@ -107,12 +103,11 @@ public class Bundle extends SmartMetering {
         LOGGER.debug("check if we get responses for all the requests");
         final NodeList nodeList = this.runXpathResult.getNodeList(this.response, "//AllResponses/*");
 
-        for (int nodeId = 0; nodeId < nodeList.getLength(); nodeId++) {
-            LOGGER.debug("requestAction:{}", REQUEST_ACTIONS.get(nodeId));
-            final int childCount = nodeList.item(nodeId).getChildNodes().getLength();
-            LOGGER.debug("responseValue has {} children", childCount);
-            assertTrue(childCount > 0);
-        }
-
+        assertEquals(REQUEST_ACTIONS.size(), nodeList.getLength());
     }
+
+    private String removeNamespace(final String input) {
+        return input.split(":")[1];
+    }
+
 }
