@@ -77,18 +77,16 @@ Feature: Smartmetering Configuration
     When the request for a firmware upgrade is received
     Then the message "Installation file is not available" should be given
 
-  #@runnow
   Scenario: upgrade of firmware, corrupt installation file
     Given a request for a firmware upgrade for device TEST1024000000001 from a client
-    And the installation file of version KFPP_V060100FFx is available
+    And the installation file of version KFPP_V060100FF.corrupt is available
     And the installation file is corrupt
     When the request for a firmware upgrade is received
     Then the message "Upgrade of firmware did not succeed" should be given
 
-  #@runnow
   Scenario: unsuccessful upgrade of firmware
     Given a request for a firmware upgrade for device TEST1024000000001 from a client
-    And the installation file of version KFPP_V060100FF is available
+    And the installation file of version KFPP_V060100FF.corrupt is available
     When the request for a firmware upgrade is received
     And the upgrade of firmware did not succeed
     Then the message "Upgrade of firmware did not succeed" should be given
