@@ -29,14 +29,13 @@ public class Defaults {
 
     // Expected values
     public static final String EXPECTED_RESULT_OK = "OK";
-
     public static final String DEFAULT_PERIOD_TYPE = "INTERVAL";
-
     public static final String DEFAULT_BEGIN_DATE = "";
-
     public static final String DEFAULT_END_DATE = "";
-
     public static final String DEFAULT_DEVICE_TYPE = "SMART_METER_E";
-
     public static final Boolean DEFAULT_INDEBUGMODE = false;
+
+    //Types
+    public static final String SMART_METER_E = "SMART_METER_E";
+    public static final String SMART_METER_G = "SMART_METER_G";
 }

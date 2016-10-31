@@ -9,6 +9,8 @@ import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
+import com.alliander.osgp.platform.cucumber.steps.Defaults;
+import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.cucumber.steps.database.DeviceSteps;
 import com.alliander.osgp.platform.cucumber.steps.database.RepoHelper;
 
@@ -28,14 +30,17 @@ public class DlmsDeviceSteps {
 
     @Given("^a device$")
     public void aDevice(final Map<String, String> settings) throws Throwable {
-        this.deviceSteps.aDevice(settings);
+        if (this.isSmartMeter(settings)) {
+            this.deviceSteps.aSmartMeter(settings);
+            this.repoHelper.insertDlmsDevice(settings);
+        } else {
+            this.aDevice(settings);
+        }
     }
 
-    @Given("^a dlms device$")
-    public void a_dlms_device(final Map<String, String> settings) throws Throwable {
-        // First create the device itself
-        this.deviceSteps.aSmartMeter(settings);
-        this.repoHelper.insertDlmsDevice(settings);
+    private boolean isSmartMeter(final Map<String, String> settings) {
+        final String devtype = settings.get(Keys.KEY_DEVICE_TYPE);
+        return Defaults.SMART_METER_E.equals(devtype) || Defaults.SMART_METER_G.equals(devtype) ;
     }
 
     @Then("^the device with the id \"([^\"]*)\" exists$")
