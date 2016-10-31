@@ -9,6 +9,9 @@ package com.alliander.osgp.adapter.domain.microgrids.application.services;
 
 import java.util.UUID;
 
+import javax.persistence.OptimisticLockException;
+
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.adapter.domain.microgrids.application.mapping.DomainMicrogridsMapper;
 import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.microgrids.entities.RtuDevice;
 import com.alliander.osgp.domain.microgrids.valueobjects.DataRequest;
 import com.alliander.osgp.domain.microgrids.valueobjects.DataResponse;
 import com.alliander.osgp.domain.microgrids.valueobjects.EmptyResponse;
@@ -42,6 +46,9 @@ public class AdHocManagementService extends AbstractService {
     @Autowired
     private DomainMicrogridsMapper mapper;
 
+    @Autowired
+    private Integer lastCommunicationUpdateInterval;
+
     /**
      * Constructor
      */
@@ -53,7 +60,7 @@ public class AdHocManagementService extends AbstractService {
 
     public void getData(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final String messageType, final DataRequest dataRequest)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.info("Get data for device [{}] with correlation id [{}]", deviceIdentification, correlationUid);
 
@@ -62,8 +69,9 @@ public class AdHocManagementService extends AbstractService {
 
         final DataRequestDto dto = this.mapper.map(dataRequest, DataRequestDto.class);
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, dto), messageType, device.getIpAddress());
+        this.osgpCoreRequestMessageSender.send(
+                new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, dto), messageType,
+                device.getIpAddress());
     }
 
     public void handleGetDataResponse(final DataResponseDto dataResponseDto, final String deviceIdentification,
@@ -82,13 +90,15 @@ public class AdHocManagementService extends AbstractService {
                 throw osgpException;
             }
 
+            this.handleResponseMessageReceived(deviceIdentification);
+
             dataResponse = this.mapper.map(dataResponseDto, DataResponse.class);
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            exception = new TechnicalException(ComponentType.DOMAIN_MICROGRIDS,
-                    "Exception occurred while getting data", e);
+            exception = new TechnicalException(ComponentType.DOMAIN_MICROGRIDS, "Exception occurred while getting data",
+                    e);
         }
 
         // Support for Push messages, generate correlationUid
@@ -105,7 +115,7 @@ public class AdHocManagementService extends AbstractService {
 
     public void handleSetPointsRequest(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final String messageType, final SetPointsRequest setPointsRequest)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.info("Set setpoints for device [{}] with correlation id [{}]", deviceIdentification, correlationUid);
 
@@ -114,8 +124,9 @@ public class AdHocManagementService extends AbstractService {
 
         final SetPointsRequestDto dto = this.mapper.map(setPointsRequest, SetPointsRequestDto.class);
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, dto), messageType, device.getIpAddress());
+        this.osgpCoreRequestMessageSender.send(
+                new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, dto), messageType,
+                device.getIpAddress());
     }
 
     public void handleSetPointsResponse(final EmptyResponseDto emptyResponseDto, final String deviceIdentification,
@@ -134,6 +145,8 @@ public class AdHocManagementService extends AbstractService {
                 throw osgpException;
             }
 
+            this.handleResponseMessageReceived(deviceIdentification);
+
             emptyResponse = this.mapper.map(emptyResponseDto, EmptyResponse.class);
 
         } catch (final Exception e) {
@@ -150,5 +163,26 @@ public class AdHocManagementService extends AbstractService {
     private String getCorrelationId(final String organisationIdentification, final String deviceIdentification) {
 
         return organisationIdentification + "|||" + deviceIdentification + "|||" + UUID.randomUUID().toString();
+    }
+
+    private void handleResponseMessageReceived(final String deviceIdentification) {
+        try {
+            final RtuDevice device = this.rtuDeviceRepository.findByDeviceIdentification(deviceIdentification);
+            if (this.shouldUpdateCommunicationTime(device)) {
+                device.messageReceived();
+                this.rtuDeviceRepository.save(device);
+            } else {
+                LOGGER.info("Last communication time within {} seconds. Skipping last communication date update.",
+                        this.lastCommunicationUpdateInterval);
+            }
+        } catch (final OptimisticLockException ex) {
+            LOGGER.warn("Last communication time not updated due to optimistic lock exception", ex);
+        }
+    }
+
+    private boolean shouldUpdateCommunicationTime(final RtuDevice device) {
+        final DateTime timeToCheck = DateTime.now().minusSeconds(this.lastCommunicationUpdateInterval);
+        final DateTime timeOfLastCommunication = new DateTime(device.getLastCommunicationTime());
+        return timeOfLastCommunication.isBefore(timeToCheck);
     }
 }

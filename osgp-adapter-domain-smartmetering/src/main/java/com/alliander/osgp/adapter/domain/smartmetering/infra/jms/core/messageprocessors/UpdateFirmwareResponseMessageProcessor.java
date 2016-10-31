@@ -7,7 +7,6 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.messageprocessors;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,32 +24,31 @@ import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 
 @Component
-public class GetFirmwareVersionResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+public class UpdateFirmwareResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
     @Autowired
     private ConfigurationService configurationService;
 
-    protected GetFirmwareVersionResponseMessageProcessor() {
-        super(DeviceFunction.GET_FIRMWARE_VERSION);
+    protected UpdateFirmwareResponseMessageProcessor() {
+        super(DeviceFunction.UPDATE_FIRMWARE);
     }
 
     @Override
     protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
-        final Object dataObject = responseMessage.getDataObject();
-        return dataObject instanceof ArrayList;
+        return true;
     }
 
     @Override
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessage responseMessage, final OsgpException osgpException) throws FunctionalException {
 
-        if (responseMessage.getDataObject() instanceof ArrayList) {
+        if (responseMessage.getDataObject() instanceof List) {
             @SuppressWarnings("unchecked")
             final List<FirmwareVersionDto> firmwareVersionList = (List<FirmwareVersionDto>) responseMessage
                     .getDataObject();
 
-            this.configurationService.handleGetFirmwareVersionResponse(deviceMessageMetadata,
-                    responseMessage.getResult(), osgpException, firmwareVersionList);
+            this.configurationService.handleUpdateFirmwareResponse(deviceMessageMetadata, responseMessage.getResult(),
+                    osgpException, firmwareVersionList);
         } else {
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
                     ComponentType.DOMAIN_SMART_METERING, new OsgpException(ComponentType.DOMAIN_SMART_METERING,

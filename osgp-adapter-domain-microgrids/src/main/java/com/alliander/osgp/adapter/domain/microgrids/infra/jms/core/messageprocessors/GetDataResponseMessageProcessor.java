@@ -45,7 +45,7 @@ public class GetDataResponseMessageProcessor extends OsgpCoreResponseMessageProc
 
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
-        LOGGER.debug("Processing public lighting get status response message");
+        LOGGER.debug("Processing microgrids get data response message");
 
         String correlationUid = null;
         String messageType = null;
