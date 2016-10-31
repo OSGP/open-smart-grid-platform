@@ -67,5 +67,5 @@ public enum DeviceFunctionDto {
     DE_COUPLE_MBUS_DEVICE,
     GET_DATA,
     SET_SETPOINT, 
-    REQUEST_SPECIAL_DAYS;
+    SET_SPECIAL_DAYS;
 }
