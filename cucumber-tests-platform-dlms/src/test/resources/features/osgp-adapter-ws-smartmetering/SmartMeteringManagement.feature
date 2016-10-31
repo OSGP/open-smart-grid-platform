@@ -26,7 +26,6 @@ Scenario: find communication events from a device
      Then communication events should be returned
         | DeviceIdentification | TEST1024000000001 |
 
-@Check
 Scenario: find mbus events from a device
      When receiving a find mbus events request
         | DeviceIdentification | TEST1024000000001 |

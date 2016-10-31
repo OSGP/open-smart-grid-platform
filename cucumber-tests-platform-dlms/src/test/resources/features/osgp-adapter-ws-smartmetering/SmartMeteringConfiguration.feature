@@ -12,14 +12,12 @@ Feature: SmartMetering Configuration
       | DeviceType                  | SMART_METER_G     |
       | GatewayDeviceIdentification | TEST1024000000001 |
 
-  @Check
   Scenario: Set special days on a device
     When the set special days request is received
       | DeviceIdentification | TEST1024000000001 |
     Then the special days should be set on the device
       | DeviceIdentification | TEST1024000000001 |
 
-  @Check
   Scenario: Set configuration object on a device
     When the set configuration object request is received
       | DeviceIdentification | TEST1024000000001 |
@@ -32,18 +30,20 @@ Feature: SmartMetering Configuration
     Then the alarm should be pushed to OSGP
       | DeviceIdentification | TEST1024000000001 |
     And the alarm should be pushed to the osgp_logging database device_log_item table
+      | DeviceIdentification | TEST1024000000001 |
 
   Scenario: Handle a received alarm notification from an unknown device
     When an alarm notification is received from an unknown device
-      | DeviceIdentification | unknown0000000000 |
+      | DeviceIdentification | UNKNOWN0000000001 |
     Then the response contains
       | FaultCode      | SOAP-ENV:Server                                                  |
       | FaultString    | UNKNOWN_DEVICE                                                   |
       | FaultType      | FunctionalFault                                                  |
       | Component      | WS_SMART_METERING                                                |
       | InnerException | com.alliander.osgp.domain.core.exceptions.UnknownEntityException |
-      | InnerMessage   | Device with id "unknown0000000000" could not be found.           |
+      | InnerMessage   | Device with id "UNKNOWN0000000001" could not be found.           |
     And the alarm should be pushed to the osgp_logging database device_log_item table
+      | DeviceIdentification | UNKNOWN0000000001 |
 
   Scenario: Set alarm notifications on a device
     When the set alarm notifications request is received
@@ -51,12 +51,14 @@ Feature: SmartMetering Configuration
     Then the specified alarm notifications should be set on the device
       | DeviceIdentification | TEST1024000000001 |
 
-@Check
+ @SKIP
   Scenario: Exchange user key on a gas device
     When the exchange user key request is received
       | DeviceIdentification | TESTG102400000001 |
     Then the new user key should be set on the gas device
-      | DeviceIdentification | TESTG102400000001 |
+      | DeviceIdentification        | TESTG102400000001 |
+      | DeviceType                  | SMART_METER_G     |
+      | GatewayDeviceIdentification | TEST1024000000001 |
 
   Scenario: Use wildcards for set activity calendar
     When the set activity calendar request is received
@@ -83,7 +85,6 @@ Feature: SmartMetering Configuration
       | DeviceIdentification | TEST1024000000001 |
     And the new keys are stored in the osgp_adapter_protocol_dlms database security_key table
 
-@Check
   Scenario: Get the firmware version from device
     When the get firmware version request is received
       | DeviceIdentification | TEST1024000000001 |

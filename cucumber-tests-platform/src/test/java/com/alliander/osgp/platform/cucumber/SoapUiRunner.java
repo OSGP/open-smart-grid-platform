@@ -15,8 +15,6 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import org.junit.Assert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -47,10 +45,10 @@ public abstract class SoapUiRunner {
     @Value("${certificate.basepath}")
     private String certBasePath;
 
-    private final Logger LOGGER = LoggerFactory.getLogger(SoapUiRunner.class);
+//    private final Logger LOGGER = LoggerFactory.getLogger(SoapUiRunner.class);
     private static final String DEFAULT_SOAPUI_PROJECT = "soap-ui-project/Core-SoapUI-project.xml";
     private String soapuiProject = DEFAULT_SOAPUI_PROJECT;
-    private static final String ERRMSG = "The soapUi xml fragment: \n %s \ndoes not contain all three tags: \n %s, %s and/or %s";
+//    private static final String ERRMSG = "The soapUi xml fragment: \n %s \ndoes not contain all three tags: \n %s, %s and/or %s";
 
     protected static final Map<String, String> PROPERTIES_MAP = new HashMap<>();
 

@@ -8,7 +8,6 @@ Feature: SmartMetering Bundle
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
 
-  @Check
   Scenario: Handle a bundle of operations
     When a bundled request message is received
       | DeviceIdentification | TEST1024000000001 |

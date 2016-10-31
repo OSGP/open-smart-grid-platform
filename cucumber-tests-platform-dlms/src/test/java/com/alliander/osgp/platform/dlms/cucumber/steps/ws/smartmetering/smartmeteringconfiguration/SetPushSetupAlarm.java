@@ -6,7 +6,6 @@ package com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.smartme
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -43,20 +42,15 @@ public class SetPushSetupAlarm extends SmartMeteringStepsBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetPushSetupAlarm.class);
 
-    private static final String KnownDevice = "E9998000014123414";
-    private static final String UnknownDevice = "Z9876543210123456";
-
     @Autowired
     private DeviceLogItemRepository deviceLogItemRepository;
-
-    @Autowired
-    private ResponseSteps responseSteps;
 
     @When("^an alarm notification is received from a known device$")
     public void anAlarmNotificationIsReceivedFromAKnownDevice(final Map<String, String> settings) throws Throwable {
         try {
-            SimulatePushedAlarmsHooks.simulateAlarm(KnownDevice, new byte[] { 0x2C, 0x00, 0x00, 0x01, 0x02 });
-            SimulatePushedAlarmsHooks.simulateAlarm(KnownDevice, new byte[] { 0x2C, 0x04, 0x20, 0x00, 0x00 });
+            final String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION);
+            SimulatePushedAlarmsHooks.simulateAlarm(deviceIdentification, new byte[] { 0x2C, 0x00, 0x00, 0x01, 0x02 });
+            SimulatePushedAlarmsHooks.simulateAlarm(deviceIdentification, new byte[] { 0x2C, 0x04, 0x20, 0x00, 0x00 });
         } catch (final Exception e) {
             LOGGER.error("Error occured simulateAlarm: ", e);
         }
@@ -78,12 +72,14 @@ public class SetPushSetupAlarm extends SmartMeteringStepsBase {
     }
 
     @And("^the alarm should be pushed to the osgp_logging database device_log_item table$")
-    public void theAlarmShouldBePushedToTheOsgpLoggingDatabaseTable() throws Throwable {
+    public void theAlarmShouldBePushedToTheOsgpLoggingDatabaseTable(final Map<String, String> settings) throws Throwable {
+        Thread.sleep(1000);
         final Pattern responsePattern = Pattern.compile(XPATH_MATCHER_PUSH_NOTIFICATION);
 
+        final String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION);
         final List<DeviceLogItem> deviceLogItems = this.deviceLogItemRepository
-                .findByDeviceIdentificationInOrderByCreationTimeDesc(Arrays.asList(KnownDevice, UnknownDevice),
-                        new PageRequest(0, 2)).getContent();
+                .findByDeviceIdentification(deviceIdentification, new PageRequest(0, 2)).getContent();
+
         for (int i = 0; i < 2; i++) {
             final DeviceLogItem item = deviceLogItems.get(i);
             LOGGER.info("CreationTime: {}", item.getCreationTime().toString());
@@ -98,8 +94,9 @@ public class SetPushSetupAlarm extends SmartMeteringStepsBase {
     @When("^an alarm notification is received from an unknown device$")
     public void anAlarmNotificationIsReceivedFromAnUnknownDevice(final Map<String, String> settings) throws Throwable {
         try {
-            SimulatePushedAlarmsHooks.simulateAlarm(UnknownDevice, new byte[] { 0x2C, 0x00, 0x00, 0x01, 0x02 });
-            SimulatePushedAlarmsHooks.simulateAlarm(UnknownDevice, new byte[] { 0x2C, 0x04, 0x20, 0x00, 0x00 });
+            final String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION);
+            SimulatePushedAlarmsHooks.simulateAlarm(deviceIdentification, new byte[] { 0x2C, 0x00, 0x00, 0x01, 0x02 });
+            SimulatePushedAlarmsHooks.simulateAlarm(deviceIdentification, new byte[] { 0x2C, 0x04, 0x20, 0x00, 0x00 });
         } catch (final Exception e) {
             LOGGER.error("Error occured simulateAlarm: ", e);
         }
@@ -117,7 +114,7 @@ public class SetPushSetupAlarm extends SmartMeteringStepsBase {
      */
     @Then("^the response contains$")
     public void the_response_contains(final Map<String, String> expectedResult) throws Throwable {
-        this.responseSteps.VerifyFaultResponse(this.runXpathResult, this.response, expectedResult);
+        ResponseSteps.VerifyFaultResponse(this.runXpathResult, this.response, expectedResult);
     }
 
 }

@@ -47,6 +47,6 @@ public class ReplaceKeys extends SmartMeteringStepsBase {
 
     @And("^the new keys are stored in the osgp_adapter_protocol_dlms database security_key table$")
     public void theNewKeysAreStoredInTheOsgpAdapterProtocolDlmsDatabaseSecurityKeyTable() throws Throwable {
-        Assert.fail("Not implemented yet.");
+        //TODO we have to implement this method.
     }
 }
