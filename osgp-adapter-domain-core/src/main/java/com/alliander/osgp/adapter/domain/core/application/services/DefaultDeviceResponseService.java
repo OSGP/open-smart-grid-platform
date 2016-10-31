@@ -7,7 +7,6 @@
  */
 package com.alliander.osgp.adapter.domain.core.application.services;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +42,7 @@ public class DefaultDeviceResponseService {
             }
         } catch (final OsgpException e) {
             LOGGER.error("Unexpected OsgpException", e);
-            osgpException = new TechnicalException(e.getComponentType(), StringUtils.isBlank(e.getCause().getMessage()) == true ? e.getMessage() : e.getCause().getMessage(), e);
+            osgpException = new TechnicalException(e.getComponentType(), e.getCause() == null ? e.getMessage() : e.getCause().getMessage(), e);
             result = ResponseMessageResultType.NOT_OK;
         }
 

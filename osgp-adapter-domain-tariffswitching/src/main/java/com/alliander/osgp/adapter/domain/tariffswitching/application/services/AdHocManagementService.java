@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,8 +123,7 @@ public class AdHocManagementService extends AbstractService {
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            osgpException = new TechnicalException(ComponentType.DOMAIN_TARIFF_SWITCHING, StringUtils.isBlank(e.getCause().getMessage()) == true ? e.getMessage() : e.getCause().getMessage(), e);
-
+            osgpException = new TechnicalException(ComponentType.DOMAIN_TARIFF_SWITCHING, e.getCause() == null ? e.getMessage() : e.getCause().getMessage(), e);
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
