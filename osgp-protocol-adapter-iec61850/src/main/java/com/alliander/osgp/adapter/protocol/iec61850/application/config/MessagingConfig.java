@@ -8,7 +8,6 @@
 package com.alliander.osgp.adapter.protocol.iec61850.application.config;
 
 import javax.annotation.Resource;
-import javax.jms.MessageListener;
 
 import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.broker.region.policy.RedeliveryPolicyMap;
@@ -16,6 +15,8 @@ import org.apache.activemq.command.ActiveMQDestination;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.apache.activemq.spring.ActiveMQConnectionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -25,7 +26,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.util.ErrorHandler;
 
+import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageListener;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceResponseMessageSender;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.Iec61850LogItemRequestMessageSender;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.OsgpRequestMessageSender;
@@ -39,6 +42,8 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.OsgpResponse
 @EnableTransactionManagement()
 @PropertySource("file:${osp/osgpAdapterProtocolIec61850/config}")
 public class MessagingConfig {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MessagingConfig.class);
 
     // JMS Settings
     private static final String PROPERTY_NAME_JMS_ACTIVEMQ_BROKER_URL = "jms.activemq.broker.url";
@@ -124,7 +129,7 @@ public class MessagingConfig {
 
     @Autowired
     @Qualifier("iec61850RequestsMessageListener")
-    private MessageListener iec61850RequestsMessageListener;
+    private DeviceRequestMessageListener iec61850RequestsMessageListener;
 
     // === JMS SETTINGS ===
 
@@ -141,9 +146,7 @@ public class MessagingConfig {
         activeMQConnectionFactory.setRedeliveryPolicyMap(this.redeliveryPolicyMap());
         activeMQConnectionFactory.setBrokerURL(this.environment
                 .getRequiredProperty(PROPERTY_NAME_JMS_ACTIVEMQ_BROKER_URL));
-
         activeMQConnectionFactory.setNonBlockingRedelivery(true);
-
         return activeMQConnectionFactory;
     }
 
@@ -174,7 +177,6 @@ public class MessagingConfig {
                 .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_BACK_OFF_MULTIPLIER)));
         redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(this.environment
                 .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_USE_EXPONENTIAL_BACK_OFF)));
-
         return redeliveryPolicy;
     }
 
@@ -183,6 +185,12 @@ public class MessagingConfig {
     @Bean
     public ActiveMQDestination iec61850RequestsQueue() {
         return new ActiveMQQueue(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_IEC61850_REQUESTS_QUEUE));
+    }
+
+    @Bean
+    public int maxRedeliveriesForIec61850Requests() {
+        return Integer.parseInt(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_IEC61850_REQUESTS_MAXIMUM_REDELIVERIES));
     }
 
     @Bean
@@ -215,6 +223,15 @@ public class MessagingConfig {
                 .getRequiredProperty(PROPERTY_NAME_JMS_IEC61850_REQUESTS_MAX_CONCURRENT_CONSUMERS)));
         messageListenerContainer.setMessageListener(this.iec61850RequestsMessageListener);
         messageListenerContainer.setSessionTransacted(true);
+        messageListenerContainer.setErrorHandler(new ErrorHandler() {
+            @Override
+            public void handleError(final Throwable t) {
+                // Implementing ErrorHandler to prevent logging at WARN level
+                // when JMSException is thrown: Execution of JMS message
+                // listener failed, and no ErrorHandler has been set.
+                LOGGER.debug("iec61850RequestsMessageListenerContainer.ErrorHandler.handleError()", t);
+            }
+        });
         return messageListenerContainer;
     }
 

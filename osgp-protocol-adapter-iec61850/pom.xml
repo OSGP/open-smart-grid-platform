@@ -108,6 +108,12 @@
       <artifactId>spring-ws-support</artifactId>
     </dependency>
 
+    <!-- Spring JMS -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jms</artifactId>
+    </dependency>
+
     <!-- Spring Data -->
     <dependency>
       <groupId>org.springframework.data</groupId>

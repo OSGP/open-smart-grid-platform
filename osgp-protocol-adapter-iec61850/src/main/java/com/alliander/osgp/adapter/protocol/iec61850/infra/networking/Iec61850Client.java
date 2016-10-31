@@ -52,13 +52,10 @@ public class Iec61850Client {
     private int iec61850RtuPortServer;
 
     @Autowired
+    private int maxRedeliveriesForIec61850Requests;
+
+    @Autowired
     private int maxRetryCount;
-
-    @Autowired
-    private int delayAfterDeviceRegistration;
-
-    @Autowired
-    private boolean isReportingAfterDeviceRegistrationEnabled;
 
     @Autowired
     private DeviceManagementService deviceManagementService;
@@ -66,10 +63,9 @@ public class Iec61850Client {
     @PostConstruct
     private void init() {
         LOGGER.info(
-                "portClient: {}, portClientLocal: {}, iec61850SsldPortServer: {}, iec61850RtuPortServer: {}, maxRetryCount: {}, delayAfterDeviceRegistration: {}, isReportingAfterDeviceRegistrationEnabled: {}",
+                "portClient: {}, portClientLocal: {}, iec61850SsldPortServer: {}, iec61850RtuPortServer: {}, maxRetryCount: {}, maxRedeliveriesForIec61850Requests: {}",
                 this.iec61850PortClient, this.iec61850PortClientLocal, this.iec61850SsldPortServer,
-                this.iec61850RtuPortServer, this.maxRetryCount, this.delayAfterDeviceRegistration,
-                this.isReportingAfterDeviceRegistrationEnabled);
+                this.iec61850RtuPortServer, this.maxRetryCount, this.maxRedeliveriesForIec61850Requests);
     }
 
     /**
@@ -98,8 +94,9 @@ public class Iec61850Client {
         // connect using SSL.
         final ClientSap clientSap = new ClientSap();
         final Iec61850ClientAssociation clientAssociation;
-        LOGGER.info("Attempting to connect to server: {} on port: {} with max retry count: {}",
-                ipAddress.getHostAddress(), port, this.maxRetryCount);
+        LOGGER.info(
+                "Attempting to connect to server: {} on port: {}, max redelivery count: {} and max retry count: {}",
+                ipAddress.getHostAddress(), port, this.maxRedeliveriesForIec61850Requests, this.maxRetryCount);
 
         try {
             final ClientAssociation association = clientSap.associate(ipAddress, port, null, reportListener);
@@ -242,7 +239,8 @@ public class Iec61850Client {
      *
      * @return The given T.
      */
-    public <T> T sendCommandWithRetry(final Function<T> function) throws ProtocolAdapterException {
+    public <T> T sendCommandWithRetry(final Function<T> function, final String deviceIdentification)
+            throws ProtocolAdapterException {
         T output = null;
 
         try {
@@ -251,14 +249,14 @@ public class Iec61850Client {
             if (ConnectionState.OK.equals(e.getConnectionState())) {
                 // ServiceError means we have to retry.
                 LOGGER.error("Caught ServiceError, retrying", e);
-                this.sendCommandWithRetry(function, 1);
+                this.sendCommandWithRetry(function, deviceIdentification, 1);
             } else {
                 LOGGER.error("Caught IOException, connection with device is broken.", e);
             }
         } catch (final ConnectionFailureException e) {
             throw e;
         } catch (final Exception e) {
-            throw new ProtocolAdapterException("Could not execute command", e);
+            throw new ProtocolAdapterException(e == null ? "Could not execute command" : e.getMessage(), e);
         }
 
         return output;
@@ -267,22 +265,24 @@ public class Iec61850Client {
     /**
      * Basically the same as sendCommandWithRetry, but with a retry parameter.
      */
-    private <T> T sendCommandWithRetry(final Function<T> function, final int retryCount)
-            throws ProtocolAdapterException {
+    private <T> T sendCommandWithRetry(final Function<T> function, final String deviceIdentification,
+            final int retryCount) throws ProtocolAdapterException {
 
         T output = null;
+
+        LOGGER.info("retry: {} of {} for deviceIdentification: {}", retryCount, this.maxRetryCount,
+                deviceIdentification);
 
         try {
             output = function.apply();
         } catch (final ProtocolAdapterException e) {
             if (retryCount >= this.maxRetryCount) {
-                throw new ConnectionFailureException("Could not send command after " + this.maxRetryCount + " attemps",
-                        e);
+                throw e;
             } else {
-                this.sendCommandWithRetry(function, retryCount + 1);
+                this.sendCommandWithRetry(function, deviceIdentification, retryCount + 1);
             }
         } catch (final Exception e) {
-            throw new ProtocolAdapterException("Could not execute command", e);
+            throw new ProtocolAdapterException(e == null ? "Could not execute command" : e.getMessage(), e);
         }
 
         return output;

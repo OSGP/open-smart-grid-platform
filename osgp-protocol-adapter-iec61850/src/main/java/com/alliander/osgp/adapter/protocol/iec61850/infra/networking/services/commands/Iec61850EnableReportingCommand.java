@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeException;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeWriteException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
@@ -59,11 +60,11 @@ public class Iec61850EnableReportingCommand {
      * When using the {@link Iec61850ClearReportCommand} the 'sequence number'
      * will always be reset to 0.
      *
-     * @throws NodeException
-     *             In case writing or reading of data-attributes fails.
+     * @throws NodeWriteException
+     *             In case writing of data-attributes fails.
      */
     public void enableReportingOnDeviceWithoutUsingSequenceNumber(final Iec61850Client iec61850Client,
-            final DeviceConnection deviceConnection) throws NodeException {
+            final DeviceConnection deviceConnection) throws NodeWriteException {
         final NodeContainer reporting = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
                 LogicalNode.LOGICAL_NODE_ZERO, DataAttribute.REPORTING, Fc.BR);
 

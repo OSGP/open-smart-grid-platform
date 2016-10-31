@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.iec61850.application.services.DeviceManagementService;
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ConnectionFailureException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
@@ -30,6 +31,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Cli
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850ClientAssociation;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Connection;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Function;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.IED;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalDevice;
@@ -65,17 +67,26 @@ public class Iec61850DeviceConnectionService {
     @Autowired
     private boolean isIcdFileUsed;
 
-    public synchronized void connect(final String ipAddress, final String deviceIdentification, final IED ied,
-            final LogicalDevice logicalDevice) throws ConnectionFailureException {
-        LOGGER.info("Trying to find connection in cache for deviceIdentification: {}", deviceIdentification);
+    public DeviceConnection connectWithoutConnectionCaching(final String ipAddress, final String deviceIdentification,
+            final IED ied, final LogicalDevice logicalDevice) throws ConnectionFailureException {
+        return this.connect(ipAddress, deviceIdentification, ied, logicalDevice, false);
+    }
 
-        if (this.testIfConnectionIsCachedAndAlive(deviceIdentification, ied, logicalDevice)) {
-            return;
+    public DeviceConnection connect(final String ipAddress, final String deviceIdentification, final IED ied,
+            final LogicalDevice logicalDevice) throws ConnectionFailureException {
+        return this.connect(ipAddress, deviceIdentification, ied, logicalDevice, true);
+    }
+
+    public synchronized DeviceConnection connect(final String ipAddress, final String deviceIdentification,
+            final IED ied, final LogicalDevice logicalDevice, final boolean cacheConnection)
+                    throws ConnectionFailureException {
+        // When connection-caching is used, check if a connection is available
+        // an usable for the given deviceIdentification.
+        if (cacheConnection && this.testIfConnectionIsCachedAndAlive(deviceIdentification, ied, logicalDevice)) {
+            return new DeviceConnection(this.fetchIec61850Connection(deviceIdentification), deviceIdentification, ied);
         }
         final InetAddress inetAddress = this.convertIpAddress(ipAddress);
-        if (inetAddress == null) {
-            return;
-        }
+
         // Connect to obtain ClientAssociation and ServerModel.
         LOGGER.info("Trying to connect to deviceIdentification: {} at IP address {} using response time-out: {}",
                 deviceIdentification, ipAddress, this.responseTimeout);
@@ -120,18 +131,24 @@ public class Iec61850DeviceConnectionService {
         }
 
         // Cache the connection.
-        this.cacheIec61850Connection(deviceIdentification, new Iec61850Connection(iec61850ClientAssociation,
-                serverModel));
+        final Iec61850Connection iec61850Connection = new Iec61850Connection(iec61850ClientAssociation, serverModel,
+                startTime);
+        if (cacheConnection) {
+            this.cacheIec61850Connection(deviceIdentification, iec61850Connection);
+        }
 
         final DateTime endTime = DateTime.now();
         LOGGER.info(
                 "Connected to device: {}, fetched server model. Start time: {}, end time: {}, total time in milliseconds: {}",
                 deviceIdentification, startTime, endTime, endTime.minus(startTime.getMillis()).getMillis());
+
+        return new DeviceConnection(iec61850Connection, deviceIdentification, ied);
     }
 
     private boolean testIfConnectionIsCachedAndAlive(final String deviceIdentification, final IED ied,
             final LogicalDevice logicalDevice) {
         try {
+            LOGGER.info("Trying to find connection in cache for deviceIdentification: {}", deviceIdentification);
             final Iec61850Connection iec61850Connection = this.fetchIec61850Connection(deviceIdentification);
             if (iec61850Connection != null) {
                 // Already connected, check if connection is still usable.
@@ -204,6 +221,29 @@ public class Iec61850DeviceConnectionService {
         }
     }
 
+    public synchronized void disconnect(final DeviceConnection deviceConnection, final DeviceRequest deviceRequest) {
+        try {
+            deviceConnection.getConnection().getIec61850ClientAssociation().getClientAssociation().disconnect();
+            this.logDuration(deviceConnection, deviceRequest);
+        } catch (final NullPointerException e) {
+            LOGGER.debug("NullPointerException during disconnect()", e);
+        }
+    }
+
+    private void logDuration(final DeviceConnection deviceConnection, final DeviceRequest deviceRequest) {
+        if (deviceConnection == null) {
+            return;
+        }
+        if (deviceRequest == null) {
+            return;
+        }
+        final DateTime endTime = DateTime.now();
+        final DateTime startTime = deviceConnection.getConnection().getConnectionStartTime();
+        LOGGER.info("Device: {}, messageType: {}, Start time: {}, end time: {}, total time in milliseconds: {}",
+                deviceConnection.getDeviceIdentification(), deviceRequest.getMessageType(), startTime, endTime, endTime
+                .minus(startTime.getMillis()).getMillis());
+    }
+
     public Iec61850ClientAssociation getIec61850ClientAssociation(final String deviceIdentification) {
         final Iec61850Connection iec61850Connection = this.fetchIec61850Connection(deviceIdentification);
         return iec61850Connection.getIec61850ClientAssociation();
@@ -227,6 +267,10 @@ public class Iec61850DeviceConnectionService {
         return this.iec61850Client;
     }
 
+    public Iec61850Connection getIec61850Connection(final String deviceIdentification) {
+        return this.fetchIec61850Connection(deviceIdentification);
+    }
+
     public void readAllValues(final String deviceIdentification) throws NodeReadException {
         final Iec61850Connection iec61850Connection = this.fetchIec61850Connection(deviceIdentification);
         if (iec61850Connection == null) {
@@ -236,7 +280,7 @@ public class Iec61850DeviceConnectionService {
         this.iec61850Client.readAllDataValues(clientAssociation);
     }
 
-    public void readNodeDateValues(final String deviceIdentification, final FcModelNode fcModelNode)
+    public void readNodeDataValues(final String deviceIdentification, final FcModelNode fcModelNode)
             throws NodeReadException {
         final Iec61850Connection iec61850Connection = this.fetchIec61850Connection(deviceIdentification);
         if (iec61850Connection == null) {
@@ -246,8 +290,9 @@ public class Iec61850DeviceConnectionService {
         this.iec61850Client.readNodeDataValues(clientAssociation, fcModelNode);
     }
 
-    public <T> T sendCommandWithRetry(final Function<T> function) throws ProtocolAdapterException {
-        return this.iec61850Client.sendCommandWithRetry(function);
+    public <T> T sendCommandWithRetry(final Function<T> function, final String deviceIdentification)
+            throws ProtocolAdapterException {
+        return this.iec61850Client.sendCommandWithRetry(function, deviceIdentification);
     }
 
     private void cacheIec61850Connection(final String deviceIdentification, final Iec61850Connection iec61850Connection) {
@@ -266,12 +311,12 @@ public class Iec61850DeviceConnectionService {
         cache.remove(deviceIdentification);
     }
 
-    private InetAddress convertIpAddress(final String ipAddress) {
+    private InetAddress convertIpAddress(final String ipAddress) throws ConnectionFailureException {
         try {
             return InetAddress.getByName(ipAddress);
         } catch (final UnknownHostException e) {
             LOGGER.error("Unexpected exception during convertIpAddress", e);
-            return null;
+            throw new ConnectionFailureException(e.getMessage(), e);
         }
     }
 }
