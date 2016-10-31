@@ -1,5 +1,6 @@
 package com.alliander.osgp.platform.cucumber.smartmeteringconfiguration;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
@@ -8,7 +9,13 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.Firmware;
+import com.alliander.osgp.domain.core.repositories.DeviceFirmwareRepository;
+import com.alliander.osgp.domain.core.repositories.DeviceRepository;
+import com.alliander.osgp.domain.core.repositories.FirmwareRepository;
 import com.alliander.osgp.platform.cucumber.SmartMetering;
 import com.alliander.osgp.platform.cucumber.smartmeteringmonitoring.ActualMeterReadsGas;
 import com.alliander.osgp.platform.cucumber.support.DeviceId;
@@ -16,20 +23,20 @@ import com.alliander.osgp.platform.cucumber.support.OrganisationId;
 import com.alliander.osgp.platform.cucumber.support.ServiceEndpoint;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
-import cucumber.api.PendingException;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
+@Transactional(value = "txMgrCore")
 public class UpdateFirmware extends SmartMetering {
 
-    private static final String FIRMWARE_IDENTIFIER_LABEL = "FirmwareIdentifier";
+    private static final String FIRMWARE_IDENTIFIER_LABEL = "FirmwareIdentification";
     private static final Map<String, String> PROPERTIES_MAP = new HashMap<>();
     private static final Logger LOGGER = LoggerFactory.getLogger(ActualMeterReadsGas.class);
 
-    private static final String PATH_RESULT_STATUS = "/Envelope/Body/GetUpdateFirmwareResponse/Result/text()";
-    private static final String PATH_RESULT_FIRMWAREVERSION_TYPE = "/Envelope/Body/GetUpdateFirmwareResponse/FirmwareVersion/FirmwareModuleType";
-    private static final String PATH_RESULT_FIRMWAREVERSION_VERSION = "/Envelope/Body/GetUpdateFirmwareResponse/FirmwareVersion/Version";
+    private static final String PATH_RESULT_STATUS = "/Envelope/Body/UpdateFirmwareResponse/Result/text()";
+    private static final String PATH_RESULT_FIRMWAREVERSION_TYPE = "/Envelope/Body/UpdateFirmwareResponse/FirmwareVersion/FirmwareModuleType";
+    private static final String PATH_RESULT_FIRMWAREVERSION_VERSION = "/Envelope/Body/UpdateFirmwareResponse/FirmwareVersion/Version";
 
     private static final String PATH_SOAP_FAULT_FAULTSTRING = "/Envelope/Body/Fault/faultstring/text()";
 
@@ -50,6 +57,15 @@ public class UpdateFirmware extends SmartMetering {
 
     @Autowired
     private ServiceEndpoint serviceEndpoint;
+
+    @Autowired
+    private DeviceRepository deviceRepository;
+
+    @Autowired
+    private FirmwareRepository firmwareRepository;
+
+    @Autowired
+    private DeviceFirmwareRepository deviceFirmwareRespository;
 
     @Given("^a request for a firmware upgrade for device (.+) from a client$")
     public void aRequestForAFirmwareUpgradeForDeviceFromAClient(final String deviceIdentification) throws Throwable {
@@ -87,8 +103,20 @@ public class UpdateFirmware extends SmartMetering {
     @Then("^the database should be updated so it indicates that device (.+) is using firmware version (.+)$")
     public void theDatabaseShouldBeUpdatedSoItIndicatesThatDeviceEIsUsingFirmwareVersion(
             final String deviceIdentification, final String firmwareVersion) throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+
+        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+        assertNotNull(device);
+
+        final Firmware firmware = this.firmwareRepository.findByFilename(firmwareVersion);
+        assertNotNull(firmware);
+
+        final Firmware activeFirmware = device.getActiveFirmware();
+        assertNotNull(activeFirmware);
+
+        assertTrue(activeFirmware.getFilename().equals(firmware.getFilename()));
+        assertTrue(activeFirmware.getModuleVersionComm().equals(firmware.getModuleVersionComm()));
+        assertTrue(activeFirmware.getModuleVersionFunc().equals(firmware.getModuleVersionFunc()));
+        assertTrue(activeFirmware.getModuleVersionMa().equals(firmware.getModuleVersionMa()));
     }
 
     @Given("^the installation file of version (.+) is not available$")
