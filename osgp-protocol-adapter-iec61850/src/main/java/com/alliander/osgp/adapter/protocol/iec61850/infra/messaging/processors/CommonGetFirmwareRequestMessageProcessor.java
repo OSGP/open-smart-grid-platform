@@ -19,17 +19,17 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
-import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.GetFirmwareVersionDeviceResponse;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.SsldDeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.SsldDeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850DeviceResponseHandler;
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
-import com.alliander.osgp.shared.exceptionhandling.ConnectionFailureException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageSender;
@@ -49,7 +49,7 @@ public class CommonGetFirmwareRequestMessageProcessor extends SsldDeviceRequestM
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) {
+    public void processMessage(final ObjectMessage message) throws JMSException {
         LOGGER.debug("Processing common get firmware request message");
 
         String correlationUid = null;
@@ -88,40 +88,24 @@ public class CommonGetFirmwareRequestMessageProcessor extends SsldDeviceRequestM
         final RequestMessageData requestMessageData = new RequestMessageData(null, domain, domainVersion, messageType,
                 retryCount, isScheduled, correlationUid, organisationIdentification, deviceIdentification);
 
-        LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
+        this.printDomainInfo(messageType, domain, domainVersion);
 
-        final DeviceResponseHandler deviceResponseHandler = new DeviceResponseHandler() {
-
-            @Override
-            public void handleResponse(final DeviceResponse deviceResponse) {
-                CommonGetFirmwareRequestMessageProcessor.this.handleGetFirmwareVersionDeviceResponse(deviceResponse,
-                        CommonGetFirmwareRequestMessageProcessor.this.responseMessageSender,
-                        requestMessageData.getDomain(), requestMessageData.getDomainVersion(),
-                        requestMessageData.getMessageType(), requestMessageData.getRetryCount());
-            }
-
-            @Override
-            public void handleException(final Throwable t, final DeviceResponse deviceResponse, final boolean expected) {
-                if (expected) {
-                    CommonGetFirmwareRequestMessageProcessor.this.handleExpectedError(new ConnectionFailureException(
-                            ComponentType.PROTOCOL_IEC61850, t.getMessage()), requestMessageData.getCorrelationUid(),
-                            requestMessageData.getOrganisationIdentification(), requestMessageData
-                                    .getDeviceIdentification(), requestMessageData.getDomain(), requestMessageData
-                                    .getDomainVersion(), requestMessageData.getMessageType());
-                } else {
-                    CommonGetFirmwareRequestMessageProcessor.this.handleUnExpectedError(deviceResponse, t,
-                            requestMessageData.getMessageData(), requestMessageData.getDomain(),
-                            requestMessageData.getDomainVersion(), requestMessageData.getMessageType(),
-                            requestMessageData.isScheduled(), requestMessageData.getRetryCount());
-                }
-            }
-
-        };
+        final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this.createIec61850DeviceResponseHandler(
+                requestMessageData, message);
 
         final DeviceRequest deviceRequest = new DeviceRequest(organisationIdentification, deviceIdentification,
                 correlationUid, domain, domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
-        this.deviceService.getFirmwareVersion(deviceRequest, deviceResponseHandler);
+        this.deviceService.getFirmwareVersion(deviceRequest, iec61850DeviceResponseHandler);
+    }
+
+    @Override
+    public void handleDeviceResponse(final DeviceResponse deviceResponse,
+            final ResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
+            final String messageType, final int retryCount) {
+        LOGGER.info("Override for handleDeviceResponse() by CommonGetFirmwareRequestMessageProcessor");
+        this.handleGetFirmwareVersionDeviceResponse(deviceResponse, responseMessageSender, domain, domainVersion,
+                messageType, retryCount);
     }
 
     private void handleGetFirmwareVersionDeviceResponse(final DeviceResponse deviceResponse,
@@ -129,14 +113,11 @@ public class CommonGetFirmwareRequestMessageProcessor extends SsldDeviceRequestM
             final String messageType, final int retryCount) {
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
-
         OsgpException osgpException = null;
-
         List<FirmwareVersionDto> firmwareVersions = null;
 
         try {
             firmwareVersions = ((GetFirmwareVersionDeviceResponse) deviceResponse).getFirmwareVersions();
-
         } catch (final Exception e) {
             LOGGER.error("Device Response Exception", e);
             result = ResponseMessageResultType.NOT_OK;
@@ -144,10 +125,13 @@ public class CommonGetFirmwareRequestMessageProcessor extends SsldDeviceRequestM
                     "Unexpected exception while retrieving response message", e);
         }
 
-        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
-                deviceResponse.getCorrelationUid(), deviceResponse.getOrganisationIdentification(),
-                deviceResponse.getDeviceIdentification(), result, osgpException, (Serializable) firmwareVersions,
-                retryCount);
+        final DeviceMessageMetadata deviceMessageMetaData = new DeviceMessageMetadata(
+                deviceResponse.getDeviceIdentification(), deviceResponse.getOrganisationIdentification(),
+                deviceResponse.getCorrelationUid(), messageType, 0);
+        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder().domain(domain)
+                .domainVersion(domainVersion).deviceMessageMetadata(deviceMessageMetaData).result(result)
+                .osgpException(osgpException).dataObject((Serializable) firmwareVersions).retryCount(retryCount)
+                .build();
 
         responseMessageSender.send(responseMessage);
     }

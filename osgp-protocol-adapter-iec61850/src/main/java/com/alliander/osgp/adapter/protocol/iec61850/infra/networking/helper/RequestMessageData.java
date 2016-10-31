@@ -10,7 +10,7 @@ package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper;
 import java.io.Serializable;
 
 /**
- * An value object, containing all data of an incoming ObjectMessage
+ * A value object, containing all data of an incoming ObjectMessage.
  */
 public class RequestMessageData {
 
@@ -23,6 +23,9 @@ public class RequestMessageData {
     final String correlationUid;
     final String organisationIdentification;
     final String deviceIdentification;
+    final String ipAddress;
+    final int messagePriority;
+    final Long scheduleTime;
 
     public RequestMessageData(final Serializable messageData, final String domain, final String domainVersion,
             final String messageType, final int retryCount, final boolean isScheduled, final String correlationUid,
@@ -36,6 +39,27 @@ public class RequestMessageData {
         this.correlationUid = correlationUid;
         this.organisationIdentification = organisationIdentification;
         this.deviceIdentification = deviceIdentification;
+        this.ipAddress = null;
+        this.messagePriority = 0;
+        this.scheduleTime = null;
+    }
+
+    public RequestMessageData(final Serializable messageData, final String domain, final String domainVersion,
+            final String messageType, final int retryCount, final Boolean isScheduled, final String correlationUid,
+            final String organisationIdentification, final String deviceIdentification, final String ipAddress,
+            final int messagePriority, final Long scheduleTime) {
+        this.messageData = messageData;
+        this.domain = domain;
+        this.domainVersion = domainVersion;
+        this.messageType = messageType;
+        this.retryCount = retryCount;
+        this.isScheduled = isScheduled;
+        this.correlationUid = correlationUid;
+        this.organisationIdentification = organisationIdentification;
+        this.deviceIdentification = deviceIdentification;
+        this.ipAddress = ipAddress;
+        this.messagePriority = messagePriority;
+        this.scheduleTime = scheduleTime;
     }
 
     public Serializable getMessageData() {
@@ -72,5 +96,17 @@ public class RequestMessageData {
 
     public String getDeviceIdentification() {
         return this.deviceIdentification;
+    }
+
+    public String getIpAddress() {
+        return this.ipAddress;
+    }
+
+    public int getMessagePriority() {
+        return this.messagePriority;
+    }
+
+    public Long getScheduleTime() {
+        return this.scheduleTime;
     }
 }

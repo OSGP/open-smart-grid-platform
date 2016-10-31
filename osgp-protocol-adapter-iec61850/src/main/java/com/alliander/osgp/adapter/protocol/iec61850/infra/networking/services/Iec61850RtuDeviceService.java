@@ -10,6 +10,8 @@ package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.jms.JMSException;
+
 import org.openmuc.openiec61850.ClientAssociation;
 import org.openmuc.openiec61850.Fc;
 import org.openmuc.openiec61850.ServerModel;
@@ -64,16 +66,17 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
     private Iec61850Client iec61850Client;
 
     @Override
-    public void getData(final GetDataDeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler) {
+    public void getData(final GetDataDeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler)
+            throws JMSException {
         try {
             final ServerModel serverModel = this.connectAndRetrieveServerModel(deviceRequest);
 
             final ClientAssociation clientAssociation = this.iec61850DeviceConnectionService
                     .getClientAssociation(deviceRequest.getDeviceIdentification());
 
-            final DataResponseDto getDataResponse = this.getData(new DeviceConnection(
-                    new Iec61850Connection(new Iec61850ClientAssociation(clientAssociation, null), serverModel),
-                    deviceRequest.getDeviceIdentification(), IED.ZOWN_RTU), deviceRequest);
+            final DataResponseDto getDataResponse = this.getData(
+                    new DeviceConnection(new Iec61850Connection(new Iec61850ClientAssociation(clientAssociation, null),
+                            serverModel), deviceRequest.getDeviceIdentification(), IED.ZOWN_RTU), deviceRequest);
 
             final GetDataDeviceResponse deviceResponse = new GetDataDeviceResponse(
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
@@ -87,7 +90,7 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
                     deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
 
-            deviceResponseHandler.handleException(se, deviceResponse, true);
+            deviceResponseHandler.handleConnectionFailure(se, deviceResponse);
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during Get Data", e);
 
@@ -95,22 +98,20 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
                     deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
 
-            deviceResponseHandler.handleException(e, deviceResponse, false);
+            deviceResponseHandler.handleException(e, deviceResponse);
         }
     }
 
     @Override
     public void setSetPoints(final SetSetPointsDeviceRequest deviceRequest,
-            final DeviceResponseHandler deviceResponseHandler) {
+            final DeviceResponseHandler deviceResponseHandler) throws JMSException {
         try {
             final ServerModel serverModel = this.connectAndRetrieveServerModel(deviceRequest);
             final ClientAssociation clientAssociation = this.iec61850DeviceConnectionService
                     .getClientAssociation(deviceRequest.getDeviceIdentification());
 
-            this.setSetPoints(
-                    new DeviceConnection(
-                            new Iec61850Connection(new Iec61850ClientAssociation(clientAssociation, null), serverModel),
-                            deviceRequest.getDeviceIdentification(), IED.ZOWN_RTU),
+            this.setSetPoints(new DeviceConnection(new Iec61850Connection(new Iec61850ClientAssociation(
+                    clientAssociation, null), serverModel), deviceRequest.getDeviceIdentification(), IED.ZOWN_RTU),
                     serverModel, clientAssociation, deviceRequest);
 
             final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
@@ -125,7 +126,7 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
                     deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
 
-            deviceResponseHandler.handleException(se, deviceResponse, true);
+            deviceResponseHandler.handleConnectionFailure(se, deviceResponse);
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during Set SetPoint", e);
 
@@ -133,7 +134,7 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
                     deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
 
-            deviceResponseHandler.handleException(e, deviceResponse, false);
+            deviceResponseHandler.handleException(e, deviceResponse);
         }
     }
 
@@ -158,7 +159,7 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
             }
         };
 
-        this.iec61850Client.sendCommandWithRetry(function);
+        this.iec61850Client.sendCommandWithRetry(function, deviceRequest.getDeviceIdentification());
     }
 
     // ======================================
@@ -211,7 +212,7 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
             }
         };
 
-        return this.iec61850Client.sendCommandWithRetry(function);
+        return this.iec61850Client.sendCommandWithRetry(function, deviceRequest.getDeviceIdentification());
     }
 
     // ===========================

@@ -14,15 +14,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
-import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.requests.SetSetPointsDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.RtuDeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850DeviceResponseHandler;
 import com.alliander.osgp.dto.valueobjects.microgrids.SetPointsRequestDto;
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
-import com.alliander.osgp.shared.exceptionhandling.ConnectionFailureException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
@@ -40,8 +37,8 @@ public class MicrogridsSetSetPointsRequestMessageProcessor extends RtuDeviceRequ
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) {
-        LOGGER.info("Processing microgrids get data request message");
+    public void processMessage(final ObjectMessage message) throws JMSException {
+        LOGGER.debug("Processing microgrids get data request message");
 
         String correlationUid = null;
         String domain = null;
@@ -63,9 +60,9 @@ public class MicrogridsSetSetPointsRequestMessageProcessor extends RtuDeviceRequ
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
             ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
             retryCount = message.getIntProperty(Constants.RETRY_COUNT);
-            isScheduled = message.propertyExists(Constants.IS_SCHEDULED)
-                    ? message.getBooleanProperty(Constants.IS_SCHEDULED) : false;
-            setSetPointsRequest = (SetPointsRequestDto) message.getObject();
+            isScheduled = message.propertyExists(Constants.IS_SCHEDULED) ? message
+                    .getBooleanProperty(Constants.IS_SCHEDULED) : false;
+                    setSetPointsRequest = (SetPointsRequestDto) message.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -81,42 +78,15 @@ public class MicrogridsSetSetPointsRequestMessageProcessor extends RtuDeviceRequ
         final RequestMessageData requestMessageData = new RequestMessageData(null, domain, domainVersion, messageType,
                 retryCount, isScheduled, correlationUid, organisationIdentification, deviceIdentification);
 
-        LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
+        this.printDomainInfo(messageType, domain, domainVersion);
 
-        final DeviceResponseHandler deviceResponseHandler = new DeviceResponseHandler() {
-
-            @Override
-            public void handleResponse(final DeviceResponse deviceResponse) {
-                MicrogridsSetSetPointsRequestMessageProcessor.this.handleEmptyDeviceResponse(deviceResponse,
-                        MicrogridsSetSetPointsRequestMessageProcessor.this.responseMessageSender,
-                        requestMessageData.getDomain(), requestMessageData.getDomainVersion(),
-                        requestMessageData.getMessageType(), requestMessageData.getRetryCount());
-            }
-
-            @Override
-            public void handleException(final Throwable t, final DeviceResponse deviceResponse,
-                    final boolean expected) {
-                if (expected) {
-                    MicrogridsSetSetPointsRequestMessageProcessor.this.handleExpectedError(
-                            new ConnectionFailureException(ComponentType.PROTOCOL_IEC61850, t.getMessage()),
-                            requestMessageData.getCorrelationUid(), requestMessageData.getOrganisationIdentification(),
-                            requestMessageData.getDeviceIdentification(), requestMessageData.getDomain(),
-                            requestMessageData.getDomainVersion(), requestMessageData.getMessageType());
-                } else {
-                    MicrogridsSetSetPointsRequestMessageProcessor.this.handleUnExpectedError(deviceResponse, t,
-                            requestMessageData.getMessageData(), requestMessageData.getDomain(),
-                            requestMessageData.getDomainVersion(), requestMessageData.getMessageType(),
-                            requestMessageData.isScheduled(), requestMessageData.getRetryCount());
-                }
-            }
-
-        };
+        final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this.createIec61850DeviceResponseHandler(
+                requestMessageData, message);
 
         final SetSetPointsDeviceRequest deviceRequest = new SetSetPointsDeviceRequest(organisationIdentification,
                 deviceIdentification, correlationUid, setSetPointsRequest, domain, domainVersion, messageType,
                 ipAddress, retryCount, isScheduled);
 
-        this.deviceService.setSetPoints(deviceRequest, deviceResponseHandler);
+        this.deviceService.setSetPoints(deviceRequest, iec61850DeviceResponseHandler);
     }
-
 }
