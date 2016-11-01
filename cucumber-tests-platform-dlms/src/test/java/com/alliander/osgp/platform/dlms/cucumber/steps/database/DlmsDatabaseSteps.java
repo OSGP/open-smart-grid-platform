@@ -7,14 +7,13 @@ import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsSecurityKeyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
-import com.alliander.osgp.domain.core.repositories.EventRepository;
 import com.alliander.osgp.domain.core.repositories.ScheduledTaskRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
-import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 
 /**
@@ -23,23 +22,17 @@ import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 @Component
 public class DlmsDatabaseSteps {
 
-	@Autowired
-	private DlmsDeviceRepository dlmsDeviceRepo;
-
-	@Autowired
-	private SmartMeterRepository smartMeterRepo;
-
-	@Autowired
-	private DlmsSecurityKeyRepository dlmsDSecurityKeyRepo;
+    @Autowired
+    private DlmsDeviceRepository dlmsDeviceRepo;
 
     @Autowired
-	private DeviceRepository deviceRepo;
+    private SmartMeterRepository smartMeterRepo;
 
     @Autowired
-    private EventRepository eventRepository;
+    private DlmsSecurityKeyRepository dlmsDSecurityKeyRepo;
 
     @Autowired
-    private SsldRepository ssldRepository;
+    private DeviceRepository deviceRepo;
 
     @Autowired
     private DeviceAuthorizationRepository deviceAuthorization;
@@ -54,30 +47,30 @@ public class DlmsDatabaseSteps {
     private ScheduledTaskRepository scheduledTaskRepository;
 
     /**
-	 * Before each scenario dlms related stuff needs to be removed.
-	 */
-	public void prepareDatabaseForScenario() {
-		// Remove all data from previous scenario.
-	    this.deviceAuthorization.deleteAllInBatch();
-	    this.eventRepository.deleteAllInBatch();
-	    this.ssldRepository.deleteAllInBatch();
-	    this.deviceRepo.deleteAllInBatch();
+     * Before each scenario dlms related stuff needs to be removed.
+     */
+    @Transactional(transactionManager = "txMgrCore")
+    public void prepareDatabaseForScenario() {
+        // Remove all data from previous scenario.
+        this.deviceAuthorization.deleteAllInBatch();
+        this.deviceRepo.deleteAllInclNestedEntities();
         this.dlmsDSecurityKeyRepo.deleteAllInBatch();
-	    this.dlmsDeviceRepo.deleteAllInBatch();
-	    this.smartMeterRepo.deleteAllInBatch();
-	    this.meterResponseDataRepo.deleteAllInBatch();
-	    this.deviceLogItemRepository.deleteAllInBatch();
-	    this.scheduledTaskRepository.deleteAllInBatch();
+        this.dlmsDeviceRepo.deleteAllInBatch();
+        this.smartMeterRepo.deleteAllInBatch();
+        this.meterResponseDataRepo.deleteAllInBatch();
+        this.deviceLogItemRepository.deleteAllInBatch();
+        this.scheduledTaskRepository.deleteAllInBatch();
 
-	    this.insertDefaultData();
-	}
+        this.insertDefaultData();
+    }
 
-	/**
-	 * This method is used to create default data not directly related to the specific tests.
-	 * For example: A default dlms gateway device.
-	 */
-	private void insertDefaultData() {
-		// TODO insert here default devices.
-	}
+    /**
+     * This method is used to create default data not directly related to the
+     * specific tests. For example: A default dlms gateway device.
+     */
+    private void insertDefaultData() {
+        // TODO insert here default devices.
+    }
+
 
 }
