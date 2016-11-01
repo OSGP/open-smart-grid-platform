@@ -65,28 +65,28 @@ Feature: Smartmetering Configuration
     Then the firmware version result should be returned
 
   Scenario: successful upgrade of firmware
-    Given a request for a firmware upgrade for device TEST1024000000001 from a client
-    And the installation file of version KFPP_V060100FF is available
+    Given a request for a firmware upgrade for device "TEST1024000000001" from a client
+    And the installation file of version "KFPP_V060100FF" is available
     When the request for a firmware upgrade is received
     Then firmware should be updated
-    And the database should be updated so it indicates that device TEST1024000000001 is using firmware version KFPP_V060100FF
+    And the database should be updated so it indicates that device "TEST1024000000001" is using firmware version "KFPP_V060100FF"
 
   Scenario: upgrade of firmware, installation file not available
-    Given a request for a firmware upgrade for device TEST1024000000001 from a client
-    And the installation file of version KFPP_V060100FA is not available
+    Given a request for a firmware upgrade for device "TEST1024000000001" from a client
+    And the installation file of version "KFPP_V060100FA" is not available
     When the request for a firmware upgrade is received
     Then the message "Installation file is not available" should be given
 
   Scenario: upgrade of firmware, corrupt installation file
-    Given a request for a firmware upgrade for device TEST1024000000001 from a client
-    And the installation file of version KFPP_V060100FF.corrupt is available
+    Given a request for a firmware upgrade for device "TEST1024000000001" from a client
+    And the installation file of version "KFPP_V060100FF.corrupt" is available
     And the installation file is corrupt
     When the request for a firmware upgrade is received
     Then the message "Upgrade of firmware did not succeed" should be given
 
   Scenario: unsuccessful upgrade of firmware
-    Given a request for a firmware upgrade for device TEST1024000000001 from a client
-    And the installation file of version KFPP_V060100FF.corrupt is available
+    Given a request for a firmware upgrade for device "TEST1024000000001" from a client
+    And the installation file of version "KFPP_V060100FF.corrupt" is available
     When the request for a firmware upgrade is received
     And the upgrade of firmware did not succeed
     Then the message "Upgrade of firmware did not succeed" should be given

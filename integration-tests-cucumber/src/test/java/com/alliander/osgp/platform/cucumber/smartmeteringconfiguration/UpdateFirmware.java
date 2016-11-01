@@ -1,5 +1,14 @@
+/**
+ * Copyright 2016 Smart Society Services B.V. *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.platform.cucumber.smartmeteringconfiguration;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -13,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.Firmware;
-import com.alliander.osgp.domain.core.repositories.DeviceFirmwareRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.FirmwareRepository;
 import com.alliander.osgp.platform.cucumber.SmartMetering;
@@ -64,15 +72,12 @@ public class UpdateFirmware extends SmartMetering {
     @Autowired
     private FirmwareRepository firmwareRepository;
 
-    @Autowired
-    private DeviceFirmwareRepository deviceFirmwareRespository;
-
-    @Given("^a request for a firmware upgrade for device (.+) from a client$")
+    @Given("^a request for a firmware upgrade for device \"([^\"]*)\" from a client$")
     public void aRequestForAFirmwareUpgradeForDeviceFromAClient(final String deviceIdentification) throws Throwable {
         this.deviceId.setDeviceIdE(deviceIdentification);
     }
 
-    @Given("^the installation file of version (.+) is available$")
+    @Given("^the installation file of version \"([^\"]*)\" is available$")
     public void theInstallationFileOfVersionIsAvailable(final String version) throws Throwable {
         PROPERTIES_MAP.put(FIRMWARE_IDENTIFIER_LABEL, version);
     }
@@ -100,26 +105,29 @@ public class UpdateFirmware extends SmartMetering {
                 XPATH_MATCHER_FIRMWAREVERSION_VERSION, 3);
     }
 
-    @Then("^the database should be updated so it indicates that device (.+) is using firmware version (.+)$")
+    @Then("^the database should be updated so it indicates that device \"([^\"]*)\" is using firmware version \"([^\"]*)\"$")
     public void theDatabaseShouldBeUpdatedSoItIndicatesThatDeviceEIsUsingFirmwareVersion(
             final String deviceIdentification, final String firmwareVersion) throws Throwable {
 
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-        assertNotNull(device);
+        assertNotNull("Device not found.", device);
 
         final Firmware firmware = this.firmwareRepository.findByFilename(firmwareVersion);
-        assertNotNull(firmware);
+        assertNotNull("Firmware not found.", firmware);
 
         final Firmware activeFirmware = device.getActiveFirmware();
-        assertNotNull(activeFirmware);
+        assertNotNull("No active firmware found for device.", activeFirmware);
 
-        assertTrue(activeFirmware.getFilename().equals(firmware.getFilename()));
-        assertTrue(activeFirmware.getModuleVersionComm().equals(firmware.getModuleVersionComm()));
-        assertTrue(activeFirmware.getModuleVersionFunc().equals(firmware.getModuleVersionFunc()));
-        assertTrue(activeFirmware.getModuleVersionMa().equals(firmware.getModuleVersionMa()));
+        assertEquals("Firmware filenames do not match.", activeFirmware.getFilename(), firmware.getFilename());
+        assertEquals("Firmware fields module_version_comm do not match.", activeFirmware.getModuleVersionComm(),
+                firmware.getModuleVersionComm());
+        assertEquals("Firmware fields module_version_func do not match.", activeFirmware.getModuleVersionFunc(),
+                firmware.getModuleVersionFunc());
+        assertEquals("Firmware fields module_version_ma do not match.", activeFirmware.getModuleVersionMa(),
+                firmware.getModuleVersionMa());
     }
 
-    @Given("^the installation file of version (.+) is not available$")
+    @Given("^the installation file of version \"([^\"]*)\" is not available$")
     public void theInstallationFileOfVersionIsNotAvailable(final String version) throws Throwable {
         PROPERTIES_MAP.put(FIRMWARE_IDENTIFIER_LABEL, version);
     }
