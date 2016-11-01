@@ -15,12 +15,12 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
-import com.alliander.osgp.platform.cucumber.steps.Defaults;
 
 import cucumber.api.java.en.Given;
 
@@ -44,16 +44,16 @@ public class DeviceAuthorizationSteps {
     @Given("^a device authorization$")
     public void aDeviceAuthorization(final Map<String, String> settings) throws Throwable {
 
-        final Device device = this.deviceRepository.findByDeviceIdentification(getString(settings,
-                "DeviceIdentification", DeviceSteps.DEFAULT_DEVICE_IDENTIFICATION));
+    	Device device = deviceRepository.findByDeviceIdentification(
+    			getString(settings, "DeviceIdentification", DeviceSteps.DEFAULT_DEVICE_IDENTIFICATION));
+    	
+    	Organisation organization = organizationRepository.findByOrganisationIdentification(
+    			getString(settings, "OrganizationIdentification", "test-org"));
+    	
+    	DeviceFunctionGroup functionGroup = getEnum(settings, "DeviceFunctionGroup", DeviceFunctionGroup.class, DeviceFunctionGroup.OWNER);
+    	
+        final DeviceAuthorization authorization = device.addAuthorization(organization, functionGroup);
 
-        final Organisation organization = this.organizationRepository.findByOrganisationIdentification(getString(
-                settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
-
-        final DeviceFunctionGroup functionGroup = getEnum(settings, "DeviceFunctionGroup", DeviceFunctionGroup.class,
-                DeviceFunctionGroup.OWNER);
-
-        device.addAuthorization(organization, functionGroup);
-        this.deviceRepository.save(device);
+        deviceAuthorizationRepository.save(authorization);
     }
 }

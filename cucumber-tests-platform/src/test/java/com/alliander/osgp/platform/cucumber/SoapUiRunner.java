@@ -40,7 +40,7 @@ import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
  */
 @Configuration
 @PropertySources({ @PropertySource("classpath:cucumber-platform.properties"),
-    	@PropertySource(value = "file:/etc/osp/cucumber-platform.properties", ignoreResourceNotFound = true)
+    	@PropertySource(value = "file:/etc/osp/cucumber-platform.properties", ignoreResourceNotFound = true) 
 })
 public abstract class SoapUiRunner {
 
@@ -90,7 +90,7 @@ public abstract class SoapUiRunner {
 
     /**
      * Create the WSDL project based on the given SoapUI project.
-     *
+     * 
      * @throws Throwable.
      */
     @PostConstruct
@@ -134,8 +134,6 @@ public abstract class SoapUiRunner {
      *            is the testcase name which includes the testcase
      * @param testSuiteXml
      *            is the testsuite name which includes the testcase
-     * @throws java.lang.NullPointerException
-     *            when thrown, information about the SoapUI testcase is probably incorrect
      * @throws Throwable
      */
     protected void requestRunner(final TestStepStatus testStepStatus, final Map<String, String> propertiesMap,
@@ -177,15 +175,15 @@ public abstract class SoapUiRunner {
     }
 
     /**
-     * Wait for a response.
-     * @note In order to get the actual response from the device of the original request to the platform,
-     * we need to poll for it. Newer devices use notification services though, and thus they don't need
+     * Wait for a response. 
+     * @note In order to get the actual response from the device of the original request to the platform, 
+     * we need to poll for it. Newer devices use notification services though, and thus they don't need 
      * to poll for it using this method.
      * @param propertiesMap
      * @param testCaseResultName
      * @param testCaseResultReqXML
      * @param testSuiteXML
-     * @throws Throwable
+     * @throws Throwable 
      */
     public void waitForResponse(final TestStepStatus testStepStatus, final Map<String, String> propertiesMap, final String testCaseResultNameRequest,
                 final String testCaseResultReqXml, final String testSuiteXml) throws Throwable {
@@ -195,13 +193,13 @@ public abstract class SoapUiRunner {
             if (count > 120) {
                 Assert.fail("Failed to retieve a response");
             }
-
+    
             // Wait for next try to retrieve a response
             count++;
             Thread.sleep(1000);
-
+    
             this.requestRunner(testStepStatus, propertiesMap, testCaseResultNameRequest,
                     testCaseResultReqXml, testSuiteXml);
-        } while (!this.runXpathResult.assertXpath(this.response, PATH_RESULT, "OK"));
+        } while (!this.runXpathResult.assertXpath(this.response, PATH_RESULT, "OK")); 
     }
 }
