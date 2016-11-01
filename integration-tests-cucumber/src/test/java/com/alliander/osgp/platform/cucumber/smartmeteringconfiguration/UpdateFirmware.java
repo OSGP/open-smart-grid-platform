@@ -118,13 +118,13 @@ public class UpdateFirmware extends SmartMetering {
         final Firmware activeFirmware = device.getActiveFirmware();
         assertNotNull("No active firmware found for device.", activeFirmware);
 
-        assertEquals("Firmware filenames do not match.", activeFirmware.getFilename(), firmware.getFilename());
-        assertEquals("Firmware fields module_version_comm do not match.", activeFirmware.getModuleVersionComm(),
-                firmware.getModuleVersionComm());
-        assertEquals("Firmware fields module_version_func do not match.", activeFirmware.getModuleVersionFunc(),
-                firmware.getModuleVersionFunc());
-        assertEquals("Firmware fields module_version_ma do not match.", activeFirmware.getModuleVersionMa(),
-                firmware.getModuleVersionMa());
+        assertEquals("Firmware filenames do not match.", firmware.getFilename(), activeFirmware.getFilename());
+        assertEquals("Firmware fields module_version_comm do not match.", firmware.getModuleVersionComm(),
+                activeFirmware.getModuleVersionComm());
+        assertEquals("Firmware fields module_version_func do not match.", firmware.getModuleVersionFunc(),
+                activeFirmware.getModuleVersionFunc());
+        assertEquals("Firmware fields module_version_ma do not match.", firmware.getModuleVersionMa(),
+                activeFirmware.getModuleVersionMa());
     }
 
     @Given("^the installation file of version \"([^\"]*)\" is not available$")
