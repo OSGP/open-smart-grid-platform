@@ -17,6 +17,8 @@ import com.alliander.osgp.domain.core.entities.Firmware;
 @Repository
 public interface FirmwareRepository extends JpaRepository<Firmware, Long> {
 
-    public List<Firmware> findByModuleVersionCommAndModuleVersionMaAndModuleVersionFunc(String moduleVersionComm,
-            String moduleVersionMa, String moduleVersionFunc);
+    public List<Firmware> findByModuleVersionCommAndModuleVersionMaAndModuleVersionFunc(final String moduleVersionComm,
+            final String moduleVersionMa, final String moduleVersionFunc);
+
+    public Firmware findByFilename(final String filename);
 }

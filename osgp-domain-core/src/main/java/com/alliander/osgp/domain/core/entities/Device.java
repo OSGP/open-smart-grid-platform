@@ -474,10 +474,10 @@ public class Device implements Serializable {
     }
 
     public void setFirmware(final Firmware firmware, final String installedBy) {
-        for (DeviceFirmware deviceFirmware : this.deviceFirmwares) {
+        for (final DeviceFirmware deviceFirmware : this.deviceFirmwares) {
             deviceFirmware.setActive(false);
         }
-        DeviceFirmware newDeviceFirmware = new DeviceFirmware();
+        final DeviceFirmware newDeviceFirmware = new DeviceFirmware();
         newDeviceFirmware.setActive(true);
         newDeviceFirmware.setDevice(this);
         newDeviceFirmware.setFirmware(firmware);
@@ -485,5 +485,15 @@ public class Device implements Serializable {
         newDeviceFirmware.setInstalledBy(installedBy);
 
         this.deviceFirmwares.add(newDeviceFirmware);
+    }
+
+    public Firmware getActiveFirmware() {
+        for (final DeviceFirmware deviceFirmware : this.deviceFirmwares) {
+            if (deviceFirmware.isActive()) {
+                return deviceFirmware.getFirmware();
+            }
+        }
+
+        return null;
     }
 }
