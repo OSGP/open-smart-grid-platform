@@ -37,14 +37,19 @@ public class DefaultDeviceResponseService {
         OsgpException osgpException = exception;
 
         try {
-            if (deviceResult == ResponseMessageResultType.NOT_OK || exception != null) {
+            if (deviceResult == ResponseMessageResultType.NOT_OK || osgpException != null) {
                 LOGGER.error("Device Response not ok.", osgpException);
                 throw osgpException;
             }
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            osgpException = new TechnicalException(ComponentType.UNKNOWN, "An unknown error occurred", e);
+
+            if (e instanceof OsgpException) {
+                osgpException = (OsgpException) e;
+            } else {
+                osgpException = new TechnicalException(ComponentType.UNKNOWN, "An unknown error occurred", e);
+            }
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
