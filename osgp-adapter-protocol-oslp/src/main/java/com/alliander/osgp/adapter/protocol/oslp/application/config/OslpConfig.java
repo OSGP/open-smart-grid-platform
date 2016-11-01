@@ -44,7 +44,6 @@ import com.alliander.osgp.adapter.protocol.oslp.infra.networking.OslpChannelHand
 import com.alliander.osgp.adapter.protocol.oslp.infra.networking.OslpSecurityHandler;
 import com.alliander.osgp.oslp.OslpDecoder;
 import com.alliander.osgp.oslp.OslpEncoder;
-import com.alliander.osgp.oslp.OslpUtils;
 
 /**
  * An application context Java configuration class. The usage of Java
@@ -236,19 +235,6 @@ public class OslpConfig {
     @Bean
     public OslpChannelHandlerClient oslpChannelHandlerClient() {
         return new OslpChannelHandlerClient();
-    }
-
-    /**
-     * Why is this class instantiated? The class only offers static functions.
-     * SonarQube issue: Classes with only "static" methods should not be
-     * instantiated squid:S2440
-     * http://54.77.62.182/sonarqube/coding_rules#rule_key=squid%3AS2440
-     *
-     * @return
-     */
-    @Bean
-    public OslpUtils oslpUtils() {
-        return new OslpUtils();
     }
 
     // === Sequence number config ===
