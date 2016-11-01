@@ -77,7 +77,7 @@ public class GetFirmwareVersionSteps extends CoreStepsBase {
                 getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
                         Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
-        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get("CorrelationUid") + "]");
+        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
     }
 
     @Then("^the platform buffers a get firmware version response message for device \"([^\"]*)\"$")
@@ -85,7 +85,7 @@ public class GetFirmwareVersionSteps extends CoreStepsBase {
             final Map<String, String> expectedResponseData) throws Throwable {
         // Required parameters
         PROPERTIES_MAP.put("__DEVICE_IDENTIFICATION__", deviceIdentification);
-        PROPERTIES_MAP.put("__CORRELATION_UID__", (String) ScenarioContext.Current().get("CorrelationUid"));
+        PROPERTIES_MAP.put("__CORRELATION_UID__", (String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
 
         this.waitForResponse(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_RESULT_NAME_REQUEST,
                     TEST_CASE_RESULT_REQ_XML, TEST_SUITE_XML);

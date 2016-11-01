@@ -50,7 +50,7 @@ public class SetLightSteps extends PublicLightingStepsBase {
     public void givenReceivingASetLightRequest(final Map<String, String> requestParameters) throws Throwable {
 
         // Required parameters
-        PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_LABEL, getString(requestParameters, DEVICE_IDENTIFICATION_LABEL, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION, getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
         PROPERTIES_MAP.put(ON_LABEL, getString(requestParameters, ON_LABEL, DEFAULT_ON));
 
         // Now run the request.
@@ -77,14 +77,14 @@ public class SetLightSteps extends PublicLightingStepsBase {
                 getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
                         Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
-        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get("CorrelationUid") + "]");
+        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
     }
 
     @Then("^the platform buffers a set light response message for device \"([^\"]*)\"$")
     public void thenThePlatformBufferesASetLightResponseMessage(final String deviceIdentification) throws Throwable {
         // Required parameters
         PROPERTIES_MAP.put("__DEVICE_IDENTIFICATION__", deviceIdentification);
-        PROPERTIES_MAP.put("__CORRELATION_UID__", (String) ScenarioContext.Current().get("CorrelationUid"));
+        PROPERTIES_MAP.put("__CORRELATION_UID__", (String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
 
         this.waitForResponse(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_RESULT_NAME_REQUEST,
                     TEST_CASE_RESULT_REQ_XML, TEST_SUITE_XML);

@@ -1,3 +1,6 @@
+/**
+ * Copyright 2016 Smart Society Services B.V.
+ */
 package com.alliander.osgp.platform.cucumber.steps;
 
 /**
@@ -8,6 +11,7 @@ public class Keys {
     public Keys() {
     }
 
+    public static final String KEY_CORRELATION_UID = "CorrelationUid";
     public static final String KEY_DEVICE_IDENTIFICATION = "DeviceIdentification";
     public static final String KEY_DEVICE_TYPE = "DeviceType";
     public static final String KEY_PROTOCOL = "Protocol";
@@ -32,10 +36,17 @@ public class Keys {
     public static final String KEY_IP_ADDR_IS_STATIC = "IpAddressIsStatic";
     public static final String KEY_GATEWAY_DEVICE_ID = "GatewayDeviceIdentification";
     public static final String KEY_CHANNEL = "Channel";
-//  public static final String KEY_ = "DeviceFunctionGroup";
-//  public static final String KEY_ = "DeviceFunctionGroup";
     public static final String KEY_PERIOD_TYPE = "PeriodType";
     public static final String KEY_BEGIN_DATE = "BeginDate";
     public static final String KEY_END_DATE = "EndDate";
     public static final String KEY_INDEBUGMODE = "InDebugMode";
+    public static final String KEY_DEVICE_COMMUNICATIONMETHOD = "CommunicationMethod";
+    public static final String KEY_DEVICE_COMMUNICATIONPROVIDER = "CommunicationProvider";
+    public static final String KEY_DEVICE_ICCID = "ICC_id";
+    public static final String KEY_DEVICE_DSMRVERSION = "DSMR_version";
+    public static final String KEY_DEVICE_SUPPLIER = "Supplier";
+    public static final String KEY_DEVICE_HLS3ACTIVE = "HLS3_active";
+    public static final String KEY_DEVICE_HLS4ACTIVE = "HLS4_active";
+    public static final String KEY_DEVICE_HLS5ACTIVE = "HLS5_active";
+    public static final String KEY_DEVICE_MASTERKEY = "Master_key";
 }

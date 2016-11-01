@@ -17,6 +17,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.util.Assert;
 
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
+import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
 public class Helpers {
@@ -193,7 +194,7 @@ public class Helpers {
 
         // Validate the correlation-id starts with correct organization
         Assert.isTrue(correlationUid.startsWith(organizationIdentification));
-        ScenarioContext.Current().put("CorrelationUid", correlationUid);
+        ScenarioContext.Current().put(Keys.KEY_CORRELATION_UID, correlationUid);
     }
 
     /**

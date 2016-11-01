@@ -47,7 +47,7 @@ public class DeviceAuthorizationSteps {
     public void aDeviceAuthorization(final Map<String, String> settings) throws Throwable {
 
     	final Device device = this.deviceRepository.findByDeviceIdentification(
-    			getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, DeviceSteps.DEFAULT_DEVICE_IDENTIFICATION));
+    			getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
     	final Organisation organization = this.organizationRepository.findByOrganisationIdentification(
     			getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));

@@ -28,7 +28,7 @@ public class ActivateDeviceSteps extends AdminStepsBase {
 
     @When("^receiving a activate device request$")
     public void receivingAActivateDeviceRequest(final Map<String, String> requestSettings) throws Throwable {
-        PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_LABEL, requestSettings.get(Keys.KEY_DEVICE_IDENTIFICATION));
+        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION, requestSettings.get(Keys.KEY_DEVICE_IDENTIFICATION));
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_NAME, TEST_SUITE);
     }

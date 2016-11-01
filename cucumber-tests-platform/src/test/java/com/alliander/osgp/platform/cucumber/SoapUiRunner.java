@@ -53,12 +53,7 @@ public abstract class SoapUiRunner {
     protected static final Map<String, String> PROPERTIES_MAP = new HashMap<>();
 
     // Labels.
-    protected static final String DEVICE_IDENTIFICATION_LABEL = "DeviceIdentification";
-    protected static final String ORGANISATION_IDENTIFICATION_LABEL = "OrganisationIdentification";
     protected static final String SERVICE_ENDPOINT_LABEL = "ServiceEndpoint";
-    public    static final String CORRELATION_UID_LABEL = "CorrelationUid";
-    protected static final String DEVICE_TYPE_LABEL = "DeviceType";
-
     protected static final String PATH_DEVICE_IDENTIFICATION = "//*[local-name()='DeviceIdentification']/text()";
     protected static final String PATH_CORRELATION_UID = "//*[local-name()='CorrelationUid']/text()";
     protected static final String PATH_RESULT = "//*[local-name()='Result']/text()";
