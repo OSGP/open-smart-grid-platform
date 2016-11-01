@@ -32,6 +32,7 @@ public abstract class AbstractApplicationInitializer {
     protected Logger logger;
     private Class<?> contextClass;
     private String logConfig;
+    protected AnnotationConfigWebApplicationContext rootContext;
 
     /**
      * 
@@ -42,6 +43,7 @@ public abstract class AbstractApplicationInitializer {
         this.contextClass = contextClass;
         this.logConfig = logConfig;
         this.logger = LoggerFactory.getLogger(this.contextClass);
+        this.rootContext = new AnnotationConfigWebApplicationContext();
     }
 
     protected void startUp(final ServletContext servletContext) throws ServletException {
@@ -51,7 +53,6 @@ public abstract class AbstractApplicationInitializer {
 
         initializeLogging(servletContext);
 
-        final AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
         rootContext.register(this.contextClass);
 
         servletContext.addListener(new ContextLoaderListener(rootContext));
