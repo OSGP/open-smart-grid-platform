@@ -80,7 +80,7 @@
 			only local deployment test (which will fail op build server -->
 		<!-- Automatic tests project -->
 		<!-- <module>cucumber-tests-platform</module> -->
-		<!--module>cucumber-tests-platform-dlms</module -->
+		<!--module>cucumber-tests-platform-dlms</module> -->
 
 		<!-- Fitnesse Acceptance Test Project (Obsolete, but in here because not 
 			all tests are moved to the cucumber projects -->
