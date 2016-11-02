@@ -45,8 +45,14 @@ public interface DeviceRepository extends JpaRepository<Device, Long>, JpaSpecif
             + ") AND " + "d.modificationTime >= ?2")
     List<Device> findRecentDevices(Organisation organisation, Date fromDate);
 
+    /*
+     * We need these native queries below because these entities dont have an Id
+     */
     @Modifying
-    @Query(value = "delete from device_output_setting; delete from event; delete from ssld; delete from ean; delete from device", nativeQuery = true)
-    void deleteAllInclNestedEntities();
+    @Query(value = "delete from ean", nativeQuery = true)
+    void deleteAllEans();
 
+    @Modifying
+    @Query(value = "delete from device_output_setting", nativeQuery = true)
+    void deleteDeviceOutputSettings();
 }
