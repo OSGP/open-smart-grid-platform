@@ -20,5 +20,6 @@ public class DeleteAllDevicesService {
         this.eventRepository.deleteAllInBatch();
         this.deviceRepositry.deleteAllEans();
         this.deviceRepositry.deleteDeviceOutputSettings();
-        this.deviceRepositry.deleteAllInBatch();    }
+        this.deviceRepositry.deleteAllInBatch();
+    }
 }
