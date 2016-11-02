@@ -117,46 +117,39 @@ public class AdHocManagementService extends AbstractService {
     public void handleGetStatusResponse(final com.alliander.osgp.dto.valueobjects.DeviceStatusDto deviceStatusDto,
             final DomainType allowedDomainType, final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
-            final ResponseMessageResultType deviceResult, final OsgpException exception) throws OsgpException {
+            final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
         LOGGER.info("handleResponse for MessageType: {}", messageType);
 
-        ResponseMessageResultType result = ResponseMessageResultType.OK;
+        ResponseMessageResultType result = deviceResult;
         OsgpException osgpException = exception;
         DeviceStatusMapped deviceStatusMapped = null;
 
-        try {
             if (deviceResult == ResponseMessageResultType.NOT_OK || osgpException != null) {
                 LOGGER.error("Device Response not ok.", osgpException);
-                throw osgpException;
-            }
-
-            final DeviceStatus status = this.domainCoreMapper.map(deviceStatusDto, DeviceStatus.class);
-
-            final Ssld device = this.ssldRepository.findByDeviceIdentification(deviceIdentification);
-
-            final List<DeviceOutputSetting> deviceOutputSettings = device.getOutputSettings();
-
-            final Map<Integer, DeviceOutputSetting> dosMap = new HashMap<>();
-            for (final DeviceOutputSetting dos : deviceOutputSettings) {
-                dosMap.put(dos.getExternalId(), dos);
-            }
-
-            if (status != null) {
-                deviceStatusMapped = new DeviceStatusMapped(filterTariffValues(status.getLightValues(), dosMap,
-                        allowedDomainType), filterLightValues(status.getLightValues(), dosMap, allowedDomainType),
-                        status.getPreferredLinkType(), status.getActualLinkType(), status.getLightType(),
-                        status.getEventNotificationsMask());
             } else {
-                result = ResponseMessageResultType.NOT_OK;
-                osgpException = new TechnicalException(ComponentType.DOMAIN_PUBLIC_LIGHTING,
-                        "Device was not able to report status", new NoDeviceResponseException());
+                final DeviceStatus status = this.domainCoreMapper.map(deviceStatusDto, DeviceStatus.class);
+
+                final Ssld device = this.ssldRepository.findByDeviceIdentification(deviceIdentification);
+
+                final List<DeviceOutputSetting> deviceOutputSettings = device.getOutputSettings();
+
+                final Map<Integer, DeviceOutputSetting> dosMap = new HashMap<>();
+                for (final DeviceOutputSetting dos : deviceOutputSettings) {
+                    dosMap.put(dos.getExternalId(), dos);
+                }
+
+                if (status != null) {
+                    deviceStatusMapped = new DeviceStatusMapped(filterTariffValues(status.getLightValues(), dosMap,
+                            allowedDomainType), filterLightValues(status.getLightValues(), dosMap, allowedDomainType),
+                            status.getPreferredLinkType(), status.getActualLinkType(), status.getLightType(),
+                            status.getEventNotificationsMask());
+                } else {
+                    result = ResponseMessageResultType.NOT_OK;
+                    osgpException = new TechnicalException(ComponentType.DOMAIN_PUBLIC_LIGHTING,
+                            "Device was not able to report status", new NoDeviceResponseException());
+                }
             }
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected Exception", e);
-            result = ResponseMessageResultType.NOT_OK;
-            osgpException = new TechnicalException(ComponentType.DOMAIN_PUBLIC_LIGHTING, e.getCause() == null ? e.getMessage() : e.getCause().getMessage(), e);
-        }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
                 deviceIdentification, result, osgpException, deviceStatusMapped));

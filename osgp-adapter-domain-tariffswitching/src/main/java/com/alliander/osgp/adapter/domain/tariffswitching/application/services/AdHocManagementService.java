@@ -93,12 +93,9 @@ public class AdHocManagementService extends AbstractService {
         OsgpException osgpException = exception;
         DeviceStatusMapped deviceStatusMapped = null;
 
-        try {
-            if (deviceResult == ResponseMessageResultType.NOT_OK || exception != null) {
-                LOGGER.error("Device Response not ok.", osgpException);
-                throw osgpException;
-            }
-
+        if (deviceResult == ResponseMessageResultType.NOT_OK || exception != null) {
+            LOGGER.error("Device Response not ok.", osgpException);
+        } else {
             final DeviceStatus status = this.domainCoreMapper.map(deviceStatusDto, DeviceStatus.class);
 
             final Ssld ssld = this.ssldRepository.findByDeviceIdentification(deviceIdentification);
@@ -120,10 +117,6 @@ public class AdHocManagementService extends AbstractService {
                 osgpException = new TechnicalException(ComponentType.DOMAIN_TARIFF_SWITCHING,
                         "Device was not able to report status", new NoDeviceResponseException());
             }
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected Exception", e);
-            result = ResponseMessageResultType.NOT_OK;
-            osgpException = new TechnicalException(ComponentType.DOMAIN_TARIFF_SWITCHING, e.getCause() == null ? e.getMessage() : e.getCause().getMessage(), e);
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
