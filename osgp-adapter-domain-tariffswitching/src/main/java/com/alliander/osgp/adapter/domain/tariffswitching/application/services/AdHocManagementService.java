@@ -89,7 +89,7 @@ public class AdHocManagementService extends AbstractService {
             final String organisationIdentification, final String correlationUid, final String messageType,
             final ResponseMessageResultType deviceResult, final OsgpException exception) throws OsgpException {
 
-        ResponseMessageResultType result = ResponseMessageResultType.OK;
+        ResponseMessageResultType result = deviceResult;
         OsgpException osgpException = exception;
         DeviceStatusMapped deviceStatusMapped = null;
 
