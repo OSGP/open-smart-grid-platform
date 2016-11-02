@@ -11,6 +11,7 @@ import java.io.Serializable;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import com.alliander.osgp.adapter.protocol.oslp.elster.services.DeviceResponseSe
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
 import com.alliander.osgp.shared.infra.jms.MessageProcessorMap;
@@ -172,7 +174,8 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             final String messageType, final boolean isScheduled, final int retryCount) {
 
         final ResponseMessageResultType result = ResponseMessageResultType.NOT_OK;
-        final TechnicalException ex = new TechnicalException(ComponentType.PROTOCOL_OSLP, UNEXPECTED_EXCEPTION, t);
+        final OsgpException ex = new TechnicalException(ComponentType.PROTOCOL_OSLP, StringUtils.isBlank(t.getMessage()) ?
+                UNEXPECTED_EXCEPTION : t.getMessage(), t);
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
                 deviceResponse.getCorrelationUid(), deviceResponse.getOrganisationIdentification(),
