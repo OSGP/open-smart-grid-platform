@@ -51,14 +51,14 @@ public abstract class AbstractApplicationInitializer {
         // Hibernate/JDBC)
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
-        initializeLogging(servletContext);
+        initializeLogging();
 
         rootContext.register(this.contextClass);
 
         servletContext.addListener(new ContextLoaderListener(rootContext));
     }
 
-    private void initializeLogging(final ServletContext servletContext) throws ServletException {
+    private void initializeLogging() throws ServletException {
         boolean reinitLogback = false;
 
         Context initialContext;
