@@ -3,6 +3,7 @@
  */
 package com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.smartmeteringmanagement;
 
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getBoolean;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 
 import java.io.IOException;
@@ -15,8 +16,6 @@ import javax.xml.xpath.XPathExpressionException;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -53,7 +52,7 @@ public abstract class AbstractFindEventsReads extends SmartMeteringStepsBase {
         //this.waitForResponse(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE + this.getEventLogCategory(), TEST_CASE_XML, TEST_SUITE_XML);
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE + this.getEventLogCategory(), TEST_CASE_XML, TEST_SUITE_XML);
 
-        this.checkResponse(this.getAllowedEventTypes());
+        this.checkResponse(settings, this.getAllowedEventTypes());
     }
 
     /**
@@ -73,28 +72,16 @@ public abstract class AbstractFindEventsReads extends SmartMeteringStepsBase {
      * @throws SAXException
      * @throws IOException
      */
-    private final void checkResponse(final List<EventType> allowed) throws XPathExpressionException,
+    private final void checkResponse(final Map<String, String> settings, final List<EventType> allowed) throws XPathExpressionException,
             ParserConfigurationException, SAXException, IOException {
+
         final NodeList nodeList = this.runXpathResult.getNodeList(this.response, PATH_RESULT_EVENTS);
-        if (nodeList.getLength() > 0) {
-            for (int i = 0; i < nodeList.getLength(); i++) {
-                final Node node = nodeList.item(i);
-                if (node.getNodeType() == Node.ELEMENT_NODE) {
-                    final Element e = (Element) node;
-                    String name = e.getNodeName();
-                    String prefix = "";
-                    if (name.indexOf(':') != -1) {
-                        prefix = name.substring(0, name.indexOf(':') + 1);
-                        name = name.substring(name.indexOf(':') + 1);
-                    }
-                    if ("Events".equals(name)) {
-                        final String type = e.getElementsByTagName(prefix + "eventType").item(0).getNodeValue();
-                        Assert.assertTrue("Type not allowed " + type, allowed.contains(EventType.fromValue(type)));
-                    }
-                }
+        final boolean nodeListExpected = getBoolean(settings, Keys.KEY_EVENTS_NODELIST_EXPECTED, Defaults.EVENTS_NODELIST_EXPECTED);
+        if (nodeListExpected) {
+            Assert.assertEquals("Size of response nodelist should be equals to the allowed size", allowed.size(), nodeList.getLength());
+            for (final EventType eventtype : allowed) {
+                Assert.assertTrue("eventype " + eventtype + " should be in response", this.response.indexOf(eventtype.toString()) > 0);
             }
-        } else {
-            // ok events can be empty
         }
     }
 }

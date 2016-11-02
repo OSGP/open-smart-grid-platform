@@ -8,6 +8,7 @@
 package com.alliander.osgp.platform.cucumber.core;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -106,12 +107,16 @@ public class Helpers {
         return value;
     }
 
-
     /**
-     * Get the boolean value of the given key in the settings. If it didn't exist return the defaultValue.
-     * @param settings The settings to get the value from.
-     * @param key The key to get the boolean from.
-     * @param defaultValue The default value if the key wasn't found.
+     * Get the boolean value of the given key in the settings. If it didn't
+     * exist return the defaultValue.
+     *
+     * @param settings
+     *            The settings to get the value from.
+     * @param key
+     *            The key to get the boolean from.
+     * @param defaultValue
+     *            The default value if the key wasn't found.
      * @return
      */
     public static Boolean getBoolean(final Map<String, String> settings, final String key, final Boolean defaultValue) {
@@ -198,10 +203,13 @@ public class Helpers {
     }
 
     /**
-     * When running automatic tests, it might be that not each project is started in tomcat. When
-     * the repo's are cleared at the beginning of a test run, you get some exceptions when the database wasn't
-     * found. Therefore this method is created to ignore that.
-     * @param repo The repository to remove.
+     * When running automatic tests, it might be that not each project is
+     * started in tomcat. When the repo's are cleared at the beginning of a test
+     * run, you get some exceptions when the database wasn't found. Therefore
+     * this method is created to ignore that.
+     *
+     * @param repo
+     *            The repository to remove.
      */
     public static <T extends AbstractEntity> void cleanRepoAbstractEntity(final JpaRepository<T, Long> repo) {
         try {
@@ -212,9 +220,11 @@ public class Helpers {
     }
 
     /**
-     * When running automatic tests, it might be that not each project is started in tomcat. When
-     * the repo's are cleared at the beginning of a test run, you get some exceptions when the database wasn't
-     * found. Therefore this method is created to ignore that.
+     * When running automatic tests, it might be that not each project is
+     * started in tomcat. When the repo's are cleared at the beginning of a test
+     * run, you get some exceptions when the database wasn't found. Therefore
+     * this method is created to ignore that.
+     *
      * @param repo
      */
     public static <T extends Serializable> void cleanRepoSerializable(final JpaRepository<T, Long> repo) {
@@ -226,83 +236,96 @@ public class Helpers {
     }
 
     /**
-     * This is a generic method which will translate the given string to a datetime.
-     * Supported:
-     *   now + 3 months
-     *   tomorrow - 1 year
-     *   yesterday + 2 weeks
+     * This is a generic method which will translate the given string to a
+     * datetime. Supported: now + 3 months tomorrow - 1 year yesterday + 2 weeks
      *
      * @param dateString
      * @return
      * @throws Exception
      */
-	public static DateTime getDateTime(final String dateString) throws Exception {
+    public static DateTime getDateTime(final String dateString) throws Exception {
 
-		DateTime retval;
+        DateTime retval;
 
-		final String pattern = "([a-z]*)[ ]*([+-]?)[ ]*([0-9]*)[ ]*([a-z]*)";
-		final Pattern r = Pattern.compile(pattern);
-		final Matcher m = r.matcher(dateString);
+        final String pattern = "([a-z]*)[ ]*([+-]?)[ ]*([0-9]*)[ ]*([a-z]*)";
+        final Pattern r = Pattern.compile(pattern);
+        final Matcher m = r.matcher(dateString);
 
-		if (m.groupCount() != 4) {
-			throw new Exception("Incorrect dateString [" + dateString + "]");
-		}
+        if (m.groupCount() != 4) {
+            throw new Exception("Incorrect dateString [" + dateString + "]");
+        }
 
-		m.find();
+        m.find();
 
-		final String when = m.group(1).toLowerCase();
-		final String op = m.group(2);
-		final Integer numberToAddOrSubstract = Integer.parseInt(m.group(3));
-		final String what = m.group(4);
+        final String when = m.group(1).toLowerCase();
+        final String op = m.group(2);
+        final Integer numberToAddOrSubstract = Integer.parseInt(m.group(3));
+        final String what = m.group(4);
 
-		switch (when) {
-		case "tomorrow":
-			retval = DateTime.now().plusDays(1);
-			break;
-		case "yesterday":
-			retval = DateTime.now().minusDays(1);
-			break;
-		case "now":
-		case "today":
-			retval = DateTime.now();
-			break;
-		default:
-			throw new Exception("Incorrect dateString [" + dateString + "]");
-		}
+        switch (when) {
+        case "tomorrow":
+            retval = DateTime.now().plusDays(1);
+            break;
+        case "yesterday":
+            retval = DateTime.now().minusDays(1);
+            break;
+        case "now":
+        case "today":
+            retval = DateTime.now();
+            break;
+        default:
+            throw new Exception("Incorrect dateString [" + dateString + "]");
+        }
 
-		switch (what) {
-		case "days":
-			if (op.equals("+")) {
-				retval = retval.plusDays(numberToAddOrSubstract);
-			} else {
-				retval = retval.minusDays(numberToAddOrSubstract);
-			}
-		case "hours":
-			if (op.equals("+")) {
-				retval = retval.plusHours(numberToAddOrSubstract);
-			} else {
-				retval = retval.minusHours(numberToAddOrSubstract);
-			}
-		case "weeks":
-			if (op.equals("+")) {
-				retval = retval.plusWeeks(numberToAddOrSubstract);
-			} else {
-				retval = retval.minusWeeks(numberToAddOrSubstract);
-			}
-		case "months":
-			if (op.equals("+")) {
-				retval = retval.plusMonths(numberToAddOrSubstract);
-			} else {
-				retval = retval.minusMonths(numberToAddOrSubstract);
-			}
-		case "years":
-			if (op.equals("+")) {
-				retval = retval.plusYears(numberToAddOrSubstract);
-			} else {
-				retval = retval.minusYears(numberToAddOrSubstract);
-			}
-		}
+        switch (what) {
+        case "days":
+            if (op.equals("+")) {
+                retval = retval.plusDays(numberToAddOrSubstract);
+            } else {
+                retval = retval.minusDays(numberToAddOrSubstract);
+            }
+        case "hours":
+            if (op.equals("+")) {
+                retval = retval.plusHours(numberToAddOrSubstract);
+            } else {
+                retval = retval.minusHours(numberToAddOrSubstract);
+            }
+        case "weeks":
+            if (op.equals("+")) {
+                retval = retval.plusWeeks(numberToAddOrSubstract);
+            } else {
+                retval = retval.minusWeeks(numberToAddOrSubstract);
+            }
+        case "months":
+            if (op.equals("+")) {
+                retval = retval.plusMonths(numberToAddOrSubstract);
+            } else {
+                retval = retval.minusMonths(numberToAddOrSubstract);
+            }
+        case "years":
+            if (op.equals("+")) {
+                retval = retval.plusYears(numberToAddOrSubstract);
+            } else {
+                retval = retval.minusYears(numberToAddOrSubstract);
+            }
+        }
 
-		return retval;
-	}
+        return retval;
+    }
+
+    /**
+     * The final Map<String, String> settings is an immutable map, so it is not possible to modify it.
+     * This shortcut makes a new Map with the given key + value
+     * @param settings
+     * @param key
+     * @param value
+     * @return
+     */
+    public static Map<String, String> addSetting(final Map<String, String> settings, final String key, final String value) {
+        final Map<String, String> result = new HashMap<String, String>();
+        result.putAll(settings);
+        result.put(key, value);
+        return result;
+    }
+
 }

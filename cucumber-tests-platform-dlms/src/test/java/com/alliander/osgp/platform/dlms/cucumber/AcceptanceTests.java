@@ -12,7 +12,7 @@ import cucumber.api.junit.Cucumber;
 @RunWith(Cucumber.class)
 @CucumberOptions(
 		features = "src/test/resources/features",
-		tags = { "~@SKIP" },
+		tags = { "@TEST"}, // "~@SKIP" },
 		plugin = {
 				"pretty",
 				"html:target/output/Cucumber-report",

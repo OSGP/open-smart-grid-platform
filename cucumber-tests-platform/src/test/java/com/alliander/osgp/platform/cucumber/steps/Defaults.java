@@ -58,9 +58,11 @@ public class Defaults {
     public static final String DEFAULT_BEGIN_DATE = "";
     public static final String DEFAULT_END_DATE = "";
     public static final Boolean DEFAULT_INDEBUGMODE = false;
+    public static final Boolean EVENTS_NODELIST_EXPECTED = false;
 
     //Types
     public static final String SMART_METER_E = "SMART_METER_E";
     public static final String SMART_METER_G = "SMART_METER_G";
+
 
 }

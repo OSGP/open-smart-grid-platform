@@ -49,4 +49,10 @@ public class Keys {
     public static final String KEY_DEVICE_HLS4ACTIVE = "HLS4_active";
     public static final String KEY_DEVICE_HLS5ACTIVE = "HLS5_active";
     public static final String KEY_DEVICE_MASTERKEY = "Master_key";
+
+    public static final String KEY_DEVICE_IDENTIFICATION_E_LABEL = "DeviceIdentificationE";
+    public static final String KEY_DEVICE_IDENTIFICATION_G_LABEL = "DeviceIdentificationG";
+
+    public static final String KEY_EVENTS_NODELIST_EXPECTED = "event-nodelist-expected";
+
 }

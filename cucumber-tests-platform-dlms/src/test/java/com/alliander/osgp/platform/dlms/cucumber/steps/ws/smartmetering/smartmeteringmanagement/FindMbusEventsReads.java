@@ -10,6 +10,8 @@ import java.util.Map;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.EventLogCategory;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.EventType;
+import com.alliander.osgp.platform.cucumber.core.Helpers;
+import com.alliander.osgp.platform.cucumber.steps.Keys;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -48,7 +50,7 @@ public class FindMbusEventsReads extends AbstractFindEventsReads {
     @Then("^mbus events should be returned$")
     @Override
     public void eventsShouldBeReturned(final Map<String, String> settings) throws Throwable {
-        super.eventsShouldBeReturned(settings);
+        super.eventsShouldBeReturned(Helpers.addSetting(settings, Keys.KEY_EVENTS_NODELIST_EXPECTED, "true"));
     }
 
     @Override

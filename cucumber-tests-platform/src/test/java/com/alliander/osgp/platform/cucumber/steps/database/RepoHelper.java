@@ -11,7 +11,6 @@ import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +36,7 @@ import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
+import com.alliander.osgp.platform.cucumber.core.Helpers;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
@@ -163,8 +163,8 @@ public class RepoHelper {
                 );
 
         final Protocol protocol = ProtocolHelper.getProtocol(Protocol.ProtocolType.DSMR);
-        Map<String, String> settings = this.putSetting(inputSettings, Keys.KEY_PROTOCOL, protocol.getProtocol());
-        settings = this.putSetting(settings, Keys.KEY_PROTOCOL_VERSION, protocol.getVersion());
+        Map<String, String> settings = Helpers.addSetting(inputSettings, Keys.KEY_PROTOCOL, protocol.getProtocol());
+        settings = Helpers.addSetting(settings, Keys.KEY_PROTOCOL_VERSION, protocol.getVersion());
 
         if (settings.containsKey(Keys.KEY_GATEWAY_DEVICE_ID)) {
             smartMeter.setChannel(getShort(settings, Keys.KEY_CHANNEL, Defaults.DEFAULT_CHANNEL));
@@ -224,14 +224,6 @@ public class RepoHelper {
 
     public DlmsDevice findDlmsDevice(final String deviceIdentification) {
         return this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
-    }
-
-
-    private Map<String, String> putSetting(final Map<String, String> settings, final String key, final String value) {
-        final Map<String, String> result = new HashMap<String, String>();
-        result.putAll(settings);
-        result.put(key, value);
-        return result;
     }
 
 
