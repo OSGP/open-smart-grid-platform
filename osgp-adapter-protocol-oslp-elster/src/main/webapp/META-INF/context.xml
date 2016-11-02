@@ -18,25 +18,27 @@
 <!-- The contents of this file will be loaded for each web application -->
 <Context useHttpOnly="true">
 
-    <!-- Default set of monitored resources -->
-    <WatchedResource>WEB-INF/web.xml</WatchedResource>
+  <!-- Default set of monitored resources -->
+  <WatchedResource>WEB-INF/web.xml</WatchedResource>
 
-    <!-- Uncomment this to disable session persistence across Tomcat restarts -->
-    <!--
-    <Manager pathname="" />
-    -->
+  <!-- Uncomment this to disable session persistence across Tomcat restarts -->
+  <!-- <Manager pathname="" /> -->
 
-    <!-- Uncomment this to enable Comet connection tacking (provides events
-         on session expiration as well as webapp lifecycle) -->
-    <!--
-    <Valve className="org.apache.catalina.valves.CometConnectionManagerValve" />
-    -->
+  <!-- Uncomment this to enable Comet connection tacking (provides events 
+    on session expiration as well as webapp lifecycle) -->
+  <!-- <Valve className="org.apache.catalina.valves.CometConnectionManagerValve" 
+    /> -->
 
-    <!-- App config files -->    
-    <!--   Global.properties -->
-    <Environment name="osgp/Global/config" value="/etc/osp/global.properties" type="java.lang.String" override="true" />
+  <!-- App config files -->
+  <!-- Global.properties -->
+  <Environment name="osgp/Global/config" value="/etc/osp/global.properties"
+    type="java.lang.String" override="true" />
 
-    <Environment name="osgp/AdapterProtocolOslpElster/config" value="/etc/osp/osgp-adapter-protocol-oslp-elster.properties" type="java.lang.String" override="true" />
-    <Environment name="osgp/AdapterProtocolOslpElster/log-config" value="/etc/osp/osgp-adapter-protocol-oslp-elster-logback.xml" type="java.lang.String" override="true" />
+  <Environment name="osgp/AdapterProtocolOslpElster/config"
+    value="/etc/osp/osgp-adapter-protocol-oslp-elster.properties" type="java.lang.String"
+    override="true" />
+  <Environment name="osgp/AdapterProtocolOslpElster/log-config"
+    value="/etc/osp/osgp-adapter-protocol-oslp-elster-logback.xml" type="java.lang.String"
+    override="true" />
 
 </Context>
