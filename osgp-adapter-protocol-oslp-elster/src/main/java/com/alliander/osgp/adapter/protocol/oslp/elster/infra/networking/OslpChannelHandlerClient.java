@@ -58,7 +58,7 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
         final int channelId = e.getChannel().getId();
         if (this.callbackHandlers.containsKey(channelId)) {
             this.callbackHandlers.get(channelId).getDeviceResponseHandler()
-                    .handleException(new NoDeviceResponseException());
+            .handleException(new NoDeviceResponseException());
             this.callbackHandlers.remove(channelId);
         }
         super.channelDisconnected(ctx, e);
@@ -102,7 +102,7 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
             final OslpResponseHandler responseHandler, final String deviceIdentification) throws IOException {
         LOGGER.info("Sending OSLP request: {}", request.getPayloadMessage());
 
-        // Open connection and send message
+        // Open connection and send message.
         final ChannelFuture channelFuture = this.bootstrap.connect(address);
 
         this.callbackHandlers.put(channelFuture.getChannel().getId(), new OslpCallbackHandler(responseHandler));
@@ -120,7 +120,7 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
                     // What is this call below good for?
                     future.getChannel().getId();
                 } else {
-                    LOGGER.info("The connection to the device {} is not sucessfull", deviceIdentification);
+                    LOGGER.info("The connection to the device {} is not successful", deviceIdentification);
                     throw new IOException("ChannelFuture - Unable to connect");
                 }
             }
