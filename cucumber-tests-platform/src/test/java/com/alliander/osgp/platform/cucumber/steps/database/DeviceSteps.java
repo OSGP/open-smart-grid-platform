@@ -15,12 +15,10 @@ import static com.alliander.osgp.platform.cucumber.core.Helpers.getLong;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 
 import java.net.InetAddress;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.domain.core.entities.Device;
@@ -50,7 +48,7 @@ public class DeviceSteps {
     public static String DEFAULT_PROTOCOL = "OSLP";
     public static String DEFAULT_PROTOCOL_VERSION = "1.0";
     @SuppressWarnings("unused")
-	private Long DEFAULT_DEVICE_ID = new java.util.Random().nextLong();
+    private Long DEFAULT_DEVICE_ID = new java.util.Random().nextLong();
     private static Boolean DEFAULT_IS_ACTIVATED = true;
     private static Boolean DEFAULT_ACTIVE = true;
     private static String DEFAULT_ALIAS = "";
@@ -76,8 +74,8 @@ public class DeviceSteps {
 
     @Autowired
     private ProtocolInfoRepository protocolInfoRepository;
-    
-    @Autowired 
+
+    @Autowired
     private SmartMeterRepository smartMeterRepository;
 
     /**
@@ -92,32 +90,32 @@ public class DeviceSteps {
 
         // Set the required stuff
         final String deviceIdentification = settings.get("DeviceIdentification");
-        Device device = new Device(deviceIdentification);
+        final Device device = new Device(deviceIdentification);
 
-        updateDevice(device, settings);
+        this.updateDevice(device, settings);
     }
-    
+
     @Given("^a smart meter$")
     public void aSmartMeter(final Map<String, String> settings) {
-    	SmartMeter smartMeter = new SmartMeter(
-        		getString(settings, "DeviceIdentification", Defaults.DEFAULT_DEVICE_IDENTIFICATION),
-        		getString(settings, "Alias", DEFAULT_ALIAS),
-        		getString(settings, "ContainerCity", DEFAULT_CONTAINER_CITY),
-        		getString(settings, "ContainerPostalCode", DEFAULT_CONTAINER_POSTALCODE),
-        		getString(settings, "ContainerStreet", DEFAULT_CONTAINER_STREET),
-        		getString(settings, "ContainerNumber", DEFAULT_CONTAINER_NUMBER),
-        		getString(settings, "ContainerMunicipality", DEFAULT_CONTAINER_MUNICIPALITY),
-        		getFloat(settings, "GPSLatitude", DEFAULT_LATITUDE),
-        		getFloat(settings, "GPSLongitude", DEFAULT_LONGITUDE)
-        		);
-    	
-    	smartMeterRepository.save(smartMeter);
-    	
-    	Device device = deviceRepository.findByDeviceIdentification(getString(settings, "DeviceIdentification", Defaults.DEFAULT_DEVICE_IDENTIFICATION));	
-    	updateDevice(device, settings);
-    	
+        final SmartMeter smartMeter = new SmartMeter(
+                getString(settings, "DeviceIdentification", Defaults.DEFAULT_DEVICE_IDENTIFICATION),
+                getString(settings, "Alias", DEFAULT_ALIAS),
+                getString(settings, "ContainerCity", DEFAULT_CONTAINER_CITY),
+                getString(settings, "ContainerPostalCode", DEFAULT_CONTAINER_POSTALCODE),
+                getString(settings, "ContainerStreet", DEFAULT_CONTAINER_STREET),
+                getString(settings, "ContainerNumber", DEFAULT_CONTAINER_NUMBER),
+                getString(settings, "ContainerMunicipality", DEFAULT_CONTAINER_MUNICIPALITY),
+                getFloat(settings, "GPSLatitude", this.DEFAULT_LATITUDE),
+                getFloat(settings, "GPSLongitude", this.DEFAULT_LONGITUDE));
+
+        this.smartMeterRepository.save(smartMeter);
+
+        final Device device = this.deviceRepository.findByDeviceIdentification(
+                getString(settings, "DeviceIdentification", Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+        this.updateDevice(device, settings);
+
     }
-    
+
     private void updateDevice(Device device, final Map<String, String> settings) {
 
         // Now set the optional stuff
@@ -145,8 +143,8 @@ public class DeviceSteps {
                 getString(settings, "containerStreet", DEFAULT_CONTAINER_STREET),
                 getString(settings, "containerNumber", DEFAULT_CONTAINER_NUMBER),
                 getString(settings, "containerMunicipality", DEFAULT_CONTAINER_MUNICIPALITY),
-                getFloat(settings, "gpsLatitude", DEFAULT_LATITUDE),
-                getFloat(settings, "gpsLongitude", DEFAULT_LONGITUDE));
+                getFloat(settings, "gpsLatitude", this.DEFAULT_LATITUDE),
+                getFloat(settings, "gpsLongitude", this.DEFAULT_LONGITUDE));
 
         device = this.deviceRepository.save(device);
 
@@ -157,9 +155,9 @@ public class DeviceSteps {
                 DeviceFunctionGroup.OWNER);
 
         final DeviceAuthorization authorization = device.addAuthorization(organization, functionGroup);
-        Device savedDevice = this.deviceRepository.save(device);
+        final Device savedDevice = this.deviceRepository.save(device);
         this.deviceAuthorizationRepository.save(authorization);
-        
+
         ScenarioContext.Current().put("DeviceIdentification", savedDevice.getDeviceIdentification());
     }
 
@@ -170,62 +168,58 @@ public class DeviceSteps {
     @Then("^the device with device identification \"([^\"]*)\" should be active$")
     public void theDeviceWithDeviceIdentificationShouldBeActive(final String deviceIdentification) throws Throwable {
 
-    	boolean success = false;
+        boolean success = false;
         int count = 0;
-    	while (!success) {
-    		try {
-    			if (count > 120) {
-	                Assert.fail("Failed");
-	            }
-	    
-	            // Wait for next try to retrieve a response
-	            count++;
-	            Thread.sleep(1000);
-	    
-    	        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+        while (!success) {
+            try {
+                if (count > 120) {
+                    Assert.fail("Failed");
+                }
 
-    	        Assert.assertTrue(device.isActive());
-    	        
-    	        success = true;
-    		} 
-    		catch(Exception e)
-    		{
-    			// Do nothing	
-    		}
-    	}
+                // Wait for next try to retrieve a response
+                count++;
+                Thread.sleep(1000);
+
+                final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+
+                Assert.assertTrue(device.isActive());
+
+                success = true;
+            } catch (final Exception e) {
+                // Do nothing
+            }
+        }
     }
 
-	/**
+    /**
      *
      * @param deviceIdentification
      * @throws Throwable
      */
     @Then("^the device with device identification \"([^\"]*)\" should be inactive$")
     public void theDeviceWithDeviceIdentificationShouldBeInActive(final String deviceIdentification) throws Throwable {
-    	boolean success = false;
-    	int count = 0;
-    	while (!success) {
-    		try {
-    			if (count > 120) {
-	                Assert.fail("Failed");
-	            }
-	    
-	            // Wait for next try to retrieve a response
-	            count++;
-	            Thread.sleep(1000);
-	            
-		        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-		        Assert.assertFalse(device.isActive());
-		        
-		        success = true;
-    		} 
-    		catch(Exception e)
-    		{
-    			// Do nothing	
-    		}
-    	}
+        boolean success = false;
+        int count = 0;
+        while (!success) {
+            try {
+                if (count > 120) {
+                    Assert.fail("Failed");
+                }
+
+                // Wait for next try to retrieve a response
+                count++;
+                Thread.sleep(1000);
+
+                final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+                Assert.assertFalse(device.isActive());
+
+                success = true;
+            } catch (final Exception e) {
+                // Do nothing
+            }
+        }
     }
-    
+
     /**
      * check that the given device is inserted
      *
@@ -234,10 +228,25 @@ public class DeviceSteps {
      */
     @And("^the device with id \"([^\"]*)\" should be added in the core database$")
     public void theDeviceShouldBeAddedInTheCoreDatabase(final String deviceId) throws Throwable {
-        final Device device = this.deviceRepository.findByDeviceIdentification(deviceId);
-        final List<DeviceAuthorization> devAuths = this.deviceAuthorizationRepository.findByDevice(device);
-        
-        Assert.assertNotNull(device);
-        Assert.assertTrue(devAuths.size() > 0);
+        boolean success = false;
+        int count = 0;
+        while (!success) {
+            try {
+                if (count > 120) {
+                    Assert.fail("Failed");
+                }
+
+                // Wait for next try to retrieve a response
+                count++;
+                Thread.sleep(1000);
+
+                final Device device = this.deviceRepository.findByDeviceIdentification(deviceId);
+                Assert.assertNotNull(device);
+
+                success = true;
+            } catch (final Exception e) {
+                // Do nothing
+            }
+        }
     }
 }
