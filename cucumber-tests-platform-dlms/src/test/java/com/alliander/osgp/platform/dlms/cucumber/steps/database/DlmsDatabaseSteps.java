@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
+import com.alliander.osgp.domain.core.repositories.DeleteAllDevicesService;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
-import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.ScheduledTaskRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
@@ -32,9 +32,6 @@ public class DlmsDatabaseSteps {
     private DlmsSecurityKeyRepository dlmsDSecurityKeyRepo;
 
     @Autowired
-    private DeviceRepository deviceRepo;
-
-    @Autowired
     private DeviceAuthorizationRepository deviceAuthorization;
 
     @Autowired
@@ -46,6 +43,8 @@ public class DlmsDatabaseSteps {
     @Autowired
     private ScheduledTaskRepository scheduledTaskRepository;
 
+    @Autowired
+    private DeleteAllDevicesService deleteAllDevicesService;
     /**
      * Before each scenario dlms related stuff needs to be removed.
      */
@@ -53,7 +52,7 @@ public class DlmsDatabaseSteps {
     public void prepareDatabaseForScenario() {
         // Remove all data from previous scenario.
         this.deviceAuthorization.deleteAllInBatch();
-        this.deviceRepo.deleteAllInclNestedEntities();
+        this.deleteAllDevicesService.deleteAllDevices();
         this.dlmsDSecurityKeyRepo.deleteAllInBatch();
         this.dlmsDeviceRepo.deleteAllInBatch();
         this.smartMeterRepo.deleteAllInBatch();
