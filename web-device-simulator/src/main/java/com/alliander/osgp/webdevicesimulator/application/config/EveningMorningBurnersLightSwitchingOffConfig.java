@@ -16,7 +16,7 @@ import com.alliander.osgp.webdevicesimulator.application.tasks.EveningMorningBur
 
 @Configuration
 @EnableScheduling
-@PropertySource("file:${osp//webDeviceSimulator/config}")
+@PropertySource("file:${osgp/WebDeviceSimulator/config}")
 public class EveningMorningBurnersLightSwitchingOffConfig {
 
     private static final String PROPERTY_NAME_AUTONOMOUS_TASKS_EVENING_MORNING_BURNER_LIGHTSWITCHING_OFF_CRON_EXPRESSION = "autonomous.tasks.evening.morning.burner.lightswitching.off.cron.expression";

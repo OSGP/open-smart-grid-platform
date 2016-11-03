@@ -16,7 +16,7 @@ import com.alliander.osgp.webdevicesimulator.application.tasks.LightSwitchingOff
 
 @Configuration
 @EnableScheduling
-@PropertySource("file:${osp//webDeviceSimulator/config}")
+@PropertySource("file:${osgp/WebDeviceSimulator/config}")
 public class LightSwitchingOffConfig {
 
     private static final String PROPERTY_NAME_AUTONOMOUS_TASKS_LIGHTSWITCHING_OFF_CRON_EXPRESSION = "autonomous.tasks.lightswitching.off.cron.expression";

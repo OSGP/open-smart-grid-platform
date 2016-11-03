@@ -23,7 +23,7 @@ import com.alliander.osgp.webdevicesimulator.application.tasks.AutonomousDeviceR
 
 @Configuration
 @EnableScheduling
-@PropertySource("file:${osp//webDeviceSimulator/config}")
+@PropertySource("file:${osgp/WebDeviceSimulator/config}")
 public class AutonomousDeviceRegisterConfig {
 
     private static final String PROPERTY_NAME_AUTONOMOUS_TASKS_CRON_EXPRESSION = "autonomous.tasks.device.registration.cron.expression";

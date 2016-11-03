@@ -16,7 +16,7 @@ import com.alliander.osgp.webdevicesimulator.application.tasks.TariffSwitchingLo
 
 @Configuration
 @EnableScheduling
-@PropertySource("file:${osp//webDeviceSimulator/config}")
+@PropertySource("file:${osgp/WebDeviceSimulator/config}")
 public class TariffSwitchingLowConfig {
 
     private static final String PROPERTY_NAME_AUTONOMOUS_TASKS_TARIFFSWITCHING_LOW_CRON_EXPRESSION = "autonomous.tasks.tariffswitching.low.cron.expression";

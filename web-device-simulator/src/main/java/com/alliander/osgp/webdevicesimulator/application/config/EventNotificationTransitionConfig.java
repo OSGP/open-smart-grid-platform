@@ -16,7 +16,7 @@ import com.alliander.osgp.webdevicesimulator.application.tasks.EventNotification
 
 @Configuration
 @EnableScheduling
-@PropertySource("file:${osp//webDeviceSimulator/config}")
+@PropertySource("file:${osgp/WebDeviceSimulator/config}")
 public class EventNotificationTransitionConfig {
 
     private static final String PROPERTY_NAME_AUTONOMOUS_TASKS_EVENTNOTIFICATION_CRON_EXPRESSION = "autonomous.tasks.eventnotification.cron.expression";

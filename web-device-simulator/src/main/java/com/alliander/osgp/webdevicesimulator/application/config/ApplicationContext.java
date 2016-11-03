@@ -72,7 +72,7 @@ import com.zaxxer.hikari.HikariDataSource;
 @ComponentScan(basePackages = { "com.alliander.osgp.webdevicesimulator" })
 @EnableWebMvc
 @ImportResource("classpath:applicationContext.xml")
-@PropertySource("file:${osp/webDeviceSimulator/config}")
+@PropertySource("file:${osgp/WebDeviceSimulator/config}")
 public class ApplicationContext {
 
     private static final String VIEW_RESOLVER_PREFIX = "/WEB-INF/views/";
