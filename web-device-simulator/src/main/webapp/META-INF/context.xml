@@ -24,10 +24,10 @@
     type="java.lang.String" override="true" />
 
   <!-- App config files -->
-  <Environment name="osgp/webDeviceSimulator/config"
+  <Environment name="osgp/WebDeviceSimulator/config"
     value="/etc/osp/web-device-simulator.properties" type="java.lang.String"
     override="true" />
-  <Environment name="osgp/webDeviceSimulator/log-config"
+  <Environment name="osgp/WebDeviceSimulator/log-config"
     value="/etc/osp/web-device-simulator-logback.xml" type="java.lang.String"
     override="true" />
 </Context>

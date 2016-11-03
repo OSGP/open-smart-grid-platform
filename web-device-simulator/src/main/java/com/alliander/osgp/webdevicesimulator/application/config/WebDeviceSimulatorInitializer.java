@@ -30,7 +30,7 @@ public class WebDeviceSimulatorInitializer extends AbstractApplicationInitialize
      * Default constructor.
      */
     public WebDeviceSimulatorInitializer() {
-        super(ApplicationContext.class, "java:comp/env/osgp/webDeviceSimulator/log-config");
+        super(ApplicationContext.class, "java:comp/env/osgp/WebDeviceSimulator/log-config");
     }
     
     /**
