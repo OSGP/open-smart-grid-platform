@@ -23,7 +23,7 @@ import com.alliander.osgp.oslp.Oslp.SetConfigurationRequest;
 import com.google.protobuf.ByteString;
 
 public class ConfigurationToOslpSetConfigurationRequestConverter extends
-        CustomConverter<ConfigurationDto, Oslp.SetConfigurationRequest> {
+CustomConverter<ConfigurationDto, Oslp.SetConfigurationRequest> {
 
     private static final Logger LOGGER = LoggerFactory
             .getLogger(ConfigurationToOslpSetConfigurationRequestConverter.class);
@@ -94,21 +94,21 @@ public class ConfigurationToOslpSetConfigurationRequestConverter extends
         if (source.isDhcpEnabled() != null) {
             setConfigurationRequest.setIsDhcpEnabled(source.isDhcpEnabled());
         }
-        if (source.isTlsEnabled() != null) {
-            setConfigurationRequest.setIsTlsEnabled(source.isTlsEnabled());
-        }
-        if (source.getTlsPortNumber() != null) {
-            setConfigurationRequest.setOslpBindPortNumber(source.getTlsPortNumber());
-        }
-        if (source.getCommonNameString() != null) {
-            setConfigurationRequest.setCommonNameString(source.getCommonNameString());
-        }
+        // if (source.isTlsEnabled() != null) {
+        // setConfigurationRequest.setIsTlsEnabled(source.isTlsEnabled());
+        // }
+        // if (source.getTlsPortNumber() != null) {
+        // setConfigurationRequest.setOslpBindPortNumber(source.getTlsPortNumber());
+        // }
+        // if (source.getCommonNameString() != null) {
+        // setConfigurationRequest.setCommonNameString(source.getCommonNameString());
+        // }
         if (source.getOsgpPortNumber() != null) {
             setConfigurationRequest.setOsgpPortNumber(source.getOsgpPortNumber());
         }
         if (source.getOsgpIpAddres() != null) {
             setConfigurationRequest
-                    .setOspgIpAddress(this.convertTextualIpAddressToByteString(source.getOsgpIpAddres()));
+            .setOspgIpAddress(this.convertTextualIpAddressToByteString(source.getOsgpIpAddres()));
         }
         if (source.isRelayRefreshing() != null) {
             setConfigurationRequest.setRelayRefreshing(source.isRelayRefreshing());
