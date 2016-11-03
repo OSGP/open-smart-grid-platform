@@ -30,8 +30,6 @@
     /> -->
 
   <!-- App config files -->
-
-  <!-- Global.properties -->
   <Environment name="osgp/Global/config" value="/etc/osp/global.properties"
     type="java.lang.String" override="true" />
 
