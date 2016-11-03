@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.protocol.iec61850.application.mapping.Iec61850Mapper;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DaylightSavingTimeTransition;
-import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
@@ -161,28 +160,25 @@ public class Iec61850GetConfigurationCommand {
                         winterTimeDetails).getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
 
                 // getting the TLS configuration values
-                LOGGER.info("Reading the TLS configuration values");
-                final NodeContainer tls = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
-                        LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.TLS_CONFIGURATION, Fc.CF);
-                if (tls != null) {
-                    try {
-                        iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
-                                tls.getFcmodelNode());
-
-                        final int tlsPortNumber = (int) tls.getUnsignedInteger(SubDataAttribute.TLS_PORT_NUMBER)
-                                .getValue();
-                        final boolean tlsEnabled = tls.getBoolean(SubDataAttribute.TLS_ENABLED).getValue();
-                        final String commonName = tls.getString(SubDataAttribute.TLS_COMMON_NAME);
-
-                        configuration.setTlsPortNumber(tlsPortNumber);
-                        configuration.setTlsEnabled(tlsEnabled);
-                        configuration.setCommonNameString(commonName);
-                    } catch (final NodeReadException e) {
-                        LOGGER.info(
-                                "Catched NodeReadException while reading TLS configuration values. Caused by mis-match between server model and IED firmware version. This temporary try-catch maintains backwards compatibility for now. ",
-                                e);
-                    }
-                }
+                // LOGGER.info("Reading the TLS configuration values");
+                // final NodeContainer tls =
+                // deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
+                // LogicalNode.STREET_LIGHT_CONFIGURATION,
+                // DataAttribute.TLS_CONFIGURATION, Fc.CF);
+                //
+                // iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
+                // tls.getFcmodelNode());
+                //
+                // final int tlsPortNumber = (int)
+                // tls.getUnsignedInteger(SubDataAttribute.TLS_PORT_NUMBER).getValue();
+                // final boolean tlsEnabled =
+                // tls.getBoolean(SubDataAttribute.TLS_ENABLED).getValue();
+                // final String commonName =
+                // tls.getString(SubDataAttribute.TLS_COMMON_NAME);
+                //
+                // configuration.setTlsPortNumber(tlsPortNumber);
+                // configuration.setTlsEnabled(tlsEnabled);
+                // configuration.setCommonNameString(commonName);
 
                 return configuration;
             }
