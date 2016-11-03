@@ -29,15 +29,17 @@ import ch.qos.logback.ext.spring.LogbackConfigurer;
  */
 public abstract class AbstractApplicationInitializer {
 
-    protected Logger logger;
+    private static final String DEFAULT_LOGBACK_CONFIG = "classpath:logback.xml";
+    
+    protected final Logger logger;
     private Class<?> contextClass;
     private String logConfig;
     protected AnnotationConfigWebApplicationContext rootContext;
 
     /**
-     * 
-     * @param contextClass
-     * @param logConfig
+     * Constructs instance of ApplicationInitializer 
+     * @param contextClass the class holding application specific Spring ApplicationContext
+     * @param logConfig jndi property which points to logback configuration
      */
     public AbstractApplicationInitializer(final Class<?> contextClass, final String logConfig) {
         this.contextClass = contextClass;
@@ -46,9 +48,16 @@ public abstract class AbstractApplicationInitializer {
         this.rootContext = new AnnotationConfigWebApplicationContext();
     }
 
+    /**
+     * Default startup of application context which:
+     * - Forces timezone to UTC
+     * - Initializes the application logging
+     * - Registers the application context with ServletContext
+     * @param servletContext Java servlet context as supplied by application server
+     * @throws ServletException
+     */
     protected void startUp(final ServletContext servletContext) throws ServletException {
-        // Force the timezone of application to UTC (required for
-        // Hibernate/JDBC)
+        // Force the timezone of application to UTC (required for Hibernate/JDBC)
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
         initializeLogging();
@@ -59,32 +68,34 @@ public abstract class AbstractApplicationInitializer {
     }
 
     private void initializeLogging() throws ServletException {
-        boolean reinitLogback = false;
-
         Context initialContext;
         try {
             initialContext = new InitialContext();
             final String logLocation = (String) initialContext.lookup(this.logConfig);
 
             LogbackConfigurer.initLogging(logLocation);
-        } catch (final NamingException | FileNotFoundException | JoranException e) {
-            logger.info("Using default logback.xml from classpath. Message [" + e.getMessage() + "]");
-            // For some reason it might be the case that the LogbackConfigurer
-            // is initialized at this point
-            // but the logger will not work in that case. The following is a
-            // trigger to
-            // reinitialize the logging using the classpath logback.xml file.
-            reinitLogback = true;
-        }
 
-        if (reinitLogback) {
-            // Reinitialize the logback functionality using the internal
-            // logback.xml file.
-            try {
-                LogbackConfigurer.initLogging("classpath:logback.xml");
-            } catch (Exception e) {
-                throw new ServletException(e);
-            }
+            logger.debug("Initialized logging using {}", this.logConfig);
+        } catch (final NamingException | FileNotFoundException | JoranException e) {
+            logger.debug("Failed to initialize logging using {}, falling back to default logging", this.logConfig, e);
+
+            /*
+             * For some reason it might be the case that the LogbackConfigurer
+             * is initialized at this point but the logger will not work in that
+             * case. 
+             * 
+             * Fallback to reinitialize the logging using the classpath logback.xml file.
+             */
+            initializeDefaultLogging(DEFAULT_LOGBACK_CONFIG);
+        }
+    }
+    
+    private void initializeDefaultLogging(final String defaultConfig) throws ServletException {
+        try {
+            LogbackConfigurer.initLogging(defaultConfig);
+            logger.debug("Initialized default logging using {}", defaultConfig);
+        } catch (Exception ex) {
+            throw new ServletException(ex);
         }
     }
 }

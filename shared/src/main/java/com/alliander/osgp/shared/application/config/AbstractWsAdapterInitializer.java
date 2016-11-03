@@ -17,20 +17,31 @@ import org.springframework.ws.transport.http.MessageDispatcherServlet;
 /**
  * Web application Java configuration class.
  */
-public abstract class AbstractAdapterInitializer extends AbstractApplicationInitializer {
+public abstract class AbstractWsAdapterInitializer extends AbstractApplicationInitializer {
 
     private static final String DISPATCHER_SERVLET_NAME = "spring-ws";
     private static final String DISPATCHER_SERVLET_MAPPING = "/*";
 
-    public AbstractAdapterInitializer(final Class<?> contextClass, final String logConfig) {
+    /**
+     * Constructs instance of ApplicationInitializer specific for webservice adapters. 
+     * @param contextClass the class holding application specific Spring ApplicationContext
+     * @param logConfig jndi property which points to logback configuration
+     */
+    public AbstractWsAdapterInitializer(final Class<?> contextClass, final String logConfig) {
         super(contextClass, logConfig);
     }
     
     /**
-     * 
+     * Default startup of application context for webservice adapters which:
+     * - Performs default startup
+     * - Setup WSDL handling
+     * - Initialize DispatchServlet
+     * @param servletContext Java servlet context as supplied by application server
+     * @throws ServletException
      */
-    protected void startUpAdapter(final ServletContext servletContext) throws ServletException {
-        startUp(servletContext);
+    @Override
+    protected void startUp(final ServletContext servletContext) throws ServletException {
+        super.startUp(servletContext);
 
         final MessageDispatcherServlet servlet = new MessageDispatcherServlet();
         servlet.setContextClass(AnnotationConfigWebApplicationContext.class);
@@ -40,5 +51,4 @@ public abstract class AbstractAdapterInitializer extends AbstractApplicationInit
         dispatcher.setLoadOnStartup(1);
         dispatcher.addMapping(DISPATCHER_SERVLET_MAPPING);
     }
-
 }
