@@ -30,10 +30,8 @@
     /> -->
 
   <!-- App config files -->
-  <!-- Global.properties -->
   <Environment name="osgp/Global/config" value="/etc/osp/global.properties"
     type="java.lang.String" override="false" />
-
   <Environment name="osgp/AdapterProtocolIec61850/config"
     value="/etc/osp/osgp-adapter-protocol-iec61850.properties" type="java.lang.String"
     override="true" />
