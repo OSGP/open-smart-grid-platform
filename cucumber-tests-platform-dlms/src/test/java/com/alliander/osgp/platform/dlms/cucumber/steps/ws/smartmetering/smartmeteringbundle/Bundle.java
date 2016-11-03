@@ -58,29 +58,10 @@ public class Bundle extends SmartMeteringStepsBase {
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
 
-//        final NodeList nodeList = this.runXpathResult.getNodeList(this.request, "//Actions/*");
-//        for (int nodeId = 0; nodeId < nodeList.getLength(); nodeId++) {
-//            REQUEST_ACTIONS.add(this.formatAction(nodeList.item(nodeId).getNodeName(), "Request"));
-//        }
-
         final NodeList nodeList = this.runXpathResult.getNodeList(this.request, "//Actions/*");
         for (int nodeId = 0; nodeId < nodeList.getLength(); nodeId++) {
             REQUEST_ACTIONS.add(this.removeNamespace(nodeList.item(nodeId).getNodeName()));
         }
-    }
-
-    /**
-     * An action is in the node list in the form of <ns1:FindEventsRequest> or
-     * <ns2:FindEventsResponseData> We want to loose the namespace and postfix
-     */
-    private String formatAction(final String input, final String postfix) {
-        final String request = input.split(":")[1];
-        if (request.indexOf(postfix) > 0) {
-            return request.substring(0, request.indexOf(postfix));
-        } else {
-            return request;
-        }
-
     }
 
     @And("^the operations in the bundled request message will be executed from top to bottom$")
@@ -96,7 +77,7 @@ public class Bundle extends SmartMeteringStepsBase {
         for (int nodeId = 0; nodeId < nodeList.getLength(); nodeId++) {
             final String responseAction = this.removeNamespace(nodeList.item(nodeId).getNodeName());
             final String matchingResponse = REQUEST_RESPONSE_PAIRS.get(REQUEST_ACTIONS.get(nodeId));
-            assertEquals(matchingResponse, responseAction);
+            assertEquals("the matchingResponse should equals responseAction", matchingResponse, responseAction);
         }
     }
 
@@ -105,7 +86,7 @@ public class Bundle extends SmartMeteringStepsBase {
         LOGGER.debug("check if we get responses for all the requests");
         final NodeList nodeList = this.runXpathResult.getNodeList(this.response, "//AllResponses/*");
 
-        assertEquals(REQUEST_ACTIONS.size(), nodeList.getLength());
+        assertEquals("the number of request actions should equals the nr nodelists", REQUEST_ACTIONS.size(), nodeList.getLength());
     }
 
     private String removeNamespace(final String input) {

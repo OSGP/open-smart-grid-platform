@@ -38,7 +38,7 @@ public class ActivateDeviceSteps extends AdminStepsBase {
      * @throws Throwable
      */
     @Then("^the activate device response contains$")
-    public void the_activate_device_response_contains(final Map<String, String> expectedResponse) throws Throwable {
+    public void theActivateDeviceResponseContains(final Map<String, String> expectedResponse) throws Throwable {
         Assert.assertTrue(this.runXpathResult.assertXpath(this.response, "/Envelope/Body/ActivateDeviceResponse/Result/text()", expectedResponse.get("Result")));
     }
 }

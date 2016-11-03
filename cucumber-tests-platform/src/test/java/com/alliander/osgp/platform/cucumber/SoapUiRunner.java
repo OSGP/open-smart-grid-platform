@@ -45,10 +45,8 @@ public abstract class SoapUiRunner {
     @Value("${certificate.basepath}")
     private String certBasePath;
 
-//    private final Logger LOGGER = LoggerFactory.getLogger(SoapUiRunner.class);
     private static final String DEFAULT_SOAPUI_PROJECT = "soap-ui-project/Core-SoapUI-project.xml";
     private String soapuiProject = DEFAULT_SOAPUI_PROJECT;
-//    private static final String ERRMSG = "The soapUi xml fragment: \n %s \ndoes not contain all three tags: \n %s, %s and/or %s";
 
     protected static final Map<String, String> PROPERTIES_MAP = new HashMap<>();
 
@@ -164,8 +162,7 @@ public abstract class SoapUiRunner {
     /**
      * Wait for a response.
      * @note In order to get the actual response from the device of the original request to the platform,
-     * we need to poll for it. Newer devices use notification services though, and thus they don't need
-     * to poll for it using this method.
+     * we need to poll for it.
      * @param propertiesMap
      * @param testCaseResultName
      * @param testCaseResultReqXML

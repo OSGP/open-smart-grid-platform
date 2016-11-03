@@ -49,9 +49,7 @@ public abstract class AbstractFindEventsReads extends SmartMeteringStepsBase {
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION, getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
         PROPERTIES_MAP.put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
 
-        //this.waitForResponse(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE + this.getEventLogCategory(), TEST_CASE_XML, TEST_SUITE_XML);
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE + this.getEventLogCategory(), TEST_CASE_XML, TEST_SUITE_XML);
-
         this.checkResponse(settings, this.getAllowedEventTypes());
     }
 

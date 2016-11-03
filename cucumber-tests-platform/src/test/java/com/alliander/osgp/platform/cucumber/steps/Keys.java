@@ -1,5 +1,9 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package com.alliander.osgp.platform.cucumber.steps;
 
@@ -49,6 +53,7 @@ public class Keys {
     public static final String KEY_DEVICE_HLS4ACTIVE = "HLS4_active";
     public static final String KEY_DEVICE_HLS5ACTIVE = "HLS5_active";
     public static final String KEY_DEVICE_MASTERKEY = "Master_key";
+    public static final String KEY_FIRMWARE_IDENTIFICATION = "FirmwareIdentification";
 
     public static final String KEY_DEVICE_IDENTIFICATION_E_LABEL = "DeviceIdentificationE";
     public static final String KEY_DEVICE_IDENTIFICATION_G_LABEL = "DeviceIdentificationG";

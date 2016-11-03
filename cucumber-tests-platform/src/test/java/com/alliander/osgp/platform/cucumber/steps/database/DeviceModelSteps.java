@@ -69,7 +69,6 @@ public class DeviceModelSteps {
     @Then("^the entity device model exists$")
     public void thenTheEntityDeviceModelExists(final Map<String, String> expectedEntity) throws Throwable {
 
-    	// TODO: Wait until the stuff is created.
         final DeviceModel entity = this.repo.findByModelCode(
         		getString(expectedEntity, "ModelCode", Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
 

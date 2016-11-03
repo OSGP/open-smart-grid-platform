@@ -12,9 +12,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,9 +33,6 @@ import cucumber.api.java.en.When;
 
 @Transactional(value = "txMgrCore")
 public class UpdateFirmware extends SmartMeteringStepsBase {
-
-    private static final String FIRMWARE_IDENTIFIER_LABEL = "FirmwareIdentification";
-    private static final Map<String, String> PROPERTIES_MAP = new HashMap<>();
 
     private static final String PATH_RESULT_STATUS = "/Envelope/Body/UpdateFirmwareResponse/Result/text()";
     private static final String PATH_RESULT_FIRMWAREVERSION_TYPE = "/Envelope/Body/UpdateFirmwareResponse/FirmwareVersion/FirmwareModuleType";
@@ -78,7 +72,7 @@ public class UpdateFirmware extends SmartMeteringStepsBase {
 
     @Given("^the installation file of version \"([^\"]*)\" is available$")
     public void theInstallationFileOfVersionIsAvailable(final String version) throws Throwable {
-        PROPERTIES_MAP.put(FIRMWARE_IDENTIFIER_LABEL, version);
+        PROPERTIES_MAP.put(Keys.KEY_FIRMWARE_IDENTIFICATION, version);
     }
 
     @When("^the request for a firmware upgrade is received$")
@@ -128,7 +122,7 @@ public class UpdateFirmware extends SmartMeteringStepsBase {
 
     @Given("^the installation file of version \"([^\"]*)\" is not available$")
     public void theInstallationFileOfVersionIsNotAvailable(final String version) throws Throwable {
-        PROPERTIES_MAP.put(FIRMWARE_IDENTIFIER_LABEL, version);
+        PROPERTIES_MAP.put(Keys.KEY_FIRMWARE_IDENTIFICATION, version);
     }
 
     @Then("^the message \"([^\"]*)\" should be given$")

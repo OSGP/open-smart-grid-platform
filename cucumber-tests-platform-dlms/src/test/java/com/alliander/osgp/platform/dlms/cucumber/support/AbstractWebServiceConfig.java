@@ -4,25 +4,13 @@
 
 package com.alliander.osgp.platform.dlms.cucumber.support;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.soap.security.support.KeyStoreFactoryBean;
 
-import com.alliander.osgp.platform.cucumber.support.ApplicationConfig;
-
 public class AbstractWebServiceConfig {
-
-    @Autowired
-    private ApplicationConfig applicationConfig;
-
-    @Value("${application.name}")
-    protected String applicationName;
-
-    @Value("${base.uri}")
-    protected String baseUri;
 
     @Value("${web.service.truststore.location}")
     protected String webserviceTruststoreLocation;
@@ -32,16 +20,6 @@ public class AbstractWebServiceConfig {
 
     @Value("${web.service.truststore.type}")
     protected String webserviceTruststoreType;
-
-    @Value("${web.service.keystore.basepath}")
-    protected String webserviceKeystoreLocation;
-
-    @Value("${web.service.keystore.password}")
-    protected String webserviceKeystorePassword;
-
-    @Value("${web.service.keystore.type}")
-    protected String webserviceKeystoreType;
-
 
     @Bean
     public SaajSoapMessageFactory messageFactory() {

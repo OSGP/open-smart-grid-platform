@@ -49,87 +49,77 @@ public class DatabaseSteps {
     /**
      *
      */
-	public void prepareDatabaseForTestRun() {
-		// Remove all data from previous scenario.
+    public void prepareDatabaseForTestRun() {
+        // Remove all data from previous scenario.
         cleanRepoAbstractEntity(this.oslpDeviceRepo);
         cleanRepoAbstractEntity(this.deviceAuthorizationRepo);
         cleanRepoSerializable(this.smartMeterRepo);
         cleanRepoSerializable(this.deviceRepo);
         cleanRepoSerializable(this.deviceModelRepo);
         cleanRepoSerializable(this.manufacturerRepo);
-		for(final Organisation org : this.organizationRepo.findAll()) {
-			if (!org.getOrganisationIdentification().equals("test-org") &&
-                    !org.getOrganisationIdentification().equals("Inforstroom") &&
-					!org.getOrganisationIdentification().equals("FlexOvlProject") &&
-					!org.getOrganisationIdentification().equals("GemeenteArnhem") &&
-					!org.getOrganisationIdentification().equals("LianderNetManagement")) {
-				this.organizationRepo.delete(org);
-			}
-		}
+        for (final Organisation org : this.organizationRepo.findAll()) {
+            if (!org.getOrganisationIdentification().equals("test-org")
+                    && !org.getOrganisationIdentification().equals("Inforstroom")
+                    && !org.getOrganisationIdentification().equals("FlexOvlProject")
+                    && !org.getOrganisationIdentification().equals("GemeenteArnhem")
+                    && !org.getOrganisationIdentification().equals("LianderNetManagement")) {
+                this.organizationRepo.delete(org);
+            }
+        }
 
         // TODO: Clean all other repositories ....
 
         this.insertDefaultData();
-	}
+    }
 
-	/**
-	 * This method is used to create default data not directly related to the specific tests.
-	 * For example: The test-org organization which is used to send authorized requests to the platform.
-	 */
-	private void insertDefaultData() {
-		// TODO: Better would be to have some sort of init method in the
+    /**
+     * This method is used to create default data not directly related to the
+     * specific tests. For example: The test-org organization which is used to
+     * send authorized requests to the platform.
+     */
+    private void insertDefaultData() {
+        // TODO: Better would be to have some sort of init method in the
         // steps.database package which will create the necessary basic
         // entities.
 
-		if (this.organizationRepo.findByOrganisationIdentification(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION) == null) {
-	        // Create test organization used within the tests.
-	        final Organisation testOrg = new Organisation(
-	        		Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION,
-	        		Defaults.DEFAULT_ORGANIZATION_DESCRIPTION,
-	        		Defaults.DEFAULT_PREFIX,
-	        		PlatformFunctionGroup.ADMIN);
-	        testOrg.addDomain(PlatformDomain.COMMON);
-			testOrg.addDomain(PlatformDomain.PUBLIC_LIGHTING);
-			testOrg.addDomain(PlatformDomain.TARIFF_SWITCHING);
-			testOrg.setIsEnabled(true);
+        if (this.organizationRepo.findByOrganisationIdentification(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION) == null) {
+            // Create test organization used within the tests.
+            final Organisation testOrg = new Organisation(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION,
+                    Defaults.DEFAULT_ORGANIZATION_DESCRIPTION, Defaults.DEFAULT_PREFIX, PlatformFunctionGroup.ADMIN);
+            testOrg.addDomain(PlatformDomain.COMMON);
+            testOrg.addDomain(PlatformDomain.PUBLIC_LIGHTING);
+            testOrg.addDomain(PlatformDomain.TARIFF_SWITCHING);
+            testOrg.setIsEnabled(true);
 
-	        this.organizationRepo.save(testOrg);
-		}
+            this.organizationRepo.save(testOrg);
+        }
 
-		// Create default test manufacturer
-        final Manufacturer manufacturer = new Manufacturer(
-        		Defaults.DEFAULT_MANUFACTURER_ID,
-        		Defaults.DEFAULT_MANUFACTURER_NAME,
-        		false);
+        // Create default test manufacturer
+        final Manufacturer manufacturer = new Manufacturer(Defaults.DEFAULT_MANUFACTURER_ID,
+                Defaults.DEFAULT_MANUFACTURER_NAME, false);
         this.manufacturerRepo.save(manufacturer);
 
         // Create the default test model
-        final DeviceModel deviceModel = new DeviceModel(
-        		manufacturer,
-        		Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE,
-        		Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION,
-        		true);
+        final DeviceModel deviceModel = new DeviceModel(manufacturer, Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE,
+                Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION, true);
         this.deviceModelRepo.save(deviceModel);
-	}
+    }
 
-	public void prepareDatabaseForScenario() {
-		final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
-		LOGGER.info(this.getClass() + ": prepareDatabaseForScenario");
+    public void prepareDatabaseForScenario() {
+        final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+        LOGGER.info(this.getClass() + ": prepareDatabaseForScenario");
 
         cleanRepoAbstractEntity(this.oslpDeviceRepo);
         cleanRepoAbstractEntity(this.deviceAuthorizationRepo);
         cleanRepoSerializable(this.deviceRepo);
         cleanRepoSerializable(this.deviceModelRepo);
         cleanRepoSerializable(this.manufacturerRepo);
-		for(final Organisation org : this.organizationRepo.findAll()) {
-			final String orgName = org.getOrganisationIdentification();
-			if (!orgName.equals("test-org") &&
-                    !orgName.equals("Infostroom") &&
-					!orgName.equals("FlexOvlProject") &&
-					!orgName.equals("GemeenteArnhem") &&
-					!orgName.equals("LianderNetManagement")) {
-				this.organizationRepo.delete(org);
-			}
-		}
-	}
+        for (final Organisation org : this.organizationRepo.findAll()) {
+            final String orgName = org.getOrganisationIdentification();
+            if (!orgName.equals("test-org") && !orgName.equals("Infostroom") && !orgName.equals("FlexOvlProject")
+                    && !orgName.equals("GemeenteArnhem") && !orgName.equals("LianderNetManagement")) {
+                this.organizationRepo.delete(org);
+            }
+        }
+    }
 }

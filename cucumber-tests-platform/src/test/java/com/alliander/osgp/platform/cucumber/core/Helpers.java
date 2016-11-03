@@ -14,6 +14,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.util.Assert;
 
@@ -22,6 +24,8 @@ import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
 public class Helpers {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Helpers.class);
 
     protected static final String XPATH_MATCHER_CORRELATIONUID = "\\|\\|\\|\\S{17}\\|\\|\\|\\S{17}";
 
@@ -214,16 +218,14 @@ public class Helpers {
     public static <T extends AbstractEntity> void cleanRepoAbstractEntity(final JpaRepository<T, Long> repo) {
         try {
             repo.deleteAllInBatch();
-        } catch (final Exception e) {
-            System.err.println(e);
+        } catch (final Exception ex) {
+            LOGGER.error(ex.getMessage());
         }
     }
 
     /**
-     * When running automatic tests, it might be that not each project is
-     * started in tomcat. When the repo's are cleared at the beginning of a test
-     * run, you get some exceptions when the database wasn't found. Therefore
-     * this method is created to ignore that.
+     * When running automatic tests, in a beforestep all tables (except for some 'stamdata') are cleared, you get some exceptions when the database wasn't found.
+     * Therefore this method is created to ignore that
      *
      * @param repo
      */
@@ -314,8 +316,7 @@ public class Helpers {
     }
 
     /**
-     * The final Map<String, String> settings is an immutable map, so it is not possible to modify it.
-     * This shortcut makes a new Map with the given key + value
+     * This shortcut makes a new Map from the given map with the given key + value
      * @param settings
      * @param key
      * @param value

@@ -41,8 +41,8 @@ public class DlmsDeviceSteps {
     }
 
     private boolean isSmartMeter(final Map<String, String> settings) {
-        final String devtype = settings.get(Keys.KEY_DEVICE_TYPE);
-        return SMART_METER_E.equals(devtype) || SMART_METER_G.equals(devtype) ;
+        final String deviceType = settings.get(Keys.KEY_DEVICE_TYPE);
+        return SMART_METER_E.equals(deviceType) || SMART_METER_G.equals(deviceType) ;
     }
 
     @Then("^the device with the id \"([^\"]*)\" exists$")
