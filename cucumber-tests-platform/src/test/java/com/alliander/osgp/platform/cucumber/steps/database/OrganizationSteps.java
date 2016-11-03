@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.platform.cucumber.steps.database;
 
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getBoolean;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getEnum;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 
@@ -38,6 +39,7 @@ public class OrganizationSteps {
 	/**
 	 * Some defaults for the organization class.
 	 */
+	private final Boolean DEFAULT_ENABLED = true;
 	private final String DEFAULT_ORGANIZATION = "An Organization";
 	private final String DEFAULT_NAME = "An Organization";
 	private final String DEFAULT_PREFIX = "Tes";
@@ -60,6 +62,8 @@ public class OrganizationSteps {
 
     	// Add all the mandatory stuff.
     	entity.addDomain(getEnum(settings, "PlatformDomain", PlatformDomain.class, this.DEFAULT_PLATFORM_DOMAIN));
+
+    	entity.setIsEnabled(getBoolean(settings, "Enabled", this.DEFAULT_ENABLED));
 
     	// TODO: Add all the optional stuff
     	this.repo.save(entity);
