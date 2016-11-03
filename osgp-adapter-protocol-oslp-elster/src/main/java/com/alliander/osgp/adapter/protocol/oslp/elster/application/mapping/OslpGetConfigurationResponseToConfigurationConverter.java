@@ -76,15 +76,15 @@ public class OslpGetConfigurationResponseToConfigurationConverter extends
             configuration.setDeviceFixedIp(new DeviceFixedIpDto(ipAddress, netMask, gateWay));
         }
         configuration.setDhcpEnabled(source.getIsDhcpEnabled());
-        if (source.hasIsTlsEnabled()) {
-            configuration.setTlsEnabled(source.getIsTlsEnabled());
-        }
-        if (source.hasOslpBindPortNumber()) {
-            configuration.setTlsPortNumber(source.getOslpBindPortNumber());
-        }
-        if (source.hasCommonNameString()) {
-            configuration.setCommonNameString(source.getCommonNameString());
-        }
+//        if (source.hasIsTlsEnabled()) {
+//            configuration.setTlsEnabled(source.getIsTlsEnabled());
+//        }
+//        if (source.hasOslpBindPortNumber()) {
+//            configuration.setTlsPortNumber(source.getOslpBindPortNumber());
+//        }
+//        if (source.hasCommonNameString()) {
+//            configuration.setCommonNameString(source.getCommonNameString());
+//        }
         configuration.setCommunicationTimeout(source.getCommunicationTimeout());
         configuration.setCommunicationNumberOfRetries(source.getCommunicationNumberOfRetries());
         configuration.setCommunicationPauseTimeBetweenConnectionTrials(source

@@ -856,9 +856,9 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                 configuration.setNetMask(ByteString.copyFrom(InetAddress.getByName("255.255.255.0").getAddress()));
                 configuration.setGateWay(ByteString.copyFrom(InetAddress.getByName("192.168.0.1").getAddress()));
                 configuration.setIsDhcpEnabled(false);
-                configuration.setIsTlsEnabled(true);
-                configuration.setOslpBindPortNumber(1234);
-                configuration.setCommonNameString("TLS Test");
+//                configuration.setIsTlsEnabled(true);
+//                configuration.setOslpBindPortNumber(1234);
+//                configuration.setCommonNameString("TLS Test");
                 configuration.setCommunicationTimeout(30);
                 configuration.setCommunicationNumberOfRetries(5);
                 configuration.setCommunicationPauseTimeBetweenConnectionTrials(120);
