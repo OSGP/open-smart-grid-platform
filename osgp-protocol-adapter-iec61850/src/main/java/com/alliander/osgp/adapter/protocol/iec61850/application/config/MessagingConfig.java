@@ -34,19 +34,19 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRespon
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.Iec61850LogItemRequestMessageSender;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.OsgpRequestMessageSender;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.OsgpResponseMessageListener;
+import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 /**
- * An application context Java configuration class. The usage of Java
- * configuration requires Spring Framework 3.0
+ * An application context Java configuration class.
  */
 @Configuration
 @EnableTransactionManagement()
 @PropertySources({
 	@PropertySource("classpath:osgp-adapter-protocol-iec61850.properties"),
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 	@PropertySource(value = "file:${osgp/AdapterProtocolIec61850/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 })
-public class MessagingConfig {
+public class MessagingConfig extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MessagingConfig.class);
 

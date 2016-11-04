@@ -10,7 +10,6 @@ package com.alliander.osgp.core.db.api.iec61850.application.config;
 import java.util.Properties;
 
 import javax.annotation.PreDestroy;
-import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 import org.hibernate.ejb.HibernatePersistence;
@@ -20,7 +19,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
-import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -28,6 +26,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.alliander.osgp.core.db.api.iec61850.exceptions.Iec61850CoreDbApiException;
 import com.alliander.osgp.core.db.api.iec61850.repositories.SsldDataRepository;
+import com.alliander.osgp.shared.application.config.AbstractConfig;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -36,10 +35,10 @@ import com.zaxxer.hikari.HikariDataSource;
 @EnableTransactionManagement()
 @PropertySources({
 	@PropertySource("classpath:osgp-core-db-api-iec61850.properties"),
-	@PropertySource(value = "file:${osgp/CoreDbApiIEC61850/config}", ignoreResourceNotFound = true),
 	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+    @PropertySource(value = "file:${osgp/CoreDbApiIEC61850/config}", ignoreResourceNotFound = true),
 })
-public class Iec61850OsgpCoreDbApiPersistenceConfig {
+public class Iec61850OsgpCoreDbApiPersistenceConfig extends AbstractConfig {
 
     private static final String PROPERTY_NAME_DATABASE_DRIVER = "db.api.driver";
     private static final String PROPERTY_NAME_DATABASE_PASSWORD = "db.api.password";
@@ -62,9 +61,6 @@ public class Iec61850OsgpCoreDbApiPersistenceConfig {
     private static final String PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN = "api.entitymanager.packages.to.scan.iec61850";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850OsgpCoreDbApiPersistenceConfig.class);
-
-    @Resource
-    private Environment environment;
 
     private HikariDataSource dataSource;
 
