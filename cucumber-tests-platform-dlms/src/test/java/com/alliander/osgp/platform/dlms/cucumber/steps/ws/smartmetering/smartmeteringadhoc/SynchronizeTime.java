@@ -1,5 +1,9 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.smartmeteringadhoc;
 
@@ -34,12 +38,13 @@ public class SynchronizeTime extends SmartMeteringStepsBase {
 
     @When("^receiving a get synchronize time request$")
     public void receivingAGetSynchronizeTimeRequest(final Map<String, String> settings) throws Throwable {
-        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION, getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
+                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         /*
          * Setup of deviation and DST information, that will make
          * SynchronizeTime configure a meter for time zone Europe/Amsterdam.
-         *
+         * 
          * This assumes the server time that will be synchronized is about the
          * same as the system time where this test code is executed and
          * configures deviation and DST according to the proper values for
@@ -65,10 +70,13 @@ public class SynchronizeTime extends SmartMeteringStepsBase {
 
     @Then("^the date and time is synchronized on the device$")
     public void theDateAndTimeIsSynchronizedOnTheDevice(final Map<String, String> settings) throws Throwable {
-        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION, getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-        PROPERTIES_MAP.put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
+        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
+                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+        PROPERTIES_MAP
+                .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
 
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_GETRESPONSE_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
+        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_GETRESPONSE_REQUEST, TEST_CASE_XML,
+                TEST_SUITE_XML);
 
         assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT, Defaults.EXPECTED_RESULT_OK));
     }

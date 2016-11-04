@@ -1,5 +1,9 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.smartmeteringinstallation;
 
@@ -29,8 +33,10 @@ public class AddDevice extends SmartMeteringStepsBase {
 
     @When("^receiving an add device request$")
     public void receiving_an_add_device_request(final Map<String, String> setings) throws Throwable {
-        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION, getString(setings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-        PROPERTIES_MAP.put(Keys.KEY_DEVICE_TYPE, getString(setings, Keys.KEY_DEVICE_TYPE, Defaults.DEFAULT_DEVICE_TYPE));
+        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
+                getString(setings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+        PROPERTIES_MAP
+                .put(Keys.KEY_DEVICE_TYPE, getString(setings, Keys.KEY_DEVICE_TYPE, Defaults.DEFAULT_DEVICE_TYPE));
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_COMMUNICATIONMETHOD, setings.get(Keys.KEY_DEVICE_COMMUNICATIONMETHOD));
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_COMMUNICATIONPROVIDER, setings.get(Keys.KEY_DEVICE_COMMUNICATIONPROVIDER));
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_ICCID, setings.get(Keys.KEY_DEVICE_ICCID));
@@ -46,20 +52,27 @@ public class AddDevice extends SmartMeteringStepsBase {
 
     @Then("^the add device response contains$")
     public void the_add_device_request_contains(final Map<String, String> settings) throws Throwable {
-    	this.runXpathResult.assertXpath(this.response, PATH_DEVICE_IDENTIFICATION, getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
-    	this.runXpathResult.assertNotNull(this.response, PATH_CORRELATION_UID);
+        this.runXpathResult
+                .assertXpath(
+                        this.response,
+                        PATH_DEVICE_IDENTIFICATION,
+                        getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
+                                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+        this.runXpathResult.assertNotNull(this.response, PATH_CORRELATION_UID);
 
-    	// Save the returned CorrelationUid in the Scenario related context for further use.
-    	saveCorrelationUidInScenarioContext(
-    	    this.runXpathResult.getValue(this.response, PATH_CORRELATION_UID),
-    	    getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+        // Save the returned CorrelationUid in the Scenario related context for
+        // further use.
+        saveCorrelationUidInScenarioContext(this.runXpathResult.getValue(this.response, PATH_CORRELATION_UID),
+                getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
     }
 
     @Then("^receiving an get add device response request$")
     public void receiving_an_get_add_device_response_request(final Map<String, String> settings) throws Throwable {
-        PROPERTIES_MAP.put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
+        PROPERTIES_MAP
+                .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
 
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_GETRESPONSE_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
+        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_GETRESPONSE_REQUEST, TEST_CASE_XML,
+                TEST_SUITE_XML);
     }
 
     @Then("^the get add device request response should be ok$")

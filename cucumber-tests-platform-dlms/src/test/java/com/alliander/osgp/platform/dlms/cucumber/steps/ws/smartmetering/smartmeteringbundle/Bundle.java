@@ -1,5 +1,9 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.smartmeteringbundle;
 
@@ -53,8 +57,12 @@ public class Bundle extends SmartMeteringStepsBase {
 
     @When("^a bundled request message is received$")
     public void aBundledRequestMessageIsReceived(final Map<String, String> settings) throws Throwable {
-        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION, getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-        PROPERTIES_MAP.put(Keys.KEY_ORGANIZATION_IDENTIFICATION, getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
+                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+        PROPERTIES_MAP
+                .put(Keys.KEY_ORGANIZATION_IDENTIFICATION,
+                        getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
+                                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
 
@@ -65,12 +73,16 @@ public class Bundle extends SmartMeteringStepsBase {
     }
 
     @And("^the operations in the bundled request message will be executed from top to bottom$")
-    public void theRequestsInTheBundledRequestMessageWillBeExecutedFromTopToBottom(final Map<String, String> settings) throws Throwable {
-        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION, getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-        PROPERTIES_MAP.put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
+    public void theRequestsInTheBundledRequestMessageWillBeExecutedFromTopToBottom(final Map<String, String> settings)
+            throws Throwable {
+        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
+                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+        PROPERTIES_MAP
+                .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
         PROPERTIES_MAP.put(MAX_TIME, "180000");
 
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_GETRESPONSE_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
+        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_GETRESPONSE_REQUEST, TEST_CASE_XML,
+                TEST_SUITE_XML);
 
         LOGGER.debug("check if responses are in the correct order:");
         final NodeList nodeList = this.runXpathResult.getNodeList(this.response, "//AllResponses/*");
@@ -86,7 +98,8 @@ public class Bundle extends SmartMeteringStepsBase {
         LOGGER.debug("check if we get responses for all the requests");
         final NodeList nodeList = this.runXpathResult.getNodeList(this.response, "//AllResponses/*");
 
-        assertEquals("the number of request actions should equals the nr nodelists", REQUEST_ACTIONS.size(), nodeList.getLength());
+        assertEquals("the number of request actions should equals the nr nodelists", REQUEST_ACTIONS.size(),
+                nodeList.getLength());
     }
 
     private String removeNamespace(final String input) {

@@ -1,5 +1,9 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.smartmeteringmonitoring;
 
@@ -35,10 +39,15 @@ public class PeriodicMeterReadsGas extends SmartMeteringStepsBase {
     private static final String END_DATE_LABEL = "endDate";
 
     @When("^the get \"([^\"]*)\" meter reads gas request is received$")
-    public void theGetMeterReadsRequestIsReceived(final String periodtype, final Map<String, String> settings) throws Throwable {
+    public void theGetMeterReadsRequestIsReceived(final String periodtype, final Map<String, String> settings)
+            throws Throwable {
 
-        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION, getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-        PROPERTIES_MAP.put(Keys.KEY_ORGANIZATION_IDENTIFICATION, getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
+                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+        PROPERTIES_MAP
+                .put(Keys.KEY_ORGANIZATION_IDENTIFICATION,
+                        getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
+                                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
         PROPERTIES_MAP.put(PERIOD_TYPE_LABEL, getString(settings, Keys.KEY_PERIOD_TYPE, Defaults.DEFAULT_PERIOD_TYPE));
         PROPERTIES_MAP.put(BEGIN_DATE_LABEL, getString(settings, Keys.KEY_BEGIN_DATE, Defaults.DEFAULT_BEGIN_DATE));
         PROPERTIES_MAP.put(END_DATE_LABEL, getString(settings, Keys.KEY_END_DATE, Defaults.DEFAULT_END_DATE));
@@ -47,9 +56,12 @@ public class PeriodicMeterReadsGas extends SmartMeteringStepsBase {
     }
 
     @Then("^the \"([^\"]*)\" meter reads gas result should be returned$")
-    public void theMeterReadsResultShouldBeReturned(final String periodType, final Map<String, String> settings) throws Throwable {
-        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION, getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-        PROPERTIES_MAP.put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
+    public void theMeterReadsResultShouldBeReturned(final String periodType, final Map<String, String> settings)
+            throws Throwable {
+        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
+                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+        PROPERTIES_MAP
+                .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, TEST_CASE_XML, TEST_SUITE_XML);
 

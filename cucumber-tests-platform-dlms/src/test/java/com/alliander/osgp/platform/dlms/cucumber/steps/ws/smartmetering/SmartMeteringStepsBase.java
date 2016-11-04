@@ -1,5 +1,9 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering;
 
@@ -19,17 +23,19 @@ import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 public abstract class SmartMeteringStepsBase extends SoapUiRunner {
 
     /**
-     * Constructor.
-     * The steps in this folder use the SmartMetering SoapUI project.
+     * Constructor. The steps in this folder use the SmartMetering SoapUI
+     * project.
      */
     protected SmartMeteringStepsBase() {
-    	super("soap-ui-project/Dlms-SoapUI-project.xml");
+        super("soap-ui-project/Dlms-SoapUI-project.xml");
     }
 
     /**
-     * Because the smartmetering scenarios are missing the verify check for the response from the platform (which
-     * would contain the device identification and the correlation uid) this check has been put here.
-     * It would be better to make this a separate step, as you definitely want to check this response in my opinion.
+     * Because the smartmetering scenarios are missing the verify check for the
+     * response from the platform (which would contain the device identification
+     * and the correlation uid) this check has been put here. It would be better
+     * to make this a separate step, as you definitely want to check this
+     * response in my opinion.
      */
     @Override
     protected void requestRunner(final TestStepStatus testStepStatus, final Map<String, String> propertiesMap,
@@ -44,9 +50,9 @@ public abstract class SmartMeteringStepsBase extends SoapUiRunner {
     }
 
     protected void saveCorrelationId() throws Throwable {
-        // Save the returned CorrelationUid in the Scenario related context for further use.
-        Helpers.saveCorrelationUidInScenarioContext(
-                this.runXpathResult.getValue(this.response, PATH_CORRELATION_UID),
+        // Save the returned CorrelationUid in the Scenario related context for
+        // further use.
+        Helpers.saveCorrelationUidInScenarioContext(this.runXpathResult.getValue(this.response, PATH_CORRELATION_UID),
                 getString(PROPERTIES_MAP, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
     }

@@ -1,5 +1,9 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.smartmeteringmanagement;
 
@@ -39,17 +43,21 @@ public abstract class AbstractFindEventsReads extends SmartMeteringStepsBase {
     protected abstract String getEventLogCategory();
 
     public void receivingAFindStandardEventsRequest(final Map<String, String> requestData) throws Throwable {
-        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION, getString(requestData, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
+                getString(requestData, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST + this.getEventLogCategory(),
                 TEST_CASE_XML, TEST_SUITE_XML);
     }
 
     public void eventsShouldBeReturned(final Map<String, String> settings) throws Throwable {
-        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION, getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
-        PROPERTIES_MAP.put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
+        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
+                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+        PROPERTIES_MAP
+                .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
 
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE + this.getEventLogCategory(), TEST_CASE_XML, TEST_SUITE_XML);
+        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE + this.getEventLogCategory(),
+                TEST_CASE_XML, TEST_SUITE_XML);
         this.checkResponse(settings, this.getAllowedEventTypes());
     }
 
@@ -70,15 +78,18 @@ public abstract class AbstractFindEventsReads extends SmartMeteringStepsBase {
      * @throws SAXException
      * @throws IOException
      */
-    private final void checkResponse(final Map<String, String> settings, final List<EventType> allowed) throws XPathExpressionException,
-            ParserConfigurationException, SAXException, IOException {
+    private final void checkResponse(final Map<String, String> settings, final List<EventType> allowed)
+            throws XPathExpressionException, ParserConfigurationException, SAXException, IOException {
 
         final NodeList nodeList = this.runXpathResult.getNodeList(this.response, PATH_RESULT_EVENTS);
-        final boolean nodeListExpected = getBoolean(settings, Keys.KEY_EVENTS_NODELIST_EXPECTED, Defaults.EVENTS_NODELIST_EXPECTED);
+        final boolean nodeListExpected = getBoolean(settings, Keys.KEY_EVENTS_NODELIST_EXPECTED,
+                Defaults.EVENTS_NODELIST_EXPECTED);
         if (nodeListExpected) {
-            Assert.assertEquals("Size of response nodelist should be equals to the allowed size", allowed.size(), nodeList.getLength());
+            Assert.assertEquals("Size of response nodelist should be equals to the allowed size", allowed.size(),
+                    nodeList.getLength());
             for (final EventType eventtype : allowed) {
-                Assert.assertTrue("eventype " + eventtype + " should be in response", this.response.indexOf(eventtype.toString()) > 0);
+                Assert.assertTrue("eventype " + eventtype + " should be in response",
+                        this.response.indexOf(eventtype.toString()) > 0);
             }
         }
     }
