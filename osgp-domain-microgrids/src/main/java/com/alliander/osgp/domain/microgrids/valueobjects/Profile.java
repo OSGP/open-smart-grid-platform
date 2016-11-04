@@ -7,14 +7,29 @@
  */
 package com.alliander.osgp.domain.microgrids.valueobjects;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Profile {
+public class Profile implements Serializable {
 
+    private static final long serialVersionUID = 7317782056712941895L;
+
+    private Integer id;
+    private String node;
     private List<ProfileEntry> profileEntries;
 
-    public Profile(final List<ProfileEntry> profileEntries) {
+    public Profile(final Integer id, final String node, final List<ProfileEntry> profileEntries) {
+        this.id = id;
+        this.node = node;
         this.profileEntries = profileEntries;
+    }
+
+    public Integer getId() {
+        return this.id;
+    }
+
+    public String getNode() {
+        return this.node;
     }
 
     public List<ProfileEntry> getProfileEntries() {

@@ -7,15 +7,26 @@
  */
 package com.alliander.osgp.domain.microgrids.valueobjects;
 
+import java.io.Serializable;
+
 import org.joda.time.DateTime;
 
-public class ProfileEntry {
+public class ProfileEntry implements Serializable {
+
+    private static final long serialVersionUID = -6843459709647885422L;
+
+    private Integer id;
     private DateTime time;
     private double value;
 
-    public ProfileEntry(final DateTime time, final double value) {
+    public ProfileEntry(final int id, final DateTime time, final double value) {
+        this.id = id;
         this.time = time;
         this.value = value;
+    }
+
+    public int getId() {
+        return this.id;
     }
 
     public DateTime getTime() {

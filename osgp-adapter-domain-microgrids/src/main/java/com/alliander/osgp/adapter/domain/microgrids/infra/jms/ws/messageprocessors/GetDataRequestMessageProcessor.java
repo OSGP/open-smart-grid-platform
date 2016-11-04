@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.microgrids.application.services.AdHocManagementService;
 import com.alliander.osgp.adapter.domain.microgrids.infra.jms.ws.WebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.domain.microgrids.valueobjects.DataRequest;
+import com.alliander.osgp.domain.microgrids.valueobjects.GetDataRequest;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
@@ -48,7 +48,7 @@ public class GetDataRequestMessageProcessor extends WebServiceRequestMessageProc
         String messageType = null;
         String organisationIdentification = null;
         String deviceIdentification = null;
-        DataRequest dataRequest = null;
+        GetDataRequest dataRequest = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -56,8 +56,8 @@ public class GetDataRequestMessageProcessor extends WebServiceRequestMessageProc
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
 
-            if (message.getObject() != null && message.getObject() instanceof DataRequest) {
-                dataRequest = (DataRequest) message.getObject();
+            if (message.getObject() != null && message.getObject() instanceof GetDataRequest) {
+                dataRequest = (GetDataRequest) message.getObject();
             }
 
         } catch (final JMSException e) {

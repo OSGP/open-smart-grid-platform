@@ -11,7 +11,7 @@ import java.io.Serializable;
 
 import org.joda.time.DateTime;
 
-public class Measurement extends MeasurementIdentifier implements Serializable {
+public class Measurement extends NodeIdentifier implements Serializable {
     /**
      *
      */

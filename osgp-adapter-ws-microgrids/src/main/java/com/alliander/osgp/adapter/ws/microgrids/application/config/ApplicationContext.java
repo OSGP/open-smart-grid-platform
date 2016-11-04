@@ -34,6 +34,10 @@ public class ApplicationContext {
     @Resource
     private Environment environment;
 
+    public ApplicationContext() {
+        // Default public constructor
+    }
+
     @Bean
     public boolean stubResponses() {
         return Boolean.parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_STUB_RESPONSES));

@@ -23,32 +23,32 @@ import com.alliander.osgp.domain.microgrids.valueobjects.SetDataRequest;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
- * Class for processing microgrids set setpoints request messages
+ * Class for processing microgrids set data request messages
  */
-@Component("domainMicrogridsSetSetPointsRequestMessageProcessor")
-public class SetSetPointsRequestMessageProcessor extends WebServiceRequestMessageProcessor {
+@Component("domainMicrogridsSetDataRequestMessageProcessor")
+public class SetDataRequestMessageProcessor extends WebServiceRequestMessageProcessor {
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(SetSetPointsRequestMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SetDataRequestMessageProcessor.class);
 
     @Autowired
     @Qualifier("domainMicrogridsAdHocManagementService")
     private AdHocManagementService adHocManagementService;
 
-    public SetSetPointsRequestMessageProcessor() {
-        super(DeviceFunction.SET_SETPOINT);
+    public SetDataRequestMessageProcessor() {
+        super(DeviceFunction.SET_DATA);
     }
 
     @Override
     public void processMessage(final ObjectMessage message) {
-        LOGGER.info("Processing public lighting get status request message");
+        LOGGER.info("Processing microgrids set data request message");
 
         String correlationUid = null;
         String messageType = null;
         String organisationIdentification = null;
         String deviceIdentification = null;
-        SetDataRequest setPointsRequest = null;
+        SetDataRequest setDataRequest = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -57,7 +57,7 @@ public class SetSetPointsRequestMessageProcessor extends WebServiceRequestMessag
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
 
             if (message.getObject() != null && message.getObject() instanceof SetDataRequest) {
-                setPointsRequest = (SetDataRequest) message.getObject();
+                setDataRequest = (SetDataRequest) message.getObject();
             }
 
         } catch (final JMSException e) {
@@ -72,8 +72,8 @@ public class SetSetPointsRequestMessageProcessor extends WebServiceRequestMessag
         try {
             LOGGER.info("Calling application service function: {}", messageType);
 
-            this.adHocManagementService.handleSetPointsRequest(organisationIdentification, deviceIdentification,
-                    correlationUid, messageType, setPointsRequest);
+            this.adHocManagementService.handleSetDataRequest(organisationIdentification, deviceIdentification,
+                    correlationUid, messageType, setDataRequest);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);

@@ -34,12 +34,12 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
  * MessageProcessors after dependency injection has completed.
  *
  */
-public abstract class DomainResponseMessageProcessor implements MessageProcessor {
+public abstract class AbstractDomainResponseMessageProcessor implements MessageProcessor {
 
     /**
      * Logger for this class.
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(DomainResponseMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDomainResponseMessageProcessor.class);
 
     /**
      * The hash map of message processor instances.
@@ -64,7 +64,7 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
      * @param deviceFunction
      *            The message type a message processor can handle.
      */
-    protected DomainResponseMessageProcessor(final DeviceFunction deviceFunction) {
+    protected AbstractDomainResponseMessageProcessor(final DeviceFunction deviceFunction) {
         this.deviceFunction = deviceFunction;
     }
 

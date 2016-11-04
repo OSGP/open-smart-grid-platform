@@ -18,13 +18,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alliander.osgp.adapter.domain.microgrids.application.mapping.DomainMicrogridsMapper;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.microgrids.entities.RtuDevice;
-import com.alliander.osgp.domain.microgrids.valueobjects.DataRequest;
-import com.alliander.osgp.domain.microgrids.valueobjects.DataResponse;
 import com.alliander.osgp.domain.microgrids.valueobjects.EmptyResponse;
+import com.alliander.osgp.domain.microgrids.valueobjects.GetDataRequest;
+import com.alliander.osgp.domain.microgrids.valueobjects.GetDataResponse;
 import com.alliander.osgp.domain.microgrids.valueobjects.SetDataRequest;
-import com.alliander.osgp.dto.valueobjects.microgrids.DataRequestDto;
-import com.alliander.osgp.dto.valueobjects.microgrids.DataResponseDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.EmptyResponseDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.GetDataRequestDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.GetDataResponseDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.SetDataRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -53,7 +53,7 @@ public class AdHocManagementService extends AbstractService {
     // === GET DATA ===
 
     public void getData(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final String messageType, final DataRequest dataRequest)
+            final String correlationUid, final String messageType, final GetDataRequest dataRequest)
             throws FunctionalException {
 
         LOGGER.info("Get data for device [{}] with correlation id [{}]", deviceIdentification, correlationUid);
@@ -61,21 +61,21 @@ public class AdHocManagementService extends AbstractService {
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        final DataRequestDto dto = this.mapper.map(dataRequest, DataRequestDto.class);
+        final GetDataRequestDto dto = this.mapper.map(dataRequest, GetDataRequestDto.class);
 
         this.osgpCoreRequestMessageSender.send(
                 new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, dto), messageType,
                 device.getIpAddress());
     }
 
-    public void handleGetDataResponse(final DataResponseDto dataResponseDto, final String deviceIdentification,
+    public void handleGetDataResponse(final GetDataResponseDto dataResponseDto, final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
             final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException) {
 
         LOGGER.info("handleResponse for MessageType: {}", messageType);
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
-        DataResponse dataResponse = null;
+        GetDataResponse dataResponse = null;
         OsgpException exception = null;
 
         try {
@@ -86,7 +86,7 @@ public class AdHocManagementService extends AbstractService {
 
             this.handleResponseMessageReceived(deviceIdentification);
 
-            dataResponse = this.mapper.map(dataResponseDto, DataResponse.class);
+            dataResponse = this.mapper.map(dataResponseDto, GetDataResponse.class);
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception", e);
@@ -105,25 +105,25 @@ public class AdHocManagementService extends AbstractService {
                 deviceIdentification, result, exception, dataResponse), messageType);
     }
 
-    // === SET SETPOINTS ===
+    // === SET DATA ===
 
-    public void handleSetPointsRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final String messageType, final SetDataRequest setPointsRequest)
+    public void handleSetDataRequest(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final String messageType, final SetDataRequest setDataRequest)
             throws FunctionalException {
 
-        LOGGER.info("Set setpoints for device [{}] with correlation id [{}]", deviceIdentification, correlationUid);
+        LOGGER.info("Set data for device [{}] with correlation id [{}]", deviceIdentification, correlationUid);
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        final SetDataRequestDto dto = this.mapper.map(setPointsRequest, SetDataRequestDto.class);
+        final SetDataRequestDto dto = this.mapper.map(setDataRequest, SetDataRequestDto.class);
 
         this.osgpCoreRequestMessageSender.send(
                 new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, dto), messageType,
                 device.getIpAddress());
     }
 
-    public void handleSetPointsResponse(final EmptyResponseDto emptyResponseDto, final String deviceIdentification,
+    public void handleSetDataResponse(final EmptyResponseDto emptyResponseDto, final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
             final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException) {
 
@@ -146,8 +146,8 @@ public class AdHocManagementService extends AbstractService {
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            exception = new TechnicalException(ComponentType.DOMAIN_MICROGRIDS,
-                    "Exception occurred while setting setpoints", e);
+            exception = new TechnicalException(ComponentType.DOMAIN_MICROGRIDS, "Exception occurred while setting data",
+                    e);
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,

@@ -26,26 +26,26 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 /**
- * Class for processing microgrids set setpoints response messages
+ * Class for processing microgrids set data response messages
  */
-@Component("domainMicrogridsSetSetPointsResponseMessageProcessor")
-public class SetSetPointsResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+@Component("domainMicrogridsSetDataResponseMessageProcessor")
+public class SetDataResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(SetSetPointsResponseMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SetDataResponseMessageProcessor.class);
 
     @Autowired
     @Qualifier("domainMicrogridsAdHocManagementService")
     private AdHocManagementService adHocManagementService;
 
-    protected SetSetPointsResponseMessageProcessor() {
-        super(DeviceFunction.SET_SETPOINT);
+    protected SetDataResponseMessageProcessor() {
+        super(DeviceFunction.SET_DATA);
     }
 
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
-        LOGGER.debug("Processing public lighting get status response message");
+        LOGGER.debug("Processing microgrids set data response message");
 
         String correlationUid = null;
         String messageType = null;
@@ -84,7 +84,7 @@ public class SetSetPointsResponseMessageProcessor extends OsgpCoreResponseMessag
 
             final EmptyResponseDto emptyResponse = (EmptyResponseDto) dataObject;
 
-            this.adHocManagementService.handleSetPointsResponse(emptyResponse, deviceIdentification,
+            this.adHocManagementService.handleSetDataResponse(emptyResponse, deviceIdentification,
                     organisationIdentification, correlationUid, messageType, responseMessageResultType, osgpException);
 
         } catch (final Exception e) {

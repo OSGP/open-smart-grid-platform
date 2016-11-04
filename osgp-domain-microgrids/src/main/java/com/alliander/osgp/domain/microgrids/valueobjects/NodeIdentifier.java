@@ -9,16 +9,14 @@ package com.alliander.osgp.domain.microgrids.valueobjects;
 
 import java.io.Serializable;
 
-public class MeasurementIdentifier implements Serializable {
-    /**
-     *
-     */
+public class NodeIdentifier implements Serializable {
+
     private static final long serialVersionUID = 3933967809366650885L;
 
     private final int id;
     private final String node;
 
-    public MeasurementIdentifier(final int id, final String node) {
+    public NodeIdentifier(final int id, final String node) {
         super();
         this.id = id;
         this.node = node;

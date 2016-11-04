@@ -12,5 +12,5 @@ package com.alliander.osgp.adapter.ws.microgrids.infra.jms;
  */
 public enum MicrogridsRequestMessageType {
     GET_DATA,
-    SET_SETPOINT
+    SET_DATA
 }

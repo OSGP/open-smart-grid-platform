@@ -31,6 +31,10 @@ public class RtuResponseDataService {
     @Autowired
     private RtuResponseDataRepository responseDataRepository;
 
+    public RtuResponseDataService() {
+        // Default public constructor
+    }
+
     /**
      * Queue response data object.
      *
@@ -81,8 +85,12 @@ public class RtuResponseDataService {
              * data will not be removed, so it will be available for the right
              * request type.
              */
-            final String warningResultClassType = responseData.getMessageData() == null ? "NULL"
-                    : responseData.getMessageData().getClass().getName();
+            String warningResultClassType;
+            if (responseData.getMessageData() == null) {
+                warningResultClassType = "NULL";
+            } else {
+                warningResultClassType = responseData.getMessageData().getClass().getName();
+            }
 
             LOGGER.warn("Incorrect type of response data: {} for correlation UID: {}", warningResultClassType,
                     responseData.getCorrelationUid());

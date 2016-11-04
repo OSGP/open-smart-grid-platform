@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.microgrids.application.services.AdHocManagementService;
 import com.alliander.osgp.adapter.domain.microgrids.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.dto.valueobjects.microgrids.DataResponseDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.GetDataResponseDto;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -82,7 +82,7 @@ public class GetDataResponseMessageProcessor extends OsgpCoreResponseMessageProc
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
-            final DataResponseDto dataResponse = (DataResponseDto) dataObject;
+            final GetDataResponseDto dataResponse = (GetDataResponseDto) dataObject;
 
             this.adHocManagementService.handleGetDataResponse(dataResponse, deviceIdentification,
                     organisationIdentification, correlationUid, messageType, responseMessageResultType, osgpException);

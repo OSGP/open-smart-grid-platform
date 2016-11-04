@@ -63,6 +63,10 @@ public class WebServiceConfig {
     @Resource
     private Environment environment;
 
+    public WebServiceConfig() {
+        // Default public constructor
+    }
+
     // === MICROGRIDS MARSHALLERS ===
 
     /**
@@ -193,8 +197,8 @@ public class WebServiceConfig {
     @Bean
     public Jaxb2Marshaller notificationSenderMarshaller() {
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-        marshaller.setContextPath(this.environment
-                .getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_MICROGRIDS_NOTIFICATION));
+        marshaller.setContextPath(
+                this.environment.getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_MICROGRIDS_NOTIFICATION));
         return marshaller;
     }
 
@@ -204,7 +208,7 @@ public class WebServiceConfig {
 
     @Bean
     public SendNotificationServiceClient sendNotificationServiceClient() throws java.security.GeneralSecurityException {
-        return new SendNotificationServiceClient(this.createWebServiceTemplateFactory(this
-                .notificationSenderMarshaller()));
+        return new SendNotificationServiceClient(
+                this.createWebServiceTemplateFactory(this.notificationSenderMarshaller()));
     }
 }

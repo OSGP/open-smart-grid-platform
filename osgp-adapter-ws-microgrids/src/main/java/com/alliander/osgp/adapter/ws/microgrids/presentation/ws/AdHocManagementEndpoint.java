@@ -29,8 +29,6 @@ import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataRe
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataResponse;
 import com.alliander.osgp.adapter.ws.schema.microgrids.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.microgrids.common.OsgpResultType;
-import com.alliander.osgp.domain.microgrids.valueobjects.DataRequest;
-import com.alliander.osgp.domain.microgrids.valueobjects.DataResponse;
 import com.alliander.osgp.domain.microgrids.valueobjects.EmptyResponse;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -48,6 +46,10 @@ public class AdHocManagementEndpoint {
     @Autowired
     private MicrogridsMapper mapper;
 
+    public AdHocManagementEndpoint() {
+        // Default public constructor
+    }
+
     // === GET DATA ===
 
     @PayloadRoot(localPart = "GetDataRequest", namespace = NAMESPACE)
@@ -61,7 +63,8 @@ public class AdHocManagementEndpoint {
         final GetDataAsyncResponse response = new GetDataAsyncResponse();
 
         try {
-            final DataRequest dataRequest = this.mapper.map(request, DataRequest.class);
+            final com.alliander.osgp.domain.microgrids.valueobjects.GetDataRequest dataRequest = this.mapper
+                    .map(request, com.alliander.osgp.domain.microgrids.valueobjects.GetDataRequest.class);
             final String correlationUid = this.service.enqueueGetDataRequest(organisationIdentification,
                     request.getDeviceIdentification(), dataRequest);
 
@@ -88,7 +91,7 @@ public class AdHocManagementEndpoint {
 
         try {
 
-            final DataResponse dataResponse = this.service
+            final com.alliander.osgp.domain.microgrids.valueobjects.GetDataResponse dataResponse = this.service
                     .dequeueGetDataResponse(request.getAsyncRequest().getCorrelationUid());
             if (dataResponse != null) {
                 response = this.mapper.map(dataResponse, GetDataResponse.class);
@@ -121,8 +124,9 @@ public class AdHocManagementEndpoint {
         final SetDataAsyncResponse response = new SetDataAsyncResponse();
 
         try {
-            final SetDataRequest setDataRequest = this.mapper.map(request, SetDataRequest.class);
-            final String correlationUid = this.service.enqueueSetSetPointsRequest(organisationIdentification,
+            final com.alliander.osgp.domain.microgrids.valueobjects.SetDataRequest setDataRequest = this.mapper
+                    .map(request, com.alliander.osgp.domain.microgrids.valueobjects.SetDataRequest.class);
+            final String correlationUid = this.service.enqueueSetDataRequest(organisationIdentification,
                     request.getDeviceIdentification(), setDataRequest);
 
             final AsyncResponse asyncResponse = new AsyncResponse();
@@ -140,7 +144,7 @@ public class AdHocManagementEndpoint {
     public SetDataResponse getSetDataResponse(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SetDataAsyncRequest request) throws OsgpException {
 
-        LOGGER.info("Get Set SetPoints Response received from organisation: {} with correlationUid: {}.",
+        LOGGER.info("Get Set Data Response received from organisation: {} with correlationUid: {}.",
                 organisationIdentification, request.getAsyncRequest().getCorrelationUid());
 
         final SetDataResponse response = new SetDataResponse();
@@ -154,7 +158,7 @@ public class AdHocManagementEndpoint {
                 response.setResult(OsgpResultType.NOT_FOUND);
             }
         } catch (final ResponseNotFoundException e) {
-            LOGGER.warn("ResponseNotFoundException for getSetSetPointsResponse", e);
+            LOGGER.warn("ResponseNotFoundException for getSetDataResponse", e);
             response.setResult(OsgpResultType.NOT_FOUND);
         } catch (final Exception e) {
             this.handleException(e);
