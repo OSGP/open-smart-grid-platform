@@ -15,17 +15,28 @@ public class SetPointDto implements Serializable {
 
     private static final long serialVersionUID = -8242555524743018337L;
 
+    private int id;
     private String node;
     private double value;
     private DateTime startTime;
     private DateTime endTime;
 
-    public SetPointDto(final String node, final double value, final DateTime startTime, final DateTime endTime) {
+    public SetPointDto(final int id, final String node, final double value, final DateTime startTime,
+            final DateTime endTime) {
         super();
+        this.id = id;
         this.node = node;
         this.value = value;
         this.startTime = startTime;
         this.endTime = endTime;
+    }
+
+    public int getId() {
+        return this.id;
+    }
+
+    public void setId(final int id) {
+        this.id = id;
     }
 
     public String getNode() {

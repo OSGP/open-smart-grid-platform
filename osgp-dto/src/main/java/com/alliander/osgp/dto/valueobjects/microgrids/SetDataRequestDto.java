@@ -14,18 +14,18 @@ public class SetDataRequestDto implements Serializable {
 
     private static final long serialVersionUID = 2354993345497992666L;
 
-    private List<SetDataSystemIdentifierDto> setPointSystemIdentifiers;
+    private List<SetDataSystemIdentifierDto> setDataSystemIdentifiers;
 
-    public SetDataRequestDto(final List<SetDataSystemIdentifierDto> setPointSystemIdentifiers) {
+    public SetDataRequestDto(final List<SetDataSystemIdentifierDto> setDataSystemIdentifiers) {
         super();
-        this.setPointSystemIdentifiers = setPointSystemIdentifiers;
+        this.setDataSystemIdentifiers = setDataSystemIdentifiers;
     }
 
-    public List<SetDataSystemIdentifierDto> getSetPointSystemIdentifiers() {
-        return this.setPointSystemIdentifiers;
+    public List<SetDataSystemIdentifierDto> getSetDataSystemIdentifiers() {
+        return this.setDataSystemIdentifiers;
     }
 
-    public void setSetPointSystemIdentifiers(final List<SetDataSystemIdentifierDto> setPointSystemIdentifiers) {
-        this.setPointSystemIdentifiers = setPointSystemIdentifiers;
+    public void setSetDataSystemIdentifiers(final List<SetDataSystemIdentifierDto> setDataSystemIdentifiers) {
+        this.setDataSystemIdentifiers = setDataSystemIdentifiers;
     }
 }

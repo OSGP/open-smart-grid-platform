@@ -8,31 +8,32 @@
 package com.alliander.osgp.dto.valueobjects.microgrids;
 
 import java.io.Serializable;
-import java.util.List;
 
-public class ProfileDto implements Serializable {
+public class ProfileIdentifierDto implements Serializable {
 
-    private static final long serialVersionUID = 7279719312339028843L;
+    private static final long serialVersionUID = 5587798706867134143L;
 
-    private Integer id;
+    private int id;
     private String node;
-    private List<ProfileEntryDto> profileEntries;
 
-    public ProfileDto(final Integer id, final String node, final List<ProfileEntryDto> profileEntries) {
+    public ProfileIdentifierDto(final int id, final String node) {
         this.id = id;
         this.node = node;
-        this.profileEntries = profileEntries;
     }
 
-    public Integer getId() {
+    public int getId() {
         return this.id;
+    }
+
+    public void setId(final int id) {
+        this.id = id;
     }
 
     public String getNode() {
         return this.node;
     }
 
-    public List<ProfileEntryDto> getProfileEntries() {
-        return this.profileEntries;
+    public void setNode(final String node) {
+        this.node = node;
     }
 }

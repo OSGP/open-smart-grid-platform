@@ -8,6 +8,7 @@
 package com.alliander.osgp.dto.valueobjects.microgrids;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SystemFilterDto extends SystemIdentifierDto implements Serializable {
@@ -15,12 +16,19 @@ public class SystemFilterDto extends SystemIdentifierDto implements Serializable
     private static final long serialVersionUID = 972589625016827390L;
 
     private List<MeasurementFilterDto> measurementFilters;
+    private List<ProfileFilterDto> profileFilters;
     private boolean all;
 
     public SystemFilterDto(final int id, final String systemType, final List<MeasurementFilterDto> measurementFilters,
             final boolean all) {
+        this(id, systemType, measurementFilters, new ArrayList<ProfileFilterDto>(), all);
+    }
+
+    public SystemFilterDto(final int id, final String systemType, final List<MeasurementFilterDto> measurementFilters,
+            final List<ProfileFilterDto> profileFilters, final boolean all) {
         super(id, systemType);
         this.measurementFilters = measurementFilters;
+        this.profileFilters = profileFilters;
         this.all = all;
     }
 
@@ -30,6 +38,14 @@ public class SystemFilterDto extends SystemIdentifierDto implements Serializable
 
     public void setMeasurementFilters(final List<MeasurementFilterDto> measurementFilters) {
         this.measurementFilters = measurementFilters;
+    }
+
+    public List<ProfileFilterDto> getProfileFilters() {
+        return this.profileFilters;
+    }
+
+    public void setProfileFilters(final List<ProfileFilterDto> profileFilters) {
+        this.profileFilters = profileFilters;
     }
 
     public boolean isAll() {
