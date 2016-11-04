@@ -4624,38 +4624,38 @@
       <ns1:AddDeviceRequest>
          <ns1:Device>
             <!--Optional:-->
-            <ns1:DeviceUid>?</ns1:DeviceUid>
-            <ns1:DeviceIdentification>?</ns1:DeviceIdentification>
+            <ns1:DeviceUid>${=testCase.getPropertyValue( "DeviceUid" )}</ns1:DeviceUid>
+            <ns1:DeviceIdentification>${=testCase.getPropertyValue( "DeviceIdentification" )}</ns1:DeviceIdentification>
             <!--Optional:-->
-            <ns1:Alias>?</ns1:Alias>
+            <ns1:Alias>${=testCase.getPropertyValue( "Alias" )}</ns1:Alias>
             <!--Optional:-->
-            <ns1:Owner>?</ns1:Owner>
+            <ns1:Owner>${=testCase.getPropertyValue( "Owner" )}</ns1:Owner>
             <!--Optional:-->
-            <ns1:ContainerPostalCode>?</ns1:ContainerPostalCode>
+            <ns1:ContainerPostalCode>${=testCase.getPropertyValue( "ContainerPostalCode" )}</ns1:ContainerPostalCode>
             <!--Optional:-->
-            <ns1:ContainerCity>?</ns1:ContainerCity>
+            <ns1:ContainerCity>${=testCase.getPropertyValue( "ContainerCity" )}</ns1:ContainerCity>
             <!--Optional:-->
-            <ns1:ContainerStreet>?</ns1:ContainerStreet>
+            <ns1:ContainerStreet>${=testCase.getPropertyValue( "ContainerStreet" )}</ns1:ContainerStreet>
             <!--Optional:-->
-            <ns1:ContainerNumber>?</ns1:ContainerNumber>
+            <ns1:ContainerNumber>${=testCase.getPropertyValue( "ContainerNumber" )}</ns1:ContainerNumber>
             <!--Optional:-->
-            <ns1:ContainerMunicipality>?</ns1:ContainerMunicipality>
+            <ns1:ContainerMunicipality>${=testCase.getPropertyValue( "ContainerMunicipality" )}</ns1:ContainerMunicipality>
             <!--Optional:-->
-            <ns1:GpsLatitude>?</ns1:GpsLatitude>
+            <ns1:GpsLatitude>${=testCase.getPropertyValue( "GpsLatitude" )}</ns1:GpsLatitude>
             <!--Optional:-->
-            <ns1:GpsLongitude>?</ns1:GpsLongitude>
+            <ns1:GpsLongitude>${=testCase.getPropertyValue( "GpsLongitude" )}</ns1:GpsLongitude>
             <!--Optional:-->
-            <ns1:Activated>?</ns1:Activated>
+            <ns1:Activated>${=testCase.getPropertyValue( "Activated" )}</ns1:Activated>
             <!--Optional:-->
-            <ns1:HasSchedule>?</ns1:HasSchedule>
+            <ns1:HasSchedule>${=testCase.getPropertyValue( "HasSchedule" )}</ns1:HasSchedule>
             <!--Optional:-->
-            <ns1:PublicKeyPresent>?</ns1:PublicKeyPresent>
+            <ns1:PublicKeyPresent>${=testCase.getPropertyValue( "PublicKeyPresent" )}</ns1:PublicKeyPresent>
             <ns1:DeviceModel>
-               <ns1:Manufacturer>?</ns1:Manufacturer>
+               <ns1:Manufacturer>${=testCase.getPropertyValue( "Manufacturer" )}</ns1:Manufacturer>
                <!--Optional:-->
-               <ns1:ModelCode>?</ns1:ModelCode>
+               <ns1:ModelCode>${=testCase.getPropertyValue( "ModelCode" )}</ns1:ModelCode>
                <!--Optional:-->
-               <ns1:Description>?</ns1:Description>
+               <ns1:Description>${=testCase.getPropertyValue( "Description" )}</ns1:Description>
             </ns1:DeviceModel>
          </ns1:Device>
       </ns1:AddDeviceRequest>
