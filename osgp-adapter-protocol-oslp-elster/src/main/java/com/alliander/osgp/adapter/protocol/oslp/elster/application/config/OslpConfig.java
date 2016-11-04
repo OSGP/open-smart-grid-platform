@@ -10,8 +10,6 @@ package com.alliander.osgp.adapter.protocol.oslp.elster.application.config;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
 
-import javax.annotation.Resource;
-
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.ChannelFactory;
@@ -32,7 +30,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
-import org.springframework.core.env.Environment;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.alliander.osgp.adapter.protocol.oslp.elster.exceptions.ProtocolAdapterException;
@@ -41,6 +38,7 @@ import com.alliander.osgp.adapter.protocol.oslp.elster.infra.networking.OslpChan
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.networking.OslpSecurityHandler;
 import com.alliander.osgp.oslp.OslpDecoder;
 import com.alliander.osgp.oslp.OslpEncoder;
+import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 /**
  * An application context Java configuration class. The usage of Java
@@ -50,10 +48,10 @@ import com.alliander.osgp.oslp.OslpEncoder;
 @EnableTransactionManagement()
 @PropertySources({
 	@PropertySource("classpath:osgp-adapter-protocol-oslp-elster.properties"),
-	@PropertySource(value = "file:{osgp/AdapterProtocolOslpElster/config}", ignoreResourceNotFound = true),
 	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+    @PropertySource(value = "file:{osgp/AdapterProtocolOslpElster/config}", ignoreResourceNotFound = true),
 })
-public class OslpConfig {
+public class OslpConfig extends AbstractConfig {
     private static final String PROPERTY_NAME_OSLP_TIMEOUT_CONNECT = "oslp.timeout.connect";
     private static final String PROPERTY_NAME_OSLP_PORT_CLIENT = "oslp.port.client";
     private static final String PROPERTY_NAME_OSLP_PORT_CLIENTLOCAL = "oslp.port.clientlocal";
@@ -69,9 +67,6 @@ public class OslpConfig {
     private static final String PROPERTY_NAME_OSLP_EXECUTE_RESUME_SCHEDULE_AFTER_SET_LIGHT = "oslp.execute.resume.schedule.after.set.light";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OslpConfig.class);
-
-    @Resource
-    private Environment environment;
 
     public OslpConfig() {
         InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());

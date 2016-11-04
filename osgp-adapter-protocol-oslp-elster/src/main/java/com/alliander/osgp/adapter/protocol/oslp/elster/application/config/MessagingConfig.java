@@ -38,6 +38,7 @@ import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.OsgpReque
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.OsgpResponseMessageListener;
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.OslpLogItemRequestMessageSender;
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.SigningServerRequestMessageSender;
+import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 /**
  * An application context Java configuration class. The usage of Java
@@ -47,10 +48,10 @@ import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.SigningSe
 @EnableTransactionManagement()
 @PropertySources({
 	@PropertySource("classpath:osgp-adapter-protocol-oslp-elster.properties"),
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 	@PropertySource(value = "file:${osgp/AdapterProtocolOslpElster/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 })
-public class MessagingConfig {
+public class MessagingConfig extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MessagingConfig.class);
 

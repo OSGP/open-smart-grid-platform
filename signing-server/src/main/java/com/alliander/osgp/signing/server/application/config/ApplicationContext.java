@@ -13,8 +13,6 @@ import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.spec.InvalidKeySpecException;
 
-import javax.annotation.Resource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -24,24 +22,23 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
-import org.springframework.core.env.Environment;
 
+import com.alliander.osgp.shared.application.config.AbstractConfig;
 import com.alliander.osgp.shared.security.CertificateHelper;
 import com.alliander.osgp.signing.server.domain.exceptions.SigningServerException;
 
 /**
- * An application context Java configuration class. The usage of Java
- * configuration requires Spring Framework 3.0
+ * An application context Java configuration class.
  */
 @Configuration
 @ComponentScan(basePackages = { "com.alliander.osgp.signing.server" })
 @Import({ MessagingConfig.class })
 @PropertySources({
 	@PropertySource("classpath:signing-server.properties"),
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 	@PropertySource(value = "file:${osgp/SigningServer/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 })
-public class ApplicationContext {
+public class ApplicationContext extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);
 
@@ -49,9 +46,6 @@ public class ApplicationContext {
     private static final String PROPERTY_NAME_SIGNING_SERVER_SECURITY_KEYTYPE = "signing.server.security.keytype";
     private static final String PROPERTY_NAME_SIGNING_SERVER_SECURITY_SIGNATURE = "signing.server.security.signature";
     private static final String PROPERTY_NAME_SIGNING_SERVER_SECURITY_PROVIDER = "signing.server.security.provider";
-
-    @Resource
-    private Environment environment;
 
     @Bean
     @Qualifier("signingServerPrivateKey")

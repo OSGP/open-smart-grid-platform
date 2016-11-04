@@ -13,8 +13,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.concurrent.Executors;
 
-import javax.annotation.Resource;
-
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.ChannelFactory;
@@ -35,7 +33,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
-import org.springframework.core.env.Environment;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.alliander.osgp.adapter.protocol.oslp.exceptions.ProtocolAdapterException;
@@ -44,6 +41,7 @@ import com.alliander.osgp.adapter.protocol.oslp.infra.networking.OslpChannelHand
 import com.alliander.osgp.adapter.protocol.oslp.infra.networking.OslpSecurityHandler;
 import com.alliander.osgp.oslp.OslpDecoder;
 import com.alliander.osgp.oslp.OslpEncoder;
+import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 /**
  * An application context Java configuration class. The usage of Java
@@ -53,10 +51,11 @@ import com.alliander.osgp.oslp.OslpEncoder;
 @EnableTransactionManagement()
 @PropertySources({
 	@PropertySource("classpath:osgp-adapter-protocol-oslp.properties"),
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 	@PropertySource(value = "file:${osgp/AdapterProtocolOslp/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 })
-public class OslpConfig {
+public class OslpConfig extends AbstractConfig {
+    
     private static final String PROPERTY_NAME_OSLP_TIMEOUT_CONNECT = "oslp.timeout.connect";
     private static final String PROPERTY_NAME_OSLP_PORT_CLIENT = "oslp.port.client";
     private static final String PROPERTY_NAME_OSLP_PORT_CLIENTLOCAL = "oslp.port.clientlocal";
@@ -68,9 +67,6 @@ public class OslpConfig {
     private static final String PROPERTY_NAME_OSLP_SEQUENCE_NUMBER_MAXIMUM = "oslp.sequence.number.maximum";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OslpConfig.class);
-
-    @Resource
-    private Environment environment;
 
     public OslpConfig() {
         InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());

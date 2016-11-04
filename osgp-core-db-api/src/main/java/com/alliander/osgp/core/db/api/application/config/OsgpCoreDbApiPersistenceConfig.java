@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.alliander.osgp.core.db.api.exceptions.CoreDbApiException;
 import com.alliander.osgp.core.db.api.repositories.DeviceDataRepository;
+import com.alliander.osgp.shared.application.config.AbstractConfig;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -36,10 +37,10 @@ import com.zaxxer.hikari.HikariDataSource;
 @EnableTransactionManagement()
 @PropertySources({
 	@PropertySource("classpath:osgp-core-db-api.properties"),
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 	@PropertySource(value = "file:${osgp/CoreDbApi/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 })
-public class OsgpCoreDbApiPersistenceConfig {
+public class OsgpCoreDbApiPersistenceConfig extends AbstractConfig {
 
     private static final String PROPERTY_NAME_DATABASE_DRIVER = "db.api.driver";
     private static final String PROPERTY_NAME_DATABASE_PASSWORD = "db.api.password";
