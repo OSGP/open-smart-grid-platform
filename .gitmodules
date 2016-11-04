@@ -9,9 +9,9 @@
 [submodule "Platform"]
 	path = Platform
 	url = https://github.com/OSGP/Platform.git
-	branch = SLIM-669_improve_cucumber_tests 
+	branch = development
 [submodule "Protocol-Adapter-DLMS"]
 	path = Protocol-Adapter-DLMS
 	url = https://github.com/OSGP/Protocol-Adapter-DLMS.git
-	branch = SLIM-669_improve_cucumber_tests
+	branch = development
 
