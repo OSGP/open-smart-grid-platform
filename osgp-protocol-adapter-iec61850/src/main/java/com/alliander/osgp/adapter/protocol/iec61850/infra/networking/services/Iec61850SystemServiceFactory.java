@@ -23,7 +23,11 @@ public class Iec61850SystemServiceFactory {
     private Map<String, SystemService> systemServices = null;
 
     public SystemService getSystemService(final SystemFilterDto systemFilter) throws OsgpException {
-        final String key = systemFilter.getSystemType().toUpperCase() + systemFilter.getId();
+        return this.getSystemService(systemFilter.getId(), systemFilter.getSystemType());
+    }
+
+    public SystemService getSystemService(final int systemId, final String systemType) throws OsgpException {
+        final String key = systemType.toUpperCase() + systemId;
         if (this.getSystemServices().containsKey(key)) {
             return this.getSystemServices().get(key);
         }

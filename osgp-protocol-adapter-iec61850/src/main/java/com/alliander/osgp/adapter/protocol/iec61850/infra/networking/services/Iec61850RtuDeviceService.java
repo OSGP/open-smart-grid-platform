@@ -23,7 +23,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuDeviceService;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.requests.GetDataDeviceRequest;
-import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.requests.SetSetPointsDeviceRequest;
+import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.requests.SetDataDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.EmptyDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.GetDataDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ConnectionFailureException;
@@ -41,12 +41,11 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Logi
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalNode;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.NodeContainer;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
-import com.alliander.osgp.dto.valueobjects.microgrids.DataRequestDto;
-import com.alliander.osgp.dto.valueobjects.microgrids.DataResponseDto;
-import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
-import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementResultSystemIdentifierDto;
-import com.alliander.osgp.dto.valueobjects.microgrids.SetPointSystemIdentifierDto;
-import com.alliander.osgp.dto.valueobjects.microgrids.SetPointsRequestDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.GetDataRequestDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.GetDataResponseDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.GetDataSystemIdentifierDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.SetDataRequestDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.SetDataSystemIdentifierDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.SystemFilterDto;
 
 @Component
@@ -71,7 +70,7 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
             final ClientAssociation clientAssociation = this.iec61850DeviceConnectionService
                     .getClientAssociation(deviceRequest.getDeviceIdentification());
 
-            final DataResponseDto getDataResponse = this.getData(new DeviceConnection(
+            final GetDataResponseDto getDataResponse = this.getData(new DeviceConnection(
                     new Iec61850Connection(new Iec61850ClientAssociation(clientAssociation, null), serverModel),
                     deviceRequest.getDeviceIdentification(), IED.ZOWN_RTU), deviceRequest);
 
@@ -100,14 +99,13 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
     }
 
     @Override
-    public void setSetPoints(final SetSetPointsDeviceRequest deviceRequest,
-            final DeviceResponseHandler deviceResponseHandler) {
+    public void setData(final SetDataDeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler) {
         try {
             final ServerModel serverModel = this.connectAndRetrieveServerModel(deviceRequest);
             final ClientAssociation clientAssociation = this.iec61850DeviceConnectionService
                     .getClientAssociation(deviceRequest.getDeviceIdentification());
 
-            this.setSetPoints(
+            this.setData(
                     new DeviceConnection(
                             new Iec61850Connection(new Iec61850ClientAssociation(clientAssociation, null), serverModel),
                             deviceRequest.getDeviceIdentification(), IED.ZOWN_RTU),
@@ -127,7 +125,7 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
 
             deviceResponseHandler.handleException(se, deviceResponse, true);
         } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during Set SetPoint", e);
+            LOGGER.error("Unexpected exception during Set Data", e);
 
             final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
@@ -137,21 +135,26 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
         }
     }
 
-    private void setSetPoints(final DeviceConnection connection, final ServerModel serverModel,
-            final ClientAssociation clientAssociation, final SetSetPointsDeviceRequest deviceRequest)
+    private void setData(final DeviceConnection connection, final ServerModel serverModel,
+            final ClientAssociation clientAssociation, final SetDataDeviceRequest deviceRequest)
             throws ProtocolAdapterException {
 
-        final SetPointsRequestDto setPointsRequest = deviceRequest.getSetPointsRequest();
+        final SetDataRequestDto setDataRequest = deviceRequest.getSetDataRequest();
 
         final Function<Void> function = new Function<Void>() {
 
             @Override
             public Void apply() throws Exception {
-                for (final SetPointSystemIdentifierDto spsi : setPointsRequest.getSetPointSystemIdentifiers()) {
-                    LOGGER.debug("Dummy logger for unused parameters {},{},{}", connection.toString(),
-                            serverModel.toString(), clientAssociation.toString());
-                    LOGGER.info("Skipping Set SetPoint for unsupported system {} with id {}", spsi.getSystemType(),
-                            spsi.getId());
+
+                Iec61850RtuDeviceService.this.enableReportingOnDevice(connection,
+                        deviceRequest.getDeviceIdentification());
+
+                for (final SetDataSystemIdentifierDto identifier : setDataRequest.getSetDataSystemIdentifiers()) {
+
+                    final SystemService systemService = Iec61850RtuDeviceService.this.systemServiceFactory
+                            .getSystemService(identifier.getId(), identifier.getSystemType());
+
+                    systemService.setData(identifier, Iec61850RtuDeviceService.this.iec61850Client, connection);
                 }
 
                 return null;
@@ -159,6 +162,7 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
         };
 
         this.iec61850Client.sendCommandWithRetry(function);
+
     }
 
     // ======================================
@@ -177,37 +181,33 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
     // PRIVATE HELPER METHODS =
     // ========================
 
-    private DataResponseDto getData(final DeviceConnection connection, final GetDataDeviceRequest deviceRequest)
+    private GetDataResponseDto getData(final DeviceConnection connection, final GetDataDeviceRequest deviceRequest)
             throws ProtocolAdapterException {
 
-        final DataRequestDto requestedData = deviceRequest.getDataRequest();
+        final GetDataRequestDto requestedData = deviceRequest.getDataRequest();
 
-        final Function<DataResponseDto> function = new Function<DataResponseDto>() {
+        final Function<GetDataResponseDto> function = new Function<GetDataResponseDto>() {
 
             @Override
-            public DataResponseDto apply() throws Exception {
+            public GetDataResponseDto apply() throws Exception {
 
                 Iec61850RtuDeviceService.this.enableReportingOnDevice(connection,
                         deviceRequest.getDeviceIdentification());
 
-                final List<MeasurementResultSystemIdentifierDto> identifiers = new ArrayList<>();
+                final List<GetDataSystemIdentifierDto> identifiers = new ArrayList<>();
 
                 for (final SystemFilterDto systemFilter : requestedData.getSystemFilters()) {
 
-                    final List<MeasurementDto> measurements = new ArrayList<>();
-
                     final SystemService systemService = Iec61850RtuDeviceService.this.systemServiceFactory
                             .getSystemService(systemFilter);
-                    measurements.addAll(systemService.getData(systemFilter,
-                            Iec61850RtuDeviceService.this.iec61850Client, connection));
 
-                    final MeasurementResultSystemIdentifierDto measurementIdentifier = new MeasurementResultSystemIdentifierDto(
-                            systemFilter.getId(), systemFilter.getSystemType(), measurements);
+                    final GetDataSystemIdentifierDto getDataSystemIdentifier = systemService.getData(systemFilter,
+                            Iec61850RtuDeviceService.this.iec61850Client, connection);
 
-                    identifiers.add(measurementIdentifier);
+                    identifiers.add(getDataSystemIdentifier);
                 }
 
-                return new DataResponseDto(identifiers);
+                return new GetDataResponseDto(identifiers);
             }
         };
 

@@ -13,8 +13,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuCommandFactory;
+import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommandFactory;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850AlarmCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850AlarmOtherCommand;
@@ -27,9 +27,10 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.co
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850ModeCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850WarningCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850WarningOtherCommand;
+import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementFilterDto;
 
-public class Iec61850LoadCommandFactory implements RtuCommandFactory {
+public class Iec61850LoadCommandFactory implements RtuReadCommandFactory<MeasurementDto, MeasurementFilterDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850LoadCommandFactory.class);
 
@@ -38,7 +39,7 @@ public class Iec61850LoadCommandFactory implements RtuCommandFactory {
 
     private static Iec61850LoadCommandFactory instance;
 
-    private Map<String, RtuCommand> rtuCommandMap = new HashMap<>();
+    private Map<String, RtuReadCommand<MeasurementDto>> rtuCommandMap = new HashMap<>();
 
     private Iec61850LoadCommandFactory() {
         this.rtuCommandMap.put(DataAttribute.BEHAVIOR.getDescription(), new Iec61850BehaviourCommand());
@@ -77,7 +78,7 @@ public class Iec61850LoadCommandFactory implements RtuCommandFactory {
     }
 
     @Override
-    public RtuCommand getCommand(final MeasurementFilterDto filter) {
+    public RtuReadCommand<MeasurementDto> getCommand(final MeasurementFilterDto filter) {
         final DataAttribute da = DataAttribute.fromString(filter.getNode());
         if (this.useFilterId(da)) {
             return this.getCommand(filter.getNode() + filter.getId());
@@ -87,8 +88,8 @@ public class Iec61850LoadCommandFactory implements RtuCommandFactory {
     }
 
     @Override
-    public RtuCommand getCommand(final String node) {
-        final RtuCommand command = this.rtuCommandMap.get(node);
+    public RtuReadCommand<MeasurementDto> getCommand(final String node) {
+        final RtuReadCommand<MeasurementDto> command = this.rtuCommandMap.get(node);
 
         if (command == null) {
             LOGGER.warn("No command found for node {}", node);

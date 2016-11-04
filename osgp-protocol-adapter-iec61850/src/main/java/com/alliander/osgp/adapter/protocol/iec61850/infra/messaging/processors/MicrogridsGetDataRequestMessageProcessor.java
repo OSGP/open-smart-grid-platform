@@ -21,8 +21,8 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.GetDat
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.RtuDeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
-import com.alliander.osgp.dto.valueobjects.microgrids.DataRequestDto;
-import com.alliander.osgp.dto.valueobjects.microgrids.DataResponseDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.GetDataRequestDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.GetDataResponseDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.ConnectionFailureException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -59,7 +59,7 @@ public class MicrogridsGetDataRequestMessageProcessor extends RtuDeviceRequestMe
         String ipAddress = null;
         int retryCount = 0;
         boolean isScheduled = false;
-        DataRequestDto getDataRequest = null;
+        GetDataRequestDto getDataRequest = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -72,7 +72,7 @@ public class MicrogridsGetDataRequestMessageProcessor extends RtuDeviceRequestMe
             retryCount = message.getIntProperty(Constants.RETRY_COUNT);
             isScheduled = message.propertyExists(Constants.IS_SCHEDULED)
                     ? message.getBooleanProperty(Constants.IS_SCHEDULED) : false;
-            getDataRequest = (DataRequestDto) message.getObject();
+            getDataRequest = (GetDataRequestDto) message.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -132,7 +132,7 @@ public class MicrogridsGetDataRequestMessageProcessor extends RtuDeviceRequestMe
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = null;
-        DataResponseDto dataResponse = null;
+        GetDataResponseDto dataResponse = null;
 
         try {
             final GetDataDeviceResponse response = (GetDataDeviceResponse) deviceResponse;

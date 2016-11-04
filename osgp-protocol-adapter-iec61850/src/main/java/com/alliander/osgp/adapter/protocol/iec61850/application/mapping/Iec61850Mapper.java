@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.adapter.protocol.iec61850.application.mapping;//
+package com.alliander.osgp.adapter.protocol.iec61850.application.mapping;
 
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;

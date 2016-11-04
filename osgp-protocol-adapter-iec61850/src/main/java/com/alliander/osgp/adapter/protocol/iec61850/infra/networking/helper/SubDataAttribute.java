@@ -272,7 +272,24 @@ public enum SubDataAttribute {
     /**
      * Substitution quality
      */
-    SUBSTITUDE_QUALITY("subQ");
+    SUBSTITUDE_QUALITY("subQ"),
+    /**
+     * Setpoint value
+     */
+    SETPOINT_VALUE("setVal"),
+    /**
+     * Number of points
+     */
+    NUMBER_OF_POINTS("numPts"),
+    /**
+     * Array of Values;
+     */
+    VALUES("val"),
+    /**
+     * Array of timestamps
+     */
+    TIMES("time");
+
     private String description;
 
     private SubDataAttribute(final String description) {

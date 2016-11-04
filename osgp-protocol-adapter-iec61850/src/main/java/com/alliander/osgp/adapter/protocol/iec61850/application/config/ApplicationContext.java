@@ -44,6 +44,10 @@ public class ApplicationContext {
     @Resource
     private Environment environment;
 
+    public ApplicationContext() {
+        // Default public constructor
+    }
+
     /**
      * The number of times the communication with the device is retried
      */
@@ -73,8 +77,8 @@ public class ApplicationContext {
     @Bean
     public FirmwareLocation firmwareLocation() {
         return new FirmwareLocation(this.environment.getProperty(PROPERTY_NAME_FIRMWARE_PROTOCOL),
-                this.environment.getProperty(PROPERTY_NAME_FIRMWARE_DOMAIN), Integer.parseInt(this.environment
-                        .getProperty(PROPERTY_NAME_FIRMWARE_PORT)),
-                        this.environment.getProperty(PROPERTY_NAME_FIRMWARE_PATH));
+                this.environment.getProperty(PROPERTY_NAME_FIRMWARE_DOMAIN),
+                Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_FIRMWARE_PORT)),
+                this.environment.getProperty(PROPERTY_NAME_FIRMWARE_PATH));
     }
 }

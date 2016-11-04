@@ -205,7 +205,23 @@ public enum DataAttribute {
     /**
      * Other warnings
      */
-    WARNING_OTHER("IntIn2");
+    WARNING_OTHER("IntIn2"),
+    /**
+     * Schedule ID
+     */
+    SCHEDULE_ID("SchdId"),
+    /**
+     * Schedule Type
+     */
+    SCHEDULE_TYPE("SchdTyp"),
+    /**
+     * Schedule Category
+     */
+    SCHEDULE_CAT("SchCat"),
+    /**
+     * Absolute time schedule entries
+     */
+    SCHEDULE_ABS_TIME("SchdAbsTm");
 
     private String description;
 

@@ -10,14 +10,13 @@ package com.alliander.osgp.adapter.protocol.iec61850.device.rtu;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceMessageStatus;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.requests.GetDataDeviceRequest;
-import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.requests.SetSetPointsDeviceRequest;
+import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.requests.SetDataDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.GetDataDeviceResponse;
-import com.alliander.osgp.dto.valueobjects.microgrids.DataRequestDto;
-import com.alliander.osgp.dto.valueobjects.microgrids.SetPointsRequestDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.GetDataRequestDto;
 
 public interface RtuDeviceService {
     /**
-     * Reads the {@link DataRequestDto} from the device.
+     * Reads the {@link GetDataRequestDto} from the device.
      *
      * @returns a {@link GetDataDeviceResponse} via the deviceResponseHandler's
      *          callback.
@@ -30,5 +29,5 @@ public interface RtuDeviceService {
      * @returns a {@link DeviceMessageStatus} via the deviceResponseHandler's
      *          callback.
      */
-    void setSetPoints(SetSetPointsDeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler);
+    void setData(SetDataDeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler);
 }

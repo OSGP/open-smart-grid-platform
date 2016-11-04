@@ -16,11 +16,11 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
-import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.requests.SetSetPointsDeviceRequest;
+import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.requests.SetDataDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.RtuDeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
-import com.alliander.osgp.dto.valueobjects.microgrids.SetPointsRequestDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.SetDataRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.ConnectionFailureException;
 import com.alliander.osgp.shared.infra.jms.Constants;
@@ -28,15 +28,15 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 /**
  * Class for processing microgrids get data request messages
  */
-@Component("iec61850MicrogridsSetSetPointsRequestMessageProcessor")
-public class MicrogridsSetSetPointsRequestMessageProcessor extends RtuDeviceRequestMessageProcessor {
+@Component("iec61850MicrogridsSetDataRequestMessageProcessor")
+public class MicrogridsSetDataRequestMessageProcessor extends RtuDeviceRequestMessageProcessor {
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(MicrogridsSetSetPointsRequestMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MicrogridsSetDataRequestMessageProcessor.class);
 
-    public MicrogridsSetSetPointsRequestMessageProcessor() {
-        super(DeviceRequestMessageType.SET_SETPOINT);
+    public MicrogridsSetDataRequestMessageProcessor() {
+        super(DeviceRequestMessageType.SET_DATA);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class MicrogridsSetSetPointsRequestMessageProcessor extends RtuDeviceRequ
         String ipAddress = null;
         int retryCount = 0;
         boolean isScheduled = false;
-        SetPointsRequestDto setSetPointsRequest = null;
+        SetDataRequestDto setDataRequest = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -65,7 +65,7 @@ public class MicrogridsSetSetPointsRequestMessageProcessor extends RtuDeviceRequ
             retryCount = message.getIntProperty(Constants.RETRY_COUNT);
             isScheduled = message.propertyExists(Constants.IS_SCHEDULED)
                     ? message.getBooleanProperty(Constants.IS_SCHEDULED) : false;
-            setSetPointsRequest = (SetPointsRequestDto) message.getObject();
+            setDataRequest = (SetDataRequestDto) message.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -87,8 +87,8 @@ public class MicrogridsSetSetPointsRequestMessageProcessor extends RtuDeviceRequ
 
             @Override
             public void handleResponse(final DeviceResponse deviceResponse) {
-                MicrogridsSetSetPointsRequestMessageProcessor.this.handleEmptyDeviceResponse(deviceResponse,
-                        MicrogridsSetSetPointsRequestMessageProcessor.this.responseMessageSender,
+                MicrogridsSetDataRequestMessageProcessor.this.handleEmptyDeviceResponse(deviceResponse,
+                        MicrogridsSetDataRequestMessageProcessor.this.responseMessageSender,
                         requestMessageData.getDomain(), requestMessageData.getDomainVersion(),
                         requestMessageData.getMessageType(), requestMessageData.getRetryCount());
             }
@@ -97,13 +97,13 @@ public class MicrogridsSetSetPointsRequestMessageProcessor extends RtuDeviceRequ
             public void handleException(final Throwable t, final DeviceResponse deviceResponse,
                     final boolean expected) {
                 if (expected) {
-                    MicrogridsSetSetPointsRequestMessageProcessor.this.handleExpectedError(
+                    MicrogridsSetDataRequestMessageProcessor.this.handleExpectedError(
                             new ConnectionFailureException(ComponentType.PROTOCOL_IEC61850, t.getMessage()),
                             requestMessageData.getCorrelationUid(), requestMessageData.getOrganisationIdentification(),
                             requestMessageData.getDeviceIdentification(), requestMessageData.getDomain(),
                             requestMessageData.getDomainVersion(), requestMessageData.getMessageType());
                 } else {
-                    MicrogridsSetSetPointsRequestMessageProcessor.this.handleUnExpectedError(deviceResponse, t,
+                    MicrogridsSetDataRequestMessageProcessor.this.handleUnExpectedError(deviceResponse, t,
                             requestMessageData.getMessageData(), requestMessageData.getDomain(),
                             requestMessageData.getDomainVersion(), requestMessageData.getMessageType(),
                             requestMessageData.isScheduled(), requestMessageData.getRetryCount());
@@ -112,11 +112,11 @@ public class MicrogridsSetSetPointsRequestMessageProcessor extends RtuDeviceRequ
 
         };
 
-        final SetSetPointsDeviceRequest deviceRequest = new SetSetPointsDeviceRequest(organisationIdentification,
-                deviceIdentification, correlationUid, setSetPointsRequest, domain, domainVersion, messageType,
-                ipAddress, retryCount, isScheduled);
+        final SetDataDeviceRequest deviceRequest = new SetDataDeviceRequest(organisationIdentification,
+                deviceIdentification, correlationUid, setDataRequest, domain, domainVersion, messageType, ipAddress,
+                retryCount, isScheduled);
 
-        this.deviceService.setSetPoints(deviceRequest, deviceResponseHandler);
+        this.deviceService.setData(deviceRequest, deviceResponseHandler);
     }
 
 }

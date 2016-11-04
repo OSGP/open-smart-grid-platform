@@ -11,19 +11,19 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.openmuc.openiec61850.Fc;
 
-import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.QualityConverter;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalDevice;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalNode;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.NodeContainer;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.QualityConverter;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
 
-public class Iec61850BehaviourCommand implements RtuCommand {
+public class Iec61850BehaviourCommand implements RtuReadCommand<MeasurementDto> {
 
     @Override
     public MeasurementDto execute(final Iec61850Client client, final DeviceConnection connection,
@@ -38,8 +38,8 @@ public class Iec61850BehaviourCommand implements RtuCommand {
     public MeasurementDto translate(final NodeContainer containingNode) {
         return new MeasurementDto(1, DataAttribute.BEHAVIOR.getDescription(),
                 QualityConverter.toShort(containingNode.getQuality(SubDataAttribute.QUALITY).getValue()),
-                new DateTime(containingNode.getDate(SubDataAttribute.TIME), DateTimeZone.UTC), containingNode.getByte(
-                        SubDataAttribute.STATE).getValue());
+                new DateTime(containingNode.getDate(SubDataAttribute.TIME), DateTimeZone.UTC),
+                containingNode.getByte(SubDataAttribute.STATE).getValue());
     }
 
 }

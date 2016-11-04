@@ -13,11 +13,11 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.ReadOnlyNodeContainer;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850PvCommandFactory;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
-import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementResultSystemIdentifierDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.GetDataSystemIdentifierDto;
 
 public class Iec61850PvReportHandler implements Iec61850ReportHandler {
 
@@ -32,10 +32,10 @@ public class Iec61850PvReportHandler implements Iec61850ReportHandler {
     }
 
     @Override
-    public MeasurementResultSystemIdentifierDto createResult(final List<MeasurementDto> measurements) {
-        final MeasurementResultSystemIdentifierDto systemResult = new MeasurementResultSystemIdentifierDto(
+    public GetDataSystemIdentifierDto createResult(final List<MeasurementDto> measurements) {
+        final GetDataSystemIdentifierDto systemResult = new GetDataSystemIdentifierDto(
                 this.systemId, SYSTEM_TYPE, measurements);
-        final List<MeasurementResultSystemIdentifierDto> systems = new ArrayList<>();
+        final List<GetDataSystemIdentifierDto> systems = new ArrayList<>();
         systems.add(systemResult);
         return systemResult;
     }
@@ -43,7 +43,8 @@ public class Iec61850PvReportHandler implements Iec61850ReportHandler {
     @Override
     public MeasurementDto handleMember(final ReadOnlyNodeContainer member) {
 
-        final RtuCommand command = Iec61850PvCommandFactory.getInstance().getCommand(member.getFcmodelNode().getName());
+        final RtuReadCommand<MeasurementDto> command = Iec61850PvCommandFactory.getInstance()
+                .getCommand(member.getFcmodelNode().getName());
 
         if (command == null) {
             LOGGER.warn("No command found for node {}", member.getFcmodelNode().getName());
