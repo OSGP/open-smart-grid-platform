@@ -24,7 +24,6 @@ import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.SmartMeteringStepsBase;
 import com.alliander.osgp.platform.dlms.cucumber.support.DeviceId;
 import com.alliander.osgp.platform.dlms.cucumber.support.OrganisationId;
-import com.alliander.osgp.platform.dlms.cucumber.support.ServiceEndpoint;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
 import cucumber.api.java.en.Given;
@@ -57,9 +56,6 @@ public class UpdateFirmware extends SmartMeteringStepsBase {
     private OrganisationId organisationId;
 
     @Autowired
-    private ServiceEndpoint serviceEndpoint;
-
-    @Autowired
     private DeviceRepository deviceRepository;
 
     @Autowired
@@ -79,14 +75,15 @@ public class UpdateFirmware extends SmartMeteringStepsBase {
     public void theRequestForAFirmwareUpgradeIsReceived() throws Throwable {
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION_E_LABEL, this.deviceId.getDeviceIdE());
         PROPERTIES_MAP.put(Keys.KEY_ORGANIZATION_IDENTIFICATION, this.organisationId.getOrganisationId());
-        PROPERTIES_MAP.put(ENDPOINT_LABEL, this.serviceEndpoint.getServiceEndpoint());
+        PROPERTIES_MAP.put(ENDPOINT_LABEL, this.serviceEndpoint);
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }
 
     @Then("^firmware should be updated$")
     public void firmwareShouldBeUpdated() throws Throwable {
-        PROPERTIES_MAP.put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
+        PROPERTIES_MAP
+                .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, TEST_CASE_XML, TEST_SUITE_XML);
 
@@ -127,7 +124,8 @@ public class UpdateFirmware extends SmartMeteringStepsBase {
 
     @Then("^the message \"([^\"]*)\" should be given$")
     public void theMessageShouldBeGiven(final String message) throws Throwable {
-        PROPERTIES_MAP.put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
+        PROPERTIES_MAP
+                .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, TEST_CASE_XML, TEST_SUITE_XML);
 

@@ -40,7 +40,7 @@ public abstract class SoapUiRunner {
     protected ApplicationConfig applicationConfig;
 
     @Value("${serviceEndpoint}")
-    private String serviceEndpoint;
+    protected String serviceEndpoint;
 
     @Value("${certificate.basepath}")
     private String certBasePath;
@@ -155,22 +155,25 @@ public abstract class SoapUiRunner {
         final boolean flag2 = xml.indexOf(testCaseXml) > 0;
         final boolean flag3 = xml.indexOf(testSuiteXml) > 0;
         if (!flag1 || !flag2 || !flag3) {
-        //    this.LOGGER.error(String.format(ERRMSG, xml, testSuiteXml, testCaseXml, testCaseNameRequest));
+            // this.LOGGER.error(String.format(ERRMSG, xml, testSuiteXml,
+            // testCaseXml, testCaseNameRequest));
         }
     }
 
     /**
      * Wait for a response.
-     * @note In order to get the actual response from the device of the original request to the platform,
-     * we need to poll for it.
+     * 
+     * @note In order to get the actual response from the device of the original
+     *       request to the platform, we need to poll for it.
      * @param propertiesMap
      * @param testCaseResultName
      * @param testCaseResultReqXML
      * @param testSuiteXML
      * @throws Throwable
      */
-    public void waitForResponse(final TestStepStatus testStepStatus, final Map<String, String> propertiesMap, final String testCaseResultNameRequest,
-                final String testCaseResultReqXml, final String testSuiteXml) throws Throwable {
+    public void waitForResponse(final TestStepStatus testStepStatus, final Map<String, String> propertiesMap,
+            final String testCaseResultNameRequest, final String testCaseResultReqXml, final String testSuiteXml)
+            throws Throwable {
         // Wait for OK response
         int count = 0;
         do {
@@ -182,8 +185,8 @@ public abstract class SoapUiRunner {
             count++;
             Thread.sleep(1000);
 
-            this.requestRunner(testStepStatus, propertiesMap, testCaseResultNameRequest,
-                    testCaseResultReqXml, testSuiteXml);
+            this.requestRunner(testStepStatus, propertiesMap, testCaseResultNameRequest, testCaseResultReqXml,
+                    testSuiteXml);
         } while (!this.runXpathResult.assertXpath(this.response, PATH_RESULT, "OK"));
     }
 }
