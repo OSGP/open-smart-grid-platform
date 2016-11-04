@@ -91,7 +91,7 @@ public class Helpers {
     }
 
     /**
-     * Get a long value for the key from the settings.
+     * Get a Short value for the key from the settings.
      *
      * @param settings
      *            The settings to get the key from.
@@ -224,16 +224,17 @@ public class Helpers {
     }
 
     /**
-     * When running automatic tests, in a beforestep all tables (except for some 'stamdata') are cleared, you get some exceptions when the database wasn't found.
-     * Therefore this method is created to ignore that
+     * When running automatic tests, in a beforestep all tables (except for some
+     * 'stamdata') are cleared, you get some exceptions when the database wasn't
+     * found. Therefore this method is created to ignore that
      *
      * @param repo
      */
     public static <T extends Serializable> void cleanRepoSerializable(final JpaRepository<T, Long> repo) {
         try {
             repo.deleteAllInBatch();
-        } catch (final Exception e) {
-            System.err.println(e);
+        } catch (final Exception ex) {
+            LOGGER.error(ex.getMessage());
         }
     }
 
@@ -279,50 +280,50 @@ public class Helpers {
             throw new Exception("Incorrect dateString [" + dateString + "]");
         }
 
-        switch (what) {
-        case "days":
-            if (op.equals("+")) {
+        if (op.equals("+")) {
+            switch (what) {
+            case "days":
                 retval = retval.plusDays(numberToAddOrSubstract);
-            } else {
-                retval = retval.minusDays(numberToAddOrSubstract);
-            }
-        case "hours":
-            if (op.equals("+")) {
+            case "hours":
                 retval = retval.plusHours(numberToAddOrSubstract);
-            } else {
-                retval = retval.minusHours(numberToAddOrSubstract);
-            }
-        case "weeks":
-            if (op.equals("+")) {
+            case "weeks":
                 retval = retval.plusWeeks(numberToAddOrSubstract);
-            } else {
-                retval = retval.minusWeeks(numberToAddOrSubstract);
-            }
-        case "months":
-            if (op.equals("+")) {
+            case "months":
                 retval = retval.plusMonths(numberToAddOrSubstract);
-            } else {
-                retval = retval.minusMonths(numberToAddOrSubstract);
-            }
-        case "years":
-            if (op.equals("+")) {
+            case "years":
                 retval = retval.plusYears(numberToAddOrSubstract);
-            } else {
+            }
+        } else {
+            switch (what) {
+            case "days":
+                retval = retval.minusDays(numberToAddOrSubstract);
+            case "hours":
+                retval = retval.minusHours(numberToAddOrSubstract);
+            case "weeks":
+                retval = retval.minusWeeks(numberToAddOrSubstract);
+            case "months":
+                retval = retval.minusMonths(numberToAddOrSubstract);
+            case "years":
                 retval = retval.minusYears(numberToAddOrSubstract);
             }
+
         }
 
         return retval;
     }
 
     /**
-     * This shortcut makes a new Map from the given map with the given key + value
+     * This shortcut makes a new Map from the given map with the given key value
+     * pair
+     *
      * @param settings
+     *            the input map
      * @param key
      * @param value
-     * @return
+     * @return an updated Map with the new key value pair
      */
-    public static Map<String, String> addSetting(final Map<String, String> settings, final String key, final String value) {
+    public static Map<String, String> addSetting(final Map<String, String> settings, final String key,
+            final String value) {
         final Map<String, String> result = new HashMap<String, String>();
         result.putAll(settings);
         result.put(key, value);

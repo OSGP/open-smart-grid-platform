@@ -59,7 +59,7 @@ public class DatabaseSteps {
         cleanRepoSerializable(this.manufacturerRepo);
         for (final Organisation org : this.organizationRepo.findAll()) {
             if (!org.getOrganisationIdentification().equals("test-org")
-                    && !org.getOrganisationIdentification().equals("Inforstroom")
+                    && !org.getOrganisationIdentification().equals("Infostroom")
                     && !org.getOrganisationIdentification().equals("FlexOvlProject")
                     && !org.getOrganisationIdentification().equals("GemeenteArnhem")
                     && !org.getOrganisationIdentification().equals("LianderNetManagement")) {
