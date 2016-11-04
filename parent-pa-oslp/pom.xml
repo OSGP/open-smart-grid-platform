@@ -54,11 +54,11 @@
   <properties>
     <module.baseUri>${project.baseUri}/../</module.baseUri>
     <osgp.version>${project.version}</osgp.version>
-    <osgp.shared.version>4.3.0-SNAPSHOT</osgp.shared.version>
+    <osgp.shared.version>4.4.0-SNAPSHOT</osgp.shared.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <spring.version>4.3.3.RELEASE</spring.version>
-    <spring.ws.version>2.2.0.RELEASE</spring.ws.version>
+    <spring.ws.version>2.2.2.RELEASE</spring.ws.version>
     <spring.data.version>1.10.4.RELEASE</spring.data.version>
     <spring.security.version>4.1.3.RELEASE</spring.security.version>
     <servlet.version>3.0.1</servlet.version>
@@ -86,7 +86,7 @@
     <SunriseSunsetCalculator.version>1.1</SunriseSunsetCalculator.version>
     <mockito.version>1.9.5</mockito.version>
     <apache.commons.schema>2.0.3</apache.commons.schema>
-    <maven.compiler.plugin.version>3.5.1</maven.compiler.plugin.version>
+    <maven.compiler.plugin.version>3.6.0</maven.compiler.plugin.version>
     <guava.version>18.0</guava.version>
     <license.maven.plugin>2.11</license.maven.plugin>
     <hikaricp.version>2.4.0</hikaricp.version>
