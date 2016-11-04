@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.shared.application.config;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.TimeZone;
 
@@ -28,8 +29,6 @@ import ch.qos.logback.ext.spring.LogbackConfigurer;
  * Web application Java configuration class.
  */
 public abstract class AbstractApplicationInitializer {
-
-    private static final String DEFAULT_LOGBACK_CONFIG = "classpath:logback.xml";
     
     protected final Logger logger;
     private Class<?> contextClass;
@@ -73,29 +72,14 @@ public abstract class AbstractApplicationInitializer {
             initialContext = new InitialContext();
             final String logLocation = (String) initialContext.lookup(this.logConfig);
 
-            LogbackConfigurer.initLogging(logLocation);
-
-            logger.debug("Initialized logging using {}", this.logConfig);
+            // Load specific logback configuration, otherwise fallback to classpath logback.xml
+            if (new File(logLocation).exists()) {
+                LogbackConfigurer.initLogging(logLocation);
+                logger.info("Initialized logging using {}", this.logConfig);
+            }
         } catch (final NamingException | FileNotFoundException | JoranException e) {
-            logger.debug("Failed to initialize logging using {}, falling back to default logging", this.logConfig, e);
-
-            /*
-             * For some reason it might be the case that the LogbackConfigurer
-             * is initialized at this point but the logger will not work in that
-             * case. 
-             * 
-             * Fallback to reinitialize the logging using the classpath logback.xml file.
-             */
-            initializeDefaultLogging(DEFAULT_LOGBACK_CONFIG);
-        }
-    }
-    
-    private void initializeDefaultLogging(final String defaultConfig) throws ServletException {
-        try {
-            LogbackConfigurer.initLogging(defaultConfig);
-            logger.debug("Initialized default logging using {}", defaultConfig);
-        } catch (Exception ex) {
-            throw new ServletException(ex);
+            logger.info("Failed to initialize logging using {}", this.logConfig, e);
+            throw new ServletException(e);
         }
     }
 }
