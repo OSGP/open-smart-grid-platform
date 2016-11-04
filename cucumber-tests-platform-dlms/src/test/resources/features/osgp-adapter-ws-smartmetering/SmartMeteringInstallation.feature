@@ -13,7 +13,7 @@ Feature: SmartMetering Installation
       | Supplier              | Kaifa             |
       | HLS3_active           | false             |
       | HLS4_active           | false             |
-      | HLS5_active           | false             |
+      | HLS5_active           | true              |
       | Master_key            | true              |
     Then the add device response contains
       | DeviceIdentification | E0026000059790003 |
