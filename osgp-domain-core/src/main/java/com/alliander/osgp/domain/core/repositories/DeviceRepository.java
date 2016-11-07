@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -43,4 +44,15 @@ public interface DeviceRepository extends JpaRepository<Device, Long>, JpaSpecif
             + "		 auth.functionGroup = com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup.INSTALLATION)"
             + ") AND " + "d.modificationTime >= ?2")
     List<Device> findRecentDevices(Organisation organisation, Date fromDate);
+
+    /*
+     * We need these native queries below because these entities dont have an Id
+     */
+    @Modifying
+    @Query(value = "delete from ean", nativeQuery = true)
+    void deleteAllEans();
+
+    @Modifying
+    @Query(value = "delete from device_output_setting", nativeQuery = true)
+    void deleteDeviceOutputSettings();
 }
