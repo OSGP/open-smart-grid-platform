@@ -23,6 +23,7 @@ import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.valueobjects.PlatformDomain;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
+import com.alliander.osgp.platform.cucumber.steps.Keys;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -38,12 +39,12 @@ public class OrganizationSteps {
     /**
      * Some defaults for the organization class.
      */
-    private Boolean DEFAULT_ENABLED = true;
-    private String DEFAULT_ORGANIZATION = "An Organization";
-    private String DEFAULT_NAME = "An Organization";
-    private String DEFAULT_PREFIX = "Tes";
-    private PlatformFunctionGroup DEFAULT_PLATFORM_FUNCTION_GROUP = PlatformFunctionGroup.ADMIN;
-    private PlatformDomain DEFAULT_PLATFORM_DOMAIN = PlatformDomain.COMMON;
+    private final Boolean DEFAULT_ENABLED = true;
+    private final String DEFAULT_ORGANIZATION = "An Organization";
+    private final String DEFAULT_NAME = "An Organization";
+    private final String DEFAULT_PREFIX = "Tes";
+    private final PlatformFunctionGroup DEFAULT_PLATFORM_FUNCTION_GROUP = PlatformFunctionGroup.ADMIN;
+    private final PlatformDomain DEFAULT_PLATFORM_DOMAIN = PlatformDomain.COMMON;
 
     /**
      * Generic method to create an organization.
@@ -54,23 +55,23 @@ public class OrganizationSteps {
      */
     @Given("^an organization$")
     public void anOrganization(final Map<String, String> settings) throws Throwable {
-        final Organisation entity = new Organisation(
-                getString(settings, "OrganizationIdentification", this.DEFAULT_ORGANIZATION),
-                getString(settings, "Name", this.DEFAULT_NAME), getString(settings, "Prefix", this.DEFAULT_PREFIX),
-                getEnum(settings, "PlatformFunctionGroup", PlatformFunctionGroup.class,
-                        this.DEFAULT_PLATFORM_FUNCTION_GROUP));
+        final Organisation entity = new Organisation(getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
+                this.DEFAULT_ORGANIZATION), getString(settings, "Name", this.DEFAULT_NAME), getString(settings,
+                        "Prefix", this.DEFAULT_PREFIX), getEnum(settings, "PlatformFunctionGroup", PlatformFunctionGroup.class,
+                                this.DEFAULT_PLATFORM_FUNCTION_GROUP));
 
         // Add all the mandatory stuff.
         entity.addDomain(getEnum(settings, "PlatformDomain", PlatformDomain.class, this.DEFAULT_PLATFORM_DOMAIN));
 
-        // TODO: Add all the optional stuff
         entity.setIsEnabled(getBoolean(settings, "Enabled", this.DEFAULT_ENABLED));
 
+        // TODO: Add all the optional stuff
         this.repo.save(entity);
 
         // Save the created id for the organization in the scenario context.
         final Organisation savedEntity = this.repo.findByName(getString(settings, "Name", this.DEFAULT_NAME));
-        ScenarioContext.Current().put("OrganizationIdentification", savedEntity.getOrganisationIdentification());
+        ScenarioContext.Current()
+        .put(Keys.KEY_ORGANIZATION_IDENTIFICATION, savedEntity.getOrganisationIdentification());
     }
 
     /**
@@ -84,36 +85,19 @@ public class OrganizationSteps {
     @Then("^the entity organization exists$")
     public void thenTheEntityOrganizationExists(final Map<String, String> expectedEntity) throws Throwable {
 
-        // TODO: Wait until the stuff is created.
-        final Organisation entity = this.repo
-                .findByOrganisationIdentification(expectedEntity.get("OrganizationIdentification"));
+        final Organisation entity = this.repo.findByOrganisationIdentification(expectedEntity
+                .get(Keys.KEY_ORGANIZATION_IDENTIFICATION));
 
         Assert.assertEquals(expectedEntity.get("Name"), entity.getName());
         Assert.assertEquals(expectedEntity.get("Prefix"), entity.getPrefix());
-        Assert.assertTrue(
-                expectedEntity.get("FunctionGroup").toUpperCase().equals(entity.getFunctionGroup().toString()));
+        Assert.assertTrue(expectedEntity.get("FunctionGroup").toUpperCase()
+                .equals(entity.getFunctionGroup().toString()));
         Assert.assertTrue(expectedEntity.get("Enabled").toLowerCase().equals("true") == entity.isEnabled());
         final List<String> expectedDomains = Arrays.asList(expectedEntity.get("Domains").split(";"));
         Assert.assertEquals(expectedDomains.size(), entity.getDomains().size());
         for (final PlatformDomain domain : entity.getDomains()) {
             Assert.assertTrue(expectedDomains.contains(domain.toString()));
         }
-    }
-
-    /**
-     * Generic method to check if the organization is not present in the
-     * database.
-     *
-     * @param expectedEntity
-     *            The expected settings.
-     * @throws Throwable
-     */
-    @Then("^the entity organization does not exists$")
-    // @Test(expected=.class)
-    public void thenTheEntityOrganizationDoesNotExist(final Map<String, String> expectedEntity) throws Throwable {
-        final Organisation entity = this.repo
-                .findByOrganisationIdentification(expectedEntity.get("OrganizationIdentification"));
-        Assert.assertNull(entity);
     }
 
     /**

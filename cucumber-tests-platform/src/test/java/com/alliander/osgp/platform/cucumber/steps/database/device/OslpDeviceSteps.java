@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.protocol.oslp.domain.entities.OslpDevice;
 import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRepository;
+import com.alliander.osgp.platform.cucumber.steps.Defaults;
+import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.cucumber.steps.database.DeviceSteps;
 
 import cucumber.api.java.en.Given;
@@ -41,10 +43,10 @@ public class OslpDeviceSteps {
         this.deviceSteps.aDevice(settings);
 
         // Now create the OSLP device in the OSLP database
-        final String deviceIdentification = getString(settings, "DeviceIdentification",
-                DeviceSteps.DEFAULT_DEVICE_IDENTIFICATION);
+        final String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION,
+                Defaults.DEFAULT_DEVICE_IDENTIFICATION);
         final OslpDevice device = new OslpDevice(getString(settings, "DeviceUid", DEFAULT_DEVICE_UID),
-                deviceIdentification, getString(settings, "DeviceType", DeviceSteps.DEFAULT_DEVICE_TYPE));
+                deviceIdentification, getString(settings, "DeviceType", Defaults.DEFAULT_DEVICE_TYPE));
         device.setSequenceNumber(0);
         device.setRandomDevice(0);
         device.setRandomPlatform(0);

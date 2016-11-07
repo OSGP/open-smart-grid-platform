@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
+import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.cucumber.steps.ws.core.CoreStepsBase;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
@@ -50,7 +51,7 @@ public class GetFirmwareVersionSteps extends CoreStepsBase {
     public void givenReceivingAGetFirmwareVersionRequest(final Map<String, String> requestParameters) throws Throwable {
 
         // Required parameters
-        PROPERTIES_MAP.put("__DEVICE_IDENTIFICATION__", requestParameters.get("DeviceIdentification"));
+        PROPERTIES_MAP.put("__DEVICE_IDENTIFICATION__", requestParameters.get(Keys.KEY_DEVICE_IDENTIFICATION));
 
         // Now run the request.
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_ASYNC_NAME_REQUEST, TEST_CASE_ASYNC_REQ_XML,
@@ -67,16 +68,16 @@ public class GetFirmwareVersionSteps extends CoreStepsBase {
     public void thenTheGetFirmwareVersionResponseContains(final Map<String, String> expectedResponseData)
             throws Throwable {
         this.runXpathResult.assertXpath(this.response, PATH_DEVICE_IDENTIFICATION,
-                getString(expectedResponseData, "DeviceIdentification", Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+                getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
         this.runXpathResult.assertNotNull(this.response, PATH_CORRELATION_UID);
 
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.
         saveCorrelationUidInScenarioContext(this.runXpathResult.getValue(this.response, PATH_CORRELATION_UID),
-                getString(expectedResponseData, "OrganizationIdentification",
+                getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
                         Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
-        
-        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get("CorrelationUid") + "]");
+
+        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
     }
 
     @Then("^the platform buffers a get firmware version response message for device \"([^\"]*)\"$")
@@ -84,11 +85,11 @@ public class GetFirmwareVersionSteps extends CoreStepsBase {
             final Map<String, String> expectedResponseData) throws Throwable {
         // Required parameters
         PROPERTIES_MAP.put("__DEVICE_IDENTIFICATION__", deviceIdentification);
-        PROPERTIES_MAP.put("__CORRELATION_UID__", (String) ScenarioContext.Current().get("CorrelationUid"));
-        
+        PROPERTIES_MAP.put("__CORRELATION_UID__", (String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
+
         this.waitForResponse(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_RESULT_NAME_REQUEST,
                     TEST_CASE_RESULT_REQ_XML, TEST_SUITE_XML);
-        
+
         Assert.assertEquals(getString(expectedResponseData, "FirmwareModuleType", ""),
                 this.runXpathResult.getValue(this.response, PATH_FIRMWARE_TYPE));
         Assert.assertEquals(getString(expectedResponseData, "FirmwareVersion", ""),

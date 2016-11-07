@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.platform.cucumber.steps.database;
 
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
+
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +22,7 @@ import com.alliander.osgp.domain.core.entities.DeviceFirmware;
 import com.alliander.osgp.domain.core.entities.Firmware;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
-import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
+import com.alliander.osgp.platform.cucumber.steps.Keys;
 
 import cucumber.api.java.en.Given;
 
@@ -47,7 +49,7 @@ public class DeviceFirmwareSteps {
 
         // Get the device
         final Device device = this.deviceRepository.findByDeviceIdentification(
-                getString(settings, "DeviceIdentification", Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         // TODO for now take the last
         final List<Firmware> fws = this.firmwareRepository.findAll();

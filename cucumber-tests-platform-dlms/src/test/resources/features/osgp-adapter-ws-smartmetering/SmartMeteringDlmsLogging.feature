@@ -1,0 +1,28 @@
+Feature: 
+  As a grid operator
+  I want the platform to collect detailed DLMS communication logs for a device in debug mode
+  In order to ...
+
+  Scenario: DLMS device log information is collected for a device in debug mode.
+    Given a device
+      | DeviceIdentification | TEST1024000000001 |
+      | DeviceType           | SMART_METER_E     |
+      | Active               | true              |
+      | InDebugMode          | true              |
+    When the get administrative status request is received
+      | DeviceIdentification | TEST1024000000001 |
+    Then the administrative status should be returned
+      | DeviceIdentification | TEST1024000000001 |
+    And the get administrative status communication for device "TEST1024000000001" should be in the device_log_item table
+
+  Scenario: DLMS device log information is not collected for a device not in debug mode.
+    Given a device
+      | DeviceIdentification | TEST1024000000001 |
+      | DeviceType           | SMART_METER_E     |
+      | Active               | true              |
+      | InDebugMode          | false             |
+    When the get administrative status request is received
+      | DeviceIdentification | TEST1024000000001 |
+    Then the administrative status should be returned
+      | DeviceIdentification | TEST1024000000001 |
+    And the get administrative status communication for device "TEST1024000000001" should not be in the device_log_item table

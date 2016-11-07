@@ -13,6 +13,7 @@ import java.util.Map;
 
 import org.junit.Assert;
 
+import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.cucumber.steps.ws.admin.AdminStepsBase;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
@@ -27,17 +28,17 @@ public class ActivateDeviceSteps extends AdminStepsBase {
 
     @When("^receiving a activate device request$")
     public void receivingAActivateDeviceRequest(final Map<String, String> requestSettings) throws Throwable {
-        PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_LABEL, requestSettings.get("DeviceIdentification"));
+        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION, requestSettings.get(Keys.KEY_DEVICE_IDENTIFICATION));
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_NAME, TEST_SUITE);
     }
-    
+
     /**
      * Verify that the activate device response is successful.
      * @throws Throwable
      */
     @Then("^the activate device response contains$")
-    public void the_activate_device_response_contains(Map<String, String> expectedResponse) throws Throwable {
+    public void theActivateDeviceResponseContains(final Map<String, String> expectedResponse) throws Throwable {
         Assert.assertTrue(this.runXpathResult.assertXpath(this.response, "/Envelope/Body/ActivateDeviceResponse/Result/text()", expectedResponse.get("Result")));
     }
 }

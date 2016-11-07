@@ -1,78 +1,57 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package com.alliander.osgp.platform.dlms.cucumber.steps.database.device;
 
-import static com.alliander.osgp.platform.cucumber.core.Helpers.getBoolean;
-import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
+import static com.alliander.osgp.platform.cucumber.steps.Defaults.SMART_METER_E;
+import static com.alliander.osgp.platform.cucumber.steps.Defaults.SMART_METER_G;
 
 import java.util.Map;
 
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
-import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
-import com.alliander.osgp.domain.core.repositories.DeviceRepository;
-import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
+import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.cucumber.steps.database.DeviceSteps;
+import com.alliander.osgp.platform.cucumber.steps.database.RepoHelper;
 
-import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
 
 /**
  * DLMS device specific steps.
  */
 public class DlmsDeviceSteps {
 
-    private static final String DEFAULT_COMMUNICATION_METHOD = "GPRS";
-	private static final Boolean DEFAULT_IP_ADDRESS_IS_STATIC = true;
-	private static final String DEFAULT_ALIAS = "Test";
-	private static final String DEFAULT_CONTAINER_CITY = "Esloo";
-	private static final String DEFAULT_CONTAINER_POSTAL_CODE = "6171 AE";
-	private static final String DEFAULT_CONTAINER_STREET = "Mauritsweg";
-	private static final String DEFAULT_CONTAINER_NUMBER = "109";
-	private static final String DEFAULT_CONTAINER_MUNICIPALITY = "Stein";
-	private static final Float DEFAULT_GPSLATITUDE = 5.0F;
-	private static final Float DEFAULT_GPSLONGITUDE = 5.0F;
-	private static final Boolean DEFAULT_ACTIVE = true;
-
-	@Autowired
-    private DeviceRepository deviceRepository;
-
-    @Autowired
-    private DlmsDeviceRepository dlmsDeviceRepository;
-    
-    @Autowired
-    private DeviceAuthorizationRepository deviceAuthorizationRepository;
-    
-    @Autowired
-    private SmartMeterRepository smartMeterRepository;
-
     @Autowired
     private DeviceSteps deviceSteps;
 
-    @Given("^a dlms device$")
-    public void a_dlms_device(final Map<String, String> settings) throws Throwable {
+    @Autowired
+    private RepoHelper repoHelper;
 
-        // First create the device itself
-        this.deviceSteps.aSmartMeter(settings);
-        
-        // Now create the DLMS device in the DLMS database
-        final String deviceIdentification = getString(settings, "DeviceIdentification",
-                DeviceSteps.DEFAULT_DEVICE_IDENTIFICATION);
-        final DlmsDevice dlmsDevice = new DlmsDevice(deviceIdentification);
-        dlmsDevice.setCommunicationMethod(
-        		getString(settings, "CommunicationMethod", DEFAULT_COMMUNICATION_METHOD));
-        dlmsDevice.setIpAddressIsStatic(
-        		getBoolean(settings, "IpAddressIsStatic", DEFAULT_IP_ADDRESS_IS_STATIC));
-        dlmsDevice.setPort(4059L);
-        // TODO: Set dlms specific device settings
-        this.dlmsDeviceRepository.save(dlmsDevice);
-        
-        // TODO: Set the devicegateway
+    @Given("^a device$")
+    public void aDevice(final Map<String, String> settings) throws Throwable {
+        if (this.isSmartMeter(settings)) {
+            this.repoHelper.insertSmartMeter(settings);
+            this.repoHelper.insertDlmsDevice(settings);
+        } else {
+            this.repoHelper.insertDevice(settings);
+        }
+    }
+
+    private boolean isSmartMeter(final Map<String, String> settings) {
+        final String deviceType = settings.get(Keys.KEY_DEVICE_TYPE);
+        return SMART_METER_E.equals(deviceType) || SMART_METER_G.equals(deviceType);
+    }
+
+    @Then("^the device with the id \"([^\"]*)\" exists$")
+    public void theDeviceWithTheIdExists(final String deviceIdentification) throws Throwable {
+        this.deviceSteps.theDeviceWithIdExists(deviceIdentification);
     }
 
     /**
@@ -81,10 +60,9 @@ public class DlmsDeviceSteps {
      * @param deviceId
      * @return
      */
-    @And("^the device with id \"([^\"]*)\" should be added in the dlms database$")
-    public void theDeviceShouldBeAddedInTheDlmsDatabase(final String deviceId) throws Throwable {
-        final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceId);
-        
+    @Then("^the dlms device with id \"([^\"]*)\" exists$")
+    public void theDlmsDeviceShouldExist(final String deviceIdentification) throws Throwable {
+        final DlmsDevice dlmsDevice = this.repoHelper.findDlmsDevice(deviceIdentification);
         Assert.notNull(dlmsDevice);
         Assert.isTrue(dlmsDevice.getSecurityKeys().size() > 0);
     }
