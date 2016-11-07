@@ -35,7 +35,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGasRe
 
 public class PeriodicMeterReadsContainerGasMappingTest {
 
-    private MonitoringMapper monitoringMapper = new MonitoringMapper();
+    private final MonitoringMapper monitoringMapper = new MonitoringMapper();
 
     // the List is not allowed to be null because of the way the constructor is
     // defined
@@ -63,7 +63,7 @@ public class PeriodicMeterReadsContainerGasMappingTest {
 
         assertNotNull(periodicMeterReadContainerGas);
 
-        assertTrue(periodicMeterReadContainerGas.getMeterReadsGas().isEmpty());
+        assertTrue(periodicMeterReadContainerGas.getPeriodicMeterReadsGas().isEmpty());
         assertEquals(periodicMeterReadsContainerGasDto.getPeriodType().name(), periodicMeterReadContainerGas
                 .getPeriodType().name());
     }
@@ -78,8 +78,8 @@ public class PeriodicMeterReadsContainerGasMappingTest {
         amrProfileStatusCodeFlagSet.add(AmrProfileStatusCodeFlagDto.CRITICAL_ERROR);
         final AmrProfileStatusCodeDto amrProfileStatusCodeDto = new AmrProfileStatusCodeDto(amrProfileStatusCodeFlagSet);
 
-        final PeriodicMeterReadsGasResponseItemDto periodicMeterReadsGasDto = new PeriodicMeterReadsGasResponseItemDto(new Date(), consumption,
-                new Date(), amrProfileStatusCodeDto);
+        final PeriodicMeterReadsGasResponseItemDto periodicMeterReadsGasDto = new PeriodicMeterReadsGasResponseItemDto(
+                new Date(), consumption, new Date(), amrProfileStatusCodeDto);
         final List<PeriodicMeterReadsGasResponseItemDto> meterReads = new ArrayList<>();
         meterReads.add(periodicMeterReadsGasDto);
 
@@ -96,23 +96,23 @@ public class PeriodicMeterReadsContainerGasMappingTest {
         assertEquals(periodicMeterReadsContainerDto.getPeriodType().name(), periodicMeterReadsContainerGas
                 .getPeriodType().name());
 
-        assertEquals(periodicMeterReadsContainerDto.getMeterReadsGas().size(), periodicMeterReadsContainerGas
-                .getMeterReadsGas().size());
-        assertEquals(periodicMeterReadsContainerDto.getMeterReadsGas().get(0).getLogTime(),
-                periodicMeterReadsContainerGas.getMeterReadsGas().get(0).getLogTime());
-        assertEquals(periodicMeterReadsContainerDto.getMeterReadsGas().get(0).getCaptureTime(),
-                periodicMeterReadsContainerGas.getMeterReadsGas().get(0).getCaptureTime());
+        assertEquals(periodicMeterReadsContainerDto.getPeriodicMeterReadsGas().size(), periodicMeterReadsContainerGas
+                .getPeriodicMeterReadsGas().size());
+        assertEquals(periodicMeterReadsContainerDto.getPeriodicMeterReadsGas().get(0).getLogTime(),
+                periodicMeterReadsContainerGas.getPeriodicMeterReadsGas().get(0).getLogTime());
+        assertEquals(periodicMeterReadsContainerDto.getPeriodicMeterReadsGas().get(0).getCaptureTime(),
+                periodicMeterReadsContainerGas.getPeriodicMeterReadsGas().get(0).getCaptureTime());
 
-        assertEquals(new BigDecimal("1.0"), periodicMeterReadsContainerGas.getMeterReadsGas().get(0).getConsumption()
-                .getValue());
-        assertEquals(OsgpUnit.M3, periodicMeterReadsContainerGas.getMeterReadsGas().get(0).getConsumption()
+        assertEquals(new BigDecimal("1.0"), periodicMeterReadsContainerGas.getPeriodicMeterReadsGas().get(0)
+                .getConsumption().getValue());
+        assertEquals(OsgpUnit.M3, periodicMeterReadsContainerGas.getPeriodicMeterReadsGas().get(0).getConsumption()
                 .getOsgpUnit());
 
-        assertEquals(periodicMeterReadsContainerDto.getMeterReadsGas().get(0).getAmrProfileStatusCode()
-                .getAmrProfileStatusCodeFlags().size(), periodicMeterReadsContainerGas.getMeterReadsGas().get(0)
-                .getAmrProfileStatusCode().getAmrProfileStatusCodeFlags().size());
+        assertEquals(periodicMeterReadsContainerDto.getPeriodicMeterReadsGas().get(0).getAmrProfileStatusCode()
+                .getAmrProfileStatusCodeFlags().size(), periodicMeterReadsContainerGas.getPeriodicMeterReadsGas()
+                .get(0).getAmrProfileStatusCode().getAmrProfileStatusCodeFlags().size());
 
-        assertTrue(periodicMeterReadsContainerGas.getMeterReadsGas().get(0).getAmrProfileStatusCode()
+        assertTrue(periodicMeterReadsContainerGas.getPeriodicMeterReadsGas().get(0).getAmrProfileStatusCode()
                 .getAmrProfileStatusCodeFlags().contains(AmrProfileStatusCodeFlag.CRITICAL_ERROR));
     }
 }
