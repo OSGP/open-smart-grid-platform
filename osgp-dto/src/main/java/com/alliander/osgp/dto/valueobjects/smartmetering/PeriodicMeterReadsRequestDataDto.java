@@ -10,9 +10,7 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 import java.util.Date;
 
 /**
- * request periodic reads for E or GAS meter
- *
- * @author dev
+ * request periodic reads for E meter
  */
 public class PeriodicMeterReadsRequestDataDto implements ActionRequestDto {
 

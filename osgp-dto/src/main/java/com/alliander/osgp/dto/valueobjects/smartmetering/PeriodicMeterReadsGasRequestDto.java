@@ -10,37 +10,18 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 import java.util.Date;
 
 /**
- * request periodic reads for E or GAS meter
- *
- * @author dev
+ * request periodic reads for GAS meter
  */
-public class PeriodicMeterReadsGasRequestDto implements ActionRequestDto {
+public class PeriodicMeterReadsGasRequestDto extends PeriodicMeterReadsRequestDataDto {
 
     private static final long serialVersionUID = -2483665562035897062L;
 
-    private final PeriodTypeDto periodType;
-    private final Date beginDate;
-    private final Date endDate;
     private final ChannelDto channel;
 
-    public PeriodicMeterReadsGasRequestDto(final PeriodTypeDto periodType, final Date beginDate,
-            final Date endDate, final ChannelDto channel) {
-        this.periodType = periodType;
-        this.beginDate = new Date(beginDate.getTime());
-        this.endDate = new Date(endDate.getTime());
+    public PeriodicMeterReadsGasRequestDto(final PeriodTypeDto periodType, final Date beginDate, final Date endDate,
+            final ChannelDto channel) {
+        super(periodType, beginDate, endDate);
         this.channel = channel;
-    }
-
-    public PeriodTypeDto getPeriodType() {
-        return this.periodType;
-    }
-
-    public Date getBeginDate() {
-        return new Date(this.beginDate.getTime());
-    }
-
-    public Date getEndDate() {
-        return new Date(this.endDate.getTime());
     }
 
     public boolean isMbusQuery() {
