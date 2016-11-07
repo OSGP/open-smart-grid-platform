@@ -39,7 +39,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRespo
 
 @Component()
 public class GetPeriodicMeterReadsCommandExecutor extends
-AbstractPeriodicMeterReadsCommandExecutor<PeriodicMeterReadsRequestDto, PeriodicMeterReadsResponseDto> {
+        AbstractPeriodicMeterReadsCommandExecutor<PeriodicMeterReadsRequestDto, PeriodicMeterReadsResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsCommandExecutor.class);
 
@@ -123,7 +123,7 @@ AbstractPeriodicMeterReadsCommandExecutor<PeriodicMeterReadsRequestDto, Periodic
 
             conn.getDlmsMessageListener().setDescription(
                     "GetPeriodicMeterReads " + periodType + " from " + beginDateTime + " until " + endDateTime
-                            + ", retrieve attribute: " + JdlmsObjectToStringUtil.describeAttributes(address));
+                    + ", retrieve attribute: " + JdlmsObjectToStringUtil.describeAttributes(address));
 
             getResultList.addAll(this.dlmsHelperService.getAndCheck(conn, device, "retrieve periodic meter reads for "
                     + periodType, address));
@@ -205,7 +205,7 @@ AbstractPeriodicMeterReadsCommandExecutor<PeriodicMeterReadsRequestDto, Periodic
                 "positiveActiveEnergyTariff1");
         final DlmsMeterValueDto positiveActiveEnergyTariff2 = this.dlmsHelperService.getScaledMeterValue(
                 bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_2), results.get(RESULT_INDEX_IMPORT_2_OR_EXPORT)
-                .getResultData(), "positiveActiveEnergyTariff2");
+                        .getResultData(), "positiveActiveEnergyTariff2");
         final DlmsMeterValueDto negativeActiveEnergyTariff1 = this.dlmsHelperService.getScaledMeterValue(
                 bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_1), results.get(RESULT_INDEX_EXPORT).getResultData(),
                 "negativeActiveEnergyTariff1");
@@ -254,7 +254,7 @@ AbstractPeriodicMeterReadsCommandExecutor<PeriodicMeterReadsRequestDto, Periodic
                 "positiveActiveEnergyTariff1");
         final DlmsMeterValueDto positiveActiveEnergyTariff2 = this.dlmsHelperService.getScaledMeterValue(
                 bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_2 - 1), results.get(RESULT_INDEX_IMPORT_2_OR_EXPORT)
-                .getResultData(), "positiveActiveEnergyTariff2");
+                        .getResultData(), "positiveActiveEnergyTariff2");
         final DlmsMeterValueDto negativeActiveEnergyTariff1 = this.dlmsHelperService.getScaledMeterValue(
                 bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_1 - 1), results.get(RESULT_INDEX_EXPORT).getResultData(),
                 "negativeActiveEnergyTariff1");
@@ -270,7 +270,7 @@ AbstractPeriodicMeterReadsCommandExecutor<PeriodicMeterReadsRequestDto, Periodic
 
     private AttributeAddress[] getProfileBufferAndScalerUnit(final PeriodTypeDto periodType,
             final DateTime beginDateTime, final DateTime endDateTime, final boolean isSelectingValuesSupported)
-                    throws ProtocolAdapterException {
+            throws ProtocolAdapterException {
 
         final SelectiveAccessDescription access = this.getSelectiveAccessDescription(periodType, beginDateTime,
                 endDateTime, isSelectingValuesSupported);
@@ -297,29 +297,36 @@ AbstractPeriodicMeterReadsCommandExecutor<PeriodicMeterReadsRequestDto, Periodic
     }
 
     private List<AttributeAddress> getScalerUnit(final PeriodTypeDto periodType) throws ProtocolAdapterException {
-
-        final List<AttributeAddress> scalerUnit = new ArrayList<>();
         switch (periodType) {
         case INTERVAL:
-            scalerUnit.add(new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_INTERVAL_IMPORT_SCALER_UNIT,
-                    ATTRIBUTE_ID_SCALER_UNIT));
-            scalerUnit.add(new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_INTERVAL_EXPORT_SCALER_UNIT,
-                    ATTRIBUTE_ID_SCALER_UNIT));
-            break;
+            return this.createScalerUnitForInterval();
         case DAILY:
         case MONTHLY:
-            scalerUnit.add(new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_MONTHLY_DAILY_IMPORT_RATE_1_SCALER_UNIT,
-                    ATTRIBUTE_ID_SCALER_UNIT));
-            scalerUnit.add(new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_MONTHLY_DAILY_IMPORT_RATE_2_SCALER_UNIT,
-                    ATTRIBUTE_ID_SCALER_UNIT));
-            scalerUnit.add(new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_MONTHLY_DAILY_EXPORT_RATE_1_SCALER_UNIT,
-                    ATTRIBUTE_ID_SCALER_UNIT));
-            scalerUnit.add(new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_MONTHLY_DAILY_EXPORT_RATE_2_SCALER_UNIT,
-                    ATTRIBUTE_ID_SCALER_UNIT));
-            break;
+            return this.createScalerUnitForMonth();
         default:
             throw new ProtocolAdapterException(String.format("periodtype %s not supported", periodType));
         }
+    }
+
+    private List<AttributeAddress> createScalerUnitForInterval() {
+        final List<AttributeAddress> scalerUnit = new ArrayList<>();
+        scalerUnit.add(new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_INTERVAL_IMPORT_SCALER_UNIT,
+                ATTRIBUTE_ID_SCALER_UNIT));
+        scalerUnit.add(new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_INTERVAL_EXPORT_SCALER_UNIT,
+                ATTRIBUTE_ID_SCALER_UNIT));
+        return scalerUnit;
+    }
+
+    private List<AttributeAddress> createScalerUnitForMonth() {
+        final List<AttributeAddress> scalerUnit = new ArrayList<>();
+        scalerUnit.add(new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_MONTHLY_DAILY_IMPORT_RATE_1_SCALER_UNIT,
+                ATTRIBUTE_ID_SCALER_UNIT));
+        scalerUnit.add(new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_MONTHLY_DAILY_IMPORT_RATE_2_SCALER_UNIT,
+                ATTRIBUTE_ID_SCALER_UNIT));
+        scalerUnit.add(new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_MONTHLY_DAILY_EXPORT_RATE_1_SCALER_UNIT,
+                ATTRIBUTE_ID_SCALER_UNIT));
+        scalerUnit.add(new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_MONTHLY_DAILY_EXPORT_RATE_2_SCALER_UNIT,
+                ATTRIBUTE_ID_SCALER_UNIT));
         return scalerUnit;
     }
 
