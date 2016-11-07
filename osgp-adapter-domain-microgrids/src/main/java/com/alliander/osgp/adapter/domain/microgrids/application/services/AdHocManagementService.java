@@ -9,6 +9,9 @@ package com.alliander.osgp.adapter.domain.microgrids.application.services;
 
 import java.util.UUID;
 
+import javax.persistence.OptimisticLockException;
+
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +45,9 @@ public class AdHocManagementService extends BaseService {
 
     @Autowired
     private DomainMicrogridsMapper mapper;
+
+    @Autowired
+    private Integer lastCommunicationUpdateInterval;
 
     /**
      * Constructor
@@ -160,8 +166,23 @@ public class AdHocManagementService extends BaseService {
     }
 
     private void handleResponseMessageReceived(final String deviceIdentification) {
-        final RtuDevice device = this.rtuDeviceRepository.findByDeviceIdentification(deviceIdentification);
-        device.messageReceived();
-        this.rtuDeviceRepository.save(device);
+        try {
+            final RtuDevice device = this.rtuDeviceRepository.findByDeviceIdentification(deviceIdentification);
+            if (this.shouldUpdateCommunicationTime(device)) {
+                device.messageReceived();
+                this.rtuDeviceRepository.save(device);
+            } else {
+                LOGGER.info("Last communication time within {} seconds. Skipping last communication date update.",
+                        this.lastCommunicationUpdateInterval);
+            }
+        } catch (final OptimisticLockException ex) {
+            LOGGER.warn("Last communication time not updated due to optimistic lock exception", ex);
+        }
+    }
+
+    private boolean shouldUpdateCommunicationTime(final RtuDevice device) {
+        final DateTime timeToCheck = DateTime.now().minusSeconds(this.lastCommunicationUpdateInterval);
+        final DateTime timeOfLastCommunication = new DateTime(device.getLastCommunicationTime());
+        return timeOfLastCommunication.isBefore(timeToCheck);
     }
 }

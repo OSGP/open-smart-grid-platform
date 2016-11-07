@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.adapter.domain.core.infra.jms.ws.WebServiceResponseMessageSender;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -32,21 +33,19 @@ public class DefaultDeviceResponseService {
 
         LOGGER.info("handleDefaultDeviceResponse for MessageType: {}", messageType);
 
+        ResponseMessageResultType result = deviceResult;
         OsgpException osgpException = exception;
-        ResponseMessageResultType result = ResponseMessageResultType.OK;
 
-        try {
-            if (deviceResult == ResponseMessageResultType.NOT_OK || osgpException != null) {
-                LOGGER.error("Device Response not ok.", osgpException);
-                throw osgpException;
-            }
-        } catch (final OsgpException e) {
-            LOGGER.error("Unexpected OsgpException", e);
-            osgpException = new TechnicalException(e.getComponentType(), e.getMessage(), e);
+        if (deviceResult == ResponseMessageResultType.NOT_OK && exception == null) {
+            LOGGER.error("Incorrect response received, exception should not be null when result is not ok");
+            osgpException = new TechnicalException(ComponentType.DOMAIN_CORE, "An unknown error occurred");
+        }
+        if (deviceResult == ResponseMessageResultType.OK && exception != null) {
+            LOGGER.error("Incorrect response received, result should be set to not ok when exception is not null");
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, osgpException, null));
+        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification, deviceIdentification,
+                result, osgpException, null));
     }
 }

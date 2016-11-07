@@ -33,18 +33,16 @@ public class DefaultDeviceResponseService {
 
         LOGGER.info("handleDefaultDeviceResponse for MessageType: {}", messageType);
 
-        ResponseMessageResultType result = ResponseMessageResultType.OK;
+        ResponseMessageResultType result = deviceResult;
         OsgpException osgpException = exception;
 
-        try {
-            if (deviceResult == ResponseMessageResultType.NOT_OK || exception != null) {
-                LOGGER.error("Device Response not ok.", osgpException);
-                throw osgpException;
-            }
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected Exception", e);
+        if (deviceResult == ResponseMessageResultType.NOT_OK && exception == null) {
+            LOGGER.error("Incorrect response received, exception should not be null when result is not ok");
+            osgpException = new TechnicalException(ComponentType.DOMAIN_TARIFF_SWITCHING, "An unknown error occurred");
+        }
+        if (deviceResult == ResponseMessageResultType.OK && exception != null) {
+            LOGGER.error("Incorrect response received, result should be set to not ok when exception is not null");
             result = ResponseMessageResultType.NOT_OK;
-            osgpException = new TechnicalException(ComponentType.UNKNOWN, "An unknown error occurred", e);
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
