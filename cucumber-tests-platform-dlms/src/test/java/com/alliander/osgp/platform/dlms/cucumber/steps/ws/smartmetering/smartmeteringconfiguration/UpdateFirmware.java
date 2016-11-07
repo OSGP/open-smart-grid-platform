@@ -46,7 +46,6 @@ public class UpdateFirmware extends SmartMeteringStepsBase {
     private static final String TEST_CASE_XML = "268 Update firmware";
     private static final String TEST_CASE_NAME_REQUEST = "UpdateFirmware";
     private static final String TEST_CASE_NAME_RESPONSE = "GetUpdateFirmwareResponse";
-    private static final String ENDPOINT_LABEL = "ServiceEndpoint";
 
     @Autowired
     private DeviceId deviceId;
@@ -74,7 +73,6 @@ public class UpdateFirmware extends SmartMeteringStepsBase {
     public void theRequestForAFirmwareUpgradeIsReceived() throws Throwable {
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION_E_LABEL, this.deviceId.getDeviceIdE());
         PROPERTIES_MAP.put(Keys.KEY_ORGANIZATION_IDENTIFICATION, this.organisationId.getOrganisationId());
-        PROPERTIES_MAP.put(ENDPOINT_LABEL, this.serviceEndpoint);
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }
@@ -82,7 +80,7 @@ public class UpdateFirmware extends SmartMeteringStepsBase {
     @Then("^firmware should be updated$")
     public void firmwareShouldBeUpdated() throws Throwable {
         PROPERTIES_MAP
-        .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
+                .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, TEST_CASE_XML, TEST_SUITE_XML);
 
@@ -124,7 +122,7 @@ public class UpdateFirmware extends SmartMeteringStepsBase {
     @Then("^the message \"([^\"]*)\" should be given$")
     public void theMessageShouldBeGiven(final String message) throws Throwable {
         PROPERTIES_MAP
-        .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
+                .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, TEST_CASE_XML, TEST_SUITE_XML);
 
