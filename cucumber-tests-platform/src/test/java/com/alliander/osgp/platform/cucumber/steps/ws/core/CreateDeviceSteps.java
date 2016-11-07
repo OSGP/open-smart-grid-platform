@@ -9,17 +9,24 @@
  */
 package com.alliander.osgp.platform.cucumber.steps.ws.core;
 
-import java.util.Map;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
+
+import java.io.IOException;
+import java.util.Map;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
 
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.xml.sax.SAXException;
 
-import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
+import com.alliander.osgp.platform.cucumber.steps.common.ResponseSteps;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
+import cucumber.api.PendingException;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
@@ -45,18 +52,16 @@ public class CreateDeviceSteps extends CoreStepsBase {
     private static final String DEFAULT_CONTAINER_CITY = "";
     private static final String DEFAULT_CONTAINER_STREET = "";
     private static final String DEFAULT_CONTAINER_NUMBER = "";
-    private static final String DEFAULT_GPSLATITUDE = "";
-    private static final String DEFAULT_GPSLONGITUDE = "";
-    private static final String DEFAULT_HASSCHEDULE = "";
+    private static final String DEFAULT_GPSLATITUDE = "0";
+    private static final String DEFAULT_GPSLONGITUDE = "0";
+    private static final String DEFAULT_HASSCHEDULE = "false";
     private static final String DEFAULT_CONTAINER_MUNICIPALITY = "";
-    private static final String DEFAULT_ACTIVATED = "";
-    private static final String DEFAULT_PUBLIC_KEY_PRESENT = "";
+    private static final String DEFAULT_ACTIVATED = "true";
+    private static final String DEFAULT_PUBLIC_KEY_PRESENT = "false";
     private static final String DEFAULT_MANUFACTURER = "Test";
-    private static final String DEFAULT_MODELCODE = "Test";
+    private static final String DEFAULT_MODELCODE = "TestModel";
     private static final String DEFAULT_DESCRIPTION = "Test";
-
-    @Autowired
-    private DeviceRepository deviceRepository;
+    private static final String DEFAULT_METERED = "true";
 
     /**
      *
@@ -80,42 +85,7 @@ public class CreateDeviceSteps extends CoreStepsBase {
         PROPERTIES_MAP.put("Manufacturer", getString(settings, "DeviceModelManufacturer", DEFAULT_MANUFACTURER));
         PROPERTIES_MAP.put("ModelCode", getString(settings, "ModelCode", DEFAULT_MODELCODE));
         PROPERTIES_MAP.put("Description", getString(settings, "Description", DEFAULT_DESCRIPTION));
-    }
-
-    /**
-     * Generic method to check if the device is created as expected in the
-     * database.
-     *
-     * @param expectedEntity
-     *            The expected settings.
-     * @throws Throwable
-     */
-    @Then("^the entity device exists$")
-    public void thenTheEntityDeviceExists(final Map<String, String> expectedEntity) throws Throwable {
-        boolean success = false;
-        int count = 0;
-        while (!success) {
-            try {
-                if (count > 120) {
-                    Assert.fail("Failed");
-                }
-
-                // Wait for next try to retrieve a response
-                count++;
-                Thread.sleep(1000);
-
-                final Device device = this.deviceRepository
-                        .findByDeviceIdentification(expectedEntity.get("DeviceIdentification"));
-
-                Assert.assertEquals(expectedEntity.get("DeviceModelManufacturer"),
-                        device.getDeviceModel().getManufacturerId());
-                Assert.assertEquals(expectedEntity.get("Alias"), device.getAlias());
-
-                success = true;
-            } catch (final Exception e) {
-                // Do nothing
-            }
-        }
+        PROPERTIES_MAP.put("Metered", getString(settings, "Metered", DEFAULT_METERED));
     }
 
     /**
@@ -123,24 +93,66 @@ public class CreateDeviceSteps extends CoreStepsBase {
      * @throws Throwable
      */
     @When("^receiving an add device request$")
-    public void receiving_an_add_device_request(final Map<String, String> requestParameters) throws Throwable {
+    public void receiving_an_add_device_request(final Map<String, String> settings) throws Throwable {
 
-        this.fillPropertiesMap(requestParameters);
+        this.fillPropertiesMap(settings);
 
         this.requestRunner(TestStepStatus.UNKNOWN, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST_ADD_DEVICE,
                 TEST_CASE_NAME_ADD_DEVICE, TEST_SUITE);
+    }
+    
+    /**
+     * Verify the response of a add device request.
+     * 
+     * @param settings
+     * @throws Throwable
+     */
+    @Then("^the add device response is successfull$")
+    public void the_add_device_response_is_successfull() throws Throwable {
+        Assert.assertTrue(this.runXpathResult.assertXpath(this.response, "/Envelope/Body/AddDeviceResponse", ""));
     }
 
     /**
      *
      * @throws Throwable
      */
-    @When("^updating a device$")
-    public void updating_a_device(final Map<String, String> requestParameters) throws Throwable {
+    @When("^receiving an update device request")
+    public void receiving_an_update_device_request(final Map<String, String> requestParameters) throws Throwable {
 
         this.fillPropertiesMap(requestParameters);
 
         this.requestRunner(TestStepStatus.UNKNOWN, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST_UPDATE_DEVICE,
                 TEST_CASE_NAME_UPDATE_DEVICE, TEST_SUITE);
+    }
+
+    /**
+     * Verify the response of a update device request.
+     * 
+     * @param settings
+     * @throws Throwable
+     */
+    @Then("^the update device response is successfull$")
+    public void the_update_device_response_is_successfull() throws Throwable {
+        Assert.assertTrue(this.runXpathResult.assertXpath(this.response, "/Envelope/Body/UpdateDeviceResponse", ""));
+    }
+    
+    /**
+     * Verify that the create organization response contains the fault with the given expectedResult parameters.
+     * @param expectedResult
+     * @throws Throwable
+     */
+    @Then("^the add device response contains$")
+    public void the_add_device_response_contains(Map<String, String> expectedResult) throws Throwable {
+        ResponseSteps.VerifyFaultResponse(this.runXpathResult, this.response, expectedResult);
+    }
+    
+    /**
+     * Verify that the update device response contains the fault with the given expectedResult parameters.
+     * @param expectedResult
+     * @throws Throwable
+     */
+    @Then("^the update device response contains$")
+    public void the_update_device_response_contains(Map<String, String> expectedResult) throws Throwable {
+        ResponseSteps.VerifyFaultResponse(this.runXpathResult, this.response, expectedResult);
     }
 }

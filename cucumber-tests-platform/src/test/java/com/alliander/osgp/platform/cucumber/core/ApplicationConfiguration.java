@@ -22,8 +22,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 /**
- * Base class for PersistenceConfig classes.
- * An application context Java JPA configuration class.
+ * Base class for the application configuration.
  */
 @Configuration
 @PropertySources({ 

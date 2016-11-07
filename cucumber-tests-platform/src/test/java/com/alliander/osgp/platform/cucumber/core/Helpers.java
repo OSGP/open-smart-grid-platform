@@ -134,7 +134,7 @@ public class Helpers {
 
         return Float.parseFloat(settings.get(key));
     }
-
+    
     /**
      *
      * @param settings

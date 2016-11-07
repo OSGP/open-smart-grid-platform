@@ -26,12 +26,14 @@ import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
+import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
+import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
@@ -78,6 +80,9 @@ public class DeviceSteps {
 
     @Autowired
     private SmartMeterRepository smartMeterRepository;
+    
+    @Autowired
+    private SsldRepository ssldRepository;
 
     /**
      * Generic method which adds a device using the settings.
@@ -91,11 +96,19 @@ public class DeviceSteps {
 
         // Set the required stuff
         final String deviceIdentification = settings.get("DeviceIdentification");
-        final Device device = new Device(deviceIdentification);
-
+        final Ssld ssld = new Ssld(deviceIdentification);
+        
+        this.ssldRepository.save(ssld);
+        
+        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
         this.updateDevice(device, settings);
     }
 
+    /**
+     * Given a smart meter exists.
+     * 
+     * @param settings
+     */
     @Given("^a smart meter$")
     public void aSmartMeter(final Map<String, String> settings) {
     	SmartMeter smartMeter = new SmartMeter(
@@ -118,6 +131,12 @@ public class DeviceSteps {
     	updateDevice(device, settings);
     }
 
+    /**
+     * Update an existing device with the given settings.
+     * 
+     * @param device
+     * @param settings
+     */
     private void updateDevice(Device device, final Map<String, String> settings) {
 
         // Now set the optional stuff
@@ -139,7 +158,7 @@ public class DeviceSteps {
         device.setVersion(getLong(settings, "Version"));
         device.setActive(getBoolean(settings, "Active", DEFAULT_ACTIVE));
         device.addOrganisation(getString(settings, "Organization", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
-        device.updateMetaData(getString(settings, "alias", DEFAULT_ALIAS),
+        device.updateMetaData(getString(settings, "Alias", DEFAULT_ALIAS),
                 getString(settings, "containerCity", DEFAULT_CONTAINER_CITY),
                 getString(settings, "containerPostalCode", DEFAULT_CONTAINER_POSTALCODE),
                 getString(settings, "containerStreet", DEFAULT_CONTAINER_STREET),
@@ -149,7 +168,7 @@ public class DeviceSteps {
                 getFloat(settings, "gpsLongitude", this.DEFAULT_LONGITUDE));
 
         device = this.deviceRepository.save(device);
-
+        
         final Organisation organization = this.organizationRepository.findByOrganisationIdentification(
                 getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
@@ -223,13 +242,12 @@ public class DeviceSteps {
     }
 
     /**
-     * check that the given device is inserted
+     * Verify that the device exists in the database.
      *
-     * @param deviceId
      * @return
      */
-    @And("^the device with id \"([^\"]*)\" should be added in the core database$")
-    public void theDeviceShouldBeAddedInTheCoreDatabase(final String deviceId) throws Throwable {
+    @And("^the device exists")
+    public void theDeviceExists(final Map<String, String> settings) throws Throwable {
         boolean success = false;
         int count = 0;
         while (!success) {
@@ -242,11 +260,17 @@ public class DeviceSteps {
                 count++;
                 Thread.sleep(1000);
 
-                final Device device = this.deviceRepository.findByDeviceIdentification(deviceId);
+                final Device device = this.deviceRepository.findByDeviceIdentification(settings.get("DeviceIdentification"));
                 Assert.assertNotNull(device);
+                
+                if (settings.containsKey("Alias")) {
+                    Assert.assertEquals(settings.get("Alias"), device.getAlias());
+                }
+                
+                // TODO check the settings.
 
                 success = true;
-            } catch (final Exception e) {
+            } catch (final Exception | AssertionError e) {
                 // Do nothing
             }
         }

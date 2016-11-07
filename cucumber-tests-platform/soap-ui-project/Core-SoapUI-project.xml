@@ -2737,7 +2737,53 @@
       <xsd:pattern value="[a-zA-Z0-9 ]+"/>
     </xsd:restriction>
   </xsd:simpleType>
-</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>https://localhost:443/osgp-adapter-ws-core/common/deviceInstallationService/</con:endpoint></con:endpoints><con:operation id="3017c31d-df06-4a62-b4e1-748163a622ce" isOneWay="false" action="" name="AddDevice" bindingOperationName="AddDevice" type="Request-Response" outputName="AddDeviceResponse" inputName="AddDeviceRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="b4bc5ec9-765e-451d-baea-ac55dd3eba6c" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:443/osgp-adapter-ws-core/common/deviceInstallationService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/deviceinstallation/2014/10">
+</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>https://localhost:443/osgp-adapter-ws-core/common/deviceInstallationService/</con:endpoint></con:endpoints><con:operation id="3017c31d-df06-4a62-b4e1-748163a622ce" isOneWay="false" action="" name="AddDevice" bindingOperationName="AddDevice" type="Request-Response" outputName="AddDeviceResponse" inputName="AddDeviceRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="b4bc5ec9-765e-451d-baea-ac55dd3eba6c" name="Request 1" sslKeystore="test-org.pfx"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:443/osgp-adapter-ws-core/common/deviceInstallationService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/deviceinstallation/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>SoapUI</ns:ApplicationName>
+      <ns:UserName>TestUser</ns:UserName>
+      <ns:OrganisationIdentification>test-org</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:AddDeviceRequest>
+         <ns1:Device>
+<ns1:DeviceUid/>
+            <ns1:DeviceIdentification>TEST1024000000002</ns1:DeviceIdentification>
+            <!--Optional:-->
+            <ns1:Alias>AfterTest</ns1:Alias>
+            <!--Optional:-->
+            <ns1:Owner/>
+            <!--Optional:-->
+            <ns1:ContainerPostalCode/>
+            <!--Optional:-->
+            <ns1:ContainerCity/>
+            <!--Optional:-->
+            <ns1:ContainerStreet/>
+            <!--Optional:-->
+            <ns1:ContainerNumber/>
+            <!--Optional:-->
+            <ns1:ContainerMunicipality/>
+            <!--Optional:-->
+            <ns1:GpsLatitude>0</ns1:GpsLatitude>
+            <!--Optional:-->
+            <ns1:GpsLongitude>0</ns1:GpsLongitude>
+            <!--Optional:-->
+            <ns1:Activated>true</ns1:Activated>
+            <!--Optional:-->
+            <ns1:HasSchedule>false</ns1:HasSchedule>
+            <!--Optional:-->
+            <ns1:PublicKeyPresent>false</ns1:PublicKeyPresent>
+            <ns1:DeviceModel>
+               <ns1:Manufacturer>Test</ns1:Manufacturer>
+               <!--Optional:-->
+               <ns1:ModelCode>TestModel</ns1:ModelCode>
+               <!--Optional:-->
+               <ns1:Description>Test</ns1:Description>
+               <ns1:Metered>true</ns1:Metered>
+            </ns1:DeviceModel>
+         </ns1:Device>
+      </ns1:AddDeviceRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/common/deviceinstallation-v1.0/DeviceInstallationPort/AddDeviceRequest"/><con:wsrmConfig version="1.2"/></con:call><con:call id="d5b6411f-4a2b-408c-ac95-edeb2c2aa1ed" name="Request 2"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:443/osgp-adapter-ws-core/common/deviceInstallationService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/deviceinstallation/2014/10">
    <soapenv:Header>
       <ns:ApplicationName>?</ns:ApplicationName>
       <ns:UserName>?</ns:UserName>
@@ -2783,7 +2829,7 @@
          </ns1:Device>
       </ns1:AddDeviceRequest>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/common/deviceinstallation-v1.0/DeviceInstallationPort/AddDeviceRequest"/></con:call></con:operation><con:operation id="e24e48a0-37e0-43b6-9b44-98cf92ac6abb" isOneWay="false" action="" name="FindRecentDevices" bindingOperationName="FindRecentDevices" type="Request-Response" outputName="FindRecentDevicesResponse" inputName="FindRecentDevicesRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="02155d19-b0fa-4f5f-945e-02a6d71165e0" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:443/osgp-adapter-ws-core/common/deviceInstallationService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/deviceinstallation/2014/10">
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/common/deviceinstallation-v1.0/DeviceInstallationPort/AddDeviceRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="e24e48a0-37e0-43b6-9b44-98cf92ac6abb" isOneWay="false" action="" name="FindRecentDevices" bindingOperationName="FindRecentDevices" type="Request-Response" outputName="FindRecentDevicesResponse" inputName="FindRecentDevicesRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="02155d19-b0fa-4f5f-945e-02a6d71165e0" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:443/osgp-adapter-ws-core/common/deviceInstallationService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/deviceinstallation/2014/10">
    <soapenv:Header>
       <ns:ApplicationName>?</ns:ApplicationName>
       <ns:UserName>?</ns:UserName>
@@ -2867,54 +2913,55 @@
          <ns1:DeviceIdentification>?</ns1:DeviceIdentification>
       </ns1:StopDeviceTestRequest>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/common/deviceinstallation-v1.0/DeviceInstallationPort/StopDeviceTestRequest"/></con:call></con:operation><con:operation id="5e505129-fee8-4f70-93b6-fdb5701a26fe" isOneWay="false" action="" name="UpdateDevice" bindingOperationName="UpdateDevice" type="Request-Response" outputName="UpdateDeviceResponse" inputName="UpdateDeviceRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="6a75c6d0-404a-4c24-9384-d63bffda350f" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:443/osgp-adapter-ws-core/common/deviceInstallationService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/deviceinstallation/2014/10">
-   <soapenv:Header>
-      <ns:ApplicationName>?</ns:ApplicationName>
-      <ns:UserName>?</ns:UserName>
-      <ns:OrganisationIdentification>?</ns:OrganisationIdentification>
+</soapenv:Envelope>]]></con:request><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/common/deviceinstallation-v1.0/DeviceInstallationPort/StopDeviceTestRequest"/></con:call></con:operation><con:operation id="5e505129-fee8-4f70-93b6-fdb5701a26fe" isOneWay="false" action="" name="UpdateDevice" bindingOperationName="UpdateDevice" type="Request-Response" outputName="UpdateDeviceResponse" inputName="UpdateDeviceRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="6a75c6d0-404a-4c24-9384-d63bffda350f" name="Request 1" sslKeystore="test-org.pfx"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:443/osgp-adapter-ws-core/common/deviceInstallationService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/deviceinstallation/2014/10">
+  <soapenv:Header>
+      <ns:ApplicationName>SoapUI</ns:ApplicationName>
+      <ns:UserName>TestUser</ns:UserName>
+      <ns:OrganisationIdentification>test-org</ns:OrganisationIdentification>
    </soapenv:Header>
    <soapenv:Body>
       <ns1:UpdateDeviceRequest>
-         <ns1:DeviceIdentification>?</ns1:DeviceIdentification>
+         <ns1:DeviceIdentification>TEST1024000000001</ns1:DeviceIdentification>
          <ns1:UpdatedDevice>
             <!--Optional:-->
-            <ns1:DeviceUid>?</ns1:DeviceUid>
-            <ns1:DeviceIdentification>?</ns1:DeviceIdentification>
+            <ns1:DeviceUid/>
+            <ns1:DeviceIdentification>TEST1024000000001</ns1:DeviceIdentification>
             <!--Optional:-->
-            <ns1:Alias>?</ns1:Alias>
+            <ns1:Alias>AfterTest</ns1:Alias>
             <!--Optional:-->
-            <ns1:Owner>?</ns1:Owner>
+            <ns1:Owner/>
             <!--Optional:-->
-            <ns1:ContainerPostalCode>?</ns1:ContainerPostalCode>
+            <ns1:ContainerPostalCode/>
             <!--Optional:-->
-            <ns1:ContainerCity>?</ns1:ContainerCity>
+            <ns1:ContainerCity/>
             <!--Optional:-->
-            <ns1:ContainerStreet>?</ns1:ContainerStreet>
+            <ns1:ContainerStreet/>
             <!--Optional:-->
-            <ns1:ContainerNumber>?</ns1:ContainerNumber>
+            <ns1:ContainerNumber/>
             <!--Optional:-->
-            <ns1:ContainerMunicipality>?</ns1:ContainerMunicipality>
+            <ns1:ContainerMunicipality/>
             <!--Optional:-->
-            <ns1:GpsLatitude>?</ns1:GpsLatitude>
+            <ns1:GpsLatitude>0</ns1:GpsLatitude>
             <!--Optional:-->
-            <ns1:GpsLongitude>?</ns1:GpsLongitude>
+            <ns1:GpsLongitude>0</ns1:GpsLongitude>
             <!--Optional:-->
-            <ns1:Activated>?</ns1:Activated>
+            <ns1:Activated>true</ns1:Activated>
             <!--Optional:-->
-            <ns1:HasSchedule>?</ns1:HasSchedule>
+            <ns1:HasSchedule>false</ns1:HasSchedule>
             <!--Optional:-->
-            <ns1:PublicKeyPresent>?</ns1:PublicKeyPresent>
+            <ns1:PublicKeyPresent>false</ns1:PublicKeyPresent>
             <ns1:DeviceModel>
-               <ns1:Manufacturer>?</ns1:Manufacturer>
+               <ns1:Manufacturer>Test</ns1:Manufacturer>
                <!--Optional:-->
-               <ns1:ModelCode>?</ns1:ModelCode>
+               <ns1:ModelCode>TestModel</ns1:ModelCode>
                <!--Optional:-->
-               <ns1:Description>?</ns1:Description>
+               <ns1:Description>Test</ns1:Description>
+               <ns1:Metered>true</ns1:Metered>
             </ns1:DeviceModel>
          </ns1:UpdatedDevice>
       </ns1:UpdateDeviceRequest>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/common/deviceinstallation-v1.0/DeviceInstallationPort/UpdateDeviceRequest"/></con:call></con:operation></con:interface><con:interface xsi:type="con:WsdlInterface" id="ec41705c-eb86-4ced-9665-b0eb907e6c38" wsaVersion="NONE" name="FirmwareManagementPortSoap11" type="wsdl" bindingName="{http://www.alliander.com/definitions/osgp/common/firmwaremanagement-v1.0}FirmwareManagementPortSoap11" soapVersion="1_1" anonymous="optional" definition="https://localhost:443/osgp-adapter-ws-core/wsdl/core/FirmwareManagement.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="https://localhost:443/osgp-adapter-ws-core/wsdl/core/FirmwareManagement.wsdl"><con:part><con:url>https://localhost:443/osgp-adapter-ws-core/wsdl/core/FirmwareManagement.wsdl</con:url><con:content><![CDATA[<!--Platform version: 4.0.0-SNAPSHOT -->
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/common/deviceinstallation-v1.0/DeviceInstallationPort/UpdateDeviceRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:interface xsi:type="con:WsdlInterface" id="ec41705c-eb86-4ced-9665-b0eb907e6c38" wsaVersion="NONE" name="FirmwareManagementPortSoap11" type="wsdl" bindingName="{http://www.alliander.com/definitions/osgp/common/firmwaremanagement-v1.0}FirmwareManagementPortSoap11" soapVersion="1_1" anonymous="optional" definition="https://localhost:443/osgp-adapter-ws-core/wsdl/core/FirmwareManagement.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="https://localhost:443/osgp-adapter-ws-core/wsdl/core/FirmwareManagement.wsdl"><con:part><con:url>https://localhost:443/osgp-adapter-ws-core/wsdl/core/FirmwareManagement.wsdl</con:url><con:content><![CDATA[<!--Platform version: 4.0.0-SNAPSHOT -->
 <wsdl:definitions targetNamespace="http://www.alliander.com/definitions/osgp/common/firmwaremanagement-v1.0" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:fman="http://www.alliander.com/schemas/osgp/common/firmwaremanagement/2014/10" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.alliander.com/definitions/osgp/common/firmwaremanagement-v1.0">
   <wsdl:types>
     <xsd:schema targetNamespace="http://www.alliander.com/definitions/osgp/common/firmwaremanagement/imports" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
@@ -4656,6 +4703,7 @@
                <ns1:ModelCode>${=testCase.getPropertyValue( "ModelCode" )}</ns1:ModelCode>
                <!--Optional:-->
                <ns1:Description>${=testCase.getPropertyValue( "Description" )}</ns1:Description>
+               <ns1:Metered>${=testCase.getPropertyValue( "Metered" )}</ns1:Metered>
             </ns1:DeviceModel>
          </ns1:Device>
       </ns1:AddDeviceRequest>
@@ -4791,7 +4839,55 @@
          </ns1:UpdatedDevice>
       </ns1:UpdateDeviceRequest>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://www.alliander.com/definitions/osgp/common/deviceinstallation-v1.0/DeviceInstallationPort/UpdateDeviceRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/></con:testCase><con:properties/></con:testSuite><con:testSuite id="049a3d94-5534-4b6b-b9c4-713894034dd6" name="DeviceManagement"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase id="ca5d4622-9478-4b19-844f-f116f634eff2" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="FindAllOrganisations TestCase" searchProperties="true"><con:settings/><con:testStep type="request" id="95e0cc16-3b5b-41b4-8255-1a8151ec9f21" name="FindAllOrganisations"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>DeviceManagementPortSoap11</con:interface><con:operation>FindAllOrganisations</con:operation><con:request name="FindAllOrganisations" id="f1c29ced-8db6-4bee-b0d5-f64c9308d790"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:443/osgp-adapter-ws-core/common/deviceManagementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/devicemanagement/2014/10">
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://www.alliander.com/definitions/osgp/common/deviceinstallation-v1.0/DeviceInstallationPort/UpdateDeviceRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/></con:testCase><con:testCase id="0959528e-f59c-4dea-ae82-fcc7480c83f7" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="AT UpdateDevice" searchProperties="true"><con:settings/><con:testStep type="request" id="f5ee054e-ec07-4615-9c37-6514623b3b0f" name="UpdateDevice"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>DeviceInstallationPortSoap11</con:interface><con:operation>AddDevice</con:operation><con:request name="UpdateDevice" id="64a478c5-c3be-4342-b435-60c897eacf3a" sslKeystore="test-org.pfx"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://${#TestCase#ServiceEndpoint}/osgp-adapter-ws-core/common/deviceInstallationService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/deviceinstallation/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>SoapUI</ns:ApplicationName>
+      <ns:UserName>TestUser</ns:UserName>
+      <ns:OrganisationIdentification>test-org</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:UpdateDeviceRequest>
+         <ns1:DeviceIdentification>${=testCase.getPropertyValue( "DeviceIdentification" )}</ns1:DeviceIdentification>
+         <ns1:UpdatedDevice>
+            <!--Optional:-->
+            <ns1:DeviceUid>${=testCase.getPropertyValue( "DeviceUid" )}</ns1:DeviceUid>
+            <ns1:DeviceIdentification>${=testCase.getPropertyValue( "DeviceIdentification" )}</ns1:DeviceIdentification>
+            <!--Optional:-->
+            <ns1:Alias>${=testCase.getPropertyValue( "Alias" )}</ns1:Alias>
+            <!--Optional:-->
+            <ns1:Owner>${=testCase.getPropertyValue( "Owner" )}</ns1:Owner>
+            <!--Optional:-->
+            <ns1:ContainerPostalCode>${=testCase.getPropertyValue( "ContainerPostalCode" )}</ns1:ContainerPostalCode>
+            <!--Optional:-->
+            <ns1:ContainerCity>${=testCase.getPropertyValue( "ContainerCity" )}</ns1:ContainerCity>
+            <!--Optional:-->
+            <ns1:ContainerStreet>${=testCase.getPropertyValue( "ContainerStreet" )}</ns1:ContainerStreet>
+            <!--Optional:-->
+            <ns1:ContainerNumber>${=testCase.getPropertyValue( "ContainerNumber" )}</ns1:ContainerNumber>
+            <!--Optional:-->
+            <ns1:ContainerMunicipality>${=testCase.getPropertyValue( "ContainerMunicipality" )}</ns1:ContainerMunicipality>
+            <!--Optional:-->
+            <ns1:GpsLatitude>${=testCase.getPropertyValue( "GpsLatitude" )}</ns1:GpsLatitude>
+            <!--Optional:-->
+            <ns1:GpsLongitude>${=testCase.getPropertyValue( "GpsLongitude" )}</ns1:GpsLongitude>
+            <!--Optional:-->
+            <ns1:Activated>${=testCase.getPropertyValue( "Activated" )}</ns1:Activated>
+            <!--Optional:-->
+            <ns1:HasSchedule>${=testCase.getPropertyValue( "HasSchedule" )}</ns1:HasSchedule>
+            <!--Optional:-->
+            <ns1:PublicKeyPresent>${=testCase.getPropertyValue( "PublicKeyPresent" )}</ns1:PublicKeyPresent>
+            <ns1:DeviceModel>
+               <ns1:Manufacturer>${=testCase.getPropertyValue( "Manufacturer" )}</ns1:Manufacturer>
+               <!--Optional:-->
+               <ns1:ModelCode>${=testCase.getPropertyValue( "ModelCode" )}</ns1:ModelCode>
+               <!--Optional:-->
+               <ns1:Description>${=testCase.getPropertyValue( "Description" )}</ns1:Description>
+               <ns1:Metered>${=testCase.getPropertyValue( "Metered" )}</ns1:Metered>
+            </ns1:DeviceModel>
+         </ns1:UpdatedDevice>
+      </ns1:UpdateDeviceRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://www.alliander.com/definitions/osgp/common/deviceinstallation-v1.0/DeviceInstallationPort/AddDeviceRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/></con:testCase><con:properties/></con:testSuite><con:testSuite id="049a3d94-5534-4b6b-b9c4-713894034dd6" name="DeviceManagement"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase id="ca5d4622-9478-4b19-844f-f116f634eff2" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="FindAllOrganisations TestCase" searchProperties="true"><con:settings/><con:testStep type="request" id="95e0cc16-3b5b-41b4-8255-1a8151ec9f21" name="FindAllOrganisations"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>DeviceManagementPortSoap11</con:interface><con:operation>FindAllOrganisations</con:operation><con:request name="FindAllOrganisations" id="f1c29ced-8db6-4bee-b0d5-f64c9308d790"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:443/osgp-adapter-ws-core/common/deviceManagementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/devicemanagement/2014/10">
    <soapenv:Header>
       <ns:ApplicationName>?</ns:ApplicationName>
       <ns:UserName>?</ns:UserName>

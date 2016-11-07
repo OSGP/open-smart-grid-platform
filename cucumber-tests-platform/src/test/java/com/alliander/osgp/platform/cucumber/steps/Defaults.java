@@ -29,4 +29,8 @@ public class Defaults {
 
     // Expected values
     public static final String EXPECTED_RESULT_OK = "OK";
+
+    public static final Boolean DEFAULT_HASSCHEDULE = false;
+
+    public static final Boolean DEFAULT_PUBLICKEYPRESENT = false;
 }

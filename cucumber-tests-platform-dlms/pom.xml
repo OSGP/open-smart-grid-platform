@@ -8,14 +8,17 @@
 	<groupId>com.alliander</groupId>
 	<artifactId>cucumber-tests-platform-dlms</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0-SNAPSHOT</version>
 	<name>cucumber-tests-platform-dlms</name>
 
 	<properties>
+		<osgp.version>${project.version}</osgp.version>
+		<spring.version>4.3.3.RELEASE</spring.version>
 		<cucumber.version>1.2.4</cucumber.version>
+		<hibernate.jpa.version>1.0.1.Final</hibernate.jpa.version>
 		<soapui.maven.plugin.version>5.2.1</soapui.maven.plugin.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<maven.surefire.plugin.version>2.19.1</maven.surefire.plugin.version>
 	</properties>
 
 	<repositories>
@@ -56,7 +59,7 @@
 						<include>**/*Tests.java</include>
 					</includes>
 				</configuration>
-				<version>2.19.1</version>
+				<version>${maven.surefire.plugin.version}</version>
 			</plugin>
 		</plugins>
 	</build>
@@ -114,7 +117,7 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
-			<version>4.3.3.RELEASE</version>
+			<version>${spring.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -153,7 +156,7 @@
 		<dependency>
 			<groupId>org.hibernate.javax.persistence</groupId>
 			<artifactId>hibernate-jpa-2.0-api</artifactId>
-			<version>1.0.1.Final</version>
+			<version>${hibernate.jpa.version}</version>
 		</dependency>
 
 		<dependency>
@@ -176,7 +179,7 @@
 		<dependency>
 			<groupId>com.alliander</groupId>
 			<artifactId>cucumber-tests-platform</artifactId>
-			<version>1.0-SNAPSHOT</version>
+			<version>${osgp.version}</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>

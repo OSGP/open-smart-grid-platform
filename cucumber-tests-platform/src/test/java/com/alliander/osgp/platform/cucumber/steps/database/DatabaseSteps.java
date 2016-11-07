@@ -17,6 +17,7 @@ import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.ManufacturerRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
+import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.PlatformDomain;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
@@ -41,6 +42,9 @@ public class DatabaseSteps {
 
     @Autowired 
     private OslpDeviceRepository oslpDeviceRepo;
+    
+    @Autowired
+    private SsldRepository ssldRepository;
 
 	public void prepareDatabaseForScenario() {
 		Logger LOGGER = LoggerFactory.getLogger(this.getClass());
@@ -51,6 +55,8 @@ public class DatabaseSteps {
         cleanRepoSerializable(this.deviceRepo);
         cleanRepoSerializable(this.deviceModelRepo);
         cleanRepoSerializable(this.manufacturerRepo);
+        cleanRepoSerializable(this.ssldRepository);
+        
 		for(Organisation org : this.organizationRepo.findAll()) {
 			String orgName = org.getOrganisationIdentification(); 
 			if (!orgName.equals("test-org") && 
