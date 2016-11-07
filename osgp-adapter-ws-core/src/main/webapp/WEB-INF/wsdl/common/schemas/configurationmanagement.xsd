@@ -121,9 +121,9 @@
       <xsd:element name="TimeSyncFrequency" type="xsd:int" minOccurs="0" maxOccurs="1" />
       <xsd:element name="DeviceFixedIp" type="tns:DeviceFixedIp" minOccurs="0" maxOccurs="1" />
       <xsd:element name="DhcpEnabled" type="xsd:boolean" minOccurs="0" maxOccurs="1" />
-      <xsd:element name="TlsEnabled" type="xsd:boolean" minOccurs="0" maxOccurs="1" />
-      <xsd:element name="TlsPortNumber" type="xsd:int" minOccurs="0" maxOccurs="1" />
-      <xsd:element name="CommonNameString" type="tns:CommonName" minOccurs="0" maxOccurs="1" />
+<!--       <xsd:element name="TlsEnabled" type="xsd:boolean" minOccurs="0" maxOccurs="1" /> -->
+<!--       <xsd:element name="TlsPortNumber" type="xsd:int" minOccurs="0" maxOccurs="1" /> -->
+<!--       <xsd:element name="CommonNameString" type="tns:CommonName" minOccurs="0" maxOccurs="1" /> -->
       <xsd:element name="CommunicationTimeout" type="xsd:int" minOccurs="0" maxOccurs="1" />
       <xsd:element name="CommunicationNumberOfRetries" type="xsd:int" minOccurs="0" maxOccurs="1" />
       <xsd:element name="CommunicationPauseTimeBetweenConnectionTrials" type="xsd:int" minOccurs="0" maxOccurs="1" />

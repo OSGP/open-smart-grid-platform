@@ -87,18 +87,15 @@ public class AdHocManagementService extends AbstractService {
     public void handleGetStatusResponse(final com.alliander.osgp.dto.valueobjects.DeviceStatusDto deviceStatusDto,
             final DomainType allowedDomainType, final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
-            final ResponseMessageResultType deviceResult, final OsgpException exception) {
+            final ResponseMessageResultType deviceResult, final OsgpException exception) throws OsgpException {
 
-        ResponseMessageResultType result = ResponseMessageResultType.OK;
+        ResponseMessageResultType result = deviceResult;
         OsgpException osgpException = exception;
         DeviceStatusMapped deviceStatusMapped = null;
 
-        try {
-            if (deviceResult == ResponseMessageResultType.NOT_OK || exception != null) {
-                LOGGER.error("Device Response not ok.", osgpException);
-                throw osgpException;
-            }
-
+        if (deviceResult == ResponseMessageResultType.NOT_OK || exception != null) {
+            LOGGER.error("Device Response not ok.", osgpException);
+        } else {
             final DeviceStatus status = this.domainCoreMapper.map(deviceStatusDto, DeviceStatus.class);
 
             final Ssld ssld = this.ssldRepository.findByDeviceIdentification(deviceIdentification);
@@ -120,11 +117,6 @@ public class AdHocManagementService extends AbstractService {
                 osgpException = new TechnicalException(ComponentType.DOMAIN_TARIFF_SWITCHING,
                         "Device was not able to report status", new NoDeviceResponseException());
             }
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected Exception", e);
-            result = ResponseMessageResultType.NOT_OK;
-            osgpException = new TechnicalException(ComponentType.DOMAIN_TARIFF_SWITCHING,
-                    "Exception occurred while getting device status", e);
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
