@@ -15,13 +15,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
-import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
-import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.SsldDeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.SsldDeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
-import com.alliander.osgp.shared.exceptionhandling.ConnectionFailureException;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850DeviceResponseHandler;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
@@ -39,7 +36,7 @@ public class CommonStartDeviceTestRequestMessageProcessor extends SsldDeviceRequ
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) {
+    public void processMessage(final ObjectMessage message) throws JMSException {
         LOGGER.debug("Processing common start device test request message");
 
         String correlationUid = null;
@@ -78,40 +75,15 @@ public class CommonStartDeviceTestRequestMessageProcessor extends SsldDeviceRequ
         final RequestMessageData requestMessageData = new RequestMessageData(null, domain, domainVersion, messageType,
                 retryCount, isScheduled, correlationUid, organisationIdentification, deviceIdentification);
 
-        final DeviceResponseHandler deviceResponseHandler = new DeviceResponseHandler() {
+        this.printDomainInfo(messageType, domain, domainVersion);
 
-            @Override
-            public void handleResponse(final DeviceResponse deviceResponse) {
-                CommonStartDeviceTestRequestMessageProcessor.this.handleEmptyDeviceResponse(deviceResponse,
-                        CommonStartDeviceTestRequestMessageProcessor.this.responseMessageSender,
-                        requestMessageData.getDomain(), requestMessageData.getDomainVersion(),
-                        requestMessageData.getMessageType(), requestMessageData.getRetryCount());
-            }
-
-            @Override
-            public void handleException(final Throwable t, final DeviceResponse deviceResponse, final boolean expected) {
-
-                if (expected) {
-                    CommonStartDeviceTestRequestMessageProcessor.this.handleExpectedError(
-                            new ConnectionFailureException(ComponentType.PROTOCOL_IEC61850, t.getMessage()),
-                            requestMessageData.getCorrelationUid(), requestMessageData.getOrganisationIdentification(),
-                            requestMessageData.getDeviceIdentification(), requestMessageData.getDomain(),
-                            requestMessageData.getDomainVersion(), requestMessageData.getMessageType());
-                } else {
-                    CommonStartDeviceTestRequestMessageProcessor.this.handleUnExpectedError(deviceResponse, t,
-                            requestMessageData.getMessageData(), requestMessageData.getDomain(),
-                            requestMessageData.getDomainVersion(), requestMessageData.getMessageType(),
-                            requestMessageData.isScheduled(), requestMessageData.getRetryCount());
-                }
-            }
-        };
-
-        LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
+        final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this.createIec61850DeviceResponseHandler(
+                requestMessageData, message);
 
         final DeviceRequest deviceRequest = new DeviceRequest(organisationIdentification, deviceIdentification,
                 correlationUid, domain, domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
-        // This is a start selftest, so startOfTest == true
-        this.deviceService.runSelfTest(deviceRequest, deviceResponseHandler, true);
+        // This is a start self-test, so startOfTest == true.
+        this.deviceService.runSelfTest(deviceRequest, iec61850DeviceResponseHandler, true);
     }
 }

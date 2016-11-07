@@ -60,6 +60,6 @@ public class Iec61850UpdateFirmwareCommand {
             }
         };
 
-        iec61850Client.sendCommandWithRetry(function);
+        iec61850Client.sendCommandWithRetry(function, deviceConnection.getDeviceIdentification());
     }
 }

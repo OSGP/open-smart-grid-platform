@@ -136,16 +136,16 @@ public enum LogicalNode {
      */
     public static LogicalNode getSwitchComponentByIndex(final int index) {
         switch (index) {
-        case 1:
-            return SWITCH_COMPONENT_ONE;
-        case 2:
-            return SWITCH_COMPONENT_TWO;
-        case 3:
-            return SWITCH_COMPONENT_THREE;
-        case 4:
-            return SWITCH_COMPONENT_FOUR;
-        default:
-            throw new IllegalArgumentException("Invalid index value : " + index);
+            case 1:
+                return SWITCH_COMPONENT_ONE;
+            case 2:
+                return SWITCH_COMPONENT_TWO;
+            case 3:
+                return SWITCH_COMPONENT_THREE;
+            case 4:
+                return SWITCH_COMPONENT_FOUR;
+            default:
+                throw new IllegalArgumentException("Invalid index value : " + index);
         }
     }
 

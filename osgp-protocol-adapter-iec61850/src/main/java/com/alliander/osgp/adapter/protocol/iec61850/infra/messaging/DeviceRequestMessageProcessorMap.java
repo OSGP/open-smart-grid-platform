@@ -49,8 +49,4 @@ public class DeviceRequestMessageProcessorMap extends BaseMessageProcessorMap {
 
         return messageProcessor;
     }
-
-    public MessageProcessor getOslpEnvelopeProcessor(final DeviceRequestMessageType messageType) {
-        return this.messageProcessors.get(messageType.ordinal());
-    }
 }

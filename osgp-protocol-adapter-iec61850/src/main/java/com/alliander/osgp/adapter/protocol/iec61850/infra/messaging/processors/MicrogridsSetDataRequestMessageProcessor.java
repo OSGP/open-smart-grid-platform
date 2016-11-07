@@ -14,15 +14,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
-import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.requests.SetDataDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.RtuDeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850DeviceResponseHandler;
 import com.alliander.osgp.dto.valueobjects.microgrids.SetDataRequestDto;
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
-import com.alliander.osgp.shared.exceptionhandling.ConnectionFailureException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
@@ -40,7 +37,7 @@ public class MicrogridsSetDataRequestMessageProcessor extends RtuDeviceRequestMe
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) {
+    public void processMessage(final ObjectMessage message) throws JMSException {
         LOGGER.info("Processing microgrids get data request message");
 
         String correlationUid = null;
@@ -83,40 +80,14 @@ public class MicrogridsSetDataRequestMessageProcessor extends RtuDeviceRequestMe
 
         LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
 
-        final DeviceResponseHandler deviceResponseHandler = new DeviceResponseHandler() {
-
-            @Override
-            public void handleResponse(final DeviceResponse deviceResponse) {
-                MicrogridsSetDataRequestMessageProcessor.this.handleEmptyDeviceResponse(deviceResponse,
-                        MicrogridsSetDataRequestMessageProcessor.this.responseMessageSender,
-                        requestMessageData.getDomain(), requestMessageData.getDomainVersion(),
-                        requestMessageData.getMessageType(), requestMessageData.getRetryCount());
-            }
-
-            @Override
-            public void handleException(final Throwable t, final DeviceResponse deviceResponse,
-                    final boolean expected) {
-                if (expected) {
-                    MicrogridsSetDataRequestMessageProcessor.this.handleExpectedError(
-                            new ConnectionFailureException(ComponentType.PROTOCOL_IEC61850, t.getMessage()),
-                            requestMessageData.getCorrelationUid(), requestMessageData.getOrganisationIdentification(),
-                            requestMessageData.getDeviceIdentification(), requestMessageData.getDomain(),
-                            requestMessageData.getDomainVersion(), requestMessageData.getMessageType());
-                } else {
-                    MicrogridsSetDataRequestMessageProcessor.this.handleUnExpectedError(deviceResponse, t,
-                            requestMessageData.getMessageData(), requestMessageData.getDomain(),
-                            requestMessageData.getDomainVersion(), requestMessageData.getMessageType(),
-                            requestMessageData.isScheduled(), requestMessageData.getRetryCount());
-                }
-            }
-
-        };
+        final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this
+                .createIec61850DeviceResponseHandler(requestMessageData, message);
 
         final SetDataDeviceRequest deviceRequest = new SetDataDeviceRequest(organisationIdentification,
                 deviceIdentification, correlationUid, setDataRequest, domain, domainVersion, messageType, ipAddress,
                 retryCount, isScheduled);
 
-        this.deviceService.setData(deviceRequest, deviceResponseHandler);
+        this.deviceService.setData(deviceRequest, iec61850DeviceResponseHandler);
     }
 
 }

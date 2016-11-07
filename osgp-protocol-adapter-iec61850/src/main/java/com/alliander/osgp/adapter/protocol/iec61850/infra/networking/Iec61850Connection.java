@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking;
 
+import org.joda.time.DateTime;
 import org.openmuc.openiec61850.ClientAssociation;
 import org.openmuc.openiec61850.ServerModel;
 
@@ -16,9 +17,19 @@ public class Iec61850Connection {
 
     private ServerModel serverModel;
 
+    private DateTime connectionStartTime;
+
     public Iec61850Connection(final Iec61850ClientAssociation clientAssociation, final ServerModel serverModel) {
         this.clientAssociation = clientAssociation;
         this.serverModel = serverModel;
+        this.connectionStartTime = null;
+    }
+
+    public Iec61850Connection(final Iec61850ClientAssociation clientAssociation, final ServerModel serverModel,
+            final DateTime connectionStartTime) {
+        this.clientAssociation = clientAssociation;
+        this.serverModel = serverModel;
+        this.connectionStartTime = connectionStartTime;
     }
 
     public Iec61850ClientAssociation getIec61850ClientAssociation() {
@@ -31,5 +42,9 @@ public class Iec61850Connection {
 
     public ServerModel getServerModel() {
         return this.serverModel;
+    }
+
+    public DateTime getConnectionStartTime() {
+        return this.connectionStartTime;
     }
 }

@@ -15,23 +15,22 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
-import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.requests.GetPowerUsageHistoryDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.GetPowerUsageHistoryDeviceResponse;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.SsldDeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceResponseMessageSender;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.SsldDeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850DeviceResponseHandler;
 import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryMessageDataContainerDto;
 import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryResponseMessageDataContainerDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
-import com.alliander.osgp.shared.exceptionhandling.ConnectionFailureException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
+import com.alliander.osgp.shared.infra.jms.ResponseMessageSender;
 
 /**
  * Class for processing public lighting get power usage history request messages
@@ -49,7 +48,7 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends S
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) {
+    public void processMessage(final ObjectMessage message) throws JMSException {
         LOGGER.debug("Processing public lighting get power usage history request message");
 
         String correlationUid = null;
@@ -61,8 +60,8 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends S
         String ipAddress = null;
         Boolean isScheduled = null;
         int retryCount = 0;
-        final int messagePriority;
-        final Long scheduleTime;
+        int messagePriority = 0;
+        Long scheduleTime = null;
         PowerUsageHistoryMessageDataContainerDto powerUsageHistoryMessageDataContainerDto;
 
         try {
@@ -78,8 +77,7 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends S
             messagePriority = message.getJMSPriority();
             scheduleTime = message.propertyExists(Constants.SCHEDULE_TIME) ? message
                     .getLongProperty(Constants.SCHEDULE_TIME) : null;
-                    powerUsageHistoryMessageDataContainerDto = (PowerUsageHistoryMessageDataContainerDto) message.getObject();
-
+            powerUsageHistoryMessageDataContainerDto = (PowerUsageHistoryMessageDataContainerDto) message.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -90,64 +88,50 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends S
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
             LOGGER.debug("ipAddress: {}", ipAddress);
             LOGGER.debug("scheduled: {}", isScheduled);
+            LOGGER.debug("retryCount: {}", retryCount);
+            LOGGER.debug("messagePriority: {}", messagePriority);
+            LOGGER.debug("scheduleTime: {}", scheduleTime);
             return;
         }
 
         final RequestMessageData requestMessageData = new RequestMessageData(powerUsageHistoryMessageDataContainerDto,
                 domain, domainVersion, messageType, retryCount, isScheduled, correlationUid,
-                organisationIdentification, deviceIdentification);
+                organisationIdentification, deviceIdentification, ipAddress, messagePriority, scheduleTime);
 
-        final DeviceResponseHandler deviceResponseHandler = new DeviceResponseHandler() {
+        this.printDomainInfo(messageType, domain, domainVersion);
 
-            @Override
-            public void handleResponse(final DeviceResponse deviceResponse) {
-                PublicLightingGetPowerUsageHistoryRequestMessageProcessor.this
-                .handleGetPowerUsageHistoryDeviceResponse((GetPowerUsageHistoryDeviceResponse) deviceResponse,
-                        PublicLightingGetPowerUsageHistoryRequestMessageProcessor.this.responseMessageSender,
-                        requestMessageData.getDomain(), requestMessageData.getDomainVersion(),
-                        requestMessageData.getMessageType(), requestMessageData.getRetryCount(),
-                        messagePriority, scheduleTime);
-            }
-
-            @Override
-            public void handleException(final Throwable t, final DeviceResponse deviceResponse, final boolean expected) {
-
-                if (expected) {
-                    PublicLightingGetPowerUsageHistoryRequestMessageProcessor.this.handleExpectedError(
-                            new ConnectionFailureException(ComponentType.PROTOCOL_IEC61850, t.getMessage()),
-                            requestMessageData.getCorrelationUid(), requestMessageData.getOrganisationIdentification(),
-                            requestMessageData.getDeviceIdentification(), requestMessageData.getDomain(),
-                            requestMessageData.getDomainVersion(), requestMessageData.getMessageType());
-                } else {
-                    PublicLightingGetPowerUsageHistoryRequestMessageProcessor.this.handleUnExpectedError(
-                            deviceResponse, t, requestMessageData.getMessageData(), requestMessageData.getDomain(),
-                            requestMessageData.getDomainVersion(), requestMessageData.getMessageType(),
-                            requestMessageData.isScheduled(), requestMessageData.getRetryCount());
-                }
-            }
-        };
-
-        LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
+        final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this.createIec61850DeviceResponseHandler(
+                requestMessageData, message);
 
         final GetPowerUsageHistoryDeviceRequest deviceRequest = new GetPowerUsageHistoryDeviceRequest(
                 organisationIdentification, deviceIdentification, correlationUid,
                 powerUsageHistoryMessageDataContainerDto, domain, domainVersion, messageType, ipAddress, retryCount,
                 isScheduled);
 
-        this.deviceService.getPowerUsageHistory(deviceRequest, deviceResponseHandler);
+        this.deviceService.getPowerUsageHistory(deviceRequest, iec61850DeviceResponseHandler);
     }
 
-    private void handleGetPowerUsageHistoryDeviceResponse(final GetPowerUsageHistoryDeviceResponse deviceResponse,
-            final DeviceResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
+    @Override
+    public void handleDeviceResponse(final DeviceResponse deviceResponse,
+            final ResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
+            final String messageType, final int retryCount, final int messagePriority, final Long scheduleTime) {
+        LOGGER.info("Override for handleDeviceResponse() by PublicLightingGetPowerUsageHistoryRequestMessageProcessor");
+        this.handleGetPowerUsageHistoryDeviceResponse(deviceResponse, responseMessageSender, domain, domainVersion,
+                messageType, retryCount, messagePriority, scheduleTime);
+    }
+
+    private void handleGetPowerUsageHistoryDeviceResponse(final DeviceResponse deviceResponse,
+            final ResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
             final String messageType, final int retryCount, final int messagePriority, final Long scheduleTime) {
 
+        final GetPowerUsageHistoryDeviceResponse getPowerUsageHistoryDeviceResponse = (GetPowerUsageHistoryDeviceResponse) deviceResponse;
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = null;
         PowerUsageHistoryResponseMessageDataContainerDto powerUsageHistoryResponseMessageDataContainer = null;
 
         try {
             powerUsageHistoryResponseMessageDataContainer = new PowerUsageHistoryResponseMessageDataContainerDto(
-                    deviceResponse.getPowerUsageHistoryData());
+                    getPowerUsageHistoryDeviceResponse.getPowerUsageHistoryData());
         } catch (final Exception e) {
             LOGGER.error("Device Response Exception", e);
             result = ResponseMessageResultType.NOT_OK;
@@ -165,5 +149,4 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends S
 
         responseMessageSender.send(responseMessage);
     }
-
 }

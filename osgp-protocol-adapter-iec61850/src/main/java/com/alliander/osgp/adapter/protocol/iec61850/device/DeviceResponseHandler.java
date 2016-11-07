@@ -7,10 +7,14 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.device;
 
+import javax.jms.JMSException;
+
 public interface DeviceResponseHandler {
 
     void handleResponse(DeviceResponse deviceResponse);
 
-    void handleException(Throwable t, DeviceResponse deviceResponse, boolean expected);
+    void handleConnectionFailure(Throwable t, DeviceResponse deviceResponse) throws JMSException;
+
+    void handleException(Throwable t, DeviceResponse deviceResponse);
 
 }

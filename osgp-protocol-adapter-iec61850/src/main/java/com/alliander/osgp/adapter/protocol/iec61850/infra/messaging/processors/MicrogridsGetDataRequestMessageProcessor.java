@@ -15,19 +15,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
-import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.requests.GetDataDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.GetDataDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.RtuDeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850DeviceResponseHandler;
 import com.alliander.osgp.dto.valueobjects.microgrids.GetDataRequestDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.GetDataResponseDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
-import com.alliander.osgp.shared.exceptionhandling.ConnectionFailureException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageSender;
@@ -47,8 +47,8 @@ public class MicrogridsGetDataRequestMessageProcessor extends RtuDeviceRequestMe
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) {
-        LOGGER.info("Processing microgrids get data request message");
+    public void processMessage(final ObjectMessage message) throws JMSException {
+        LOGGER.debug("Processing microgrids get data request message");
 
         String correlationUid = null;
         String domain = null;
@@ -88,42 +88,25 @@ public class MicrogridsGetDataRequestMessageProcessor extends RtuDeviceRequestMe
         final RequestMessageData requestMessageData = new RequestMessageData(null, domain, domainVersion, messageType,
                 retryCount, isScheduled, correlationUid, organisationIdentification, deviceIdentification);
 
-        LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
+        this.printDomainInfo(messageType, domain, domainVersion);
 
-        final DeviceResponseHandler deviceResponseHandler = new DeviceResponseHandler() {
-
-            @Override
-            public void handleResponse(final DeviceResponse deviceResponse) {
-                MicrogridsGetDataRequestMessageProcessor.this.handleGetDataDeviceResponse(deviceResponse,
-                        MicrogridsGetDataRequestMessageProcessor.this.responseMessageSender,
-                        requestMessageData.getDomain(), requestMessageData.getDomainVersion(),
-                        requestMessageData.getMessageType(), requestMessageData.getRetryCount());
-            }
-
-            @Override
-            public void handleException(final Throwable t, final DeviceResponse deviceResponse,
-                    final boolean expected) {
-                if (expected) {
-                    MicrogridsGetDataRequestMessageProcessor.this.handleExpectedError(
-                            new ConnectionFailureException(ComponentType.PROTOCOL_IEC61850, t.getMessage()),
-                            requestMessageData.getCorrelationUid(), requestMessageData.getOrganisationIdentification(),
-                            requestMessageData.getDeviceIdentification(), requestMessageData.getDomain(),
-                            requestMessageData.getDomainVersion(), requestMessageData.getMessageType());
-                } else {
-                    MicrogridsGetDataRequestMessageProcessor.this.handleUnExpectedError(deviceResponse, t,
-                            requestMessageData.getMessageData(), requestMessageData.getDomain(),
-                            requestMessageData.getDomainVersion(), requestMessageData.getMessageType(),
-                            requestMessageData.isScheduled(), requestMessageData.getRetryCount());
-                }
-            }
-
-        };
+        final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this
+                .createIec61850DeviceResponseHandler(requestMessageData, message);
 
         final GetDataDeviceRequest deviceRequest = new GetDataDeviceRequest(organisationIdentification,
                 deviceIdentification, correlationUid, getDataRequest, domain, domainVersion, messageType, ipAddress,
                 retryCount, isScheduled);
 
-        this.deviceService.getData(deviceRequest, deviceResponseHandler);
+        this.deviceService.getData(deviceRequest, iec61850DeviceResponseHandler);
+    }
+
+    @Override
+    public void handleDeviceResponse(final DeviceResponse deviceResponse,
+            final ResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
+            final String messageType, final int retryCount) {
+        LOGGER.info("Override for handleDeviceResponse() by MicrogridsGetDataRequestMessageProcessor");
+        this.handleGetDataDeviceResponse(deviceResponse, responseMessageSender, domain, domainVersion, messageType,
+                retryCount);
     }
 
     private void handleGetDataDeviceResponse(final DeviceResponse deviceResponse,
@@ -136,7 +119,6 @@ public class MicrogridsGetDataRequestMessageProcessor extends RtuDeviceRequestMe
 
         try {
             final GetDataDeviceResponse response = (GetDataDeviceResponse) deviceResponse;
-
             dataResponse = response.getDataResponse();
         } catch (final Exception e) {
             LOGGER.error("Device Response Exception", e);
@@ -145,11 +127,13 @@ public class MicrogridsGetDataRequestMessageProcessor extends RtuDeviceRequestMe
                     "Unexpected exception while retrieving response message", e);
         }
 
-        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
-                deviceResponse.getCorrelationUid(), deviceResponse.getOrganisationIdentification(),
-                deviceResponse.getDeviceIdentification(), result, osgpException, dataResponse, retryCount);
+        final DeviceMessageMetadata deviceMessageMetaData = new DeviceMessageMetadata(
+                deviceResponse.getDeviceIdentification(), deviceResponse.getOrganisationIdentification(),
+                deviceResponse.getCorrelationUid(), messageType, 0);
+        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder().domain(domain)
+                .domainVersion(domainVersion).deviceMessageMetadata(deviceMessageMetaData).result(result)
+                .osgpException(osgpException).dataObject(dataResponse).retryCount(retryCount).build();
 
         responseMessageSender.send(responseMessage);
     }
-
 }

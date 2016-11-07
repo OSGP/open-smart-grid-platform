@@ -49,7 +49,7 @@ public class Iec61850GetConfigurationCommand {
 
     public ConfigurationDto getConfigurationFromDevice(final Iec61850Client iec61850Client,
             final DeviceConnection deviceConnection, final Ssld ssld, final Iec61850Mapper mapper)
-            throws ProtocolAdapterException {
+                    throws ProtocolAdapterException {
         final Function<ConfigurationDto> function = new Function<ConfigurationDto>() {
 
             @Override
@@ -160,25 +160,31 @@ public class Iec61850GetConfigurationCommand {
                         winterTimeDetails).getDateTimeForNextTransition().toDateTime(DateTimeZone.UTC));
 
                 // getting the TLS configuration values
-                LOGGER.info("Reading the TLS configuration values");
-                final NodeContainer tls = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
-                        LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.TLS_CONFIGURATION, Fc.CF);
-                iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
-                        tls.getFcmodelNode());
-
-                final int tlsPortNumber = (int) tls.getUnsignedInteger(SubDataAttribute.TLS_PORT_NUMBER).getValue();
-                final boolean tlsEnabled = tls.getBoolean(SubDataAttribute.TLS_ENABLED).getValue();
-                final String commonName = tls.getString(SubDataAttribute.TLS_COMMON_NAME);
-
-                configuration.setTlsPortNumber(tlsPortNumber);
-                configuration.setTlsEnabled(tlsEnabled);
-                configuration.setCommonNameString(commonName);
+                // LOGGER.info("Reading the TLS configuration values");
+                // final NodeContainer tls =
+                // deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
+                // LogicalNode.STREET_LIGHT_CONFIGURATION,
+                // DataAttribute.TLS_CONFIGURATION, Fc.CF);
+                //
+                // iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
+                // tls.getFcmodelNode());
+                //
+                // final int tlsPortNumber = (int)
+                // tls.getUnsignedInteger(SubDataAttribute.TLS_PORT_NUMBER).getValue();
+                // final boolean tlsEnabled =
+                // tls.getBoolean(SubDataAttribute.TLS_ENABLED).getValue();
+                // final String commonName =
+                // tls.getString(SubDataAttribute.TLS_COMMON_NAME);
+                //
+                // configuration.setTlsPortNumber(tlsPortNumber);
+                // configuration.setTlsEnabled(tlsEnabled);
+                // configuration.setCommonNameString(commonName);
 
                 return configuration;
             }
         };
 
-        return iec61850Client.sendCommandWithRetry(function);
+        return iec61850Client.sendCommandWithRetry(function, deviceConnection.getDeviceIdentification());
     }
 
     private void checkRelayType(final Iec61850Client iec61850Client, final DeviceConnection deviceConnection,

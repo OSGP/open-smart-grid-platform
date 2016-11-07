@@ -65,6 +65,6 @@ public class Iec61850GetFirmwareVersionCommand {
             }
         };
 
-        return iec61850Client.sendCommandWithRetry(function);
+        return iec61850Client.sendCommandWithRetry(function, deviceConnection.getDeviceIdentification());
     }
 }

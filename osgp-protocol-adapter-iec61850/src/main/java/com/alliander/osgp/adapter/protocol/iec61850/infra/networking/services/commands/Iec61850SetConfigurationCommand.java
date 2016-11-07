@@ -209,34 +209,43 @@ public class Iec61850SetConfigurationCommand {
 
                 // Checking to see if all TLS values are null, so that we
                 // don't read the values for no reason.
-                if (!(configuration.getCommonNameString() == null && configuration.isTlsEnabled() == null && configuration
-                        .getTlsPortNumber() == null)) {
-
-                    final NodeContainer tls = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
-                            LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.TLS_CONFIGURATION, Fc.CF);
-                    iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
-                            tls.getFcmodelNode());
-
-                    if (configuration.getTlsPortNumber() != null) {
-                        LOGGER.info("Updating tlsPortNumber to {}", configuration.getTlsPortNumber());
-                        tls.writeUnsignedInteger(SubDataAttribute.TLS_PORT_NUMBER, configuration.getTlsPortNumber());
-                    }
-
-                    if (configuration.isTlsEnabled() != null) {
-                        LOGGER.info("Updating tlsEnabled to {}", configuration.isTlsEnabled());
-                        tls.writeBoolean(SubDataAttribute.TLS_ENABLED, configuration.isTlsEnabled());
-                    }
-
-                    if (configuration.getCommonNameString() != null) {
-                        LOGGER.info("Updating commonNameString to {}", configuration.getCommonNameString());
-                        tls.writeString(SubDataAttribute.TLS_COMMON_NAME, configuration.getCommonNameString());
-                    }
-                }
+                // if (!(configuration.getCommonNameString() == null &&
+                // configuration.isTlsEnabled() == null && configuration
+                // .getTlsPortNumber() == null)) {
+                //
+                // final NodeContainer tls =
+                // deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
+                // LogicalNode.STREET_LIGHT_CONFIGURATION,
+                // DataAttribute.TLS_CONFIGURATION, Fc.CF);
+                // iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
+                // tls.getFcmodelNode());
+                //
+                // if (configuration.getTlsPortNumber() != null) {
+                // LOGGER.info("Updating tlsPortNumber to {}",
+                // configuration.getTlsPortNumber());
+                // tls.writeUnsignedInteger(SubDataAttribute.TLS_PORT_NUMBER,
+                // configuration.getTlsPortNumber());
+                // }
+                //
+                // if (configuration.isTlsEnabled() != null) {
+                // LOGGER.info("Updating tlsEnabled to {}",
+                // configuration.isTlsEnabled());
+                // tls.writeBoolean(SubDataAttribute.TLS_ENABLED,
+                // configuration.isTlsEnabled());
+                // }
+                //
+                // if (configuration.getCommonNameString() != null) {
+                // LOGGER.info("Updating commonNameString to {}",
+                // configuration.getCommonNameString());
+                // tls.writeString(SubDataAttribute.TLS_COMMON_NAME,
+                // configuration.getCommonNameString());
+                // }
+                // }
 
                 return null;
             }
         };
 
-        iec61850Client.sendCommandWithRetry(function);
+        iec61850Client.sendCommandWithRetry(function, deviceConnection.getDeviceIdentification());
     }
 }

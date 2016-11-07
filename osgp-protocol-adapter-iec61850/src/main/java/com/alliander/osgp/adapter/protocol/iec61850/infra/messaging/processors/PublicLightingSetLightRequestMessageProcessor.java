@@ -14,15 +14,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
-import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.requests.SetLightDeviceRequest;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.SsldDeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.SsldDeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850DeviceResponseHandler;
 import com.alliander.osgp.dto.valueobjects.LightValueMessageDataContainerDto;
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
-import com.alliander.osgp.shared.exceptionhandling.ConnectionFailureException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
@@ -40,7 +37,7 @@ public class PublicLightingSetLightRequestMessageProcessor extends SsldDeviceReq
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) {
+    public void processMessage(final ObjectMessage message) throws JMSException {
         LOGGER.debug("Processing public lighting set light request message");
 
         String correlationUid = null;
@@ -66,7 +63,7 @@ public class PublicLightingSetLightRequestMessageProcessor extends SsldDeviceReq
             isScheduled = message.propertyExists(Constants.IS_SCHEDULED) ? message
                     .getBooleanProperty(Constants.IS_SCHEDULED) : false;
 
-                    lightValueMessageDataContainer = (LightValueMessageDataContainerDto) message.getObject();
+            lightValueMessageDataContainer = (LightValueMessageDataContainerDto) message.getObject();
 
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
@@ -84,40 +81,15 @@ public class PublicLightingSetLightRequestMessageProcessor extends SsldDeviceReq
                 domainVersion, messageType, retryCount, isScheduled, correlationUid, organisationIdentification,
                 deviceIdentification);
 
-        final DeviceResponseHandler deviceResponseHandler = new DeviceResponseHandler() {
+        this.printDomainInfo(messageType, domain, domainVersion);
 
-            @Override
-            public void handleResponse(final DeviceResponse deviceResponse) {
-                PublicLightingSetLightRequestMessageProcessor.this.handleEmptyDeviceResponse(deviceResponse,
-                        PublicLightingSetLightRequestMessageProcessor.this.responseMessageSender,
-                        requestMessageData.getDomain(), requestMessageData.getDomainVersion(),
-                        requestMessageData.getMessageType(), requestMessageData.getRetryCount());
-            }
-
-            @Override
-            public void handleException(final Throwable t, final DeviceResponse deviceResponse, final boolean expected) {
-
-                if (expected) {
-                    PublicLightingSetLightRequestMessageProcessor.this.handleExpectedError(
-                            new ConnectionFailureException(ComponentType.PROTOCOL_IEC61850, t.getMessage()),
-                            requestMessageData.getCorrelationUid(), requestMessageData.getOrganisationIdentification(),
-                            requestMessageData.getDeviceIdentification(), requestMessageData.getDomain(),
-                            requestMessageData.getDomainVersion(), requestMessageData.getMessageType());
-                } else {
-                    PublicLightingSetLightRequestMessageProcessor.this.handleUnExpectedError(deviceResponse, t,
-                            requestMessageData.getMessageData(), requestMessageData.getDomain(),
-                            requestMessageData.getDomainVersion(), requestMessageData.getMessageType(),
-                            requestMessageData.isScheduled(), requestMessageData.getRetryCount());
-                }
-            }
-        };
-
-        LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
+        final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this.createIec61850DeviceResponseHandler(
+                requestMessageData, message);
 
         final SetLightDeviceRequest deviceRequest = new SetLightDeviceRequest(organisationIdentification,
                 deviceIdentification, correlationUid, lightValueMessageDataContainer, domain, domainVersion,
                 messageType, ipAddress, retryCount, isScheduled);
 
-        this.deviceService.setLight(deviceRequest, deviceResponseHandler);
+        this.deviceService.setLight(deviceRequest, iec61850DeviceResponseHandler);
     }
 }

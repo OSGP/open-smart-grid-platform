@@ -16,13 +16,12 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
-import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.SsldDeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.SsldDeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
-import com.alliander.osgp.shared.exceptionhandling.ConnectionFailureException;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850DeviceResponseHandler;
 import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.infra.jms.ResponseMessageSender;
 
 /**
  * Class for processing common get status request messages
@@ -39,8 +38,8 @@ public class CommonGetStatusRequestMessageProcessor extends SsldDeviceRequestMes
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) {
-        LOGGER.info("Processing common get status request message");
+    public void processMessage(final ObjectMessage message) throws JMSException {
+        LOGGER.debug("Processing common get status request message");
 
         String correlationUid = null;
         String domain = null;
@@ -78,39 +77,23 @@ public class CommonGetStatusRequestMessageProcessor extends SsldDeviceRequestMes
         final RequestMessageData requestMessageData = new RequestMessageData(null, domain, domainVersion, messageType,
                 retryCount, isScheduled, correlationUid, organisationIdentification, deviceIdentification);
 
-        LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
+        this.printDomainInfo(messageType, domain, domainVersion);
 
-        final DeviceResponseHandler deviceResponseHandler = new DeviceResponseHandler() {
-
-            @Override
-            public void handleResponse(final DeviceResponse deviceResponse) {
-                CommonGetStatusRequestMessageProcessor.this.handleGetStatusDeviceResponse(deviceResponse,
-                        CommonGetStatusRequestMessageProcessor.this.responseMessageSender,
-                        requestMessageData.getDomain(), requestMessageData.getDomainVersion(),
-                        requestMessageData.getMessageType(), requestMessageData.getRetryCount());
-            }
-
-            @Override
-            public void handleException(final Throwable t, final DeviceResponse deviceResponse, final boolean expected) {
-                if (expected) {
-                    CommonGetStatusRequestMessageProcessor.this.handleExpectedError(new ConnectionFailureException(
-                            ComponentType.PROTOCOL_IEC61850, t.getMessage()), requestMessageData.getCorrelationUid(),
-                            requestMessageData.getOrganisationIdentification(), requestMessageData
-                                    .getDeviceIdentification(), requestMessageData.getDomain(), requestMessageData
-                                    .getDomainVersion(), requestMessageData.getMessageType());
-                } else {
-                    CommonGetStatusRequestMessageProcessor.this.handleUnExpectedError(deviceResponse, t,
-                            requestMessageData.getMessageData(), requestMessageData.getDomain(),
-                            requestMessageData.getDomainVersion(), requestMessageData.getMessageType(),
-                            requestMessageData.isScheduled(), requestMessageData.getRetryCount());
-                }
-            }
-
-        };
+        final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this.createIec61850DeviceResponseHandler(
+                requestMessageData, message);
 
         final DeviceRequest deviceRequest = new DeviceRequest(organisationIdentification, deviceIdentification,
                 correlationUid, domain, domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
-        this.deviceService.getStatus(deviceRequest, deviceResponseHandler);
+        this.deviceService.getStatus(deviceRequest, iec61850DeviceResponseHandler);
+    }
+
+    @Override
+    public void handleDeviceResponse(final DeviceResponse deviceResponse,
+            final ResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
+            final String messageType, final int retryCount) {
+        LOGGER.info("Override for handleDeviceResponse() by CommonGetStatusRequestMessageProcessor");
+        this.handleGetStatusDeviceResponse(deviceResponse, responseMessageSender, domain, domainVersion, messageType,
+                retryCount);
     }
 }

@@ -98,6 +98,7 @@ public class Iec61850LoadCommandFactory implements RtuReadCommandFactory<Measure
     }
 
     private boolean useFilterId(final DataAttribute da) {
-        return da != DataAttribute.BEHAVIOR && da != DataAttribute.HEALTH && da != DataAttribute.MODE;
+        return da == DataAttribute.ACTUAL_POWER || da == DataAttribute.MAX_ACTUAL_POWER
+                || da == DataAttribute.MIN_ACTUAL_POWER || da == DataAttribute.TOTAL_ENERGY;
     }
 }

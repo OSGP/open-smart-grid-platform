@@ -7,26 +7,17 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.infra.messaging;
 
-import java.io.Serializable;
-
 import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.SsldDeviceService;
-import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.EmptyDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.GetStatusDeviceResponse;
-import com.alliander.osgp.adapter.protocol.iec61850.services.DeviceResponseService;
 import com.alliander.osgp.dto.valueobjects.DeviceStatusDto;
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
-import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
-import com.alliander.osgp.shared.infra.jms.MessageProcessor;
-import com.alliander.osgp.shared.infra.jms.MessageProcessorMap;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageSender;
@@ -38,26 +29,12 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageSender;
  * construction. The Singleton instance is added to the HashMap of
  * MessageProcessors after dependency injection has completed.
  */
-public abstract class SsldDeviceRequestMessageProcessor implements MessageProcessor {
-
-    protected static final String UNEXPECTED_EXCEPTION = "Unexpected exception while retrieving response message";
+public abstract class SsldDeviceRequestMessageProcessor extends BaseMessageProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SsldDeviceRequestMessageProcessor.class);
 
     @Autowired
     protected SsldDeviceService deviceService;
-
-    @Autowired
-    protected DeviceResponseMessageSender responseMessageSender;
-
-    @Autowired
-    protected DeviceResponseService deviceResponseService;
-
-    @Autowired
-    @Qualifier("iec61850DeviceRequestMessageProcessorMap")
-    protected MessageProcessorMap iec61850RequestMessageProcessorMap;
-
-    protected final DeviceRequestMessageType deviceRequestMessageType;
 
     /**
      * Each MessageProcessor should register it's MessageType at construction.
@@ -82,70 +59,22 @@ public abstract class SsldDeviceRequestMessageProcessor implements MessageProces
                 this.deviceRequestMessageType.name(), this);
     }
 
-    protected void handleEmptyDeviceResponse(final DeviceResponse deviceResponse,
-            final ResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
-            final String messageType, final int retryCount) {
-
-        ResponseMessageResultType result = ResponseMessageResultType.OK;
-        OsgpException ex = null;
-
-        try {
-            final EmptyDeviceResponse response = (EmptyDeviceResponse) deviceResponse;
-            this.deviceResponseService.handleDeviceMessageStatus(response.getStatus());
-        } catch (final OsgpException e) {
-            LOGGER.error("Device Response Exception", e);
-            result = ResponseMessageResultType.NOT_OK;
-            ex = e;
-        }
-
-        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
-                deviceResponse.getCorrelationUid(), deviceResponse.getOrganisationIdentification(),
-                deviceResponse.getDeviceIdentification(), result, ex, null, retryCount);
-
-        responseMessageSender.send(responseMessage);
-    }
-
-    // this one is here, because it's used in 3 domains
+    // This function is used in 3 domains.
     protected void handleGetStatusDeviceResponse(final DeviceResponse deviceResponse,
             final ResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
             final String messageType, final int retryCount) {
-
-        final ResponseMessageResultType result = ResponseMessageResultType.OK;
-        final OsgpException osgpException = null;
+        LOGGER.info("Handling getStatusDeviceResponse for device: {}", deviceResponse.getDeviceIdentification());
 
         final GetStatusDeviceResponse response = (GetStatusDeviceResponse) deviceResponse;
         final DeviceStatusDto status = response.getDeviceStatus();
 
-        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
-                deviceResponse.getCorrelationUid(), deviceResponse.getOrganisationIdentification(),
-                deviceResponse.getDeviceIdentification(), result, osgpException, status, retryCount);
-
-        responseMessageSender.send(responseMessage);
-    }
-
-    public void handleUnExpectedError(final DeviceResponse deviceResponse, final Throwable t,
-            final Serializable messageData, final String domain, final String domainVersion, final String messageType,
-            final boolean isScheduled, final int retryCount) {
-
-        final ResponseMessageResultType result = ResponseMessageResultType.NOT_OK;
-        final OsgpException ex = new TechnicalException(ComponentType.PROTOCOL_IEC61850, t.getMessage());
-
-        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
-                deviceResponse.getCorrelationUid(), deviceResponse.getOrganisationIdentification(),
-                deviceResponse.getDeviceIdentification(), result, ex, messageData, isScheduled, retryCount);
-
-        this.responseMessageSender.send(responseMessage);
-    }
-
-    protected void handleExpectedError(final OsgpException e, final String correlationUid,
-            final String organisationIdentification, final String deviceIdentification, final String domain,
-            final String domainVersion, final String messageType) {
-        LOGGER.error("Expected error while processing message", e);
-
-        final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage(domain, domainVersion,
-                messageType, correlationUid, organisationIdentification, deviceIdentification,
-                ResponseMessageResultType.NOT_OK, e, null);
-
-        this.responseMessageSender.send(protocolResponseMessage);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(
+                deviceResponse.getDeviceIdentification(), deviceResponse.getOrganisationIdentification(),
+                deviceResponse.getCorrelationUid(), messageType, 0);
+        final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage.Builder().domain(domain)
+                .domainVersion(domainVersion).deviceMessageMetadata(deviceMessageMetadata)
+                .result(ResponseMessageResultType.OK).osgpException(null).retryCount(retryCount).dataObject(status)
+                .build();
+        responseMessageSender.send(protocolResponseMessage);
     }
 }

@@ -7,12 +7,15 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.device.rtu;
 
+import javax.jms.JMSException;
+
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceMessageStatus;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.requests.GetDataDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.requests.SetDataDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.GetDataDeviceResponse;
 import com.alliander.osgp.dto.valueobjects.microgrids.GetDataRequestDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.SetDataRequestDto;
 
 public interface RtuDeviceService {
     /**
@@ -21,13 +24,15 @@ public interface RtuDeviceService {
      * @returns a {@link GetDataDeviceResponse} via the deviceResponseHandler's
      *          callback.
      */
-    void getData(GetDataDeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler);
+    void getData(GetDataDeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler) throws JMSException;
 
     /**
-     * Writes the {@link SetPointsRequestDto} to the device.
+     * Writes the {@link SetDataRequestDto} to the device.
+     * 
+     * @throws JMSException
      *
      * @returns a {@link DeviceMessageStatus} via the deviceResponseHandler's
      *          callback.
      */
-    void setData(SetDataDeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler);
+    void setData(SetDataDeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler) throws JMSException;
 }

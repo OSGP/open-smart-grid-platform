@@ -196,7 +196,7 @@ public class Iec61850SetScheduleCommand {
                     }
 
                 };
-                iec61850Client.sendCommandWithRetry(function);
+                iec61850Client.sendCommandWithRetry(function, deviceConnection.getDeviceIdentification());
             }
         } catch (final FunctionalException e) {
             throw new ProtocolAdapterException(e.getMessage(), e);
@@ -208,7 +208,7 @@ public class Iec61850SetScheduleCommand {
      */
     private Map<Integer, List<ScheduleEntry>> createScheduleEntries(final List<ScheduleDto> scheduleList,
             final Ssld ssld, final RelayTypeDto relayTypeDto, final SsldDataService ssldDataService)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         final Map<Integer, List<ScheduleEntry>> relaySchedulesEntries = new HashMap<>();
 
@@ -259,7 +259,7 @@ public class Iec61850SetScheduleCommand {
                         // type.
                         this.checkRelayForSchedules(
                                 ssldDataService.getDeviceOutputSettingForInternalIndex(ssld, internalIndex)
-                                        .getRelayType(), relayType, internalIndex);
+                                .getRelayType(), relayType, internalIndex);
 
                         // Adding it to scheduleEntries.
                         final List<ScheduleEntry> scheduleEntries = new ArrayList<>();

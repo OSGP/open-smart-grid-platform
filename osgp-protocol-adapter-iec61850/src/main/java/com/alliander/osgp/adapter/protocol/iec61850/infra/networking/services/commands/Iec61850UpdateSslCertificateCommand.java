@@ -31,7 +31,7 @@ public class Iec61850UpdateSslCertificateCommand {
 
     public void pushSslCertificateToDevice(final Iec61850Client iec61850Client,
             final DeviceConnection deviceConnection, final CertificationDto certification)
-                    throws ProtocolAdapterException {
+            throws ProtocolAdapterException {
         final Function<Void> function = new Function<Void>() {
 
             @Override
@@ -76,6 +76,6 @@ public class Iec61850UpdateSslCertificateCommand {
             }
         };
 
-        iec61850Client.sendCommandWithRetry(function);
+        iec61850Client.sendCommandWithRetry(function, deviceConnection.getDeviceIdentification());
     }
 }
