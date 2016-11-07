@@ -54,6 +54,9 @@ public class CommunicationMonitoringConfig {
     // Default await termination seconds in seconds
     private static final Integer DEFAULT_AWAIT_TERMINATION_SECONDS = 10;
 
+    // Default last communication update interval in seconds
+    private static final Integer DEFAULT_LAST_COMMUNICATION_UPDATE_INTERVAL = 30;
+
     @Resource
     private Environment environment;
 
