@@ -31,7 +31,7 @@ public class DomainAdapterInitializer implements WebApplicationInitializer {
 
     @Override
     public void onStartup(final ServletContext servletContext) throws ServletException {
-        try {
+        try (final AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();) {
             // Force the timezone of application to UTC (required for
             // Hibernate/JDBC)
             TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
@@ -42,7 +42,6 @@ public class DomainAdapterInitializer implements WebApplicationInitializer {
                     .lookup("java:comp/env/osp/osgpAdapterDomainMicrogrids/log-config");
             LogbackConfigurer.initLogging(logLocation);
 
-            final AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
             rootContext.register(ApplicationContext.class);
 
             servletContext.addListener(new ContextLoaderListener(rootContext));

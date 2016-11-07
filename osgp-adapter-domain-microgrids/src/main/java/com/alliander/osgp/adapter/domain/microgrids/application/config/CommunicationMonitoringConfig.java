@@ -48,12 +48,17 @@ public class CommunicationMonitoringConfig {
     private static final Integer DEFAULT_POOL_SIZE = 1;
     private static final String DEFAULT_THREAD_NAME_PREFIX = "microgrids-communication-monitoring-";
     private static final Integer DEFAULT_MAXIMUM_TIME_WITHOUT_COMMUNICATION = 15;
+    private static final Integer DEFAULT_AWAIT_TERMINATION_SECONDS = 10;
 
     @Resource
     private Environment environment;
 
     @Autowired
     private CommunicationMonitoringTask communicationMonitoringTask;
+
+    public CommunicationMonitoringConfig() {
+        // Default public constructor
+    }
 
     @Bean
     public CronTrigger communicationMonitoringTaskCronTrigger() {
@@ -71,7 +76,7 @@ public class CommunicationMonitoringConfig {
             taskScheduler.setPoolSize(this.schedulerPoolSize());
             taskScheduler.setThreadNamePrefix(this.schedulerThreadNamePrefix());
             taskScheduler.setWaitForTasksToCompleteOnShutdown(false);
-            taskScheduler.setAwaitTerminationSeconds(10);
+            taskScheduler.setAwaitTerminationSeconds(DEFAULT_AWAIT_TERMINATION_SECONDS);
             taskScheduler.initialize();
             taskScheduler.schedule(this.communicationMonitoringTask, this.communicationMonitoringTaskCronTrigger());
         } else {

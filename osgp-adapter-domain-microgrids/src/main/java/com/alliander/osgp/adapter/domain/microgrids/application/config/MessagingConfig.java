@@ -140,6 +140,10 @@ public class MessagingConfig {
     @Qualifier("domainMicrogridsIncomingOsgpCoreRequestMessageListener")
     private OsgpCoreRequestMessageListener incomingOsgpCoreRequestMessageListener;
 
+    public MessagingConfig() {
+        // Default public constructor
+    }
+
     // === JMS SETTINGS ===
 
     @Bean(destroyMethod = "stop")

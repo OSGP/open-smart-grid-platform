@@ -26,7 +26,7 @@ import com.alliander.osgp.shared.infra.jms.RequestMessage;
 
 @Service(value = "domainMicrogridsCommunicationRecoveryService")
 @Transactional(value = "transactionManager")
-public class CommunicatonRecoveryService extends AbstractService {
+public class CommunicatonRecoveryService extends BaseService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommunicatonRecoveryService.class);
 
@@ -37,6 +37,10 @@ public class CommunicatonRecoveryService extends AbstractService {
 
     @Autowired
     private CorrelationIdProviderService correlationIdProviderService;
+
+    public CommunicatonRecoveryService() {
+        // Default public constructor
+    }
 
     public void restoreCommunication(final RtuDevice rtu) {
         LOGGER.info("Restoring communication for device {}.", rtu.getDeviceIdentification());

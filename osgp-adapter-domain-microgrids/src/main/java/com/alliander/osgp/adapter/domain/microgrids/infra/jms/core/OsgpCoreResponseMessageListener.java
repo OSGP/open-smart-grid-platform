@@ -32,7 +32,7 @@ public class OsgpCoreResponseMessageListener implements MessageListener {
     private MessageProcessorMap osgpCoreResponseMessageProcessorMap;
 
     public OsgpCoreResponseMessageListener() {
-        // empty constructor
+        // Default public constructor
     }
 
     @Override

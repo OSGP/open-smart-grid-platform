@@ -29,6 +29,10 @@ public class OsgpCoreResponseMessageSender {
     @Qualifier("domainMicrogridsOutgoingOsgpCoreResponsesJmsTemplate")
     private JmsTemplate osgpCoreResponsesJmsTemplate;
 
+    public OsgpCoreResponseMessageSender() {
+        // Default public constructor
+    }
+
     public void send(final ResponseMessage responseMessage, final String messageType) {
 
         this.osgpCoreResponsesJmsTemplate.send(new MessageCreator() {

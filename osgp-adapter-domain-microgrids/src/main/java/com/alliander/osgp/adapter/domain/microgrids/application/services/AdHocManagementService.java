@@ -36,7 +36,7 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 @Service(value = "domainMicrogridsAdHocManagementService")
 @Transactional(value = "transactionManager")
-public class AdHocManagementService extends AbstractService {
+public class AdHocManagementService extends BaseService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdHocManagementService.class);
 

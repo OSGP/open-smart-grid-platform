@@ -26,7 +26,7 @@ import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 
-public class AbstractService {
+public class BaseService {
 
     @Autowired
     protected DeviceDomainService deviceDomainService;

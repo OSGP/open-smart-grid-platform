@@ -30,8 +30,8 @@ import com.alliander.osgp.domain.microgrids.repositories.RtuDeviceRepository;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-@EnableJpaRepositories(entityManagerFactoryRef = "entityManagerFactory", basePackageClasses = {
-        RtuDeviceRepository.class, DeviceRepository.class })
+@EnableJpaRepositories(basePackageClasses = { RtuDeviceRepository.class,
+        DeviceRepository.class }, entityManagerFactoryRef = "entityManagerFactory")
 @Configuration
 @PropertySource("file:${osp/osgpAdapterDomainMicrogrids/config}")
 public class PersistenceConfig {
@@ -57,6 +57,10 @@ public class PersistenceConfig {
     private Environment environment;
 
     private HikariDataSource dataSource;
+
+    public PersistenceConfig() {
+        // Default public constructor
+    }
 
     /**
      * Method for creating the Data Source.
