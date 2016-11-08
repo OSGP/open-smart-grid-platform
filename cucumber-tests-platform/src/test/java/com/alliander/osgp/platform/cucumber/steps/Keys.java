@@ -56,5 +56,6 @@ public class Keys {
     public static final String KEY_DEVICE_IDENTIFICATION_G_LABEL = "DeviceIdentificationG";
 
     public static final String KEY_EVENTS_NODELIST_EXPECTED = "event-nodelist-expected";
+    public static final String KEY_DEVICE_UID = "DeviceUid";
 
 }
