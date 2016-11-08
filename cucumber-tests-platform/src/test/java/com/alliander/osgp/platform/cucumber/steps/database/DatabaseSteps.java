@@ -3,8 +3,9 @@ package com.alliander.osgp.platform.cucumber.steps.database;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.cleanRepoAbstractEntity;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.cleanRepoSerializable;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -45,11 +46,13 @@ public class DatabaseSteps {
     
     @Autowired
     private SsldRepository ssldRepository;
+    
+    /**
+     * These are the default organizations which are used for most tests.
+     */
+    private static final List<String> SPECIAL_ORGANIZATIONS = Arrays.asList("test-org", "FlexOvlProject", "GemeenteArnhem", "LianderNetManagement");
 
 	public void prepareDatabaseForScenario() {
-		Logger LOGGER = LoggerFactory.getLogger(this.getClass());
-		LOGGER.info(this.getClass() + ": prepareDatabaseForScenario");
-		
         cleanRepoAbstractEntity(this.oslpDeviceRepo);
         cleanRepoAbstractEntity(this.deviceAuthorizationRepo);
         cleanRepoSerializable(this.deviceRepo);
@@ -59,10 +62,7 @@ public class DatabaseSteps {
         
 		for(Organisation org : this.organizationRepo.findAll()) {
 			String orgName = org.getOrganisationIdentification(); 
-			if (!orgName.equals("test-org") && 
-					!orgName.equals("FlexOvlProject") &&
-					!orgName.equals("GemeenteArnhem") &&
-					!orgName.equals("LianderNetManagement")) {
+			if (!SPECIAL_ORGANIZATIONS.contains(orgName)) {
 				this.organizationRepo.delete(org);
 			}
 		}
