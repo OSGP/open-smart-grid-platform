@@ -32,5 +32,5 @@ public class Defaults {
 
     public static final Boolean DEFAULT_HASSCHEDULE = false;
 
-    public static final Boolean DEFAULT_PUBLICKEYPRESENT = false;
+    public static final Boolean DEFAULT_PUBLICKEYPRESENT = true;
 }

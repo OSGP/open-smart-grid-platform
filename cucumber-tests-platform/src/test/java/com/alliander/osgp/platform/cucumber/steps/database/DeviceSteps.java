@@ -98,6 +98,8 @@ public class DeviceSteps {
         final String deviceIdentification = settings.get("DeviceIdentification");
         final Ssld ssld = new Ssld(deviceIdentification);
         
+        ssld.setPublicKeyPresent(getBoolean(settings, "PublicKeyPresent", Defaults.DEFAULT_PUBLICKEYPRESENT));
+        
         this.ssldRepository.save(ssld);
         
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
