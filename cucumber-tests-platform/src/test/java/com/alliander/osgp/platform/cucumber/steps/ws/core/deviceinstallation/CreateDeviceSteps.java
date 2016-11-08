@@ -7,26 +7,19 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.steps.ws.core;
+package com.alliander.osgp.platform.cucumber.steps.ws.core.deviceinstallation;
 
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 
-import java.io.IOException;
 import java.util.Map;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathExpressionException;
-
 import org.junit.Assert;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.xml.sax.SAXException;
 
-import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.common.ResponseSteps;
+import com.alliander.osgp.platform.cucumber.steps.ws.core.CoreStepsBase;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
-import cucumber.api.PendingException;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
