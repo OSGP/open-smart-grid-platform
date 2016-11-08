@@ -1,5 +1,9 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.smartmeteringmanagement;
 
@@ -14,6 +18,7 @@ import java.util.Map;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.EventLogCategory;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.EventType;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
+import com.alliander.osgp.platform.cucumber.steps.Keys;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -39,16 +44,18 @@ public class FindStandardEventsReads extends AbstractFindEventsReads {
     public void receivingAFindStandardEventsRequest(final Map<String, String> requestData) throws Throwable {
         super.receivingAFindStandardEventsRequest(requestData);
 
-        // Save the returned CorrelationUid in the Scenario related context for further use.
+        // Save the returned CorrelationUid in the Scenario related context for
+        // further use.
         saveCorrelationUidInScenarioContext(
-            this.runXpathResult.getValue(this.response, PATH_CORRELATION_UID),
-            getString(PROPERTIES_MAP, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+                this.runXpathResult.getValue(this.response, PATH_CORRELATION_UID),
+                getString(PROPERTIES_MAP, Keys.KEY_ORGANIZATION_IDENTIFICATION,
+                        Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
     }
 
     @Then("^standard events should be returned$")
     @Override
-    public void eventsShouldBeReturned() throws Throwable {
-        super.eventsShouldBeReturned();
+    public void eventsShouldBeReturned(final Map<String, String> settings) throws Throwable {
+        super.eventsShouldBeReturned(settings);
     }
 
     @Override

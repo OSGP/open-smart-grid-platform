@@ -15,11 +15,10 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import org.junit.Assert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
+import com.alliander.osgp.platform.cucumber.support.ApplicationConfig;
 import com.alliander.osgp.platform.cucumber.support.RunXpathResult;
 import com.alliander.osgp.platform.cucumber.support.TestCaseResult;
 import com.alliander.osgp.platform.cucumber.support.TestCaseRunner;
@@ -37,30 +36,23 @@ import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
  */
 public abstract class SoapUiRunner {
 
-    /**
-     * The url of the server to test. Default to localhost:443.
-     */
+    @Autowired
+    protected ApplicationConfig applicationConfig;
+
     @Value("${serviceEndpoint}")
-    private String serviceEndpoint;
+    protected String serviceEndpoint;
 
     @Value("${certificate.basepath}")
     private String certBasePath;
 
-    private final Logger LOGGER = LoggerFactory.getLogger(SoapUiRunner.class);
     private static final String DEFAULT_SOAPUI_PROJECT = "soap-ui-project/Core-SoapUI-project.xml";
     private String soapuiProject = DEFAULT_SOAPUI_PROJECT;
-    private static final String ERRMSG = "The soapUi xml fragment: \n %s \ndoes not contain all three tags: \n %s, %s and/or %s";
 
     protected static final Map<String, String> PROPERTIES_MAP = new HashMap<>();
 
     // Labels.
-    protected static final String DEVICE_IDENTIFICATION_LABEL = "DeviceIdentification";
-    protected static final String ORGANISATION_IDENTIFICATION_LABEL = "OrganisationIdentification";
     protected static final String SERVICE_ENDPOINT_LABEL = "ServiceEndpoint";
-    public    static final String CORRELATION_UID_LABEL = "CorrelationUid";
-    protected static final String DEVICE_TYPE_LABEL = "DeviceType";
-
-    protected static final String PATH_DEVICE_IDENTIFICATION = "//*[local-name()='DeviceId']/text()";
+    protected static final String PATH_DEVICE_IDENTIFICATION = "//*[local-name()='DeviceIdentification']/text()";
     protected static final String PATH_CORRELATION_UID = "//*[local-name()='CorrelationUid']/text()";
     protected static final String PATH_RESULT = "//*[local-name()='Result']/text()";
 
@@ -83,7 +75,7 @@ public abstract class SoapUiRunner {
 
     /**
      * Create the WSDL project based on the given SoapUI project.
-     * 
+     *
      * @throws Throwable.
      */
     @PostConstruct
@@ -163,36 +155,38 @@ public abstract class SoapUiRunner {
         final boolean flag2 = xml.indexOf(testCaseXml) > 0;
         final boolean flag3 = xml.indexOf(testSuiteXml) > 0;
         if (!flag1 || !flag2 || !flag3) {
-            this.LOGGER.error(String.format(ERRMSG, xml, testSuiteXml, testCaseXml, testCaseNameRequest));
+            // this.LOGGER.error(String.format(ERRMSG, xml, testSuiteXml,
+            // testCaseXml, testCaseNameRequest));
         }
     }
 
     /**
-     * Wait for a response. 
-     * @note In order to get the actual response from the device of the original request to the platform, 
-     * we need to poll for it. Newer devices use notification services though, and thus they don't need 
-     * to poll for it using this method.
+     * Wait for a response.
+     * 
+     * @note In order to get the actual response from the device of the original
+     *       request to the platform, we need to poll for it.
      * @param propertiesMap
      * @param testCaseResultName
      * @param testCaseResultReqXML
      * @param testSuiteXML
-     * @throws Throwable 
+     * @throws Throwable
      */
-    public void waitForResponse(final TestStepStatus testStepStatus, final Map<String, String> propertiesMap, final String testCaseResultNameRequest,
-                final String testCaseResultReqXml, final String testSuiteXml) throws Throwable {
+    public void waitForResponse(final TestStepStatus testStepStatus, final Map<String, String> propertiesMap,
+            final String testCaseResultNameRequest, final String testCaseResultReqXml, final String testSuiteXml)
+            throws Throwable {
         // Wait for OK response
         int count = 0;
         do {
             if (count > 120) {
                 Assert.fail("Failed to retieve a response");
             }
-    
+
             // Wait for next try to retrieve a response
             count++;
             Thread.sleep(1000);
-    
-            this.requestRunner(testStepStatus, propertiesMap, testCaseResultNameRequest,
-                    testCaseResultReqXml, testSuiteXml);
-        } while (!this.runXpathResult.assertXpath(this.response, PATH_RESULT, "OK")); 
+
+            this.requestRunner(testStepStatus, propertiesMap, testCaseResultNameRequest, testCaseResultReqXml,
+                    testSuiteXml);
+        } while (!this.runXpathResult.assertXpath(this.response, PATH_RESULT, "OK"));
     }
 }

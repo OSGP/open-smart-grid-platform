@@ -9,16 +9,18 @@ package com.alliander.osgp.platform.cucumber.steps.database;
 
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getBoolean;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getDate;
-import static com.alliander.osgp.platform.cucumber.core.Helpers.getEnum;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getFloat;
-import static com.alliander.osgp.platform.cucumber.core.Helpers.getLong;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getEnum;
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getLong;
 
 import java.net.InetAddress;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.domain.core.entities.Device;
@@ -43,6 +45,7 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
 @Transactional("txMgrCore")
+@Component
 public class DeviceSteps {
 
     private static final String DEFAULT_SUPPLIER = "Kaifa";
@@ -50,27 +53,18 @@ public class DeviceSteps {
     public static String DEFAULT_DEVICE_TYPE = "OSLP";
     public static String DEFAULT_PROTOCOL = "OSLP";
     public static String DEFAULT_PROTOCOL_VERSION = "1.0";
+
     @SuppressWarnings("unused")
-    private Long DEFAULT_DEVICE_ID = new java.util.Random().nextLong();
-    private static Boolean DEFAULT_IS_ACTIVATED = true;
-    private static Boolean DEFAULT_ACTIVE = true;
-    private static String DEFAULT_ALIAS = "";
-    private static String DEFAULT_CONTAINER_CITY = "";
-    private static String DEFAULT_CONTAINER_POSTALCODE = "";
-    private static String DEFAULT_CONTAINER_STREET = "";
-    private static String DEFAULT_CONTAINER_NUMBER = "";
-    private static String DEFAULT_CONTAINER_MUNICIPALITY = "";
-    private Float DEFAULT_LATITUDE = new Float(0);
-    private Float DEFAULT_LONGITUDE = new Float(0);
+    private final Long DEFAULT_DEVICE_ID = new java.util.Random().nextLong();
+
+    @Autowired
+    private DeviceModelRepository deviceModelRepository;
 
     @Autowired
     private DeviceRepository deviceRepository;
 
     @Autowired
     private OrganisationRepository organizationRepository;
-
-    @Autowired
-    private DeviceModelRepository deviceModelRepository;
 
     @Autowired
     private DeviceAuthorizationRepository deviceAuthorizationRepository;
@@ -93,7 +87,7 @@ public class DeviceSteps {
      */
     @Given("^a device$")
     public void aDevice(final Map<String, String> settings) throws Throwable {
-
+        
         // Set the required stuff
         final String deviceIdentification = settings.get("DeviceIdentification");
         final Ssld ssld = new Ssld(deviceIdentification);
@@ -115,14 +109,14 @@ public class DeviceSteps {
     public void aSmartMeter(final Map<String, String> settings) {
     	SmartMeter smartMeter = new SmartMeter(
         		getString(settings, "DeviceIdentification", Defaults.DEFAULT_DEVICE_IDENTIFICATION),
-        		getString(settings, "Alias", DEFAULT_ALIAS),
-        		getString(settings, "ContainerCity", DEFAULT_CONTAINER_CITY),
-        		getString(settings, "ContainerPostalCode", DEFAULT_CONTAINER_POSTALCODE),
-        		getString(settings, "ContainerStreet", DEFAULT_CONTAINER_STREET),
-        		getString(settings, "ContainerNumber", DEFAULT_CONTAINER_NUMBER),
-        		getString(settings, "ContainerMunicipality", DEFAULT_CONTAINER_MUNICIPALITY),
-        		getFloat(settings, "GPSLatitude", DEFAULT_LATITUDE),
-        		getFloat(settings, "GPSLongitude", DEFAULT_LONGITUDE)
+        		getString(settings, "Alias", Defaults.DEFAULT_ALIAS),
+        		getString(settings, "ContainerCity", Defaults.DEFAULT_CONTAINER_CITY),
+        		getString(settings, "ContainerPostalCode", Defaults.DEFAULT_CONTAINER_POSTALCODE),
+        		getString(settings, "ContainerStreet", Defaults.DEFAULT_CONTAINER_STREET),
+        		getString(settings, "ContainerNumber", Defaults.DEFAULT_CONTAINER_NUMBER),
+        		getString(settings, "ContainerMunicipality", Defaults.DEFAULT_CONTAINER_MUNICIPALITY),
+        		getFloat(settings, "GPSLatitude", Defaults.DEFAULT_LATITUDE),
+        		getFloat(settings, "GPSLongitude", Defaults.DEFAULT_LONGITUDE)
         		);
     	
     	smartMeter.setSupplier(getString(settings, "Supplier", DEFAULT_SUPPLIER));
@@ -142,7 +136,7 @@ public class DeviceSteps {
     private void updateDevice(Device device, final Map<String, String> settings) {
 
         // Now set the optional stuff
-        device.setActivated(getBoolean(settings, "IsActivated", DEFAULT_IS_ACTIVATED));
+        device.setActivated(getBoolean(settings, "IsActivated", Defaults.DEFAULT_IS_ACTIVATED));
         device.setTechnicalInstallationDate(getDate(settings, "TechnicalInstallationDate").toDate());
 
         final DeviceModel deviceModel = this.deviceModelRepository
@@ -158,18 +152,18 @@ public class DeviceSteps {
                 getString(settings, "DeviceType", DeviceSteps.DEFAULT_DEVICE_TYPE));
 
         device.setVersion(getLong(settings, "Version"));
-        device.setActive(getBoolean(settings, "Active", DEFAULT_ACTIVE));
+        device.setActive(getBoolean(settings, "Active", Defaults.DEFAULT_ACTIVE));
         if (getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION).toLowerCase() != "null") {
             device.addOrganisation(getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
         }
-        device.updateMetaData(getString(settings, "Alias", DEFAULT_ALIAS),
-                getString(settings, "containerCity", DEFAULT_CONTAINER_CITY),
-                getString(settings, "containerPostalCode", DEFAULT_CONTAINER_POSTALCODE),
-                getString(settings, "containerStreet", DEFAULT_CONTAINER_STREET),
-                getString(settings, "containerNumber", DEFAULT_CONTAINER_NUMBER),
-                getString(settings, "containerMunicipality", DEFAULT_CONTAINER_MUNICIPALITY),
-                getFloat(settings, "gpsLatitude", this.DEFAULT_LATITUDE),
-                getFloat(settings, "gpsLongitude", this.DEFAULT_LONGITUDE));
+        device.updateMetaData(getString(settings, "Alias", Defaults.DEFAULT_ALIAS),
+                getString(settings, "containerCity", Defaults.DEFAULT_CONTAINER_CITY),
+                getString(settings, "containerPostalCode", Defaults.DEFAULT_CONTAINER_POSTALCODE),
+                getString(settings, "containerStreet", Defaults.DEFAULT_CONTAINER_STREET),
+                getString(settings, "containerNumber", Defaults.DEFAULT_CONTAINER_NUMBER),
+                getString(settings, "containerMunicipality", Defaults.DEFAULT_CONTAINER_MUNICIPALITY),
+                getFloat(settings, "gpsLatitude", Defaults.DEFAULT_LATITUDE),
+                getFloat(settings, "gpsLongitude", Defaults.DEFAULT_LONGITUDE));
 
         device = this.deviceRepository.save(device);
         
@@ -184,13 +178,8 @@ public class DeviceSteps {
             this.deviceAuthorizationRepository.save(authorization);
             ScenarioContext.Current().put("DeviceIdentification", savedDevice.getDeviceIdentification());
         }
-
     }
 
-    /**
-     *
-     * @throws Throwable
-     */
     @Then("^the device with device identification \"([^\"]*)\" should be active$")
     public void theDeviceWithDeviceIdentificationShouldBeActive(final String deviceIdentification) throws Throwable {
 
@@ -317,5 +306,18 @@ public class DeviceSteps {
                 // Do nothing
             }
         }
+    }
+
+    /**
+     * @param deviceIdentification
+     * @return
+     */
+    @Then("^the device with the id \"([^\"]*)\" exists$")
+    public void theDeviceWithIdExists(final String deviceIdentification) throws Throwable {
+        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+        final List<DeviceAuthorization> devAuths = this.deviceAuthorizationRepository.findByDevice(device);
+
+        Assert.assertNotNull(device);
+        Assert.assertTrue(devAuths.size() > 0);
     }
 }

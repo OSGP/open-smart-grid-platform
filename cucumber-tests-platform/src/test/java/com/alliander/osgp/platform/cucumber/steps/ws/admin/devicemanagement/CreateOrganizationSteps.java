@@ -9,16 +9,17 @@
  */
 package com.alliander.osgp.platform.cucumber.steps.ws.admin.devicemanagement;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
-
 import java.util.Map;
 
 import org.junit.Assert;
 
+import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.cucumber.steps.common.ResponseSteps;
 import com.alliander.osgp.platform.cucumber.steps.ws.admin.AdminStepsBase;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
+
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
 
 /**
  * Class with all the create organization requests steps
@@ -40,7 +41,7 @@ public class CreateOrganizationSteps extends AdminStepsBase {
      * @param requestParameters
      */
     private void fillPropertiesMap(Map<String, String> requestParameters) {
-        PROPERTIES_MAP.put("__ORGANIZATION_IDENTIFICATION__", requestParameters.get("OrganizationIdentification"));
+        PROPERTIES_MAP.put("__ORGANIZATION_IDENTIFICATION__", requestParameters.get(Keys.KEY_ORGANIZATION_IDENTIFICATION));
         PROPERTIES_MAP.put("__NAME__", requestParameters.get("Name"));
         PROPERTIES_MAP.put("__PREFIX__", requestParameters.get("Prefix"));
         PROPERTIES_MAP.put("__FUNCTIONGROUP__", requestParameters.get("FunctionGroup"));

@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.platform.cucumber.SoapUiRunner;
+import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCase;
 import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCaseRunner;
 import com.eviware.soapui.model.support.PropertiesMap;
@@ -61,16 +62,16 @@ public class TestCaseRunner {
     }
 
     private String getCorrelId(final Map<String, String> propertiesMap) {
-        if (propertiesMap.containsKey(SoapUiRunner.CORRELATION_UID_LABEL)) {
-            return propertiesMap.get(SoapUiRunner.CORRELATION_UID_LABEL);
+        if (propertiesMap.containsKey(Keys.KEY_CORRELATION_UID)) {
+            return propertiesMap.get(Keys.KEY_CORRELATION_UID);
         } else {
             return null;
         }
     }
 
     private boolean resetCorrelId(final Map<String, String> propertiesMap) {
-        if (propertiesMap.containsKey(SoapUiRunner.CORRELATION_UID_LABEL)) {
-            propertiesMap.put(SoapUiRunner.CORRELATION_UID_LABEL, null);
+        if (propertiesMap.containsKey(Keys.KEY_CORRELATION_UID)) {
+            propertiesMap.put(Keys.KEY_CORRELATION_UID, null);
             return true;
         } else {
             return false;

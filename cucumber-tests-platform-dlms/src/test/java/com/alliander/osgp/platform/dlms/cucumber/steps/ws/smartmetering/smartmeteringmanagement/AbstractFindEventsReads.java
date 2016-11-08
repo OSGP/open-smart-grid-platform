@@ -1,7 +1,14 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.smartmeteringmanagement;
+
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getBoolean;
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 
 import java.io.IOException;
 import java.util.List;
@@ -11,16 +18,15 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.junit.Assert;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.EventType;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
+import com.alliander.osgp.platform.cucumber.steps.Defaults;
+import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.SmartMeteringStepsBase;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
@@ -37,18 +43,22 @@ public abstract class AbstractFindEventsReads extends SmartMeteringStepsBase {
     protected abstract String getEventLogCategory();
 
     public void receivingAFindStandardEventsRequest(final Map<String, String> requestData) throws Throwable {
-        PROPERTIES_MAP.put(DEVICE_IDENTIFICATION_LABEL, requestData.get("DeviceIdentification"));
+        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
+                getString(requestData, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST + this.getEventLogCategory(),
                 TEST_CASE_XML, TEST_SUITE_XML);
     }
 
-    public void eventsShouldBeReturned() throws Throwable {
-        PROPERTIES_MAP.put(CORRELATION_UID_LABEL, ScenarioContext.Current().get("CorrelationUid").toString());
+    public void eventsShouldBeReturned(final Map<String, String> settings) throws Throwable {
+        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
+                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+        PROPERTIES_MAP
+                .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
 
-        this.waitForResponse(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE + this.getEventLogCategory(), TEST_CASE_XML, TEST_SUITE_XML);
-
-        this.checkResponse(this.getAllowedEventTypes());
+        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE + this.getEventLogCategory(),
+                TEST_CASE_XML, TEST_SUITE_XML);
+        this.checkResponse(settings, this.getAllowedEventTypes());
     }
 
     /**
@@ -68,28 +78,19 @@ public abstract class AbstractFindEventsReads extends SmartMeteringStepsBase {
      * @throws SAXException
      * @throws IOException
      */
-    private final void checkResponse(final List<EventType> allowed) throws XPathExpressionException,
-            ParserConfigurationException, SAXException, IOException {
+    private final void checkResponse(final Map<String, String> settings, final List<EventType> allowed)
+            throws XPathExpressionException, ParserConfigurationException, SAXException, IOException {
+
         final NodeList nodeList = this.runXpathResult.getNodeList(this.response, PATH_RESULT_EVENTS);
-        if (nodeList.getLength() > 0) {
-            for (int i = 0; i < nodeList.getLength(); i++) {
-                final Node node = nodeList.item(i);
-                if (node.getNodeType() == Node.ELEMENT_NODE) {
-                    final Element e = (Element) node;
-                    String name = e.getNodeName();
-                    String prefix = "";
-                    if (name.indexOf(':') != -1) {
-                        prefix = name.substring(0, name.indexOf(':') + 1);
-                        name = name.substring(name.indexOf(':') + 1);
-                    }
-                    if ("Events".equals(name)) {
-                        final String type = e.getElementsByTagName(prefix + "eventType").item(0).getNodeValue();
-                        Assert.assertTrue("Type not allowed " + type, allowed.contains(EventType.fromValue(type)));
-                    }
-                }
+        final boolean nodeListExpected = getBoolean(settings, Keys.KEY_EVENTS_NODELIST_EXPECTED,
+                Defaults.EVENTS_NODELIST_EXPECTED);
+        if (nodeListExpected) {
+            Assert.assertEquals("Size of response nodelist should be equals to the allowed size", allowed.size(),
+                    nodeList.getLength());
+            for (final EventType eventtype : allowed) {
+                Assert.assertTrue("eventype " + eventtype + " should be in response",
+                        this.response.indexOf(eventtype.toString()) > 0);
             }
-        } else {
-            // ok events can be empty
         }
     }
 }

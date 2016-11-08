@@ -9,16 +9,20 @@ package com.alliander.osgp.platform.cucumber.core;
 
 import java.util.Properties;
 
+import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 import org.hibernate.ejb.HibernatePersistence;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
+import com.alliander.osgp.platform.cucumber.support.ApplicationConfig;
 import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 /**
@@ -31,6 +35,9 @@ import com.alliander.osgp.shared.application.config.AbstractConfig;
     @PropertySource(value = "file:/etc/osp/test/cucumber-platform.properties", ignoreResourceNotFound = true),
 })
 public abstract class ApplicationConfiguration extends AbstractConfig {
+
+    @Autowired
+    protected ApplicationConfig applicationConfig;
 
     @Value("${cucumber.dbs.driver}")
     protected String databaseDriver;
@@ -60,7 +67,10 @@ public abstract class ApplicationConfiguration extends AbstractConfig {
     protected abstract String getDatabaseUrl();
 
     protected abstract String getEntitymanagerPackagesToScan();
-  
+
+    @Resource
+    protected Environment environment;
+
     /**
      * Default constructor
      */
@@ -68,7 +78,7 @@ public abstract class ApplicationConfiguration extends AbstractConfig {
     	// Default constructor
     }
 
-    
+
     /**
      * Method for creating the Data Source.
      *

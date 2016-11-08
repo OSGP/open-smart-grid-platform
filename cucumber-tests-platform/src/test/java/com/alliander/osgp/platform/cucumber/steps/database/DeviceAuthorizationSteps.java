@@ -21,6 +21,8 @@ import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
+import com.alliander.osgp.platform.cucumber.steps.Defaults;
+import com.alliander.osgp.platform.cucumber.steps.Keys;
 
 import cucumber.api.java.en.Given;
 
@@ -44,16 +46,16 @@ public class DeviceAuthorizationSteps {
     @Given("^a device authorization$")
     public void aDeviceAuthorization(final Map<String, String> settings) throws Throwable {
 
-    	Device device = deviceRepository.findByDeviceIdentification(
-    			getString(settings, "DeviceIdentification", DeviceSteps.DEFAULT_DEVICE_IDENTIFICATION));
-    	
-    	Organisation organization = organizationRepository.findByOrganisationIdentification(
-    			getString(settings, "OrganizationIdentification", "test-org"));
-    	
-    	DeviceFunctionGroup functionGroup = getEnum(settings, "DeviceFunctionGroup", DeviceFunctionGroup.class, DeviceFunctionGroup.OWNER);
-    	
+    	final Device device = this.deviceRepository.findByDeviceIdentification(
+    			getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+
+    	final Organisation organization = this.organizationRepository.findByOrganisationIdentification(
+    			getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+
+    	final DeviceFunctionGroup functionGroup = getEnum(settings, Keys.KEY_DEVICE_FUNCTION_GRP, DeviceFunctionGroup.class, DeviceFunctionGroup.OWNER);
+
         final DeviceAuthorization authorization = device.addAuthorization(organization, functionGroup);
 
-        deviceAuthorizationRepository.save(authorization);
+        this.deviceAuthorizationRepository.save(authorization);
     }
 }

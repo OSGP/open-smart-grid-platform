@@ -46,7 +46,6 @@ Alternatively each developer/tester can run the automatic tests on his own envir
 ### How to implement.
 There are a few rules on how to implement the automatic tests.
 
-* Only add new tests in the cucumber-tests-* project!
 * When writing the feature files, always meantion the Feature on top and add a little description like "As a ..., I want to ..., In order to". Via this way you think a little more about what you are going to do.
 * When writing the scenarios, keep in mind that each scenario should stand on its one. Don't ever make a scenario dependent on another.
 * When writing the scenarios, please try to write functional scenarios. A person with less technical background should be able to read those scenarios as well. Also have a look at the already created scenarios for reference.
@@ -55,6 +54,6 @@ There are a few rules on how to implement the automatic tests.
 * Before each test scenario the database is cleared as well except for the default data (provisioned in the GlobalHooks.java).
 * Each time you implement new functionality or solve bugs, make sure you execute the automatic tests.
 
-Note: The smart metering tests are not yet updated.
+Note: Scenarios which are dependent on a DLMS device simulator need to be implemented in the cucumber-tests-platform-dlms project.
 
 Note. At the time of writing this readme there are still Fitnesse tests. They should be converted to cucumber tests in time. So if you touch existing functionality, please see whether it is in time possible to convert the corresponding fitnesse tests as well.
