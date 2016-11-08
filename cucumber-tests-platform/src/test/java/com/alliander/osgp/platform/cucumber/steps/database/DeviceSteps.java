@@ -159,7 +159,9 @@ public class DeviceSteps {
 
         device.setVersion(getLong(settings, "Version"));
         device.setActive(getBoolean(settings, "Active", DEFAULT_ACTIVE));
-        device.addOrganisation(getString(settings, "Organization", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+        if (getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION).toLowerCase() != "null") {
+            device.addOrganisation(getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+        }
         device.updateMetaData(getString(settings, "Alias", DEFAULT_ALIAS),
                 getString(settings, "containerCity", DEFAULT_CONTAINER_CITY),
                 getString(settings, "containerPostalCode", DEFAULT_CONTAINER_POSTALCODE),
@@ -174,14 +176,15 @@ public class DeviceSteps {
         final Organisation organization = this.organizationRepository.findByOrganisationIdentification(
                 getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
-        final DeviceFunctionGroup functionGroup = getEnum(settings, "DeviceFunctionGroup", DeviceFunctionGroup.class,
-                DeviceFunctionGroup.OWNER);
+        if (getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION).toLowerCase() != "null") {
+            final DeviceFunctionGroup functionGroup = getEnum(settings, "DeviceFunctionGroup", DeviceFunctionGroup.class,
+                    DeviceFunctionGroup.OWNER);
+            final DeviceAuthorization authorization = device.addAuthorization(organization, functionGroup);
+            final Device savedDevice = this.deviceRepository.save(device);
+            this.deviceAuthorizationRepository.save(authorization);
+            ScenarioContext.Current().put("DeviceIdentification", savedDevice.getDeviceIdentification());
+        }
 
-        final DeviceAuthorization authorization = device.addAuthorization(organization, functionGroup);
-        final Device savedDevice = this.deviceRepository.save(device);
-        this.deviceAuthorizationRepository.save(authorization);
-
-        ScenarioContext.Current().put("DeviceIdentification", savedDevice.getDeviceIdentification());
     }
 
     /**
