@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.hooks;
+package com.alliander.osgp.platform.dlms.cucumber.hooks;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -14,20 +14,20 @@ import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 
 /**
- * 
+ * DLMS specific. 
  */
 public class SimulatePushedAlarmsHooks {
 
-	/**
-	 * 
-	 * @param deviceId
-	 * @param alarmsToPush
-	 * @throws UnknownHostException
-	 * @throws IOException
-	 */
+    /**
+     * 
+     * @param deviceId
+     * @param alarmsToPush
+     * @throws UnknownHostException
+     * @throws IOException
+     */
     public static void simulateAlarm(final String deviceId, final byte[] alarmsToPush) throws UnknownHostException,
     IOException {
-    	// TODO Make this configurable.
+        // TODO Make this configurable.
         final Socket socket = new Socket("localhost", 9598);
         try {
             final OutputStream outputStream = socket.getOutputStream();

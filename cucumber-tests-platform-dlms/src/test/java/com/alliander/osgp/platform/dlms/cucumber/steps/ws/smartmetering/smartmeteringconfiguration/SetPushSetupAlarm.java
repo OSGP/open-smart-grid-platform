@@ -23,10 +23,10 @@ import org.springframework.data.domain.PageRequest;
 import com.alliander.osgp.logging.domain.entities.DeviceLogItem;
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
-import com.alliander.osgp.platform.cucumber.hooks.SimulatePushedAlarmsHooks;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.cucumber.steps.common.ResponseSteps;
+import com.alliander.osgp.platform.dlms.cucumber.hooks.SimulatePushedAlarmsHooks;
 import com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.SmartMeteringStepsBase;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 

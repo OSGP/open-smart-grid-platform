@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.steps.database.device;
+package com.alliander.osgp.platform.cucumber.steps.database.adapterprotocoloslp;
 
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 
@@ -17,7 +17,7 @@ import com.alliander.osgp.adapter.protocol.oslp.domain.entities.OslpDevice;
 import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRepository;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.steps.database.DeviceSteps;
+import com.alliander.osgp.platform.cucumber.steps.database.core.DeviceSteps;
 
 import cucumber.api.java.en.Given;
 

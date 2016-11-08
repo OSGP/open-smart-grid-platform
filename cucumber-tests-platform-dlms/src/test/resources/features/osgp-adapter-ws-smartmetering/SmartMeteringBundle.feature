@@ -4,7 +4,7 @@ Feature: SmartMetering Bundle
   In order to ...
 
   Background: 
-    Given a device
+    Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
 

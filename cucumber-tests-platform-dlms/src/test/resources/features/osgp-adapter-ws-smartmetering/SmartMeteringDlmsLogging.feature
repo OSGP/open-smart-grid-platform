@@ -4,7 +4,7 @@ Feature:
   In order to ...
 
   Scenario: DLMS device log information is collected for a device in debug mode.
-    Given a device
+    Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
       | Active               | true              |
@@ -16,7 +16,7 @@ Feature:
     And the get administrative status communication for device "TEST1024000000001" should be in the device_log_item table
 
   Scenario: DLMS device log information is not collected for a device not in debug mode.
-    Given a device
+    Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
       | Active               | true              |

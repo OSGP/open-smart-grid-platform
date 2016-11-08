@@ -5,14 +5,14 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.steps.database;
+package com.alliander.osgp.platform.cucumber.steps.database.core;
 
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getBoolean;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getDate;
-import static com.alliander.osgp.platform.cucumber.core.Helpers.getFloat;
-import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getEnum;
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getFloat;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getLong;
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 
 import java.net.InetAddress;
 import java.util.List;
@@ -20,21 +20,18 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Organisation;
-import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
-import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
@@ -45,10 +42,8 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
 @Transactional("txMgrCore")
-@Component
 public class DeviceSteps {
 
-    private static final String DEFAULT_SUPPLIER = "Kaifa";
     public static String DEFAULT_DEVICE_IDENTIFICATION = "test-device";
     public static String DEFAULT_DEVICE_TYPE = "OSLP";
     public static String DEFAULT_PROTOCOL = "OSLP";
@@ -73,9 +68,6 @@ public class DeviceSteps {
     private ProtocolInfoRepository protocolInfoRepository;
 
     @Autowired
-    private SmartMeterRepository smartMeterRepository;
-    
-    @Autowired
     private SsldRepository ssldRepository;
 
     /**
@@ -99,32 +91,16 @@ public class DeviceSteps {
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
         this.updateDevice(device, settings);
     }
-
+    
     /**
-     * Given a smart meter exists.
+     * Update a device entity given its deviceidentification.
      * 
-     * @param settings
+     * @param deviceIdentification The deviceIdentification.
+     * @param settings The settings.
      */
-    @Given("^a smart meter$")
-    public void aSmartMeter(final Map<String, String> settings) {
-    	SmartMeter smartMeter = new SmartMeter(
-        		getString(settings, "DeviceIdentification", Defaults.DEFAULT_DEVICE_IDENTIFICATION),
-        		getString(settings, "Alias", Defaults.DEFAULT_ALIAS),
-        		getString(settings, "ContainerCity", Defaults.DEFAULT_CONTAINER_CITY),
-        		getString(settings, "ContainerPostalCode", Defaults.DEFAULT_CONTAINER_POSTALCODE),
-        		getString(settings, "ContainerStreet", Defaults.DEFAULT_CONTAINER_STREET),
-        		getString(settings, "ContainerNumber", Defaults.DEFAULT_CONTAINER_NUMBER),
-        		getString(settings, "ContainerMunicipality", Defaults.DEFAULT_CONTAINER_MUNICIPALITY),
-        		getFloat(settings, "GPSLatitude", Defaults.DEFAULT_LATITUDE),
-        		getFloat(settings, "GPSLongitude", Defaults.DEFAULT_LONGITUDE)
-        		);
-    	
-    	smartMeter.setSupplier(getString(settings, "Supplier", DEFAULT_SUPPLIER));
-    	
-    	smartMeterRepository.save(smartMeter);
-    	
-    	Device device = deviceRepository.findByDeviceIdentification(getString(settings, "DeviceIdentification", Defaults.DEFAULT_DEVICE_IDENTIFICATION));	
-    	updateDevice(device, settings);
+    public void updateDevice(String deviceIdentification, Map<String, String> settings) {
+        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+        this.updateDevice(device, settings);
     }
 
     /**

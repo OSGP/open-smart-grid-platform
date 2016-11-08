@@ -17,8 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.steps.database.DeviceSteps;
-import com.alliander.osgp.platform.cucumber.steps.database.RepoHelper;
+import com.alliander.osgp.platform.cucumber.steps.database.core.DeviceSteps;
+import com.alliander.osgp.platform.cucumber.steps.database.core.SmartMeterSteps;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -28,56 +28,28 @@ import cucumber.api.java.en.Then;
  */
 public class DlmsDeviceSteps {
 
-    private static final String DEFAULT_COMMUNICATION_METHOD = "GPRS";
-	private static final Boolean DEFAULT_IP_ADDRESS_IS_STATIC = true;
-
-    @Autowired
-    private DlmsDeviceRepository dlmsDeviceRepository;
-    
     @Autowired
     private DeviceSteps deviceSteps;
+    
+    @Autowired
+    private SmartMeterSteps smartMeterSteps;
 
     @Autowired
-    private RepoHelper repoHelper;
+    private com.alliander.osgp.platform.cucumber.steps.database.adapterprotocoldlms.DlmsDeviceSteps repoHelper;
 
-    @Given("^a device$")
-    public void aDevice(final Map<String, String> settings) throws Throwable {
+    @Given("^a dlms device$")
+    public void aDlmsDevice(final Map<String, String> settings) throws Throwable {
         if (this.isSmartMeter(settings)) {
-            this.repoHelper.insertSmartMeter(settings);
+            smartMeterSteps.aSmartMeter(settings);
             this.repoHelper.insertDlmsDevice(settings);
         } else {
-            this.repoHelper.insertDevice(settings);
+            deviceSteps.aDevice(settings);
         }
     }
->>>>>>> development
 
     private boolean isSmartMeter(final Map<String, String> settings) {
         final String deviceType = settings.get(Keys.KEY_DEVICE_TYPE);
         return SMART_METER_E.equals(deviceType) || SMART_METER_G.equals(deviceType);
-    }
-
-<<<<<<< HEAD
-        // First create the device itself
-        this.deviceSteps.aSmartMeter(settings);
-        
-        // Now create the DLMS device in the DLMS database
-        final String deviceIdentification = getString(settings, "DeviceIdentification",
-                DeviceSteps.DEFAULT_DEVICE_IDENTIFICATION);
-        final DlmsDevice dlmsDevice = new DlmsDevice(deviceIdentification);
-        dlmsDevice.setCommunicationMethod(
-        		getString(settings, "CommunicationMethod", DEFAULT_COMMUNICATION_METHOD));
-        dlmsDevice.setIpAddressIsStatic(
-        		getBoolean(settings, "IpAddressIsStatic", DEFAULT_IP_ADDRESS_IS_STATIC));
-
-        // TODO: Set dlms specific device settings
-        this.dlmsDeviceRepository.save(dlmsDevice);
-        
-        // TODO: Set the devicegateway
-=======
-    @Then("^the device with the id \"([^\"]*)\" exists$")
-    public void theDeviceWithTheIdExists(final String deviceIdentification) throws Throwable {
-        this.deviceSteps.theDeviceWithIdExists(deviceIdentification);
->>>>>>> development
     }
 
     /**

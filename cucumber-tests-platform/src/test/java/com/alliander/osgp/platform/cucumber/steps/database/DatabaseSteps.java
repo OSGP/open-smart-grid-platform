@@ -89,6 +89,7 @@ public class DatabaseSteps {
         cleanRepoSerializable(this.deviceModelRepo);
         cleanRepoSerializable(this.manufacturerRepo);
         cleanRepoSerializable(this.ssldRepository);
+        cleanRepoSerializable(this.organizationRepo);
 
         insertDefaultData();
     }

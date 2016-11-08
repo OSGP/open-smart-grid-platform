@@ -7,8 +7,6 @@
  */
 package com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering;
 
-import java.util.Map;
-
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 
 import java.util.Map;
