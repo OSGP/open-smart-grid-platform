@@ -19,7 +19,7 @@ public class PeriodicMeterReadGasResponseDto extends ActionResponseDto {
 
     public PeriodicMeterReadGasResponseDto(final PeriodTypeDto periodType,
             final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReadsGas) {
-        this.periodicMeterReadsGas = new ArrayList<PeriodicMeterReadsGasResponseItemDto>(periodicMeterReadsGas);
+        this.periodicMeterReadsGas = new ArrayList<>(periodicMeterReadsGas);
         this.periodType = periodType;
     }
 
