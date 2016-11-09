@@ -35,7 +35,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGasRe
 
 public class PeriodicMeterReadsContainerGasMappingTest {
 
-    private MonitoringMapper monitoringMapper = new MonitoringMapper();
+    private final MonitoringMapper monitoringMapper = new MonitoringMapper();
 
     // the List is not allowed to be null because of the way the constructor is
     // defined
@@ -63,7 +63,7 @@ public class PeriodicMeterReadsContainerGasMappingTest {
 
         assertNotNull(periodicMeterReadContainerGas);
 
-        assertTrue(periodicMeterReadContainerGas.getMeterReadsGas().isEmpty());
+        assertTrue(periodicMeterReadContainerGas.getPeriodicMeterReadsGas().isEmpty());
         assertEquals(periodicMeterReadsContainerGasDto.getPeriodType().name(), periodicMeterReadContainerGas
                 .getPeriodType().name());
     }
@@ -78,8 +78,8 @@ public class PeriodicMeterReadsContainerGasMappingTest {
         amrProfileStatusCodeFlagSet.add(AmrProfileStatusCodeFlagDto.CRITICAL_ERROR);
         final AmrProfileStatusCodeDto amrProfileStatusCodeDto = new AmrProfileStatusCodeDto(amrProfileStatusCodeFlagSet);
 
-        final PeriodicMeterReadsGasResponseItemDto periodicMeterReadsGasDto = new PeriodicMeterReadsGasResponseItemDto(new Date(), consumption,
-                new Date(), amrProfileStatusCodeDto);
+        final PeriodicMeterReadsGasResponseItemDto periodicMeterReadsGasDto = new PeriodicMeterReadsGasResponseItemDto(
+                new Date(), consumption, new Date(), amrProfileStatusCodeDto);
         final List<PeriodicMeterReadsGasResponseItemDto> meterReads = new ArrayList<>();
         meterReads.add(periodicMeterReadsGasDto);
 
@@ -91,28 +91,34 @@ public class PeriodicMeterReadsContainerGasMappingTest {
         final PeriodicMeterReadsContainerGas periodicMeterReadsContainerGas = this.monitoringMapper.map(
                 periodicMeterReadsContainerDto, PeriodicMeterReadsContainerGas.class);
         // test mapping
-        assertNotNull(periodicMeterReadsContainerGas);
+        assertNotNull("Mapping must take place. So the result cannot be null.", periodicMeterReadsContainerGas);
 
-        assertEquals(periodicMeterReadsContainerDto.getPeriodType().name(), periodicMeterReadsContainerGas
-                .getPeriodType().name());
+        assertEquals("After the mapping the name of the period must be the same.", periodicMeterReadsContainerDto
+                .getPeriodType().name(), periodicMeterReadsContainerGas.getPeriodType().name());
 
-        assertEquals(periodicMeterReadsContainerDto.getMeterReadsGas().size(), periodicMeterReadsContainerGas
-                .getMeterReadsGas().size());
-        assertEquals(periodicMeterReadsContainerDto.getMeterReadsGas().get(0).getLogTime(),
-                periodicMeterReadsContainerGas.getMeterReadsGas().get(0).getLogTime());
-        assertEquals(periodicMeterReadsContainerDto.getMeterReadsGas().get(0).getCaptureTime(),
-                periodicMeterReadsContainerGas.getMeterReadsGas().get(0).getCaptureTime());
+        assertEquals("The number of periodic meter reads before and after the mapping must be equal.",
+                periodicMeterReadsContainerDto.getPeriodicMeterReadsGas().size(), periodicMeterReadsContainerGas
+                        .getPeriodicMeterReadsGas().size());
+        assertEquals("After the mapping the log time of the first entry must be the same.",
+                periodicMeterReadsContainerDto.getPeriodicMeterReadsGas().get(0).getLogTime(),
+                periodicMeterReadsContainerGas.getPeriodicMeterReadsGas().get(0).getLogTime());
+        assertEquals("After the mapping the capture time of the first entry must be the same.",
+                periodicMeterReadsContainerDto.getPeriodicMeterReadsGas().get(0).getCaptureTime(),
+                periodicMeterReadsContainerGas.getPeriodicMeterReadsGas().get(0).getCaptureTime());
 
-        assertEquals(new BigDecimal("1.0"), periodicMeterReadsContainerGas.getMeterReadsGas().get(0).getConsumption()
-                .getValue());
-        assertEquals(OsgpUnit.M3, periodicMeterReadsContainerGas.getMeterReadsGas().get(0).getConsumption()
-                .getOsgpUnit());
+        assertEquals("After the mapping the consumption must be equal.", new BigDecimal("1.0"),
+                periodicMeterReadsContainerGas.getPeriodicMeterReadsGas().get(0).getConsumption().getValue());
+        assertEquals("After the mapping the osgp unit value must be the same", OsgpUnit.M3,
+                periodicMeterReadsContainerGas.getPeriodicMeterReadsGas().get(0).getConsumption().getOsgpUnit());
 
-        assertEquals(periodicMeterReadsContainerDto.getMeterReadsGas().get(0).getAmrProfileStatusCode()
-                .getAmrProfileStatusCodeFlags().size(), periodicMeterReadsContainerGas.getMeterReadsGas().get(0)
-                .getAmrProfileStatusCode().getAmrProfileStatusCodeFlags().size());
+        assertEquals("After the mapping the size of the arm profile status code flags must be the same.",
+                periodicMeterReadsContainerDto.getPeriodicMeterReadsGas().get(0).getAmrProfileStatusCode()
+                        .getAmrProfileStatusCodeFlags().size(), periodicMeterReadsContainerGas
+                        .getPeriodicMeterReadsGas().get(0).getAmrProfileStatusCode().getAmrProfileStatusCodeFlags()
+                        .size());
 
-        assertTrue(periodicMeterReadsContainerGas.getMeterReadsGas().get(0).getAmrProfileStatusCode()
-                .getAmrProfileStatusCodeFlags().contains(AmrProfileStatusCodeFlag.CRITICAL_ERROR));
+        assertTrue("After the mapping the amr profile status code flags must contain the CRITICAL_ERROR flag.",
+                periodicMeterReadsContainerGas.getPeriodicMeterReadsGas().get(0).getAmrProfileStatusCode()
+                        .getAmrProfileStatusCodeFlags().contains(AmrProfileStatusCodeFlag.CRITICAL_ERROR));
     }
 }
