@@ -10,6 +10,7 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+import org.osgp.adapter.protocol.dlms.exceptions.BufferedDateTimeValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,25 +25,21 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends Ab
         super(clazz);
     }
 
-    protected boolean validateBufferedDateTime(final DateTime bufferedDateTime, final CosemDateTimeDto cosemDateTime,
-            final DateTime beginDateTime, final DateTime endDateTime) {
+    protected void validateBufferedDateTime(final DateTime bufferedDateTime, final CosemDateTimeDto cosemDateTime,
+            final DateTime beginDateTime, final DateTime endDateTime) throws BufferedDateTimeValidationException {
 
         if (bufferedDateTime == null) {
             final DateTimeFormatter dtf = ISODateTimeFormat.dateTime();
-            LOGGER.warn("Not using an object from capture buffer (clock=" + cosemDateTime
+            throw new BufferedDateTimeValidationException("Not using an object from capture buffer (clock="
+                    + cosemDateTime
                     + "), because the date does not match the given period, since it is not fully specified: ["
                     + dtf.print(beginDateTime) + " .. " + dtf.print(endDateTime) + "].");
-            return false;
         }
         if (bufferedDateTime.isBefore(beginDateTime) || bufferedDateTime.isAfter(endDateTime)) {
             final DateTimeFormatter dtf = ISODateTimeFormat.dateTime();
-            LOGGER.warn("Not using an object from capture buffer (clock=" + dtf.print(bufferedDateTime)
-                    + "), because the date does not match the given period: [" + dtf.print(beginDateTime) + " .. "
-                    + dtf.print(endDateTime) + "].");
-            return false;
+            throw new BufferedDateTimeValidationException("Not using an object from capture buffer (clock="
+                    + dtf.print(bufferedDateTime) + "), because the date does not match the given period: ["
+                    + dtf.print(beginDateTime) + " .. " + dtf.print(endDateTime) + "].");
         }
-
-        return true;
     }
-
 }
