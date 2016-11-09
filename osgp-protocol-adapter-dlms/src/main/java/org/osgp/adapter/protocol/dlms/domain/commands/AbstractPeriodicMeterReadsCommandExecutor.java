@@ -11,15 +11,11 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.osgp.adapter.protocol.dlms.exceptions.BufferedDateTimeValidationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDataDto;
 
 public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R> extends AbstractCommandExecutor<T, R> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPeriodicMeterReadsCommandExecutor.class);
 
     public AbstractPeriodicMeterReadsCommandExecutor(Class<? extends PeriodicMeterReadsRequestDataDto> clazz) {
         super(clazz);
