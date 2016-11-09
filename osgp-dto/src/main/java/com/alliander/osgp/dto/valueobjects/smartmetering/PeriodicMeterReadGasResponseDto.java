@@ -14,17 +14,17 @@ public class PeriodicMeterReadGasResponseDto extends ActionResponseDto {
 
     private static final long serialVersionUID = -156966569210717654L;
 
-    private final List<PeriodicMeterReadsGasResponseItemDto> meterReadsGas;
+    private final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReadsGas;
     private final PeriodTypeDto periodType;
 
     public PeriodicMeterReadGasResponseDto(final PeriodTypeDto periodType,
-            final List<PeriodicMeterReadsGasResponseItemDto> meterReadsGas) {
-        this.meterReadsGas = new ArrayList<PeriodicMeterReadsGasResponseItemDto>(meterReadsGas);
+            final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReadsGas) {
+        this.periodicMeterReadsGas = new ArrayList<>(periodicMeterReadsGas);
         this.periodType = periodType;
     }
 
-    public List<PeriodicMeterReadsGasResponseItemDto> getMeterReadsGas() {
-        return new ArrayList<>(this.meterReadsGas);
+    public List<PeriodicMeterReadsGasResponseItemDto> getPeriodicMeterReadsGas() {
+        return new ArrayList<>(this.periodicMeterReadsGas);
     }
 
     public PeriodTypeDto getPeriodType() {
