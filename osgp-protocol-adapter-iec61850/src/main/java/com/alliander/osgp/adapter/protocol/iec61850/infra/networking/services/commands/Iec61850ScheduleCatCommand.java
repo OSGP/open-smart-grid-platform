@@ -71,7 +71,7 @@ public class Iec61850ScheduleCatCommand implements RtuReadCommand<MeasurementDto
         try {
             result = (int) value;
         } catch (final ClassCastException e) {
-            throw new NodeWriteException(String.format("Invalid value {}.", value));
+            throw new NodeWriteException(String.format("Invalid value %f.", value), e);
         }
         return result;
     }

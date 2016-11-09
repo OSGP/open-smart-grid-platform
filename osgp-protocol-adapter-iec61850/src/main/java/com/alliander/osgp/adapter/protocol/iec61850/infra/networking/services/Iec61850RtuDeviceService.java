@@ -109,11 +109,9 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
             final ClientAssociation clientAssociation = this.iec61850DeviceConnectionService
                     .getClientAssociation(deviceRequest.getDeviceIdentification());
 
-            this.setData(
-                    new DeviceConnection(
-                            new Iec61850Connection(new Iec61850ClientAssociation(clientAssociation, null), serverModel),
-                            deviceRequest.getDeviceIdentification(), IED.ZOWN_RTU),
-                    serverModel, clientAssociation, deviceRequest);
+            this.setData(new DeviceConnection(
+                    new Iec61850Connection(new Iec61850ClientAssociation(clientAssociation, null), serverModel),
+                    deviceRequest.getDeviceIdentification(), IED.ZOWN_RTU), clientAssociation, deviceRequest);
 
             final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
@@ -139,9 +137,8 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
         }
     }
 
-    private void setData(final DeviceConnection connection, final ServerModel serverModel,
-            final ClientAssociation clientAssociation, final SetDataDeviceRequest deviceRequest)
-            throws ProtocolAdapterException {
+    private void setData(final DeviceConnection connection, final ClientAssociation clientAssociation,
+            final SetDataDeviceRequest deviceRequest) throws ProtocolAdapterException {
 
         final SetDataRequestDto setDataRequest = deviceRequest.getSetDataRequest();
 
@@ -193,23 +190,16 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
 
             @Override
             public GetDataResponseDto apply() throws Exception {
-
                 Iec61850RtuDeviceService.this.enableReportingOnDevice(connection,
                         deviceRequest.getDeviceIdentification());
-
                 final List<GetDataSystemIdentifierDto> identifiers = new ArrayList<>();
-
                 for (final SystemFilterDto systemFilter : requestedData.getSystemFilters()) {
-
                     final SystemService systemService = Iec61850RtuDeviceService.this.systemServiceFactory
                             .getSystemService(systemFilter);
-
                     final GetDataSystemIdentifierDto getDataSystemIdentifier = systemService.getData(systemFilter,
                             Iec61850RtuDeviceService.this.iec61850Client, connection);
-
                     identifiers.add(getDataSystemIdentifier);
                 }
-
                 return new GetDataResponseDto(identifiers);
             }
         };

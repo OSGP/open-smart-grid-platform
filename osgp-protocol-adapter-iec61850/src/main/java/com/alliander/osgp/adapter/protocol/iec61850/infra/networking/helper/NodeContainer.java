@@ -220,7 +220,7 @@ public class NodeContainer {
         final Array array = (Array) this.parent.getChild(child.getDescription());
         if (array.size() != values.length) {
             throw new NodeWriteException(
-                    String.format("Invalid array size {}. Size on device is {}", values.length, array.size()));
+                    String.format("Invalid array size %d. Size on device is %d", values.length, array.size()));
         }
 
         for (int i = 0; i < values.length; i++) {
@@ -245,7 +245,7 @@ public class NodeContainer {
         final Array array = (Array) this.parent.getChild(child.getDescription());
         if (array.size() != values.length) {
             throw new NodeWriteException(
-                    String.format("Invalid array size {}. Size on device is {}", values.length, array.size()));
+                    String.format("Invalid array size %d. Size on device is %d", values.length, array.size()));
         }
 
         for (int i = 0; i < values.length; i++) {

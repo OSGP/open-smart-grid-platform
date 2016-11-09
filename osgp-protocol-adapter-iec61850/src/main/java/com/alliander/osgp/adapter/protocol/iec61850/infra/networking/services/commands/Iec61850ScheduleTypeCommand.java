@@ -70,7 +70,7 @@ public class Iec61850ScheduleTypeCommand implements RtuReadCommand<MeasurementDt
         try {
             result = (int) value;
         } catch (final ClassCastException e) {
-            throw new NodeWriteException(String.format("Invalid value {}.", value));
+            throw new NodeWriteException(String.format("Invalid value %f.", value), e);
         }
         return result;
     }

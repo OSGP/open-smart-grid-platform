@@ -66,26 +66,12 @@ public class Iec61850ScheduleIdCommand implements RtuReadCommand<MeasurementDto>
         containingNode.writeInteger(SUB_DATA_ATTRIBUTE, value);
     }
 
-    // private SetPointDto checkData(final Serializable writeData) throws
-    // NodeWriteException {
-    //
-    // if (writeData == null) {
-    // throw new NodeWriteException("Invalid write data. Data is null.");
-    // }
-    // if (!(writeData instanceof SetPointDto)) {
-    // throw new NodeWriteException(
-    // String.format("Invalid write data. Data is of wrong type {}.",
-    // writeData.getClass().getName()));
-    // }
-    // return (SetPointDto) writeData;
-    // }
-
     private int checkValue(final double value) throws NodeWriteException {
         int result;
         try {
             result = (int) value;
         } catch (final ClassCastException e) {
-            throw new NodeWriteException(String.format("Invalid value {}.", value));
+            throw new NodeWriteException(String.format("Invalid value %f.", value));
         }
         return result;
     }

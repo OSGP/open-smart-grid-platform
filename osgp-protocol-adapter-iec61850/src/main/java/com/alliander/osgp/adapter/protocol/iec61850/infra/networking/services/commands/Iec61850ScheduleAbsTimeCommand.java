@@ -93,13 +93,11 @@ public class Iec61850ScheduleAbsTimeCommand implements RtuReadCommand<ProfileDto
         final int size = profile.getProfileEntries().size();
         if (size > ARRAY_SIZE) {
             throw new NodeWriteException(String.format(
-                    "Invalid profile. Profile entries list size {} is larger then allowed {}.", size, ARRAY_SIZE));
+                    "Invalid profile. Profile entries list size %d is larger then allowed %d.", size, ARRAY_SIZE));
         }
     }
 
     private List<ProfileEntryDto> convert(final NodeContainer profileNode) {
-        // final BdaInt32 numberOfPoints =
-        // profileNode.getInteger(SubDataAttribute.NUMBER_OF_POINTS);
         final Float[] values = profileNode.getFloatArray(SubDataAttribute.VALUES);
         final Date[] times = profileNode.getDateArray(SubDataAttribute.TIMES);
 
@@ -124,9 +122,9 @@ public class Iec61850ScheduleAbsTimeCommand implements RtuReadCommand<ProfileDto
         final Date[] times = new Date[ARRAY_SIZE];
 
         for (final ProfileEntryDto pe : profileEntries) {
-            final int index = pe.getId() - 1;
-            values[index] = (float) pe.getValue();
-            times[index] = pe.getTime().toDate();
+            final int i = pe.getId() - 1;
+            values[i] = (float) pe.getValue();
+            times[i] = pe.getTime().toDate();
         }
 
         // Fill rest of array with default values
