@@ -16,6 +16,9 @@ import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
+import com.alliander.osgp.platform.cucumber.core.Helpers;
+import com.alliander.osgp.platform.cucumber.helpers.Protocol;
+import com.alliander.osgp.platform.cucumber.helpers.ProtocolHelper;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.cucumber.steps.database.core.DeviceSteps;
 import com.alliander.osgp.platform.cucumber.steps.database.core.SmartMeterSteps;
@@ -38,12 +41,23 @@ public class DlmsDeviceSteps {
     private com.alliander.osgp.platform.cucumber.steps.database.adapterprotocoldlms.DlmsDeviceSteps repoHelper;
 
     @Given("^a dlms device$")
-    public void aDlmsDevice(final Map<String, String> settings) throws Throwable {
-        if (this.isSmartMeter(settings)) {
+    public void aDlmsDevice(final Map<String, String> inputSettings) throws Throwable {
+        if (this.isSmartMeter(inputSettings)) {
+            
+            // Add DSMR protocol if not provided, inputSettings are leading!
+            final Protocol protocol = ProtocolHelper.getProtocol(Protocol.ProtocolType.DSMR);
+            Map<String, String> settings = inputSettings;
+            if (!settings.containsKey(Keys.KEY_PROTOCOL)) {
+                settings = Helpers.addSetting(settings, Keys.KEY_PROTOCOL, protocol.getProtocol());
+            }
+            if (!settings.containsKey(Keys.KEY_PROTOCOL_VERSION)) {
+                settings = Helpers.addSetting(settings, Keys.KEY_PROTOCOL_VERSION, protocol.getVersion());
+            }
+            
             smartMeterSteps.aSmartMeter(settings);
             this.repoHelper.insertDlmsDevice(settings);
         } else {
-            deviceSteps.aDevice(settings);
+            deviceSteps.aDevice(inputSettings);
         }
     }
 

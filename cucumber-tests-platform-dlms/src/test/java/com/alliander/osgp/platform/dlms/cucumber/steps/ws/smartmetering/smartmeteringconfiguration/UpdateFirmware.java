@@ -19,10 +19,9 @@ import com.alliander.osgp.domain.core.entities.Firmware;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.FirmwareRepository;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
+import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.SmartMeteringStepsBase;
-import com.alliander.osgp.platform.dlms.cucumber.support.DeviceId;
-import com.alliander.osgp.platform.dlms.cucumber.support.OrganisationId;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
 import cucumber.api.java.en.Given;
@@ -48,12 +47,6 @@ public class UpdateFirmware extends SmartMeteringStepsBase {
     private static final String TEST_CASE_NAME_RESPONSE = "GetUpdateFirmwareResponse";
 
     @Autowired
-    private DeviceId deviceId;
-
-    @Autowired
-    private OrganisationId organisationId;
-
-    @Autowired
     private DeviceRepository deviceRepository;
 
     @Autowired
@@ -61,7 +54,7 @@ public class UpdateFirmware extends SmartMeteringStepsBase {
 
     @Given("^a request for a firmware upgrade for device \"([^\"]*)\" from a client$")
     public void aRequestForAFirmwareUpgradeForDeviceFromAClient(final String deviceIdentification) throws Throwable {
-        this.deviceId.setDeviceIdE(deviceIdentification);
+        ScenarioContext.Current().put("DeviceIdentification", deviceIdentification);
     }
 
     @Given("^the installation file of version \"([^\"]*)\" is available$")
@@ -71,8 +64,8 @@ public class UpdateFirmware extends SmartMeteringStepsBase {
 
     @When("^the request for a firmware upgrade is received$")
     public void theRequestForAFirmwareUpgradeIsReceived() throws Throwable {
-        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION_E_LABEL, this.deviceId.getDeviceIdE());
-        PROPERTIES_MAP.put(Keys.KEY_ORGANIZATION_IDENTIFICATION, this.organisationId.getOrganisationId());
+        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION_E_LABEL, ScenarioContext.Current().get(Keys.KEY_ORGANIZATION_IDENTIFICATION).toString());
+        PROPERTIES_MAP.put(Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }
