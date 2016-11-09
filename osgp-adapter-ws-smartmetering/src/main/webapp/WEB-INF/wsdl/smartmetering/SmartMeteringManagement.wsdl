@@ -1,142 +1,296 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Platform version: ${display.version} -->
 
-<wsdl:definitions 
-	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"	
-	xmlns:smman="http://www.alliander.com/schemas/osgp/smartmetering/sm-management/2014/10"
-	xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10"	
-	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
-	xmlns:tns="http://www.alliander.com/definitions/osgp/smartmetering/sm-management-v1.0"
-	targetNamespace="http://www.alliander.com/definitions/osgp/smartmetering/sm-management-v1.0">
-		
-	<wsdl:types>
-		<xsd:schema 
-			targetNamespace="http://www.alliander.com/definitions/osgp/smartmetering/sm-management/imports" 
-			xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-			
-			<xsd:import 
-				namespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-management/2014/10" 
-				schemaLocation="schemas/sm-management.xsd" />				
-		</xsd:schema>
-	</wsdl:types>
-	
-	<wsdl:message name="FindEventsHeader">
-		<wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
-		<wsdl:part element="common:UserName" name="UserName" />
-		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
-	</wsdl:message>
-	<wsdl:message name="FindEventsRequest">
-		<wsdl:part element="smman:FindEventsRequest" name="FindEventsRequest">
-		</wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="FindEventsAsyncResponse">
-		<wsdl:part element="smman:FindEventsAsyncResponse" name="FindEventsAsyncResponse">
-		</wsdl:part>
-	</wsdl:message>
-		
-	<wsdl:message name="FindEventsAsyncHeader">
-		<wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
-		<wsdl:part element="common:UserName" name="UserName" />
-		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
-	</wsdl:message>
-	<wsdl:message name="FindEventsAsyncRequest">
-		<wsdl:part element="smman:FindEventsAsyncRequest" name="FindEventsAsyncRequest">
-		</wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="FindEventsResponse">
-		<wsdl:part element="smman:FindEventsResponse" name="FindEventsResponse">
-		</wsdl:part>
-	</wsdl:message>
-			 
-	<wsdl:message name="GetDevicesHeader">
-		<wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
-		<wsdl:part element="common:UserName" name="UserName" />
-		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
-	</wsdl:message>
-	<wsdl:message name="GetDevicesRequest">
-		<wsdl:part element="smman:GetDevicesRequest" name="GetDevicesRequest">
-		</wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="GetDevicesResponse">
-		<wsdl:part element="smman:GetDevicesResponse" name="GetDevicesResponse">
-		</wsdl:part>
-	</wsdl:message>
-	
-	<wsdl:portType name="SmartMeteringManagementPort">
-	
-		<wsdl:operation name="FindEvents">
-			<wsdl:input message="tns:FindEventsRequest" name="FindEventsRequest">
-			</wsdl:input>
-			<wsdl:output message="tns:FindEventsAsyncResponse" name="FindEventsAsyncResponse">
-			</wsdl:output>
-		</wsdl:operation>
-		
-		<wsdl:operation name="GetFindEventsResponse">
-			<wsdl:input message="tns:FindEventsAsyncRequest" name="FindEventsAsyncRequest">
-			</wsdl:input>
-			<wsdl:output message="tns:FindEventsResponse" name="FindEventsResponse">
-			</wsdl:output>
-		</wsdl:operation>
-	
-		<wsdl:operation name="GetDevices">
-			<wsdl:input message="tns:GetDevicesRequest" name="GetDevicesRequest">
-			</wsdl:input>
-			<wsdl:output message="tns:GetDevicesResponse" name="GetDevicesResponse">
-			</wsdl:output>
-		</wsdl:operation>
-					
-	</wsdl:portType>
-	
-	<wsdl:binding name="SmartMeteringManagementPortSoap11" type="tns:SmartMeteringManagementPort">
-		
-		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
-		
-		<wsdl:operation name="FindEvents">
-			<soap:operation soapAction="" />
-			<wsdl:input name="FindEventsRequest">
-				<soap:header message="tns:FindEventsHeader" part="OrganisationIdentification" use="literal" />
-				<soap:header message="tns:FindEventsHeader" part="UserName" use="literal" />
-				<soap:header message="tns:FindEventsHeader" part="ApplicationName" use="literal" />
-				<soap:body use="literal" />
-			</wsdl:input>
-			<wsdl:output name="FindEventsAsyncResponse">
-				<soap:body use="literal" />
-			</wsdl:output>
-		</wsdl:operation>
-		
-		<wsdl:operation name="GetFindEventsResponse">
-			<soap:operation soapAction="" />
-			<wsdl:input name="FindEventsAsyncRequest">
-				<soap:header message="tns:FindEventsHeader" part="OrganisationIdentification" use="literal" />
-				<soap:header message="tns:FindEventsHeader" part="UserName" use="literal" />
-				<soap:header message="tns:FindEventsHeader" part="ApplicationName" use="literal" />
-				<soap:body use="literal" />
-			</wsdl:input>
-			<wsdl:output name="FindEventsResponse">
-				<soap:body use="literal" />
-			</wsdl:output>
-		</wsdl:operation>
-		
-		<wsdl:operation name="GetDevices">
-			<soap:operation soapAction="" />
-			<wsdl:input name="GetDevicesRequest">
-				<soap:header message="tns:GetDevicesHeader" part="OrganisationIdentification" use="literal" />
-				<soap:header message="tns:GetDevicesHeader" part="UserName" use="literal" />
-				<soap:header message="tns:GetDevicesHeader" part="ApplicationName" use="literal" />
-				<soap:body use="literal" />
-			</wsdl:input>
-			<wsdl:output name="GetDevicesResponse">
-				<soap:body use="literal" />
-			</wsdl:output>
-		</wsdl:operation>
-		
-	</wsdl:binding>
-	
-	<wsdl:service name="SmartMeteringManagementPortService">
-		<wsdl:port binding="tns:SmartMeteringManagementPortSoap11" name="SmartMeteringManagementPortSoap11">
-			<soap:address
-				location="http://localhost:8080/osgp-adapter-ws-smartmetering/smartMetering/managementService/" />
-		</wsdl:port>
-	</wsdl:service>
-	
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:smman="http://www.alliander.com/schemas/osgp/smartmetering/sm-management/2014/10"
+    xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:tns="http://www.alliander.com/definitions/osgp/smartmetering/sm-management-v1.0"
+    targetNamespace="http://www.alliander.com/definitions/osgp/smartmetering/sm-management-v1.0">
+
+    <wsdl:types>
+        <xsd:schema
+            targetNamespace="http://www.alliander.com/definitions/osgp/smartmetering/sm-management/imports"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+            <xsd:import
+                namespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-management/2014/10"
+                schemaLocation="schemas/sm-management.xsd" />
+        </xsd:schema>
+    </wsdl:types>
+
+    <wsdl:message name="ActionHeader">
+        <wsdl:part element="common:OrganisationIdentification"
+            name="OrganisationIdentification" />
+        <wsdl:part element="common:UserName" name="UserName" />
+        <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+    </wsdl:message>
+
+    <wsdl:message name="FindEventsRequest">
+        <wsdl:part element="smman:FindEventsRequest" name="FindEventsRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="FindEventsAsyncResponse">
+        <wsdl:part element="smman:FindEventsAsyncResponse"
+            name="FindEventsAsyncResponse">
+        </wsdl:part>
+    </wsdl:message>
+
+    <wsdl:message name="FindEventsAsyncRequest">
+        <wsdl:part element="smman:FindEventsAsyncRequest"
+            name="FindEventsAsyncRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="FindEventsResponse">
+        <wsdl:part element="smman:FindEventsResponse" name="FindEventsResponse">
+        </wsdl:part>
+    </wsdl:message>
+
+    <wsdl:message name="GetDevicesRequest">
+        <wsdl:part element="smman:GetDevicesRequest" name="GetDevicesRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="GetDevicesResponse">
+        <wsdl:part element="smman:GetDevicesResponse" name="GetDevicesResponse">
+        </wsdl:part>
+    </wsdl:message>
+
+    <wsdl:message name="EnableDebuggingRequest">
+        <wsdl:part element="smman:EnableDebuggingRequest"
+            name="EnableDebuggingRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="EnableDebuggingAsyncResponse">
+        <wsdl:part element="smman:EnableDebuggingAsyncResponse"
+            name="EnableDebuggingAsyncResponse">
+        </wsdl:part>
+    </wsdl:message>
+
+    <wsdl:message name="EnableDebuggingAsyncRequest">
+        <wsdl:part element="smman:EnableDebuggingAsyncRequest"
+            name="EnableDebuggingAsyncRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="EnableDebuggingResponse">
+        <wsdl:part element="smman:EnableDebuggingResponse"
+            name="EnableDebuggingResponse">
+        </wsdl:part>
+    </wsdl:message>
+
+    <wsdl:message name="DisableDebuggingRequest">
+        <wsdl:part element="smman:DisableDebuggingRequest"
+            name="DisableDebuggingRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="DisableDebuggingAsyncResponse">
+        <wsdl:part element="smman:DisableDebuggingAsyncResponse"
+            name="DisableDebuggingAsyncResponse">
+        </wsdl:part>
+    </wsdl:message>
+
+    <wsdl:message name="DisableDebuggingAsyncRequest">
+        <wsdl:part element="smman:DisableDebuggingAsyncRequest"
+            name="DisableDebuggingAsyncRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="DisableDebuggingResponse">
+        <wsdl:part element="smman:DisableDebuggingResponse"
+            name="DisableDebuggingResponse">
+        </wsdl:part>
+    </wsdl:message>
+
+
+    <wsdl:portType name="SmartMeteringManagementPort">
+
+        <wsdl:operation name="FindEvents">
+            <wsdl:input message="tns:FindEventsRequest" name="FindEventsRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:FindEventsAsyncResponse"
+                name="FindEventsAsyncResponse">
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="GetFindEventsResponse">
+            <wsdl:input message="tns:FindEventsAsyncRequest"
+                name="FindEventsAsyncRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:FindEventsResponse"
+                name="FindEventsResponse">
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="GetDevices">
+            <wsdl:input message="tns:GetDevicesRequest" name="GetDevicesRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:GetDevicesResponse"
+                name="GetDevicesResponse">
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="EnableDebugging">
+            <wsdl:input message="tns:EnableDebuggingRequest"
+                name="EnableDebuggingRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:EnableDebuggingAsyncResponse"
+                name="EnableDebuggingAsyncResponse">
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="GetEnableDebuggingResponse">
+            <wsdl:input message="tns:EnableDebuggingAsyncRequest"
+                name="EnableDebuggingAsyncRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:EnableDebuggingResponse"
+                name="EnableDebuggingResponse">
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="DisableDebugging">
+            <wsdl:input message="tns:DisableDebuggingRequest"
+                name="DisableDebuggingRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:DisableDebuggingAsyncResponse"
+                name="DisableDebuggingAsyncResponse">
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="GetDisableDebuggingResponse">
+            <wsdl:input message="tns:DisableDebuggingAsyncRequest"
+                name="DisableDebuggingAsyncRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:DisableDebuggingResponse"
+                name="DisableDebuggingResponse">
+            </wsdl:output>
+        </wsdl:operation>
+
+    </wsdl:portType>
+
+    <wsdl:binding name="SmartMeteringManagementPortSoap11"
+        type="tns:SmartMeteringManagementPort">
+
+        <soap:binding style="document"
+            transport="http://schemas.xmlsoap.org/soap/http" />
+
+        <wsdl:operation name="FindEvents">
+            <soap:operation soapAction="" />
+            <wsdl:input name="FindEventsRequest">
+                <soap:header message="tns:ActionHeader"
+                    part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader"
+                    part="UserName" use="literal" />
+                <soap:header message="tns:ActionHeader"
+                    part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="FindEventsAsyncResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="GetFindEventsResponse">
+            <soap:operation soapAction="" />
+            <wsdl:input name="FindEventsAsyncRequest">
+                <soap:header message="tns:ActionHeader"
+                    part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader"
+                    part="UserName" use="literal" />
+                <soap:header message="tns:ActionHeader"
+                    part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="FindEventsResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="GetDevices">
+            <soap:operation soapAction="" />
+            <wsdl:input name="GetDevicesRequest">
+                <soap:header message="tns:ActionHeader"
+                    part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader"
+                    part="UserName" use="literal" />
+                <soap:header message="tns:ActionHeader"
+                    part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="GetDevicesResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="EnableDebugging">
+            <soap:operation soapAction="" />
+            <wsdl:input name="EnableDebuggingRequest">
+                <soap:header message="tns:ActionHeader"
+                    part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader"
+                    part="UserName" use="literal" />
+                <soap:header message="tns:ActionHeader"
+                    part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="EnableDebuggingAsyncResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="GetEnableDebuggingResponse">
+            <soap:operation soapAction="" />
+            <wsdl:input name="EnableDebuggingAsyncRequest">
+                <soap:header message="tns:ActionHeader"
+                    part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader"
+                    part="UserName" use="literal" />
+                <soap:header message="tns:ActionHeader"
+                    part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="EnableDebuggingResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="DisableDebugging">
+            <soap:operation soapAction="" />
+            <wsdl:input name="DisableDebuggingRequest">
+                <soap:header message="tns:ActionHeader"
+                    part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader"
+                    part="UserName" use="literal" />
+                <soap:header message="tns:ActionHeader"
+                    part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="DisableDebuggingAsyncResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="GetDisableDebuggingResponse">
+            <soap:operation soapAction="" />
+            <wsdl:input name="DisableDebuggingAsyncRequest">
+                <soap:header message="tns:ActionHeader"
+                    part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader"
+                    part="UserName" use="literal" />
+                <soap:header message="tns:ActionHeader"
+                    part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="DisableDebuggingResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+    </wsdl:binding>
+
+    <wsdl:service name="SmartMeteringManagementPortService">
+        <wsdl:port binding="tns:SmartMeteringManagementPortSoap11"
+            name="SmartMeteringManagementPortSoap11">
+            <soap:address
+                location="http://localhost:8080/osgp-adapter-ws-smartmetering/smartMetering/managementService/" />
+        </wsdl:port>
+    </wsdl:service>
+
 </wsdl:definitions>
