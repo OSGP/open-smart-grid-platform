@@ -65,7 +65,7 @@ public class Iec61850ScheduleAbsTimeCommand implements RtuReadCommand<ProfileDto
 
         final List<ProfileEntryDto> profileEntries = this.convert(containingNode);
 
-        return new ProfileDto(this.index, NODE_NAME, profileEntries);
+        return new ProfileDto(this.index, DATA_ATTRIBUTE.getDescription(), profileEntries);
     }
 
     @Override
