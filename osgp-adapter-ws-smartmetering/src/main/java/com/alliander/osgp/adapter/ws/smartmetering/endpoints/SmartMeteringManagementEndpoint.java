@@ -23,6 +23,7 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.ScheduleTime;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.DevicePage;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.DisableDebuggingAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.DisableDebuggingAsyncResponse;
@@ -224,8 +225,10 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             final MeterResponseData meterResponseData = this.managementService.dequeueEnableDebuggingResponse(request
                     .getCorrelationUid());
 
-            response = this.managementMapper.map(meterResponseData.getMessageData(), EnableDebuggingResponse.class);
-
+            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+            if (meterResponseData.getMessageData() instanceof String) {
+                response.setDescription((String) meterResponseData.getMessageData());
+            }
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("EnableDebuggingResponse Exception", e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
@@ -283,8 +286,10 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             final MeterResponseData meterResponseData = this.managementService.dequeueDisableDebuggingResponse(request
                     .getCorrelationUid());
 
-            response = this.managementMapper.map(meterResponseData.getMessageData(), DisableDebuggingResponse.class);
-
+            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+            if (meterResponseData.getMessageData() instanceof String) {
+                response.setDescription((String) meterResponseData.getMessageData());
+            }
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("DisableDebuggingResponse Exception", e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
