@@ -37,7 +37,7 @@ public class DisableDebuggingRequestMessageProcessor extends DeviceRequestMessag
     @Override
     protected Serializable handleMessage(final DlmsDevice device, final Serializable requestObject)
             throws OsgpException, ProtocolAdapterException {
-        this.managementService.disableDebugging(device);
+        this.managementService.changeInDebugMode(device, false);
 
         // No response data
         return null;

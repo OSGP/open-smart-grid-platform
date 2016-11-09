@@ -56,13 +56,8 @@ public class ManagementService {
         return new EventMessageDataResponseDto(events);
     }
 
-    public void enableDebugging(final DlmsDevice device) {
-        device.setInDebugMode(true);
-        dlmsDeviceRepository.save(device);
-    }
-
-    public void disableDebugging(final DlmsDevice device) {
-        device.setInDebugMode(false);
+    public void changeInDebugMode(final DlmsDevice device, final boolean debugMode) {
+        device.setInDebugMode(debugMode);
         dlmsDeviceRepository.save(device);
     }
 }
