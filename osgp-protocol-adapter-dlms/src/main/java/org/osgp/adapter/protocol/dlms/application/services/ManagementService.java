@@ -13,6 +13,7 @@ import java.util.List;
 import org.osgp.adapter.protocol.dlms.domain.commands.RetrieveEventsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,11 +33,13 @@ public class ManagementService {
     @Autowired
     private RetrieveEventsCommandExecutor retrieveEventsCommandExecutor;
 
+    @Autowired
+    private DlmsDeviceRepository dlmsDeviceRepository;
+
     // === FIND EVENTS ===
 
     public EventMessageDataResponseDto findEvents(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final FindEventsRequestList findEventsQueryMessageDataContainer)
-            throws ProtocolAdapterException {
+            final FindEventsRequestList findEventsQueryMessageDataContainer) throws ProtocolAdapterException {
 
         final List<EventDto> events = new ArrayList<>();
 
@@ -53,4 +56,13 @@ public class ManagementService {
         return new EventMessageDataResponseDto(events);
     }
 
+    public void enableDebugging(final DlmsDevice device) {
+        device.setInDebugMode(true);
+        dlmsDeviceRepository.save(device);
+    }
+
+    public void disableDebugging(final DlmsDevice device) {
+        device.setInDebugMode(false);
+        dlmsDeviceRepository.save(device);
+    }
 }
