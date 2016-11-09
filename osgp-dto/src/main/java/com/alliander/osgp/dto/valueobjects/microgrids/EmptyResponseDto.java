@@ -13,4 +13,7 @@ public class EmptyResponseDto implements Serializable {
 
     private static final long serialVersionUID = 5816029946353851065L;
 
+    public EmptyResponseDto() {
+        // Default public constructor
+    }
 }
