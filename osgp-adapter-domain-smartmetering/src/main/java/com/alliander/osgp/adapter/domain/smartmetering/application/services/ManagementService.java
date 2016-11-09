@@ -91,15 +91,7 @@ public class ManagementService {
         LOGGER.info("EnableDebugging for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
-        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceMessageMetadata
-                .getDeviceIdentification());
-
-        LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
-        final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                smartMeteringDevice.getIpAddress());
-        this.osgpCoreRequestMessageSender.send(requestMessage, deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+        this.sendMetadataOnlyRequestMessage(deviceMessageMetadata);
     }
 
     public void handleEnableDebuggingResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -108,22 +100,26 @@ public class ManagementService {
         LOGGER.info("handleEnableDebuggingResponse for MessageType: {}, with result: {}",
                 deviceMessageMetadata.getMessageType(), deviceResult.toString());
 
-        ResponseMessageResultType result = deviceResult;
-        if (exception != null) {
-            LOGGER.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
-            result = ResponseMessageResultType.NOT_OK;
-        }
-
-        this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                result, exception, null, deviceMessageMetadata.getMessagePriority()), deviceMessageMetadata
-                .getMessageType());
+        this.handleMetadataOnlyResponseMessage(deviceMessageMetadata, deviceResult, exception);
     }
 
     public void disableDebugging(final DeviceMessageMetadata deviceMessageMetadata) throws FunctionalException {
         LOGGER.info("DisableDebugging for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
+        this.sendMetadataOnlyRequestMessage(deviceMessageMetadata);
+    }
+
+    public void handleDisableDebuggingResponse(final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessageResultType deviceResult, final OsgpException exception) {
+
+        LOGGER.info("handleDisableDebuggingResponse for MessageType: {}, with result: {}",
+                deviceMessageMetadata.getMessageType(), deviceResult.toString());
+
+        this.handleMetadataOnlyResponseMessage(deviceMessageMetadata, deviceResult, exception);
+    }
+
+    private void sendMetadataOnlyRequestMessage(final DeviceMessageMetadata deviceMessageMetadata) throws FunctionalException {
         final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceMessageMetadata
                 .getDeviceIdentification());
 
@@ -135,11 +131,8 @@ public class ManagementService {
                 deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
     }
 
-    public void handleDisableDebuggingResponse(final DeviceMessageMetadata deviceMessageMetadata,
+    private void handleMetadataOnlyResponseMessage(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType deviceResult, final OsgpException exception) {
-
-        LOGGER.info("handleDisableDebuggingResponse for MessageType: {}, with result: {}",
-                deviceMessageMetadata.getMessageType(), deviceResult.toString());
 
         ResponseMessageResultType result = deviceResult;
         if (exception != null) {

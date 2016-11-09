@@ -77,7 +77,7 @@ public class ManagementService {
 
     public String enqueueFindEventsRequest(final String organisationIdentification, final String deviceIdentification,
             final List<FindEventsRequestData> findEventsQueryList, final int messagePriority, final Long scheduleTime)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -101,8 +101,8 @@ public class ManagementService {
                 messagePriority, scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata)
-                .request(new FindEventsRequestDataList(findEventsQueryList)).build();
+        .deviceMessageMetadata(deviceMessageMetadata)
+        .request(new FindEventsRequestDataList(findEventsQueryList)).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -168,7 +168,7 @@ public class ManagementService {
 
     public String enqueueEnableDebuggingRequest(final String organisationIdentification,
             final String deviceIdentification, final int messagePriority, final Long scheduleTime)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -194,7 +194,7 @@ public class ManagementService {
 
     public String enqueueDisableDebuggingRequest(final String organisationIdentification,
             final String deviceIdentification, final int messagePriority, final Long scheduleTime)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
