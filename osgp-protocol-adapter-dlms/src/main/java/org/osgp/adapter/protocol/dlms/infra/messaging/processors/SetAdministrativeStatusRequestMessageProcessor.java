@@ -38,6 +38,8 @@ public class SetAdministrativeStatusRequestMessageProcessor extends DeviceReques
     @Override
     protected Serializable handleMessage(final DlmsConnectionHolder conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
+        this.assertRequestObjectType(AdministrativeStatusTypeDto.class, requestObject);
+
         final AdministrativeStatusTypeDto administrativeStatusType = (AdministrativeStatusTypeDto) requestObject;
 
         this.configurationService.requestSetAdministrativeStatus(conn, device, administrativeStatusType);

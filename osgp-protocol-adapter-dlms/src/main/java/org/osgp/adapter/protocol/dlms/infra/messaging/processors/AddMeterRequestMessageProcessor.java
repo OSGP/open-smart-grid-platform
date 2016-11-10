@@ -10,6 +10,7 @@ package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 import java.io.Serializable;
 
 import org.osgp.adapter.protocol.dlms.application.services.InstallationService;
+import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
@@ -38,8 +39,10 @@ public class AddMeterRequestMessageProcessor extends DeviceRequestMessageProcess
     }
 
     @Override
-    protected Serializable handleMessage(final Serializable requestObject) throws OsgpException,
-            ProtocolAdapterException {
+    protected Serializable handleMessage(final DlmsDevice device, final Serializable requestObject)
+            throws OsgpException, ProtocolAdapterException {
+        this.assertRequestObjectType(SmartMeteringDeviceDto.class, requestObject);
+
         final SmartMeteringDeviceDto smartMeteringDevice = (SmartMeteringDeviceDto) requestObject;
         this.installationService.addMeter(smartMeteringDevice);
 

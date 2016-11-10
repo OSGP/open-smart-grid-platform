@@ -112,6 +112,15 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         logger.debug("deviceIdentification: {}", messageMetadata.getDeviceIdentification());
     }
 
+    protected void assertRequestObjectType(final Class<?> expected, final Serializable requestObject)
+            throws ProtocolAdapterException {
+        if (!expected.isInstance(requestObject)) {
+            throw new ProtocolAdapterException(String.format(
+                    "The request object has an incorrect type. %s excepted but %s was found.",
+                    expected.getCanonicalName(), requestObject.getClass().getCanonicalName()));
+        }
+    }
+
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
         LOGGER.debug("Processing {} request message", this.deviceRequestMessageType.name());
@@ -126,13 +135,13 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         try {
             // Handle message
             messageMetadata.handleMessage(message);
+            device = this.domainHelperService.findDlmsDevice(messageMetadata);
 
             LOGGER.info("{} called for device: {} for organisation: {}", message.getJMSType(),
                     messageMetadata.getDeviceIdentification(), messageMetadata.getOrganisationIdentification());
 
             Serializable response = null;
             if (this.usesDeviceConnection()) {
-                device = this.domainHelperService.findDlmsDevice(messageMetadata);
                 final LoggingDlmsMessageListener dlmsMessageListener;
                 if (device.isInDebugMode()) {
                     dlmsMessageListener = new LoggingDlmsMessageListener(device.getDeviceIdentification(),
@@ -145,7 +154,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
                 conn = this.dlmsConnectionFactory.getConnection(device, dlmsMessageListener);
                 response = this.handleMessage(conn, device, message.getObject());
             } else {
-                response = this.handleMessage(message.getObject());
+                response = this.handleMessage(device, message.getObject());
             }
 
             // Send response
@@ -195,8 +204,8 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
                 "handleMessage(DlmsConnection, DlmsDevice, Serializable) should be overriden by a subclass, or usesDeviceConnection should return false.");
     }
 
-    protected Serializable handleMessage(final Serializable requestObject) throws OsgpException,
-            ProtocolAdapterException {
+    protected Serializable handleMessage(final DlmsDevice device, final Serializable requestObject)
+            throws OsgpException, ProtocolAdapterException {
         throw new UnsupportedOperationException(
                 "handleMessage(Serializable) should be overriden by a subclass, or usesDeviceConnection should return true.");
     }

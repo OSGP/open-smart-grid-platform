@@ -38,6 +38,8 @@ public class SetAlarmNotificationsRequestMessageProcessor extends DeviceRequestM
     @Override
     protected Serializable handleMessage(final DlmsConnectionHolder conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
+        this.assertRequestObjectType(AlarmNotificationsDto.class, requestObject);
+
         final AlarmNotificationsDto alarmNotifications = (AlarmNotificationsDto) requestObject;
 
         this.configurationService.setAlarmNotifications(conn, device, alarmNotifications);
