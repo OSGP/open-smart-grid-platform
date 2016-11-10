@@ -1,4 +1,4 @@
-Feature: 
+Feature: DLMS logging
   As a grid operator
   I want the platform to collect detailed DLMS communication logs for a device in debug mode
   In order to ...
