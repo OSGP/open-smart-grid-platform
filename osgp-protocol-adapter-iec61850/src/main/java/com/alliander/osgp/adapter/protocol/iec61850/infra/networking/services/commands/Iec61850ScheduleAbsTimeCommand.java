@@ -17,6 +17,7 @@ import org.openmuc.openiec61850.Fc;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuWriteCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.ProfilePair;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeWriteException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
@@ -39,7 +40,7 @@ public class Iec61850ScheduleAbsTimeCommand implements RtuReadCommand<ProfileDto
     // (numPts) from the device
     private static final int ARRAY_SIZE = 50;
 
-    private static final float DEFAULT_VALUE = 0f;
+    private static final float DEFAULT_VALUE = 0F;
     private static final Date DEFAULT_TIME = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeZone.UTC).toDate();
 
     private LogicalNode logicalNode;
@@ -79,8 +80,8 @@ public class Iec61850ScheduleAbsTimeCommand implements RtuReadCommand<ProfileDto
 
         final ProfilePair profilePair = this.convert(profile.getProfileEntries());
 
-        containingNode.writeFloatArray(SubDataAttribute.VALUES, profilePair.values);
-        containingNode.writeDateArray(SubDataAttribute.TIMES, profilePair.times);
+        containingNode.writeFloatArray(SubDataAttribute.VALUES, profilePair.getValues());
+        containingNode.writeDateArray(SubDataAttribute.TIMES, profilePair.getTimes());
     }
 
     private void checkProfile(final ProfileDto profile) throws NodeWriteException {
@@ -95,25 +96,6 @@ public class Iec61850ScheduleAbsTimeCommand implements RtuReadCommand<ProfileDto
             throw new NodeWriteException(String.format(
                     "Invalid profile. Profile entries list size %d is larger then allowed %d.", size, ARRAY_SIZE));
         }
-    }
-
-    private List<ProfileEntryDto> convert(final NodeContainer profileNode) {
-        final Float[] values = profileNode.getFloatArray(SubDataAttribute.VALUES);
-        final Date[] times = profileNode.getDateArray(SubDataAttribute.TIMES);
-
-        final List<ProfileEntryDto> profileEntries = new ArrayList<>();
-
-        for (int i = 0; i < ARRAY_SIZE; i++) {
-            final int index = i + 1;
-            final double value = values[i];
-            final DateTime time = (DateTime) (times[i] == null ? DEFAULT_TIME : new DateTime(times[i]));
-
-            if (value != DEFAULT_VALUE && !time.equals(DEFAULT_TIME)) {
-                profileEntries.add(new ProfileEntryDto(index, time, value));
-            }
-        }
-
-        return profileEntries;
     }
 
     private ProfilePair convert(final List<ProfileEntryDto> profileEntries) {
@@ -139,14 +121,27 @@ public class Iec61850ScheduleAbsTimeCommand implements RtuReadCommand<ProfileDto
         return new ProfilePair(values, times);
     }
 
-    private class ProfilePair {
+    private List<ProfileEntryDto> convert(final NodeContainer profileNode) {
+        final Float[] values = profileNode.getFloatArray(SubDataAttribute.VALUES);
+        final Date[] times = profileNode.getDateArray(SubDataAttribute.TIMES);
 
-        protected final Float[] values;
-        protected final Date[] times;
+        final List<ProfileEntryDto> profileEntries = new ArrayList<>();
 
-        protected ProfilePair(final Float[] values, final Date[] times) {
-            this.values = values;
-            this.times = times;
+        for (int i = 0; i < ARRAY_SIZE; i++) {
+            final double value = values[i];
+            final Date time;
+            if (times[i] == null) {
+                time = DEFAULT_TIME;
+            } else {
+                time = times[i];
+            }
+
+            if (!time.equals(DEFAULT_TIME)) {
+                profileEntries.add(new ProfileEntryDto(i + 1, new DateTime(time), value));
+            }
         }
+
+        return profileEntries;
     }
+
 }

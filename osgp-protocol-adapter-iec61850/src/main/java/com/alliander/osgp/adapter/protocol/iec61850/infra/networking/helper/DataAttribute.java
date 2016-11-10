@@ -217,7 +217,11 @@ public enum DataAttribute {
     /**
      * Schedule Category
      */
-    SCHEDULE_CAT("SchCat"),
+    SCHEDULE_CAT("SchdCat"),
+    /**
+     * Schedule Category WAGO RTU
+     */
+    SCHEDULE_CAT_RTU("SchCat"),
     /**
      * Absolute time schedule entries
      */

@@ -28,6 +28,7 @@ public class Iec61850ScheduleCatCommand implements RtuReadCommand<MeasurementDto
 
     private static final String NODE_NAME = "DSCH";
     private static final DataAttribute DATA_ATTRIBUTE = DataAttribute.SCHEDULE_CAT;
+    private static final DataAttribute DATA_ATTRIBUTE_RTU = DataAttribute.SCHEDULE_CAT_RTU;
     private static final SubDataAttribute SUB_DATA_ATTRIBUTE = SubDataAttribute.SETPOINT_VALUE;
     private static final Fc FC = Fc.SP;
 
@@ -43,8 +44,8 @@ public class Iec61850ScheduleCatCommand implements RtuReadCommand<MeasurementDto
     @Override
     public MeasurementDto execute(final Iec61850Client client, final DeviceConnection connection,
             final LogicalDevice logicalDevice) throws NodeReadException {
-        final NodeContainer containingNode = connection.getFcModelNode(logicalDevice, this.logicalNode, DATA_ATTRIBUTE,
-                FC);
+        final NodeContainer containingNode = connection.getFcModelNode(logicalDevice, this.logicalNode,
+                DATA_ATTRIBUTE_RTU, FC);
         client.readNodeDataValues(connection.getConnection().getClientAssociation(), containingNode.getFcmodelNode());
         return this.translate(containingNode);
     }
@@ -59,14 +60,14 @@ public class Iec61850ScheduleCatCommand implements RtuReadCommand<MeasurementDto
     public void executeWrite(final Iec61850Client client, final DeviceConnection connection,
             final LogicalDevice logicalDevice, final SetPointDto setPoint) throws NodeWriteException {
 
-        final int value = this.checkValue(setPoint.getValue());
+        final int value = this.checkValues(setPoint.getValue());
 
-        final NodeContainer containingNode = connection.getFcModelNode(logicalDevice, this.logicalNode, DATA_ATTRIBUTE,
-                FC);
+        final NodeContainer containingNode = connection.getFcModelNode(logicalDevice, this.logicalNode,
+                DATA_ATTRIBUTE_RTU, FC);
         containingNode.writeInteger(SUB_DATA_ATTRIBUTE, value);
     }
 
-    private int checkValue(final double value) throws NodeWriteException {
+    private int checkValues(final double value) throws NodeWriteException {
         int result;
         try {
             result = (int) value;

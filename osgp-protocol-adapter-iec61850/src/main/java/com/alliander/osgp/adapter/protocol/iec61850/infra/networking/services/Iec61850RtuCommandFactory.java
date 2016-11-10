@@ -29,11 +29,16 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.co
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementFilterDto;
 
-public class Iec61850RtuCommandFactory implements RtuReadCommandFactory<MeasurementDto, MeasurementFilterDto> {
+public final class Iec61850RtuCommandFactory implements RtuReadCommandFactory<MeasurementDto, MeasurementFilterDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850RtuCommandFactory.class);
     private static final int SCHEDULE_ID_START = 1;
     private static final int SCHEDULE_ID_END = 4;
+
+    private static final int ONE = 1;
+    private static final int TWO = 2;
+    private static final int THREE = 3;
+    private static final int FOUR = 4;
 
     private static Iec61850RtuCommandFactory instance;
 
@@ -43,26 +48,28 @@ public class Iec61850RtuCommandFactory implements RtuReadCommandFactory<Measurem
         this.rtuCommandMap.put(DataAttribute.BEHAVIOR.getDescription(), new Iec61850BehaviourCommand());
         this.rtuCommandMap.put(DataAttribute.HEALTH.getDescription(), new Iec61850HealthCommand());
         this.rtuCommandMap.put(DataAttribute.MODE.getDescription(), new Iec61850ModeCommand());
-        this.rtuCommandMap.put(DataAttribute.ALARM_ONE.getDescription(), new Iec61850AlarmCommand(1));
-        this.rtuCommandMap.put(DataAttribute.ALARM_TWO.getDescription(), new Iec61850AlarmCommand(2));
-        this.rtuCommandMap.put(DataAttribute.ALARM_THREE.getDescription(), new Iec61850AlarmCommand(3));
-        this.rtuCommandMap.put(DataAttribute.ALARM_FOUR.getDescription(), new Iec61850AlarmCommand(4));
+        this.rtuCommandMap.put(DataAttribute.ALARM_ONE.getDescription(), new Iec61850AlarmCommand(ONE));
+        this.rtuCommandMap.put(DataAttribute.ALARM_TWO.getDescription(), new Iec61850AlarmCommand(TWO));
+        this.rtuCommandMap.put(DataAttribute.ALARM_THREE.getDescription(), new Iec61850AlarmCommand(THREE));
+        this.rtuCommandMap.put(DataAttribute.ALARM_FOUR.getDescription(), new Iec61850AlarmCommand(FOUR));
         this.rtuCommandMap.put(DataAttribute.ALARM_OTHER.getDescription(), new Iec61850AlarmOtherCommand());
-        this.rtuCommandMap.put(DataAttribute.WARNING_ONE.getDescription(), new Iec61850WarningCommand(1));
-        this.rtuCommandMap.put(DataAttribute.WARNING_TWO.getDescription(), new Iec61850WarningCommand(2));
-        this.rtuCommandMap.put(DataAttribute.WARNING_THREE.getDescription(), new Iec61850WarningCommand(3));
-        this.rtuCommandMap.put(DataAttribute.WARNING_FOUR.getDescription(), new Iec61850WarningCommand(4));
+        this.rtuCommandMap.put(DataAttribute.WARNING_ONE.getDescription(), new Iec61850WarningCommand(ONE));
+        this.rtuCommandMap.put(DataAttribute.WARNING_TWO.getDescription(), new Iec61850WarningCommand(TWO));
+        this.rtuCommandMap.put(DataAttribute.WARNING_THREE.getDescription(), new Iec61850WarningCommand(THREE));
+        this.rtuCommandMap.put(DataAttribute.WARNING_FOUR.getDescription(), new Iec61850WarningCommand(FOUR));
         this.rtuCommandMap.put(DataAttribute.WARNING_OTHER.getDescription(), new Iec61850WarningOtherCommand());
 
         for (int i = SCHEDULE_ID_START; i <= SCHEDULE_ID_END; i++) {
             this.rtuCommandMap.put(DataAttribute.SCHEDULE_ID.getDescription() + i, new Iec61850ScheduleIdCommand(i));
             this.rtuCommandMap.put(DataAttribute.SCHEDULE_CAT.getDescription() + i, new Iec61850ScheduleCatCommand(i));
+            this.rtuCommandMap.put(DataAttribute.SCHEDULE_CAT_RTU.getDescription() + i,
+                    new Iec61850ScheduleCatCommand(i));
             this.rtuCommandMap.put(DataAttribute.SCHEDULE_TYPE.getDescription() + i,
                     new Iec61850ScheduleTypeCommand(i));
         }
     }
 
-    public static Iec61850RtuCommandFactory getInstance() {
+    public static synchronized Iec61850RtuCommandFactory getInstance() {
         if (instance == null) {
             instance = new Iec61850RtuCommandFactory();
         }
