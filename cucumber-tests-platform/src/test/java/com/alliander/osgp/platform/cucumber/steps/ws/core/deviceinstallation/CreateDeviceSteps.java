@@ -30,7 +30,6 @@ public class CreateDeviceSteps extends CoreStepsBase {
 
     protected CreateDeviceSteps() throws Throwable {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     private static final String TEST_SUITE = "DeviceInstallation";

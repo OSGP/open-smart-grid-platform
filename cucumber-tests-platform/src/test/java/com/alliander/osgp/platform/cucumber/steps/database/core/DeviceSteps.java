@@ -36,6 +36,7 @@ import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
+import com.alliander.osgp.platform.cucumber.steps.Keys;
 
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
@@ -119,10 +120,9 @@ public class DeviceSteps {
                 .findByModelCode(getString(settings, "DeviceModel", Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
         device.setDeviceModel(deviceModel);
 
-        // TODO: add protocol information in controlled place
         device.updateProtocol(this.protocolInfoRepository.findByProtocolAndProtocolVersion(
-                getString(settings, "Protocol", DeviceSteps.DEFAULT_PROTOCOL),
-                getString(settings, "ProtocolVersion", DeviceSteps.DEFAULT_PROTOCOL_VERSION)));
+                getString(settings, Keys.KEY_PROTOCOL, DeviceSteps.DEFAULT_PROTOCOL),
+                getString(settings, Keys.KEY_PROTOCOL_VERSION, DeviceSteps.DEFAULT_PROTOCOL_VERSION)));
 
         device.updateRegistrationData(InetAddress.getLoopbackAddress(),
                 getString(settings, "DeviceType", DeviceSteps.DEFAULT_DEVICE_TYPE));

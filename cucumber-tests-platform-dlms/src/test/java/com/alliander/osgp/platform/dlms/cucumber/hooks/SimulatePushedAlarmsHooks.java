@@ -13,11 +13,13 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 
+import com.alliander.osgp.platform.dlms.cucumber.ApplicationConfiguration;
+
 /**
  * DLMS specific. 
  */
 public class SimulatePushedAlarmsHooks {
-
+	
     /**
      * 
      * @param deviceId
@@ -27,8 +29,10 @@ public class SimulatePushedAlarmsHooks {
      */
     public static void simulateAlarm(final String deviceId, final byte[] alarmsToPush) throws UnknownHostException,
     IOException {
+    	ApplicationConfiguration applicationConfig = new ApplicationConfiguration();
+    	
         // TODO Make this configurable.
-        final Socket socket = new Socket("localhost", 9598);
+        final Socket socket = new Socket(applicationConfig.alarmNotificationsHost, Integer.parseInt(applicationConfig.alarmNotificationsPort));
         try {
             final OutputStream outputStream = socket.getOutputStream();
             outputStream.write(deviceId.getBytes(StandardCharsets.US_ASCII));
