@@ -112,6 +112,15 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         logger.debug("deviceIdentification: {}", messageMetadata.getDeviceIdentification());
     }
 
+    protected void assertRequestObjectType(final Class<?> expected, final Serializable requestObject)
+            throws ProtocolAdapterException {
+        if (!expected.isInstance(requestObject)) {
+            throw new ProtocolAdapterException(String.format(
+                    "The request object has an incorrect type. %s excepted but %s was found.",
+                    expected.getCanonicalName(), requestObject.getClass().getCanonicalName()));
+        }
+    }
+
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
         LOGGER.debug("Processing {} request message", this.deviceRequestMessageType.name());

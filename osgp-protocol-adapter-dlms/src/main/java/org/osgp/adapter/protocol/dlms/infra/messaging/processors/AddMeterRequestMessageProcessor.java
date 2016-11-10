@@ -41,6 +41,8 @@ public class AddMeterRequestMessageProcessor extends DeviceRequestMessageProcess
     @Override
     protected Serializable handleMessage(final DlmsDevice device, final Serializable requestObject)
             throws OsgpException, ProtocolAdapterException {
+        this.assertRequestObjectType(SmartMeteringDeviceDto.class, requestObject);
+
         final SmartMeteringDeviceDto smartMeteringDevice = (SmartMeteringDeviceDto) requestObject;
         this.installationService.addMeter(smartMeteringDevice);
 

@@ -36,6 +36,8 @@ public class SynchronizeTimeRequestMessageProcessor extends DeviceRequestMessage
     @Override
     protected Serializable handleMessage(final DlmsConnectionHolder conn, final DlmsDevice device,
             final Serializable requestObject) throws ProtocolAdapterException {
+        this.assertRequestObjectType(SynchronizeTimeRequestDto.class, requestObject);
+
         this.adhocService.synchronizeTime(conn, device, (SynchronizeTimeRequestDto) requestObject);
         return null;
     }

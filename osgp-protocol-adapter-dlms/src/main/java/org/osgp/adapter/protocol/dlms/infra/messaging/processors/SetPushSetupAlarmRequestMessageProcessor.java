@@ -38,6 +38,8 @@ public class SetPushSetupAlarmRequestMessageProcessor extends DeviceRequestMessa
     @Override
     protected Serializable handleMessage(final DlmsConnectionHolder conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
+        this.assertRequestObjectType(PushSetupAlarmDto.class, requestObject);
+
         final PushSetupAlarmDto pushSetupAlarm = (PushSetupAlarmDto) requestObject;
         this.configurationService.setPushSetupAlarm(conn, device, pushSetupAlarm);
         return null;

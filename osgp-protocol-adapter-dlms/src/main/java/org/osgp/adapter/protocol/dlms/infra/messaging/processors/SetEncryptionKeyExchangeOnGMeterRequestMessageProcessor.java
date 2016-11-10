@@ -38,6 +38,8 @@ public class SetEncryptionKeyExchangeOnGMeterRequestMessageProcessor extends Dev
     @Override
     protected Serializable handleMessage(final DlmsConnectionHolder conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
+        this.assertRequestObjectType(GMeterInfoDto.class, requestObject);
+
         final GMeterInfoDto gMeterInfo = (GMeterInfoDto) requestObject;
         return this.configurationService.setEncryptionKeyExchangeOnGMeter(conn, device, gMeterInfo);
     }

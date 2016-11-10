@@ -38,6 +38,7 @@ public class FindEventsRequestMessageProcessor extends DeviceRequestMessageProce
     @Override
     protected Serializable handleMessage(final DlmsConnectionHolder conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
+        this.assertRequestObjectType(FindEventsRequestList.class, requestObject);
 
         return this.managementService.findEvents(conn, device, (FindEventsRequestList) requestObject);
     }

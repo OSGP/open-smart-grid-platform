@@ -38,6 +38,8 @@ public class SetActivityCalendarRequestMessageProcessor extends DeviceRequestMes
     @Override
     protected Serializable handleMessage(final DlmsConnectionHolder conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
+        this.assertRequestObjectType(ActivityCalendarDto.class, requestObject);
+
         final ActivityCalendarDto activityCalendarDto = (ActivityCalendarDto) requestObject;
 
         return this.configurationService.setActivityCalendar(conn, device, activityCalendarDto);

@@ -33,9 +33,11 @@ public class GetSpecificAttributeValueRequestMessageProcessor extends DeviceRequ
     @Override
     protected Serializable handleMessage(final DlmsConnectionHolder conn, final DlmsDevice device,
             final Serializable requestObject) throws ProtocolAdapterException {
+
+        this.assertRequestObjectType(SpecificAttributeValueRequestDto.class, requestObject);
+
         final SpecificAttributeValueRequestDto specificConfigurationObjectRequestDataDto = (SpecificAttributeValueRequestDto) requestObject;
 
-        return this.adhocService
-                .getSpecificAttributeValue(conn, device, specificConfigurationObjectRequestDataDto);
+        return this.adhocService.getSpecificAttributeValue(conn, device, specificConfigurationObjectRequestDataDto);
     }
 }

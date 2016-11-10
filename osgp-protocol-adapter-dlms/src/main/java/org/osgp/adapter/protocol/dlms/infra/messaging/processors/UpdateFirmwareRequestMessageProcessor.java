@@ -34,6 +34,7 @@ public class UpdateFirmwareRequestMessageProcessor extends DeviceRequestMessageP
     @Override
     protected Serializable handleMessage(final DlmsConnectionHolder conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
+        this.assertRequestObjectType(String.class, requestObject);
 
         return (Serializable) this.configurationService.updateFirmware(conn, device, (String) requestObject);
     }

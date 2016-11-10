@@ -37,11 +37,7 @@ public class BundleMessageProcessor extends DeviceRequestMessageProcessor {
     protected Serializable handleMessage(final DlmsConnectionHolder conn, final DlmsDevice device,
             final Serializable requestObject) throws ProtocolAdapterException {
 
-        if (!(requestObject instanceof BundleMessagesRequestDto)) {
-            throw new ProtocolAdapterException(
-                    "Expected request object of type BundleMessageDataContainer. In stead of "
-                            + requestObject.getClass());
-        }
+        this.assertRequestObjectType(BundleMessagesRequestDto.class, requestObject);
         final BundleMessagesRequestDto bundleMessagesRequest = (BundleMessagesRequestDto) requestObject;
 
         return this.bundleService.callExecutors(conn, device, bundleMessagesRequest);
