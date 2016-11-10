@@ -97,8 +97,17 @@ public final class Iec61850RtuCommandFactory implements RtuReadCommandFactory<Me
     }
 
     private boolean useFilterId(final DataAttribute da) {
-        return da == DataAttribute.SCHEDULE_ID || da == DataAttribute.SCHEDULE_TYPE || da == DataAttribute.SCHEDULE_CAT
-                || da == DataAttribute.SCHEDULE_ABS_TIME;
+        boolean result = false;
+        if (da == DataAttribute.SCHEDULE_ID || da == DataAttribute.SCHEDULE_TYPE) {
+            result = true;
+        } 
+        if (da == DataAttribute.SCHEDULE_CAT || da == DataAttribute.SCHEDULE_CAT_RTU) {
+            result = true;
+        } 
+        if (da == DataAttribute.SCHEDULE_ABS_TIME) {
+            result = true;
+        }
+        return result;
     }
 
 }
