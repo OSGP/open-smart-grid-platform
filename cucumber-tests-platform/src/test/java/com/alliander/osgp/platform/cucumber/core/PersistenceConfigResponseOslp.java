@@ -10,7 +10,6 @@ package com.alliander.osgp.platform.cucumber.core;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -19,15 +18,11 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRepository;
-import com.alliander.osgp.platform.cucumber.support.ApplicationConfig;
 
 @EnableJpaRepositories(entityManagerFactoryRef = "entityMgrFactOslp", 
 	transactionManagerRef = "txMgrOslp", 
 	basePackageClasses = { OslpDeviceRepository.class })
 public class PersistenceConfigResponseOslp extends ApplicationConfiguration {
-
-    @Autowired
-    protected ApplicationConfig applicationConfig;
 
     public PersistenceConfigResponseOslp() {
     }

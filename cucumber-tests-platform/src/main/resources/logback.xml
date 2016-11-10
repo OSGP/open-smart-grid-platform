@@ -11,7 +11,7 @@
   <logger name="org.springframework" level="WARN" />
   <logger name="org.apache.http.wire" level="DEBUG" />
 
-  <root level="DEBUG">
+  <root level="INFO">
     <appender-ref ref="STDOUT" />
   </root>
   

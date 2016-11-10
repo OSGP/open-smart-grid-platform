@@ -11,7 +11,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -19,15 +18,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
-import com.alliander.osgp.platform.cucumber.support.ApplicationConfig;
-
 @EnableJpaRepositories(entityManagerFactoryRef = "entityMgrFactDlms",
     transactionManagerRef = "txMgrDlms",
     basePackageClasses = { DlmsDeviceRepository.class })
 public class PersistenceConfigResponseDlms extends ApplicationConfiguration {
-
-    @Autowired
-    protected ApplicationConfig applicationConfig;
 
     public PersistenceConfigResponseDlms() {
     }

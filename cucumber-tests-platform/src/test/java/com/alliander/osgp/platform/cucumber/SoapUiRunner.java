@@ -20,8 +20,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
+import com.alliander.osgp.platform.cucumber.core.ApplicationConfiguration;
 import com.alliander.osgp.platform.cucumber.core.Helpers;
-import com.alliander.osgp.platform.cucumber.support.ApplicationConfig;
 import com.alliander.osgp.platform.cucumber.support.RunXpathResult;
 import com.alliander.osgp.platform.cucumber.support.TestCaseResult;
 import com.alliander.osgp.platform.cucumber.support.TestCaseRunner;
@@ -40,9 +40,6 @@ import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 public abstract class SoapUiRunner {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Helpers.class);
-
-    @Autowired
-    protected ApplicationConfig applicationConfig;
 
     @Value("${serviceEndpoint}")
     protected String serviceEndpoint;
