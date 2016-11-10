@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import com.alliander.osgp.platform.cucumber.core.ApplicationConfiguration;
 import com.alliander.osgp.platform.cucumber.core.Helpers;
 import com.alliander.osgp.platform.cucumber.support.RunXpathResult;
 import com.alliander.osgp.platform.cucumber.support.TestCaseResult;
