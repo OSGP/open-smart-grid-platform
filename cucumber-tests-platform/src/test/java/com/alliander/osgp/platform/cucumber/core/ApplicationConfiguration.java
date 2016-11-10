@@ -32,14 +32,17 @@ import com.alliander.osgp.shared.application.config.AbstractConfig;
 })
 public abstract class ApplicationConfiguration extends AbstractConfig {
 
-    @Value("${cucumber.dbs.driver}")
+    @Value("${dbs.driver}")
     protected String databaseDriver;
 
-    @Value("${cucumber.dbs.username}")
+    @Value("${dbs.username}")
     protected String databaseUsername;
 
-    @Value("${cucumber.dbs.password}")
+    @Value("${dbs.password}")
     protected String databasePassword;
+
+    @Value("${dbs.location}")
+    protected String databaselocation;
 
     protected static final String PROPERTY_NAME_HIBERNATE_DIALECT = "hibernate.dialect";
     @Value("${hibernate.dialect}")
@@ -67,8 +70,7 @@ public abstract class ApplicationConfiguration extends AbstractConfig {
     public ApplicationConfiguration() {
     	// Default constructor
     }
-
-
+    
     /**
      * Method for creating the Data Source.
      *

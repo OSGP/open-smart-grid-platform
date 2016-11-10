@@ -24,7 +24,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResp
     basePackageClasses = { MeterResponseDataRepository.class })
 public class PersistenceConfigResponseData extends ApplicationConfiguration {
 
-    @Value("${cucumber.osgpadapterwssmartmeteringdbs.url}")
+    @Value("${osgpadapterwssmartmeteringdbs.url}")
     private String databaseUrl;
 
     @Value("${entitymanager.packages.to.scan}")

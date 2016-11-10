@@ -27,7 +27,7 @@ public class PersistenceConfigResponseOslp extends ApplicationConfiguration {
     public PersistenceConfigResponseOslp() {
     }
 
-    @Value("${cucumber.osgpadapterprotocoloslpdbs.url}")
+    @Value("${osgpadapterprotocoloslpdbs.url}")
     private String databaseUrl;
 
     @Value("${entitymanager.packages.to.scan.oslp}")

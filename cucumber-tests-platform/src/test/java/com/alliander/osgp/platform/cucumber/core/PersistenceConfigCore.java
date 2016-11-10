@@ -26,7 +26,7 @@ import com.alliander.osgp.domain.core.repositories.DeviceRepository;
     basePackageClasses = { DeviceRepository.class, DeviceAuthorizationRepository.class })
 public class PersistenceConfigCore extends ApplicationConfiguration {
 
-    @Value("${cucumber.osgpcoredbs.url}")
+    @Value("${osgpcoredbs.url}")
     private String databaseUrl;
 
     @Value("${entitymanager.packages.to.scan.core}")

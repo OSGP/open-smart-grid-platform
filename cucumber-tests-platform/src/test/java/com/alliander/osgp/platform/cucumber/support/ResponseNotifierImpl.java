@@ -29,13 +29,13 @@ public class ResponseNotifierImpl implements ResponseNotifier {
 
     private Connection connection;
 
-    @Value("${cucumber.osgpadapterwssmartmeteringdbs.url}")
+    @Value("${osgpadapterwssmartmeteringdbs.url}")
     private String jdbcUrl;
 
-    @Value("${cucumber.dbs.username}")
+    @Value("${dbs.username}")
     private String username;
 
-    @Value("${cucumber.dbs.password}")
+    @Value("${dbs.password}")
     private String password;
 
     @Override

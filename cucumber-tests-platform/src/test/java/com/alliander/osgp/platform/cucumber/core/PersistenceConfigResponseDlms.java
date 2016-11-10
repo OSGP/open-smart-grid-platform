@@ -26,7 +26,7 @@ public class PersistenceConfigResponseDlms extends ApplicationConfiguration {
     public PersistenceConfigResponseDlms() {
     }
 
-    @Value("${cucumber.osgpadapterprotocoldlmsdbs.url}")
+    @Value("${osgpadapterprotocoldlmsdbs.url}")
     private String databaseUrl;
 
     @Value("${entitymanager.packages.to.scan.dlms}")
