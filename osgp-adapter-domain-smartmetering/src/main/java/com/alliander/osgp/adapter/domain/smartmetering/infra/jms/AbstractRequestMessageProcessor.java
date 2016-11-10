@@ -15,6 +15,8 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 public abstract class AbstractRequestMessageProcessor {
 
+    private static final String ERROR_MSG_UNSUPPORTED_OPERATION = "Operation %s is not supported, it must be overridden by the implementing class.";
+
     @Autowired
     protected WebServiceResponseMessageSender webServiceResponseMessageSender;
 
@@ -23,8 +25,16 @@ public abstract class AbstractRequestMessageProcessor {
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractRequestMessageProcessor.class);
 
-    protected abstract void handleMessage(DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
-            throws FunctionalException;
+    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
+            throws FunctionalException {
+        throw new UnsupportedOperationException(String.format(ERROR_MSG_UNSUPPORTED_OPERATION,
+                "handleMessage(deviceMessageMetadata, dataObject)"));
+    }
+
+    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata) throws FunctionalException {
+        throw new UnsupportedOperationException(String.format(ERROR_MSG_UNSUPPORTED_OPERATION,
+                "handleMessage(deviceMessageMetadata)"));
+    }
 
     /**
      * In case of an error, this function can be used to send a response

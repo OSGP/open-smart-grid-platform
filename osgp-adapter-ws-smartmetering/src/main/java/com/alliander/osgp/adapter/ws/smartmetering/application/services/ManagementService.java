@@ -41,6 +41,7 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
+import com.alliander.osgp.shared.exceptionhandling.UnknownCorrelationUidException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
 @Service(value = "wsSmartMeteringManagementService")
@@ -59,6 +60,9 @@ public class ManagementService {
     private DeviceRepository deviceRepository;
 
     @Autowired
+    private MeterResponseDataService meterResponseDataService;
+
+    @Autowired
     private MeterResponseDataRepository meterResponseDataRepository;
 
     @Autowired
@@ -73,7 +77,7 @@ public class ManagementService {
 
     public String enqueueFindEventsRequest(final String organisationIdentification, final String deviceIdentification,
             final List<FindEventsRequestData> findEventsQueryList, final int messagePriority, final Long scheduleTime)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -94,13 +98,11 @@ public class ManagementService {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, SmartMeteringRequestMessageType.FIND_EVENTS.toString(),
-                messagePriority,scheduleTime);
+                messagePriority, scheduleTime);
 
-        // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata)
-                .request(new FindEventsRequestDataList(findEventsQueryList)).build();
-        // @formatter:on
+        .deviceMessageMetadata(deviceMessageMetadata)
+        .request(new FindEventsRequestDataList(findEventsQueryList)).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -162,5 +164,67 @@ public class ManagementService {
 
         final PageRequest request = new PageRequest(pageNumber, PAGE_SIZE, Sort.Direction.DESC, "deviceIdentification");
         return this.deviceRepository.findAllAuthorized(organisation, request);
+    }
+
+    public String enqueueEnableDebuggingRequest(final String organisationIdentification,
+            final String deviceIdentification, final int messagePriority, final Long scheduleTime)
+            throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.ENABLE_DEBUGGING);
+
+        LOGGER.info("EnableDebugging called with organisation {}", organisationIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                SmartMeteringRequestMessageType.ENABLE_DEBUGGING.toString(), messagePriority, scheduleTime);
+
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
+                deviceMessageMetadata).build();
+
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
+    public String enqueueDisableDebuggingRequest(final String organisationIdentification,
+            final String deviceIdentification, final int messagePriority, final Long scheduleTime)
+            throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.DISABLE_DEBUGGING);
+
+        LOGGER.info("DisableDebugging called with organisation {}", organisationIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                SmartMeteringRequestMessageType.DISABLE_DEBUGGING.toString(), messagePriority, scheduleTime);
+
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
+                deviceMessageMetadata).build();
+
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
+    public MeterResponseData dequeueEnableDebuggingResponse(final String correlationUid)
+            throws UnknownCorrelationUidException {
+        return this.meterResponseDataService.dequeue(correlationUid);
+    }
+
+    public MeterResponseData dequeueDisableDebuggingResponse(final String correlationUid)
+            throws UnknownCorrelationUidException {
+        return this.meterResponseDataService.dequeue(correlationUid);
     }
 }
