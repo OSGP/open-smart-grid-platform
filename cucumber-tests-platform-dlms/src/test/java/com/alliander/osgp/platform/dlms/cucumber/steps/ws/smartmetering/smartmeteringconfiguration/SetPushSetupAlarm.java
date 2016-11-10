@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,9 +64,9 @@ public class SetPushSetupAlarm extends SmartMeteringStepsBase {
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
                 getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
         PROPERTIES_MAP
-                .put(Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                        getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+        .put(Keys.KEY_ORGANIZATION_IDENTIFICATION,
+                getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
+                        Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }
@@ -75,7 +76,7 @@ public class SetPushSetupAlarm extends SmartMeteringStepsBase {
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
                 getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
         PROPERTIES_MAP
-                .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
+        .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_GETRESPONSE_REQUEST, TEST_CASE_XML,
                 TEST_SUITE_XML);
@@ -86,22 +87,48 @@ public class SetPushSetupAlarm extends SmartMeteringStepsBase {
     @And("^the alarm should be pushed to the osgp_logging database device_log_item table$")
     public void theAlarmShouldBePushedToTheOsgpLoggingDatabaseTable(final Map<String, String> settings)
             throws Throwable {
-        Thread.sleep(2000);
         final Pattern responsePattern = Pattern.compile(XPATH_MATCHER_PUSH_NOTIFICATION);
 
         final String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION,
                 Defaults.DEFAULT_DEVICE_IDENTIFICATION);
-        final List<DeviceLogItem> deviceLogItems = this.deviceLogItemRepository.findByDeviceIdentification(
-                deviceIdentification, new PageRequest(0, 2)).getContent();
+
+        final List<DeviceLogItem> deviceLogItems = this.findDeviceLogItems(deviceIdentification, 2);
+        if (null == deviceLogItems) {
+            Assert.fail("DeviceLogItems where not found in the database");
+        }
 
         for (int i = 0; i < 2; i++) {
             final DeviceLogItem item = deviceLogItems.get(i);
             LOGGER.info("CreationTime: {}", item.getCreationTime().toString());
             LOGGER.info("DecodedMessage: {}", item.getDecodedMessage());
 
-            // Assert a matching DlmsPushNotification is logged.
             final Matcher responseMatcher = responsePattern.matcher(item.getDecodedMessage());
-            assertTrue(responseMatcher.find());
+            assertTrue("a matching DlmsPushNotification is logged.", responseMatcher.find());
+        }
+    }
+
+    /*
+     * it may take some time before the records are to the dev_log_item table,
+     * so we have to poll.
+     */
+    private List<DeviceLogItem> findDeviceLogItems(final String deviceIdentification, final int minExcepted) {
+        int loopCount = 0;
+        while (loopCount++ < 25) {
+            this.sleep(2000L);
+            final List<DeviceLogItem> deviceLogItems = this.deviceLogItemRepository.findByDeviceIdentification(
+                    deviceIdentification, new PageRequest(0, 2)).getContent();
+            if (deviceLogItems != null && deviceLogItems.size() >= minExcepted) {
+                return deviceLogItems;
+            }
+        }
+        return null;
+    }
+
+    private void sleep(final long sleepTime) {
+        try {
+            Thread.sleep(sleepTime);
+        } catch (final InterruptedException e) {
+            LOGGER.error("thread sleep was interruped " + e);
         }
     }
 
@@ -119,9 +146,9 @@ public class SetPushSetupAlarm extends SmartMeteringStepsBase {
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
                 getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
         PROPERTIES_MAP
-                .put(Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                        getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+        .put(Keys.KEY_ORGANIZATION_IDENTIFICATION,
+                getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
+                        Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
         this.requestRunner(TestStepStatus.FAILED, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }
@@ -129,7 +156,7 @@ public class SetPushSetupAlarm extends SmartMeteringStepsBase {
     /**
      * Verify that the response contains the fault with the given expectedResult
      * parameters.
-     * 
+     *
      * @param expectedResult
      * @throws Throwable
      */
