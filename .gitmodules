@@ -2,3 +2,4 @@
 	path = Shared
 	url = https://github.com/OSGP/Shared.git
 	branch = OC-185_Remove_settings.xml_dependency_for_JAVA_profile
+
