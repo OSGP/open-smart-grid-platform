@@ -55,7 +55,6 @@ public class DlmsDatabaseSteps {
      */
     @Transactional(transactionManager = "txMgrCore")
     public void prepareDatabaseForScenario() {
-        // Remove all data from previous scenario.
         this.deviceAuthorization.deleteAllInBatch();
         this.deleteAllDevicesService.deleteAllDevices();
         this.dlmsDSecurityKeyRepo.deleteAllInBatch();

@@ -80,6 +80,7 @@ public class DlmsDeviceSteps {
 
     private void insertDlmsEMeter(final DlmsDevice dlmsDevice, final Map<String, String> settings) {
         dlmsDevice.setPort(Defaults.DLMS_DEFAULT_PORT);
+        dlmsDevice.setLogicalId(Defaults.DLMS_DEFAULT_LOGICAL_ID);
         dlmsDevice.setHls5Active(Defaults.DLMS_DEFAULT_HSL5_ACTIVE);
 
         this.dlmsDeviceRepository.save(dlmsDevice);
@@ -111,3 +112,4 @@ public class DlmsDeviceSteps {
         return this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
     }
 }
+
