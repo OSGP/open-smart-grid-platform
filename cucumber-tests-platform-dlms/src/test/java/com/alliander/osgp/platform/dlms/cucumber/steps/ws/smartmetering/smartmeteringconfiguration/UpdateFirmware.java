@@ -64,7 +64,10 @@ public class UpdateFirmware extends SmartMeteringStepsBase {
 
     @When("^the request for a firmware upgrade is received$")
     public void theRequestForAFirmwareUpgradeIsReceived() throws Throwable {
-        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION_E_LABEL, ScenarioContext.Current().get(Keys.KEY_ORGANIZATION_IDENTIFICATION).toString());
+        final Object obj = ScenarioContext.Current().get(Keys.KEY_ORGANIZATION_IDENTIFICATION);
+        final String organisationIdentification = obj == null ? Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION : obj
+                .toString();
+        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION_E_LABEL, organisationIdentification);
         PROPERTIES_MAP.put(Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
@@ -73,7 +76,7 @@ public class UpdateFirmware extends SmartMeteringStepsBase {
     @Then("^firmware should be updated$")
     public void firmwareShouldBeUpdated() throws Throwable {
         PROPERTIES_MAP
-                .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
+        .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, TEST_CASE_XML, TEST_SUITE_XML);
 
@@ -115,7 +118,7 @@ public class UpdateFirmware extends SmartMeteringStepsBase {
     @Then("^the message \"([^\"]*)\" should be given$")
     public void theMessageShouldBeGiven(final String message) throws Throwable {
         PROPERTIES_MAP
-                .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
+        .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, TEST_CASE_XML, TEST_SUITE_XML);
 
