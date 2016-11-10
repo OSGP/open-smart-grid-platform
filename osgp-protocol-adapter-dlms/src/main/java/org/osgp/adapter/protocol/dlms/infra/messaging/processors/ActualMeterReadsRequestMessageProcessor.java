@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQueryDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGasRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Component
@@ -37,7 +36,7 @@ public class ActualMeterReadsRequestMessageProcessor extends DeviceRequestMessag
     protected Serializable handleMessage(final DlmsConnectionHolder conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
 
-        this.assertRequestObjectType(PeriodicMeterReadsGasRequestDto.class, requestObject);
+        this.assertRequestObjectType(ActualMeterReadsQueryDto.class, requestObject);
 
         final ActualMeterReadsQueryDto actualMeterReadsRequest = (ActualMeterReadsQueryDto) requestObject;
         return this.monitoringService.requestActualMeterReads(conn, device, actualMeterReadsRequest);
