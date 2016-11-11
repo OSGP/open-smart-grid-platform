@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2016 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -26,23 +26,15 @@ public class GetDataSystemIdentifierDto extends SystemIdentifierDto implements S
     public GetDataSystemIdentifierDto(final int id, final String systemType, final List<MeasurementDto> measurements,
             final List<ProfileDto> profiles) {
         super(id, systemType);
-        this.measurements = measurements;
-        this.profiles = profiles;
+        this.measurements = new ArrayList<>(measurements);
+        this.profiles = new ArrayList<>(profiles);
     }
 
     public List<MeasurementDto> getMeasurements() {
         return Collections.unmodifiableList(this.measurements);
     }
 
-    public void setMeasurements(final List<MeasurementDto> measurements) {
-        this.measurements = measurements;
-    }
-
     public List<ProfileDto> getProfiles() {
         return Collections.unmodifiableList(this.profiles);
-    }
-
-    public void setProfiles(final List<ProfileDto> profiles) {
-        this.profiles = profiles;
     }
 }

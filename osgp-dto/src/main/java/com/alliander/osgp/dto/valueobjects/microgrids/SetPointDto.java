@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2016 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -23,7 +23,6 @@ public class SetPointDto implements Serializable {
 
     public SetPointDto(final int id, final String node, final double value, final DateTime startTime,
             final DateTime endTime) {
-        super();
         this.id = id;
         this.node = node;
         this.value = value;
@@ -35,39 +34,19 @@ public class SetPointDto implements Serializable {
         return this.id;
     }
 
-    public void setId(final int id) {
-        this.id = id;
-    }
-
     public String getNode() {
         return this.node;
-    }
-
-    public void setNode(final String node) {
-        this.node = node;
     }
 
     public double getValue() {
         return this.value;
     }
 
-    public void setValue(final double value) {
-        this.value = value;
-    }
-
     public DateTime getStartTime() {
         return this.startTime;
     }
 
-    public void setStartTime(final DateTime startTime) {
-        this.startTime = startTime;
-    }
-
     public DateTime getEndTime() {
         return this.endTime;
-    }
-
-    public void setEndTime(final DateTime endTime) {
-        this.endTime = endTime;
     }
 }

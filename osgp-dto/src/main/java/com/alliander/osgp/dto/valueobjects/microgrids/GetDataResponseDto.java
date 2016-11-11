@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2016 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -8,6 +8,8 @@
 package com.alliander.osgp.dto.valueobjects.microgrids;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class GetDataResponseDto implements Serializable {
@@ -17,14 +19,10 @@ public class GetDataResponseDto implements Serializable {
     private List<GetDataSystemIdentifierDto> getDataSystemIdentifiers;
 
     public GetDataResponseDto(final List<GetDataSystemIdentifierDto> getDataSystemIdentifiers) {
-        this.getDataSystemIdentifiers = getDataSystemIdentifiers;
+        this.getDataSystemIdentifiers = new ArrayList<>(getDataSystemIdentifiers);
     }
 
     public List<GetDataSystemIdentifierDto> getGetDataSystemIdentifiers() {
-        return this.getDataSystemIdentifiers;
-    }
-
-    public void setGetDataSystemIdentifiers(final List<GetDataSystemIdentifierDto> getDataSystemIdentifiers) {
-        this.getDataSystemIdentifiers = getDataSystemIdentifiers;
+        return Collections.unmodifiableList(this.getDataSystemIdentifiers);
     }
 }

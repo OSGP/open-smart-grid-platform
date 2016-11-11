@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2016 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -9,6 +9,7 @@ package com.alliander.osgp.dto.valueobjects.microgrids;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SystemFilterDto extends SystemIdentifierDto implements Serializable {
@@ -27,32 +28,20 @@ public class SystemFilterDto extends SystemIdentifierDto implements Serializable
     public SystemFilterDto(final int id, final String systemType, final List<MeasurementFilterDto> measurementFilters,
             final List<ProfileFilterDto> profileFilters, final boolean all) {
         super(id, systemType);
-        this.measurementFilters = measurementFilters;
-        this.profileFilters = profileFilters;
+        this.measurementFilters = new ArrayList<>(measurementFilters);
+        this.profileFilters = new ArrayList<>(profileFilters);
         this.all = all;
     }
 
     public List<MeasurementFilterDto> getMeasurementFilters() {
-        return this.measurementFilters;
-    }
-
-    public void setMeasurementFilters(final List<MeasurementFilterDto> measurementFilters) {
-        this.measurementFilters = measurementFilters;
+        return Collections.unmodifiableList(this.measurementFilters);
     }
 
     public List<ProfileFilterDto> getProfileFilters() {
-        return this.profileFilters;
-    }
-
-    public void setProfileFilters(final List<ProfileFilterDto> profileFilters) {
-        this.profileFilters = profileFilters;
+        return Collections.unmodifiableList(this.profileFilters);
     }
 
     public boolean isAll() {
         return this.all;
-    }
-
-    public void setAll(final boolean all) {
-        this.all = all;
     }
 }
