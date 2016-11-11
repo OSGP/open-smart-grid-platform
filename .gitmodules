@@ -1,5 +1,5 @@
 [submodule "Shared"]
 	path = Shared
 	url = ../Shared
-	branch = OP-384_Decrease_the_number_of_property_files
+	branch = development
 
