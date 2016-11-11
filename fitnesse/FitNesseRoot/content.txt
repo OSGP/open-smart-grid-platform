@@ -183,7 +183,6 @@
 !path ${MAVEN_REPO}/org/jboss/spec/javax/transaction/jboss-transaction-api_1.1_spec/1.0.1.Final/jboss-transaction-api_1.1_spec-1.0.1.Final.jar
 !path ${MAVEN_REPO}/org/json/json/20140107/json-20140107.jar
 !path ${MAVEN_REPO}/org/logback-extensions/logback-ext-spring/0.1.2/logback-ext-spring-0.1.2.jar
-!path ${MAVEN_REPO}/org/mockito/mockito-all/1.10.19/mockito-all-1.10.19.jar
 !path ${MAVEN_REPO}/org/mockito/mockito-all/1.9.5/mockito-all-1.9.5.jar
 !path ${MAVEN_REPO}/org/openmuc/jasn1/1.6.0/jasn1-1.6.0.jar
 !path ${MAVEN_REPO}/org/openmuc/jdlms/1.2.1/jdlms-1.2.1.jar
