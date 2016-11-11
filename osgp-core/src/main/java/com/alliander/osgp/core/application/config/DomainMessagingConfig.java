@@ -7,8 +7,6 @@
  */
 package com.alliander.osgp.core.application.config;
 
-import javax.annotation.Resource;
-
 import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.broker.region.policy.RedeliveryPolicyMap;
 import org.apache.activemq.pool.PooledConnectionFactory;
@@ -19,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
+import org.springframework.context.annotation.PropertySources;
 
 import com.alliander.osgp.core.infra.jms.JmsTemplateSettings;
 import com.alliander.osgp.core.infra.jms.domain.DomainRequestMessageListenerContainerFactory;
@@ -28,10 +26,15 @@ import com.alliander.osgp.core.infra.jms.domain.in.DomainRequestMessageJmsTempla
 import com.alliander.osgp.core.infra.jms.domain.in.DomainResponseMessageListenerContainerFactory;
 import com.alliander.osgp.domain.core.repositories.DomainInfoRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
+import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 @Configuration
-@PropertySource("file:${osp/osgpCore/config}")
-public class DomainMessagingConfig {
+@PropertySources({
+	@PropertySource("classpath:osgp-core.properties"),
+	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+    @PropertySource(value = "file:${osgp/Core/config}", ignoreResourceNotFound = true),
+})
+public class DomainMessagingConfig extends AbstractConfig {
 
     // JMS Settings
     private static final String PROPERTY_NAME_JMS_ACTIVEMQ_BROKER_URL = "jms.domain.activemq.broker.url";
@@ -62,9 +65,6 @@ public class DomainMessagingConfig {
     private static final String PROPERTY_NAME_JMS_INCOMING_DOMAIN_RESPONSES_MAX_CONCURRENT_CONSUMERS = "jms.incoming.domain.responses.max.concurrent.consumers";
 
     private static final String PROPERTY_NAME_JMS_GET_POWER_USAGE_HISTORY_REQUEST_TIME_TO_LIVE = "jms.get.power.usage.history.request.time.to.live";
-
-    @Resource
-    private Environment environment;
 
     @Autowired
     private DomainInfoRepository domainInfoRepository;

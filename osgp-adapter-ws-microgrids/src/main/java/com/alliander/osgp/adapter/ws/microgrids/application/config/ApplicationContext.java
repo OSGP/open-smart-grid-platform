@@ -7,16 +7,16 @@
  */
 package com.alliander.osgp.adapter.ws.microgrids.application.config;
 
-import javax.annotation.Resource;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
+
+import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 /**
  * An application context Java configuration class. The usage of Java
@@ -26,13 +26,14 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 @ComponentScan(basePackages = { "com.alliander.osgp.domain.microgrids", "com.alliander.osgp.adapter.ws.microgrids",
         "com.alliander.osgp.domain.logging", "com.alliander.osgp.domain.core.services" })
 @ImportResource("classpath:applicationContext.xml")
-@PropertySource("file:${osp/osgpAdapterWsMicrogrids/config}")
-public class ApplicationContext {
+@PropertySources({
+	@PropertySource("classpath:osgp-adapter-ws-microgrids.properties"),
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true),
+})
+public class ApplicationContext extends AbstractConfig {
 
     private static final String PROPERTY_NAME_STUB_RESPONSES = "stub.responses";
-
-    @Resource
-    private Environment environment;
 
     @Bean
     public boolean stubResponses() {

@@ -9,7 +9,6 @@ package com.alliander.osgp.adapter.domain.admin.application.config;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
@@ -19,7 +18,5 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @ComponentScan(basePackages = { "com.alliander.osgp.domain.core", "com.alliander.osgp.adapter.domain.admin" })
 @EnableTransactionManagement
-@PropertySource("file:${osp/osgpAdapterDomainAdmin/config}")
-// @Import({ PersistenceConfig.class, MessagingConfig.class })
 public class ApplicationContext {
 }

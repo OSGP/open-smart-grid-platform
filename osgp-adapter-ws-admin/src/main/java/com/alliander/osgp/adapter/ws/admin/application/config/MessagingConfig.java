@@ -7,8 +7,6 @@
  */
 package com.alliander.osgp.adapter.ws.admin.application.config;
 
-import javax.annotation.Resource;
-
 import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.broker.region.policy.RedeliveryPolicyMap;
 import org.apache.activemq.command.ActiveMQDestination;
@@ -20,16 +18,21 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.jms.core.JmsTemplate;
 
 import com.alliander.osgp.adapter.ws.admin.infra.jms.AdminRequestMessageSender;
 import com.alliander.osgp.adapter.ws.admin.infra.jms.AdminResponseMessageFinder;
 import com.alliander.osgp.adapter.ws.infra.jms.LoggingMessageSender;
+import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 @Configuration
-@PropertySource("file:${osp/osgpAdapterWsAdmin/config}")
-public class MessagingConfig {
+@PropertySources({
+	@PropertySource("classpath:osgp-adapter-ws-admin.properties"),
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/AdapterWsAdmin/config}", ignoreResourceNotFound = true),
+})
+public class MessagingConfig extends AbstractConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger(MessagingConfig.class);
 
     // JMS Settings
@@ -78,9 +81,6 @@ public class MessagingConfig {
     private static final String PROPERTY_NAME_JMS_ADMIN_RESPONSES_REDELIVERY_DELAY = "jms.admin.responses.redelivery.delay";
     private static final String PROPERTY_NAME_JMS_ADMIN_RESPONSES_BACK_OFF_MULTIPLIER = "jms.admin.responses.back.off.multiplier";
     private static final String PROPERTY_NAME_JMS_ADMIN_RESPONSES_USE_EXPONENTIAL_BACK_OFF = "jms.admin.responses.use.exponential.back.off";
-
-    @Resource
-    private Environment environment;
 
     // === JMS SETTINGS ===
 

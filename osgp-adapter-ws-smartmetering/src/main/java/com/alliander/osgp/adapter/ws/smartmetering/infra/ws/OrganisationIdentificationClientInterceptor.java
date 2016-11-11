@@ -69,8 +69,8 @@ public class OrganisationIdentificationClientInterceptor implements ClientInterc
         return true;
     }
 
-    @Override
-    public void afterCompletion(final MessageContext messageContext, final Exception ex) {
-        // Nothing needed here.
+    @Override 
+    public void afterCompletion(final MessageContext messageContext, final Exception ex) { 
+	// Nothing needed here. 
     }
 }
