@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.steps.database.device;
+package com.alliander.osgp.platform.cucumber.steps.database.adapterprotocoloslp;
 
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 
@@ -17,7 +17,7 @@ import com.alliander.osgp.adapter.protocol.oslp.domain.entities.OslpDevice;
 import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRepository;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.steps.database.DeviceSteps;
+import com.alliander.osgp.platform.cucumber.steps.database.core.DeviceSteps;
 
 import cucumber.api.java.en.Given;
 
@@ -45,8 +45,8 @@ public class OslpDeviceSteps {
         // Now create the OSLP device in the OSLP database
         final String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION,
                 Defaults.DEFAULT_DEVICE_IDENTIFICATION);
-        final OslpDevice device = new OslpDevice(getString(settings, "DeviceUid", DEFAULT_DEVICE_UID),
-                deviceIdentification, getString(settings, "DeviceType", Defaults.DEFAULT_DEVICE_TYPE));
+        final OslpDevice device = new OslpDevice(getString(settings, Keys.KEY_DEVICE_UID, DEFAULT_DEVICE_UID),
+                deviceIdentification, getString(settings, Keys.KEY_DEVICE_TYPE, Defaults.DEFAULT_DEVICE_TYPE));
         device.setSequenceNumber(0);
         device.setRandomDevice(0);
         device.setRandomPlatform(0);

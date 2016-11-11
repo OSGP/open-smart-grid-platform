@@ -7,17 +7,13 @@
  */
 package com.alliander.osgp.platform.cucumber.core;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.alliander.osgp.platform.cucumber.support.ApplicationConfig;
-
 /**
- * An application context Java configuration class. The usage of Java
- * configuration requires Spring Framework 4.0
+ * An application context Java configuration class.
  */
 @Configuration
 @ComponentScan(basePackages = { "com.alliander.osgp.adapter.ws.smartmetering.domain.entities",
@@ -30,8 +26,5 @@ import com.alliander.osgp.platform.cucumber.support.ApplicationConfig;
 @Import({ PersistenceConfigCore.class, PersistenceConfigResponseData.class, PersistenceConfigResponseDlms.class,
         PersistenceConfigLogging.class, PersistenceConfigResponseOslp.class })
 public class ApplicationContext {
-
-    @Autowired
-    protected ApplicationConfig applicationConfig;
 
 }

@@ -16,9 +16,12 @@ import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
+import com.alliander.osgp.platform.cucumber.core.Helpers;
+import com.alliander.osgp.platform.cucumber.helpers.Protocol;
+import com.alliander.osgp.platform.cucumber.helpers.ProtocolHelper;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.steps.database.DeviceSteps;
-import com.alliander.osgp.platform.cucumber.steps.database.RepoHelper;
+import com.alliander.osgp.platform.cucumber.steps.database.core.DeviceSteps;
+import com.alliander.osgp.platform.cucumber.steps.database.core.SmartMeterSteps;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -30,28 +33,37 @@ public class DlmsDeviceSteps {
 
     @Autowired
     private DeviceSteps deviceSteps;
+    
+    @Autowired
+    private SmartMeterSteps smartMeterSteps;
 
     @Autowired
-    private RepoHelper repoHelper;
+    private com.alliander.osgp.platform.cucumber.steps.database.adapterprotocoldlms.DlmsDeviceSteps repoHelper;
 
-    @Given("^a device$")
-    public void aDevice(final Map<String, String> settings) throws Throwable {
-        if (this.isSmartMeter(settings)) {
-            this.repoHelper.insertSmartMeter(settings);
+    @Given("^a dlms device$")
+    public void aDlmsDevice(final Map<String, String> inputSettings) throws Throwable {
+        if (this.isSmartMeter(inputSettings)) {
+            
+            // Add DSMR protocol if not provided, inputSettings are leading!
+            final Protocol protocol = ProtocolHelper.getProtocol(Protocol.ProtocolType.DSMR);
+            Map<String, String> settings = inputSettings;
+            if (!settings.containsKey(Keys.KEY_PROTOCOL)) {
+                settings = Helpers.addSetting(settings, Keys.KEY_PROTOCOL, protocol.getProtocol());
+            }
+            if (!settings.containsKey(Keys.KEY_PROTOCOL_VERSION)) {
+                settings = Helpers.addSetting(settings, Keys.KEY_PROTOCOL_VERSION, protocol.getVersion());
+            }
+            
+            smartMeterSteps.aSmartMeter(settings);
             this.repoHelper.insertDlmsDevice(settings);
         } else {
-            this.repoHelper.insertDevice(settings);
+            deviceSteps.aDevice(inputSettings);
         }
     }
 
     private boolean isSmartMeter(final Map<String, String> settings) {
         final String deviceType = settings.get(Keys.KEY_DEVICE_TYPE);
         return SMART_METER_E.equals(deviceType) || SMART_METER_G.equals(deviceType);
-    }
-
-    @Then("^the device with the id \"([^\"]*)\" exists$")
-    public void theDeviceWithTheIdExists(final String deviceIdentification) throws Throwable {
-        this.deviceSteps.theDeviceWithIdExists(deviceIdentification);
     }
 
     /**

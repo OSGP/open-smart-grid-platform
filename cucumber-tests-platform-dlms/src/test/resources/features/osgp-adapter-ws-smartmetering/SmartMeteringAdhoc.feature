@@ -3,7 +3,7 @@ Feature: SmartMetering AdHoc
   I want to be able to perform SmartMeteringAdhoc operations on a device
 
   Background: 
-    Given a device
+    Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
       | Active               | true              |
