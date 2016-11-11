@@ -40,6 +40,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -72,7 +73,10 @@ import com.zaxxer.hikari.HikariDataSource;
 @ComponentScan(basePackages = { "com.alliander.osgp.webdevicesimulator" })
 @EnableWebMvc
 @ImportResource("classpath:applicationContext.xml")
-@PropertySource("file:${osp/webDeviceSimulator/config}")
+@PropertySources({
+    @PropertySource("classpath:web-device-simulator.properties"),
+    @PropertySource(value = "file:${osgp/WebDeviceSimulator/config}", ignoreResourceNotFound = true),
+})
 public class ApplicationContext {
 
     private static final String VIEW_RESOLVER_PREFIX = "/WEB-INF/views/";

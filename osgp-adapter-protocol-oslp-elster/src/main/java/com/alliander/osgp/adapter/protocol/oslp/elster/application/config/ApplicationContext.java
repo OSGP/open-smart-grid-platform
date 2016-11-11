@@ -7,8 +7,6 @@
  */
 package com.alliander.osgp.adapter.protocol.oslp.elster.application.config;
 
-import javax.annotation.Resource;
-
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.jboss.netty.logging.Slf4JLoggerFactory;
 import org.joda.time.DateTime;
@@ -19,23 +17,27 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.alliander.osgp.adapter.protocol.oslp.elster.device.FirmwareLocation;
 import com.alliander.osgp.core.db.api.application.config.OsgpCoreDbApiPersistenceConfig;
+import com.alliander.osgp.shared.application.config.AbstractConfig;
 import com.alliander.osgp.shared.application.config.PagingSettings;
 
 /**
- * An application context Java configuration class. The usage of Java
- * configuration requires Spring Framework 3.0
+ * An application context Java configuration class.
  */
 @Configuration
 @ComponentScan(basePackages = { "com.alliander.osgp.adapter.protocol.oslp.elster", "com.alliander.osgp.core.db.api" })
 @EnableTransactionManagement()
 @Import({ MessagingConfig.class, OslpConfig.class, OslpPersistenceConfig.class, OsgpCoreDbApiPersistenceConfig.class })
-@PropertySource("file:${osp/osgpAdapterProtocolOslpElster/config}")
-public class ApplicationContext {
+@PropertySources({
+	@PropertySource("classpath:osgp-adapter-protocol-oslp-elster.properties"),
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/AdapterProtocolOslpElster/config}", ignoreResourceNotFound = true),
+})
+public class ApplicationContext extends AbstractConfig {
 
     private static final String PROPERTY_NAME_FIRMWARE_DOMAIN = "firmware.domain";
     private static final String PROPERTY_NAME_FIRMWARE_PATH = "firmware.path";
@@ -46,9 +48,6 @@ public class ApplicationContext {
     private static final DateTimeZone LOCAL_TIME_ZONE = DateTimeZone.forID(LOCAL_TIME_ZONE_IDENTIFIER);
     private static final int TIME_ZONE_OFFSET_MINUTES = LOCAL_TIME_ZONE.getStandardOffset(new DateTime().getMillis())
             / DateTimeConstants.MILLIS_PER_MINUTE;
-
-    @Resource
-    private Environment environment;
 
     public ApplicationContext() {
         InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());

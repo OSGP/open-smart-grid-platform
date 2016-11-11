@@ -10,7 +10,6 @@ package com.alliander.osgp.adapter.protocol.oslp.application.config;
 import java.util.Properties;
 
 import javax.annotation.PreDestroy;
-import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 import org.hibernate.ejb.HibernatePersistence;
@@ -22,7 +21,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -30,6 +29,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRepository;
 import com.alliander.osgp.adapter.protocol.oslp.exceptions.ProtocolAdapterException;
+import com.alliander.osgp.shared.application.config.AbstractConfig;
 import com.googlecode.flyway.core.Flyway;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -41,8 +41,12 @@ import com.zaxxer.hikari.HikariDataSource;
 @EnableJpaRepositories(entityManagerFactoryRef = "oslpEntityManagerFactory", basePackageClasses = { OslpDeviceRepository.class })
 @Configuration
 @EnableTransactionManagement()
-@PropertySource("file:${osp/osgpAdapterProtocolOslp/config}")
-public class OslpPersistenceConfig {
+@PropertySources({
+	@PropertySource("classpath:osgp-adapter-protocol-oslp.properties"),
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/AdapterProtocolOslp/config}", ignoreResourceNotFound = true),
+})
+public class OslpPersistenceConfig extends AbstractConfig {
 
     private static final String PROPERTY_NAME_DATABASE_DRIVER = "db.driver";
     private static final String PROPERTY_NAME_DATABASE_PASSWORD = "db.password";
@@ -64,9 +68,6 @@ public class OslpPersistenceConfig {
     private static final String PROPERTY_NAME_OSLP_ENTITYMANAGER_PACKAGES_TO_SCAN = "entitymanager.packages.to.scan.oslp";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OslpPersistenceConfig.class);
-
-    @Resource
-    private Environment environment;
 
     private HikariDataSource dataSource;
 

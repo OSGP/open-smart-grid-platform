@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -16,7 +17,10 @@ import com.alliander.osgp.webdevicesimulator.application.tasks.TariffSwitchingHi
 
 @Configuration
 @EnableScheduling
-@PropertySource("file:${osp//webDeviceSimulator/config}")
+@PropertySources({
+    @PropertySource("classpath:web-device-simulator.properties"),
+    @PropertySource(value = "file:${osgp/WebDeviceSimulator/config}", ignoreResourceNotFound = true),
+})
 public class TariffSwitchingHighConfig {
 
     private static final String PROPERTY_NAME_AUTONOMOUS_TASKS_TARIFFSWITCHING_HIGH_CRON_EXPRESSION = "autonomous.tasks.tariffswitching.high.cron.expression";

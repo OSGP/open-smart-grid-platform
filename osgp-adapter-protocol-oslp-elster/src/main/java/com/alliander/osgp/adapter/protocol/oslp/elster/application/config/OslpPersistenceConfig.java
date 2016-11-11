@@ -10,7 +10,6 @@ package com.alliander.osgp.adapter.protocol.oslp.elster.application.config;
 import java.util.Properties;
 
 import javax.annotation.PreDestroy;
-import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 import org.hibernate.ejb.HibernatePersistence;
@@ -21,7 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -29,18 +28,22 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.alliander.osgp.adapter.protocol.oslp.elster.domain.repositories.OslpDeviceRepository;
 import com.alliander.osgp.adapter.protocol.oslp.elster.exceptions.ProtocolAdapterException;
+import com.alliander.osgp.shared.application.config.AbstractConfig;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 /**
- * An application context Java configuration class. The usage of Java
- * configuration requires Spring Framework 3.0
+ * An application context Java configuration class.
  */
-@EnableJpaRepositories(entityManagerFactoryRef = "oslpEntityManagerFactory", basePackageClasses = { OslpDeviceRepository.class })
+@EnableJpaRepositories(entityManagerFactoryRef = "oslpEntityManagerFactory", basePackageClasses = {
+        OslpDeviceRepository.class })
 @Configuration
 @EnableTransactionManagement()
-@PropertySource("file:${osp/osgpAdapterProtocolOslpElster/config}")
-public class OslpPersistenceConfig {
+@PropertySources({ @PropertySource("classpath:osgp-adapter-protocol-oslp-elster.properties"),
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true), 
+    @PropertySource(value = "file:${osgp/AdapterProtocolOslpElster/config}", ignoreResourceNotFound = true),
+})
+public class OslpPersistenceConfig extends AbstractConfig {
 
     private static final String PROPERTY_NAME_DATABASE_DRIVER = "db.driver";
     private static final String PROPERTY_NAME_DATABASE_PASSWORD = "db.password";
@@ -55,16 +58,9 @@ public class OslpPersistenceConfig {
     private static final String PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY = "hibernate.ejb.naming_strategy";
     private static final String PROPERTY_NAME_HIBERNATE_SHOW_SQL = "hibernate.show_sql";
 
-    private static final String PROPERTY_NAME_FLYWAY_INITIAL_VERSION = "flyway.initial.version";
-    private static final String PROPERTY_NAME_FLYWAY_INITIAL_DESCRIPTION = "flyway.initial.description";
-    private static final String PROPERTY_NAME_FLYWAY_INIT_ON_MIGRATE = "flyway.init.on.migrate";
-
     private static final String PROPERTY_NAME_OSLP_ENTITYMANAGER_PACKAGES_TO_SCAN = "entitymanager.packages.to.scan.oslp";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OslpPersistenceConfig.class);
-
-    @Resource
-    private Environment environment;
 
     private HikariDataSource dataSource;
 
@@ -86,10 +82,10 @@ public class OslpPersistenceConfig {
             hikariConfig.setUsername(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_USERNAME));
             hikariConfig.setPassword(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_PASSWORD));
 
-            hikariConfig.setMaximumPoolSize(Integer.parseInt(this.environment
-                    .getRequiredProperty(PROPERTY_NAME_DATABASE_MAX_POOL_SIZE)));
-            hikariConfig.setAutoCommit(Boolean.parseBoolean(this.environment
-                    .getRequiredProperty(PROPERTY_NAME_DATABASE_AUTO_COMMIT)));
+            hikariConfig.setMaximumPoolSize(
+                    Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_MAX_POOL_SIZE)));
+            hikariConfig.setAutoCommit(
+                    Boolean.parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_AUTO_COMMIT)));
 
             this.dataSource = new HikariDataSource(hikariConfig);
         }
@@ -119,21 +115,6 @@ public class OslpPersistenceConfig {
         return transactionManager;
     }
 
-    // @Bean(initMethod = "migrate")
-    // public Flyway oslpFlyway() {
-    // final Flyway flyway = new Flyway();
-    //
-    // // Initialization for non-empty schema with no metadata table
-    // flyway.setInitVersion(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_VERSION));
-    // flyway.setInitDescription(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_DESCRIPTION));
-    // flyway.setInitOnMigrate(Boolean.parseBoolean(this.environment
-    // .getRequiredProperty(PROPERTY_NAME_FLYWAY_INIT_ON_MIGRATE)));
-    //
-    // flyway.setDataSource(this.getOslpDataSource());
-    //
-    // return flyway;
-    // }
-
     /**
      * Method for creating the Entity Manager Factory Bean.
      *
@@ -142,14 +123,13 @@ public class OslpPersistenceConfig {
      *             when class not found
      */
     @Bean
-    // @DependsOn("oslpFlyway")
     public LocalContainerEntityManagerFactoryBean oslpEntityManagerFactory() throws ClassNotFoundException {
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 
         entityManagerFactoryBean.setPersistenceUnitName("OSGP_PROTOCOL_ADAPTER_OSLP_SETTINGS");
         entityManagerFactoryBean.setDataSource(this.getOslpDataSource());
-        entityManagerFactoryBean.setPackagesToScan(this.environment
-                .getRequiredProperty(PROPERTY_NAME_OSLP_ENTITYMANAGER_PACKAGES_TO_SCAN));
+        entityManagerFactoryBean.setPackagesToScan(
+                this.environment.getRequiredProperty(PROPERTY_NAME_OSLP_ENTITYMANAGER_PACKAGES_TO_SCAN));
         entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistence.class);
 
         final Properties jpaProperties = new Properties();

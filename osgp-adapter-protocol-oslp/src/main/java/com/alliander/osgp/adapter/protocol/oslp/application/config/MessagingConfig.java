@@ -7,7 +7,6 @@
  */
 package com.alliander.osgp.adapter.protocol.oslp.application.config;
 
-import javax.annotation.Resource;
 import javax.jms.MessageListener;
 
 import org.apache.activemq.RedeliveryPolicy;
@@ -27,7 +26,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -37,6 +36,7 @@ import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.OsgpRequestMessa
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.OsgpResponseMessageListener;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.OslpLogItemRequestMessageSender;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.SigningServerRequestMessageSender;
+import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 /**
  * An application context Java configuration class. The usage of Java
@@ -44,8 +44,12 @@ import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.SigningServerReq
  */
 @Configuration
 @EnableTransactionManagement()
-@PropertySource("file:${osp/osgpAdapterProtocolOslp/config}")
-public class MessagingConfig {
+@PropertySources({
+	@PropertySource("classpath:osgp-adapter-protocol-oslp.properties"),
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/AdapterProtocolOslp/config}", ignoreResourceNotFound = true),
+})
+public class MessagingConfig extends AbstractConfig{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MessagingConfig.class);
 
@@ -154,9 +158,6 @@ public class MessagingConfig {
     private static final String PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_REDELIVERY_DELAY = "jms.signing.server.responses.redelivery.delay";
     private static final String PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_BACK_OFF_MULTIPLIER = "jms.signing.server.responses.back.off.multiplier";
     private static final String PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_USE_EXPONENTIAL_BACK_OFF = "jms.signing.server.responses.use.exponential.back.off";
-
-    @Resource
-    private Environment environment;
 
     @Autowired
     @Qualifier("oslpRequestsMessageListener")

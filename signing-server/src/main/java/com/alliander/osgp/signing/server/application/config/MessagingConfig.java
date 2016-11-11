@@ -21,21 +21,26 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import com.alliander.osgp.shared.application.config.AbstractConfig;
 import com.alliander.osgp.signing.server.infra.messaging.SigningServerResponseMessageSender;
 
 /**
- * An application context Java configuration class. The usage of Java
- * configuration requires Spring Framework 3.0
+ * An application context Java configuration class.
  */
 @Configuration
 @EnableTransactionManagement()
-@PropertySource("file:${osp/signingServer/config}")
-public class MessagingConfig {
+@PropertySources({
+	@PropertySource("classpath:signing-server.properties"),
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+    @PropertySource(value = "file:${osgp/SigningServer/config}", ignoreResourceNotFound = true),
+})
+public class MessagingConfig extends AbstractConfig {
 
     // JMS Settings
     private static final String PROPERTY_NAME_JMS_ACTIVEMQ_BROKER_URL = "jms.activemq.broker.url";
