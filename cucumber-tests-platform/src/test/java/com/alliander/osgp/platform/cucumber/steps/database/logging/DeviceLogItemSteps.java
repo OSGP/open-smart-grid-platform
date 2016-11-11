@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.steps.database;
+package com.alliander.osgp.platform.cucumber.steps.database.logging;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -17,13 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 
 import cucumber.api.java.en.Then;
 
-@Component
 public class DeviceLogItemSteps {
 
     @Autowired

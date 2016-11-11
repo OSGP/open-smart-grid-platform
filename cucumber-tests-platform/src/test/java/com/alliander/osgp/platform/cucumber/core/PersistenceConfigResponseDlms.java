@@ -11,34 +11,22 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import com.alliander.osgp.platform.cucumber.support.ApplicationConfig;
 
 @EnableJpaRepositories(entityManagerFactoryRef = "entityMgrFactDlms",
     transactionManagerRef = "txMgrDlms",
     basePackageClasses = { DlmsDeviceRepository.class })
-@Configuration
-@EnableTransactionManagement()
-@Primary
-public class PersistenceConfigResponseDlms extends AbstractPersistenceConfig {
-
-    @Autowired
-    protected ApplicationConfig applicationConfig;
+public class PersistenceConfigResponseDlms extends ApplicationConfiguration {
 
     public PersistenceConfigResponseDlms() {
     }
 
-    @Value("${cucumber.osgpadapterprotocoldlmsdbs.url}")
+    @Value("${osgpadapterprotocoldlmsdbs.url}")
     private String databaseUrl;
 
     @Value("${entitymanager.packages.to.scan.dlms}")

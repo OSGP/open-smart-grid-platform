@@ -22,9 +22,9 @@ import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResp
 @EnableJpaRepositories(entityManagerFactoryRef = "entityMgrRespData", 
     transactionManagerRef = "txMgrRespData",
     basePackageClasses = { MeterResponseDataRepository.class })
-public class PersistenceConfigResponseData extends AbstractPersistenceConfig {
+public class PersistenceConfigResponseData extends ApplicationConfiguration {
 
-    @Value("${cucumber.osgpadapterwssmartmeteringdbs.url}")
+    @Value("${osgpadapterwssmartmeteringdbs.url}")
     private String databaseUrl;
 
     @Value("${entitymanager.packages.to.scan}")

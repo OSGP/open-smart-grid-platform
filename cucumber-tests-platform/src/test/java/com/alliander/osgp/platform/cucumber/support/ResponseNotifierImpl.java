@@ -15,11 +15,8 @@ import java.sql.Statement;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -32,16 +29,13 @@ public class ResponseNotifierImpl implements ResponseNotifier {
 
     private Connection connection;
 
-    @Autowired
-    protected ApplicationConfig applicationConfig;
-
-    @Value("${cucumber.osgpadapterwssmartmeteringdbs.url}")
+    @Value("${osgpadapterwssmartmeteringdbs.url}")
     private String jdbcUrl;
 
-    @Value("${cucumber.dbs.username}")
+    @Value("${dbs.username}")
     private String username;
 
-    @Value("${cucumber.dbs.password}")
+    @Value("${dbs.password}")
     private String password;
 
     @Override
@@ -142,14 +136,6 @@ public class ResponseNotifierImpl implements ResponseNotifier {
             System.exit(2);
         }
         return this.connection;
-    }
-
-    // -------------
-
-    // To resolve ${} in @Value
-    @Bean
-    public static PropertySourcesPlaceholderConfigurer propertyConfigInDev() {
-        return new PropertySourcesPlaceholderConfigurer();
     }
 
     private enum PollResult {

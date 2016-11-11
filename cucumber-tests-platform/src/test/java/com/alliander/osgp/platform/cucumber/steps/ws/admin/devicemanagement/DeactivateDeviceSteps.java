@@ -24,7 +24,6 @@ public class DeactivateDeviceSteps extends AdminStepsBase {
 
     protected DeactivateDeviceSteps() throws Throwable {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	private static final String TEST_SUITE = "DeviceManagement";

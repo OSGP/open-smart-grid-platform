@@ -20,6 +20,10 @@ import com.alliander.osgp.domain.core.repositories.ScheduledTaskRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 
+
+/**
+ * DLMS related database steps.
+ */
 @Component
 public class DlmsDatabaseSteps {
 
@@ -52,7 +56,6 @@ public class DlmsDatabaseSteps {
      */
     @Transactional(transactionManager = "txMgrCore")
     public void prepareDatabaseForScenario() {
-        // Remove all data from previous scenario.
         this.deviceAuthorization.deleteAllInBatch();
         this.deleteAllDevicesService.deleteAllDevices();
         this.dlmsDSecurityKeyRepo.deleteAllInBatch();

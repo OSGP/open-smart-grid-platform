@@ -88,7 +88,7 @@ public class RunXpathResult {
         assertEquals("Expected number of nodes does not match.", expectedNodes, list.getLength());
 
         for (int i = 0; i < list.getLength(); i++) {
-            final Matcher responseMatcher = responsePattern.matcher(list.item(i).getTextContent());
+            final Matcher responseMatcher = responsePattern.matcher(list.item(i).getNodeValue());
             assertTrue(responseMatcher.find());
         }
     }

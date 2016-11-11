@@ -5,12 +5,12 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.steps.database;
+package com.alliander.osgp.platform.cucumber.helpers;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import com.alliander.osgp.platform.cucumber.steps.database.Protocol.ProtocolType;
+import com.alliander.osgp.platform.cucumber.helpers.Protocol.ProtocolType;
 
 public class ProtocolHelper {
 
