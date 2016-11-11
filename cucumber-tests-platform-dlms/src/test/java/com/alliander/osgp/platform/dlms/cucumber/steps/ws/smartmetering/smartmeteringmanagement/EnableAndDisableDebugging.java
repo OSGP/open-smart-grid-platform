@@ -52,9 +52,8 @@ public class EnableAndDisableDebugging extends SmartMeteringStepsBase {
 
     @Then("^the device debug information should be enabled$")
     public void theDeviceDebugInformationShouldBeEnabled() throws Throwable {
-        final DlmsDevice device = dlmsDeviceRepository.findByDeviceIdentification(PROPERTIES_MAP.put(
-                Keys.KEY_DEVICE_IDENTIFICATION, ScenarioContext.Current().get(Keys.KEY_DEVICE_IDENTIFICATION)
-                .toString()));
+        final DlmsDevice device = dlmsDeviceRepository.findByDeviceIdentification(ScenarioContext.Current()
+                .get(Keys.KEY_DEVICE_IDENTIFICATION).toString());
 
         assertTrue("Debug mode", device.isInDebugMode());
     }
@@ -83,9 +82,8 @@ public class EnableAndDisableDebugging extends SmartMeteringStepsBase {
 
     @Then("^the device debug information should be disabled$")
     public void theDeviceDebugInformationShouldBeDisabled() throws Throwable {
-        final DlmsDevice device = dlmsDeviceRepository.findByDeviceIdentification(PROPERTIES_MAP.put(
-                Keys.KEY_DEVICE_IDENTIFICATION, ScenarioContext.Current().get(Keys.KEY_DEVICE_IDENTIFICATION)
-                .toString()));
+        final DlmsDevice device = dlmsDeviceRepository.findByDeviceIdentification(ScenarioContext.Current()
+                .get(Keys.KEY_DEVICE_IDENTIFICATION).toString());
 
         assertFalse("Debug mode", device.isInDebugMode());
     }
