@@ -10,8 +10,6 @@ package com.alliander.osgp.adapter.protocol.iec61850.application.config;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
 
-import javax.annotation.Resource;
-
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.ChannelFactory;
@@ -29,17 +27,22 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850ChannelHandlerServer;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.RegisterDeviceRequestDecoder;
+import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 @Configuration
 @EnableTransactionManagement()
-@PropertySource("file:${osp/osgpAdapterProtocolIec61850/config}")
-public class Iec61850Config {
+@PropertySources({
+	@PropertySource("classpath:osgp-adapter-protocol-iec61850.properties"),
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/AdapterProtocolIec61850/config}", ignoreResourceNotFound = true),
+})
+public class Iec61850Config extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850Config.class);
 
@@ -59,9 +62,6 @@ public class Iec61850Config {
 
     private static final String PROPERTY_NAME_IEC61850_ICD_FILE_PATH = "iec61850.icd.file.path";
     private static final String PROPERTY_NAME_IEC61850_ICD_FILE_USE = "iec61850.icd.file.use";
-
-    @Resource
-    private Environment environment;
 
     public Iec61850Config() {
         InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());

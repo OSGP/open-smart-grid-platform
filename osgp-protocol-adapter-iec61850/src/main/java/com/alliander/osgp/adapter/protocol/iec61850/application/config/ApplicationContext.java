@@ -7,29 +7,31 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.application.config;
 
-import javax.annotation.Resource;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.FirmwareLocation;
 import com.alliander.osgp.core.db.api.iec61850.application.config.Iec61850OsgpCoreDbApiPersistenceConfig;
+import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 /**
- * An application context Java configuration class. The usage of Java
- * configuration requires Spring Framework 3.0
+ * An application context Java configuration class.
  */
 @Configuration
 @ComponentScan(basePackages = { "com.alliander.osgp.adapter.protocol.iec61850", "com.alliander.osgp.core.db.api" })
 @EnableTransactionManagement()
 @Import({ MessagingConfig.class, Iec61850OsgpCoreDbApiPersistenceConfig.class, Iec61850Config.class })
-@PropertySource("file:${osp/osgpAdapterProtocolIec61850/config}")
-public class ApplicationContext {
+@PropertySources({
+	@PropertySource("classpath:osgp-adapter-protocol-iec61850.properties"),
+	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+    @PropertySource(value = "file:${osgp/AdapterProtocolIec61850/config}", ignoreResourceNotFound = true),
+})
+public class ApplicationContext extends AbstractConfig {
 
     private static final String PROPERTY_NAME_MAX_RETRY_COUNT = "retrycount.max";
     private static final String PROPERTY_NAME_SELFTEST_TIMEOUT = "selftest.timeout";
@@ -40,9 +42,6 @@ public class ApplicationContext {
     private static final String PROPERTY_NAME_FIRMWARE_DOMAIN = "firmware.domain";
     private static final String PROPERTY_NAME_FIRMWARE_PORT = "firmware.port";
     private static final String PROPERTY_NAME_FIRMWARE_PATH = "firmware.path";
-
-    @Resource
-    private Environment environment;
 
     /**
      * The number of times the communication with the device is retried
