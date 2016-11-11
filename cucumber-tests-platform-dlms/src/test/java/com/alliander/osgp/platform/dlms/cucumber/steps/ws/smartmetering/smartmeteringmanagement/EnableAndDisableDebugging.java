@@ -1,3 +1,10 @@
+/**
+ * Copyright 2016 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.smartmeteringmanagement;
 
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
@@ -47,7 +54,7 @@ public class EnableAndDisableDebugging extends SmartMeteringStepsBase {
     public void theDeviceDebugInformationShouldBeEnabled() throws Throwable {
         final DlmsDevice device = dlmsDeviceRepository.findByDeviceIdentification(PROPERTIES_MAP.put(
                 Keys.KEY_DEVICE_IDENTIFICATION, ScenarioContext.Current().get(Keys.KEY_DEVICE_IDENTIFICATION)
-                        .toString()));
+                .toString()));
 
         assertTrue("Debug mode", device.isInDebugMode());
     }
@@ -57,7 +64,7 @@ public class EnableAndDisableDebugging extends SmartMeteringStepsBase {
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION, ScenarioContext.Current()
                 .get(Keys.KEY_DEVICE_IDENTIFICATION).toString());
         PROPERTIES_MAP
-        .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
+                .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_ENABLE_RESPONSE, TEST_CASE_XML,
                 TEST_SUITE_XML);
@@ -78,7 +85,7 @@ public class EnableAndDisableDebugging extends SmartMeteringStepsBase {
     public void theDeviceDebugInformationShouldBeDisabled() throws Throwable {
         final DlmsDevice device = dlmsDeviceRepository.findByDeviceIdentification(PROPERTIES_MAP.put(
                 Keys.KEY_DEVICE_IDENTIFICATION, ScenarioContext.Current().get(Keys.KEY_DEVICE_IDENTIFICATION)
-                        .toString()));
+                .toString()));
 
         assertFalse("Debug mode", device.isInDebugMode());
     }
@@ -88,7 +95,7 @@ public class EnableAndDisableDebugging extends SmartMeteringStepsBase {
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION, ScenarioContext.Current()
                 .get(Keys.KEY_DEVICE_IDENTIFICATION).toString());
         PROPERTIES_MAP
-        .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
+                .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_DISABLE_RESPONSE, TEST_CASE_XML,
                 TEST_SUITE_XML);
