@@ -40,7 +40,7 @@ public class PeriodicMeterReadsGasResponseDataConverter
         periodicMeterReadsResponse.setPeriodType(PeriodType.valueOf(source.getPeriodType().name()));
         final List<PeriodicMeterReadsGas> periodicMeterReads = periodicMeterReadsResponse.getPeriodicMeterReadsGas();
         for (final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGas m : source
-                .getMeterReadsGas()) {
+                .getPeriodicMeterReadsGas()) {
             periodicMeterReads.add(this.convert(m));
         }
         return periodicMeterReadsResponse;

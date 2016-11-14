@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -23,15 +24,17 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 
 import com.alliander.osgp.adapter.domain.microgrids.application.tasks.CommunicationMonitoringTask;
+import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 /**
- * An application context Java configuration class. The usage of Java
- * configuration requires Spring Framework 3.0
+ * An application context Java configuration class.
  */
 @Configuration
 @EnableScheduling
-@PropertySource("file:${osp/osgpAdapterDomainMicrogrids/config}")
-public class CommunicationMonitoringConfig {
+@PropertySources({ @PropertySource("classpath:osgp-adapter-domain-microgrids.properties"),
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/AdapterDomainMicrogrids/config}", ignoreResourceNotFound = true), })
+public class CommunicationMonitoringConfig extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommunicationMonitoringConfig.class);
 
@@ -51,7 +54,7 @@ public class CommunicationMonitoringConfig {
 
     // Default maximum time without communication in minutes
     private static final Integer DEFAULT_MAXIMUM_TIME_WITHOUT_COMMUNICATION = 15;
-    // Default await termination seconds in seconds
+
     private static final Integer DEFAULT_AWAIT_TERMINATION_SECONDS = 10;
 
     // Default last communication update interval in seconds

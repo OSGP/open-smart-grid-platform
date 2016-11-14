@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.server.endpoint.adapter.DefaultMethodEndpointAdapter;
@@ -36,10 +37,15 @@ import com.alliander.osgp.adapter.ws.microgrids.application.exceptionhandling.De
 import com.alliander.osgp.adapter.ws.microgrids.application.exceptionhandling.SoapFaultMapper;
 import com.alliander.osgp.adapter.ws.microgrids.presentation.ws.SendNotificationServiceClient;
 import com.alliander.osgp.adapter.ws.microgrids.presentation.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 @Configuration
-@PropertySource("file:${osp/osgpAdapterWsMicrogrids/config}")
-public class WebServiceConfig {
+@PropertySources({
+	@PropertySource("classpath:osgp-adapter-ws-microgrids.properties"),
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true),
+})
+public class WebServiceConfig extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceConfig.class);
 

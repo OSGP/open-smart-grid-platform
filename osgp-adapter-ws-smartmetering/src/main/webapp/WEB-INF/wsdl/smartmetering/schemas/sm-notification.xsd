@@ -70,6 +70,8 @@
             <xsd:enumeration value="COUPLE_MBUS_DEVICE" />
             <xsd:enumeration value="DE_COUPLE_MBUS_DEVICE" />
             <xsd:enumeration value="UPDATE_FIRMWARE" />
+            <xsd:enumeration value="ENABLE_DEBUGGING" />
+            <xsd:enumeration value="DISABLE_DEBUGGING" />
 		</xsd:restriction>
 	</xsd:simpleType>
 

@@ -9,7 +9,6 @@ package com.alliander.osgp.adapter.domain.publiclighting.application.config;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
@@ -19,8 +18,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @ComponentScan(basePackages = { "com.alliander.osgp.domain.core", "com.alliander.osgp.adapter.domain.publiclighting" })
 @EnableTransactionManagement
-@PropertySource("file:${osp/osgpAdapterDomainPublicLighting/config}")
-// @Import({ PersistenceConfig.class, MessagingConfig.class })
 public class ApplicationContext {
 
 }

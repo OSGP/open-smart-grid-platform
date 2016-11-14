@@ -66,5 +66,7 @@ public enum DeviceFunction {
     COUPLE_MBUS_DEVICE,
     DE_COUPLE_MBUS_DEVICE,
     GET_DATA,
-    SET_DATA;
+    SET_DATA,
+    ENABLE_DEBUGGING,
+    DISABLE_DEBUGGING;
 }

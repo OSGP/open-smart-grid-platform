@@ -31,7 +31,7 @@ import com.alliander.osgp.shared.infra.jms.MessageProcessor;
  *
  */
 public abstract class WebServiceRequestMessageProcessor extends AbstractRequestMessageProcessor implements
-        MessageProcessor {
+MessageProcessor {
 
     /**
      * Logger for this class.
@@ -86,6 +86,16 @@ public abstract class WebServiceRequestMessageProcessor extends AbstractRequestM
                 this.deviceFunction.name(), this);
     }
 
+    /**
+     * Indicates if the message processor contains a dataobject that should be
+     * handled. Normally requests do contains some data, so the default is TRUE.
+     *
+     * @return Does the message contain a dataobject to be processed.
+     */
+    public boolean messageContainsDataObject() {
+        return true;
+    }
+
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
         Object dataObject = null;
@@ -102,7 +112,11 @@ public abstract class WebServiceRequestMessageProcessor extends AbstractRequestM
 
         try {
             LOGGER.info("Calling application service function: {}", deviceMessageMetadata.getMessageType());
-            this.handleMessage(deviceMessageMetadata, dataObject);
+            if (this.messageContainsDataObject()) {
+                this.handleMessage(deviceMessageMetadata, dataObject);
+            } else {
+                this.handleMessage(deviceMessageMetadata);
+            }
 
         } catch (final Exception e) {
             this.handleError(e, deviceMessageMetadata, "An unknown error occurred");

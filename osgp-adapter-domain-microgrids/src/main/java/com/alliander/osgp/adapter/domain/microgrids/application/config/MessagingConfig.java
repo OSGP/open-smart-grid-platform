@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
@@ -30,14 +31,18 @@ import com.alliander.osgp.adapter.domain.microgrids.infra.jms.core.OsgpCoreReque
 import com.alliander.osgp.adapter.domain.microgrids.infra.jms.core.OsgpCoreResponseMessageListener;
 import com.alliander.osgp.adapter.domain.microgrids.infra.jms.ws.WebServiceRequestMessageListener;
 import com.alliander.osgp.adapter.domain.microgrids.infra.jms.ws.WebServiceResponseMessageSender;
+import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 /**
- * An application context Java configuration class. The usage of Java
- * configuration requires Spring Framework 3.0
+ * An application context Java configuration class.
  */
 @Configuration
-@PropertySource("file:${osp/osgpAdapterDomainMicrogrids/config}")
-public class MessagingConfig {
+@PropertySources({
+	@PropertySource("classpath:osgp-adapter-domain-microgrids.properties"),
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/AdapterDomainMicrogrids/config}", ignoreResourceNotFound = true),
+})
+public class MessagingConfig extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MessagingConfig.class);
 
