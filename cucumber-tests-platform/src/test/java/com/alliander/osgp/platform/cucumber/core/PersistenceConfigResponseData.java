@@ -30,18 +30,17 @@ public class PersistenceConfigResponseData extends ApplicationConfiguration {
     @Value("${entitymanager.packages.to.scan}")
     private String entitymanagerPackagesToScan;
 
- 
     public PersistenceConfigResponseData() {
     }
 
     @Override
     protected String getDatabaseUrl() {
-        return databaseUrl;
+        return this.databaseUrl;
     }
 
     @Override
     protected String getEntitymanagerPackagesToScan() {
-        return entitymanagerPackagesToScan;
+        return this.entitymanagerPackagesToScan;
     }
 
     /**
@@ -49,9 +48,9 @@ public class PersistenceConfigResponseData extends ApplicationConfiguration {
      *
      * @return DataSource
      */
-    @Bean(name = "dsRespData")    
+    @Bean(name = "dsRespData")
     public DataSource dataSource() {
-        return makeDataSource();
+        return this.makeDataSource();
     }
 
     /**
@@ -63,9 +62,9 @@ public class PersistenceConfigResponseData extends ApplicationConfiguration {
      */
     @Bean(name = "entityMgrRespData")
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(
-            @Qualifier("dsRespData") DataSource dataSource) throws ClassNotFoundException {
+            @Qualifier("dsRespData") final DataSource dataSource) throws ClassNotFoundException {
 
-        return makeEntityManager("OSGP_CUCUMBER_RESPDATA", dataSource);
+        return this.makeEntityManager("OSGP_CUCUMBER_RESPDATA", dataSource);
     }
 
     /**
@@ -75,9 +74,9 @@ public class PersistenceConfigResponseData extends ApplicationConfiguration {
      * @throws ClassNotFoundException
      *             when class not found
      */
-    @Bean(name = "txMgrRespData")    
+    @Bean(name = "txMgrRespData")
     public JpaTransactionManager transactionManager(
-            @Qualifier("entityMgrRespData") EntityManagerFactory barEntityManagerFactory) {
+            @Qualifier("entityMgrRespData") final EntityManagerFactory barEntityManagerFactory) {
         return new JpaTransactionManager(barEntityManagerFactory);    }
 
 }

@@ -25,12 +25,12 @@ import com.alliander.osgp.shared.application.config.AbstractConfig;
  * Base class for the application configuration.
  */
 @Configuration
-@PropertySources({ 
-	@PropertySource("classpath:cucumber-platform.properties"),
-	@PropertySource(value = "file:/etc/osp/test/global-cucumber.properties", ignoreResourceNotFound = true),
-    @PropertySource(value = "file:/etc/osp/test/cucumber-platform.properties", ignoreResourceNotFound = true),
-})
+@PropertySources({ @PropertySource("classpath:cucumber-platform.properties"),
+        @PropertySource(value = "file:/etc/osp/test/global-cucumber.properties", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:/etc/osp/test/cucumber-platform.properties", ignoreResourceNotFound = true), })
 public abstract class ApplicationConfiguration extends AbstractConfig {
+
+    private static final String REGEX_COMMA_WITH_OPTIONAL_WHITESPACE = "\\s*+,\\s*+";
 
     @Value("${dbs.driver}")
     protected String databaseDriver;
@@ -68,9 +68,9 @@ public abstract class ApplicationConfiguration extends AbstractConfig {
      * Default constructor
      */
     public ApplicationConfiguration() {
-    	// Default constructor
+        // Default constructor
     }
-    
+
     /**
      * Method for creating the Data Source.
      *
@@ -97,13 +97,14 @@ public abstract class ApplicationConfiguration extends AbstractConfig {
      * @throws ClassNotFoundException
      *             when class not found
      */
-    protected LocalContainerEntityManagerFactoryBean makeEntityManager(final String unitName, final DataSource dataSource)
-            throws ClassNotFoundException {
+    protected LocalContainerEntityManagerFactoryBean makeEntityManager(final String unitName,
+            final DataSource dataSource) throws ClassNotFoundException {
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 
         entityManagerFactoryBean.setPersistenceUnitName(unitName);
         entityManagerFactoryBean.setDataSource(dataSource);
-        entityManagerFactoryBean.setPackagesToScan(this.getEntitymanagerPackagesToScan());
+        entityManagerFactoryBean
+                .setPackagesToScan(this.getEntitymanagerPackagesToScan().split(REGEX_COMMA_WITH_OPTIONAL_WHITESPACE));
         entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistence.class);
 
         final Properties jpaProperties = new Properties();

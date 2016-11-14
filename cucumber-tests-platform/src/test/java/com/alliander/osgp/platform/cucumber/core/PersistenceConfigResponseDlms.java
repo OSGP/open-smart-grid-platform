@@ -18,9 +18,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
-@EnableJpaRepositories(entityManagerFactoryRef = "entityMgrFactDlms",
-    transactionManagerRef = "txMgrDlms",
-    basePackageClasses = { DlmsDeviceRepository.class })
+@EnableJpaRepositories(entityManagerFactoryRef = "entityMgrFactDlms", transactionManagerRef = "txMgrDlms", basePackageClasses = {
+        DlmsDeviceRepository.class })
 public class PersistenceConfigResponseDlms extends ApplicationConfiguration {
 
     public PersistenceConfigResponseDlms() {
@@ -76,6 +75,7 @@ public class PersistenceConfigResponseDlms extends ApplicationConfiguration {
     @Bean(name = "txMgrDlms")
     public JpaTransactionManager transactionManager(
             @Qualifier("entityMgrFactDlms") final EntityManagerFactory barEntityManagerFactory) {
-        return new JpaTransactionManager(barEntityManagerFactory);    }
+        return new JpaTransactionManager(barEntityManagerFactory);
+    }
 
 }

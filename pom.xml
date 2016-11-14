@@ -55,11 +55,13 @@
 		<!-- Platform -->
 		<module>Platform/osgp-domain-core</module>
 		<module>Platform/osgp-domain-logging</module>
+        <module>Platform/osgp-domain-microgrids</module>
 
 		<module>Platform/osgp-adapter-domain-shared</module>
 
 		<module>Platform/osgp-adapter-domain-admin</module>
 		<module>Platform/osgp-adapter-domain-core</module>
+        <module>Platform/osgp-adapter-domain-microgrids</module>
 		<module>Platform/osgp-adapter-domain-publiclighting</module>
 		<module>Platform/osgp-adapter-domain-tariffswitching</module>
 		<module>Platform/osgp-adapter-domain-smartmetering</module>

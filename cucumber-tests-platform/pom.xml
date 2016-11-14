@@ -248,6 +248,15 @@
 			<classifier>classes</classifier>
 		</dependency>
 
+        <dependency>
+            <groupId>com.alliander.osgp</groupId>
+            <artifactId>osgp-domain-microgrids</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alliander.osgp</groupId>
+            <artifactId>osgp-adapter-domain-microgrids</artifactId>
+        </dependency>
+
 		<dependency>
 			<groupId>com.alliander.osgp</groupId>
 			<artifactId>osgp-domain-logging</artifactId>
