@@ -381,4 +381,21 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             }
         };
     }
+
+    @Override
+    public final Specification<Device> excludeDeviceIdentificationList(final List<String> deviceIdentifications)
+            throws ArgumentNullOrEmptyException {
+        if (deviceIdentifications == null) {
+            throw new ArgumentNullOrEmptyException("deviceIdentifications");
+        }
+
+        return new Specification<Device>() {
+            @Override
+            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
+                    final CriteriaBuilder cb) {
+
+                return cb.not(deviceRoot.get("deviceIdentification").in(deviceIdentifications));
+            }
+        };
+    }
 }

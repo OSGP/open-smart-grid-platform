@@ -56,4 +56,7 @@ public interface DeviceSpecifications {
 
     Specification<Device> existsInDeviceIdentificationList(List<String> deviceIdentifications)
             throws ArgumentNullOrEmptyException;
+
+    Specification<Device> excludeDeviceIdentificationList(List<String> deviceIdentifications)
+            throws ArgumentNullOrEmptyException;
 }

@@ -33,6 +33,7 @@ public class DeviceFilter {
     private String firmwareModuleVersion;
     private boolean exactMatch;
     private List<String> deviceIdentificationsToUse;
+    private List<String> deviceIdentificationsToExclude;
 
     public DeviceFilter() {
         // Default constructor.
@@ -45,7 +46,8 @@ public class DeviceFilter {
             final String sortDir, final String sortedBy, final boolean hasTechnicalInstallation, final String owner,
             final String deviceType, final String manufacturer, final String model,
             final FirmwareModuleFilterType firmwareModuleType, final String firmwareModuleVersion,
-            final boolean exactMatch, final List<String> deviceIdentificationsToUse) {
+            final boolean exactMatch, final List<String> deviceIdentificationsToUse,
+            final List<String> deviceIdentificationsToExclude) {
         this.organisationIdentification = organisationIdentification;
         this.deviceIdentification = deviceIdentification;
         this.alias = alias;
@@ -68,6 +70,7 @@ public class DeviceFilter {
         this.firmwareModuleVersion = firmwareModuleVersion;
         this.exactMatch = exactMatch;
         this.deviceIdentificationsToUse = deviceIdentificationsToUse;
+        this.deviceIdentificationsToExclude = deviceIdentificationsToExclude;
     }
 
     public String getOrganisationIdentification() {
@@ -196,5 +199,13 @@ public class DeviceFilter {
 
     public void setDeviceIdentificationsToUse(final List<String> deviceIdentificationsToUse) {
         this.deviceIdentificationsToUse = deviceIdentificationsToUse;
+    }
+
+    public List<String> getDeviceIdentificationsToExclude() {
+        return this.deviceIdentificationsToExclude;
+    }
+
+    public void setDeviceIdentificationsToExclude(final List<String> deviceIdentificationsToExclude) {
+        this.deviceIdentificationsToExclude = deviceIdentificationsToExclude;
     }
 }

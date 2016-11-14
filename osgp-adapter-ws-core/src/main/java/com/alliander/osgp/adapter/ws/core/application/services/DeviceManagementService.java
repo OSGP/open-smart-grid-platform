@@ -278,7 +278,7 @@ public class DeviceManagementService {
                 final DeviceFilter df = new DeviceFilter(organisationIdentification, null, null, null, null, null, null,
                         null, DeviceExternalManagedFilterType.BOTH, DeviceActivatedFilterType.BOTH,
                         DeviceInMaintenanceFilterType.BOTH, null, null, false, null, null, null, null, null, null,
-                        false, null);
+                        false, null, null);
                 devices = this.applyFilter(df, organisation, request);
             } else {
                 deviceFilter.updateOrganisationIdentification(organisationIdentification);
@@ -394,9 +394,15 @@ public class DeviceManagementService {
                                     deviceFilter.getFirmwareModuleVersion().replaceAll(WILDCARD, "%") + "%"));
                 }
                 if (deviceFilter.getDeviceIdentificationsToUse() != null
-                        && deviceFilter.getDeviceIdentificationsToUse().size() > 0) {
+                        && !deviceFilter.getDeviceIdentificationsToUse().isEmpty()) {
                     specifications = specifications.and(this.deviceSpecifications
                             .existsInDeviceIdentificationList(deviceFilter.getDeviceIdentificationsToUse()));
+
+                }
+                if (deviceFilter.getDeviceIdentificationsToExclude() != null
+                        && !deviceFilter.getDeviceIdentificationsToExclude().isEmpty()) {
+                    specifications = specifications.and(this.deviceSpecifications
+                            .excludeDeviceIdentificationList(deviceFilter.getDeviceIdentificationsToExclude()));
 
                 }
                 devices = this.deviceRepository.findAll(specifications, request);
