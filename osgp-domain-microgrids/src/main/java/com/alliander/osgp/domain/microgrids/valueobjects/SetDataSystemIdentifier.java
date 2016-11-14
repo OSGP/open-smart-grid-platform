@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.domain.microgrids.valueobjects;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SetDataSystemIdentifier extends SystemIdentifier {
@@ -19,15 +20,15 @@ public class SetDataSystemIdentifier extends SystemIdentifier {
     public SetDataSystemIdentifier(final int id, final String systemType, final List<SetPoint> setPoints,
             final List<Profile> profiles) {
         super(id, systemType);
-        this.setPoints = setPoints;
-        this.profiles = profiles;
+        this.setPoints = new ArrayList<>(setPoints);
+        this.profiles = new ArrayList<>(profiles);
     }
 
     public List<SetPoint> getSetPoints() {
-        return this.setPoints;
+        return new ArrayList<>(this.setPoints);
     }
 
     public List<Profile> getProfiles() {
-        return this.profiles;
+        return new ArrayList<>(this.profiles);
     }
 }

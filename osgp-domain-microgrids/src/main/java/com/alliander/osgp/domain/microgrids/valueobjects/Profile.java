@@ -8,6 +8,7 @@
 package com.alliander.osgp.domain.microgrids.valueobjects;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Profile implements Serializable {
@@ -21,7 +22,7 @@ public class Profile implements Serializable {
     public Profile(final Integer id, final String node, final List<ProfileEntry> profileEntries) {
         this.id = id;
         this.node = node;
-        this.profileEntries = profileEntries;
+        this.profileEntries = new ArrayList<>(profileEntries);
     }
 
     public Integer getId() {
@@ -33,6 +34,6 @@ public class Profile implements Serializable {
     }
 
     public List<ProfileEntry> getProfileEntries() {
-        return this.profileEntries;
+        return new ArrayList<>(this.profileEntries);
     }
 }

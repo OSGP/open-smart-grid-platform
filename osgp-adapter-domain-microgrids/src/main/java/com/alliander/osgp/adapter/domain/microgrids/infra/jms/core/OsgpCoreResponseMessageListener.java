@@ -31,10 +31,6 @@ public class OsgpCoreResponseMessageListener implements MessageListener {
     @Qualifier("domainMicrogridsOsgpCoreResponseMessageProcessorMap")
     private MessageProcessorMap osgpCoreResponseMessageProcessorMap;
 
-    public OsgpCoreResponseMessageListener() {
-        // Default public constructor
-    }
-
     @Override
     public void onMessage(final Message message) {
         try {

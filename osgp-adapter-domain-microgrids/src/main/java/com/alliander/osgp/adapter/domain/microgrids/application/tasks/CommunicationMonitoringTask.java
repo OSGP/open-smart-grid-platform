@@ -44,10 +44,6 @@ public class CommunicationMonitoringTask implements Runnable {
     @Autowired
     private Integer maximumTimeWithoutCommunication;
 
-    public CommunicationMonitoringTask() {
-        // Default public constructor
-    }
-
     @Override
     public void run() {
         LOGGER.info("Running communication monitoring task.");

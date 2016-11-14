@@ -33,11 +33,9 @@ import com.zaxxer.hikari.HikariDataSource;
 @EnableJpaRepositories(basePackageClasses = { RtuDeviceRepository.class,
         DeviceRepository.class }, entityManagerFactoryRef = "entityManagerFactory")
 @Configuration
-@PropertySources({
-	@PropertySource("classpath:osgp-adapter-domain-microgrids.properties"),
-	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-    @PropertySource(value = "file:${osgp/AdapterDomainMicrogrids/config}", ignoreResourceNotFound = true),
-})
+@PropertySources({ @PropertySource("classpath:osgp-adapter-domain-microgrids.properties"),
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/AdapterDomainMicrogrids/config}", ignoreResourceNotFound = true), })
 public class PersistenceConfig extends AbstractConfig {
 
     private static final String PROPERTY_NAME_DATABASE_DRIVER = "db.driver";
@@ -58,10 +56,6 @@ public class PersistenceConfig extends AbstractConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger(PersistenceConfig.class);
 
     private HikariDataSource dataSource;
-
-    public PersistenceConfig() {
-        // Default public constructor
-    }
 
     /**
      * Method for creating the Data Source.

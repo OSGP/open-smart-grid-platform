@@ -8,6 +8,7 @@
 package com.alliander.osgp.domain.microgrids.valueobjects;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SetDataRequest implements Serializable {
@@ -17,10 +18,10 @@ public class SetDataRequest implements Serializable {
     private final List<SetDataSystemIdentifier> setDataSystemIdentifiers;
 
     public SetDataRequest(final List<SetDataSystemIdentifier> setDataSystemIdentifiers) {
-        this.setDataSystemIdentifiers = setDataSystemIdentifiers;
+        this.setDataSystemIdentifiers = new ArrayList<>(setDataSystemIdentifiers);
     }
 
     public List<SetDataSystemIdentifier> getSetDataSystemIdentifiers() {
-        return this.setDataSystemIdentifiers;
+        return new ArrayList<>(this.setDataSystemIdentifiers);
     }
 }

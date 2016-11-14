@@ -31,10 +31,6 @@ public class OsgpCoreRequestMessageListener implements MessageListener {
     @Qualifier(value = "domainMicrogridsIncomingOsgpCoreRequestMessageProcessor")
     private OsgpCoreRequestMessageProcessor osgpCoreRequestMessageProcessor;
 
-    public OsgpCoreRequestMessageListener() {
-        // Default public constructor
-    }
-
     @Override
     public void onMessage(final Message message) {
         try {

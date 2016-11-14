@@ -26,18 +26,12 @@ import com.alliander.osgp.shared.application.config.AbstractConfig;
 @ComponentScan(basePackages = { "com.alliander.osgp.domain.microgrids", "com.alliander.osgp.adapter.ws.microgrids",
         "com.alliander.osgp.domain.logging", "com.alliander.osgp.domain.core.services" })
 @ImportResource("classpath:applicationContext.xml")
-@PropertySources({
-	@PropertySource("classpath:osgp-adapter-ws-microgrids.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true),
-})
+@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-microgrids.properties"),
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true), })
 public class ApplicationContext extends AbstractConfig {
 
     private static final String PROPERTY_NAME_STUB_RESPONSES = "stub.responses";
-
-    public ApplicationContext() {
-        // Default public constructor
-    }
 
     @Bean
     public boolean stubResponses() {

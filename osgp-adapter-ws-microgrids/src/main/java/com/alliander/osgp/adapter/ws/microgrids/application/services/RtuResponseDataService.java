@@ -31,10 +31,6 @@ public class RtuResponseDataService {
     @Autowired
     private RtuResponseDataRepository responseDataRepository;
 
-    public RtuResponseDataService() {
-        // Default public constructor
-    }
-
     /**
      * Queue response data object.
      *

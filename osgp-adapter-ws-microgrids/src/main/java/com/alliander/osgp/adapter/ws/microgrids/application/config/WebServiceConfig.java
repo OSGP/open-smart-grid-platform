@@ -40,11 +40,9 @@ import com.alliander.osgp.adapter.ws.microgrids.presentation.ws.WebServiceTempla
 import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 @Configuration
-@PropertySources({
-	@PropertySource("classpath:osgp-adapter-ws-microgrids.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true),
-})
+@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-microgrids.properties"),
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true), })
 public class WebServiceConfig extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceConfig.class);
@@ -68,10 +66,6 @@ public class WebServiceConfig extends AbstractConfig {
 
     @Resource
     private Environment environment;
-
-    public WebServiceConfig() {
-        // Default public constructor
-    }
 
     // === MICROGRIDS MARSHALLERS ===
 

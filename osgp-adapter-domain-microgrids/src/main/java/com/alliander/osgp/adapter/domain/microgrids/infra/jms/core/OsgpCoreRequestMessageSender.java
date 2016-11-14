@@ -22,10 +22,6 @@ public class OsgpCoreRequestMessageSender {
     @Qualifier("domainMicrogridsOutgoingOsgpCoreRequestsJmsTemplate")
     private JmsTemplate osgpCoreRequestsJmsTemplate;
 
-    public OsgpCoreRequestMessageSender() {
-        // Default public constructor
-    }
-
     public void send(final RequestMessage requestMessage, final String messageType, final String ipAddress) {
         this.send(requestMessage, messageType, ipAddress, null);
     }

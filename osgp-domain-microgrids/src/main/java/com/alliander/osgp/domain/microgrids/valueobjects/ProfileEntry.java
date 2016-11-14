@@ -15,7 +15,7 @@ public class ProfileEntry implements Serializable {
 
     private static final long serialVersionUID = -6843459709647885422L;
 
-    private Integer id;
+    private int id;
     private DateTime time;
     private double value;
 

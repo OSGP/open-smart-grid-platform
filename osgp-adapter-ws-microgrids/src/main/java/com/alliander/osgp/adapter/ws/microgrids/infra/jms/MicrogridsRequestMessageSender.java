@@ -39,10 +39,6 @@ public class MicrogridsRequestMessageSender {
     @Qualifier("wsMicrogridsOutgoingRequestsJmsTemplate")
     private JmsTemplate microgridsRequestsJmsTemplate;
 
-    public MicrogridsRequestMessageSender() {
-        // Default public constructor
-    }
-
     /**
      * Method for sending a request message to the queue
      *

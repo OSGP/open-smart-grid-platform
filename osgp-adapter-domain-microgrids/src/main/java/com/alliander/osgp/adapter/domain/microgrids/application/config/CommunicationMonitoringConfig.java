@@ -66,10 +66,6 @@ public class CommunicationMonitoringConfig extends AbstractConfig {
     @Autowired
     private CommunicationMonitoringTask communicationMonitoringTask;
 
-    public CommunicationMonitoringConfig() {
-        // Default public constructor
-    }
-
     @Bean
     public CronTrigger communicationMonitoringTaskCronTrigger() {
         LOGGER.info("Initializing Cron Trigger bean with cron expression {}.", this.cronExpression());

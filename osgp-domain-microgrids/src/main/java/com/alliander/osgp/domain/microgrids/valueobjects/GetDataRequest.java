@@ -22,6 +22,6 @@ public class GetDataRequest implements Serializable {
     }
 
     public List<SystemFilter> getSystemFilters() {
-        return this.systemFilters;
+        return new ArrayList<>(this.systemFilters);
     }
 }

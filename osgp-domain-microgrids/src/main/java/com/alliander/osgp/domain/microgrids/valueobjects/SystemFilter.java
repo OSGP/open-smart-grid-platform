@@ -28,11 +28,11 @@ public class SystemFilter extends SystemIdentifier implements Serializable {
     }
 
     public List<MeasurementFilter> getMeasurementFilters() {
-        return this.measurementFilters;
+        return new ArrayList<>(this.measurementFilters);
     }
 
     public List<ProfileFilter> getProfileFilters() {
-        return this.profileFilters;
+        return new ArrayList<>(this.profileFilters);
     }
 
     public boolean isAll() {

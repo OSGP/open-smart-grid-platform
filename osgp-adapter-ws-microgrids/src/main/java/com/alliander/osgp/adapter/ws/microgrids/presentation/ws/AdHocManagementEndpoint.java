@@ -46,10 +46,6 @@ public class AdHocManagementEndpoint {
     @Autowired
     private MicrogridsMapper mapper;
 
-    public AdHocManagementEndpoint() {
-        // Default public constructor
-    }
-
     // === GET DATA ===
 
     @PayloadRoot(localPart = "GetDataRequest", namespace = NAMESPACE)

@@ -38,10 +38,6 @@ public class CommunicatonRecoveryService extends BaseService {
     @Autowired
     private CorrelationIdProviderService correlationIdProviderService;
 
-    public CommunicatonRecoveryService() {
-        // Default public constructor
-    }
-
     public void restoreCommunication(final RtuDevice rtu) {
         LOGGER.info("Restoring communication for device {}.", rtu.getDeviceIdentification());
 

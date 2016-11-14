@@ -28,10 +28,6 @@ public class WebServiceResponseMessageSender implements NotificationResponseMess
     @Qualifier("domainMicrogridsOutgoingWebServiceResponsesJmsTemplate")
     private JmsTemplate webServiceResponsesJmsTemplate;
 
-    public WebServiceResponseMessageSender() {
-        // Default public constructor
-    }
-
     /**
      * Send a response message to the web service adapter using a custom time to
      * live.

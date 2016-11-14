@@ -56,7 +56,7 @@ public class GetDataRequestMessageProcessor extends WebServiceRequestMessageProc
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
 
-            if (message.getObject() != null && message.getObject() instanceof GetDataRequest) {
+            if (message.getObject() instanceof GetDataRequest) {
                 dataRequest = (GetDataRequest) message.getObject();
             }
 

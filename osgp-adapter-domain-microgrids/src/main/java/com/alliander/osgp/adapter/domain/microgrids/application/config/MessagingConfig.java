@@ -37,11 +37,9 @@ import com.alliander.osgp.shared.application.config.AbstractConfig;
  * An application context Java configuration class.
  */
 @Configuration
-@PropertySources({
-	@PropertySource("classpath:osgp-adapter-domain-microgrids.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "file:${osgp/AdapterDomainMicrogrids/config}", ignoreResourceNotFound = true),
-})
+@PropertySources({ @PropertySource("classpath:osgp-adapter-domain-microgrids.properties"),
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/AdapterDomainMicrogrids/config}", ignoreResourceNotFound = true), })
 public class MessagingConfig extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MessagingConfig.class);
@@ -144,10 +142,6 @@ public class MessagingConfig extends AbstractConfig {
     @Autowired
     @Qualifier("domainMicrogridsIncomingOsgpCoreRequestMessageListener")
     private OsgpCoreRequestMessageListener incomingOsgpCoreRequestMessageListener;
-
-    public MessagingConfig() {
-        // Default public constructor
-    }
 
     // === JMS SETTINGS ===
 
