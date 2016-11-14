@@ -34,6 +34,8 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 public class ManagementService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ManagementService.class);
+    private static final String DEVICE_RESPONSE_NOT_OK_LOG_MSG = "Device Response not ok. Unexpected Exception";
+    private static final String SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG = "Sending request message to core.";
 
     @Autowired
     @Qualifier(value = "domainSmartMeteringOutgoingOsgpCoreRequestMessageSender")
@@ -74,8 +76,8 @@ public class ManagementService {
             final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException,
             final EventMessageDataResponseDto eventMessageDataContainerDto) {
 
-        final EventMessagesResponse eventMessageDataContainer = this.managementMapper.map(
-                eventMessageDataContainerDto, EventMessagesResponse.class);
+        final EventMessagesResponse eventMessageDataContainer = this.managementMapper.map(eventMessageDataContainerDto,
+                EventMessagesResponse.class);
 
         // Send the response containing the events to the webservice-adapter
         final ResponseMessage responseMessage = new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
@@ -83,5 +85,64 @@ public class ManagementService {
                 responseMessageResultType, osgpException, eventMessageDataContainer,
                 deviceMessageMetadata.getMessagePriority());
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
+    }
+
+    public void enableDebugging(final DeviceMessageMetadata deviceMessageMetadata) throws FunctionalException {
+        LOGGER.info("EnableDebugging for organisationIdentification: {} for deviceIdentification: {}",
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
+
+        this.sendMetadataOnlyRequestMessage(deviceMessageMetadata);
+    }
+
+    public void handleEnableDebuggingResponse(final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessageResultType deviceResult, final OsgpException exception) {
+
+        LOGGER.info("handleEnableDebuggingResponse for MessageType: {}, with result: {}",
+                deviceMessageMetadata.getMessageType(), deviceResult.toString());
+
+        this.handleMetadataOnlyResponseMessage(deviceMessageMetadata, deviceResult, exception);
+    }
+
+    public void disableDebugging(final DeviceMessageMetadata deviceMessageMetadata) throws FunctionalException {
+        LOGGER.info("DisableDebugging for organisationIdentification: {} for deviceIdentification: {}",
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
+
+        this.sendMetadataOnlyRequestMessage(deviceMessageMetadata);
+    }
+
+    public void handleDisableDebuggingResponse(final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessageResultType deviceResult, final OsgpException exception) {
+
+        LOGGER.info("handleDisableDebuggingResponse for MessageType: {}, with result: {}",
+                deviceMessageMetadata.getMessageType(), deviceResult.toString());
+
+        this.handleMetadataOnlyResponseMessage(deviceMessageMetadata, deviceResult, exception);
+    }
+
+    private void sendMetadataOnlyRequestMessage(final DeviceMessageMetadata deviceMessageMetadata) throws FunctionalException {
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceMessageMetadata
+                .getDeviceIdentification());
+
+        LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
+        final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                smartMeteringDevice.getIpAddress());
+        this.osgpCoreRequestMessageSender.send(requestMessage, deviceMessageMetadata.getMessageType(),
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+    }
+
+    private void handleMetadataOnlyResponseMessage(final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessageResultType deviceResult, final OsgpException exception) {
+
+        ResponseMessageResultType result = deviceResult;
+        if (exception != null) {
+            LOGGER.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
+            result = ResponseMessageResultType.NOT_OK;
+        }
+
+        this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                result, exception, null, deviceMessageMetadata.getMessagePriority()), deviceMessageMetadata
+                .getMessageType());
     }
 }

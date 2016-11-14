@@ -9,7 +9,6 @@ package com.alliander.osgp.adapter.domain.microgrids.application.config;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
@@ -19,7 +18,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @ComponentScan(basePackages = { "com.alliander.osgp.domain.core", "com.alliander.osgp.adapter.domain.microgrids" })
 @EnableTransactionManagement
-@PropertySource("file:${osp/osgpAdapterDomainMicrogrids/config}")
 public class ApplicationContext {
 
 }
