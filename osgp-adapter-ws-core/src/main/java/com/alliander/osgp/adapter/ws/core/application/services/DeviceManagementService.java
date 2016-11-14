@@ -277,7 +277,8 @@ public class DeviceManagementService {
             if (deviceFilter == null) {
                 final DeviceFilter df = new DeviceFilter(organisationIdentification, null, null, null, null, null, null,
                         null, DeviceExternalManagedFilterType.BOTH, DeviceActivatedFilterType.BOTH,
-                        DeviceInMaintenanceFilterType.BOTH, null, null, false, null, null, null, null, null, null, false);
+                        DeviceInMaintenanceFilterType.BOTH, null, null, false, null, null, null, null, null, null,
+                        false, null);
                 devices = this.applyFilter(df, organisation, request);
             } else {
                 deviceFilter.updateOrganisationIdentification(organisationIdentification);
@@ -322,11 +323,11 @@ public class DeviceManagementService {
                     String searchString = deviceFilter.getDeviceIdentification();
 
                     if (!deviceFilter.isExactMatch()) {
-                            searchString = searchString.replaceAll(WILDCARD, "%") + "%";
-                            }
+                        searchString = searchString.replaceAll(WILDCARD, "%") + "%";
+                    }
 
                     specifications = specifications.and(this.deviceSpecifications.hasDeviceIdentification(searchString,
-                                                deviceFilter.isExactMatch()));
+                            deviceFilter.isExactMatch()));
                 }
                 if (!StringUtils.isEmpty(deviceFilter.getAlias())) {
                     specifications = specifications.and(this.deviceSpecifications
@@ -391,6 +392,12 @@ public class DeviceManagementService {
                     specifications = specifications.and(
                             this.deviceSpecifications.forFirmwareModuleVersion(deviceFilter.getFirmwareModuleType(),
                                     deviceFilter.getFirmwareModuleVersion().replaceAll(WILDCARD, "%") + "%"));
+                }
+                if (deviceFilter.getDeviceIdentificationsToUse() != null
+                        && deviceFilter.getDeviceIdentificationsToUse().size() > 0) {
+                    specifications = specifications.and(this.deviceSpecifications
+                            .existsInDeviceIdentificationList(deviceFilter.getDeviceIdentificationsToUse()));
+
                 }
                 devices = this.deviceRepository.findAll(specifications, request);
             } else {

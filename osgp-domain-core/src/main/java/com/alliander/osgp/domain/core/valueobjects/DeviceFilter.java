@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.domain.core.valueobjects;
 
+import java.util.List;
+
 public class DeviceFilter {
 
     private String organisationIdentification;
@@ -30,19 +32,20 @@ public class DeviceFilter {
     private FirmwareModuleFilterType firmwareModuleType;
     private String firmwareModuleVersion;
     private boolean exactMatch;
+    private List<String> deviceIdentificationsToUse;
 
     public DeviceFilter() {
         // Default constructor.
     }
 
-    public DeviceFilter(final String organisationIdentification, final String deviceIdentification,
-            final String street, final String city, final String postalCode, final String alias, final String number,
+    public DeviceFilter(final String organisationIdentification, final String deviceIdentification, final String street,
+            final String city, final String postalCode, final String alias, final String number,
             final String municipality, final DeviceExternalManagedFilterType deviceExternalManaged,
             final DeviceActivatedFilterType deviceActivated, final DeviceInMaintenanceFilterType deviceInMaintenance,
             final String sortDir, final String sortedBy, final boolean hasTechnicalInstallation, final String owner,
             final String deviceType, final String manufacturer, final String model,
             final FirmwareModuleFilterType firmwareModuleType, final String firmwareModuleVersion,
-            final boolean exactMatch) {
+            final boolean exactMatch, final List<String> deviceIdentificationsToUse) {
         this.organisationIdentification = organisationIdentification;
         this.deviceIdentification = deviceIdentification;
         this.alias = alias;
@@ -64,6 +67,7 @@ public class DeviceFilter {
         this.firmwareModuleType = firmwareModuleType;
         this.firmwareModuleVersion = firmwareModuleVersion;
         this.exactMatch = exactMatch;
+        this.deviceIdentificationsToUse = deviceIdentificationsToUse;
     }
 
     public String getOrganisationIdentification() {
@@ -184,5 +188,13 @@ public class DeviceFilter {
 
     public boolean isExactMatch() {
         return this.exactMatch;
+    }
+
+    public List<String> getDeviceIdentificationsToUse() {
+        return this.deviceIdentificationsToUse;
+    }
+
+    public void setDeviceIdentificationsToUse(final List<String> deviceIdentificationsToUse) {
+        this.deviceIdentificationsToUse = deviceIdentificationsToUse;
     }
 }
