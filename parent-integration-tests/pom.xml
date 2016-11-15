@@ -249,6 +249,7 @@
         <groupId>com.alliander.osgp</groupId>
         <artifactId>osgp-adapter-domain-microgrids</artifactId>
         <version>${osgp.version}</version>
+        <classifier>classes</classifier>
       </dependency>
       <dependency>
         <groupId>com.alliander.osgp</groupId>

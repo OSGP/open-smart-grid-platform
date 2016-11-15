@@ -255,6 +255,7 @@
         <dependency>
             <groupId>com.alliander.osgp</groupId>
             <artifactId>osgp-adapter-domain-microgrids</artifactId>
+            <classifier>classes</classifier>
         </dependency>
 
 		<dependency>
