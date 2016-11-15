@@ -11,14 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import javax.annotation.Resource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.server.endpoint.adapter.DefaultMethodEndpointAdapter;
 import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadMethodProcessor;
@@ -34,10 +32,15 @@ import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderEndpointInte
 import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderMessagePriorityEndpointInterceptor;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.WebServiceMonitorInterceptor;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.X509CertificateRdnAttributeValueEndpointInterceptor;
+import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 @Configuration
-@PropertySource("file:${osp/osgpAdapterWsCore/config}")
-public class WebServiceConfig {
+@PropertySources({
+	@PropertySource("classpath:osgp-adapter-ws-core.properties"),
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/AdapterWsCore/config}", ignoreResourceNotFound = true),
+})
+public class WebServiceConfig extends AbstractConfig {
 
     private static final String PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_DEVICE_INSTALLATION = "jaxb2.marshaller.context.path.deviceinstallation";
     private static final String PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_DEVICE_MANAGEMENT = "jaxb2.marshaller.context.path.devicemanagement";
@@ -61,9 +64,6 @@ public class WebServiceConfig {
     private static final String SERVER = "SERVER";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceConfig.class);
-
-    @Resource
-    private Environment environment;
 
     // === COMMON MARSHALLERS ===
 

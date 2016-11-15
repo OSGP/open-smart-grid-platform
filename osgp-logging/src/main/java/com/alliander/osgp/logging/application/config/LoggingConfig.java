@@ -10,7 +10,6 @@ package com.alliander.osgp.logging.application.config;
 import java.util.Properties;
 
 import javax.annotation.PreDestroy;
-import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 import org.hibernate.ejb.HibernatePersistence;
@@ -20,20 +19,25 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import com.alliander.osgp.logging.domain.repositories.WebServiceMonitorLogRepository;
+import com.alliander.osgp.shared.application.config.AbstractConfig;
 import com.googlecode.flyway.core.Flyway;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 @EnableJpaRepositories(basePackageClasses = { WebServiceMonitorLogRepository.class })
 @Configuration
-@PropertySource("file:${osp/osgpLogging/config}")
-public class LoggingConfig {
+@PropertySources({
+	@PropertySource("classpath:osgp-logging.properties"),
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/Logging/config}", ignoreResourceNotFound = true),
+})
+public class LoggingConfig extends AbstractConfig {
 
     private static final String PROPERTY_NAME_DATABASE_DRIVER = "db.driver";
     private static final String PROPERTY_NAME_DATABASE_PASSWORD = "db.password";
@@ -55,9 +59,6 @@ public class LoggingConfig {
     private static final String PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN = "entitymanager.packages.to.scan";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LoggingConfig.class);
-
-    @Resource
-    private Environment environment;
 
     private HikariDataSource dataSource;
 

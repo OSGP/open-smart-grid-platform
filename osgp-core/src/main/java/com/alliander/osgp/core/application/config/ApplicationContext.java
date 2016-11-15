@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.alliander.osgp.core.domain.model.domain.DomainRequestService;
@@ -31,9 +30,6 @@ import com.alliander.osgp.core.infra.jms.protocol.in.ProtocolResponseMessageSend
 @Configuration
 @ComponentScan(basePackages = { "com.alliander.osgp.domain.core", "com.alliander.osgp.core" })
 @EnableTransactionManagement()
-// @Import({ PersistenceConfig.class, MessagingConfig.class,
-// SchedulingConfig.class })
-@PropertySource("file:${osp/osgpCore/config}")
 public class ApplicationContext {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);

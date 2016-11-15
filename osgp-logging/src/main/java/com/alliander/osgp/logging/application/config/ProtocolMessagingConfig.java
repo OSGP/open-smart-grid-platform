@@ -7,8 +7,6 @@
  */
 package com.alliander.osgp.logging.application.config;
 
-import javax.annotation.Resource;
-
 import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.broker.region.policy.RedeliveryPolicyMap;
 import org.apache.activemq.command.ActiveMQDestination;
@@ -20,14 +18,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
 import com.alliander.osgp.logging.infra.jms.ProtocolLogItemRequestMessageListener;
+import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 @Configuration
-@PropertySource("file:${osp/osgpLogging/config}")
-public class ProtocolMessagingConfig {
+@PropertySources({
+	@PropertySource("classpath:osgp-logging.properties"),
+	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+    @PropertySource(value = "file:${osgp/Logging/config}", ignoreResourceNotFound = true),
+})
+public class ProtocolMessagingConfig extends AbstractConfig {
 
     // JMS Settings
     private static final String PROPERTY_NAME_JMS_ACTIVEMQ_BROKER_URL = "jms.protocol.activemq.broker.url";
@@ -45,9 +48,6 @@ public class ProtocolMessagingConfig {
     private static final String PROPERTY_NAME_JMS_INCOMING_PROTOCOL_LOG_ITEM_REQUESTS_MAX_CONCURRENT_CONSUMERS = "jms.incoming.protocol.log.item.requests.max.concurrent.consumers";
 
     private static final String PROPERTY_NAME_MAX_RETRY_COUNT = "max.retry.count";
-
-    @Resource
-    private Environment environment;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolMessagingConfig.class);
 

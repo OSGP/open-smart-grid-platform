@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -31,19 +32,23 @@ import com.alliander.osgp.domain.core.specifications.DeviceSpecifications;
 import com.alliander.osgp.domain.core.specifications.EventSpecifications;
 import com.alliander.osgp.domain.core.valueobjects.FirmwareLocation;
 import com.alliander.osgp.logging.domain.config.ReadOnlyLoggingConfig;
+import com.alliander.osgp.shared.application.config.AbstractConfig;
 import com.alliander.osgp.shared.application.config.PagingSettings;
 
 /**
- * An application context Java configuration class. The usage of Java
- * configuration requires Spring Framework 3.0
+ * An application context Java configuration class.
  */
 @Configuration
 @ComponentScan(basePackages = { "com.alliander.osgp.domain.core", "com.alliander.osgp.adapter.ws.core",
 "com.alliander.osgp.domain.logging" })
 @ImportResource("classpath:applicationContext.xml")
 @Import({ PersistenceConfig.class, WritablePersistenceConfig.class, ReadOnlyLoggingConfig.class, WebServiceConfig.class })
-@PropertySource("file:${osp/osgpAdapterWsCore/config}")
-public class ApplicationContext {
+@PropertySources({
+	@PropertySource("classpath:osgp-adapter-ws-core.properties"),
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/AdapterWsCore/config}", ignoreResourceNotFound = true),
+})
+public class ApplicationContext extends AbstractConfig {
 
     private static final String PROPERTY_NAME_DEFAULT_PROTOCOL = "default.protocol";
     private static final String PROPERTY_NAME_DEFAULT_PROTOCOL_VERSION = "default.protocol.version";

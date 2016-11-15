@@ -11,14 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import javax.annotation.Resource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.server.endpoint.adapter.DefaultMethodEndpointAdapter;
 import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadMethodProcessor;
@@ -33,10 +31,15 @@ import com.alliander.osgp.adapter.ws.endpointinterceptors.WebServiceMonitorInter
 import com.alliander.osgp.adapter.ws.endpointinterceptors.X509CertificateRdnAttributeValueEndpointInterceptor;
 import com.alliander.osgp.adapter.ws.publiclighting.application.exceptionhandling.DetailSoapFaultMappingExceptionResolver;
 import com.alliander.osgp.adapter.ws.publiclighting.application.exceptionhandling.SoapFaultMapper;
+import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 @Configuration
-@PropertySource("file:${osp/osgpAdapterWsPublicLighting/config}")
-public class WebServiceConfig {
+@PropertySources({
+	@PropertySource("classpath:osgp-adapter-ws-publiclighting.properties"),
+	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+    @PropertySource(value = "file:${osgp/AdapterWsPublicLighting/config}", ignoreResourceNotFound = true),
+})
+public class WebServiceConfig extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceConfig.class);
 
@@ -55,9 +58,6 @@ public class WebServiceConfig {
     private static final String X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME = "CommonNameSet";
 
     private static final String SERVER = "SERVER";
-
-    @Resource
-    private Environment environment;
 
     // === PUBLIC LIGHTING MARSHALLERS ===
 

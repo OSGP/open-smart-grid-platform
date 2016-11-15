@@ -42,3 +42,5 @@ fitnesse/FitNesseRoot/files/
 .idea
 
 *~
+*.log
+.checkstyle
