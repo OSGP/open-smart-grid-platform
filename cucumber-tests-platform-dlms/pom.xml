@@ -10,24 +10,6 @@
   <packaging>jar</packaging>
   <name>cucumber-tests-platform-dlms</name>
 
-  <properties>
-    <osgp.version>${project.version}</osgp.version>
-    <spring.version>4.3.3.RELEASE</spring.version>
-    <cucumber.version>1.2.4</cucumber.version>
-    <hibernate.jpa.version>1.0.1.Final</hibernate.jpa.version>
-    <soapui.maven.plugin.version>5.2.1</soapui.maven.plugin.version>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <maven.surefire.plugin.version>2.19.1</maven.surefire.plugin.version>
-  </properties>
-
-  <repositories>
-    <repository>
-      <id>smartbear-sweden-plugin-repository</id>
-      <url>http://www.soapui.org/repository/maven2</url>
-    </repository>
-  </repositories>
-
   <parent>
     <groupId>com.alliander.osgp</groupId>
     <artifactId>parent-integration-tests</artifactId>
@@ -40,26 +22,14 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>com.smartbear.soapui</groupId>
         <artifactId>soapui-maven-plugin</artifactId>
-        <version>${soapui.maven.plugin.version}</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <includes>
-            <!-- Include your Cucumber tests, as an example -->
-            <include>**/*Tests.java</include>
-          </includes>
-        </configuration>
-        <version>${maven.surefire.plugin.version}</version>
       </plugin>
     </plugins>
   </build>
@@ -80,36 +50,21 @@
     <dependency>
       <groupId>com.smartbear.soapui</groupId>
       <artifactId>soapui-maven-plugin</artifactId>
-      <version>${soapui.maven.plugin.version}</version>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>httpcore</artifactId>
-          <groupId>org.apache.httpcomponents</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>jfxrt</artifactId>
-          <groupId>javafx</groupId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <!-- Cucumber Framework -->
     <dependency>
       <groupId>info.cukes</groupId>
       <artifactId>cucumber-junit</artifactId>
-      <version>${cucumber.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>info.cukes</groupId>
       <artifactId>cucumber-java</artifactId>
-      <version>${cucumber.version}</version>
     </dependency>
     <dependency>
       <groupId>info.cukes</groupId>
       <artifactId>cucumber-spring</artifactId>
-      <version>${cucumber.version}</version>
       <scope>test</scope>
     </dependency>
 
@@ -154,20 +109,9 @@
     </dependency>
 
     <dependency>
-      <groupId>org.hibernate.javax.persistence</groupId>
-      <artifactId>hibernate-jpa-2.0-api</artifactId>
-      <version>${hibernate.jpa.version}</version>
-    </dependency>
-
-    <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>jgoodies</groupId>
-      <artifactId>forms</artifactId>
-      <version>1.0.5</version>
     </dependency>
 
     <!-- OSGP -->
@@ -184,9 +128,7 @@
     <dependency>
       <groupId>com.alliander</groupId>
       <artifactId>cucumber-tests-platform</artifactId>
-      <version>${osgp.version}</version>
       <type>test-jar</type>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>
