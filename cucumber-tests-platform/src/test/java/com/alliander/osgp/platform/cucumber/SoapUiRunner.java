@@ -15,10 +15,12 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import org.junit.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import com.alliander.osgp.platform.cucumber.support.ApplicationConfig;
+import com.alliander.osgp.platform.cucumber.core.Helpers;
 import com.alliander.osgp.platform.cucumber.support.RunXpathResult;
 import com.alliander.osgp.platform.cucumber.support.TestCaseResult;
 import com.alliander.osgp.platform.cucumber.support.TestCaseRunner;
@@ -36,8 +38,7 @@ import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
  */
 public abstract class SoapUiRunner {
 
-    @Autowired
-    protected ApplicationConfig applicationConfig;
+    private static final Logger LOGGER = LoggerFactory.getLogger(Helpers.class);
 
     @Value("${serviceEndpoint}")
     protected String serviceEndpoint;
@@ -124,11 +125,12 @@ public abstract class SoapUiRunner {
     protected void requestRunner(final TestStepStatus testStepStatus, final Map<String, String> propertiesMap,
             final String testCaseNameRequest, final String testCaseXml, final String testSuiteXml) throws Throwable {
 
+        LOGGER.debug("Sending request [{} => {} => {}] ...", testSuiteXml, testCaseXml, testCaseNameRequest);
         propertiesMap.put(SERVICE_ENDPOINT_LABEL, this.serviceEndpoint);
         
         this.testCase = this.wsdlProjectFactory.createWsdlTestCase(testSuiteXml, testCaseXml);
         this.assertRequest(testCaseNameRequest, testCaseXml, testSuiteXml);
-        /*
+        
         final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase, propertiesMap,
                 testCaseNameRequest);
         final TestStepResult runTestStepByNameResult = runTestStepByName.getRunTestStepByName();
@@ -137,7 +139,9 @@ public abstract class SoapUiRunner {
         final WsdlTestCaseRunner wsdlTestCaseRunner = runTestStepByName.getResults();
         final MessageExchange messageExchange = (MessageExchange) wsdlTestCaseRunner.getResults().get(0);
         this.request = messageExchange.getRequestContent();
-        this.response = messageExchange.getResponseContent();*/
+
+        this.response = messageExchange.getResponseContent();
+        LOGGER.debug("Got response for request [{} => {} => {}] : [{}]", testSuiteXml, testCaseXml, testCaseNameRequest, this.response);        
     }
 
     /**
@@ -155,17 +159,10 @@ public abstract class SoapUiRunner {
     	final boolean flag1 = xml.indexOf(testCaseNameRequest) > 0;
         final boolean flag2 = xml.indexOf(testCaseXml) > 0;
         
-        
         final boolean flag3 = xml.indexOf(testSuiteXml) > 0;
-        try
-        {if (!flag1 || !flag2 || !flag3) {
+        if (!flag1 || !flag2 || !flag3) {
             // this.LOGGER.error(String.format(ERRMSG, xml, testSuiteXml,
             // testCaseXml, testCaseNameRequest));
-        }
-        }
-        catch (NullPointerException npe)
-        {
-        	System.out.println(npe.getMessage() + " thrown!");
         }
     }
 

@@ -27,7 +27,7 @@ Feature: Device installation
     And the device exists
       | DeviceIdentification       | <DeviceIdentification>  |
       | Alias                      | <Alias>                 |
-      | OrganisationIdentification | <Owner>                 |
+      | OrganizationIdentification | <Owner>                 |
       | ContainerPostalCode        | <ContainerPostalCode>   |
       | ContainerCity              | <ContainerCity>         |
       | ContainerStreet            | <ContainerStreet>       |
@@ -44,11 +44,11 @@ Feature: Device installation
       | DeviceUid  | DeviceIdentification | Alias       | Owner    | ContainerPostalCode | ContainerCity | ContainerStreet | ContainerNumber | ContainerMunicipality | GpsLatitude | GpsLongitude | Activated | HasSchedule | PublicKeyPresent | Manufacturer | ModelCode  | Description | Metered |
       | 1234567890 | TEST1024000000001    | Test device | test-org | 1234AA              | Maastricht    | Stationsstraat  |              12 |                       |           0 |            0 | true      | false       | false            | Test         | Test Model | Test        | true    |
 
-  Scenario Outline: Adding a device which already exists
+  Scenario: Adding a device which already exists
     Given a device
-      | DeviceIdentification | <DeviceIdentification> |
+      | DeviceIdentification | TEST1024000000001 |
     When receiving an add device request
-      | DeviceIdentification | <DeviceIdentification> |
+      | DeviceIdentification | TEST1024000000001 |
     Then the add device response contains
       | FaultCode      | SOAP-ENV:Server                                                   |
       | FaultString    | EXISTING_DEVICE                                                   |
@@ -57,11 +57,8 @@ Feature: Device installation
       | Message        | EXISTING_DEVICE                                                   |
       | Component      | WS_CORE                                                           |
       | InnerException | com.alliander.osgp.domain.core.exceptions.ExistingEntityException |
-      | InnerMessage   | Device with id <DeviceIdentification> already exists.             |
-		
-		Examples:
-			| DeviceIdentification |
-			| TEST1024000000001    |
+      | InnerMessage   | Device with id TEST1024000000001 already exists.                  |
+
   #Scenario: Updating a device
   #Given a device
   #| DeviceIdentification | TEST1024000000001 |
@@ -73,9 +70,10 @@ Feature: Device installation
   #And the device exists
   #| DeviceIdentification | TEST1024000000001 |
   #| Alias                | AfterTest         |
-  Scenario Outline: Updating a non existing device
+
+  Scenario: Updating a non existing device
     When receiving an update device request
-      | DeviceIdentification | <DeviceIdentification> |
+      | DeviceIdentification | TEST1024000000001 |
     Then the update device response contains
       | FaultCode      | SOAP-ENV:Server                                                  |
       | FaultString    | UNKNOWN_DEVICE                                                   |
@@ -84,11 +82,7 @@ Feature: Device installation
       | Message        | UNKNOWN_DEVICE                                                   |
       | Component      | WS_CORE                                                          |
       | InnerException | com.alliander.osgp.domain.core.exceptions.UnknownEntityException |
-      | InnerMessage   | Device with id "<DeviceIdentification>" could not be found.      |
-		
-		Examples:
-			| DeviceIdentification |
-			| TEST1024000000001    |
+	  | InnerMessage   | Device with id "TEST1024000000001" could not be found.           |
 			
 ### Converted Fitnesse tests to Cucumber ###
 	# RemoveDevice scenario's

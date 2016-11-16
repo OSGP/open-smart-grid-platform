@@ -12,9 +12,6 @@ package com.alliander.osgp.platform.cucumber.steps;
  */
 public class Keys {
 
-    public Keys() {
-    }
-
     public static final String KEY_CORRELATION_UID = "CorrelationUid";
     public static final String KEY_DEVICE_IDENTIFICATION = "DeviceIdentification";
     public static final String KEY_DEVICE_TYPE = "DeviceType";
@@ -59,5 +56,6 @@ public class Keys {
     public static final String KEY_DEVICE_IDENTIFICATION_G_LABEL = "DeviceIdentificationG";
 
     public static final String KEY_EVENTS_NODELIST_EXPECTED = "event-nodelist-expected";
+    public static final String KEY_DEVICE_UID = "DeviceUid";
 
 }

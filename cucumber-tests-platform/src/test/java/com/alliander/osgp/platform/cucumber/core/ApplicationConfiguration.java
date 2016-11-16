@@ -9,42 +9,40 @@ package com.alliander.osgp.platform.cucumber.core;
 
 import java.util.Properties;
 
-import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 import org.hibernate.ejb.HibernatePersistence;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
-import org.springframework.core.env.Environment;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.alliander.osgp.platform.cucumber.support.ApplicationConfig;
+import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 /**
- * Base class for PersistenceConfig classes.
- * An application context Java JPA configuration class. The usage of Java
- * configuration requires Spring Framework 3.0
+ * Base class for the application configuration.
  */
 @Configuration
-@EnableTransactionManagement()
-@Primary
-public abstract class AbstractPersistenceConfig {
+@PropertySources({ 
+	@PropertySource("classpath:cucumber-platform.properties"),
+	@PropertySource(value = "file:/etc/osp/test/global-cucumber.properties", ignoreResourceNotFound = true),
+    @PropertySource(value = "file:/etc/osp/test/cucumber-platform.properties", ignoreResourceNotFound = true),
+})
+public abstract class ApplicationConfiguration extends AbstractConfig {
 
-    @Autowired
-    protected ApplicationConfig applicationConfig;
-
-    @Value("${cucumber.dbs.driver}")
+    @Value("${dbs.driver}")
     protected String databaseDriver;
 
-    @Value("${cucumber.dbs.username}")
+    @Value("${dbs.username}")
     protected String databaseUsername;
 
-    @Value("${cucumber.dbs.password}")
+    @Value("${dbs.password}")
     protected String databasePassword;
+
+    @Value("${dbs.location}")
+    protected String databaselocation;
 
     protected static final String PROPERTY_NAME_HIBERNATE_DIALECT = "hibernate.dialect";
     @Value("${hibernate.dialect}")
@@ -66,18 +64,13 @@ public abstract class AbstractPersistenceConfig {
 
     protected abstract String getEntitymanagerPackagesToScan();
 
-
-    @Resource
-    protected Environment environment;
-
     /**
      * Default constructor
      */
-    public AbstractPersistenceConfig() {
+    public ApplicationConfiguration() {
     	// Default constructor
     }
-
-
+    
     /**
      * Method for creating the Data Source.
      *
@@ -123,6 +116,4 @@ public abstract class AbstractPersistenceConfig {
 
         return entityManagerFactoryBean;
     }
-
-
 }

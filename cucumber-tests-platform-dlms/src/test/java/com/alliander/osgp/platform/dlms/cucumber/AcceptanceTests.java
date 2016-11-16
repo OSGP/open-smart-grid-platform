@@ -8,6 +8,7 @@
 package com.alliander.osgp.platform.dlms.cucumber;
 
 import org.junit.runner.RunWith;
+import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
 import cucumber.api.CucumberOptions;
 import cucumber.api.SnippetType;
@@ -17,11 +18,14 @@ import cucumber.api.junit.Cucumber;
 @CucumberOptions(
 		features = "src/test/resources/features",
 		tags = { "~@SKIP" },
-		plugin = {
+        glue = {
+        		"com.alliander.osgp.platform.cucumber",
+        		"com.alliander.osgp.platform.dlms.cucumber" }, 
+        plugin = {
 				"pretty",
 				"html:target/output/Cucumber-report",
 				"html:target/output/Cucumber-html-report.html" },
 		snippets = SnippetType.CAMELCASE)
-public class AcceptanceTests {
+public class AcceptanceTests extends AbstractTransactionalJUnit4SpringContextTests {
 
 }

@@ -28,7 +28,6 @@ public class CreateOrganizationSteps extends AdminStepsBase {
     
     protected CreateOrganizationSteps() throws Throwable {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	private static final String TEST_SUITE = "DeviceManagement";

@@ -12,9 +12,6 @@ package com.alliander.osgp.platform.cucumber.steps;
  */
 public class Defaults {
 
-    public Defaults() {
-    }
-
     // Labels
     public static final String KEY_ORGANIZATION_IDENTIFICATION = "OrganizationIdentification";
 
@@ -33,7 +30,8 @@ public class Defaults {
 
     public static final String DLMS_DEFAULT_COMMUNICATION_METHOD = "GPRS";
     public static final Boolean DLMS_DEFAULT_IP_ADDRESS_IS_STATIC = true;
-    public static final long DLMS_DEFAULT_PORT = 4059L;
+    public static final long DLMS_DEFAULT_PORT = 1024L;
+    public static final long DLMS_DEFAULT_LOGICAL_ID = 1L;
     public static final Boolean DLMS_DEFAULT_HSL5_ACTIVE = true;
     public static final String DLMS_DEFAULT_DEVICE_TYPE = "SMART_METER_E";
 
@@ -55,6 +53,11 @@ public class Defaults {
 
     // Expected values
     public static final String EXPECTED_RESULT_OK = "OK";
+
+    public static final Boolean DEFAULT_HASSCHEDULE = false;
+
+    public static final Boolean DEFAULT_PUBLICKEYPRESENT = true;
+
     public static final String DEFAULT_PERIOD_TYPE = "INTERVAL";
     public static final String DEFAULT_BEGIN_DATE = "";
     public static final String DEFAULT_END_DATE = "";
@@ -64,5 +67,4 @@ public class Defaults {
     // Types
     public static final String SMART_METER_E = "SMART_METER_E";
     public static final String SMART_METER_G = "SMART_METER_G";
-
 }

@@ -5,8 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.steps.database;
-
+package com.alliander.osgp.platform.cucumber.helpers;
 
 public class Protocol {
 
