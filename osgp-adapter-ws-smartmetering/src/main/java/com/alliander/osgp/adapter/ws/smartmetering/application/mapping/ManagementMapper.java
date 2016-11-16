@@ -12,6 +12,8 @@ import ma.glasnost.orika.impl.ConfigurableMapper;
 
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.management.MessageLog;
+import com.alliander.osgp.logging.domain.entities.DeviceLogItem;
 import com.alliander.osgp.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
 
 @Component(value = "smartMeteringManagementMapper")
@@ -27,8 +29,11 @@ public class ManagementMapper extends ConfigurableMapper {
         // dates and times.
         mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
         mapperFactory.getConverterFactory().registerConverter(new XsdDateTimeToLongConverter());
-        
+
         mapperFactory.getConverterFactory().registerConverter(new EventMessageDataContainerConverter());
-        
+
+        mapperFactory.classMap(DeviceLogItem.class, MessageLog.class).field("creationTime", "timestamp").byDefault()
+        .register();
+
     }
 }

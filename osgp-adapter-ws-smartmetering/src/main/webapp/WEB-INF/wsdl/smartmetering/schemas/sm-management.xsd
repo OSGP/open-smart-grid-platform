@@ -405,7 +405,6 @@
             <xsd:element name="Timestamp" type="xsd:dateTime" />
             <xsd:element name="OrganisationIdentification"
                 type="common:Identification" />
-            <xsd:element name="DeviceUid" type="xsd:string" />
             <xsd:element name="DeviceIdentification" type="common:Identification" />
             <xsd:element name="DecodedMessage" type="xsd:string" />
             <xsd:element name="EncodedMessage" type="xsd:string" />
