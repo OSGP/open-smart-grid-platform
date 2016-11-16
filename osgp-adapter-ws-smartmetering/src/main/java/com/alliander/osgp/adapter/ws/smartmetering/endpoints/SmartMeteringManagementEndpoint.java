@@ -321,7 +321,6 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
         try {
             response = new FindMessageLogsAsyncResponse();
 
-            // Get the request parameters, make sure that date time are in UTC.
             final String deviceIdentification = request.getDeviceIdentification();
 
             final String correlationUid = this.managementService.findMessageLogsRequest(organisationIdentification,
@@ -339,7 +338,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
 
     @PayloadRoot(localPart = "FindMessageLogsAsyncRequest", namespace = NAMESPACE)
     @ResponsePayload
-    public FindMessageLogsResponse getDisableDebuggingResponse(
+    public FindMessageLogsResponse getFindMessageLogsResponse(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final FindMessageLogsAsyncRequest request) throws OsgpException {
 
