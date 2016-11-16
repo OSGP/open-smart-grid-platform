@@ -45,7 +45,6 @@ As a OSP I want to make sure the owner organisation can stop a device test
 |when |the stop device test request is received                                          |
 |then |a stop device test oslp message is sent to device @device should be @ismessagesent|
 
-
 -| stop device test failure matrix |
 |device   |organisation           |status |ismessagesent|
 |device-01|ORGANISATION-01        |unknown|false        |

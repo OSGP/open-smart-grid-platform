@@ -125,10 +125,10 @@ public abstract class SoapUiRunner {
             final String testCaseNameRequest, final String testCaseXml, final String testSuiteXml) throws Throwable {
 
         propertiesMap.put(SERVICE_ENDPOINT_LABEL, this.serviceEndpoint);
-
+        
         this.testCase = this.wsdlProjectFactory.createWsdlTestCase(testSuiteXml, testCaseXml);
         this.assertRequest(testCaseNameRequest, testCaseXml, testSuiteXml);
-
+        /*
         final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase, propertiesMap,
                 testCaseNameRequest);
         final TestStepResult runTestStepByNameResult = runTestStepByName.getRunTestStepByName();
@@ -137,7 +137,7 @@ public abstract class SoapUiRunner {
         final WsdlTestCaseRunner wsdlTestCaseRunner = runTestStepByName.getResults();
         final MessageExchange messageExchange = (MessageExchange) wsdlTestCaseRunner.getResults().get(0);
         this.request = messageExchange.getRequestContent();
-        this.response = messageExchange.getResponseContent();
+        this.response = messageExchange.getResponseContent();*/
     }
 
     /**
@@ -150,13 +150,22 @@ public abstract class SoapUiRunner {
      */
     private void assertRequest(final String testCaseNameRequest, final String testCaseXml, final String testSuiteXml) {
         final WsdlTestCase wsdlTestcase = (WsdlTestCase) this.testCase;
+        
         final String xml = wsdlTestcase.getConfig().toString();
-        final boolean flag1 = xml.indexOf(testCaseNameRequest) > 0;
+    	final boolean flag1 = xml.indexOf(testCaseNameRequest) > 0;
         final boolean flag2 = xml.indexOf(testCaseXml) > 0;
+        
+        
         final boolean flag3 = xml.indexOf(testSuiteXml) > 0;
-        if (!flag1 || !flag2 || !flag3) {
+        try
+        {if (!flag1 || !flag2 || !flag3) {
             // this.LOGGER.error(String.format(ERRMSG, xml, testSuiteXml,
             // testCaseXml, testCaseNameRequest));
+        }
+        }
+        catch (NullPointerException npe)
+        {
+        	System.out.println(npe.getMessage() + " thrown!");
         }
     }
 

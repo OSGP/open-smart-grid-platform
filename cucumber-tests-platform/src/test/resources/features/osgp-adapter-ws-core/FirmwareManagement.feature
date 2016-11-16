@@ -7,20 +7,20 @@ Feature: Firmware management
   @OslpMockServer
   Scenario Outline: Get firmware version
     Given an oslp device
-      | DeviceIdentification | D01               |
-      | Status               | Active            |
-      | Organization         | Test Organization |
-      | IsActivated          | True              |
+      | DeviceIdentification | <DeviceIdentification> |
+      | Status               | <Status>               |
+      | Organization         | <Organization>         |
+      | IsActivated          | <IsActivated>          |
     And the device returns firmware version "<Firmware Version>" over OSLP
     When receiving a get firmware version request
-      | DeviceIdentification | D01 |
+      | DeviceIdentification | <DeviceIdentification> |
     Then the get firmware version async response contains
-      | DeviceIdentification | D01 |
-    And a get firmware version OSLP message is sent to device "D01"
-    And the platform buffers a get firmware version response message for device "D01"
+      | DeviceIdentification | <DeviceIdentification> |
+    And a get firmware version OSLP message is sent to device "<DeviceIdentification>"
+    And the platform buffers a get firmware version response message for device "<DeviceIdentification>"
       | FirmwareVersion    | <Firmware Version>     |
       | FirmwareModuleType | <Firmware Module Type> |
 
     Examples: 
-      | Firmware Version | Firmware Module Type |
-      | 0123             | FUNCTIONAL           |
+      | DeviceIdentification | Status | Organization      | IsActivated | Firmware Version | Firmware Module Type |
+      | D01                  | active | Test Organization | true        | 0123             | FUNCTIONAL           |
