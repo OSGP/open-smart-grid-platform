@@ -28,9 +28,6 @@ public class ScenarioHooks {
     @Autowired
     private ServiceEndpoint serviceEndpoint;
 
-    // @Autowired
-    // private ApplicationConfiguration applicationConfig;
-
     @Value("${service.endpoint.host}")
     private String serviceEndpointHost;
 
