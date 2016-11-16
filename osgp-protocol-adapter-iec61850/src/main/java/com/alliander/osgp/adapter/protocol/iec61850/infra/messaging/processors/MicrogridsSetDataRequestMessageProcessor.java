@@ -23,7 +23,7 @@ import com.alliander.osgp.dto.valueobjects.microgrids.SetDataRequestDto;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
- * Class for processing microgrids get data request messages
+ * Class for processing microgrids set data request messages
  */
 @Component("iec61850MicrogridsSetDataRequestMessageProcessor")
 public class MicrogridsSetDataRequestMessageProcessor extends RtuDeviceRequestMessageProcessor {
