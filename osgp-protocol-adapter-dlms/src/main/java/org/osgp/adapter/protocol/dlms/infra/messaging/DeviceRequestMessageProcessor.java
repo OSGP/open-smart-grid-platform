@@ -135,7 +135,9 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         try {
             // Handle message
             messageMetadata.handleMessage(message);
-            device = this.domainHelperService.findDlmsDevice(messageMetadata);
+            if (!DeviceRequestMessageType.ADD_METER.name().equals(messageMetadata.getMessageType())) {
+                device = this.domainHelperService.findDlmsDevice(messageMetadata);
+            }
 
             LOGGER.info("{} called for device: {} for organisation: {}", message.getJMSType(),
                     messageMetadata.getDeviceIdentification(), messageMetadata.getOrganisationIdentification());
