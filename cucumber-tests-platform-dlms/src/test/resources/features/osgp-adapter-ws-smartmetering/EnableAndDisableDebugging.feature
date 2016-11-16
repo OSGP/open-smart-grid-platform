@@ -4,7 +4,7 @@ Feature: Enable and disable debugging
   So I can see extra information of a meter under investigation
 
   Scenario: Enable debug information from a single meter
-    Given a device
+    Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
     When the enable Debug request is received
@@ -13,7 +13,7 @@ Feature: Enable and disable debugging
     And the enable debug response should be "OK"
 
   Scenario: Disable debug information from a single meter
-    Given a device
+    Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
     When the disable Debug request is received
