@@ -22,11 +22,15 @@ public class DeleteAllDevicesService {
     @Autowired
     private EventRepository eventRepository;
 
+    @Autowired
+    private DeviceModelRepository deviceModelRepository;
+
     public void deleteAllDevices() {
         this.ssldRepository.deleteAllInBatch();
         this.eventRepository.deleteAllInBatch();
         this.deviceRepositry.deleteAllEans();
         this.deviceRepositry.deleteDeviceOutputSettings();
+        this.deviceModelRepository.deleteAllInBatch();
         this.deviceRepositry.deleteAllInBatch();
     }
 }
