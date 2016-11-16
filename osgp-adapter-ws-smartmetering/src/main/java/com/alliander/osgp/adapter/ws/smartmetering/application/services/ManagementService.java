@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessage;
@@ -36,13 +37,18 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.Event;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessagesResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsRequestDataList;
+import com.alliander.osgp.logging.domain.entities.DeviceLogItem;
+import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
+import com.alliander.osgp.shared.application.config.PagingSettings;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.CorrelationUidException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.exceptionhandling.UnknownCorrelationUidException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
+import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 @Service(value = "wsSmartMeteringManagementService")
 @Transactional(value = "transactionManager")
@@ -66,10 +72,18 @@ public class ManagementService {
     private MeterResponseDataRepository meterResponseDataRepository;
 
     @Autowired
+    private DeviceLogItemRepository logItemRepository;
+
+    @Autowired
     private CorrelationIdProviderService correlationIdProviderService;
 
     @Autowired
     private SmartMeteringRequestMessageSender smartMeteringRequestMessageSender;
+    @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
+    private PagingSettings pagingSettings;
 
     public ManagementService() {
         // Parameterless constructor required for transactions
@@ -77,7 +91,7 @@ public class ManagementService {
 
     public String enqueueFindEventsRequest(final String organisationIdentification, final String deviceIdentification,
             final List<FindEventsRequestData> findEventsQueryList, final int messagePriority, final Long scheduleTime)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -101,8 +115,8 @@ public class ManagementService {
                 messagePriority, scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata)
-        .request(new FindEventsRequestDataList(findEventsQueryList)).build();
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .request(new FindEventsRequestDataList(findEventsQueryList)).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -168,7 +182,7 @@ public class ManagementService {
 
     public String enqueueEnableDebuggingRequest(final String organisationIdentification,
             final String deviceIdentification, final int messagePriority, final Long scheduleTime)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -194,7 +208,7 @@ public class ManagementService {
 
     public String enqueueDisableDebuggingRequest(final String organisationIdentification,
             final String deviceIdentification, final int messagePriority, final Long scheduleTime)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -226,5 +240,50 @@ public class ManagementService {
     public MeterResponseData dequeueDisableDebuggingResponse(final String correlationUid)
             throws UnknownCorrelationUidException {
         return this.meterResponseDataService.dequeue(correlationUid);
+    }
+
+    public String findMessageLogsRequest(final String organisationIdentification, final String deviceIdentification,
+            final int pageNumber, final int messagePriority, final Long map) throws FunctionalException {
+
+        LOGGER.debug("findMessageLogs called with organisation {}, device {} and pagenumber {}", new Object[] {
+                organisationIdentification, deviceIdentification, pageNumber });
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_MESSAGES);
+
+        final PageRequest request = new PageRequest(pageNumber, this.pagingSettings.getMaximumPageSize(),
+                Sort.Direction.DESC, "modificationTime");
+
+        Page<DeviceLogItem> pages = null;
+        if (deviceIdentification != null && !deviceIdentification.isEmpty()) {
+            pages = this.logItemRepository.findByDeviceIdentification(deviceIdentification, request);
+        } else {
+            pages = this.logItemRepository.findAll(request);
+        }
+
+        // Store result
+        final ResponseMessageResultType resultType = ResponseMessageResultType.OK;
+        final String messageType = DeviceFunction.GET_MESSAGES.name();
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification, messageType,
+                deviceIdentification, correlationUid, resultType, (Serializable) pages);
+        this.meterResponseDataService.enqueue(meterResponseData);
+
+        // Send notification
+        final NotificationType notificationType = NotificationType.valueOf(messageType);
+        this.notificationService.sendNotification(organisationIdentification, deviceIdentification, resultType.name(),
+                correlationUid, "", notificationType);
+
+        return correlationUid;
+    }
+
+    @SuppressWarnings("unchecked")
+    public MeterResponseData dequeueFindMessageLogsResponse(final String correlationUid) throws CorrelationUidException {
+        return this.meterResponseDataService.dequeue(correlationUid, Page.class);
     }
 }

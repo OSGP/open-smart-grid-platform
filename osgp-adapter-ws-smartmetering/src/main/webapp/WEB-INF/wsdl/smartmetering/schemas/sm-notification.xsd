@@ -1,6 +1,6 @@
 <!--
 
-    Copyright 2015 Smart Society Services B.V.
+    Copyright 2015-2016 Smart Society Services B.V.
 
     Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
 
@@ -72,6 +72,7 @@
             <xsd:enumeration value="UPDATE_FIRMWARE" />
             <xsd:enumeration value="ENABLE_DEBUGGING" />
             <xsd:enumeration value="DISABLE_DEBUGGING" />
+            <xsd:enumeration value="GET_MESSAGES" />
 		</xsd:restriction>
 	</xsd:simpleType>
 
