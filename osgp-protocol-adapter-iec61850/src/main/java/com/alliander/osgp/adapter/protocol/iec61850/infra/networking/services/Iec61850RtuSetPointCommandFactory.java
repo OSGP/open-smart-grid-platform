@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2016 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -21,27 +21,25 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.co
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850ScheduleTypeCommand;
 import com.alliander.osgp.dto.valueobjects.microgrids.SetPointDto;
 
-public class Iec61850RtuSetPointCommandFactory implements RtuWriteCommandFactory<SetPointDto> {
+public final class Iec61850RtuSetPointCommandFactory implements RtuWriteCommandFactory<SetPointDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850RtuSetPointCommandFactory.class);
 
-    private static Iec61850RtuSetPointCommandFactory instance;
-    private static int ID_START = 1;
-    private static int ID_END = 4;
+    private static final int ID_START = 1;
+    private static final int ID_END = 4;
 
-    private Map<String, RtuWriteCommand<SetPointDto>> rtuCommandMap = new HashMap<>();
+    private static final Map<String, RtuWriteCommand<SetPointDto>> RTU_COMMAND_MAP = new HashMap<>();
 
-    private Iec61850RtuSetPointCommandFactory() {
-        for (int i = ID_START; i <= ID_END; i++) {
-
-            this.rtuCommandMap.put(this.createMapKey(DataAttribute.SCHEDULE_ID, i), new Iec61850ScheduleIdCommand(i));
-            this.rtuCommandMap.put(this.createMapKey(DataAttribute.SCHEDULE_TYPE, i),
-                    new Iec61850ScheduleTypeCommand(i));
-            this.rtuCommandMap.put(this.createMapKey(DataAttribute.SCHEDULE_CAT, i), new Iec61850ScheduleCatCommand(i));
-        }
+    static {
+        initializeRtuCommandMap();
     }
 
-    public static Iec61850RtuSetPointCommandFactory getInstance() {
+    private static Iec61850RtuSetPointCommandFactory instance;
+
+    private Iec61850RtuSetPointCommandFactory() {
+    }
+
+    public static synchronized Iec61850RtuSetPointCommandFactory getInstance() {
         if (instance == null) {
             instance = new Iec61850RtuSetPointCommandFactory();
         }
@@ -51,7 +49,7 @@ public class Iec61850RtuSetPointCommandFactory implements RtuWriteCommandFactory
     @Override
     public RtuWriteCommand<SetPointDto> getCommand(final String node) {
 
-        final RtuWriteCommand<SetPointDto> command = this.rtuCommandMap.get(node);
+        final RtuWriteCommand<SetPointDto> command = RTU_COMMAND_MAP.get(node);
 
         if (command == null) {
             LOGGER.warn("No command found for data attribute {}", node);
@@ -59,7 +57,16 @@ public class Iec61850RtuSetPointCommandFactory implements RtuWriteCommandFactory
         return command;
     }
 
-    private String createMapKey(final DataAttribute da, final int index) {
+    private static void initializeRtuCommandMap() {
+        for (int i = ID_START; i <= ID_END; i++) {
+
+            RTU_COMMAND_MAP.put(createMapKey(DataAttribute.SCHEDULE_ID, i), new Iec61850ScheduleIdCommand(i));
+            RTU_COMMAND_MAP.put(createMapKey(DataAttribute.SCHEDULE_TYPE, i), new Iec61850ScheduleTypeCommand(i));
+            RTU_COMMAND_MAP.put(createMapKey(DataAttribute.SCHEDULE_CAT, i), new Iec61850ScheduleCatCommand(i));
+        }
+    }
+
+    private static String createMapKey(final DataAttribute da, final int index) {
         return da.getDescription() + index;
     }
 }

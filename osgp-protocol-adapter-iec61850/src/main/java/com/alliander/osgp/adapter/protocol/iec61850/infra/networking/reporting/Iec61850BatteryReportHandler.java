@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2016 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -23,7 +23,7 @@ public class Iec61850BatteryReportHandler implements Iec61850ReportHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850BatteryReportHandler.class);
 
-    private static String SYSTEM_TYPE = "BATTERY";
+    private static final String SYSTEM_TYPE = "BATTERY";
 
     private int systemId;
 

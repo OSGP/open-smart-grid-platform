@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2016 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -96,14 +96,16 @@ public class Iec61850RtuDeviceReportingService {
             final String deviceIdentification, final LogicalDevice logicalDevice, final DataAttribute reportName) {
 
         try {
-            final NodeContainer reportingPv = deviceConnection.getFcModelNode(logicalDevice,
+            final NodeContainer reportingNode = deviceConnection.getFcModelNode(logicalDevice,
                     LogicalNode.LOGICAL_NODE_ZERO, reportName, Fc.BR);
-            reportingPv.writeBoolean(SubDataAttribute.ENABLE_REPORTING, true);
+            reportingNode.writeBoolean(SubDataAttribute.ENABLE_REPORTING, true);
         } catch (final NullPointerException e) {
             LOGGER.debug("NullPointerException", e);
             LOGGER.warn("Skip enable reporting for device {}, report {}.", logicalDevice, reportName.getDescription());
         } catch (final NodeWriteException e) {
-            LOGGER.error("NodeWriteException", e);
+            LOGGER.debug("NodeWriteException", e);
+            LOGGER.error("Enable reporting for device {}, report {}, failed with exception: {}", logicalDevice,
+                    reportName.getDescription(), e.getMessage());
         }
 
         LOGGER.info("Allowing device {} to send events", deviceIdentification);
@@ -113,14 +115,16 @@ public class Iec61850RtuDeviceReportingService {
             final String deviceIdentification, final LogicalDevice logicalDevice, final DataAttribute reportName) {
 
         try {
-            final NodeContainer reportingPv = deviceConnection.getFcModelNode(logicalDevice,
+            final NodeContainer reportingNode = deviceConnection.getFcModelNode(logicalDevice,
                     LogicalNode.LOGICAL_NODE_ZERO, reportName, Fc.RP);
-            reportingPv.writeBoolean(SubDataAttribute.ENABLE_REPORTING, true);
+            reportingNode.writeBoolean(SubDataAttribute.ENABLE_REPORTING, true);
         } catch (final NullPointerException e) {
             LOGGER.debug("NullPointerException", e);
             LOGGER.warn("Skip enable reporting for device {}, report {}.", logicalDevice, reportName.getDescription());
         } catch (final NodeWriteException e) {
-            LOGGER.error("NodeWriteException", e);
+            LOGGER.debug("NodeWriteException", e);
+            LOGGER.error("Enable reporting for device {}, report {}, failed with exception: {}", logicalDevice,
+                    reportName.getDescription(), e.getMessage());
         }
 
         LOGGER.info("Allowing device {} to send events", deviceIdentification);

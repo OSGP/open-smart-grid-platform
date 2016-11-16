@@ -41,11 +41,9 @@ import com.alliander.osgp.shared.application.config.AbstractConfig;
  */
 @Configuration
 @EnableTransactionManagement()
-@PropertySources({
-	@PropertySource("classpath:osgp-adapter-protocol-iec61850.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "file:${osgp/AdapterProtocolIec61850/config}", ignoreResourceNotFound = true),
-})
+@PropertySources({ @PropertySource("classpath:osgp-adapter-protocol-iec61850.properties"),
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/AdapterProtocolIec61850/config}", ignoreResourceNotFound = true), })
 public class MessagingConfig extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MessagingConfig.class);
@@ -135,10 +133,6 @@ public class MessagingConfig extends AbstractConfig {
     @Autowired
     @Qualifier("iec61850RequestsMessageListener")
     private DeviceRequestMessageListener iec61850RequestsMessageListener;
-
-    public MessagingConfig() {
-        // Default public constructor
-    }
 
     // === JMS SETTINGS ===
 

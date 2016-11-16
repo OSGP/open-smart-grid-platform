@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2016 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -58,10 +58,6 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
 
     @Autowired
     private Iec61850Client iec61850Client;
-
-    public Iec61850RtuDeviceService() {
-        // Default public constructor
-    }
 
     @Override
     public void getData(final GetDataDeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler)

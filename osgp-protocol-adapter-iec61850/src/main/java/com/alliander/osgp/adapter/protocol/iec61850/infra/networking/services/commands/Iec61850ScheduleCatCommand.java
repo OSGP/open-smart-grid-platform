@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2016 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -60,14 +60,14 @@ public class Iec61850ScheduleCatCommand implements RtuReadCommand<MeasurementDto
     public void executeWrite(final Iec61850Client client, final DeviceConnection connection,
             final LogicalDevice logicalDevice, final SetPointDto setPoint) throws NodeWriteException {
 
-        final int value = this.checkValues(setPoint.getValue());
+        final int value = this.checkValue(setPoint.getValue());
 
         final NodeContainer containingNode = connection.getFcModelNode(logicalDevice, this.logicalNode,
                 DATA_ATTRIBUTE_RTU, FC);
         containingNode.writeInteger(SUB_DATA_ATTRIBUTE, value);
     }
 
-    private int checkValues(final double value) throws NodeWriteException {
+    private int checkValue(final double value) throws NodeWriteException {
         int result;
         try {
             result = (int) value;

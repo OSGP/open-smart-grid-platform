@@ -229,7 +229,7 @@ public enum DataAttribute {
 
     private String description;
 
-    private DataAttribute(final String description) {
+    DataAttribute(final String description) {
         this.description = description;
     }
 

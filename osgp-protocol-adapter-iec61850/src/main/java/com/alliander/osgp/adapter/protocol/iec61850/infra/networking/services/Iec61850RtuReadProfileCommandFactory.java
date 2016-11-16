@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2016 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -7,7 +7,9 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -20,7 +22,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.co
 import com.alliander.osgp.dto.valueobjects.microgrids.ProfileDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.ProfileFilterDto;
 
-public class Iec61850RtuReadProfileCommandFactory implements RtuReadCommandFactory<ProfileDto, ProfileFilterDto> {
+public final class Iec61850RtuReadProfileCommandFactory implements RtuReadCommandFactory<ProfileDto, ProfileFilterDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850RtuReadProfileCommandFactory.class);
     private static final int SCHEDULE_ID_START = 1;
@@ -28,16 +30,18 @@ public class Iec61850RtuReadProfileCommandFactory implements RtuReadCommandFacto
 
     private static Iec61850RtuReadProfileCommandFactory instance;
 
-    private Map<String, RtuReadCommand<ProfileDto>> rtuCommandMap = new HashMap<>();
+    private static final List<DataAttribute> DATA_ATTRIBUTE_USING_FILTER_ID_LIST = new ArrayList<>();
+    private static final Map<String, RtuReadCommand<ProfileDto>> RTU_COMMAND_MAP = new HashMap<>();
 
-    private Iec61850RtuReadProfileCommandFactory() {
-        for (int i = SCHEDULE_ID_START; i <= SCHEDULE_ID_END; i++) {
-            this.rtuCommandMap.put(DataAttribute.SCHEDULE_ABS_TIME.getDescription() + i,
-                    new Iec61850ScheduleAbsTimeCommand(i));
-        }
+    static {
+        initializeDataAttributeUsingFilterIdList();
+        initializeRtuCommandMap();
     }
 
-    public static Iec61850RtuReadProfileCommandFactory getInstance() {
+    private Iec61850RtuReadProfileCommandFactory() {
+    }
+
+    public static synchronized Iec61850RtuReadProfileCommandFactory getInstance() {
         if (instance == null) {
             instance = new Iec61850RtuReadProfileCommandFactory();
         }
@@ -56,7 +60,7 @@ public class Iec61850RtuReadProfileCommandFactory implements RtuReadCommandFacto
 
     @Override
     public RtuReadCommand<ProfileDto> getCommand(final String node) {
-        final RtuReadCommand<ProfileDto> command = this.rtuCommandMap.get(node);
+        final RtuReadCommand<ProfileDto> command = RTU_COMMAND_MAP.get(node);
 
         if (command == null) {
             LOGGER.warn("No command found for node {}", node);
@@ -64,9 +68,22 @@ public class Iec61850RtuReadProfileCommandFactory implements RtuReadCommandFacto
         return command;
     }
 
+    private static void initializeDataAttributeUsingFilterIdList() {
+        DATA_ATTRIBUTE_USING_FILTER_ID_LIST.add(DataAttribute.SCHEDULE_ID);
+        DATA_ATTRIBUTE_USING_FILTER_ID_LIST.add(DataAttribute.SCHEDULE_TYPE);
+        DATA_ATTRIBUTE_USING_FILTER_ID_LIST.add(DataAttribute.SCHEDULE_CAT);
+        DATA_ATTRIBUTE_USING_FILTER_ID_LIST.add(DataAttribute.SCHEDULE_ABS_TIME);
+    }
+
+    private static void initializeRtuCommandMap() {
+        for (int i = SCHEDULE_ID_START; i <= SCHEDULE_ID_END; i++) {
+            RTU_COMMAND_MAP.put(DataAttribute.SCHEDULE_ABS_TIME.getDescription() + i,
+                    new Iec61850ScheduleAbsTimeCommand(i));
+        }
+    }
+
     private boolean useFilterId(final DataAttribute da) {
-        return da == DataAttribute.SCHEDULE_ID || da == DataAttribute.SCHEDULE_TYPE || da == DataAttribute.SCHEDULE_CAT
-                || da == DataAttribute.SCHEDULE_ABS_TIME;
+        return DATA_ATTRIBUTE_USING_FILTER_ID_LIST.contains(da);
     }
 
 }

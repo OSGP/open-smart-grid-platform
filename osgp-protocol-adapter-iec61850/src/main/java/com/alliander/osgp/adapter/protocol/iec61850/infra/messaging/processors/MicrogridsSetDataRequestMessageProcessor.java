@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2016 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -38,7 +38,7 @@ public class MicrogridsSetDataRequestMessageProcessor extends RtuDeviceRequestMe
 
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
-        LOGGER.info("Processing microgrids get data request message");
+        LOGGER.info("Processing microgrids set data request message");
 
         String correlationUid = null;
         String domain = null;
@@ -60,8 +60,11 @@ public class MicrogridsSetDataRequestMessageProcessor extends RtuDeviceRequestMe
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
             ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
             retryCount = message.getIntProperty(Constants.RETRY_COUNT);
-            isScheduled = message.propertyExists(Constants.IS_SCHEDULED)
-                    ? message.getBooleanProperty(Constants.IS_SCHEDULED) : false;
+            if (message.propertyExists(Constants.IS_SCHEDULED)) {
+                isScheduled = message.getBooleanProperty(Constants.IS_SCHEDULED);
+            } else {
+                isScheduled = false;
+            }
             setDataRequest = (SetDataRequestDto) message.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
