@@ -9,6 +9,7 @@ package com.alliander.osgp.adapter.ws.smartmetering.application.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -80,8 +81,8 @@ public class ApplicationContext extends AbstractConfig {
     }
 
     @Bean
-    public PagingSettings pagingSettings() {
-        // TODO inject properties.
-        return new PagingSettings(25, 25);
+    public PagingSettings pagingSettings(@Value("${paging.maximum.pagesize}") final int maximumPageSize,
+            @Value("${paging.default.pagesize}") final int defaultPageSize) {
+        return new PagingSettings(maximumPageSize, defaultPageSize);
     }
 }
