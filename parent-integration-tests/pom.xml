@@ -36,6 +36,9 @@
   </distributionManagement>
 
   <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
     <module.baseUri>${project.baseUri}/../</module.baseUri>
     <osgp.version>4.4.0-SNAPSHOT</osgp.version>
     <osgp.dlms.version>3.5.0-SNAPSHOT</osgp.dlms.version>
@@ -86,8 +89,10 @@
     <maven.jar.plugin.version>3.0.2</maven.jar.plugin.version>
     <maven.surefire.plugin.version>2.19.1</maven.surefire.plugin.version>
     <soapui.maven.plugin.version>5.2.1</soapui.maven.plugin.version>
+    <jgoodies.version>1.0.5</jgoodies.version>
 
-    <!-- Default always skip integration tests, to ensure all developer data is retained -->
+    <!-- Default always skip integration tests, to ensure all developer data 
+      is retained -->
     <skipIntegrationTests>true</skipIntegrationTests>
   </properties>
 
@@ -613,9 +618,9 @@
         <version>${slf4j.version}</version>
       </dependency>
       <dependency>
-          <groupId>org.slf4j</groupId>
-          <artifactId>log4j-over-slf4j</artifactId>
-          <version>${slf4j.version}</version>
+        <groupId>org.slf4j</groupId>
+        <artifactId>log4j-over-slf4j</artifactId>
+        <version>${slf4j.version}</version>
       </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
@@ -688,6 +693,12 @@
             <groupId>javafx</groupId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <!-- Included because of open bug in SOAP-UI: https://sourceforge.net/p/soapui/bugs/694/ -->
+      <dependency>
+        <groupId>jgoodies</groupId>
+        <artifactId>forms</artifactId>
+        <version>${jgoodies.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -784,20 +795,21 @@
           <artifactId>jacoco-maven-plugin</artifactId>
           <version>${jacoco.maven.plugin.version}</version>
           <executions>
-            <!-- Prepares the property pointing to the JaCoCo runtime agent which 
-              is passed as VM argument when Maven the Surefire plugin is executed. -->
+            <!-- Prepares the property pointing to the JaCoCo runtime agent 
+              which is passed as VM argument when Maven the Surefire plugin is executed. -->
             <execution>
               <id>pre-unit-test</id>
               <goals>
                 <goal>prepare-agent</goal>
               </goals>
               <configuration>
-                <!-- Sets the path to the file which contains the execution data. -->
+                <!-- Sets the path to the file which contains the execution 
+                  data. -->
                 <destFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</destFile>
-                <!-- Sets the name of the property containing the settings for JaCoCo 
-                  runtime agent. -->
+                <!-- Sets the name of the property containing the settings 
+                  for JaCoCo runtime agent. -->
                 <propertyName>surefireArgLine</propertyName>
-                              <skipTests>${skipTests}</skipTests>
+                <skipTests>${skipTests}</skipTests>
               </configuration>
             </execution>
             <execution>
@@ -807,15 +819,16 @@
                 <goal>report</goal>
               </goals>
               <configuration>
-                <!-- Sets the path to the file which contains the execution data. -->
+                <!-- Sets the path to the file which contains the execution 
+                  data. -->
                 <dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile>
                 <!-- Sets the output directory for the code coverage report. -->
                 <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
-                              <skipTests>${skipTests}</skipTests>
+                <skipTests>${skipTests}</skipTests>
               </configuration>
             </execution>
-            <!-- Ensures that the code coverage report for unit tests is created 
-              after unit tests have been run. -->
+            <!-- Ensures that the code coverage report for unit tests is 
+              created after unit tests have been run. -->
             <execution>
               <id>post-unit-test</id>
               <phase>test</phase>
@@ -823,11 +836,12 @@
                 <goal>report</goal>
               </goals>
               <configuration>
-                <!-- Sets the path to the file which contains the execution data. -->
+                <!-- Sets the path to the file which contains the execution 
+                  data. -->
                 <dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile>
                 <!-- Sets the output directory for the code coverage report. -->
                 <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
-                              <skipTests>${skipTests}</skipTests>
+                <skipTests>${skipTests}</skipTests>
               </configuration>
             </execution>
           </executions>
