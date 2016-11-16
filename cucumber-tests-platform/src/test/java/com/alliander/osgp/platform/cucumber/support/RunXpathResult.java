@@ -28,6 +28,7 @@ import javax.xml.xpath.XPathFactory;
 
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -88,27 +89,31 @@ public class RunXpathResult {
         assertEquals("Expected number of nodes does not match.", expectedNodes, list.getLength());
 
         for (int i = 0; i < list.getLength(); i++) {
-            final Matcher responseMatcher = responsePattern.matcher(list.item(i).getNodeValue());
+            final Node node = list.item(i);
+            final String nodeValue = node.getNodeValue() == null ? node.getFirstChild().getNodeValue() : node
+                    .getNodeValue();
+            final Matcher responseMatcher = responsePattern.matcher(nodeValue);
             assertTrue(responseMatcher.find());
         }
     }
 
     /**
      * Verifies that the XPath is not null or empty
+     *
      * @param xml
      * @param nodeXPath
      * @throws Throwable
      */
-	public void assertNotNull(String xml, String nodeXPath) throws Throwable {
-		final XpathResult xpathResult = this.runXPathExpression(xml, nodeXPath);
+    public void assertNotNull(final String xml, final String nodeXPath) throws Throwable {
+        final XpathResult xpathResult = this.runXPathExpression(xml, nodeXPath);
         final XPathExpression expr = xpathResult.getXpathExpression();
-        
+
         assertTrue(expr.evaluate(xpathResult.getDocument()) != null);
-	}
-	
-	public String getValue(String xml, String nodeXPath) throws Throwable {
-		final XpathResult xpathResult = this.runXPathExpression(xml, nodeXPath);
+    }
+
+    public String getValue(final String xml, final String nodeXPath) throws Throwable {
+        final XpathResult xpathResult = this.runXPathExpression(xml, nodeXPath);
         final XPathExpression expr = xpathResult.getXpathExpression();
         return expr.evaluate(xpathResult.getDocument());
-	}
+    }
 }
