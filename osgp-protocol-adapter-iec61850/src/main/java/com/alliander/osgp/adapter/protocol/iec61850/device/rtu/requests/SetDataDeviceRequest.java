@@ -8,30 +8,30 @@
 package com.alliander.osgp.adapter.protocol.iec61850.device.rtu.requests;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
-import com.alliander.osgp.dto.valueobjects.microgrids.SetPointsRequestDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.SetDataRequestDto;
 
-public class SetSetPointsDeviceRequest extends DeviceRequest {
+public class SetDataDeviceRequest extends DeviceRequest {
 
-    private SetPointsRequestDto setPointsRequest;
+    private SetDataRequestDto setDataRequest;
 
-    public SetSetPointsDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final SetPointsRequestDto setPointsRequest) {
+    public SetDataDeviceRequest(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final SetDataRequestDto setDataRequest) {
         super(organisationIdentification, deviceIdentification, correlationUid);
 
-        this.setPointsRequest = setPointsRequest;
+        this.setDataRequest = setDataRequest;
     }
 
-    public SetSetPointsDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final SetPointsRequestDto setPointsRequest, final String domain,
+    public SetDataDeviceRequest(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final SetDataRequestDto setDataRequest, final String domain,
             final String domainVersion, final String messageType, final String ipAddress, final int retryCount,
             final boolean isScheduled) {
         super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
                 ipAddress, retryCount, isScheduled);
 
-        this.setPointsRequest = setPointsRequest;
+        this.setDataRequest = setDataRequest;
     }
 
-    public SetPointsRequestDto getSetPointsRequest() {
-        return this.setPointsRequest;
+    public SetDataRequestDto getSetDataRequest() {
+        return this.setDataRequest;
     }
 }

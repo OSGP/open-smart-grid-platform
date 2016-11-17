@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2016 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -14,7 +14,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.openmuc.openiec61850.Fc;
 
-import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
@@ -26,16 +26,21 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Qual
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
 
-public class Iec61850AlarmCommand implements RtuCommand {
+public class Iec61850AlarmCommand implements RtuReadCommand<MeasurementDto> {
 
     private static final Map<Integer, DataAttribute> map;
 
+    private static final int ONE = 1;
+    private static final int TWO = 2;
+    private static final int THREE = 3;
+    private static final int FOUR = 4;
+
     static {
-        map = new HashMap<Integer, DataAttribute>();
-        map.put(1, DataAttribute.ALARM_ONE);
-        map.put(2, DataAttribute.ALARM_TWO);
-        map.put(3, DataAttribute.ALARM_THREE);
-        map.put(4, DataAttribute.ALARM_FOUR);
+        map = new HashMap<>();
+        map.put(ONE, DataAttribute.ALARM_ONE);
+        map.put(TWO, DataAttribute.ALARM_TWO);
+        map.put(THREE, DataAttribute.ALARM_THREE);
+        map.put(FOUR, DataAttribute.ALARM_FOUR);
     }
 
     private int alarmIndex;
@@ -58,7 +63,16 @@ public class Iec61850AlarmCommand implements RtuCommand {
         return new MeasurementDto(1, map.get(this.alarmIndex).getDescription(),
                 QualityConverter.toShort(containingNode.getQuality(SubDataAttribute.QUALITY).getValue()),
                 new DateTime(containingNode.getDate(SubDataAttribute.TIME), DateTimeZone.UTC),
-                containingNode.getBoolean(SubDataAttribute.STATE).getValue() ? 1 : 0);
+                this.translateStateValue(containingNode));
     }
 
+    private int translateStateValue(final NodeContainer containingNode) {
+        final int value;
+        if (containingNode.getBoolean(SubDataAttribute.STATE).getValue()) {
+            value = 1;
+        } else {
+            value = 0;
+        }
+        return value;
+    }
 }

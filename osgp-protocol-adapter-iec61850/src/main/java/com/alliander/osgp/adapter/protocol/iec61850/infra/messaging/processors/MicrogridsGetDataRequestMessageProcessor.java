@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2016 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -21,8 +21,8 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceReques
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.RtuDeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850DeviceResponseHandler;
-import com.alliander.osgp.dto.valueobjects.microgrids.DataRequestDto;
-import com.alliander.osgp.dto.valueobjects.microgrids.DataResponseDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.GetDataRequestDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.GetDataResponseDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
@@ -59,7 +59,7 @@ public class MicrogridsGetDataRequestMessageProcessor extends RtuDeviceRequestMe
         String ipAddress = null;
         int retryCount = 0;
         boolean isScheduled = false;
-        DataRequestDto getDataRequest = null;
+        GetDataRequestDto getDataRequest = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -70,9 +70,9 @@ public class MicrogridsGetDataRequestMessageProcessor extends RtuDeviceRequestMe
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
             ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
             retryCount = message.getIntProperty(Constants.RETRY_COUNT);
-            isScheduled = message.propertyExists(Constants.IS_SCHEDULED) ? message
-                    .getBooleanProperty(Constants.IS_SCHEDULED) : false;
-                    getDataRequest = (DataRequestDto) message.getObject();
+            isScheduled = message.propertyExists(Constants.IS_SCHEDULED)
+                    ? message.getBooleanProperty(Constants.IS_SCHEDULED) : false;
+            getDataRequest = (GetDataRequestDto) message.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -90,8 +90,8 @@ public class MicrogridsGetDataRequestMessageProcessor extends RtuDeviceRequestMe
 
         this.printDomainInfo(messageType, domain, domainVersion);
 
-        final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this.createIec61850DeviceResponseHandler(
-                requestMessageData, message);
+        final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this
+                .createIec61850DeviceResponseHandler(requestMessageData, message);
 
         final GetDataDeviceRequest deviceRequest = new GetDataDeviceRequest(organisationIdentification,
                 deviceIdentification, correlationUid, getDataRequest, domain, domainVersion, messageType, ipAddress,
@@ -115,7 +115,7 @@ public class MicrogridsGetDataRequestMessageProcessor extends RtuDeviceRequestMe
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = null;
-        DataResponseDto dataResponse = null;
+        GetDataResponseDto dataResponse = null;
 
         try {
             final GetDataDeviceResponse response = (GetDataDeviceResponse) deviceResponse;

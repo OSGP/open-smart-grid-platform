@@ -26,11 +26,9 @@ import com.alliander.osgp.shared.application.config.AbstractConfig;
 @ComponentScan(basePackages = { "com.alliander.osgp.adapter.protocol.iec61850", "com.alliander.osgp.core.db.api" })
 @EnableTransactionManagement()
 @Import({ MessagingConfig.class, Iec61850OsgpCoreDbApiPersistenceConfig.class, Iec61850Config.class })
-@PropertySources({
-	@PropertySource("classpath:osgp-adapter-protocol-iec61850.properties"),
-	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-    @PropertySource(value = "file:${osgp/AdapterProtocolIec61850/config}", ignoreResourceNotFound = true),
-})
+@PropertySources({ @PropertySource("classpath:osgp-adapter-protocol-iec61850.properties"),
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/AdapterProtocolIec61850/config}", ignoreResourceNotFound = true), })
 public class ApplicationContext extends AbstractConfig {
 
     private static final String PROPERTY_NAME_MAX_RETRY_COUNT = "retrycount.max";
@@ -72,8 +70,8 @@ public class ApplicationContext extends AbstractConfig {
     @Bean
     public FirmwareLocation firmwareLocation() {
         return new FirmwareLocation(this.environment.getProperty(PROPERTY_NAME_FIRMWARE_PROTOCOL),
-                this.environment.getProperty(PROPERTY_NAME_FIRMWARE_DOMAIN), Integer.parseInt(this.environment
-                        .getProperty(PROPERTY_NAME_FIRMWARE_PORT)),
-                        this.environment.getProperty(PROPERTY_NAME_FIRMWARE_PATH));
+                this.environment.getProperty(PROPERTY_NAME_FIRMWARE_DOMAIN),
+                Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_FIRMWARE_PORT)),
+                this.environment.getProperty(PROPERTY_NAME_FIRMWARE_PATH));
     }
 }

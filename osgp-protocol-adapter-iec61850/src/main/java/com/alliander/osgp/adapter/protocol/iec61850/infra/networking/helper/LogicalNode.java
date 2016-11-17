@@ -98,7 +98,23 @@ public enum LogicalNode {
     /**
      * GGIO, Generic Process I/O
      */
-    GENERIC_PROCESS_I_O("GGIO1");
+    GENERIC_PROCESS_I_O("GGIO1"),
+    /**
+     * DSCH1, DER Schedule
+     */
+    DER_SCHEDULE_ONE("DSCH1"),
+    /**
+     * DSCH2, DER Schedule
+     */
+    DER_SCHEDULE_TWO("DSCH2"),
+    /**
+     * DSCH3, DER Schedule
+     */
+    DER_SCHEDULE_THREE("DSCH3"),
+    /**
+     * DSCH4, DER Schedule
+     */
+    DER_SCHEDULE_FOUR("DSCH4");
 
     private final String description;
 
@@ -120,16 +136,16 @@ public enum LogicalNode {
      */
     public static LogicalNode getSwitchComponentByIndex(final int index) {
         switch (index) {
-        case 1:
-            return SWITCH_COMPONENT_ONE;
-        case 2:
-            return SWITCH_COMPONENT_TWO;
-        case 3:
-            return SWITCH_COMPONENT_THREE;
-        case 4:
-            return SWITCH_COMPONENT_FOUR;
-        default:
-            throw new IllegalArgumentException("Invalid index value : " + index);
+            case 1:
+                return SWITCH_COMPONENT_ONE;
+            case 2:
+                return SWITCH_COMPONENT_TWO;
+            case 3:
+                return SWITCH_COMPONENT_THREE;
+            case 4:
+                return SWITCH_COMPONENT_FOUR;
+            default:
+                throw new IllegalArgumentException("Invalid index value : " + index);
         }
     }
 

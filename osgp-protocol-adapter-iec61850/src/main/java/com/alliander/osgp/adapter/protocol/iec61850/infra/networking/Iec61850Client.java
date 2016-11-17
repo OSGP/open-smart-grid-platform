@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.adapter.protocol.iec61850.application.services.DeviceManagementService;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ConnectionFailureException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeWriteException;
@@ -56,9 +55,6 @@ public class Iec61850Client {
 
     @Autowired
     private int maxRetryCount;
-
-    @Autowired
-    private DeviceManagementService deviceManagementService;
 
     @PostConstruct
     private void init() {
@@ -94,8 +90,7 @@ public class Iec61850Client {
         // connect using SSL.
         final ClientSap clientSap = new ClientSap();
         final Iec61850ClientAssociation clientAssociation;
-        LOGGER.info(
-                "Attempting to connect to server: {} on port: {}, max redelivery count: {} and max retry count: {}",
+        LOGGER.info("Attempting to connect to server: {} on port: {}, max redelivery count: {} and max retry count: {}",
                 ipAddress.getHostAddress(), port, this.maxRedeliveriesForIec61850Requests, this.maxRetryCount);
 
         try {
