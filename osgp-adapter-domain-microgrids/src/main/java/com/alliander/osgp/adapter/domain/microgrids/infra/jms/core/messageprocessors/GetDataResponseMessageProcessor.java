@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -17,9 +17,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.domain.microgrids.application.services.AdHocManagementService;
-import com.alliander.osgp.adapter.domain.microgrids.infra.jms.core.OsgpCoreResponseMessageProcessor;
+import com.alliander.osgp.adapter.domain.microgrids.infra.jms.core.AbstractOsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.dto.valueobjects.microgrids.DataResponseDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.GetDataResponseDto;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -29,7 +29,7 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
  * Class for processing microgrids get data response messages
  */
 @Component("domainMicrogridsGetDataResponseMessageProcessor")
-public class GetDataResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+public class GetDataResponseMessageProcessor extends AbstractOsgpCoreResponseMessageProcessor {
     /**
      * Logger for this class
      */
@@ -82,7 +82,7 @@ public class GetDataResponseMessageProcessor extends OsgpCoreResponseMessageProc
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
-            final DataResponseDto dataResponse = (DataResponseDto) dataObject;
+            final GetDataResponseDto dataResponse = (GetDataResponseDto) dataObject;
 
             this.adHocManagementService.handleGetDataResponse(dataResponse, deviceIdentification,
                     organisationIdentification, correlationUid, messageType, responseMessageResultType, osgpException);

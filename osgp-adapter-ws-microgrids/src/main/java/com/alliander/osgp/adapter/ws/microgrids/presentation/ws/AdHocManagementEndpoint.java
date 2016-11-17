@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -29,10 +29,7 @@ import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataRe
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataResponse;
 import com.alliander.osgp.adapter.ws.schema.microgrids.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.microgrids.common.OsgpResultType;
-import com.alliander.osgp.domain.microgrids.valueobjects.DataRequest;
-import com.alliander.osgp.domain.microgrids.valueobjects.DataResponse;
 import com.alliander.osgp.domain.microgrids.valueobjects.EmptyResponse;
-import com.alliander.osgp.domain.microgrids.valueobjects.SetPointsRequest;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
@@ -62,7 +59,8 @@ public class AdHocManagementEndpoint {
         final GetDataAsyncResponse response = new GetDataAsyncResponse();
 
         try {
-            final DataRequest dataRequest = this.mapper.map(request, DataRequest.class);
+            final com.alliander.osgp.domain.microgrids.valueobjects.GetDataRequest dataRequest = this.mapper
+                    .map(request, com.alliander.osgp.domain.microgrids.valueobjects.GetDataRequest.class);
             final String correlationUid = this.service.enqueueGetDataRequest(organisationIdentification,
                     request.getDeviceIdentification(), dataRequest);
 
@@ -89,7 +87,7 @@ public class AdHocManagementEndpoint {
 
         try {
 
-            final DataResponse dataResponse = this.service
+            final com.alliander.osgp.domain.microgrids.valueobjects.GetDataResponse dataResponse = this.service
                     .dequeueGetDataResponse(request.getAsyncRequest().getCorrelationUid());
             if (dataResponse != null) {
                 response = this.mapper.map(dataResponse, GetDataResponse.class);
@@ -109,7 +107,7 @@ public class AdHocManagementEndpoint {
         return response;
     }
 
-    // === SET SETPOINTS ===
+    // === SET DATA ===
 
     @PayloadRoot(localPart = "SetDataRequest", namespace = NAMESPACE)
     @ResponsePayload
@@ -122,9 +120,10 @@ public class AdHocManagementEndpoint {
         final SetDataAsyncResponse response = new SetDataAsyncResponse();
 
         try {
-            final SetPointsRequest setPointsRequest = this.mapper.map(request, SetPointsRequest.class);
-            final String correlationUid = this.service.enqueueSetSetPointsRequest(organisationIdentification,
-                    request.getDeviceIdentification(), setPointsRequest);
+            final com.alliander.osgp.domain.microgrids.valueobjects.SetDataRequest setDataRequest = this.mapper
+                    .map(request, com.alliander.osgp.domain.microgrids.valueobjects.SetDataRequest.class);
+            final String correlationUid = this.service.enqueueSetDataRequest(organisationIdentification,
+                    request.getDeviceIdentification(), setDataRequest);
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
@@ -141,7 +140,7 @@ public class AdHocManagementEndpoint {
     public SetDataResponse getSetDataResponse(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SetDataAsyncRequest request) throws OsgpException {
 
-        LOGGER.info("Get Set SetPoints Response received from organisation: {} with correlationUid: {}.",
+        LOGGER.info("Get Set Data Response received from organisation: {} with correlationUid: {}.",
                 organisationIdentification, request.getAsyncRequest().getCorrelationUid());
 
         final SetDataResponse response = new SetDataResponse();
@@ -155,7 +154,7 @@ public class AdHocManagementEndpoint {
                 response.setResult(OsgpResultType.NOT_FOUND);
             }
         } catch (final ResponseNotFoundException e) {
-            LOGGER.warn("ResponseNotFoundException for getSetSetPointsResponse", e);
+            LOGGER.warn("ResponseNotFoundException for getSetDataResponse", e);
             response.setResult(OsgpResultType.NOT_FOUND);
         } catch (final Exception e) {
             this.handleException(e);

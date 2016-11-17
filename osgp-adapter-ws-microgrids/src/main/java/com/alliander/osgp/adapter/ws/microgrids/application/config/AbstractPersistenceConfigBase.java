@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -24,7 +24,7 @@ import com.alliander.osgp.domain.core.exceptions.PlatformException;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-public abstract class PersistenceConfigBase {
+public abstract class AbstractPersistenceConfigBase {
 
     private static final String PROPERTY_NAME_DATABASE_DRIVER = "db.driver";
 
@@ -48,7 +48,7 @@ public abstract class PersistenceConfigBase {
 
     private HikariDataSource dataSource;
 
-    public PersistenceConfigBase(final String persistenceUnit, final String usernameProperty,
+    public AbstractPersistenceConfigBase(final String persistenceUnit, final String usernameProperty,
             final String passwordProperty, final String urlProperty, final String packagesToScanProperty,
             final Class<?> loggerClass) {
         this.logger = LoggerFactory.getLogger(loggerClass);

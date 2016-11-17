@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.domain.microgrids.application.services.AdHocManagementService;
-import com.alliander.osgp.adapter.domain.microgrids.infra.jms.core.OsgpCoreResponseMessageProcessor;
+import com.alliander.osgp.adapter.domain.microgrids.infra.jms.core.AbstractOsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.dto.valueobjects.microgrids.EmptyResponseDto;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -26,26 +26,26 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 /**
- * Class for processing microgrids set setpoints response messages
+ * Class for processing microgrids set data response messages
  */
-@Component("domainMicrogridsSetSetPointsResponseMessageProcessor")
-public class SetSetPointsResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+@Component("domainMicrogridsSetDataResponseMessageProcessor")
+public class SetDataResponseMessageProcessor extends AbstractOsgpCoreResponseMessageProcessor {
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(SetSetPointsResponseMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SetDataResponseMessageProcessor.class);
 
     @Autowired
     @Qualifier("domainMicrogridsAdHocManagementService")
     private AdHocManagementService adHocManagementService;
 
-    protected SetSetPointsResponseMessageProcessor() {
-        super(DeviceFunction.SET_SETPOINT);
+    protected SetDataResponseMessageProcessor() {
+        super(DeviceFunction.SET_DATA);
     }
 
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
-        LOGGER.debug("Processing public lighting get status response message");
+        LOGGER.debug("Processing microgrids set data response message");
 
         String correlationUid = null;
         String messageType = null;
@@ -84,7 +84,7 @@ public class SetSetPointsResponseMessageProcessor extends OsgpCoreResponseMessag
 
             final EmptyResponseDto emptyResponse = (EmptyResponseDto) dataObject;
 
-            this.adHocManagementService.handleSetPointsResponse(emptyResponse, deviceIdentification,
+            this.adHocManagementService.handleSetDataResponse(emptyResponse, deviceIdentification,
                     organisationIdentification, correlationUid, messageType, responseMessageResultType, osgpException);
 
         } catch (final Exception e) {

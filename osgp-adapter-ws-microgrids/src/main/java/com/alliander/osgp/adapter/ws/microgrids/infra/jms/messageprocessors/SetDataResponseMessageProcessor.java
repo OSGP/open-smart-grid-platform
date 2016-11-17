@@ -12,9 +12,9 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 
 @Component
-public class SetSetPointsResponseMessageProcessor extends DomainResponseMessageProcessor {
+public class SetDataResponseMessageProcessor extends AbstractDomainResponseMessageProcessor {
 
-    protected SetSetPointsResponseMessageProcessor() {
-        super(DeviceFunction.SET_SETPOINT);
+    protected SetDataResponseMessageProcessor() {
+        super(DeviceFunction.SET_DATA);
     }
 }
