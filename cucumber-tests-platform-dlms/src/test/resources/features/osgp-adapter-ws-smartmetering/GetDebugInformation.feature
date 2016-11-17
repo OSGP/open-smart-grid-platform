@@ -3,7 +3,6 @@ Feature: Get debug information
   I want to have a webmethod to get the debug information of a single meter
   So I can see extra information of a meter under investigation
 
-  @runnow
   Scenario: 
     Given a dlms device
       | DeviceIdentification        | TEST1024000000001 |
