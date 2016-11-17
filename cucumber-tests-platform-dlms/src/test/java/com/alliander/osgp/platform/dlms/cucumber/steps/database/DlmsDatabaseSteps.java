@@ -20,6 +20,7 @@ import com.alliander.osgp.domain.core.repositories.ScheduledTaskRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 
+
 /**
  * DLMS related database steps.
  */
