@@ -24,7 +24,7 @@ import com.alliander.osgp.core.db.api.iec61850.entities.Ssld;
 import com.alliander.osgp.core.db.api.iec61850.repositories.SsldDataRepository;
 import com.alliander.osgp.dto.valueobjects.DeviceFunctionDto;
 import com.alliander.osgp.dto.valueobjects.EventNotificationDto;
-import com.alliander.osgp.dto.valueobjects.microgrids.DataResponseDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.GetDataResponseDto;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
@@ -100,7 +100,7 @@ public class DeviceManagementService {
         return ssldDevice.getOutputSettings();
     }
 
-    public void sendMeasurements(final String deviceIdentification, final DataResponseDto response)
+    public void sendMeasurements(final String deviceIdentification, final GetDataResponseDto response)
             throws ProtocolAdapterException {
         // Correlation ID is generated @ WS adapter, domain+version is
         // hard-coded

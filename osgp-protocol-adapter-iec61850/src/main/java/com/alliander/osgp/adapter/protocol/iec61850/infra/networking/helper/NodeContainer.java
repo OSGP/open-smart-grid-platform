@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Objects;
 
+import org.openmuc.openiec61850.Array;
 import org.openmuc.openiec61850.BdaBoolean;
 import org.openmuc.openiec61850.BdaFloat32;
 import org.openmuc.openiec61850.BdaInt16;
@@ -204,6 +205,56 @@ public class NodeContainer {
         this.writeNode(bdaFloat);
     }
 
+    public Float[] getFloatArray(final SubDataAttribute child) {
+        final Array array = (Array) this.parent.getChild(child.getDescription());
+        final int size = array.size();
+
+        final Float[] result = new Float[size];
+        for (int i = 0; i < size; i++) {
+            result[i] = ((BdaFloat32) array.getChild(i)).getFloat();
+        }
+        return result;
+    }
+
+    public void writeFloatArray(final SubDataAttribute child, final Float[] values) throws NodeWriteException {
+        final Array array = (Array) this.parent.getChild(child.getDescription());
+        if (array.size() != values.length) {
+            throw new NodeWriteException(
+                    String.format("Invalid array size %d. Size on device is %d", values.length, array.size()));
+        }
+
+        for (int i = 0; i < values.length; i++) {
+            final BdaFloat32 bdaFloat = (BdaFloat32) array.getChild(i);
+            bdaFloat.setFloat(values[i]);
+        }
+        this.writeNode(array);
+    }
+
+    public Date[] getDateArray(final SubDataAttribute child) {
+        final Array array = (Array) this.parent.getChild(child.getDescription());
+        final int size = array.size();
+
+        final Date[] result = new Date[size];
+        for (int i = 0; i < size; i++) {
+            result[i] = ((BdaTimestamp) array.getChild(i)).getDate();
+        }
+        return result;
+    }
+
+    public void writeDateArray(final SubDataAttribute child, final Date[] values) throws NodeWriteException {
+        final Array array = (Array) this.parent.getChild(child.getDescription());
+        if (array.size() != values.length) {
+            throw new NodeWriteException(
+                    String.format("Invalid array size %d. Size on device is %d", values.length, array.size()));
+        }
+
+        for (int i = 0; i < values.length; i++) {
+            final BdaTimestamp bdaTimestamp = (BdaTimestamp) array.getChild(i);
+            bdaTimestamp.setDate(values[i]);
+        }
+        this.writeNode(array);
+    }
+
     public BdaQuality getQuality(final SubDataAttribute child) {
         return (BdaQuality) this.parent.getChild(child.getDescription());
     }
@@ -263,4 +314,5 @@ public class NodeContainer {
 
         return this.parent.toString();
     }
+
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2016 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -26,9 +26,9 @@ import com.alliander.osgp.adapter.protocol.iec61850.application.services.DeviceM
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.ReadOnlyNodeContainer;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850BdaOptFldsHelper;
-import com.alliander.osgp.dto.valueobjects.microgrids.DataResponseDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.GetDataResponseDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.GetDataSystemIdentifierDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
-import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementResultSystemIdentifierDto;
 
 public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListener {
 
@@ -149,10 +149,10 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
             }
         }
 
-        final MeasurementResultSystemIdentifierDto systemResult = reportHandler.createResult(measurements);
-        final List<MeasurementResultSystemIdentifierDto> systems = new ArrayList<>();
+        final GetDataSystemIdentifierDto systemResult = reportHandler.createResult(measurements);
+        final List<GetDataSystemIdentifierDto> systems = new ArrayList<>();
         systems.add(systemResult);
-        this.deviceManagementService.sendMeasurements(this.deviceIdentification, new DataResponseDto(systems));
+        this.deviceManagementService.sendMeasurements(this.deviceIdentification, new GetDataResponseDto(systems));
     }
 
     private void logReportDetails(final Report report) {
