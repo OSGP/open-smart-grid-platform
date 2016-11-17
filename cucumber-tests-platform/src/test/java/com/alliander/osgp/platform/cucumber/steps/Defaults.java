@@ -50,6 +50,7 @@ public class Defaults {
     public static final Float DEFAULT_LATITUDE = new Float(0);
     public static final Float DEFAULT_LONGITUDE = new Float(0);
     public static final Short DEFAULT_CHANNEL = new Short((short) 1);
+    public static final Short DEFAULT_PAGE = 0;
 
     // Expected values
     public static final String EXPECTED_RESULT_OK = "OK";
