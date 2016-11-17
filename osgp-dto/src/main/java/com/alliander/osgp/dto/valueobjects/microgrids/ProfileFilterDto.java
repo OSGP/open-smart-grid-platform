@@ -9,13 +9,13 @@ package com.alliander.osgp.dto.valueobjects.microgrids;
 
 import java.io.Serializable;
 
-public class MeasurementFilterDto extends MeasurementIdentifierDto implements Serializable {
+public class ProfileFilterDto extends ProfileIdentifierDto implements Serializable {
 
     private static final long serialVersionUID = -6058020706641320400L;
 
     private boolean all;
 
-    public MeasurementFilterDto(final int id, final String node, final boolean all) {
+    public ProfileFilterDto(final int id, final String node, final boolean all) {
         super(id, node);
         this.all = all;
     }
