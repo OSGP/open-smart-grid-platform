@@ -9,23 +9,31 @@ package com.alliander.osgp.dto.valueobjects.microgrids;
 
 import java.io.Serializable;
 
-public class SystemIdentifierDto implements Serializable {
+import org.joda.time.DateTime;
 
-    private static final long serialVersionUID = -8592667499461927077L;
+public class ProfileEntryDto implements Serializable {
+
+    private static final long serialVersionUID = 5633230544785706777L;
 
     private int id;
-    private String systemType;
+    private DateTime time;
+    private double value;
 
-    public SystemIdentifierDto(final int id, final String systemType) {
+    public ProfileEntryDto(final int id, final DateTime time, final double value) {
         this.id = id;
-        this.systemType = systemType;
+        this.time = time;
+        this.value = value;
     }
 
     public int getId() {
         return this.id;
     }
 
-    public String getSystemType() {
-        return this.systemType;
+    public DateTime getTime() {
+        return this.time;
+    }
+
+    public double getValue() {
+        return this.value;
     }
 }
