@@ -148,18 +148,6 @@
 
       <dependency>
         <groupId>com.alliander.osgp</groupId>
-        <artifactId>osgp-domain-publiclighting</artifactId>
-        <version>${osgp.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.alliander.osgp</groupId>
-        <artifactId>osgp-domain-tariffswitching</artifactId>
-        <version>${osgp.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.alliander.osgp</groupId>
         <artifactId>osgp-adapter-ws-smartmetering</artifactId>
         <version>${osgp.version}</version>
       </dependency>

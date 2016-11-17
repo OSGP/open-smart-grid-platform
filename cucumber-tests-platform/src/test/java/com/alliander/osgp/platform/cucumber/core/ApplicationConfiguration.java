@@ -12,6 +12,8 @@ import java.util.Properties;
 import javax.sql.DataSource;
 
 import org.hibernate.ejb.HibernatePersistence;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -25,24 +27,31 @@ import com.alliander.osgp.shared.application.config.AbstractConfig;
  * Base class for the application configuration.
  */
 @Configuration
-@PropertySources({ @PropertySource("classpath:cucumber-platform.properties"),
-        @PropertySource(value = "file:/etc/osp/test/global-cucumber.properties", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:/etc/osp/test/cucumber-platform.properties", ignoreResourceNotFound = true), })
+@PropertySources({
+    @PropertySource("classpath:cucumber-platform.properties"),
+    @PropertySource(value = "file:/etc/osp/test/global-cucumber.properties", ignoreResourceNotFound = true),
+    @PropertySource(value = "file:/etc/osp/test/cucumber-platform.properties", ignoreResourceNotFound = true),
+})
 public abstract class ApplicationConfiguration extends AbstractConfig {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationConfiguration.class);
 
     private static final String REGEX_COMMA_WITH_OPTIONAL_WHITESPACE = "\\s*+,\\s*+";
 
-    @Value("${dbs.driver}")
+    @Value("${db.driver}")
     protected String databaseDriver;
 
-    @Value("${dbs.username}")
+    @Value("${db.username}")
     protected String databaseUsername;
 
-    @Value("${dbs.password}")
+    @Value("${db.password}")
     protected String databasePassword;
 
-    @Value("${dbs.location}")
-    protected String databaselocation;
+    @Value("${db.hostname}")
+    protected String databaseHostname;
+
+    @Value("${db.port}")
+    protected String databasePort;
 
     protected static final String PROPERTY_NAME_HIBERNATE_DIALECT = "hibernate.dialect";
     @Value("${hibernate.dialect}")
@@ -77,16 +86,22 @@ public abstract class ApplicationConfiguration extends AbstractConfig {
      * @return DataSource
      */
     protected DataSource makeDataSource() {
+
         final SingleConnectionDataSource singleConnectionDataSource = new SingleConnectionDataSource();
         singleConnectionDataSource.setAutoCommit(false);
         final Properties properties = new Properties();
         properties.setProperty("socketTimeout", "0");
         properties.setProperty("tcpKeepAlive", "true");
+
         singleConnectionDataSource.setDriverClassName(this.databaseDriver);
         singleConnectionDataSource.setUrl(this.getDatabaseUrl());
         singleConnectionDataSource.setUsername(this.databaseUsername);
         singleConnectionDataSource.setPassword(this.databasePassword);
         singleConnectionDataSource.setSuppressClose(true);
+
+        LOGGER.info("Connecting to database {} as {}", singleConnectionDataSource.getUrl(),
+                singleConnectionDataSource.getUsername());
+
         return singleConnectionDataSource;
     }
 
