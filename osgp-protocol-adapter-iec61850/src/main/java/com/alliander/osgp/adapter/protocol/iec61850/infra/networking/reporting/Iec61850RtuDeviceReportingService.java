@@ -95,6 +95,8 @@ public class Iec61850RtuDeviceReportingService {
     private void enableStatusReportingOnDevice(final DeviceConnection deviceConnection,
             final String deviceIdentification, final LogicalDevice logicalDevice, final DataAttribute reportName) {
 
+        LOGGER.info("Allowing device {} to send events", deviceIdentification);
+
         try {
             final NodeContainer reportingNode = deviceConnection.getFcModelNode(logicalDevice,
                     LogicalNode.LOGICAL_NODE_ZERO, reportName, Fc.BR);
@@ -108,11 +110,12 @@ public class Iec61850RtuDeviceReportingService {
                     reportName.getDescription(), e.getMessage());
         }
 
-        LOGGER.info("Allowing device {} to send events", deviceIdentification);
     }
 
     private void enableMeasurementReportingOnDevice(final DeviceConnection deviceConnection,
             final String deviceIdentification, final LogicalDevice logicalDevice, final DataAttribute reportName) {
+
+        LOGGER.info("Allowing device {} to send events", deviceIdentification);
 
         try {
             final NodeContainer reportingNode = deviceConnection.getFcModelNode(logicalDevice,
@@ -127,6 +130,5 @@ public class Iec61850RtuDeviceReportingService {
                     reportName.getDescription(), e.getMessage());
         }
 
-        LOGGER.info("Allowing device {} to send events", deviceIdentification);
     }
 }
