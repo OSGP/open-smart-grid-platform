@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -22,12 +22,10 @@ import com.googlecode.flyway.core.Flyway;
 @EnableJpaRepositories(transactionManagerRef = "wsTransactionManager", entityManagerFactoryRef = "wsEntityManagerFactory", basePackageClasses = {
         com.alliander.osgp.adapter.ws.microgrids.domain.repositories.RtuResponseDataRepository.class })
 @Configuration
-@PropertySources({
-	@PropertySource("classpath:osgp-adapter-ws-microgrids.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true),
-})
-public class PersistenceConfigWs extends PersistenceConfigBase {
+@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-microgrids.properties"),
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true), })
+public class PersistenceConfigWs extends AbstractPersistenceConfigBase {
 
     private static final String PROPERTY_NAME_DATABASE_PASSWORD = "db.password";
     private static final String PROPERTY_NAME_DATABASE_URL = "db.url";

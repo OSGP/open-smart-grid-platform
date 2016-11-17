@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -11,15 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import javax.annotation.Resource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
-import org.springframework.core.env.Environment;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.server.endpoint.adapter.DefaultMethodEndpointAdapter;
 import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadMethodProcessor;
@@ -63,9 +60,6 @@ public class WebServiceConfig extends AbstractConfig {
     private static final String WEB_SERVICE_NOTIFICATION_URL_PROPERTY_NAME = "web.service.notification.url";
 
     private static final String SERVER = "SERVER";
-
-    @Resource
-    private Environment environment;
 
     // === MICROGRIDS MARSHALLERS ===
 

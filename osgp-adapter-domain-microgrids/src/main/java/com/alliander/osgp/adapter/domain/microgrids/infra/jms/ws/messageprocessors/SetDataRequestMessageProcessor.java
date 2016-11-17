@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.domain.microgrids.application.services.AdHocManagementService;
-import com.alliander.osgp.adapter.domain.microgrids.infra.jms.ws.WebServiceRequestMessageProcessor;
+import com.alliander.osgp.adapter.domain.microgrids.infra.jms.ws.AbstractWebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.microgrids.valueobjects.SetDataRequest;
 import com.alliander.osgp.shared.infra.jms.Constants;
@@ -26,7 +26,7 @@ import com.alliander.osgp.shared.infra.jms.Constants;
  * Class for processing microgrids set data request messages
  */
 @Component("domainMicrogridsSetDataRequestMessageProcessor")
-public class SetDataRequestMessageProcessor extends WebServiceRequestMessageProcessor {
+public class SetDataRequestMessageProcessor extends AbstractWebServiceRequestMessageProcessor {
     /**
      * Logger for this class
      */

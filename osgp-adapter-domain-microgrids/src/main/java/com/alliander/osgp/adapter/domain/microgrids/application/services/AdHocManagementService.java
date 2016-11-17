@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -104,7 +104,7 @@ public class AdHocManagementService extends BaseService {
         // Support for Push messages, generate correlationUid
         String actualCorrelationUid = correlationUid;
         if ("no-correlationUid".equals(actualCorrelationUid)) {
-            actualCorrelationUid = this.getCorrelationId("DeviceGenerated", deviceIdentification);
+            actualCorrelationUid = getCorrelationId("DeviceGenerated", deviceIdentification);
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(actualCorrelationUid, organisationIdentification,
@@ -160,7 +160,7 @@ public class AdHocManagementService extends BaseService {
                 deviceIdentification, result, exception, emptyResponse), messageType);
     }
 
-    private String getCorrelationId(final String organisationIdentification, final String deviceIdentification) {
+    private static String getCorrelationId(final String organisationIdentification, final String deviceIdentification) {
 
         return organisationIdentification + "|||" + deviceIdentification + "|||" + UUID.randomUUID().toString();
     }

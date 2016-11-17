@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -33,12 +33,12 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
  * construction. The Singleton instance is added to the HashMap of
  * MessageProcessors after dependency injection has completed.
  */
-public abstract class OsgpCoreResponseMessageProcessor implements MessageProcessor {
+public abstract class AbstractOsgpCoreResponseMessageProcessor implements MessageProcessor {
 
     /**
      * Logger for this class.
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(OsgpCoreResponseMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractOsgpCoreResponseMessageProcessor.class);
 
     /**
      * This is the message sender needed for the message processor
@@ -65,7 +65,7 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
      * @param deviceFunction
      *            The message type a message processor can handle.
      */
-    protected OsgpCoreResponseMessageProcessor(final DeviceFunction deviceFunction) {
+    protected AbstractOsgpCoreResponseMessageProcessor(final DeviceFunction deviceFunction) {
         this.deviceFunctions = new ArrayList<>();
         this.deviceFunctions.add(deviceFunction);
     }
