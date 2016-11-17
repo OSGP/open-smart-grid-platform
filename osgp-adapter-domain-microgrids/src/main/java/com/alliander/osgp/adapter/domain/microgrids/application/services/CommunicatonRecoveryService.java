@@ -19,21 +19,21 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.microgrids.entities.RtuDevice;
-import com.alliander.osgp.dto.valueobjects.microgrids.DataRequestDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.GetDataRequestDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementFilterDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.SystemFilterDto;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 
 @Service(value = "domainMicrogridsCommunicationRecoveryService")
 @Transactional(value = "transactionManager")
-public class CommunicatonRecoveryService extends AbstractService {
+public class CommunicatonRecoveryService extends BaseService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommunicatonRecoveryService.class);
 
     private static final int SYSTEM_ID = 1;
     private static final String SYSTEM_TYPE = "RTU";
     private static final int MEASUREMENT_ID = 1;
-    private static final String MEASUREMENT_NODE = "health";
+    private static final String MEASUREMENT_NODE = "Health";
 
     @Autowired
     private CorrelationIdProviderService correlationIdProviderService;
@@ -56,7 +56,7 @@ public class CommunicatonRecoveryService extends AbstractService {
         final String correlationUid = this.createCorrelationUid(rtu);
         final String organisationIdentification = rtu.getOwner().getOrganisationIdentification();
         final String deviceIdentification = rtu.getDeviceIdentification();
-        final DataRequestDto request = this.createRequest(rtu);
+        final GetDataRequestDto request = this.createRequest(rtu);
 
         return new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, request);
     }
@@ -73,7 +73,7 @@ public class CommunicatonRecoveryService extends AbstractService {
         return correlationUid;
     }
 
-    private DataRequestDto createRequest(final RtuDevice rtu) {
+    private GetDataRequestDto createRequest(final RtuDevice rtu) {
         LOGGER.debug("Creating data request for rtu {}.", rtu.getDeviceIdentification());
 
         final List<MeasurementFilterDto> measurementFilters = new ArrayList<>();
@@ -82,7 +82,7 @@ public class CommunicatonRecoveryService extends AbstractService {
         final List<SystemFilterDto> systemFilters = new ArrayList<>();
         systemFilters.add(new SystemFilterDto(SYSTEM_ID, SYSTEM_TYPE, measurementFilters, false));
 
-        return new DataRequestDto(systemFilters);
+        return new GetDataRequestDto(systemFilters);
     }
 
 }

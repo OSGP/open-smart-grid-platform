@@ -11,17 +11,17 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DataRequest implements Serializable {
+public class GetDataRequest implements Serializable {
 
     private static final long serialVersionUID = 4776483459295815846L;
 
     private final List<SystemFilter> systemFilters;
 
-    public DataRequest(final List<SystemFilter> systemFilters) {
-        this.systemFilters = new ArrayList<SystemFilter>(systemFilters);
+    public GetDataRequest(final List<SystemFilter> systemFilters) {
+        this.systemFilters = new ArrayList<>(systemFilters);
     }
 
     public List<SystemFilter> getSystemFilters() {
-        return this.systemFilters;
+        return new ArrayList<>(this.systemFilters);
     }
 }

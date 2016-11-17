@@ -1,43 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-	<appender name="DB" class="ch.qos.logback.classic.db.DBAppender">
-		<connectionSource
-			class="ch.qos.logback.core.db.DriverManagerConnectionSource">
-			<driverClass>org.postgresql.Driver</driverClass>
-			<url>jdbc:postgresql://localhost/osgp_logging</url>
-			<user>osp_admin</user>
-			<password>1234</password>
-		</connectionSource>
-	</appender>
+  <!-- Currently switched off due to performance issues. 
+  <appender name="DB" class="ch.qos.logback.classic.db.DBAppender"> 
+    <connectionSource class="ch.qos.logback.core.db.DriverManagerConnectionSource">
+      <driverClass>org.postgresql.Driver</driverClass> 
+      <url>jdbc:postgresql://localhost/osgp_logging</url>
+      <user>osp_admin</user>
+      <password>1234</password>
+    </connectionSource> 
+  </appender>
+  -->
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level (%file:%line\) %logger{36} - %msg%n</pattern>
+    </encoder>
+  </appender>
 
-	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-		<encoder>
-			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level (%file:%line\) %logger{36} - %msg%n</pattern>
-		</encoder>
-	</appender>
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>/var/log/osp/logs/osgp-adapter-domain-microgrids.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <!-- daily rollover -->
+      <fileNamePattern>/var/log/osp/logs/osgp-adapter-domain-microgrids.log.%d{yyyy-MM-dd}.log
+      </fileNamePattern>
 
-	<appender name="FILE"
-		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>/var/log/osp/logs/osgp-adapter-domain-microgrids.log</file>
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<!-- daily rollover -->
-			<fileNamePattern>/var/log/osp/logs/osgp-adapter-domain-microgrids.log.%d{yyyy-MM-dd}.log
-			</fileNamePattern>
+      <!-- keep X days' worth of history -->
+      <maxHistory>10</maxHistory>
+    </rollingPolicy>
 
-			<!-- keep X days' worth of history -->
-			<maxHistory>10</maxHistory>
-		</rollingPolicy>
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} %-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+    </encoder>
+  </appender>
 
-		<encoder>
-			<pattern>%d{HH:mm:ss.SSS} %-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
-		</encoder>
-	</appender>
-
-	<root level="INFO" additivity="false">
-		<appender-ref ref="CONSOLE" />
-		<appender-ref ref="FILE" />
-		<!-- <appender-ref ref="DB"/> -->
-	</root>
+  <root level="INFO" additivity="false">
+    <appender-ref ref="CONSOLE" />
+    <appender-ref ref="FILE" />
+    <!-- <appender-ref ref="DB"/> -->
+  </root>
 
 </configuration>

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 
 @Component
-public class GetDataResponseMessageProcessor extends DomainResponseMessageProcessor {
+public class GetDataResponseMessageProcessor extends AbstractDomainResponseMessageProcessor {
 
     protected GetDataResponseMessageProcessor() {
         super(DeviceFunction.GET_DATA);

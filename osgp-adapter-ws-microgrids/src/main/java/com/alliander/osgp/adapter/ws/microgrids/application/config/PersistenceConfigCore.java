@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -21,12 +21,10 @@ import com.alliander.osgp.domain.core.exceptions.PlatformException;
         com.alliander.osgp.domain.core.repositories.DeviceRepository.class,
         com.alliander.osgp.domain.microgrids.repositories.RtuDeviceRepository.class })
 @Configuration
-@PropertySources({
-	@PropertySource("classpath:osgp-adapter-ws-microgrids.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true),
-})
-public class PersistenceConfigCore extends PersistenceConfigBase {
+@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-microgrids.properties"),
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true), })
+public class PersistenceConfigCore extends AbstractPersistenceConfigBase {
 
     private static final String PROPERTY_NAME_DATABASE_PASSWORD = "db.password.core";
     private static final String PROPERTY_NAME_DATABASE_URL = "db.url.core";

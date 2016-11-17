@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -81,8 +81,12 @@ public class RtuResponseDataService {
              * data will not be removed, so it will be available for the right
              * request type.
              */
-            final String warningResultClassType = responseData.getMessageData() == null ? "NULL"
-                    : responseData.getMessageData().getClass().getName();
+            String warningResultClassType;
+            if (responseData.getMessageData() == null) {
+                warningResultClassType = "NULL";
+            } else {
+                warningResultClassType = responseData.getMessageData().getClass().getName();
+            }
 
             LOGGER.warn("Incorrect type of response data: {} for correlation UID: {}", warningResultClassType,
                     responseData.getCorrelationUid());

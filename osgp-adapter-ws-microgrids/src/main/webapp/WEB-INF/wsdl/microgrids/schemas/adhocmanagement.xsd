@@ -88,6 +88,10 @@
     <xsd:attribute name="node" type="xsd:string" use="required" />
   </xsd:complexType>
 
+  <xsd:complexType name="ProfileEntryIdentifier">
+    <xsd:attribute name="id" type="xsd:int" use="required" />
+  </xsd:complexType>
+
   <xsd:complexType name="SetPointIdentifier">
     <xsd:attribute name="id" type="xsd:int" use="optional" />
     <xsd:attribute name="node" type="xsd:string" use="required" />
@@ -166,21 +170,25 @@
   </xsd:complexType>
 
   <xsd:complexType name="ProfileEntry">
-    <xsd:sequence>
-      <xsd:element name="Time" type="xsd:dateTime" />
-      <xsd:element name="Value" type="xsd:double" />
-    </xsd:sequence>
+    <xsd:complexContent>
+      <xsd:extension base="tns:ProfileEntryIdentifier">
+        <xsd:sequence>
+          <xsd:element name="Time" type="xsd:dateTime" />
+          <xsd:element name="Value" type="xsd:double" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
   </xsd:complexType>
 
   <xsd:complexType name="SetPoint">
-  <xsd:complexContent>
-    <xsd:extension base="tns:SetPointIdentifier">
-    <xsd:sequence>
-      <xsd:element name="value" type="xsd:double" minOccurs="1" maxOccurs="1" />
-      <xsd:element name="startTime" type="xsd:dateTime" minOccurs="0" maxOccurs="1" />
-      <xsd:element name="endTime" type="xsd:dateTime" minOccurs="0" maxOccurs="1" />
-    </xsd:sequence>
-    </xsd:extension>
-  </xsd:complexContent>
+    <xsd:complexContent>
+      <xsd:extension base="tns:SetPointIdentifier">
+        <xsd:sequence>
+          <xsd:element name="value" type="xsd:double" minOccurs="1" maxOccurs="1" />
+          <xsd:element name="startTime" type="xsd:dateTime" minOccurs="0" maxOccurs="1" />
+          <xsd:element name="endTime" type="xsd:dateTime" minOccurs="0" maxOccurs="1" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
   </xsd:complexType>
 </xsd:schema>
