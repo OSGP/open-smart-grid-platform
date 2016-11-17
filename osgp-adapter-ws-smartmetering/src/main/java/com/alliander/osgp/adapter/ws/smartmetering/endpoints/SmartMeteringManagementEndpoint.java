@@ -104,8 +104,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             final String correlationUid = this.managementService.enqueueFindEventsRequest(organisationIdentification,
                     deviceIdentification, this.managementMapper.mapAsList(findEventsQuery,
                             com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsRequestData.class),
-                    MessagePriorityEnum.getMessagePriority(messagePriority), this.managementMapper.map(scheduleTime,
-                            Long.class));
+                            MessagePriorityEnum.getMessagePriority(messagePriority), this.managementMapper.map(scheduleTime,
+                                    Long.class));
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
@@ -307,6 +307,25 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
         return response;
     }
 
+    /**
+     * Retrieve log messages. Looks like it will be executed asynchronously but
+     * actually it is executed synchronously. This was implemented like this to
+     * duplicate the behavior of the implementation in ws-admin, but supporting
+     * async notifications. Once there is a wider implementation of asynchronous
+     * requests and notifications, the ws-admin implementation will replace this
+     * one and this method can be removed.
+     *
+     * See SLIM-628 for further information about this.
+     *
+     * @param organisationIdentification
+     * @param messagePriority
+     *            unused because this request fakes asynchronous behavior.
+     * @param scheduleTime
+     *            unused because this request fakes asynchronous behavior.
+     * @param request
+     * @return AsyncResponse
+     * @throws OsgpException
+     */
     @PayloadRoot(localPart = "FindMessageLogsRequest", namespace = NAMESPACE)
     @ResponsePayload
     public FindMessageLogsAsyncResponse findMessageLogsRequest(
@@ -324,8 +343,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             final String deviceIdentification = request.getDeviceIdentification();
 
             final String correlationUid = this.managementService.findMessageLogsRequest(organisationIdentification,
-                    deviceIdentification, request.getPage(), MessagePriorityEnum.getMessagePriority(messagePriority),
-                    this.managementMapper.map(scheduleTime, Long.class));
+                    deviceIdentification, request.getPage());
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
@@ -351,7 +369,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
 
             @SuppressWarnings("unchecked")
             final Page<DeviceLogItem> page = (Page<DeviceLogItem>) this.managementService
-            .dequeueFindMessageLogsResponse(request.getCorrelationUid()).getMessageData();
+                    .dequeueFindMessageLogsResponse(request.getCorrelationUid()).getMessageData();
 
             // Map to output
             final MessageLogPage logPage = new MessageLogPage();
