@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -17,38 +17,38 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.domain.microgrids.application.services.AdHocManagementService;
-import com.alliander.osgp.adapter.domain.microgrids.infra.jms.ws.WebServiceRequestMessageProcessor;
+import com.alliander.osgp.adapter.domain.microgrids.infra.jms.ws.AbstractWebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.domain.microgrids.valueobjects.SetPointsRequest;
+import com.alliander.osgp.domain.microgrids.valueobjects.SetDataRequest;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
- * Class for processing microgrids set setpoints request messages
+ * Class for processing microgrids set data request messages
  */
-@Component("domainMicrogridsSetSetPointsRequestMessageProcessor")
-public class SetSetPointsRequestMessageProcessor extends WebServiceRequestMessageProcessor {
+@Component("domainMicrogridsSetDataRequestMessageProcessor")
+public class SetDataRequestMessageProcessor extends AbstractWebServiceRequestMessageProcessor {
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(SetSetPointsRequestMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SetDataRequestMessageProcessor.class);
 
     @Autowired
     @Qualifier("domainMicrogridsAdHocManagementService")
     private AdHocManagementService adHocManagementService;
 
-    public SetSetPointsRequestMessageProcessor() {
-        super(DeviceFunction.SET_SETPOINT);
+    public SetDataRequestMessageProcessor() {
+        super(DeviceFunction.SET_DATA);
     }
 
     @Override
     public void processMessage(final ObjectMessage message) {
-        LOGGER.info("Processing public lighting get status request message");
+        LOGGER.info("Processing microgrids set data request message");
 
         String correlationUid = null;
         String messageType = null;
         String organisationIdentification = null;
         String deviceIdentification = null;
-        SetPointsRequest setPointsRequest = null;
+        SetDataRequest setDataRequest = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -56,8 +56,8 @@ public class SetSetPointsRequestMessageProcessor extends WebServiceRequestMessag
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
 
-            if (message.getObject() != null && message.getObject() instanceof SetPointsRequest) {
-                setPointsRequest = (SetPointsRequest) message.getObject();
+            if (message.getObject() instanceof SetDataRequest) {
+                setDataRequest = (SetDataRequest) message.getObject();
             }
 
         } catch (final JMSException e) {
@@ -72,8 +72,8 @@ public class SetSetPointsRequestMessageProcessor extends WebServiceRequestMessag
         try {
             LOGGER.info("Calling application service function: {}", messageType);
 
-            this.adHocManagementService.handleSetPointsRequest(organisationIdentification, deviceIdentification,
-                    correlationUid, messageType, setPointsRequest);
+            this.adHocManagementService.handleSetDataRequest(organisationIdentification, deviceIdentification,
+                    correlationUid, messageType, setDataRequest);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);

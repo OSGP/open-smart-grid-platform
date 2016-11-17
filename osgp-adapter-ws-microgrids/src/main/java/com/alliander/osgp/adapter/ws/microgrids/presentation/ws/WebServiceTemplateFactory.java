@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -20,7 +20,7 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 
-import com.alliander.osgp.adapter.ws.microgrids.exceptions.WebServiceSecurityException;
+import com.alliander.osgp.adapter.ws.microgrids.application.exceptions.WebServiceSecurityException;
 
 public class WebServiceTemplateFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceTemplateFactory.class);

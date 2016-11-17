@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.adapter.domain.microgrids.application.config;
 
+import javax.annotation.Resource;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +17,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
+import org.springframework.core.env.Environment;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -28,11 +31,9 @@ import com.alliander.osgp.shared.application.config.AbstractConfig;
  */
 @Configuration
 @EnableScheduling
-@PropertySources({
-    @PropertySource("classpath:osgp-adapter-domain-microgrids.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-    @PropertySource(value = "file:${osgp/AdapterDomainMicrogrids/config}", ignoreResourceNotFound = true),
-})
+@PropertySources({ @PropertySource("classpath:osgp-adapter-domain-microgrids.properties"),
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/AdapterDomainMicrogrids/config}", ignoreResourceNotFound = true), })
 public class CommunicationMonitoringConfig extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommunicationMonitoringConfig.class);
@@ -50,8 +51,17 @@ public class CommunicationMonitoringConfig extends AbstractConfig {
     private static final String DEFAULT_CRON_EXPRESSION = "0 */5 * * * *";
     private static final Integer DEFAULT_POOL_SIZE = 1;
     private static final String DEFAULT_THREAD_NAME_PREFIX = "microgrids-communication-monitoring-";
-    private static final Integer DEFAULT_MAXIMUM_TIME_WITHOUT_COMMUNICATION = 15; // minutes
-    private static final Integer DEFAULT_LAST_COMMUNICATION_UPDATE_INTERVAL = 30; // seconds
+
+    // Default maximum time without communication in minutes
+    private static final Integer DEFAULT_MAXIMUM_TIME_WITHOUT_COMMUNICATION = 15;
+
+    private static final Integer DEFAULT_AWAIT_TERMINATION_SECONDS = 10;
+
+    // Default last communication update interval in seconds
+    private static final Integer DEFAULT_LAST_COMMUNICATION_UPDATE_INTERVAL = 30;
+
+    @Resource
+    private Environment environment;
 
     @Autowired
     private CommunicationMonitoringTask communicationMonitoringTask;
@@ -72,7 +82,7 @@ public class CommunicationMonitoringConfig extends AbstractConfig {
             taskScheduler.setPoolSize(this.schedulerPoolSize());
             taskScheduler.setThreadNamePrefix(this.schedulerThreadNamePrefix());
             taskScheduler.setWaitForTasksToCompleteOnShutdown(false);
-            taskScheduler.setAwaitTerminationSeconds(10);
+            taskScheduler.setAwaitTerminationSeconds(DEFAULT_AWAIT_TERMINATION_SECONDS);
             taskScheduler.initialize();
             taskScheduler.schedule(this.communicationMonitoringTask, this.communicationMonitoringTaskCronTrigger());
         } else {

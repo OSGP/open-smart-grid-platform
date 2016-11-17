@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -17,16 +17,16 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.domain.microgrids.application.services.AdHocManagementService;
-import com.alliander.osgp.adapter.domain.microgrids.infra.jms.ws.WebServiceRequestMessageProcessor;
+import com.alliander.osgp.adapter.domain.microgrids.infra.jms.ws.AbstractWebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.domain.microgrids.valueobjects.DataRequest;
+import com.alliander.osgp.domain.microgrids.valueobjects.GetDataRequest;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for processing microgrids get data request messages
  */
 @Component("domainMicrogridsGetDataRequestMessageProcessor")
-public class GetDataRequestMessageProcessor extends WebServiceRequestMessageProcessor {
+public class GetDataRequestMessageProcessor extends AbstractWebServiceRequestMessageProcessor {
     /**
      * Logger for this class
      */
@@ -48,7 +48,7 @@ public class GetDataRequestMessageProcessor extends WebServiceRequestMessageProc
         String messageType = null;
         String organisationIdentification = null;
         String deviceIdentification = null;
-        DataRequest dataRequest = null;
+        GetDataRequest dataRequest = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -56,8 +56,8 @@ public class GetDataRequestMessageProcessor extends WebServiceRequestMessageProc
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
 
-            if (message.getObject() != null && message.getObject() instanceof DataRequest) {
-                dataRequest = (DataRequest) message.getObject();
+            if (message.getObject() instanceof GetDataRequest) {
+                dataRequest = (GetDataRequest) message.getObject();
             }
 
         } catch (final JMSException e) {

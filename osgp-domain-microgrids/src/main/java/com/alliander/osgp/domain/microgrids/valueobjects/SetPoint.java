@@ -15,17 +15,24 @@ public class SetPoint implements Serializable {
 
     private static final long serialVersionUID = -8781688280636819412L;
 
+    private final int id;
     private final String node;
     private final double value;
     private final DateTime startTime;
     private final DateTime endTime;
 
-    public SetPoint(final String node, final double value, final DateTime startTime, final DateTime endTime) {
+    public SetPoint(final int id, final String node, final double value, final DateTime startTime,
+            final DateTime endTime) {
         super();
+        this.id = id;
         this.node = node;
         this.value = value;
         this.startTime = startTime;
         this.endTime = endTime;
+    }
+
+    public int getId() {
+        return this.id;
     }
 
     public String getNode() {

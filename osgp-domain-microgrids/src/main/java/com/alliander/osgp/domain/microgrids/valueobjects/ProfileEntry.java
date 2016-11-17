@@ -11,25 +11,22 @@ import java.io.Serializable;
 
 import org.joda.time.DateTime;
 
-public class Measurement extends NodeIdentifier implements Serializable {
-    /**
-     *
-     */
-    private static final long serialVersionUID = 3315719218127525093L;
+public class ProfileEntry implements Serializable {
 
-    private final int qualifier;
-    private final DateTime time;
-    private final double value;
+    private static final long serialVersionUID = -6843459709647885422L;
 
-    public Measurement(final int id, final String node, final int qualifier, final DateTime time, final double value) {
-        super(id, node);
-        this.qualifier = qualifier;
+    private int id;
+    private DateTime time;
+    private double value;
+
+    public ProfileEntry(final int id, final DateTime time, final double value) {
+        this.id = id;
         this.time = time;
         this.value = value;
     }
 
-    public int getQualifier() {
-        return this.qualifier;
+    public int getId() {
+        return this.id;
     }
 
     public DateTime getTime() {

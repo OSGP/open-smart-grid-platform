@@ -11,12 +11,6 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>osgp-adapter-domain-microgrids</artifactId>
-  <name>osgp-adapter-domain-microgrids</name>
-  <packaging>war</packaging>
-  <!-- Description element is needed for the maven-jxr-plugin to generate a maven site -->
-  <description>Domain logic module for microgrids.</description>
-
   <parent>
     <groupId>com.alliander.osgp</groupId>
     <artifactId>parent-platform</artifactId>
@@ -24,30 +18,15 @@
     <relativePath>../parent-platform/pom.xml</relativePath>
   </parent>
 
+  <artifactId>osgp-adapter-domain-microgrids</artifactId>
+  <packaging>war</packaging>
+  <name>osgp-adapter-domain-microgrids</name>
+  <!-- Description element is needed for the maven-jxr-plugin to generate a maven site -->
+  <description>Domain logic module for microgrids.</description>
+
   <properties>
     <display.version>${project.version}-${BUILD_TAG}</display.version>
   </properties>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-war-plugin</artifactId>
-        <version>2.4</version>
-        <configuration>
-          <attachClasses>true</attachClasses>
-          <failOnMissingWebXml>false</failOnMissingWebXml>
-          <nonFilteredFileExtensions>
-            <nonFilteredFileExtension>gif</nonFilteredFileExtension>
-            <nonFilteredFileExtension>ico</nonFilteredFileExtension>
-            <nonFilteredFileExtension>jpg</nonFilteredFileExtension>
-            <nonFilteredFileExtension>png</nonFilteredFileExtension>
-            <nonFilteredFileExtension>pdf</nonFilteredFileExtension>
-          </nonFilteredFileExtensions>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 
   <dependencies>
     <!-- Alliander -->
@@ -181,4 +160,27 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>2.4</version>
+        <configuration>
+          <attachClasses>true</attachClasses>
+          <failOnMissingWebXml>false</failOnMissingWebXml>
+          <nonFilteredFileExtensions>
+            <nonFilteredFileExtension>gif</nonFilteredFileExtension>
+            <nonFilteredFileExtension>ico</nonFilteredFileExtension>
+            <nonFilteredFileExtension>jpg</nonFilteredFileExtension>
+            <nonFilteredFileExtension>png</nonFilteredFileExtension>
+            <nonFilteredFileExtension>pdf</nonFilteredFileExtension>
+          </nonFilteredFileExtensions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  
 </project>
