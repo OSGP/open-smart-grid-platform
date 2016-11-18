@@ -29,7 +29,7 @@ public abstract class DlmsDeviceSteps {
 
     public void createDlmsDevice(final Map<String, String> inputSettings) {
         final DlmsDeviceBuilder dlmsBuilder = new DlmsDeviceBuilder(inputSettings);
-        this.dlmsDevice = dlmsBuilder.buildDlmsDevice();
+        this.dlmsDevice = dlmsBuilder.buildDlmsDevice(inputSettings);
         this.dlmsDeviceRepository.save(this.dlmsDevice);
 
         final CoreDeviceBuilder coreBuilder = new CoreDeviceBuilder(inputSettings);
