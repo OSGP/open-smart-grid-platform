@@ -9,6 +9,7 @@ package com.alliander.osgp.adapter.ws.smartmetering.application.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -25,20 +26,20 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 import com.alliander.osgp.adapter.ws.infra.specifications.JpaEventSpecifications;
 import com.alliander.osgp.domain.core.specifications.EventSpecifications;
 import com.alliander.osgp.shared.application.config.AbstractConfig;
+import com.alliander.osgp.shared.application.config.PagingSettings;
 
 /**
  * An application context Java configuration class.
  */
 @Configuration
-@ComponentScan(basePackages = { "com.alliander.osgp.domain.core", "com.alliander.osgp.adapter.ws.smartmetering" })
+@ComponentScan(basePackages = { "com.alliander.osgp.domain.core", "com.alliander.osgp.adapter.ws.smartmetering",
+"com.alliander.osgp.logging.domain" })
 @EnableTransactionManagement()
 @ImportResource("classpath:applicationContext.xml")
 @Import({ PersistenceConfig.class, CorePersistenceConfig.class, MessagingConfig.class, WebServiceConfig.class })
-@PropertySources({
-	@PropertySource("classpath:osgp-adapter-ws-smartmetering.properties"),
-	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-    @PropertySource(value = "file:${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true),
-})
+@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-smartmetering.properties"),
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true), })
 public class ApplicationContext extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);
@@ -79,4 +80,9 @@ public class ApplicationContext extends AbstractConfig {
         return propertySource;
     }
 
+    @Bean
+    public PagingSettings pagingSettings(@Value("${paging.maximum.pagesize}") final int maximumPageSize,
+            @Value("${paging.default.pagesize}") final int defaultPageSize) {
+        return new PagingSettings(maximumPageSize, defaultPageSize);
+    }
 }

@@ -16,7 +16,23 @@
     <xsd:import namespace="http://www.alliander.com/schemas/osgp/common/2014/10"
         schemaLocation="common.xsd" />
 
-	<!-- Requests and Responses -->
+    <!-- Requests and Responses -->
+
+    <xsd:element name="GetDevicesRequest">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="Page" type="xsd:int" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="GetDevicesResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="DevicePage" type="tns:DevicePage" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
 
     <xsd:element name="FindEventsRequest">
         <xsd:complexType>
@@ -137,6 +153,41 @@
                     minOccurs="1" />
                 <xsd:element name="Description" type="xsd:string"
                     minOccurs="0" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="FindMessageLogsRequest">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="DeviceIdentification"
+                    type="common:DeviceIdentification" minOccurs="1"
+                    maxOccurs="1" />
+                <xsd:element name="Page" type="xsd:int" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="FindMessageLogsAsyncResponse">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="common:AsyncResponse"></xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="FindMessageLogsAsyncRequest">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="common:AsyncRequest"></xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="FindMessageLogsResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="MessageLogPage" type="tns:MessageLogPage" />
             </xsd:sequence>
         </xsd:complexType>
     </xsd:element>
@@ -327,24 +378,6 @@
 
         </xsd:restriction>
     </xsd:simpleType>
-		
-	<!-- Requests and Responses -->
-
-    <xsd:element name="GetDevicesRequest">
-        <xsd:complexType>
-            <xsd:sequence>
-                <xsd:element name="Page" type="xsd:int" />
-            </xsd:sequence>
-        </xsd:complexType>
-    </xsd:element>
-
-    <xsd:element name="GetDevicesResponse">
-        <xsd:complexType>
-            <xsd:sequence>
-                <xsd:element name="DevicePage" type="tns:DevicePage" />
-            </xsd:sequence>
-        </xsd:complexType>
-    </xsd:element>
 	
 	<!-- Data Types -->
 
@@ -364,6 +397,27 @@
             <xsd:element name="TotalPages" type="xsd:int" />
             <xsd:element maxOccurs="unbounded" name="Devices"
                 type="tns:Device" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="MessageLog">
+        <xsd:sequence>
+            <xsd:element name="Timestamp" type="xsd:dateTime" />
+            <xsd:element name="OrganisationIdentification"
+                type="common:Identification" />
+            <xsd:element name="DeviceIdentification" type="common:Identification" />
+            <xsd:element name="DecodedMessage" type="xsd:string" />
+            <xsd:element name="EncodedMessage" type="xsd:string" />
+            <xsd:element name="Incoming" type="xsd:boolean" />
+            <xsd:element name="Valid" type="xsd:boolean" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="MessageLogPage">
+        <xsd:sequence>
+            <xsd:element name="TotalPages" type="xsd:int" />
+            <xsd:element maxOccurs="unbounded" name="MessageLogs"
+                type="tns:MessageLog" />
         </xsd:sequence>
     </xsd:complexType>
 
