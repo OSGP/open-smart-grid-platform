@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.domain.core.specifications;
 
+import java.util.List;
+
 import org.springframework.data.jpa.domain.Specification;
 
 import com.alliander.osgp.domain.core.entities.Device;
@@ -51,4 +53,10 @@ public interface DeviceSpecifications {
 
     Specification<Device> forFirmwareModuleVersion(FirmwareModuleFilterType firmwareModuleFilterType,
             String firmwareModuleVersion) throws ArgumentNullOrEmptyException;
+
+    Specification<Device> existsInDeviceIdentificationList(List<String> deviceIdentifications)
+            throws ArgumentNullOrEmptyException;
+
+    Specification<Device> excludeDeviceIdentificationList(List<String> deviceIdentifications)
+            throws ArgumentNullOrEmptyException;
 }
