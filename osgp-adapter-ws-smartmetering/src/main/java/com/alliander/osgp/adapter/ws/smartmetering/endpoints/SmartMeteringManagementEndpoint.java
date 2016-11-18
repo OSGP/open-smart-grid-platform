@@ -315,7 +315,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
      * requests and notifications, the ws-admin implementation will replace this
      * one and this method can be removed.
      *
-     * See SLIM-628 for further information about this.
+     * @TODO remove this method once it is implemented in a asynchronous manner
+     *       in the ws-admin project.
      *
      * @param organisationIdentification
      * @param messagePriority
@@ -354,6 +355,19 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
         return response;
     }
 
+    /**
+     * Retrieve the result of the
+     * {@link #findMessageLogsRequest(String, String, String, FindMessageLogsRequest)}
+     * method.
+     *
+     * @TODO remove this method once it is implemented in a asynchronous manner
+     *       in the ws-admin project.
+     * 
+     * @param organisationIdentification
+     * @param request
+     * @return FindMessageLogsResponse
+     * @throws OsgpException
+     */
     @PayloadRoot(localPart = "FindMessageLogsAsyncRequest", namespace = NAMESPACE)
     @ResponsePayload
     public FindMessageLogsResponse getFindMessageLogsResponse(
