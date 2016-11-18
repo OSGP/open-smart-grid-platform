@@ -12,38 +12,37 @@ import static com.alliander.osgp.platform.cucumber.steps.Defaults.SMART_METER_G;
 
 import java.util.Map;
 
-import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.Assert;
 
 import com.alliander.osgp.platform.cucumber.core.Helpers;
 import com.alliander.osgp.platform.cucumber.helpers.Protocol;
 import com.alliander.osgp.platform.cucumber.helpers.ProtocolHelper;
-import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.steps.database.core.DeviceSteps;
 import com.alliander.osgp.platform.cucumber.steps.database.core.SmartMeterSteps;
+import com.alliander.osgp.platform.dlms.cucumber.steps.Keys;
+import com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.smartmeteringbundle.Bundle;
 
 import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
 
 /**
  * DLMS device specific steps.
  */
-public class DlmsDeviceSteps {
+public abstract class DlmsDeviceStepsImpl extends DlmsDeviceSteps {
 
-    @Autowired
-    private DeviceSteps deviceSteps;
-    
     @Autowired
     private SmartMeterSteps smartMeterSteps;
 
     @Autowired
     private com.alliander.osgp.platform.cucumber.steps.database.adapterprotocoldlms.DlmsDeviceSteps repoHelper;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(Bundle.class);
+
     @Given("^a dlms device$")
     public void aDlmsDevice(final Map<String, String> inputSettings) throws Throwable {
+
         if (this.isSmartMeter(inputSettings)) {
-            
+
             // Add DSMR protocol if not provided, inputSettings are leading!
             final Protocol protocol = ProtocolHelper.getProtocol(Protocol.ProtocolType.DSMR);
             Map<String, String> settings = inputSettings;
@@ -53,29 +52,20 @@ public class DlmsDeviceSteps {
             if (!settings.containsKey(Keys.KEY_PROTOCOL_VERSION)) {
                 settings = Helpers.addSetting(settings, Keys.KEY_PROTOCOL_VERSION, protocol.getVersion());
             }
-            
-            smartMeterSteps.aSmartMeter(settings);
-            this.repoHelper.insertDlmsDevice(settings);
+
+            this.smartMeterSteps.aSmartMeter(settings);
+            this.createDlmsDevice(inputSettings);
+            this.repoHelper.insertDlmsDevice(settings); // obsolete
         } else {
-            deviceSteps.aDevice(inputSettings);
+            LOGGER.error("The following DLMS device input parameters are not present: ", Keys.KEY_DEVICE_IDENTIFICATION,
+                    Keys.KEY_DEVICE_TYPE);
         }
     }
 
     private boolean isSmartMeter(final Map<String, String> settings) {
+        final String deviceId = settings.get(Keys.KEY_DEVICE_IDENTIFICATION);
         final String deviceType = settings.get(Keys.KEY_DEVICE_TYPE);
-        return SMART_METER_E.equals(deviceType) || SMART_METER_G.equals(deviceType);
+        return (SMART_METER_E.equals(deviceType) || SMART_METER_G.equals(deviceType)) && deviceId != null;
     }
 
-    /**
-     * check that the given dlms device is inserted
-     *
-     * @param deviceId
-     * @return
-     */
-    @Then("^the dlms device with id \"([^\"]*)\" exists$")
-    public void theDlmsDeviceShouldExist(final String deviceIdentification) throws Throwable {
-        final DlmsDevice dlmsDevice = this.repoHelper.findDlmsDevice(deviceIdentification);
-        Assert.notNull(dlmsDevice);
-        Assert.isTrue(dlmsDevice.getSecurityKeys().size() > 0);
-    }
 }
