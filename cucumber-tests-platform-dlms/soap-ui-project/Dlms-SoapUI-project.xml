@@ -725,14 +725,14 @@
          <ns:CorrelationUid>?</ns:CorrelationUid>
       </ns1:DeCoupleMbusDeviceAsyncRequest>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-installation-v1.0/SmartmeterInstallationPort/DeCoupleMbusDeviceAsyncRequest"/></con:call></con:operation></con:interface><con:interface xsi:type="con:WsdlInterface" id="a56528fb-1e48-44a8-b9ff-fa38f347e315" wsaVersion="NONE" name="SmartMeteringManagementPortSoap11" type="wsdl" bindingName="{http://www.alliander.com/definitions/osgp/smartmetering/sm-management-v1.0}SmartMeteringManagementPortSoap11" soapVersion="1_1" anonymous="optional" definition="https://localhost:443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringManagement.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="https://localhost:443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringManagement.wsdl"><con:part><con:url>https://localhost:443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringManagement.wsdl</con:url><con:content><![CDATA[<!--Platform version: 4.2.0-SNAPSHOT-jenkins-OSGP_Platform_development-722-->
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-installation-v1.0/SmartmeterInstallationPort/DeCoupleMbusDeviceAsyncRequest"/></con:call></con:operation></con:interface><con:interface xsi:type="con:WsdlInterface" id="a56528fb-1e48-44a8-b9ff-fa38f347e315" wsaVersion="NONE" name="SmartMeteringManagementPortSoap11" type="wsdl" bindingName="{http://www.alliander.com/definitions/osgp/smartmetering/sm-management-v1.0}SmartMeteringManagementPortSoap11" soapVersion="1_1" anonymous="optional" definition="https://localhost:443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringManagement.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="https://localhost:443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringManagement.wsdl"><con:part><con:url>https://localhost:443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringManagement.wsdl</con:url><con:content><![CDATA[<!--Platform version: 4.4.0-SNAPSHOT -->
 <wsdl:definitions targetNamespace="http://www.alliander.com/definitions/osgp/smartmetering/sm-management-v1.0" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:smman="http://www.alliander.com/schemas/osgp/smartmetering/sm-management/2014/10" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.alliander.com/definitions/osgp/smartmetering/sm-management-v1.0">
   <wsdl:types>
     <xsd:schema targetNamespace="http://www.alliander.com/definitions/osgp/smartmetering/sm-management/imports" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
       <xsd:import namespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-management/2014/10" schemaLocation="schemas/sm-management.xsd"/>
     </xsd:schema>
   </wsdl:types>
-  <wsdl:message name="FindEventsHeader">
+  <wsdl:message name="ActionHeader">
     <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification"/>
     <wsdl:part element="common:UserName" name="UserName"/>
     <wsdl:part element="common:ApplicationName" name="ApplicationName"/>
@@ -743,27 +743,41 @@
   <wsdl:message name="FindEventsAsyncResponse">
     <wsdl:part element="smman:FindEventsAsyncResponse" name="FindEventsAsyncResponse"></wsdl:part>
   </wsdl:message>
-  <wsdl:message name="FindEventsAsyncHeader">
-    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification"/>
-    <wsdl:part element="common:UserName" name="UserName"/>
-    <wsdl:part element="common:ApplicationName" name="ApplicationName"/>
-  </wsdl:message>
   <wsdl:message name="FindEventsAsyncRequest">
     <wsdl:part element="smman:FindEventsAsyncRequest" name="FindEventsAsyncRequest"></wsdl:part>
   </wsdl:message>
   <wsdl:message name="FindEventsResponse">
     <wsdl:part element="smman:FindEventsResponse" name="FindEventsResponse"></wsdl:part>
   </wsdl:message>
-  <wsdl:message name="GetDevicesHeader">
-    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification"/>
-    <wsdl:part element="common:UserName" name="UserName"/>
-    <wsdl:part element="common:ApplicationName" name="ApplicationName"/>
-  </wsdl:message>
   <wsdl:message name="GetDevicesRequest">
     <wsdl:part element="smman:GetDevicesRequest" name="GetDevicesRequest"></wsdl:part>
   </wsdl:message>
   <wsdl:message name="GetDevicesResponse">
     <wsdl:part element="smman:GetDevicesResponse" name="GetDevicesResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="EnableDebuggingRequest">
+    <wsdl:part element="smman:EnableDebuggingRequest" name="EnableDebuggingRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="EnableDebuggingAsyncResponse">
+    <wsdl:part element="smman:EnableDebuggingAsyncResponse" name="EnableDebuggingAsyncResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="EnableDebuggingAsyncRequest">
+    <wsdl:part element="smman:EnableDebuggingAsyncRequest" name="EnableDebuggingAsyncRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="EnableDebuggingResponse">
+    <wsdl:part element="smman:EnableDebuggingResponse" name="EnableDebuggingResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="DisableDebuggingRequest">
+    <wsdl:part element="smman:DisableDebuggingRequest" name="DisableDebuggingRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="DisableDebuggingAsyncResponse">
+    <wsdl:part element="smman:DisableDebuggingAsyncResponse" name="DisableDebuggingAsyncResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="DisableDebuggingAsyncRequest">
+    <wsdl:part element="smman:DisableDebuggingAsyncRequest" name="DisableDebuggingAsyncRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="DisableDebuggingResponse">
+    <wsdl:part element="smman:DisableDebuggingResponse" name="DisableDebuggingResponse"></wsdl:part>
   </wsdl:message>
   <wsdl:portType name="SmartMeteringManagementPort">
     <wsdl:operation name="FindEvents">
@@ -778,15 +792,31 @@
       <wsdl:input message="tns:GetDevicesRequest" name="GetDevicesRequest"></wsdl:input>
       <wsdl:output message="tns:GetDevicesResponse" name="GetDevicesResponse"></wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="EnableDebugging">
+      <wsdl:input message="tns:EnableDebuggingRequest" name="EnableDebuggingRequest"></wsdl:input>
+      <wsdl:output message="tns:EnableDebuggingAsyncResponse" name="EnableDebuggingAsyncResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetEnableDebuggingResponse">
+      <wsdl:input message="tns:EnableDebuggingAsyncRequest" name="EnableDebuggingAsyncRequest"></wsdl:input>
+      <wsdl:output message="tns:EnableDebuggingResponse" name="EnableDebuggingResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DisableDebugging">
+      <wsdl:input message="tns:DisableDebuggingRequest" name="DisableDebuggingRequest"></wsdl:input>
+      <wsdl:output message="tns:DisableDebuggingAsyncResponse" name="DisableDebuggingAsyncResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDisableDebuggingResponse">
+      <wsdl:input message="tns:DisableDebuggingAsyncRequest" name="DisableDebuggingAsyncRequest"></wsdl:input>
+      <wsdl:output message="tns:DisableDebuggingResponse" name="DisableDebuggingResponse"></wsdl:output>
+    </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="SmartMeteringManagementPortSoap11" type="tns:SmartMeteringManagementPort">
     <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
     <wsdl:operation name="FindEvents">
       <soap:operation soapAction=""/>
       <wsdl:input name="FindEventsRequest">
-        <soap:header message="tns:FindEventsHeader" part="OrganisationIdentification" use="literal"/>
-        <soap:header message="tns:FindEventsHeader" part="UserName" use="literal"/>
-        <soap:header message="tns:FindEventsHeader" part="ApplicationName" use="literal"/>
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal"/>
+        <soap:header message="tns:ActionHeader" part="UserName" use="literal"/>
+        <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal"/>
         <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="FindEventsAsyncResponse">
@@ -796,9 +826,9 @@
     <wsdl:operation name="GetFindEventsResponse">
       <soap:operation soapAction=""/>
       <wsdl:input name="FindEventsAsyncRequest">
-        <soap:header message="tns:FindEventsHeader" part="OrganisationIdentification" use="literal"/>
-        <soap:header message="tns:FindEventsHeader" part="UserName" use="literal"/>
-        <soap:header message="tns:FindEventsHeader" part="ApplicationName" use="literal"/>
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal"/>
+        <soap:header message="tns:ActionHeader" part="UserName" use="literal"/>
+        <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal"/>
         <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="FindEventsResponse">
@@ -808,12 +838,60 @@
     <wsdl:operation name="GetDevices">
       <soap:operation soapAction=""/>
       <wsdl:input name="GetDevicesRequest">
-        <soap:header message="tns:GetDevicesHeader" part="OrganisationIdentification" use="literal"/>
-        <soap:header message="tns:GetDevicesHeader" part="UserName" use="literal"/>
-        <soap:header message="tns:GetDevicesHeader" part="ApplicationName" use="literal"/>
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal"/>
+        <soap:header message="tns:ActionHeader" part="UserName" use="literal"/>
+        <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal"/>
         <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="GetDevicesResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="EnableDebugging">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="EnableDebuggingRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal"/>
+        <soap:header message="tns:ActionHeader" part="UserName" use="literal"/>
+        <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal"/>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="EnableDebuggingAsyncResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetEnableDebuggingResponse">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="EnableDebuggingAsyncRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal"/>
+        <soap:header message="tns:ActionHeader" part="UserName" use="literal"/>
+        <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal"/>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="EnableDebuggingResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DisableDebugging">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="DisableDebuggingRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal"/>
+        <soap:header message="tns:ActionHeader" part="UserName" use="literal"/>
+        <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal"/>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="DisableDebuggingAsyncResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDisableDebuggingResponse">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="DisableDebuggingAsyncRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal"/>
+        <soap:header message="tns:ActionHeader" part="UserName" use="literal"/>
+        <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal"/>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="DisableDebuggingResponse">
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
@@ -864,6 +942,64 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
+  <xsd:element name="EnableDebuggingRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element maxOccurs="1" minOccurs="1" name="DeviceIdentification" type="common:DeviceIdentification"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="EnableDebuggingAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="EnableDebuggingAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="EnableDebuggingResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element minOccurs="1" name="Result" type="common:OsgpResultType"/>
+        <xsd:element minOccurs="0" name="Description" type="xsd:string"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="DisableDebuggingRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element maxOccurs="1" minOccurs="1" name="DeviceIdentification" type="common:DeviceIdentification"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="DisableDebuggingAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="DisableDebuggingAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="DisableDebuggingResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element minOccurs="1" name="Result" type="common:OsgpResultType"/>
+        <xsd:element minOccurs="0" name="Description" type="xsd:string"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
   <!--Data Types-->
   <!--Query for FindEventsRequest-->
   <xsd:complexType name="FindEventsRequestData">
@@ -1063,7 +1199,7 @@
       <xsd:element maxOccurs="unbounded" name="Devices" type="tns:Device"/>
     </xsd:sequence>
   </xsd:complexType>
-</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>https://localhost:443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/schemas/common.xsd</con:url><con:content><![CDATA[<xsd:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.alliander.com/schemas/osgp/common/2014/10">
+</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>https://localhost:443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/schemas/common.xsd</con:url><con:content><![CDATA[<xsd:schema attributeFormDefault="unqualified" elementFormDefault="qualified" jxb:version="2.0" targetNamespace="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" xmlns:tns="http://www.alliander.com/schemas/osgp/common/2014/10">
   <xsd:element name="OrganisationIdentification" type="tns:Identification"/>
   <xsd:element name="UserName" type="tns:Identification"/>
   <xsd:element name="ApplicationName" type="tns:Identification"/>
@@ -1120,6 +1256,37 @@
         <xsd:sequence></xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="FaultResponseData">
+    <xsd:complexContent>
+      <xsd:extension base="tns:Response">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="Code" type="xsd:int"/>
+          <xsd:element name="Message" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="Component" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="InnerException" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="InnerMessage" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="Parameters" type="tns:FaultResponseParameters"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="FaultResponseParameters">
+    <xsd:sequence>
+      <xsd:element maxOccurs="unbounded" name="Parameter" type="tns:FaultResponseParameter">
+        <xsd:annotation>
+          <xsd:appinfo>
+            <jxb:property name="ParameterList"/>
+          </xsd:appinfo>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="FaultResponseParameter">
+    <xsd:sequence>
+      <xsd:element name="Key" type="xsd:string"/>
+      <xsd:element name="Value" type="xsd:string"/>
+    </xsd:sequence>
   </xsd:complexType>
   <xsd:complexType abstract="true" name="Action">
     <xsd:sequence></xsd:sequence>
@@ -1356,7 +1523,53 @@
          <ns:CorrelationUid>test-org|||E9998000014122714|||20160106141141445</ns:CorrelationUid>
       </ns1:FindEventsAsyncRequest>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:credentials><con:username xsi:nil="true"/><con:password xsi:nil="true"/><con:domain xsi:nil="true"/><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-management-v1.0/SmartMeteringManagementPort/FindEventsAsyncRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:interface xsi:type="con:WsdlInterface" id="48505ce4-d34c-4ae5-9461-f57b0748f17f" wsaVersion="NONE" name="SmartmetermonitoringPortSoap11" type="wsdl" bindingName="{http://www.alliander.com/definitions/osgp/smartmetering/sm-monitoring-v1.0}SmartmetermonitoringPortSoap11" soapVersion="1_1" anonymous="optional" definition="https://localhost:443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringMonitoring.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="https://localhost:443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringMonitoring.wsdl"><con:part><con:url>https://localhost:443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringMonitoring.wsdl</con:url><con:content><![CDATA[<!--Platform version: 4.2.0-SNAPSHOT-jenkins-OSGP_Platform_development-722-->
+</soapenv:Envelope>]]></con:request><con:credentials><con:username xsi:nil="true"/><con:password xsi:nil="true"/><con:domain xsi:nil="true"/><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-management-v1.0/SmartMeteringManagementPort/FindEventsAsyncRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="38325abc-5034-416d-9eba-c1838aa7db40" isOneWay="false" action="" name="EnableDebugging" bindingOperationName="EnableDebugging" type="Request-Response" outputName="EnableDebuggingAsyncResponse" inputName="EnableDebuggingRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="b85339ce-eab8-45f3-8142-6c3593b27a32" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://${#TestCase#ServiceEndpoint}/osgp-adapter-ws-smartmetering/smartMetering/managementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/smartmetering/sm-management/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>?</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:EnableDebuggingRequest>
+         <ns1:DeviceIdentification>?</ns1:DeviceIdentification>
+      </ns1:EnableDebuggingRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-management-v1.0/SmartMeteringManagementPort/EnableDebuggingRequest"/></con:call></con:operation><con:operation id="05451875-f18e-4488-8b95-0c03c8c3f7e4" isOneWay="false" action="" name="GetEnableDebuggingResponse" bindingOperationName="GetEnableDebuggingResponse" type="Request-Response" outputName="EnableDebuggingResponse" inputName="EnableDebuggingAsyncRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="f356254d-ecaf-470f-8221-d5913f2c3b65" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://${#TestCase#ServiceEndpoint}/osgp-adapter-ws-smartmetering/smartMetering/managementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/smartmetering/sm-management/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>?</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:EnableDebuggingAsyncRequest>
+         <ns:DeviceIdentification>?</ns:DeviceIdentification>
+         <ns:CorrelationUid>?</ns:CorrelationUid>
+      </ns1:EnableDebuggingAsyncRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-management-v1.0/SmartMeteringManagementPort/EnableDebuggingAsyncRequest"/></con:call></con:operation><con:operation id="5b155dd2-813c-43cf-a2aa-c453a3af6588" isOneWay="false" action="" name="DisableDebugging" bindingOperationName="DisableDebugging" type="Request-Response" outputName="DisableDebuggingAsyncResponse" inputName="DisableDebuggingRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="faf31fca-ad79-42a0-a388-bffbb59ebf82" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://${#TestCase#ServiceEndpoint}/osgp-adapter-ws-smartmetering/smartMetering/managementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/smartmetering/sm-management/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>?</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:DisableDebuggingRequest>
+         <ns1:DeviceIdentification>?</ns1:DeviceIdentification>
+      </ns1:DisableDebuggingRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-management-v1.0/SmartMeteringManagementPort/DisableDebuggingRequest"/></con:call></con:operation><con:operation id="4f13c474-e21f-4b7d-b61d-18405a19b191" isOneWay="false" action="" name="GetDisableDebuggingResponse" bindingOperationName="GetDisableDebuggingResponse" type="Request-Response" outputName="DisableDebuggingResponse" inputName="DisableDebuggingAsyncRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="206c37cd-a382-4cae-beec-3ac781c2d9b3" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://${#TestCase#ServiceEndpoint}/osgp-adapter-ws-smartmetering/smartMetering/managementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/smartmetering/sm-management/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>?</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:DisableDebuggingAsyncRequest>
+         <ns:DeviceIdentification>?</ns:DeviceIdentification>
+         <ns:CorrelationUid>?</ns:CorrelationUid>
+      </ns1:DisableDebuggingAsyncRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-management-v1.0/SmartMeteringManagementPort/DisableDebuggingAsyncRequest"/></con:call></con:operation></con:interface><con:interface xsi:type="con:WsdlInterface" id="48505ce4-d34c-4ae5-9461-f57b0748f17f" wsaVersion="NONE" name="SmartmetermonitoringPortSoap11" type="wsdl" bindingName="{http://www.alliander.com/definitions/osgp/smartmetering/sm-monitoring-v1.0}SmartmetermonitoringPortSoap11" soapVersion="1_1" anonymous="optional" definition="https://localhost:443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringMonitoring.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="https://localhost:443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringMonitoring.wsdl"><con:part><con:url>https://localhost:443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringMonitoring.wsdl</con:url><con:content><![CDATA[<!--Platform version: 4.2.0-SNAPSHOT-jenkins-OSGP_Platform_development-722-->
 <wsdl:definitions targetNamespace="http://www.alliander.com/definitions/osgp/smartmetering/sm-monitoring-v1.0" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:smmon="http://www.alliander.com/schemas/osgp/smartmetering/sm-monitoring/2014/10" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.alliander.com/definitions/osgp/smartmetering/sm-monitoring-v1.0">
   <wsdl:types>
     <xsd:schema targetNamespace="http://www.alliander.com/definitions/osgp/smartmetering/sm-monitoring/imports" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
@@ -12986,7 +13199,64 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
          <ns:CorrelationUid>${=testCase.getPropertyValue( "CorrelationUid" )}</ns:CorrelationUid>
       </ns1:SpecificAttributeValueAsyncRequest>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response" id="5c620bf4-4eac-4e09-a648-4654c9161958" name="SOAP Response"/><con:assertion type="Schema Compliance" id="2d03075a-5931-44c3-8f84-63206663496e" name="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion" id="b915fe18-f2ae-40d8-896c-1340b25e29d4" name="Not SOAP Fault"/><con:credentials><con:username xsi:nil="true"/><con:password xsi:nil="true"/><con:domain xsi:nil="true"/><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-adhoc-v1.0/SmartmeteradhocPort/SpecificAttributeValueAsyncRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties><con:property><con:name>DeviceIdentification</con:name><con:value>TEST1024000000001</con:value></con:property><con:property><con:name>OrganisationIdentification</con:name><con:value>test-org</con:value></con:property><con:property><con:name>CorrelationUid</con:name><con:value>test-org|||TEST1024000000001|||20161006085220751</con:value></con:property><con:property><con:name>DeviceIdentification</con:name><con:value>G00XX561204926113</con:value></con:property><con:property><con:name>ServiceEndpoint</con:name><con:value>localhost:443</con:value></con:property></con:properties></con:testCase><con:properties/></con:testSuite><con:testSuite id="a6019448-d7aa-461a-8c9b-54e5ade865ea" name="SmartmeterNotification"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:properties/></con:testSuite><con:testSuite id="44dc58d6-9f5b-416d-a30b-37a435bac54c" name="SmartmeterManagement"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase id="9399cf41-eb7a-4893-9f58-2b9a4905f72f" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="19 Retrieve events from the meter" searchProperties="true"><con:settings/><con:testStep type="request" id="fb666a60-d2a6-4025-9393-f34fa671426f" name="FindEvents - STANDARD_EVENT"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>SmartMeteringManagementPortSoap11</con:interface><con:operation>FindEvents</con:operation><con:request name="FindEvents - STANDARD_EVENT" outgoingWss="" incomingWss="" timeout="" sslKeystore="test-org.pfx" useWsAddressing="false" useWsReliableMessaging="false" id="5bae800e-35ec-47a1-a676-0dbc06838acb"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://${#TestCase#ServiceEndpoint}/osgp-adapter-ws-smartmetering/smartMetering/managementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/smartmetering/sm-management/2014/10">
+</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response" id="5c620bf4-4eac-4e09-a648-4654c9161958" name="SOAP Response"/><con:assertion type="Schema Compliance" id="2d03075a-5931-44c3-8f84-63206663496e" name="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion" id="b915fe18-f2ae-40d8-896c-1340b25e29d4" name="Not SOAP Fault"/><con:credentials><con:username xsi:nil="true"/><con:password xsi:nil="true"/><con:domain xsi:nil="true"/><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-adhoc-v1.0/SmartmeteradhocPort/SpecificAttributeValueAsyncRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties><con:property><con:name>DeviceIdentification</con:name><con:value>TEST1024000000001</con:value></con:property><con:property><con:name>OrganisationIdentification</con:name><con:value>test-org</con:value></con:property><con:property><con:name>CorrelationUid</con:name><con:value>test-org|||TEST1024000000001|||20161006085220751</con:value></con:property><con:property><con:name>DeviceIdentification</con:name><con:value>G00XX561204926113</con:value></con:property><con:property><con:name>ServiceEndpoint</con:name><con:value>localhost:443</con:value></con:property></con:properties></con:testCase><con:properties/></con:testSuite><con:testSuite id="a6019448-d7aa-461a-8c9b-54e5ade865ea" name="SmartmeterNotification"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:properties/></con:testSuite><con:testSuite id="44dc58d6-9f5b-416d-a30b-37a435bac54c" name="SmartmeterManagement"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase id="60b708de-faee-4486-9a4a-37f6f55fcd7d" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="625 Enable disable debugging" searchProperties="true"><con:settings/><con:testStep type="request" name="EnableDebugging" id="abfb7e07-75fa-40cf-b0b9-960f2ba8ce4b"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>SmartMeteringManagementPortSoap11</con:interface><con:operation>EnableDebugging</con:operation><con:request name="EnableDebugging" id="72ae6e7f-a939-4306-aab8-ad637e39110d" sslKeystore="test-org.pfx"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://${#TestCase#ServiceEndpoint}/osgp-adapter-ws-smartmetering/smartMetering/managementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/smartmetering/sm-management/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:EnableDebuggingRequest>
+         <ns1:DeviceIdentification>${=testCase.getPropertyValue( "DeviceIdentification" )}</ns1:DeviceIdentification>
+      </ns1:EnableDebuggingRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response" id="da2b59ed-0913-4a1c-abe4-c11f9b1c23e0"/><con:assertion type="Schema Compliance" id="7ba2b4ab-fd68-415f-b8ac-81f68a5124f4"><con:configuration/></con:assertion><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="transfer" name="EnableDebugging correlationUid" id="af4e901d-e592-4ba6-b5e1-b1b28879c0d1"><con:settings/><con:config xsi:type="con:PropertyTransfersStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" ignoreEmpty="false" transferToAll="false" entitize="false" transferChildNodes="false"><con:name>correlationUid</con:name><con:sourceType>Response</con:sourceType><con:sourceStep>EnableDebugging</con:sourceStep><con:sourcePath>declare namespace ns2='http://www.alliander.com/schemas/osgp/smartmetering/sm-management/2014/10';
+declare namespace ns4='http://www.alliander.com/schemas/osgp/common/2014/10';
+declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
+
+//SOAP-ENV:Body/ns2:EnableDebuggingAsyncResponse/ns4:CorrelationUid
+
+</con:sourcePath><con:targetType>CorrelationUid</con:targetType><con:targetStep>#TestCase#</con:targetStep><con:upgraded>true</con:upgraded></con:transfers></con:config></con:testStep><con:testStep type="delay" name="Delay" id="b2569767-37a8-408b-841a-f95cfcf649f8"><con:settings/><con:config><delay>3000</delay></con:config></con:testStep><con:testStep type="request" name="GetEnableDebuggingResponse" id="91ca830b-7441-494f-819a-a4e1965a85a3"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>SmartMeteringManagementPortSoap11</con:interface><con:operation>GetEnableDebuggingResponse</con:operation><con:request name="GetEnableDebuggingResponse" id="e354f6c0-bac0-4a97-a11a-69622def44e2" sslKeystore="test-org.pfx"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://${#TestCase#ServiceEndpoint}/osgp-adapter-ws-smartmetering/smartMetering/managementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/smartmetering/sm-management/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:EnableDebuggingAsyncRequest>
+         <ns:DeviceIdentification>${=testCase.getPropertyValue( "DeviceIdentification" )}</ns:DeviceIdentification>
+         <ns:CorrelationUid>${=testCase.getPropertyValue( "CorrelationUid" )}</ns:CorrelationUid>
+      </ns1:EnableDebuggingAsyncRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response" id="02e0e4e4-3bd5-41ea-932c-fddb8f2e1b0d"/><con:assertion type="Schema Compliance" id="1e28e13d-38d1-47bc-be2c-f32d2b7f4276"><con:configuration/></con:assertion><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="DisableDebugging" id="8c536fe2-8d47-4463-a717-d4888f4f8004"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>SmartMeteringManagementPortSoap11</con:interface><con:operation>DisableDebugging</con:operation><con:request name="DisableDebugging" id="c408268a-f5c4-4ddd-b218-5be259354778" sslKeystore="test-org.pfx"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://${#TestCase#ServiceEndpoint}/osgp-adapter-ws-smartmetering/smartMetering/managementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/smartmetering/sm-management/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:DisableDebuggingRequest>
+         <ns1:DeviceIdentification>${=testCase.getPropertyValue( "DeviceIdentification" )}</ns1:DeviceIdentification>
+      </ns1:DisableDebuggingRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response" id="b73bd372-a1bb-4d0e-8802-eb195db69fab"/><con:assertion type="Schema Compliance" id="9ad8d02b-c258-4734-af5d-a5ac3baddd9a"><con:configuration/></con:assertion><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="transfer" name="DisableDebugging correlationUid" id="8c8f999b-2399-497f-8247-fef04ee977f2"><con:settings/><con:config xsi:type="con:PropertyTransfersStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" ignoreEmpty="false" transferToAll="false" entitize="false" transferChildNodes="false"><con:name>correlationUid</con:name><con:sourceType>Response</con:sourceType><con:sourceStep>DisableDebugging</con:sourceStep><con:sourcePath>declare namespace ns2='http://www.alliander.com/schemas/osgp/smartmetering/sm-management/2014/10';
+declare namespace ns4='http://www.alliander.com/schemas/osgp/common/2014/10';
+declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
+
+//SOAP-ENV:Body/ns2:DisableDebuggingAsyncResponse/ns4:CorrelationUid
+</con:sourcePath><con:targetType>CorrelationUid</con:targetType><con:targetStep>#TestCase#</con:targetStep><con:upgraded>true</con:upgraded></con:transfers></con:config></con:testStep><con:testStep type="delay" name="Delay 2" id="7a1286c5-47c2-414d-8b3e-89af4cd38bdb"><con:settings/><con:config><delay>3000</delay></con:config></con:testStep><con:testStep type="request" name="GetDisableDebuggingResponse" id="ad5643ac-1171-44ea-8cd3-b2d0af024277"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>SmartMeteringManagementPortSoap11</con:interface><con:operation>GetDisableDebuggingResponse</con:operation><con:request name="GetDisableDebuggingResponse" id="8f682c66-a503-4dfd-9729-fa4a9e89fd4e" sslKeystore="test-org.pfx"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://${#TestCase#ServiceEndpoint}/osgp-adapter-ws-smartmetering/smartMetering/managementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/smartmetering/sm-management/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>${=testCase.getPropertyValue( "OrganisationIdentification" )}</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:DisableDebuggingAsyncRequest>
+         <ns:DeviceIdentification>${=testCase.getPropertyValue( "DeviceIdentification" )}</ns:DeviceIdentification>
+         <ns:CorrelationUid>${=testCase.getPropertyValue( "CorrelationUid" )}</ns:CorrelationUid>
+      </ns1:DisableDebuggingAsyncRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response" id="381f72b9-a622-4e39-9e22-7aaa31a957e5"/><con:assertion type="Schema Compliance" id="77a5769a-f884-4b79-a2ba-dacbfc7395f1"><con:configuration/></con:assertion><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties><con:property><con:name>DeviceIdentification</con:name><con:value>TEST1024000000001</con:value></con:property><con:property><con:name>OrganisationIdentification</con:name><con:value>test-org</con:value></con:property><con:property><con:name>CorrelationUid</con:name><con:value>Infostroom|||TEST1024000000001|||20161110150134995</con:value></con:property><con:property><con:name>ServiceEndpoint</con:name><con:value>osgp-tst.cloudapp.net:62443</con:value></con:property></con:properties></con:testCase><con:testCase id="9399cf41-eb7a-4893-9f58-2b9a4905f72f" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="19 Retrieve events from the meter" searchProperties="true"><con:settings/><con:testStep type="request" id="fb666a60-d2a6-4025-9393-f34fa671426f" name="FindEvents - STANDARD_EVENT"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>SmartMeteringManagementPortSoap11</con:interface><con:operation>FindEvents</con:operation><con:request name="FindEvents - STANDARD_EVENT" outgoingWss="" incomingWss="" timeout="" sslKeystore="test-org.pfx" useWsAddressing="false" useWsReliableMessaging="false" id="5bae800e-35ec-47a1-a676-0dbc06838acb"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://${#TestCase#ServiceEndpoint}/osgp-adapter-ws-smartmetering/smartMetering/managementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/smartmetering/sm-management/2014/10">
    <soapenv:Header>
       <ns:ApplicationName>SoapUI</ns:ApplicationName>
       <ns:UserName>testuser</ns:UserName>
@@ -13273,4 +13543,11 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
          <ns1:DeviceIdentification>${=testCase.getPropertyValue( "DeviceIdentification" )}</ns1:DeviceIdentification>\r
       </ns1:DeactivateDeviceRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response" id="6bb03bc1-0513-4444-9c1e-a4eb677a676a" name="SOAP Response"/><con:assertion type="Schema Compliance" id="cd46adb8-7f6e-4729-b69c-273515732c14" name="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion" id="5d42d3fd-127b-4afd-8706-f3c3f0ddef3a" name="Not SOAP Fault"/><con:credentials><con:username xsi:nil="true"/><con:password xsi:nil="true"/><con:domain xsi:nil="true"/><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/admin/devicemanagement-v1.0/DeviceManagementPort/DeactivateDeviceRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties><con:property><con:name>DeviceIdentification</con:name><con:value>TEST1024000000001</con:value></con:property><con:property><con:name>ServiceEndpoint</con:name><con:value>localhost:443</con:value></con:property></con:properties></con:testCase><con:properties/></con:testSuite><con:properties><con:property><con:name>DeviceIdentification</con:name><con:value>G00XX561204926013</con:value></con:property><con:property><con:name>DeviceIdentification</con:name><con:value>E0026000059790216</con:value></con:property><con:property><con:name>OrganisationIdentification</con:name><con:value>test-org</con:value></con:property></con:properties><con:wssContainer><con:crypto><con:source>/home/dev/Sources/SmartSocietyServices/Configuration/certificates/flexovlca/certs/test-org.pfx</con:source><con:password>Lcmanager02</con:password><con:type>KEYSTORE</con:type></con:crypto></con:wssContainer><con:oAuth2ProfileContainer/><con:sensitiveInformation><ProjectSpecificExposureList>null###null</ProjectSpecificExposureList></con:sensitiveInformation></con:soapui-project>
+</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response" id="6bb03bc1-0513-4444-9c1e-a4eb677a676a" name="SOAP Response"/><con:assertion type="Schema Compliance" id="cd46adb8-7f6e-4729-b69c-273515732c14" name="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion" id="5d42d3fd-127b-4afd-8706-f3c3f0ddef3a" name="Not SOAP Fault"/><con:credentials><con:username xsi:nil="true"/><con:password xsi:nil="true"/><con:domain xsi:nil="true"/><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/admin/devicemanagement-v1.0/DeviceManagementPort/DeactivateDeviceRequest"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep>
+<con:properties>
+  <con:property><con:name>DeviceIdentification</con:name><con:value>TEST1024000000001</con:value></con:property>
+  <con:property><con:name>ServiceEndpoint</con:name><con:value>localhost:443</con:value></con:property>
+</con:properties></con:testCase></con:testSuite>
+<con:properties>
+  <con:property><con:name>CertBasePath</con:name><con:value>/home/dev/Sources/OSGP/Integration-Tests/cucumber-tests-platform/certificates</con:value></con:property>
+</con:properties><con:wssContainer><con:crypto><con:source>${#Project#CertBasePath}/test-org.pfx</con:source><con:password>1234</con:password><con:type>KEYSTORE</con:type></con:crypto></con:wssContainer><con:oAuth2ProfileContainer/><con:sensitiveInformation><ProjectSpecificExposureList>null###null</ProjectSpecificExposureList></con:sensitiveInformation></con:soapui-project>

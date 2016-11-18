@@ -8,6 +8,7 @@
 package com.alliander.osgp.platform.dlms.cucumber.steps.database.device;
 
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getBoolean;
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getDate;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getLong;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 
@@ -50,8 +51,8 @@ public class DlmsDeviceBuilder implements DeviceBuilder {
 
     private String dlmsDeviceId = null;
     private String securityKeyType = null;
-    private final Date validFrom = null;
-    private final Date validTo = null;
+    private Date validFrom = null;
+    private Date validTo = null;
     private String securityKey = null;
 
     DlmsDeviceBuilder(final Map<String, String> inputSettings) {
@@ -152,27 +153,27 @@ public class DlmsDeviceBuilder implements DeviceBuilder {
     }
 
     public DeviceBuilder setDlmsDeviceId() {
-        this.dlmsDeviceId = this.inputSettings.get("DlmsDeviceId");
+        this.dlmsDeviceId = this.inputSettings.get(Keys.KEY_DLMS_DEVICE_ID);
         return this;
     }
 
     public DeviceBuilder setSecurityKeyType() {
-        this.securityKeyType = getString(this.inputSettings, "SecurityKeyType", this.securityKeyType);
+        this.securityKeyType = getString(this.inputSettings, Keys.KEY_SECURITY_KEY_TYPE_A, this.securityKeyType);
         return this;
     }
 
     public DeviceBuilder setValidFrom() {
-        // this.validFrom = getDateTime("")
+        this.validFrom = getDate(this.inputSettings, Keys.KEY_VALID_FROM).toDate();
         return this;
     }
 
     public DeviceBuilder setValidTo() {
-        // this.validTo = getDateTime();
+        this.validTo = getDate(this.inputSettings, Keys.KEY_VALID_TO).toDate();
         return this;
     }
 
     public DeviceBuilder setSecurityKey() {
-        this.securityKey = getString(this.inputSettings, "SecurityKey", this.securityKey);
+        this.securityKey = getString(this.inputSettings, Keys.KEY_SECURITY_KEY_A, this.securityKey);
         return this;
     }
 
@@ -193,7 +194,6 @@ public class DlmsDeviceBuilder implements DeviceBuilder {
         dlmsDevice.setPort(this.port);
         dlmsDevice.setClientId(this.clientId);
         dlmsDevice.setLogicalId(this.logicalId);
-        dlmsDevice.setInDebugMode(this.inDebugMode);
         dlmsDevice.setInDebugMode(this.inDebugMode);
         this.buildSecurityKey();
         return dlmsDevice;
