@@ -31,7 +31,7 @@ public class DlmsDeviceBuilder implements DeviceBuilder {
     private final Map<String, String> inputSettings;
 
     private String deviceId = null;
-    private Long version;
+    private Long version = Defaults.DEFAULT_VERSION;
     private String iccId = null;
     private String communicationProvider = null;
     private String communicationMethod = null;
@@ -56,6 +56,7 @@ public class DlmsDeviceBuilder implements DeviceBuilder {
     private String securityKey = null;
 
     DlmsDeviceBuilder(final Map<String, String> inputSettings) {
+        // Remove the parameter and class instance of inputSettings.
         this.inputSettings = inputSettings;
     }
 
@@ -66,8 +67,9 @@ public class DlmsDeviceBuilder implements DeviceBuilder {
         return this;
     }
 
-    public DeviceBuilder setVersion() {
-        this.version = getLong(this.inputSettings, Keys.KEY_VERSION, Defaults.DEFAULT_VERSION);
+    public DeviceBuilder setVersion(final Long version) {
+        // Pass a parameter to each setter like any normal builder pattern does.
+        this.version = version;
         return this;
     }
 
@@ -104,8 +106,7 @@ public class DlmsDeviceBuilder implements DeviceBuilder {
     }
 
     public DeviceBuilder setChallengeLength() {
-        this.challengeLength = getLong(this.inputSettings, Keys.KEY_CHALLENGE_LENGTH,
-                Defaults.DEFAULT_CHALLENGE_LENGTH);
+        this.challengeLength = getLong(this.inputSettings, Keys.KEY_CHALLENGE_LENGTH, Defaults.DEFAULT_CHALLENGE_LENGTH);
         return this;
     }
 
@@ -177,10 +178,16 @@ public class DlmsDeviceBuilder implements DeviceBuilder {
         return this;
     }
 
-    public DlmsDevice buildDlmsDevice() {
+    public DlmsDevice buildDlmsDevice(final Map<String, String> inputSettings) {
         final DlmsDevice dlmsDevice = new DlmsDevice();
         dlmsDevice.setDeviceIdentification(this.deviceId);
-        dlmsDevice.setVersion(this.version);
+
+        // Put the inputSettings parsing logic in only this one method.
+        if (inputSettings.containsKey(Keys.KEY_VERSION)) {
+            // Type casting can be done directly.
+            dlmsDevice.setVersion(Long.parseLong(inputSettings.get(Keys.KEY_VERSION)));
+        }
+
         dlmsDevice.setIccId(this.iccId);
         dlmsDevice.setCommunicationProvider(this.communicationProvider);
         dlmsDevice.setCommunicationMethod(this.communicationMethod);
