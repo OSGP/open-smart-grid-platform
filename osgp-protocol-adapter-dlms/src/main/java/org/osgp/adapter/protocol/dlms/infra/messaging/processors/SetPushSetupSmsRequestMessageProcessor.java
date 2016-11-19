@@ -39,6 +39,8 @@ public class SetPushSetupSmsRequestMessageProcessor extends DeviceRequestMessage
     protected Serializable handleMessage(final DlmsConnectionHolder conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
 
+        this.assertRequestObjectType(PushSetupSmsDto.class, requestObject);
+
         final PushSetupSmsDto pushSetupSms = (PushSetupSmsDto) requestObject;
         this.configurationService.setPushSetupSms(conn, device, pushSetupSms);
         return null;

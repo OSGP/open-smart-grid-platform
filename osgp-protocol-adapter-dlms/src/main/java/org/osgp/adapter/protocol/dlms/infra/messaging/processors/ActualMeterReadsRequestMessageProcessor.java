@@ -36,6 +36,8 @@ public class ActualMeterReadsRequestMessageProcessor extends DeviceRequestMessag
     protected Serializable handleMessage(final DlmsConnectionHolder conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
 
+        this.assertRequestObjectType(ActualMeterReadsQueryDto.class, requestObject);
+
         final ActualMeterReadsQueryDto actualMeterReadsRequest = (ActualMeterReadsQueryDto) requestObject;
         return this.monitoringService.requestActualMeterReads(conn, device, actualMeterReadsRequest);
     }

@@ -36,6 +36,8 @@ public class ReadAlarmRegisterRequestMessageProcessor extends DeviceRequestMessa
     protected Serializable handleMessage(final DlmsConnectionHolder conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
 
+        this.assertRequestObjectType(ReadAlarmRegisterRequestDto.class, requestObject);
+
         final ReadAlarmRegisterRequestDto readAlarmRegisterRequest = (ReadAlarmRegisterRequestDto) requestObject;
         return this.monitoringService.requestReadAlarmRegister(conn, device, readAlarmRegisterRequest);
     }

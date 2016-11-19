@@ -39,6 +39,8 @@ public class PeriodicMeterReadsRequestMessageProcessor extends DeviceRequestMess
     protected Serializable handleMessage(final DlmsConnectionHolder conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
 
+        this.assertRequestObjectType(PeriodicMeterReadsRequestDto.class, requestObject);
+
         final PeriodicMeterReadsRequestDto periodicMeterReadsQuery = (PeriodicMeterReadsRequestDto) requestObject;
 
         return this.monitoringService.requestPeriodicMeterReads(conn, device, periodicMeterReadsQuery);

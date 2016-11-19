@@ -35,6 +35,9 @@ public class ReplaceKeysRequestMessageProcessor extends DeviceRequestMessageProc
     @Override
     protected Serializable handleMessage(final DlmsConnectionHolder conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
+
+        this.assertRequestObjectType(SetKeysRequestDto.class, requestObject);
+
         final SetKeysRequestDto keySet = (SetKeysRequestDto) requestObject;
         this.configurationService.replaceKeys(conn, device, keySet);
 

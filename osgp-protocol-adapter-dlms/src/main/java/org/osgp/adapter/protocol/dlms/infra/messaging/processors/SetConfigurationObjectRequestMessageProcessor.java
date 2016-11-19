@@ -39,6 +39,8 @@ public class SetConfigurationObjectRequestMessageProcessor extends DeviceRequest
     @Override
     protected Serializable handleMessage(final DlmsConnectionHolder conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
+        this.assertRequestObjectType(SetConfigurationObjectRequestDto.class, requestObject);
+
         final SetConfigurationObjectRequestDto setConfigurationObjectRequest = (SetConfigurationObjectRequestDto) requestObject;
 
         this.configurationService.requestSetConfiguration(conn, device, setConfigurationObjectRequest);
