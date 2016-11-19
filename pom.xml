@@ -8,89 +8,89 @@
         http://www.apache.org/licenses/LICENSE-2.0
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>protocol-adapter-oslp</artifactId>
-    <groupId>com.alliander.osgp</groupId>
-    <version>4.4.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
-    <!-- Description, Organization, Licenses, URL and Distribution Management elements are needed for the maven-jxr-plugin to generate a maven site -->
-    <description>Protocol Adapter for OSLP smart devices.</description>
-    <organization>
-        <name>OSGP</name>
-        <url>http://opensmartgridplatform.org</url>
-    </organization>
-    <licenses>
-        <license>
-            <name>APACHE 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
-        </license>
-    </licenses>
-    <!-- URL is passed in as a maven argument: -Dmaven.site.url=http://my/url/for/the/site -->
-    <url>${maven.site.url}</url>
-    <distributionManagement>
-	    <repository>
-	      <uniqueVersion>false</uniqueVersion>
-	      <id>smartsociety-releases</id>
-	      <name>Smart Society Release Repo</name>
-	      <url>http://buildserver01.cloudapp.net:8081/nexus/content/repositories/smartsociety-releases/</url>
-	      <layout>default</layout>
-	    </repository>
-	    <snapshotRepository>
-	      <uniqueVersion>false</uniqueVersion>
-	      <id>smartsociety-snapshots</id>
-	      <name>Smart Society Development Repo</name>
-	      <url>http://buildserver01.cloudapp.net:8081/nexus/content/repositories/smartsociety-snapshots/</url>
-		<layout>default</layout>
-	    </snapshotRepository>
-        <site>
-            <id>pa-oslp</id>
-            <name>pa-oslp</name>
-            <!-- URL is passed in as a maven argument: -Dmaven.site.distributionManagement.site.url=file:////the/path/to/deploy/the/site/to -->
-            <url>${maven.site.distributionManagement.site.url}</url>
-        </site>
-    </distributionManagement>
+  <artifactId>protocol-adapter-oslp</artifactId>
+  <groupId>com.alliander.osgp</groupId>
+  <version>4.4.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <!-- Description, Organization, Licenses, URL and Distribution Management elements are needed for the maven-jxr-plugin to generate a maven site -->
+  <description>Protocol Adapter for OSLP smart devices.</description>
+  <organization>
+    <name>OSGP</name>
+    <url>http://opensmartgridplatform.org</url>
+  </organization>
+  <licenses>
+    <license>
+      <name>APACHE 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+    </license>
+  </licenses>
+  <!-- URL is passed in as a maven argument: -Dmaven.site.url=http://my/url/for/the/site -->
+  <url>${maven.site.url}</url>
+  <distributionManagement>
+    <repository>
+    <uniqueVersion>false</uniqueVersion>
+    <id>smartsociety-releases</id>
+    <name>Smart Society Release Repo</name>
+    <url>http://buildserver01.cloudapp.net:8081/nexus/content/repositories/smartsociety-releases/</url>
+    <layout>default</layout>
+    </repository>
+    <snapshotRepository>
+    <uniqueVersion>false</uniqueVersion>
+    <id>smartsociety-snapshots</id>
+    <name>Smart Society Development Repo</name>
+    <url>http://buildserver01.cloudapp.net:8081/nexus/content/repositories/smartsociety-snapshots/</url>
+  <layout>default</layout>
+    </snapshotRepository>
+    <site>
+      <id>pa-oslp</id>
+      <name>pa-oslp</name>
+      <!-- URL is passed in as a maven argument: -Dmaven.site.distributionManagement.site.url=file:////the/path/to/deploy/the/site/to -->
+      <url>${maven.site.distributionManagement.site.url}</url>
+    </site>
+  </distributionManagement>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>external.atlassian.jgitflow</groupId>
+        <artifactId>jgitflow-maven-plugin</artifactId>
+        <version>1.0-m5.1</version>
+        <configuration>
+          <pushFeatures>true</pushFeatures>
+          <pushHotfixes>true</pushHotfixes>
+          <pushReleases>true</pushReleases>
+          <enableSshAgent>true</enableSshAgent>
+          <flowInitContext>
+            <masterBranchName>master</masterBranchName>
+            <developBranchName>development</developBranchName>
+            <featureBranchPrefix>feature-</featureBranchPrefix>
+            <releaseBranchPrefix>release-</releaseBranchPrefix>
+            <hotfixBranchPrefix>hotfix-</hotfixBranchPrefix>
+            <versionTagPrefix>${project.artifactId}-</versionTagPrefix>
+          </flowInitContext>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
-	<build>
-	<plugins>
-	    <plugin>
-		<groupId>external.atlassian.jgitflow</groupId>
-		<artifactId>jgitflow-maven-plugin</artifactId>
-		<version>1.0-m5.1</version>
-		<configuration>
-		    <pushFeatures>true</pushFeatures>
-		    <pushHotfixes>true</pushHotfixes>
-		    <pushReleases>true</pushReleases>
-		    <enableSshAgent>true</enableSshAgent>
-		    <flowInitContext>
-			<masterBranchName>master</masterBranchName>
-			<developBranchName>development</developBranchName>
-			<featureBranchPrefix>feature-</featureBranchPrefix>
-			<releaseBranchPrefix>release-</releaseBranchPrefix>
-			<hotfixBranchPrefix>hotfix-</hotfixBranchPrefix>
-			<versionTagPrefix>${project.artifactId}-</versionTagPrefix>
-		    </flowInitContext>
-		</configuration>
-	    </plugin>
-	</plugins>
-	</build>
+  <modules>
+    <!-- Shared Libs -->
+    <module>parent-pa-oslp</module>
+    <module>oslp</module>
+    <module>Shared/shared</module>
+    <module>Shared/osgp-dto</module>
 
-    <modules>
-        <!-- Shared Libs -->
-        <module>parent-pa-oslp</module>
-        <module>oslp</module>
-        <module>Shared/shared</module>
-        <module>Shared/osgp-dto</module>
+    <!-- Webapp, Dev-Sim for Protocol Adapter OSLP -->
+    <module>web-device-simulator</module>
 
-        <!-- Webapp, Dev-Sim for Protocol Adapter OSLP -->
-        <module>web-device-simulator</module>
-
-        <!-- Protocol Adapter OSLP -->        
-        <module>osgp-core-db-api</module>
-        <module>osgp-adapter-protocol-oslp</module>
-        <module>osgp-adapter-protocol-oslp-elster</module>
-    	<module>signing-server</module>
+    <!-- Protocol Adapter OSLP -->
+    <module>osgp-core-db-api</module>
+    <module>osgp-adapter-protocol-oslp</module>
+    <module>osgp-adapter-protocol-oslp-elster</module>
+    <module>signing-server</module>
   </modules>
 </project>

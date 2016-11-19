@@ -26,8 +26,8 @@ import com.alliander.osgp.dto.valueobjects.LinkTypeDto;
 import com.alliander.osgp.dto.valueobjects.LongTermIntervalTypeDto;
 import com.alliander.osgp.dto.valueobjects.MeterTypeDto;
 import com.alliander.osgp.dto.valueobjects.RelayConfigurationDto;
-import com.alliander.osgp.dto.valueobjects.RelayMatrixDto;
 import com.alliander.osgp.dto.valueobjects.RelayMapDto;
+import com.alliander.osgp.dto.valueobjects.RelayMatrixDto;
 import com.alliander.osgp.oslp.Oslp;
 import com.google.protobuf.ByteString;
 
