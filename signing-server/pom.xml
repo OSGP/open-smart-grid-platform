@@ -93,13 +93,13 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-tx</artifactId>
     </dependency>
-    
+
     <!-- Spring Web -->
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-web</artifactId>
     </dependency>
-    
+
     <!-- Spring WS -->
     <dependency>
       <groupId>org.springframework.ws</groupId>
@@ -109,7 +109,7 @@
       <groupId>org.springframework.ws</groupId>
       <artifactId>spring-ws-support</artifactId>
     </dependency>
-    
+
     <!-- Spring JMS -->
     <dependency>
       <groupId>org.springframework</groupId>

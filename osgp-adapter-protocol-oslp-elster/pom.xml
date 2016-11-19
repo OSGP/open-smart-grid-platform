@@ -149,7 +149,7 @@
     </dependency>
 
     <!-- Logging -->
-     <dependency>
+    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
@@ -183,8 +183,8 @@
 
     <!-- Orika (mapping framework) -->
     <dependency>
-       <groupId>ma.glasnost.orika</groupId>
-       <artifactId>orika-core</artifactId>
+      <groupId>ma.glasnost.orika</groupId>
+      <artifactId>orika-core</artifactId>
     </dependency>
 
     <!-- Netty -->

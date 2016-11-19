@@ -87,7 +87,7 @@
     <!-- Webapp, Dev-Sim for Protocol Adapter OSLP -->
     <module>web-device-simulator</module>
 
-    <!-- Protocol Adapter OSLP -->        
+    <!-- Protocol Adapter OSLP -->
     <module>osgp-core-db-api</module>
     <module>osgp-adapter-protocol-oslp</module>
     <module>osgp-adapter-protocol-oslp-elster</module>
