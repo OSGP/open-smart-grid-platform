@@ -272,7 +272,7 @@
         <artifactId>HikariCP</artifactId>
         <version>${hikaricp.version}</version>
       </dependency>
-    
+
       <!-- Hibernate -->
       <dependency>
         <groupId>org.hibernate</groupId>
@@ -424,7 +424,7 @@
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
         <version>${logback.version}</version>
-      </dependency>     
+      </dependency>
       <dependency>
         <groupId>org.logback-extensions</groupId>
         <artifactId>logback-ext-spring</artifactId>
