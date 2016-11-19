@@ -149,7 +149,7 @@
     </dependency>
 
     <!-- Logging -->
-     <dependency>
+    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
@@ -193,8 +193,8 @@
       <artifactId>netty</artifactId>
     </dependency>
 
-    <!--  Apache ActiveMQ -->
-    <dependency> 
+    <!-- Apache ActiveMQ -->
+    <dependency>
       <groupId>org.apache.activemq</groupId>
       <artifactId>activemq-client</artifactId>
     </dependency>

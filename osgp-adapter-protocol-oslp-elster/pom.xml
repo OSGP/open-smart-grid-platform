@@ -156,7 +156,7 @@
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>org.logback-extensions</groupId>
       <artifactId>logback-ext-spring</artifactId>
@@ -193,8 +193,8 @@
       <artifactId>netty</artifactId>
     </dependency>
 
-    <!--  Apache ActiveMQ -->  
-    <dependency> 
+    <!-- Apache ActiveMQ -->
+    <dependency>
       <groupId>org.apache.activemq</groupId>
       <artifactId>activemq-client</artifactId>
     </dependency>
