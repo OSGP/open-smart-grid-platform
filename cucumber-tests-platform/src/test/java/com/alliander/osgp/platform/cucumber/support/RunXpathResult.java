@@ -28,6 +28,7 @@ import javax.xml.xpath.XPathFactory;
 
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -36,7 +37,7 @@ import org.xml.sax.SAXException;
 public class RunXpathResult {
 
     public XpathResult runXPathExpression(final String xml, final String path) throws ParserConfigurationException,
-    SAXException, IOException, XPathExpressionException {
+            SAXException, IOException, XPathExpressionException {
 
         final Document doc = this.getDocument(xml);
         final XPath xpath = this.getXpath();
@@ -59,7 +60,7 @@ public class RunXpathResult {
     }
 
     public NodeList getNodeList(final String xml, final String path) throws ParserConfigurationException, SAXException,
-    IOException, XPathExpressionException {
+            IOException, XPathExpressionException {
         final Document doc = this.getDocument(xml);
         final XPath xpath = this.getXpath();
         final XPathExpression expr = xpath.compile(path);
@@ -88,27 +89,37 @@ public class RunXpathResult {
         assertEquals("Expected number of nodes does not match.", expectedNodes, list.getLength());
 
         for (int i = 0; i < list.getLength(); i++) {
-            final Matcher responseMatcher = responsePattern.matcher(list.item(i).getNodeValue());
+            final Node node = list.item(i);
+            /**
+             * Originally, node.getNodeValue() was used (and apparantly worked)
+             * but than it apeared that this value may null, whereas
+             * getFirstChild().getNodeValue() contains the correct value, hence
+             * this if-else below.
+             */
+            final String nodeValue = node.getNodeValue() == null ? node.getFirstChild().getNodeValue() : node
+                    .getNodeValue();
+            final Matcher responseMatcher = responsePattern.matcher(nodeValue);
             assertTrue(responseMatcher.find());
         }
     }
 
     /**
      * Verifies that the XPath is not null or empty
+     *
      * @param xml
      * @param nodeXPath
      * @throws Throwable
      */
-	public void assertNotNull(String xml, String nodeXPath) throws Throwable {
-		final XpathResult xpathResult = this.runXPathExpression(xml, nodeXPath);
+    public void assertNotNull(final String xml, final String nodeXPath) throws Throwable {
+        final XpathResult xpathResult = this.runXPathExpression(xml, nodeXPath);
         final XPathExpression expr = xpathResult.getXpathExpression();
-        
+
         assertTrue(expr.evaluate(xpathResult.getDocument()) != null);
-	}
-	
-	public String getValue(String xml, String nodeXPath) throws Throwable {
-		final XpathResult xpathResult = this.runXPathExpression(xml, nodeXPath);
+    }
+
+    public String getValue(final String xml, final String nodeXPath) throws Throwable {
+        final XpathResult xpathResult = this.runXPathExpression(xml, nodeXPath);
         final XPathExpression expr = xpathResult.getXpathExpression();
         return expr.evaluate(xpathResult.getDocument());
-	}
+    }
 }
