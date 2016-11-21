@@ -8,10 +8,7 @@
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands;
 
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.openmuc.openiec61850.Fc;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
@@ -25,16 +22,13 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Qual
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
 
-public class Iec61850LoadTotalEnergyCommand implements RtuReadCommand<MeasurementDto> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850LoadTotalEnergyCommand.class);
-    private static final String NODE = "MMTR";
+public class Iec61850TemperatureCommand implements RtuReadCommand<MeasurementDto> {
 
     private final LogicalNode logicalNode;
     private final int index;
 
-    public Iec61850LoadTotalEnergyCommand(final int index) {
-        this.logicalNode = LogicalNode.fromString(NODE + index);
+    public Iec61850TemperatureCommand(final int index) {
+        this.logicalNode = LogicalNode.fromString("TTMP" + index);
         this.index = index;
     }
 
@@ -42,27 +36,16 @@ public class Iec61850LoadTotalEnergyCommand implements RtuReadCommand<Measuremen
     public MeasurementDto execute(final Iec61850Client client, final DeviceConnection connection,
             final LogicalDevice logicalDevice) throws NodeReadException {
         final NodeContainer containingNode = connection.getFcModelNode(logicalDevice, this.logicalNode,
-                DataAttribute.TOTAL_ENERGY, Fc.ST);
+                DataAttribute.TEMPERATURE, Fc.MX);
         client.readNodeDataValues(connection.getConnection().getClientAssociation(), containingNode.getFcmodelNode());
         return this.translate(containingNode);
     }
 
     @Override
     public MeasurementDto translate(final NodeContainer containingNode) {
-        // Load total energy is implemented different on both RTUs
-        // (one uses Int64, the other Int32)
-        // As a workaround first try to read the value as Integer
-        // If that fails read the value as Long
-        long value = 0;
-        try {
-            value = containingNode.getInteger(SubDataAttribute.ACTUAL_VALUE).getValue();
-        } catch (final ClassCastException e) {
-            LOGGER.info("Reading integer value resulted in class cast exception, trying to read long value", e);
-            value = containingNode.getLong(SubDataAttribute.ACTUAL_VALUE).getValue();
-        }
-
-        return new MeasurementDto(this.index, DataAttribute.TOTAL_ENERGY.getDescription(),
-                QualityConverter.toShort(containingNode.getQuality(SubDataAttribute.QUALITY).getValue()), new DateTime(
-                        containingNode.getDate(SubDataAttribute.TIME), DateTimeZone.UTC), value);
+        return new MeasurementDto(this.index, DataAttribute.TEMPERATURE.getDescription(),
+                QualityConverter.toShort(containingNode.getQuality(SubDataAttribute.QUALITY).getValue()),
+                new DateTime(), containingNode.getChild(SubDataAttribute.MAGNITUDE_INSTANTANEOUS)
+                        .getFloat(SubDataAttribute.FLOAT).getFloat());
     }
 }
