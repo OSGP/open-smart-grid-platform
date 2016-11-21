@@ -10,6 +10,7 @@ package com.alliander.osgp.platform.dlms.cucumber.steps.database.device;
 import java.util.Map;
 
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 
 import com.alliander.osgp.platform.dlms.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.dlms.cucumber.steps.Keys;
@@ -35,6 +36,13 @@ public class DlmsDeviceBuilder implements Builder<DlmsDevice> {
     private String deviceIdentification;
 
     private String organisationId = "test-org";
+
+    private SecurityKeyBuilder authenticationSecurityKeyBuilder = new SecurityKeyBuilder()
+            .setSecurityKeyType(SecurityKeyType.E_METER_AUTHENTICATION);
+    private SecurityKeyBuilder encryptionSecurityKeyBuilder = new SecurityKeyBuilder()
+            .setSecurityKeyType(SecurityKeyType.E_METER_ENCRYPTION);
+    private SecurityKeyBuilder masterSecurityKeyBuilder = new SecurityKeyBuilder()
+            .setSecurityKeyType(SecurityKeyType.E_METER_MASTER);
 
     public DlmsDeviceBuilder setDeviceIdentification(final String deviceIdentification) {
         this.deviceIdentification = deviceIdentification;
@@ -126,6 +134,42 @@ public class DlmsDeviceBuilder implements Builder<DlmsDevice> {
         return this;
     }
 
+    /**
+     * Retrieve the SecurityKeyBuilder in order to manipulate its values. A
+     * SecurityKey can not be set directly because there is a circular
+     * dependency with the DlmsDevice. This dependency is resolved in the
+     * {@link #build()} method of this class.
+     *
+     * @return Security key builder for authentication key.
+     */
+    public SecurityKeyBuilder getAuthenticationSecurityKeyBuilder() {
+        return this.authenticationSecurityKeyBuilder;
+    }
+
+    /**
+     * Retrieve the SecurityKeyBuilder in order to manipulate its values. A
+     * SecurityKey can not be set directly because there is a circular
+     * dependency with the DlmsDevice. This dependency is resolved in the
+     * {@link #build()} method of this class.
+     *
+     * @return Security key builder for encryption key.
+     */
+    public SecurityKeyBuilder getEncryptionSecurityKeyBuilder() {
+        return this.encryptionSecurityKeyBuilder;
+    }
+
+    /**
+     * Retrieve the SecurityKeyBuilder in order to manipulate its values. A
+     * SecurityKey can not be set directly because there is a circular
+     * dependency with the DlmsDevice. This dependency is resolved in the
+     * {@link #build()} method of this class.
+     *
+     * @return Security key builder for master key.
+     */
+    public SecurityKeyBuilder getMasterSecurityKeyBuilder() {
+        return this.masterSecurityKeyBuilder;
+    }
+
     public DlmsDeviceBuilder buildDlmsDevice(final Map<String, String> inputSettings) {
         if (inputSettings.containsKey(Keys.KEY_DEVICE_IDENTIFICATION)) {
             this.setDeviceIdentification((inputSettings.get(Keys.KEY_DEVICE_IDENTIFICATION)));
@@ -199,6 +243,16 @@ public class DlmsDeviceBuilder implements Builder<DlmsDevice> {
         dlmsDevice.setClientId(this.clientId);
         dlmsDevice.setLogicalId(this.logicalId);
         dlmsDevice.setInDebugMode(this.inDebugMode);
+
+        /**
+         * It is not ideal that the build() method for security keys is called
+         * here, but necessary because the security key needs the dlmsDevice in
+         * order to be created. This seems to be the only way to work aroud this
+         * circular dependency.
+         */
+        dlmsDevice.addSecurityKey(this.authenticationSecurityKeyBuilder.build());
+        dlmsDevice.addSecurityKey(this.encryptionSecurityKeyBuilder.build());
+        dlmsDevice.addSecurityKey(this.masterSecurityKeyBuilder.build());
 
         return dlmsDevice;
     }

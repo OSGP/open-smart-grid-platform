@@ -32,17 +32,16 @@ public class Keys {
     // Default keys security_key
     public static final String KEY_DLMS_DEVICE_ID = "DlmsDeviceId";
     public static final String KEY_SECURITY_KEY_TYPE[] = new String[] { "EMeterEncryption", "EMeterMaster,",
-            "EMeterAuthentication" };
+    "EMeterAuthentication" };
     public static final SecurityKeyType E_METER_SECURITY_KEYTYPES[] = new SecurityKeyType[] {
-            SecurityKeyType.E_METER_ENCRYPTION, SecurityKeyType.E_METER_MASTER,
-            SecurityKeyType.E_METER_AUTHENTICATION };
+        SecurityKeyType.E_METER_ENCRYPTION, SecurityKeyType.E_METER_MASTER, SecurityKeyType.E_METER_AUTHENTICATION };
     public static final String KEY_SECURITY_KEY_TYPE_M = "SecurityKeyType";
     public static final String KEY_SECURITY_KEY_TYPE_A = "SecurityKeyType";
     public static final String KEY_SECURITY_KEY_TYPE_E = "SecurityKeyType";
-    public static final String KEY_VALID_FROM = "ValidFrom";
-    public static final String KEY_VALID_TO = "ValidTo";
+    public static final String KEY_VALID_FROM = null;
+    public static final String KEY_VALID_TO = null;
     public static final String KEY_SECURITY_KEY[] = new String[] { "SecurityEncryption", "SecurityKeyAuthentication",
-            "SecurityKeyEncryption" };
+    "SecurityKeyEncryption" };
     public static final String KEY_SECURITY_KEY_M = "SecurityKey";
     public static final String KEY_SECURITY_KEY_A = "SecurityKey";
     public static final String KEY_SECURITY_KEY_E = "SecurityKey";

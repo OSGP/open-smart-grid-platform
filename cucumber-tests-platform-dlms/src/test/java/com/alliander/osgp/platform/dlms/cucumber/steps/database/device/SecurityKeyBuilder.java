@@ -49,6 +49,11 @@ public class SecurityKeyBuilder implements Builder<SecurityKey> {
         return this;
     }
 
+    public SecurityKeyBuilder setKey(final String key) {
+        this.key = key;
+        return this;
+    }
+
     public SecurityKeyBuilder setDlmsDevice(final DlmsDevice dlmsDevice) {
         this.dlmsDevice = dlmsDevice;
         return this;
