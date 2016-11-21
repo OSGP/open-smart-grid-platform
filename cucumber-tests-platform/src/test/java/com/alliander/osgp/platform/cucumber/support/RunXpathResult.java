@@ -37,7 +37,7 @@ import org.xml.sax.SAXException;
 public class RunXpathResult {
 
     public XpathResult runXPathExpression(final String xml, final String path) throws ParserConfigurationException,
-    SAXException, IOException, XPathExpressionException {
+            SAXException, IOException, XPathExpressionException {
 
         final Document doc = this.getDocument(xml);
         final XPath xpath = this.getXpath();
@@ -60,7 +60,7 @@ public class RunXpathResult {
     }
 
     public NodeList getNodeList(final String xml, final String path) throws ParserConfigurationException, SAXException,
-    IOException, XPathExpressionException {
+            IOException, XPathExpressionException {
         final Document doc = this.getDocument(xml);
         final XPath xpath = this.getXpath();
         final XPathExpression expr = xpath.compile(path);
@@ -90,6 +90,12 @@ public class RunXpathResult {
 
         for (int i = 0; i < list.getLength(); i++) {
             final Node node = list.item(i);
+            /**
+             * Originally, node.getNodeValue() was used (and apparantly worked)
+             * but than it apeared that this value may null, whereas
+             * getFirstChild().getNodeValue() contains the correct value, hence
+             * this if-else below.
+             */
             final String nodeValue = node.getNodeValue() == null ? node.getFirstChild().getNodeValue() : node
                     .getNodeValue();
             final Matcher responseMatcher = responsePattern.matcher(nodeValue);
