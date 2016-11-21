@@ -56,6 +56,7 @@ public class Iec61850SystemServiceFactory {
                 this.systemServices.put("ENGINE" + i, new Iec61850EngineSystemService(i));
             }
             this.systemServices.put("LOAD1", new Iec61850LoadSystemService(1));
+            this.systemServices.put("CHP1", new Iec61850ChpSystemService(1));
         }
         return this.systemServices;
     }

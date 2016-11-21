@@ -225,7 +225,23 @@ public enum DataAttribute {
     /**
      * Absolute time schedule entries
      */
-    SCHEDULE_ABS_TIME("SchdAbsTm");
+    SCHEDULE_ABS_TIME("SchdAbsTm"),
+    /**
+     * Absolute time schedule entries
+     */
+    TEMPERATURE("TmpSv"),
+    /**
+     * Absolute time schedule entries
+     */
+    MATERIAL_STATUS("MatStat"),
+    /**
+     * Absolute time schedule entries
+     */
+    MATERIAL_TYPE("MatTyp"),
+    /**
+     * Absolute time schedule entries
+     */
+    MATERIAL_FLOW("FlwRte");
 
     private String description;
 
