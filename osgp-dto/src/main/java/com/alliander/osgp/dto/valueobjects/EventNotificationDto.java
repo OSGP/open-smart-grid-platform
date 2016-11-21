@@ -54,7 +54,6 @@ public class EventNotificationDto implements Serializable {
                 this.deviceUid, this.dateTime, this.eventType, this.index, this.description);
     }
 
-    // TODO: remove this one?
     public String getDeviceUid() {
         return this.deviceUid;
     }
