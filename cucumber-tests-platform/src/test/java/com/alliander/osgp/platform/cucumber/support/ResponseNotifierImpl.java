@@ -32,10 +32,10 @@ public class ResponseNotifierImpl implements ResponseNotifier {
     @Value("${osgpadapterwssmartmeteringdbs.url}")
     private String jdbcUrl;
 
-    @Value("${dbs.username}")
+    @Value("${db.username}")
     private String username;
 
-    @Value("${dbs.password}")
+    @Value("${db.password}")
     private String password;
 
     @Override
