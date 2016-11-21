@@ -225,7 +225,10 @@ public enum DataAttribute {
     /**
      * Absolute time schedule entries
      */
-    SCHEDULE_ABS_TIME("SchdAbsTm");
+    SCHEDULE_ABS_TIME("SchdAbsTm"),
+
+    TEMP("TmpSv"),
+    VLMCAP("VlmCap");
 
     private String description;
 

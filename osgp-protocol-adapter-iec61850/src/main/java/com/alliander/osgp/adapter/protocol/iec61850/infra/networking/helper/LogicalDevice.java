@@ -54,7 +54,9 @@ public enum LogicalDevice {
     /**
      * Logical Device Load 1
      */
-    LOAD_ONE("LOAD1");
+    LOAD_ONE("LOAD1"),
+
+    HEAT_BUFFER_ONE("HEAT_BUFFER1");
 
     private String description;
 
