@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.platform.dlms.cucumber.steps;
 
+import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
+
 public class Keys {
 
     // Defaults keys dlms_device
@@ -29,11 +31,18 @@ public class Keys {
 
     // Default keys security_key
     public static final String KEY_DLMS_DEVICE_ID = "DlmsDeviceId";
+    public static final String KEY_SECURITY_KEY_TYPE[] = new String[] { "EMeterEncryption", "EMeterMaster,",
+            "EMeterAuthentication" };
+    public static final SecurityKeyType E_METER_SECURITY_KEYTYPES[] = new SecurityKeyType[] {
+            SecurityKeyType.E_METER_ENCRYPTION, SecurityKeyType.E_METER_MASTER,
+            SecurityKeyType.E_METER_AUTHENTICATION };
     public static final String KEY_SECURITY_KEY_TYPE_M = "SecurityKeyType";
     public static final String KEY_SECURITY_KEY_TYPE_A = "SecurityKeyType";
     public static final String KEY_SECURITY_KEY_TYPE_E = "SecurityKeyType";
     public static final String KEY_VALID_FROM = "ValidFrom";
     public static final String KEY_VALID_TO = "ValidTo";
+    public static final String KEY_SECURITY_KEY[] = new String[] { "SecurityEncryption", "SecurityKeyAuthentication",
+            "SecurityKeyEncryption" };
     public static final String KEY_SECURITY_KEY_M = "SecurityKey";
     public static final String KEY_SECURITY_KEY_A = "SecurityKey";
     public static final String KEY_SECURITY_KEY_E = "SecurityKey";

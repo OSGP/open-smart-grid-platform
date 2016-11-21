@@ -7,33 +7,28 @@
  */
 package com.alliander.osgp.platform.dlms.cucumber.steps.database.device;
 
-import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
-
 import java.util.Map;
 
 import com.alliander.osgp.domain.core.entities.Device;
-import com.alliander.osgp.platform.dlms.cucumber.steps.Defaults;
-import com.alliander.osgp.platform.dlms.cucumber.steps.Keys;
 
 public class CoreDeviceBuilder implements DeviceBuilder {
 
     private final Map<String, String> inputSettings;
 
-    private String deviceId = null;
+    private final String deviceId = null;
 
     CoreDeviceBuilder(final Map<String, String> inputSettings) {
         this.inputSettings = inputSettings;
     }
 
-    @Override
-    public DeviceBuilder setDeviceId() {
-        this.deviceId = getString(this.inputSettings, Keys.KEY_DEVICE_IDENTIFICATION,
-                Defaults.DEFAULT_DEVICE_IDENTIFICATION);
-        return this;
-    }
-
     public Device buildCoreDevice() {
         final Device coreDevice = new Device();
         return coreDevice;
+    }
+
+    @Override
+    public DlmsDeviceBuilder setDeviceId(final String deviceId) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

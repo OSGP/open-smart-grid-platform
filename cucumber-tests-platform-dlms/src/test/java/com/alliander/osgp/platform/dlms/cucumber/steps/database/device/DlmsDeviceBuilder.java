@@ -7,214 +7,178 @@
  */
 package com.alliander.osgp.platform.dlms.cucumber.steps.database.device;
 
-import static com.alliander.osgp.platform.cucumber.core.Helpers.getBoolean;
-import static com.alliander.osgp.platform.cucumber.core.Helpers.getDate;
-import static com.alliander.osgp.platform.cucumber.core.Helpers.getLong;
-import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
-
-import java.util.Date;
 import java.util.Map;
 
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
-import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsSecurityKeyRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.platform.dlms.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.dlms.cucumber.steps.Keys;
 
-public class DlmsDeviceBuilder implements DeviceBuilder {
+public class DlmsDeviceBuilder {
 
-    @Autowired
-    private DlmsSecurityKeyRepository securityKeyRepository;
-
-    private final Map<String, String> inputSettings;
-
-    private String deviceId = null;
+    private String deviceId = Defaults.DEFAULT_DEVICE_IDENTIFICATION;
     private Long version = Defaults.DEFAULT_VERSION;
-    private String iccId = null;
-    private String communicationProvider = null;
-    private String communicationMethod = null;
-    private boolean hls3active;
-    private boolean hls4active;
-    private boolean hls5active;
-    private Long challengeLength = null;
-    private boolean withListSupported;
-    private boolean selectiveAccessSupported;
-    private boolean ipAddressIsStatic;
-    private Long port;
-    private Long clientId = null;
-    private Long logicalId;
-    private boolean inDebugMode;
+    private String iccId = Defaults.DEFAULT_ICC_ID;
+    private String communicationProvider = Defaults.DEFAULT_COMMUNICATION_PROVIDER;
+    private String communicationMethod = Defaults.DEFAULT_COMMUNICATION_METHOD;
+    private boolean hls3active = Defaults.DEFAULT_HLS3ACTIVE;
+    private boolean hls4active = Defaults.DEFAULT_HLS4ACTIVE;
+    private boolean hls5active = Defaults.DEFAULT_HLS5ACTIVE;
+    private Long challengeLength = Defaults.DEFAULT_CHALLENGE_LENGTH;
+    private boolean withListSupported = Defaults.DEFAULT_WITH_LIST_SUPPORTED;
+    private boolean selectiveAccessSupported = Defaults.DEFAULT_SELECTIVE_ACCESS_SUPPORTED;
+    private boolean ipAddressIsStatic = Defaults.DEFAULT_IP_ADDRESS_IS_STATIC;
+    private Long port = Defaults.DEFAULT_PORT;
+    private Long clientId = Defaults.DEFAULT_CLIENT_ID;
+    private Long logicalId = Defaults.DEFAULT_LOGICAL_ID;
+    private boolean inDebugMode = Defaults.DEFAULT_IN_DEBUG_MODE;
 
     private String organisationId = "test-org";
+    private SecurityKeyBuilder securityKeyBuilder;
 
-    private String dlmsDeviceId = null;
-    private String securityKeyType = null;
-    private Date validFrom = null;
-    private Date validTo = null;
-    private String securityKey = null;
-
-    DlmsDeviceBuilder(final Map<String, String> inputSettings) {
-        // Remove the parameter and class instance of inputSettings.
-        this.inputSettings = inputSettings;
-    }
-
-    @Override
-    public DlmsDeviceBuilder setDeviceId() {
-        this.deviceId = getString(this.inputSettings, Keys.KEY_DEVICE_IDENTIFICATION,
-                Defaults.DEFAULT_DEVICE_IDENTIFICATION);
+    public DlmsDeviceBuilder setDeviceId(final String deviceId) {
+        this.deviceId = deviceId;
         return this;
     }
 
-    public DeviceBuilder setVersion(final Long version) {
-        // Pass a parameter to each setter like any normal builder pattern does.
+    public DlmsDeviceBuilder setVersion(final Long version) {
         this.version = version;
         return this;
     }
 
-    public DeviceBuilder setIccId() {
-        this.iccId = getString(this.inputSettings, Keys.KEY_ICC_ID, Defaults.DEFAULT_ICC_ID);
+    public DlmsDeviceBuilder setIccId(final String iccId) {
+        this.iccId = iccId;
         return this;
     }
 
-    public DeviceBuilder setCommunicationProvider() {
-        this.communicationProvider = getString(this.inputSettings, Keys.KEY_COMMUNICATION_PROVIDER,
-                Defaults.DEFAULT_COMMUNICATION_PROVIDER);
+    public DlmsDeviceBuilder setCommunicationProvider(final String communicationProvider) {
+        this.communicationProvider = communicationProvider;
         return this;
     }
 
-    public DeviceBuilder setCommunicationMethod() {
-        this.communicationMethod = getString(this.inputSettings, Keys.KEY_COMMUNICATION_METHOD,
-                Defaults.DEFAULT_COMMUNICATION_METHOD);
+    public DlmsDeviceBuilder setCommunicationMethod(final String communicationMethod) {
+        this.communicationMethod = communicationMethod;
         return this;
     }
 
-    public DeviceBuilder setHls3active() {
-        this.hls3active = getBoolean(this.inputSettings, Keys.KEY_HLS3ACTIVE, Defaults.DEFAULT_HLS3ACTIVE);
+    public DlmsDeviceBuilder setHls3active(final boolean hls3active) {
+        this.hls3active = hls3active;
         return this;
     }
 
-    public DeviceBuilder setHls4active() {
-        this.hls4active = getBoolean(this.inputSettings, Keys.KEY_HLS4ACTIVE, Defaults.DEFAULT_HLS4ACTIVE);
+    public DlmsDeviceBuilder setHls4active(final boolean hls4active) {
+        this.hls4active = hls4active;
         return this;
     }
 
-    public DeviceBuilder setHls5active() {
-        this.hls5active = getBoolean(this.inputSettings, Keys.KEY_HLS5ACTIVE, Defaults.DEFAULT_HLS5ACTIVE);
+    public DlmsDeviceBuilder setHls5active(final boolean hls5active) {
+        this.hls5active = hls5active;
         return this;
     }
 
-    public DeviceBuilder setChallengeLength() {
-        this.challengeLength = getLong(this.inputSettings, Keys.KEY_CHALLENGE_LENGTH, Defaults.DEFAULT_CHALLENGE_LENGTH);
+    public DlmsDeviceBuilder setChallengeLength(final Long challengeLength) {
+        this.challengeLength = challengeLength;
         return this;
     }
 
-    public DeviceBuilder setWithListSupported() {
-        this.withListSupported = getBoolean(this.inputSettings, Keys.KEY_WITH_LIST_SUPPORTED,
-                Defaults.DEFAULT_WITH_LIST_SUPPORTED);
+    public DlmsDeviceBuilder setWithListSupported(final boolean withListSupported) {
+        this.withListSupported = withListSupported;
         return this;
     }
 
-    public DeviceBuilder setSelectiveAccessSupported() {
-        this.selectiveAccessSupported = getBoolean(this.inputSettings, Keys.KEY_SELECTIVE_ACCESS_SUPPORTED,
-                Defaults.DEFAULT_SELECTIVE_ACCESS_SUPPORTED);
+    public DlmsDeviceBuilder setSelectiveAccessSupported(final boolean selectiveAccessSupported) {
+        this.selectiveAccessSupported = selectiveAccessSupported;
         return this;
     }
 
-    public DeviceBuilder setIpAddressIsStatic() {
-        this.ipAddressIsStatic = getBoolean(this.inputSettings, Keys.KEY_IP_ADDRESS_IS_STATIC,
-                Defaults.DEFAULT_IP_ADDRESS_IS_STATIC);
+    public DlmsDeviceBuilder setIpAddressIsStatic(final boolean ipAddressIsStatic) {
+        this.ipAddressIsStatic = ipAddressIsStatic;
         return this;
     }
 
-    public DeviceBuilder setPort() {
-        this.port = getLong(this.inputSettings, Keys.KEY_PORT, Defaults.DEFAULT_PORT);
+    public DlmsDeviceBuilder setPort(final Long port) {
+        this.port = port;
         return this;
     }
 
-    public DeviceBuilder setClientId() {
-        this.clientId = getLong(this.inputSettings, Keys.KEY_CLIENT_ID, Defaults.DEFAULT_CLIENT_ID);
+    public DlmsDeviceBuilder setClientId(final Long clientId) {
+        this.clientId = clientId;
         return this;
     }
 
-    public DeviceBuilder setLogicalId() {
-        this.logicalId = getLong(this.inputSettings, Keys.KEY_LOGICAL_ID, Defaults.DEFAULT_LOGICAL_ID);
+    public DlmsDeviceBuilder setLogicalId(final Long logicalId) {
+        this.logicalId = logicalId;
         return this;
     }
 
-    public DeviceBuilder setInDebugMode() {
-        this.inDebugMode = getBoolean(this.inputSettings, Keys.KEY_IN_DEBUG_MODE, Defaults.DEFAULT_IN_DEBUG_MODE);
+    public DlmsDeviceBuilder setInDebugMode(final boolean inDebugMode) {
+        this.inDebugMode = inDebugMode;
         return this;
     }
 
-    public DeviceBuilder setOrganisationId() {
-        this.organisationId = getString(this.inputSettings, "OrganisationId", this.organisationId);
+    public DlmsDeviceBuilder setOrganisationId(final String organisationId) {
+        this.organisationId = organisationId;
         return this;
     }
 
-    public DeviceBuilder setDlmsDeviceId() {
-        this.dlmsDeviceId = this.inputSettings.get(Keys.KEY_DLMS_DEVICE_ID);
-        return this;
-    }
-
-    public DeviceBuilder setSecurityKeyType() {
-        this.securityKeyType = getString(this.inputSettings, Keys.KEY_SECURITY_KEY_TYPE_A, this.securityKeyType);
-        return this;
-    }
-
-    public DeviceBuilder setValidFrom() {
-        this.validFrom = getDate(this.inputSettings, Keys.KEY_VALID_FROM).toDate();
-        return this;
-    }
-
-    public DeviceBuilder setValidTo() {
-        this.validTo = getDate(this.inputSettings, Keys.KEY_VALID_TO).toDate();
-        return this;
-    }
-
-    public DeviceBuilder setSecurityKey() {
-        this.securityKey = getString(this.inputSettings, Keys.KEY_SECURITY_KEY_A, this.securityKey);
+    public DlmsDeviceBuilder setSecurityKey(final SecurityKeyBuilder securityKeyBuilder) {
+        this.securityKeyBuilder = securityKeyBuilder;
         return this;
     }
 
     public DlmsDevice buildDlmsDevice(final Map<String, String> inputSettings) {
         final DlmsDevice dlmsDevice = new DlmsDevice();
-        dlmsDevice.setDeviceIdentification(this.deviceId);
-
-        // Put the inputSettings parsing logic in only this one method.
+        if (inputSettings.containsKey(Keys.KEY_DEVICE_IDENTIFICATION)) {
+            dlmsDevice.setDeviceIdentification((inputSettings.get(Keys.KEY_DEVICE_IDENTIFICATION)));
+        }
         if (inputSettings.containsKey(Keys.KEY_VERSION)) {
-            // Type casting can be done directly.
             dlmsDevice.setVersion(Long.parseLong(inputSettings.get(Keys.KEY_VERSION)));
         }
+        if (inputSettings.containsKey(Keys.KEY_ICC_ID)) {
+            dlmsDevice.setIccId((inputSettings.get(Keys.KEY_ICC_ID)));
+        }
+        if (inputSettings.containsKey(Keys.KEY_COMMUNICATION_PROVIDER)) {
+            dlmsDevice.setCommunicationProvider((inputSettings.get(Keys.KEY_COMMUNICATION_PROVIDER)));
+        }
+        if (inputSettings.containsKey(Keys.KEY_COMMUNICATION_METHOD)) {
+            dlmsDevice.setCommunicationMethod((inputSettings.get(Keys.KEY_COMMUNICATION_METHOD)));
+        }
+        if (inputSettings.containsKey(Keys.KEY_HLS3ACTIVE)) {
+            dlmsDevice.setHls3Active(Boolean.parseBoolean(inputSettings.get(Keys.KEY_HLS3ACTIVE)));
+        }
+        if (inputSettings.containsKey(Keys.KEY_HLS4ACTIVE)) {
+            dlmsDevice.setHls4Active(Boolean.parseBoolean(inputSettings.get(Keys.KEY_HLS4ACTIVE)));
+        }
+        if (inputSettings.containsKey(Keys.KEY_HLS5ACTIVE)) {
+            dlmsDevice.setHls5Active(Boolean.parseBoolean(inputSettings.get(Keys.KEY_HLS5ACTIVE)));
+        }
+        if (inputSettings.containsKey(Keys.KEY_CHALLENGE_LENGTH)) {
+            dlmsDevice.setChallengeLength(Integer.parseInt(inputSettings.get(Keys.KEY_CHALLENGE_LENGTH)));
+        }
+        if (inputSettings.containsKey(Keys.KEY_WITH_LIST_SUPPORTED)) {
+            dlmsDevice.setWithListSupported(Boolean.parseBoolean(inputSettings.get(Keys.KEY_WITH_LIST_SUPPORTED)));
+        }
+        if (inputSettings.containsKey(Keys.KEY_SELECTIVE_ACCESS_SUPPORTED)) {
+            dlmsDevice.setSelectiveAccessSupported(
+                    Boolean.parseBoolean(inputSettings.get(Keys.KEY_SELECTIVE_ACCESS_SUPPORTED)));
+        }
+        if (inputSettings.containsKey(Keys.KEY_IP_ADDRESS_IS_STATIC)) {
+            dlmsDevice.setIpAddressIsStatic(Boolean.parseBoolean(inputSettings.get(Keys.KEY_IP_ADDRESS_IS_STATIC)));
+        }
+        if (inputSettings.containsKey(Keys.KEY_PORT)) {
+            dlmsDevice.setPort(Long.parseLong(inputSettings.get(Keys.KEY_PORT)));
+        }
+        if (inputSettings.containsKey(Keys.KEY_CLIENT_ID)) {
+            dlmsDevice.setClientId(Long.parseLong(inputSettings.get(Keys.KEY_CLIENT_ID)));
+        }
+        if (inputSettings.containsKey(Keys.KEY_LOGICAL_ID)) {
+            dlmsDevice.setLogicalId(Long.parseLong(inputSettings.get(Keys.KEY_LOGICAL_ID)));
+        }
+        if (inputSettings.containsKey(Keys.KEY_IN_DEBUG_MODE)) {
+            dlmsDevice.setInDebugMode(Boolean.parseBoolean(inputSettings.get(Keys.KEY_IN_DEBUG_MODE)));
+        }
 
-        dlmsDevice.setIccId(this.iccId);
-        dlmsDevice.setCommunicationProvider(this.communicationProvider);
-        dlmsDevice.setCommunicationMethod(this.communicationMethod);
-        dlmsDevice.setHls3Active(this.hls3active);
-        dlmsDevice.setHls4Active(this.hls4active);
-        dlmsDevice.setHls5Active(this.hls5active);
-        dlmsDevice.setChallengeLength(this.challengeLength.intValue()); // getInt??
-        dlmsDevice.setWithListSupported(this.withListSupported);
-        dlmsDevice.setSelectiveAccessSupported(this.selectiveAccessSupported);
-        dlmsDevice.setIpAddressIsStatic(this.ipAddressIsStatic);
-        dlmsDevice.setPort(this.port);
-        dlmsDevice.setClientId(this.clientId);
-        dlmsDevice.setLogicalId(this.logicalId);
-        dlmsDevice.setInDebugMode(this.inDebugMode);
-        this.buildSecurityKey();
         return dlmsDevice;
     }
 
-    public void buildSecurityKey() {
-        final SecurityKey securityKey = new SecurityKey();
-        final DlmsDevice dlmsDevice = new DlmsDevice();
-        dlmsDevice.setDeviceIdentification(this.deviceId);
-        securityKey.setVersion(this.version);
-        securityKey.setValidFrom(this.validFrom);
-        securityKey.setValidTo(this.validTo);
-        securityKey.getSecurityKeyType();
-
-        // this.securityKeyRepository.save();
-    }
 }

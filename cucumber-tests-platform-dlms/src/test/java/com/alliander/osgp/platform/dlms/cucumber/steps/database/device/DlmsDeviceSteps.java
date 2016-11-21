@@ -10,7 +10,9 @@ package com.alliander.osgp.platform.dlms.cucumber.steps.database.device;
 import java.util.Map;
 
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
+import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsSecurityKeyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.domain.core.entities.Device;
@@ -22,14 +24,23 @@ public abstract class DlmsDeviceSteps {
     private DlmsDeviceRepository dlmsDeviceRepository;
 
     @Autowired
+    private DlmsSecurityKeyRepository securityKeyRepository;
+
+    @Autowired
     private DeviceRepository coreDeviceRepository;
 
     DlmsDevice dlmsDevice = null;
+    SecurityKey securityKey = null;
     Device coreDevice = null;
 
     public void createDlmsDevice(final Map<String, String> inputSettings) {
-        final DlmsDeviceBuilder dlmsBuilder = new DlmsDeviceBuilder(inputSettings);
-        this.dlmsDevice = dlmsBuilder.buildDlmsDevice(inputSettings);
+        // this.securityKey = new
+        // SecurityKeyBuilder().buildSecurityKey(inputSettings);
+        // this.securityKeyRepository.save(this.securityKey);
+
+        this.dlmsDevice = new DlmsDeviceBuilder()
+                .setSecurityKeyBuilder(new SecurityKeyBuilder().buildSecurityKey(inputSettings))
+                .buildDlmsDevice(inputSettings);
         this.dlmsDeviceRepository.save(this.dlmsDevice);
 
         final CoreDeviceBuilder coreBuilder = new CoreDeviceBuilder(inputSettings);
