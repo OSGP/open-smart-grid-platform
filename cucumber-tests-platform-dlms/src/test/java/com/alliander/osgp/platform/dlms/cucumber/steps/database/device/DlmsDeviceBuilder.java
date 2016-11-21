@@ -38,11 +38,11 @@ public class DlmsDeviceBuilder implements Builder<DlmsDevice> {
     private String organisationId = "test-org";
 
     private SecurityKeyBuilder authenticationSecurityKeyBuilder = new SecurityKeyBuilder()
-            .setSecurityKeyType(SecurityKeyType.E_METER_AUTHENTICATION);
+    .setSecurityKeyType(SecurityKeyType.E_METER_AUTHENTICATION);
     private SecurityKeyBuilder encryptionSecurityKeyBuilder = new SecurityKeyBuilder()
-            .setSecurityKeyType(SecurityKeyType.E_METER_ENCRYPTION);
+    .setSecurityKeyType(SecurityKeyType.E_METER_ENCRYPTION);
     private SecurityKeyBuilder masterSecurityKeyBuilder = new SecurityKeyBuilder()
-            .setSecurityKeyType(SecurityKeyType.E_METER_MASTER);
+    .setSecurityKeyType(SecurityKeyType.E_METER_MASTER);
 
     public DlmsDeviceBuilder setDeviceIdentification(final String deviceIdentification) {
         this.deviceIdentification = deviceIdentification;
@@ -250,9 +250,9 @@ public class DlmsDeviceBuilder implements Builder<DlmsDevice> {
          * order to be created. This seems to be the only way to work aroud this
          * circular dependency.
          */
-        dlmsDevice.addSecurityKey(this.authenticationSecurityKeyBuilder.build());
-        dlmsDevice.addSecurityKey(this.encryptionSecurityKeyBuilder.build());
-        dlmsDevice.addSecurityKey(this.masterSecurityKeyBuilder.build());
+        dlmsDevice.addSecurityKey(this.authenticationSecurityKeyBuilder.setDlmsDevice(dlmsDevice).build());
+        dlmsDevice.addSecurityKey(this.encryptionSecurityKeyBuilder.setDlmsDevice(dlmsDevice).build());
+        dlmsDevice.addSecurityKey(this.masterSecurityKeyBuilder.setDlmsDevice(dlmsDevice).build());
 
         return dlmsDevice;
     }
