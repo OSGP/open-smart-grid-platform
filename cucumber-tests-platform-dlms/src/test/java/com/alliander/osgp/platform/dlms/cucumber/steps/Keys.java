@@ -38,8 +38,8 @@ public class Keys {
     public static final String KEY_SECURITY_KEY_TYPE_M = "SecurityKeyType";
     public static final String KEY_SECURITY_KEY_TYPE_A = "SecurityKeyType";
     public static final String KEY_SECURITY_KEY_TYPE_E = "SecurityKeyType";
-    public static final String KEY_VALID_FROM = null;
-    public static final String KEY_VALID_TO = null;
+    public static final String KEY_VALID_FROM = "ValidFrom";
+    public static final String KEY_VALID_TO = "ValidTo";
     public static final String KEY_SECURITY_KEY[] = new String[] { "SecurityEncryption", "SecurityKeyAuthentication",
     "SecurityKeyEncryption" };
     public static final String KEY_SECURITY_KEY_M = "SecurityKey";
