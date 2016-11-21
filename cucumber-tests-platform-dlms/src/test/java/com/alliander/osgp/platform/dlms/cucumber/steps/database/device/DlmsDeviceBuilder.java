@@ -14,7 +14,7 @@ import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import com.alliander.osgp.platform.dlms.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.dlms.cucumber.steps.Keys;
 
-public class DlmsDeviceBuilder {
+public class DlmsDeviceBuilder implements Builder<DlmsDevice> {
 
     private String deviceId = Defaults.DEFAULT_DEVICE_IDENTIFICATION;
     private Long version = Defaults.DEFAULT_VERSION;
@@ -32,9 +32,14 @@ public class DlmsDeviceBuilder {
     private Long clientId = Defaults.DEFAULT_CLIENT_ID;
     private Long logicalId = Defaults.DEFAULT_LOGICAL_ID;
     private boolean inDebugMode = Defaults.DEFAULT_IN_DEBUG_MODE;
+    private String deviceIdentification;
 
     private String organisationId = "test-org";
-    private SecurityKeyBuilder securityKeyBuilder;
+
+    public DlmsDeviceBuilder setDeviceIdentification(final String deviceIdentification) {
+        this.deviceIdentification = deviceIdentification;
+        return this;
+    }
 
     public DlmsDeviceBuilder setDeviceId(final String deviceId) {
         this.deviceId = deviceId;
@@ -61,17 +66,17 @@ public class DlmsDeviceBuilder {
         return this;
     }
 
-    public DlmsDeviceBuilder setHls3active(final boolean hls3active) {
+    public DlmsDeviceBuilder setHls3Active(final boolean hls3active) {
         this.hls3active = hls3active;
         return this;
     }
 
-    public DlmsDeviceBuilder setHls4active(final boolean hls4active) {
+    public DlmsDeviceBuilder setHls4Active(final boolean hls4active) {
         this.hls4active = hls4active;
         return this;
     }
 
-    public DlmsDeviceBuilder setHls5active(final boolean hls5active) {
+    public DlmsDeviceBuilder setHls5Active(final boolean hls5active) {
         this.hls5active = hls5active;
         return this;
     }
@@ -121,64 +126,80 @@ public class DlmsDeviceBuilder {
         return this;
     }
 
-    public DlmsDeviceBuilder setSecurityKey(final SecurityKeyBuilder securityKeyBuilder) {
-        this.securityKeyBuilder = securityKeyBuilder;
+    public DlmsDeviceBuilder buildDlmsDevice(final Map<String, String> inputSettings) {
+        if (inputSettings.containsKey(Keys.KEY_DEVICE_IDENTIFICATION)) {
+            this.setDeviceIdentification((inputSettings.get(Keys.KEY_DEVICE_IDENTIFICATION)));
+        }
+        if (inputSettings.containsKey(Keys.KEY_VERSION)) {
+            this.setVersion(Long.parseLong(inputSettings.get(Keys.KEY_VERSION)));
+        }
+        if (inputSettings.containsKey(Keys.KEY_ICC_ID)) {
+            this.setIccId((inputSettings.get(Keys.KEY_ICC_ID)));
+        }
+        if (inputSettings.containsKey(Keys.KEY_COMMUNICATION_PROVIDER)) {
+            this.setCommunicationProvider((inputSettings.get(Keys.KEY_COMMUNICATION_PROVIDER)));
+        }
+        if (inputSettings.containsKey(Keys.KEY_COMMUNICATION_METHOD)) {
+            this.setCommunicationMethod((inputSettings.get(Keys.KEY_COMMUNICATION_METHOD)));
+        }
+        if (inputSettings.containsKey(Keys.KEY_HLS3ACTIVE)) {
+            this.setHls3Active(Boolean.parseBoolean(inputSettings.get(Keys.KEY_HLS3ACTIVE)));
+        }
+        if (inputSettings.containsKey(Keys.KEY_HLS4ACTIVE)) {
+            this.setHls4Active(Boolean.parseBoolean(inputSettings.get(Keys.KEY_HLS4ACTIVE)));
+        }
+        if (inputSettings.containsKey(Keys.KEY_HLS5ACTIVE)) {
+            this.setHls5Active(Boolean.parseBoolean(inputSettings.get(Keys.KEY_HLS5ACTIVE)));
+        }
+        if (inputSettings.containsKey(Keys.KEY_CHALLENGE_LENGTH)) {
+            this.setChallengeLength(Long.parseLong(inputSettings.get(Keys.KEY_CHALLENGE_LENGTH)));
+        }
+        if (inputSettings.containsKey(Keys.KEY_WITH_LIST_SUPPORTED)) {
+            this.setWithListSupported(Boolean.parseBoolean(inputSettings.get(Keys.KEY_WITH_LIST_SUPPORTED)));
+        }
+        if (inputSettings.containsKey(Keys.KEY_SELECTIVE_ACCESS_SUPPORTED)) {
+            this.setSelectiveAccessSupported(Boolean.parseBoolean(inputSettings
+                    .get(Keys.KEY_SELECTIVE_ACCESS_SUPPORTED)));
+        }
+        if (inputSettings.containsKey(Keys.KEY_IP_ADDRESS_IS_STATIC)) {
+            this.setIpAddressIsStatic(Boolean.parseBoolean(inputSettings.get(Keys.KEY_IP_ADDRESS_IS_STATIC)));
+        }
+        if (inputSettings.containsKey(Keys.KEY_PORT)) {
+            this.setPort(Long.parseLong(inputSettings.get(Keys.KEY_PORT)));
+        }
+        if (inputSettings.containsKey(Keys.KEY_CLIENT_ID)) {
+            this.setClientId(Long.parseLong(inputSettings.get(Keys.KEY_CLIENT_ID)));
+        }
+        if (inputSettings.containsKey(Keys.KEY_LOGICAL_ID)) {
+            this.setLogicalId(Long.parseLong(inputSettings.get(Keys.KEY_LOGICAL_ID)));
+        }
+        if (inputSettings.containsKey(Keys.KEY_IN_DEBUG_MODE)) {
+            this.setInDebugMode(Boolean.parseBoolean(inputSettings.get(Keys.KEY_IN_DEBUG_MODE)));
+        }
+
         return this;
     }
 
-    public DlmsDevice buildDlmsDevice(final Map<String, String> inputSettings) {
+    @Override
+    public DlmsDevice build() {
         final DlmsDevice dlmsDevice = new DlmsDevice();
-        if (inputSettings.containsKey(Keys.KEY_DEVICE_IDENTIFICATION)) {
-            dlmsDevice.setDeviceIdentification((inputSettings.get(Keys.KEY_DEVICE_IDENTIFICATION)));
-        }
-        if (inputSettings.containsKey(Keys.KEY_VERSION)) {
-            dlmsDevice.setVersion(Long.parseLong(inputSettings.get(Keys.KEY_VERSION)));
-        }
-        if (inputSettings.containsKey(Keys.KEY_ICC_ID)) {
-            dlmsDevice.setIccId((inputSettings.get(Keys.KEY_ICC_ID)));
-        }
-        if (inputSettings.containsKey(Keys.KEY_COMMUNICATION_PROVIDER)) {
-            dlmsDevice.setCommunicationProvider((inputSettings.get(Keys.KEY_COMMUNICATION_PROVIDER)));
-        }
-        if (inputSettings.containsKey(Keys.KEY_COMMUNICATION_METHOD)) {
-            dlmsDevice.setCommunicationMethod((inputSettings.get(Keys.KEY_COMMUNICATION_METHOD)));
-        }
-        if (inputSettings.containsKey(Keys.KEY_HLS3ACTIVE)) {
-            dlmsDevice.setHls3Active(Boolean.parseBoolean(inputSettings.get(Keys.KEY_HLS3ACTIVE)));
-        }
-        if (inputSettings.containsKey(Keys.KEY_HLS4ACTIVE)) {
-            dlmsDevice.setHls4Active(Boolean.parseBoolean(inputSettings.get(Keys.KEY_HLS4ACTIVE)));
-        }
-        if (inputSettings.containsKey(Keys.KEY_HLS5ACTIVE)) {
-            dlmsDevice.setHls5Active(Boolean.parseBoolean(inputSettings.get(Keys.KEY_HLS5ACTIVE)));
-        }
-        if (inputSettings.containsKey(Keys.KEY_CHALLENGE_LENGTH)) {
-            dlmsDevice.setChallengeLength(Integer.parseInt(inputSettings.get(Keys.KEY_CHALLENGE_LENGTH)));
-        }
-        if (inputSettings.containsKey(Keys.KEY_WITH_LIST_SUPPORTED)) {
-            dlmsDevice.setWithListSupported(Boolean.parseBoolean(inputSettings.get(Keys.KEY_WITH_LIST_SUPPORTED)));
-        }
-        if (inputSettings.containsKey(Keys.KEY_SELECTIVE_ACCESS_SUPPORTED)) {
-            dlmsDevice.setSelectiveAccessSupported(
-                    Boolean.parseBoolean(inputSettings.get(Keys.KEY_SELECTIVE_ACCESS_SUPPORTED)));
-        }
-        if (inputSettings.containsKey(Keys.KEY_IP_ADDRESS_IS_STATIC)) {
-            dlmsDevice.setIpAddressIsStatic(Boolean.parseBoolean(inputSettings.get(Keys.KEY_IP_ADDRESS_IS_STATIC)));
-        }
-        if (inputSettings.containsKey(Keys.KEY_PORT)) {
-            dlmsDevice.setPort(Long.parseLong(inputSettings.get(Keys.KEY_PORT)));
-        }
-        if (inputSettings.containsKey(Keys.KEY_CLIENT_ID)) {
-            dlmsDevice.setClientId(Long.parseLong(inputSettings.get(Keys.KEY_CLIENT_ID)));
-        }
-        if (inputSettings.containsKey(Keys.KEY_LOGICAL_ID)) {
-            dlmsDevice.setLogicalId(Long.parseLong(inputSettings.get(Keys.KEY_LOGICAL_ID)));
-        }
-        if (inputSettings.containsKey(Keys.KEY_IN_DEBUG_MODE)) {
-            dlmsDevice.setInDebugMode(Boolean.parseBoolean(inputSettings.get(Keys.KEY_IN_DEBUG_MODE)));
-        }
+        dlmsDevice.setDeviceIdentification(this.deviceIdentification);
+        dlmsDevice.setVersion(this.version);
+        dlmsDevice.setIccId(this.iccId);
+        dlmsDevice.setCommunicationProvider(this.communicationProvider);
+        dlmsDevice.setCommunicationMethod(this.communicationMethod);
+        dlmsDevice.setHls3Active(this.hls3active);
+        dlmsDevice.setHls4Active(this.hls4active);
+        dlmsDevice.setHls5Active(this.hls5active);
+        dlmsDevice.setChallengeLength(this.challengeLength.intValue());
+        dlmsDevice.setWithListSupported(this.withListSupported);
+        dlmsDevice.setSelectiveAccessSupported(this.selectiveAccessSupported);
+        dlmsDevice.setIpAddressIsStatic(this.ipAddressIsStatic);
+        dlmsDevice.setPort(this.port);
+        dlmsDevice.setClientId(this.clientId);
+        dlmsDevice.setLogicalId(this.logicalId);
+        dlmsDevice.setInDebugMode(this.inDebugMode);
 
         return dlmsDevice;
     }
-
 }

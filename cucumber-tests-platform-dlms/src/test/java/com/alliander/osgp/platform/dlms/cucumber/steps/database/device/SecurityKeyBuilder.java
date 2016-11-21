@@ -3,9 +3,7 @@ package com.alliander.osgp.platform.dlms.cucumber.steps.database.device;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -18,23 +16,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alliander.osgp.platform.dlms.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.dlms.cucumber.steps.Keys;
 
-public class SecurityKeyBuilder {
+public class SecurityKeyBuilder implements Builder<SecurityKey> {
 
     @Autowired
     private DlmsSecurityKeyRepository securityKeyRepository;
 
-    private String dlmsDeviceId = Defaults.DEFAULT_DLMS_DEVICE_ID;
-    private String securityKeyType = null;
+    private SecurityKeyType securityKeyType = null;
     private Date validFrom = Defaults.DEFAULT_VALID_FROM;
     private Date validTo = Defaults.DEFAULT_VALID_TO;
-    private String securityKey = null;
+    private Long version = Defaults.DEFAULT_VERSION;
+    private String key = Defaults.DEFAULT_SECURITY_KEY_A;
 
-    public SecurityKeyBuilder setDlmsDeviceId(final String dlmsDeviceId) {
-        this.dlmsDeviceId = dlmsDeviceId;
-        return this;
-    }
+    private DlmsDevice dlmsDevice;
 
-    public SecurityKeyBuilder setSecurityKeyType(final String securityKeyType) {
+    public SecurityKeyBuilder setSecurityKeyType(final SecurityKeyType securityKeyType) {
         this.securityKeyType = securityKeyType;
         return this;
     }
@@ -49,25 +44,24 @@ public class SecurityKeyBuilder {
         return this;
     }
 
-    public SecurityKeyBuilder setSecurityKey(final String securityKey) {
-        this.securityKey = securityKey;
+    public SecurityKeyBuilder setVersion(final Long version) {
+        this.version = version;
         return this;
     }
 
-    public SecurityKey buildSecurityKey(final Map<String, String> inputSettings,
-            final SecurityKeyType securityKeyTypes[], final String securityKeys[]) {
-        final SecurityKey securityKey = new SecurityKey();
-        final DlmsDevice dlmsDevice = new DlmsDevice();
+    public SecurityKeyBuilder setDlmsDevice(final DlmsDevice dlmsDevice) {
+        this.dlmsDevice = dlmsDevice;
+        return this;
+    }
+
+    public SecurityKeyBuilder buildSecurityKey(final Map<String, String> inputSettings) {
         final DateFormat format = new SimpleDateFormat("MM dd yyyy", Locale.getDefault());
-        if (inputSettings.containsKey(Keys.KEY_DLMS_DEVICE_ID)) {
-            dlmsDevice.setDeviceIdentification((inputSettings.get(Keys.KEY_DLMS_DEVICE_ID)));
-        }
         if (inputSettings.containsKey(Keys.KEY_VERSION)) {
-            securityKey.setVersion(Long.parseLong(inputSettings.get(Keys.KEY_VERSION)));
+            this.setVersion(Long.parseLong(inputSettings.get(Keys.KEY_VERSION)));
         }
         if (inputSettings.containsKey(Keys.KEY_VALID_FROM)) {
             try {
-                securityKey.setValidFrom(format.parse(inputSettings.get(Keys.KEY_VALID_FROM)));
+                this.setValidFrom(format.parse(inputSettings.get(Keys.KEY_VALID_FROM)));
             } catch (final ParseException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -75,23 +69,23 @@ public class SecurityKeyBuilder {
         }
         if (inputSettings.containsKey(Keys.KEY_VALID_TO)) {
             try {
-                securityKey.setValidTo(format.parse(inputSettings.get(Keys.KEY_VALID_TO)));
+                this.setValidTo(format.parse(inputSettings.get(Keys.KEY_VALID_TO)));
             } catch (final ParseException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
 
-        final List<SecurityKey> keys = new ArrayList<>();
-        for (int i = 0; i < securityKeyTypes.length; i++) {
-            keys.add(new SecurityKey(dlmsDevice, securityKeyTypes[i], securityKeys[i], this.validFrom, null));
-        }
+        return this;
+    }
 
-        for (final SecurityKey seckey : keys) {
-            this.securityKeyRepository.save(seckey);
-        }
+    @Override
+    public SecurityKey build() {
+        final SecurityKey securityKey = new SecurityKey(this.dlmsDevice, this.securityKeyType, this.key,
+                this.validFrom, this.validTo);
 
-        // this.securityKeyRepository.save(securityKey);
+        securityKey.setVersion(this.version);
+
         return securityKey;
     }
 }

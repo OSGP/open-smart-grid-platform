@@ -38,9 +38,15 @@ public abstract class DlmsDeviceSteps {
         // SecurityKeyBuilder().buildSecurityKey(inputSettings);
         // this.securityKeyRepository.save(this.securityKey);
 
-        this.dlmsDevice = new DlmsDeviceBuilder()
-                .setSecurityKeyBuilder(new SecurityKeyBuilder().buildSecurityKey(inputSettings))
-                .buildDlmsDevice(inputSettings);
+        this.dlmsDevice = new DlmsDeviceBuilder().buildDlmsDevice(inputSettings).build();
+
+        this.dlmsDevice.addSecurityKey(new SecurityKeyBuilder().setDlmsDevice(this.dlmsDevice)
+                .buildSecurityKey(inputSettings).build());
+        this.dlmsDevice.addSecurityKey(new SecurityKeyBuilder().setDlmsDevice(this.dlmsDevice)
+                .buildSecurityKey(inputSettings).build());
+        this.dlmsDevice.addSecurityKey(new SecurityKeyBuilder().setDlmsDevice(this.dlmsDevice)
+                .buildSecurityKey(inputSettings).build());
+
         this.dlmsDeviceRepository.save(this.dlmsDevice);
 
         final CoreDeviceBuilder coreBuilder = new CoreDeviceBuilder(inputSettings);
