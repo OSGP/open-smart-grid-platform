@@ -7,10 +7,11 @@
  */
 package com.alliander.osgp.core.db.api.application.config;
 
+import java.io.IOException;
 import java.util.Properties;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 import org.hibernate.ejb.HibernatePersistence;
@@ -18,9 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
-import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -28,22 +26,17 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.alliander.osgp.core.db.api.exceptions.CoreDbApiException;
 import com.alliander.osgp.core.db.api.repositories.DeviceDataRepository;
-import com.alliander.osgp.shared.application.config.AbstractConfig;
+import com.alliander.osgp.shared.application.config.AbstractCustomConfig;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 @EnableJpaRepositories(entityManagerFactoryRef = "osgpCoreDbApiEntityManagerFactory", basePackageClasses = { DeviceDataRepository.class })
 @Configuration
 @EnableTransactionManagement()
-@PropertySources({
-	@PropertySource("classpath:osgp-core-db-api.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "file:${osgp/CoreDbApi/config}", ignoreResourceNotFound = true),
-})
-public class OsgpCoreDbApiPersistenceConfig extends AbstractConfig {
+public class OsgpCoreDbApiPersistenceConfig extends AbstractCustomConfig {
 
     private static final String PROPERTY_NAME_DATABASE_DRIVER = "db.api.driver";
-    private static final String PROPERTY_NAME_DATABASE_PASSWORD = "db.api.password";
+    private static final String PROPERTY_NAME_DATABASE_PW = "db.api.password";
     private static final String PROPERTY_NAME_DATABASE_URL = "db.api.url";
     private static final String PROPERTY_NAME_DATABASE_USERNAME = "db.api.username";
 
@@ -64,11 +57,19 @@ public class OsgpCoreDbApiPersistenceConfig extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OsgpCoreDbApiPersistenceConfig.class);
 
-    @Resource
-    private Environment environment;
-
     private HikariDataSource dataSource;
 
+    /**
+     * Wire property sources to local environment.
+     * @throws IOException when required property source is not found.
+     */
+    @PostConstruct
+    protected void init() throws IOException {
+        addPropertySource("file:${osgp/CoreDbApi/config}",  true);
+        addPropertySource("file:${osgp/Global/config}", true);
+        addPropertySource("classpath:osgp-core-db-api.properties", false);        
+    }
+    
     /**
      * Method for creating the Data Source.
      *
@@ -78,14 +79,14 @@ public class OsgpCoreDbApiPersistenceConfig extends AbstractConfig {
         if (this.dataSource == null) {
             final HikariConfig hikariConfig = new HikariConfig();
 
-            hikariConfig.setDriverClassName(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER));
-            hikariConfig.setJdbcUrl(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
-            hikariConfig.setUsername(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_USERNAME));
-            hikariConfig.setPassword(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_PASSWORD));
+            hikariConfig.setDriverClassName(ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER));
+            hikariConfig.setJdbcUrl(ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
+            hikariConfig.setUsername(ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_DATABASE_USERNAME));
+            hikariConfig.setPassword(ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_DATABASE_PW));
 
-            hikariConfig.setMaximumPoolSize(Integer.parseInt(this.environment
+            hikariConfig.setMaximumPoolSize(Integer.parseInt(ENVIRONMENT
                     .getRequiredProperty(PROPERTY_NAME_DATABASE_MAX_POOL_SIZE)));
-            hikariConfig.setAutoCommit(Boolean.parseBoolean(this.environment
+            hikariConfig.setAutoCommit(Boolean.parseBoolean(ENVIRONMENT
                     .getRequiredProperty(PROPERTY_NAME_DATABASE_AUTO_COMMIT)));
 
             this.dataSource = new HikariDataSource(hikariConfig);
@@ -129,19 +130,19 @@ public class OsgpCoreDbApiPersistenceConfig extends AbstractConfig {
 
         entityManagerFactoryBean.setPersistenceUnitName("OSGP_CORE_DB_API");
         entityManagerFactoryBean.setDataSource(this.getOsgpCoreDbApiDataSource());
-        entityManagerFactoryBean.setPackagesToScan(this.environment
+        entityManagerFactoryBean.setPackagesToScan(ENVIRONMENT
                 .getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN));
         entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistence.class);
 
         final Properties jpaProperties = new Properties();
         jpaProperties.put(HIBERNATE_DIALECT_KEY,
-                this.environment.getRequiredProperty(PROPERTY_NAME_HIBERNATE_DIALECT_VALUE));
+                ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_HIBERNATE_DIALECT_VALUE));
         jpaProperties.put(HIBERNATE_FORMAT_SQL_KEY,
-                this.environment.getRequiredProperty(PROPERTY_NAME_HIBERNATE_FORMAT_SQL_VALUE));
+                ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_HIBERNATE_FORMAT_SQL_VALUE));
         jpaProperties.put(HIBERNATE_NAMING_STRATEGY_KEY,
-                this.environment.getRequiredProperty(PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY_VALUE));
+                ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY_VALUE));
         jpaProperties.put(HIBERNATE_SHOW_SQL_KEY,
-                this.environment.getRequiredProperty(PROPERTY_NAME_HIBERNATE_SHOW_SQL_VALUE));
+                ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_HIBERNATE_SHOW_SQL_VALUE));
 
         entityManagerFactoryBean.setJpaProperties(jpaProperties);
 
