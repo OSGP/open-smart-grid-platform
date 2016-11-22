@@ -115,11 +115,10 @@ public enum LogicalNode {
      * DSCH4, DER Schedule
      */
     DER_SCHEDULE_FOUR("DSCH4"),
-
     /**
-     * KTNK1, Volume Heat Buffer
+     * KTNK1, Tank Characteristics
      */
-    KTNK1("KTNK1"),
+    TANK_CHARACTERISTICS_ONE("KTNK1"),
     /**
      * TTMP1, Temperature at entrance or top
      */

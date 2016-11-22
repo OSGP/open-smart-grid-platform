@@ -19,9 +19,6 @@ import com.alliander.osgp.simulator.protocol.iec61850.server.QualityType;
 
 public class HeatBuffer extends LogicalDevice {
 
-    private static final String MMXU = "MMXU";
-    private static final String MMTR = "MMTR";
-
     public HeatBuffer(final String physicalDeviceName, final String logicalDeviceName, final ServerModel serverModel) {
         super(physicalDeviceName, logicalDeviceName, serverModel);
     }
