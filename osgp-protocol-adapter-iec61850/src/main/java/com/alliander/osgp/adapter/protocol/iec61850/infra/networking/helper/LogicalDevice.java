@@ -56,6 +56,10 @@ public enum LogicalDevice {
      */
     LOAD_ONE("LOAD1"),
     /**
+     * Logica Device Heat Buffer
+     */
+    HEAT_BUFFER_ONE("HEAT_BUFFER1"),
+    /**
      * Logical Device CHP 1
      */
     CHP_ONE("CHP1");

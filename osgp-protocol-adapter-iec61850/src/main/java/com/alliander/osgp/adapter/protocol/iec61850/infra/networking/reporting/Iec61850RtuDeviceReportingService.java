@@ -32,6 +32,7 @@ public class Iec61850RtuDeviceReportingService {
         this.enableBatteryReportingOnDevice(connection, deviceIdentification);
         this.enableEngineReportingOnDevice(connection, deviceIdentification);
         this.enableLoadReportingOnDevice(connection, deviceIdentification);
+        this.enableChpReportingOnDevice(connection, deviceIdentification);
         this.enableHeatBufferReportingOnDevice(connection, deviceIdentification);
     }
 
@@ -140,6 +141,14 @@ public class Iec61850RtuDeviceReportingService {
                     reportName.getDescription(), e.getMessage());
         }
 
+    }
+
+    private void enableChpReportingOnDevice(final DeviceConnection connection, final String deviceIdentification) {
+        this.enableStatusReportingOnDevice(connection, deviceIdentification, LogicalDevice.CHP_ONE,
+                DataAttribute.REPORT_STATUS_ONE);
+
+        this.enableMeasurementReportingOnDevice(connection, deviceIdentification, LogicalDevice.CHP_ONE,
+                DataAttribute.REPORT_MEASUREMENTS_ONE);
     }
 
 }

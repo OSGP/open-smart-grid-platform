@@ -227,6 +227,10 @@ public enum DataAttribute {
      */
     SCHEDULE_ABS_TIME("SchdAbsTm"),
     /**
+     * Volume Heat Buffer
+     */
+    VLMCAP("VlmCap"),
+    /**
      * Absolute time schedule entries
      */
     TEMPERATURE("TmpSv"),

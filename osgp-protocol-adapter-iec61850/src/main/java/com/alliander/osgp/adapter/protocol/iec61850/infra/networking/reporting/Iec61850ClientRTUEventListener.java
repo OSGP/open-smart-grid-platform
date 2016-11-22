@@ -53,6 +53,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
         handlers.put("WAGO61850ServerENGINE2/LLN0$Status", new Iec61850EngineReportHandler(2));
         handlers.put("WAGO61850ServerENGINE3/LLN0$Status", new Iec61850EngineReportHandler(3));
         handlers.put("WAGO61850ServerLOAD1/LLN0$Status", new Iec61850LoadReportHandler(1));
+        handlers.put("WAGO61850ServerCHP1/LLN0$Status", new Iec61850ChpReportHandler(1));
         handlers.put("WAGO61850ServerHEAT_BUFFER1/LLN0$Status", new Iec61850HeatBufferReportHandler(1));
 
         handlers.put("WAGO61850ServerPV1/LLN0$Measurements", new Iec61850PvReportHandler(1));
@@ -64,6 +65,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
         handlers.put("WAGO61850ServerENGINE2/LLN0$Measurements", new Iec61850EngineReportHandler(2));
         handlers.put("WAGO61850ServerENGINE3/LLN0$Measurements", new Iec61850EngineReportHandler(3));
         handlers.put("WAGO61850ServerLOAD1/LLN0$Measurements", new Iec61850LoadReportHandler(1));
+        handlers.put("WAGO61850ServerCHP1/LLN0$Measurements", new Iec61850ChpReportHandler(1));
         handlers.put("WAGO61850ServerHEAT_BUFFER1/LLN0$Measurements", new Iec61850HeatBufferReportHandler(1));
 
         REPORT_HANDLERS = Collections.unmodifiableMap(handlers);
@@ -167,15 +169,15 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
         sb.append("\t           BufOvfl:\t").append(report.isBufOvfl()).append(System.lineSeparator());
         sb.append("\t           EntryId:\t").append(report.getEntryId()).append(System.lineSeparator());
         sb.append("\tInclusionBitString:\t").append(Arrays.toString(report.getInclusionBitString()))
-                .append(System.lineSeparator());
+        .append(System.lineSeparator());
         sb.append("\tMoreSegmentsFollow:\t").append(report.isMoreSegmentsFollow()).append(System.lineSeparator());
         sb.append("\t             SqNum:\t").append(report.getSqNum()).append(System.lineSeparator());
         sb.append("\t          SubSqNum:\t").append(report.getSubSqNum()).append(System.lineSeparator());
         sb.append("\t       TimeOfEntry:\t").append(report.getTimeOfEntry()).append(System.lineSeparator());
         if (report.getTimeOfEntry() != null) {
             sb.append("\t                   \t(")
-                    .append(new DateTime(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET))
-                    .append(')').append(System.lineSeparator());
+            .append(new DateTime(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET))
+            .append(')').append(System.lineSeparator());
         }
         final List<BdaReasonForInclusion> reasonCodes = report.getReasonCodes();
         if ((reasonCodes != null) && !reasonCodes.isEmpty()) {
@@ -183,14 +185,14 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
             for (final BdaReasonForInclusion reasonCode : reasonCodes) {
                 sb.append("\t                   \t")
                         .append(reasonCode.getReference() == null ? HexConverter.toHexString(reasonCode.getValue())
-                                : reasonCode).append("\t(")
+                        : reasonCode).append("\t(")
                         .append(new Iec61850BdaReasonForInclusionHelper(reasonCode).getInfo()).append(')')
                         .append(System.lineSeparator());
             }
         }
         sb.append("\t           optFlds:").append(report.getOptFlds()).append("\t(")
-                .append(new Iec61850BdaOptFldsHelper(report.getOptFlds()).getInfo()).append(')')
-                .append(System.lineSeparator());
+        .append(new Iec61850BdaOptFldsHelper(report.getOptFlds()).getInfo()).append(')')
+        .append(System.lineSeparator());
         final DataSet dataSet = report.getDataSet();
         if (dataSet == null) {
             sb.append("\t           DataSet:\tnull").append(System.lineSeparator());
