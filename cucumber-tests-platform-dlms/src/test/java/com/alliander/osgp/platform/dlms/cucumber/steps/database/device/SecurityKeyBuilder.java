@@ -18,9 +18,6 @@ import com.alliander.osgp.platform.dlms.cucumber.steps.Keys;
 
 public class SecurityKeyBuilder implements Builder<SecurityKey> {
 
-    @Autowired
-    private DlmsSecurityKeyRepository securityKeyRepository;
-
     private SecurityKeyType securityKeyType = null;
     private Date validFrom = Defaults.DEFAULT_VALID_FROM;
     private Date validTo = Defaults.DEFAULT_VALID_TO;
@@ -81,15 +78,30 @@ public class SecurityKeyBuilder implements Builder<SecurityKey> {
             }
         }
 
+        if (inputSettings.containsKey(Keys.KEY_SECURITY_KEY_A)) {
+            this.setKey(inputSettings.get(Keys.KEY_SECURITY_KEY_A));
+        }
+
+        if (inputSettings.containsKey(Keys.KEY_SECURITY_KEY_M)) {
+            this.setKey(inputSettings.get(Keys.KEY_SECURITY_KEY_M));
+        }
+
+        if (inputSettings.containsKey(Keys.KEY_SECURITY_KEY_E)) {
+            this.setKey(inputSettings.get(Keys.KEY_SECURITY_KEY_E));
+        }
+
         return this;
     }
 
     @Override
     public SecurityKey build() {
-        final SecurityKey securityKey = new SecurityKey(this.dlmsDevice, this.securityKeyType, this.key,
-                this.validFrom, this.validTo);
+        final SecurityKey securityKey = new SecurityKey(this.dlmsDevice, this.securityKeyType, this.key, this.validFrom,
+                this.validTo);
 
         securityKey.setVersion(this.version);
+        securityKey.setValidFrom(validFrom);
+        securityKey.setValidTo(validTo);
+        securityKey.setKey();
 
         return securityKey;
     }

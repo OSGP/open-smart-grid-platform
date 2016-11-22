@@ -7,8 +7,6 @@
  */
 package com.alliander.osgp.platform.dlms.cucumber.steps;
 
-import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
-
 public class Keys {
 
     // Defaults keys dlms_device
@@ -31,23 +29,33 @@ public class Keys {
 
     // Default keys security_key
     public static final String KEY_DLMS_DEVICE_ID = "DlmsDeviceId";
-    public static final String KEY_SECURITY_KEY_TYPE[] = new String[] { "EMeterEncryption", "EMeterMaster,",
-    "EMeterAuthentication" };
-    public static final SecurityKeyType E_METER_SECURITY_KEYTYPES[] = new SecurityKeyType[] {
-        SecurityKeyType.E_METER_ENCRYPTION, SecurityKeyType.E_METER_MASTER, SecurityKeyType.E_METER_AUTHENTICATION };
-    public static final String KEY_SECURITY_KEY_TYPE_M = "SecurityKeyType";
-    public static final String KEY_SECURITY_KEY_TYPE_A = "SecurityKeyType";
-    public static final String KEY_SECURITY_KEY_TYPE_E = "SecurityKeyType";
+    public static final String KEY_SECURITY_KEY_TYPE_M = "SecurityKeyTypeMaster";
+    public static final String KEY_SECURITY_KEY_TYPE_A = "SecurityKeyTypeAuthentication";
+    public static final String KEY_SECURITY_KEY_TYPE_E = "SecurityKeyTypeEncryption";
     public static final String KEY_VALID_FROM = "ValidFrom";
     public static final String KEY_VALID_TO = "ValidTo";
-    public static final String KEY_SECURITY_KEY[] = new String[] { "SecurityEncryption", "SecurityKeyAuthentication",
-    "SecurityKeyEncryption" };
-    public static final String KEY_SECURITY_KEY_M = "SecurityKey";
-    public static final String KEY_SECURITY_KEY_A = "SecurityKey";
-    public static final String KEY_SECURITY_KEY_E = "SecurityKey";
+    public static final String KEY_SECURITY_KEY_M = "SecurityKeyMaster";
+    public static final String KEY_SECURITY_KEY_A = "SecurityKeyAuthentication";
+    public static final String KEY_SECURITY_KEY_E = "SecurityKeyEncryption";
 
     // other
     public static final String KEY_DEVICE_TYPE = "";
-    public static final String KEY_PROTOCOL = "";
-    public static final String KEY_PROTOCOL_VERSION = "";
+//    public static final String KEY_PROTOCOL = "";
+//    public static final String KEY_PROTOCOL_VERSION = "";
+    public static final String KEY_IS_ACTIVATED = null;
+    public static final String KEY_CONTAINER_CITY = null;
+    public static final String KEY_CONTAINER_STREET = null;
+    public static final String KEY_GPS_LATITUDE = null;
+    public static final String KEY_GPS_LONGITUDE = null;
+    public static final String KEY_CONTAINER_POSTAL_CODE = null;
+    public static final String KEY_CONTAINER_NUMBER = null;
+    public static final String KEY_PROTOCOL_INFO = null;
+    public static final String KEY_NETWORK_ADDRESS = null;
+    public static final String KEY_CONTAINER_MUNICIPALITY = null;
+    public static final String KEY_ALIAS = null;
+    public static final String KEY_IN_MAINTENANCE = null;
+    public static final String KEY_GATEWAY_DEVICE = null;
+    public static final String KEY_TECHNICAL_INSTALLATION_DATE = null;
+    public static final String KEY_DEVICE_MODEL = null;
+    public static final String KEY_IS_ACTIVE = null;
 }

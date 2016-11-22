@@ -9,8 +9,6 @@ package com.alliander.osgp.platform.dlms.cucumber.steps;
 
 import java.util.Date;
 
-import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
-
 public class Defaults {
 
     // Defaults values dlms_device
@@ -33,21 +31,16 @@ public class Defaults {
 
     // Default values security_key
     public static final String DEFAULT_DLMS_DEVICE_ID = null;
-    public static final SecurityKeyType DEFAULT_SECURITY_KEY_TYPE[] = new SecurityKeyType[] {
-            SecurityKeyType.E_METER_ENCRYPTION, SecurityKeyType.E_METER_MASTER,
-            SecurityKeyType.E_METER_AUTHENTICATION };
-    public static final String DEFAULT_SECURITY_KEY_TYPE_M = "";
-    public static final String DEFAULT_SECURITY_KEY_TYPE_A = "";
-    public static final String DEFAULT_SECURITY_KEY_TYPE_E = "";
+
+    public static final String DEFAULT_SECURITY_KEY_TYPE_M = "E_METER_MASTER";
+    public static final String DEFAULT_SECURITY_KEY_TYPE_A = "E_METER_AUTHENTICATION";
+    public static final String DEFAULT_SECURITY_KEY_TYPE_E = "E_METER_ENCRYPTION";
     public static final Date DEFAULT_VALID_FROM = new Date();
     public static final Date DEFAULT_VALID_TO = null;
-    public static final String DEFAULT_SECURITY_KEY[] = new String[] {
-            "bc082efed278e1bbebddc0431877d4fa2df7728229f3e03c57b2549142b40d047b35011dbf9f77ad91db5fe6f19a7b9c",
-            "bc082efed278e1bbebddc0431877d4fa16374b00e96dd102beab666dcb72efbd1f0b868412497f6d3d0c62caa4700585",
-            "bc082efed278e1bbebddc0431877d4fae80fa4e72925b6ad0bc67c84b8721598eda8458bcc1b2827fe6e5e7918ce22fd" };
-    public static final String DEFAULT_SECURITY_KEY_M = "";
-    public static final String DEFAULT_SECURITY_KEY_A = "";
-    public static final String DEFAULT_SECURITY_KEY_E = "";
+
+    public static final String DEFAULT_SECURITY_KEY_M = "bc082efed278e1bbebddc0431877d4fa16374b00e96dd102beab666dcb72efbd1f0b868412497f6d3d0c62caa4700585";
+    public static final String DEFAULT_SECURITY_KEY_A = "bc082efed278e1bbebddc0431877d4fae80fa4e72925b6ad0bc67c84b8721598eda8458bcc1b2827fe6e5e7918ce22fd";
+    public static final String DEFAULT_SECURITY_KEY_E = "bc082efed278e1bbebddc0431877d4fa2df7728229f3e03c57b2549142b40d047b35011dbf9f77ad91db5fe6f19a7b9c";
 
     // Types
     public static final String SMART_METER_E = "SMART_METER_E";

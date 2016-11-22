@@ -42,21 +42,9 @@ public abstract class DlmsDeviceStepsImpl extends DlmsDeviceSteps {
     public void aDlmsDevice(final Map<String, String> inputSettings) throws Throwable {
 
         if (this.isSmartMeter(inputSettings)) {
-
-            // Add DSMR protocol if not provided, inputSettings are leading!
-            final Protocol protocol = ProtocolHelper.getProtocol(Protocol.ProtocolType.DSMR);
-            Map<String, String> settings = inputSettings;
-            if (!settings.containsKey(Keys.KEY_PROTOCOL)) {
-                settings = Helpers.addSetting(settings, Keys.KEY_PROTOCOL, protocol.getProtocol());
-            }
-            if (!settings.containsKey(Keys.KEY_PROTOCOL_VERSION)) {
-                settings = Helpers.addSetting(settings, Keys.KEY_PROTOCOL_VERSION, protocol.getVersion());
-            }
-
-            this.smartMeterSteps.aSmartMeter(settings);
             this.createDlmsDevice(inputSettings);
-            this.repoHelper.insertDlmsDevice(settings); // obsolete
-        } else {
+            }
+        else {
             LOGGER.error("The following DLMS device input parameters are not present: ", Keys.KEY_DEVICE_IDENTIFICATION,
                     Keys.KEY_DEVICE_TYPE);
         }

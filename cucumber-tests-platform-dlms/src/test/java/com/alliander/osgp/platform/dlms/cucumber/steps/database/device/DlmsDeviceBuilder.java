@@ -17,7 +17,7 @@ import com.alliander.osgp.platform.dlms.cucumber.steps.Keys;
 
 public class DlmsDeviceBuilder implements Builder<DlmsDevice> {
 
-    private String deviceId = Defaults.DEFAULT_DEVICE_IDENTIFICATION;
+    private String deviceIdentification = Defaults.DEFAULT_DEVICE_IDENTIFICATION;
     private Long version = Defaults.DEFAULT_VERSION;
     private String iccId = Defaults.DEFAULT_ICC_ID;
     private String communicationProvider = Defaults.DEFAULT_COMMUNICATION_PROVIDER;
@@ -33,24 +33,16 @@ public class DlmsDeviceBuilder implements Builder<DlmsDevice> {
     private Long clientId = Defaults.DEFAULT_CLIENT_ID;
     private Long logicalId = Defaults.DEFAULT_LOGICAL_ID;
     private boolean inDebugMode = Defaults.DEFAULT_IN_DEBUG_MODE;
-    private String deviceIdentification;
 
-    private String organisationId = "test-org";
-
-    private SecurityKeyBuilder authenticationSecurityKeyBuilder = new SecurityKeyBuilder()
-    .setSecurityKeyType(SecurityKeyType.E_METER_AUTHENTICATION);
-    private SecurityKeyBuilder encryptionSecurityKeyBuilder = new SecurityKeyBuilder()
-    .setSecurityKeyType(SecurityKeyType.E_METER_ENCRYPTION);
-    private SecurityKeyBuilder masterSecurityKeyBuilder = new SecurityKeyBuilder()
-    .setSecurityKeyType(SecurityKeyType.E_METER_MASTER);
+    private final SecurityKeyBuilder authenticationSecurityKeyBuilder = new SecurityKeyBuilder()
+            .setSecurityKeyType(SecurityKeyType.E_METER_AUTHENTICATION).setKey(Defaults.DEFAULT_SECURITY_KEY_A);
+    private final SecurityKeyBuilder encryptionSecurityKeyBuilder = new SecurityKeyBuilder()
+            .setSecurityKeyType(SecurityKeyType.E_METER_ENCRYPTION).setKey(Defaults.DEFAULT_SECURITY_KEY_E);
+    private final SecurityKeyBuilder masterSecurityKeyBuilder = new SecurityKeyBuilder()
+            .setSecurityKeyType(SecurityKeyType.E_METER_MASTER).setKey(Defaults.DEFAULT_SECURITY_KEY_M);
 
     public DlmsDeviceBuilder setDeviceIdentification(final String deviceIdentification) {
         this.deviceIdentification = deviceIdentification;
-        return this;
-    }
-
-    public DlmsDeviceBuilder setDeviceId(final String deviceId) {
-        this.deviceId = deviceId;
         return this;
     }
 
@@ -129,10 +121,6 @@ public class DlmsDeviceBuilder implements Builder<DlmsDevice> {
         return this;
     }
 
-    public DlmsDeviceBuilder setOrganisationId(final String organisationId) {
-        this.organisationId = organisationId;
-        return this;
-    }
 
     /**
      * Retrieve the SecurityKeyBuilder in order to manipulate its values. A
@@ -202,8 +190,8 @@ public class DlmsDeviceBuilder implements Builder<DlmsDevice> {
             this.setWithListSupported(Boolean.parseBoolean(inputSettings.get(Keys.KEY_WITH_LIST_SUPPORTED)));
         }
         if (inputSettings.containsKey(Keys.KEY_SELECTIVE_ACCESS_SUPPORTED)) {
-            this.setSelectiveAccessSupported(Boolean.parseBoolean(inputSettings
-                    .get(Keys.KEY_SELECTIVE_ACCESS_SUPPORTED)));
+            this.setSelectiveAccessSupported(
+                    Boolean.parseBoolean(inputSettings.get(Keys.KEY_SELECTIVE_ACCESS_SUPPORTED)));
         }
         if (inputSettings.containsKey(Keys.KEY_IP_ADDRESS_IS_STATIC)) {
             this.setIpAddressIsStatic(Boolean.parseBoolean(inputSettings.get(Keys.KEY_IP_ADDRESS_IS_STATIC)));

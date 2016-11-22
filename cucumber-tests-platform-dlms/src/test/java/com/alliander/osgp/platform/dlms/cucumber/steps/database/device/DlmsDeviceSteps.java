@@ -35,17 +35,19 @@ public abstract class DlmsDeviceSteps {
 
     public void createDlmsDevice(final Map<String, String> inputSettings) {
         final DlmsDeviceBuilder dlmsDeviceBuilder = new DlmsDeviceBuilder().buildDlmsDevice(inputSettings);
+        final CoreDeviceBuilder coreDeviceBuilder = new CoreDeviceBuilder().buildDevice(inputSettings);
 
         // Access the builder for security keys.
         // dlmsDeviceBuilder.getAuthenticationSecurityKeyBuilder().setKey("").setValidFrom(new
         // Date());
         dlmsDeviceBuilder.getAuthenticationSecurityKeyBuilder().buildSecurityKey(inputSettings);
+        dlmsDeviceBuilder.getEncryptionSecurityKeyBuilder().buildSecurityKey(inputSettings);
+        dlmsDeviceBuilder.getMasterSecurityKeyBuilder().buildSecurityKey(inputSettings);
 
         this.dlmsDevice = dlmsDeviceBuilder.build();
         this.dlmsDeviceRepository.save(this.dlmsDevice);
 
-        final CoreDeviceBuilder coreBuilder = new CoreDeviceBuilder(inputSettings);
-        this.coreDevice = coreBuilder.buildCoreDevice();
+        this.coreDevice = coreDeviceBuilder.build();
         this.coreDeviceRepository.save(this.coreDevice);
     }
 }
