@@ -242,6 +242,12 @@
       </dependency>
       <dependency>
         <groupId>com.alliander.osgp</groupId>
+        <artifactId>osgp-adapter-ws-microgrids</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+      <dependency>
+        <groupId>com.alliander.osgp</groupId>
         <artifactId>osgp-protocol-simulator-iec61850</artifactId>
         <version>${osgp.iec61850.simulator.version}</version>
       </dependency>

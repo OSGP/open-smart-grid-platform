@@ -7,3 +7,21 @@ Feature: Get PhotoVoltaic System Data
   Scenario: Request PV1 Health
     Given an rtu device
       | DeviceIdentification | RTU10001 |
+    When a get data request is received
+      | DeviceIdentification      | RTU10001 |
+      | NumberOfSystems           |        1 |
+      | SystemId_1                |        1 |
+      | SystemType_1              | PV       |
+      | NumberOfMeasurements_1    |        1 |
+      | MeasurementFilterNode_1_1 | Health   |
+    Then the get data response should be returned
+      | DeviceIdentification     | RTU10001 |
+      | Result                   | OK       |
+      | NumberOfSystems          |        1 |
+      | SystemId_1               |        1 |
+      | SystemType_1             | PV       |
+      | NumberOfMeasurements_1   |        1 |
+      | MeasurementId_1_1        |        1 |
+      | MeasurementNode_1_1      | Health   |
+      | MeasurementQualifier_1_1 |        0 |
+      | MeasurementValue_1_1     |      1.0 |
