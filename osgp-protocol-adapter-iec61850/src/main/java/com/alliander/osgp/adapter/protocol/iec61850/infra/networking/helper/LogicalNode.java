@@ -116,13 +116,21 @@ public enum LogicalNode {
      */
     DER_SCHEDULE_FOUR("DSCH4"),
     /**
-     * TTMP1, Temperature at entrance
+     * KTNK1, Tank Characteristics
+     */
+    TANK_CHARACTERISTICS_ONE("KTNK1"),
+    /**
+     * TTMP1, Temperature at entrance or top
      */
     TEMPERATURE_ONE("TTMP1"),
     /**
-     * TTMP2, Temperature at exit
+     * TTMP2, Temperature at exit or middle
      */
     TEMPERATURE_TWO("TTMP2"),
+    /**
+     * TTMP3, Temperature at exit or bottom
+     */
+    TEMPERATURE_THREE("TTMP3"),
     /**
      * MFLW1, Type of material set to value 2 (Water) and MatStat 8State of
      * material) to value 1 (Gaseous)
