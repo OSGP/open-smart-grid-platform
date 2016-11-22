@@ -18,17 +18,16 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Devi
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalDevice;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalNode;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.NodeContainer;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.QualityConverter;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
 
-public class Iec61850TempCommand implements RtuReadCommand<MeasurementDto> {
+public class Iec61850MaterialStatusCommand implements RtuReadCommand<MeasurementDto> {
 
     private final LogicalNode logicalNode;
     private final int index;
 
-    public Iec61850TempCommand(final int index) {
-        this.logicalNode = LogicalNode.fromString("TTMP" + index);
+    public Iec61850MaterialStatusCommand(final int index) {
+        this.logicalNode = LogicalNode.fromString("MFLW" + index);
         this.index = index;
     }
 
@@ -36,16 +35,14 @@ public class Iec61850TempCommand implements RtuReadCommand<MeasurementDto> {
     public MeasurementDto execute(final Iec61850Client client, final DeviceConnection connection,
             final LogicalDevice logicalDevice) throws NodeReadException {
         final NodeContainer containingNode = connection.getFcModelNode(logicalDevice, this.logicalNode,
-                DataAttribute.TEMP, Fc.MX);
+                DataAttribute.MATERIAL_STATUS, Fc.SP);
         client.readNodeDataValues(connection.getConnection().getClientAssociation(), containingNode.getFcmodelNode());
         return this.translate(containingNode);
     }
 
     @Override
     public MeasurementDto translate(final NodeContainer containingNode) {
-        return new MeasurementDto(this.index, DataAttribute.TEMP.getDescription(),
-                QualityConverter.toShort(containingNode.getQuality(SubDataAttribute.QUALITY).getValue()),
-                DateTime.now(), containingNode.getChild(SubDataAttribute.MAGNITUDE_INSTANTANEOUS)
-                        .getFloat(SubDataAttribute.FLOAT).getFloat());
+        return new MeasurementDto(this.index, SubDataAttribute.SETPOINT_VALUE.getDescription(), 0, DateTime.now(),
+                containingNode.getInteger(SubDataAttribute.SETPOINT_VALUE).getValue());
     }
 }

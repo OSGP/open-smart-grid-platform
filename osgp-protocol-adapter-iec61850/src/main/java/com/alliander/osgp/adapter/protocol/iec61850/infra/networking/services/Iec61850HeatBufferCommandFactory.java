@@ -23,7 +23,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.co
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850BehaviourCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850HealthCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850ModeCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850TempCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850TemperatureCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850VlmCapCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850WarningCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850WarningOtherCommand;
@@ -31,7 +31,7 @@ import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementFilterDto;
 
 public final class Iec61850HeatBufferCommandFactory implements
-        RtuReadCommandFactory<MeasurementDto, MeasurementFilterDto> {
+RtuReadCommandFactory<MeasurementDto, MeasurementFilterDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850HeatBufferCommandFactory.class);
 
@@ -47,14 +47,14 @@ public final class Iec61850HeatBufferCommandFactory implements
     private static final Map<String, RtuReadCommand<MeasurementDto>> RTU_COMMAND_MAP = new HashMap<>();
     private static final List<DataAttribute> DATA_ATTRIBUTE_USING_FILTER_ID_LIST = new ArrayList<>();
     static {
-        DATA_ATTRIBUTE_USING_FILTER_ID_LIST.add(DataAttribute.TEMP);
+        DATA_ATTRIBUTE_USING_FILTER_ID_LIST.add(DataAttribute.TEMPERATURE);
 
         RTU_COMMAND_MAP.put(DataAttribute.HEALTH.getDescription(), new Iec61850HealthCommand());
         RTU_COMMAND_MAP.put(DataAttribute.MODE.getDescription(), new Iec61850ModeCommand());
         RTU_COMMAND_MAP.put(DataAttribute.BEHAVIOR.getDescription(), new Iec61850BehaviourCommand());
 
         for (int i = 1; i <= NUMBER_OF_TEMP_FIELDS; i++) {
-            RTU_COMMAND_MAP.put(DataAttribute.TEMP.getDescription() + i, new Iec61850TempCommand(i));
+            RTU_COMMAND_MAP.put(DataAttribute.TEMPERATURE.getDescription() + i, new Iec61850TemperatureCommand(i));
         }
 
         RTU_COMMAND_MAP.put(DataAttribute.VLMCAP.getDescription(), new Iec61850VlmCapCommand());

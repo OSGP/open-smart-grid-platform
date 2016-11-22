@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Battery;
+import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Chp;
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Engine;
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.HeatBuffer;
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Load;
@@ -64,6 +65,7 @@ public class RtuSimulator implements ServerEventListener {
         this.logicalDevices.add(new Engine(PHYSICAL_DEVICE, "ENGINE3", this.serverModel));
         this.logicalDevices.add(new Load(PHYSICAL_DEVICE, "LOAD1", this.serverModel));
         this.logicalDevices.add(new HeatBuffer(PHYSICAL_DEVICE, "HEAT_BUFFER1", this.serverModel));
+        this.logicalDevices.add(new Chp(PHYSICAL_DEVICE, "CHP1", this.serverModel));
     }
 
     public void start() throws IOException {

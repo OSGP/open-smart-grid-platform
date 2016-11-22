@@ -116,10 +116,32 @@ public enum LogicalNode {
      */
     DER_SCHEDULE_FOUR("DSCH4"),
 
-    TTMP1("TTMP1"),
-    TTMP2("TTMP2"),
-    TTMP3("TTMP3"),
-    KTNK1("KTNK1");
+    /**
+     * KTNK1, Volume Heat Buffer
+     */
+    KTNK1("KTNK1"),
+    /**
+     * TTMP1, Temperature at entrance or top
+     */
+    TEMPERATURE_ONE("TTMP1"),
+    /**
+     * TTMP2, Temperature at exit or middle
+     */
+    TEMPERATURE_TWO("TTMP2"),
+    /**
+     * TTMP3, Temperature at exit or bottom
+     */
+    TEMPERATURE_THREE("TTMP3"),
+    /**
+     * MFLW1, Type of material set to value 2 (Water) and MatStat 8State of
+     * material) to value 1 (Gaseous)
+     */
+    MAT_FLOW_ONE("MFLW1"),
+    /**
+     * MFLW2, Type of material set to value 6 (Natural gas) and MatStat 8State
+     * of material) to value 2 (Liquid)
+     */
+    MAT_FLOW_TWO("MFLW2");
 
     private final String description;
 
