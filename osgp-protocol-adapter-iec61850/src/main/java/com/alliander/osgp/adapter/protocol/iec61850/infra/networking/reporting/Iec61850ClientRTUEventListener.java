@@ -53,6 +53,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
         handlers.put("WAGO61850ServerENGINE2/LLN0$Status", new Iec61850EngineReportHandler(2));
         handlers.put("WAGO61850ServerENGINE3/LLN0$Status", new Iec61850EngineReportHandler(3));
         handlers.put("WAGO61850ServerLOAD1/LLN0$Status", new Iec61850LoadReportHandler(1));
+        handlers.put("WAGO61850ServerHEAT_BUFFER1/LLN0$Status", new Iec61850HeatBufferReportHandler(1));
 
         handlers.put("WAGO61850ServerPV1/LLN0$Measurements", new Iec61850PvReportHandler(1));
         handlers.put("WAGO61850ServerPV2/LLN0$Measurements", new Iec61850PvReportHandler(2));
@@ -63,6 +64,8 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
         handlers.put("WAGO61850ServerENGINE2/LLN0$Measurements", new Iec61850EngineReportHandler(2));
         handlers.put("WAGO61850ServerENGINE3/LLN0$Measurements", new Iec61850EngineReportHandler(3));
         handlers.put("WAGO61850ServerLOAD1/LLN0$Measurements", new Iec61850LoadReportHandler(1));
+        handlers.put("WAGO61850ServerHEAT_BUFFER1/LLN0$Measurements", new Iec61850HeatBufferReportHandler(1));
+
         REPORT_HANDLERS = Collections.unmodifiableMap(handlers);
     }
 
@@ -73,8 +76,8 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
 
     @Override
     public void newReport(final Report report) {
-        final DateTime timeOfEntry = report.getTimeOfEntry() == null ? null
-                : new DateTime(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET);
+        final DateTime timeOfEntry = report.getTimeOfEntry() == null ? null : new DateTime(report.getTimeOfEntry()
+                .getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET);
 
         final String reportDescription = this.getReportDescription(report, timeOfEntry);
 
@@ -111,7 +114,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
     }
 
     private boolean skipRecordBecauseOfOldSqNum(final Report report) {
-        return this.firstNewSqNum != null && report.getSqNum() != null && report.getSqNum() < this.firstNewSqNum;
+        return (this.firstNewSqNum != null) && (report.getSqNum() != null) && (report.getSqNum() < this.firstNewSqNum);
     }
 
     private void processDataSet(final DataSet dataSet, final String reportDescription,
@@ -122,7 +125,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
         }
 
         final List<FcModelNode> members = dataSet.getMembers();
-        if (members == null || members.isEmpty()) {
+        if ((members == null) || members.isEmpty()) {
             this.logger.warn("No members in DataSet available for {}", reportDescription);
             return;
         }
@@ -136,8 +139,8 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
 
             this.logger.info("Handle member {} for {}", member.getReference(), reportDescription);
             try {
-                final MeasurementDto dto = reportHandler
-                        .handleMember(new ReadOnlyNodeContainer(this.deviceIdentification, member));
+                final MeasurementDto dto = reportHandler.handleMember(new ReadOnlyNodeContainer(
+                        this.deviceIdentification, member));
                 if (dto != null) {
                     measurements.add(dto);
                 } else {
@@ -175,13 +178,13 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
                     .append(')').append(System.lineSeparator());
         }
         final List<BdaReasonForInclusion> reasonCodes = report.getReasonCodes();
-        if (reasonCodes != null && !reasonCodes.isEmpty()) {
+        if ((reasonCodes != null) && !reasonCodes.isEmpty()) {
             sb.append("\t       ReasonCodes:").append(System.lineSeparator());
             for (final BdaReasonForInclusion reasonCode : reasonCodes) {
                 sb.append("\t                   \t")
                         .append(reasonCode.getReference() == null ? HexConverter.toHexString(reasonCode.getValue())
-                                : reasonCode)
-                        .append("\t(").append(new Iec61850BdaReasonForInclusionHelper(reasonCode).getInfo()).append(')')
+                                : reasonCode).append("\t(")
+                        .append(new Iec61850BdaReasonForInclusionHelper(reasonCode).getInfo()).append(')')
                         .append(System.lineSeparator());
             }
         }
@@ -194,7 +197,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
         } else {
             sb.append("\t           DataSet:\t").append(dataSet.getReferenceStr()).append(System.lineSeparator());
             final List<FcModelNode> members = dataSet.getMembers();
-            if (members != null && !members.isEmpty()) {
+            if ((members != null) && !members.isEmpty()) {
                 sb.append("\t   DataSet members:\t").append(members.size()).append(System.lineSeparator());
                 for (final FcModelNode member : members) {
                     sb.append("\t            member:\t").append(member).append(System.lineSeparator());
