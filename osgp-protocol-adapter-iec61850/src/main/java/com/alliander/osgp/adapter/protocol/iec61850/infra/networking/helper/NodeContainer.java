@@ -226,8 +226,11 @@ public class NodeContainer {
         for (int i = 0; i < values.length; i++) {
             final BdaFloat32 bdaFloat = (BdaFloat32) array.getChild(i);
             bdaFloat.setFloat(values[i]);
+            this.writeNode(bdaFloat);
         }
-        this.writeNode(array);
+        // Unfortunately writing an array using "this.writeNode(array);"
+        // doesn't seem to work...
+        // Therefore the items are written in individual calls...
     }
 
     public Date[] getDateArray(final SubDataAttribute child) {
@@ -251,8 +254,11 @@ public class NodeContainer {
         for (int i = 0; i < values.length; i++) {
             final BdaTimestamp bdaTimestamp = (BdaTimestamp) array.getChild(i);
             bdaTimestamp.setDate(values[i]);
+            this.writeNode(bdaTimestamp);
         }
-        this.writeNode(array);
+        // Unfortunately writing an array using "this.writeNode(array);"
+        // doesn't seem to work...
+        // Therefore the items are written in individual calls...
     }
 
     public BdaQuality getQuality(final SubDataAttribute child) {
