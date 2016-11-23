@@ -247,8 +247,15 @@ public class ManagementService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        this.findMessageLogsSyncRequestExecutor.execute(organisationIdentification, deviceIdentification,
-                correlationUid, pageNumber);
+        // Delay execution so the notification will not arrive before the
+        // response of this call.
+        new java.util.Timer().schedule(new java.util.TimerTask() {
+            @Override
+            public void run() {
+                ManagementService.this.findMessageLogsSyncRequestExecutor.execute(organisationIdentification,
+                        deviceIdentification, correlationUid, pageNumber);
+            }
+        }, 5000); // TODO put delay in property.
 
         return correlationUid;
     }
