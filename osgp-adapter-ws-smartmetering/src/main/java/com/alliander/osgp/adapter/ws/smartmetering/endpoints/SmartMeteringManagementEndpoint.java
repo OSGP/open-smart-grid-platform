@@ -38,14 +38,21 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsA
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsRequestData;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindMessageLogsAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindMessageLogsAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindMessageLogsRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindMessageLogsResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.GetDevicesRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.GetDevicesResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.management.MessageLog;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.management.MessageLogPage;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.ManagementMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.ManagementService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.Event;
+import com.alliander.osgp.logging.domain.entities.DeviceLogItem;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -97,8 +104,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             final String correlationUid = this.managementService.enqueueFindEventsRequest(organisationIdentification,
                     deviceIdentification, this.managementMapper.mapAsList(findEventsQuery,
                             com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsRequestData.class),
-                    MessagePriorityEnum.getMessagePriority(messagePriority), this.managementMapper.map(scheduleTime,
-                            Long.class));
+                            MessagePriorityEnum.getMessagePriority(messagePriority), this.managementMapper.map(scheduleTime,
+                                    Long.class));
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
@@ -300,4 +307,97 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
         return response;
     }
 
+    /**
+     * Retrieve log messages. Looks like it will be executed asynchronously but
+     * actually it is executed synchronously. This was implemented like this to
+     * duplicate the behavior of the implementation in ws-admin, but supporting
+     * async notifications. Once there is a wider implementation of asynchronous
+     * requests and notifications, the ws-admin implementation will replace this
+     * one and this method can be removed.
+     *
+     * @TODO remove this method once it is implemented in a asynchronous manner
+     *       in the ws-admin project.
+     *
+     * @param organisationIdentification
+     * @param messagePriority
+     *            unused because this request fakes asynchronous behavior.
+     * @param scheduleTime
+     *            unused because this request fakes asynchronous behavior.
+     * @param request
+     * @return AsyncResponse
+     * @throws OsgpException
+     */
+    @PayloadRoot(localPart = "FindMessageLogsRequest", namespace = NAMESPACE)
+    @ResponsePayload
+    public FindMessageLogsAsyncResponse findMessageLogsRequest(
+            @OrganisationIdentification final String organisationIdentification,
+            @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
+            @RequestPayload final FindMessageLogsRequest request) throws OsgpException {
+
+        LOGGER.info("Find message logs request for organisation: {} and device: {}.", organisationIdentification,
+                request.getDeviceIdentification());
+
+        FindMessageLogsAsyncResponse response = null;
+        try {
+            response = new FindMessageLogsAsyncResponse();
+
+            final String deviceIdentification = request.getDeviceIdentification();
+
+            final String correlationUid = this.managementService.findMessageLogsRequest(organisationIdentification,
+                    deviceIdentification, request.getPage());
+
+            response.setCorrelationUid(correlationUid);
+            response.setDeviceIdentification(request.getDeviceIdentification());
+
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+        return response;
+    }
+
+    /**
+     * Retrieve the result of the
+     * {@link #findMessageLogsRequest(String, String, String, FindMessageLogsRequest)}
+     * method.
+     *
+     * @TODO remove this method once it is implemented in a asynchronous manner
+     *       in the ws-admin project.
+     * 
+     * @param organisationIdentification
+     * @param request
+     * @return FindMessageLogsResponse
+     * @throws OsgpException
+     */
+    @PayloadRoot(localPart = "FindMessageLogsAsyncRequest", namespace = NAMESPACE)
+    @ResponsePayload
+    public FindMessageLogsResponse getFindMessageLogsResponse(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final FindMessageLogsAsyncRequest request) throws OsgpException {
+
+        LOGGER.info("FindMessageLogs response for organisation: {} and device: {}.", organisationIdentification,
+                request.getDeviceIdentification());
+
+        FindMessageLogsResponse response = null;
+        try {
+            response = new FindMessageLogsResponse();
+
+            @SuppressWarnings("unchecked")
+            final Page<DeviceLogItem> page = (Page<DeviceLogItem>) this.managementService
+                    .dequeueFindMessageLogsResponse(request.getCorrelationUid()).getMessageData();
+
+            // Map to output
+            final MessageLogPage logPage = new MessageLogPage();
+            logPage.setTotalPages(page.getTotalPages());
+            logPage.getMessageLogs().addAll(this.managementMapper.mapAsList(page.getContent(), MessageLog.class));
+
+            response.setMessageLogPage(logPage);
+        } catch (final MethodConstraintViolationException e) {
+            LOGGER.error("FindMessageLogsResponse Exception", e.getMessage(), e.getStackTrace(), e);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
+                    new ValidationException(e.getConstraintViolations()));
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+        return response;
+    }
 }

@@ -99,6 +99,28 @@
         </wsdl:part>
     </wsdl:message>
 
+    <wsdl:message name="FindMessageLogsRequest">
+        <wsdl:part element="smman:FindMessageLogsRequest"
+            name="FindMessageLogsRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="FindMessageLogsAsyncResponse">
+        <wsdl:part element="smman:FindMessageLogsAsyncResponse"
+            name="FindMessageLogsAsyncResponse">
+        </wsdl:part>
+    </wsdl:message>
+
+    <wsdl:message name="FindMessageLogsAsyncRequest">
+        <wsdl:part element="smman:FindMessageLogsAsyncRequest"
+            name="FindMessageLogsAsyncRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="FindMessageLogsResponse">
+        <wsdl:part element="smman:FindMessageLogsResponse"
+            name="FindMessageLogsResponse">
+        </wsdl:part>
+    </wsdl:message>
+
 
     <wsdl:portType name="SmartMeteringManagementPort">
 
@@ -160,6 +182,24 @@
             </wsdl:input>
             <wsdl:output message="tns:DisableDebuggingResponse"
                 name="DisableDebuggingResponse">
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="FindMessageLogs">
+            <wsdl:input message="tns:FindMessageLogsRequest"
+                name="FindMessageLogsRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:FindMessageLogsAsyncResponse"
+                name="FindMessageLogsAsyncResponse">
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="GetFindMessageLogsResponse">
+            <wsdl:input message="tns:FindMessageLogsAsyncRequest"
+                name="FindMessageLogsAsyncRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:FindMessageLogsResponse"
+                name="FindMessageLogsResponse">
             </wsdl:output>
         </wsdl:operation>
 
@@ -279,6 +319,38 @@
                 <soap:body use="literal" />
             </wsdl:input>
             <wsdl:output name="DisableDebuggingResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="FindMessageLogs">
+            <soap:operation soapAction="" />
+            <wsdl:input name="FindMessageLogsRequest">
+                <soap:header message="tns:ActionHeader"
+                    part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader"
+                    part="UserName" use="literal" />
+                <soap:header message="tns:ActionHeader"
+                    part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="FindMessageLogsAsyncResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="GetFindMessageLogsResponse">
+            <soap:operation soapAction="" />
+            <wsdl:input name="FindMessageLogsAsyncRequest">
+                <soap:header message="tns:ActionHeader"
+                    part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader"
+                    part="UserName" use="literal" />
+                <soap:header message="tns:ActionHeader"
+                    part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="FindMessageLogsResponse">
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>

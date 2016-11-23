@@ -327,6 +327,8 @@
       <xsd:element name="FirmwareModuleType" type="tns:FirmwareModuleFilterType" minOccurs="0" />
       <xsd:element name="FirmwareModuleVersion" type="xsd:string" minOccurs="0" />
       <xsd:element name="ExactMatch" type="xsd:boolean" minOccurs="0" />
+      <xsd:element name="DeviceIdentificationsToUse" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="DeviceIdentificationsToExclude" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
     </xsd:sequence>
   </xsd:complexType>
 

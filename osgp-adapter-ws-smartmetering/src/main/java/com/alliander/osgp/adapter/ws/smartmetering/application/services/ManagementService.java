@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import com.alliander.osgp.adapter.ws.smartmetering.application.syncrequest.FindMessageLogsSyncRequestExecutor;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessage;
@@ -37,6 +38,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessagesRe
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsRequestDataList;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.CorrelationUidException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -70,6 +72,9 @@ public class ManagementService {
 
     @Autowired
     private SmartMeteringRequestMessageSender smartMeteringRequestMessageSender;
+
+    @Autowired
+    private FindMessageLogsSyncRequestExecutor findMessageLogsSyncRequestExecutor;
 
     public ManagementService() {
         // Parameterless constructor required for transactions
@@ -226,5 +231,29 @@ public class ManagementService {
     public MeterResponseData dequeueDisableDebuggingResponse(final String correlationUid)
             throws UnknownCorrelationUidException {
         return this.meterResponseDataService.dequeue(correlationUid);
+    }
+
+    public String findMessageLogsRequest(final String organisationIdentification, final String deviceIdentification,
+            final int pageNumber) throws FunctionalException {
+
+        LOGGER.debug("findMessageLogs called with organisation {}, device {} and pagenumber {}", new Object[] {
+                organisationIdentification, deviceIdentification, pageNumber });
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_MESSAGES);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        this.findMessageLogsSyncRequestExecutor.execute(organisationIdentification, deviceIdentification,
+                correlationUid, pageNumber);
+
+        return correlationUid;
+    }
+
+    public MeterResponseData dequeueFindMessageLogsResponse(final String correlationUid) throws CorrelationUidException {
+        return this.meterResponseDataService.dequeue(correlationUid, Page.class);
     }
 }
