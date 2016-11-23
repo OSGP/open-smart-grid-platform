@@ -57,7 +57,6 @@ public class SecurityKeyBuilder implements Builder<SecurityKey> {
     }
 
     public SecurityKeyBuilder buildSecurityKey(final Map<String, String> inputSettings) {
-        final DateFormat format = new SimpleDateFormat("MM dd yyyy", Locale.getDefault());
         if (inputSettings.containsKey(Keys.KEY_VERSION)) {
             this.setVersion(Long.parseLong(inputSettings.get(Keys.KEY_VERSION)));
         }
@@ -101,8 +100,6 @@ public class SecurityKeyBuilder implements Builder<SecurityKey> {
         securityKey.setVersion(this.version);
         securityKey.setValidFrom(validFrom);
         securityKey.setValidTo(validTo);
-        securityKey.setKey();
-
         return securityKey;
     }
 }

@@ -30,7 +30,7 @@ public class Defaults {
     public static final boolean DEFAULT_IN_DEBUG_MODE = false;
 
     // Default values security_key
-    public static final String DEFAULT_DLMS_DEVICE_ID = null;
+    //public static final String DEFAULT_DLMS_DEVICE_ID = null;
 
     public static final String DEFAULT_SECURITY_KEY_TYPE_M = "E_METER_MASTER";
     public static final String DEFAULT_SECURITY_KEY_TYPE_A = "E_METER_AUTHENTICATION";
@@ -45,4 +45,21 @@ public class Defaults {
     // Types
     public static final String SMART_METER_E = "SMART_METER_E";
     public static final String SMART_METER_G = "SMART_METER_G";
+    public static final String DEFAULT_DEVICE_TYPE = null;
+    public static final boolean DEFAULT_IS_ACTIVATED = true;
+    public static final String DEFAULT_CONTAINER_CITY = null;
+    public static final String DEFAULT_CONTAINER_STREET = null;
+    public static final Float DEFAULT_GPS_LATITUDE = null;
+    public static final Float DEFAULT_GPS_LONGITUDE = null;
+    public static final String DEFAULT_CONTAINER_POSTAL_CODE = null;
+    public static final String DEFAULT_CONTAINER_NUMBER = null;
+    public static final Long DEFAULT_PROTOCOL_INFO = null;
+    public static final String DEFAULT_NETWORK_ADDRESS = "localhost";
+    public static final String DEFAULT_CONTAINER_MUNICIPALITY = null;
+    public static final String DEFAULT_ALIAS = null;
+    public static final boolean DEFAULT_IN_MAINTENANCE = false;
+    public static final Long DEFAULT_GATEWAY_DEVICE = null;
+    public static final Long DEFAULT_DEVICE_MODEL = null;
+    public static final Date DEFAULT_TECHNICAL_INSTALLATION_DATE = new Date();
+    public static final boolean DEFAULT_IS_ACTIVE = true;
 }

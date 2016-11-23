@@ -8,9 +8,13 @@
 package com.alliander.osgp.platform.dlms.cucumber.steps.database.device;
 
 import java.net.InetAddress;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.persistence.CascadeType;
@@ -30,124 +34,122 @@ import com.alliander.osgp.domain.core.entities.ProtocolInfo;
 import com.alliander.osgp.platform.dlms.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.dlms.cucumber.steps.Keys;
 
-public class CoreDeviceBuilder implements Builder<Device>{
+public class DeviceBuilder implements Builder<Device>{
 
     private Long version = Defaults.DEFAULT_VERSION;
-    private String deviceIdentification;
-    private String deviceType;
-    private boolean isActivated;   
-    private String containerCity;
-    private String containerStreet;
-    private Float gpsLatitude;
-    private Float gpsLongitude;
-    private String containerPostalCode;
-    private String containerNumber;
-    private Long protocolInfo;
-    private Long networkAddress;
-    private String containerMunicipality;
-    private String alias;
-    private boolean inMaintenance;
-    private Long gatewayDevice;
-    private Date technicalInstallationDate;
-    private Long deviceModel;
-    private boolean isActive;
-    
-             
-    private String organisationId = "test-org";
-    
-    private final String deviceId = null;
+    private String deviceIdentification = Defaults.DEFAULT_DEVICE_IDENTIFICATION;
+    private String deviceType = Defaults.DEFAULT_DEVICE_TYPE;
+    private boolean isActivated = Defaults.DEFAULT_IS_ACTIVATED;   
+    private String containerCity = Defaults.DEFAULT_CONTAINER_CITY;
+    private String containerStreet = Defaults.DEFAULT_CONTAINER_STREET;
+    private Float gpsLatitude = Defaults.DEFAULT_GPS_LATITUDE;
+    private Float gpsLongitude = Defaults.DEFAULT_GPS_LONGITUDE;
+    private String containerPostalCode = Defaults.DEFAULT_CONTAINER_POSTAL_CODE;
+    private String containerNumber = Defaults.DEFAULT_CONTAINER_NUMBER;
+    private Long protocolInfo = Defaults.DEFAULT_PROTOCOL_INFO;
+    private String networkAddress = Defaults.DEFAULT_NETWORK_ADDRESS;
+    private String containerMunicipality = Defaults.DEFAULT_CONTAINER_MUNICIPALITY;
+    private String alias = Defaults.DEFAULT_ALIAS;
+    private boolean inMaintenance = Defaults.DEFAULT_IN_MAINTENANCE;
+    private Long gatewayDevice = Defaults.DEFAULT_GATEWAY_DEVICE;
+    private Date technicalInstallationDate = Defaults.DEFAULT_TECHNICAL_INSTALLATION_DATE;
+    private Long deviceModel = Defaults.DEFAULT_DEVICE_MODEL;
+    private boolean isActive = Defaults.DEFAULT_IS_ACTIVE;
+           
+    private Long organisation = null;
+    private Long functionGroup = null;
 
-    public CoreDeviceBuilder setVersion(final Long version) {
+    public DeviceBuilder setVersion(final Long version) {
         this.version = version;
         return this;
     }
     
-    public CoreDeviceBuilder setDeviceIdentification(final String deviceIdentification) {
+    public DeviceBuilder setDeviceIdentification(final String deviceIdentification) {
         this.deviceIdentification = deviceIdentification;
         return this;
     }
     
-    public CoreDeviceBuilder setDeviceType(final String deviceType) {
+    public DeviceBuilder setDeviceType(final String deviceType) {
         this.deviceType = deviceType;
         return this;
     }
     
-    public CoreDeviceBuilder setIsActivated(final boolean isActivated) {
+    public DeviceBuilder setIsActivated(final boolean isActivated) {
         this.isActivated = isActivated;
         return this;
     }
     
-    public CoreDeviceBuilder setContainerCity(final String containerCity) {
+    public DeviceBuilder setContainerCity(final String containerCity) {
         this.containerCity = containerCity;
         return this;
     }
     
-    public CoreDeviceBuilder setContainerStreet(final String containerStreet) {
+    public DeviceBuilder setContainerStreet(final String containerStreet) {
         this.containerStreet = containerStreet;
         return this;
     }
     
-    public CoreDeviceBuilder setGpsLatitude(final Float gpsLatitude) {
+    public DeviceBuilder setGpsLatitude(final Float gpsLatitude) {
         this.gpsLatitude = gpsLatitude;
         return this;
     }
     
-    public CoreDeviceBuilder setGpsLongitude(final Float gpsLongitude) {
+    public DeviceBuilder setGpsLongitude(final Float gpsLongitude) {
         this.gpsLongitude = gpsLongitude;
         return this;
     }
     
-    public CoreDeviceBuilder setContainerPostalCode(String containerPostalCode) {
+    public DeviceBuilder setContainerPostalCode(String containerPostalCode) {
         this.containerPostalCode = containerPostalCode;
         return this;
     }
     
-    public CoreDeviceBuilder setContainerNumber(String containerNumber) {
+    public DeviceBuilder setContainerNumber(String containerNumber) {
         this.containerNumber = containerNumber;
         return this;
     }
     
-    public CoreDeviceBuilder setProtocolInfo(Long protocolInfo) {
+    public DeviceBuilder setProtocolInfo(Long protocolInfo) {
         this.protocolInfo = protocolInfo;
         return this;
     }
     
-    public CoreDeviceBuilder setNetworkAddress(Long networkAddress) {
+    public DeviceBuilder setNetworkAddress(String networkAddress) {
         this.networkAddress = networkAddress;
         return this;
     }
     
-    public CoreDeviceBuilder setContainerMunicipality(String containerMunicipality) {
+    public DeviceBuilder setContainerMunicipality(String containerMunicipality) {
         this.containerMunicipality = containerMunicipality;
         return this;
     }
     
-    public CoreDeviceBuilder setAlias(String alias) {
+    public DeviceBuilder setAlias(String alias) {
         this.alias = alias;
         return this;
     }
     
-    public CoreDeviceBuilder setInMaintenance(Boolean inMaintenance) {
+    public DeviceBuilder setInMaintenance(Boolean inMaintenance) {
         this.inMaintenance = inMaintenance;
         return this;
     }
     
-    public CoreDeviceBuilder setGatewayDevice(Long gatewayDevice) {
+    public DeviceBuilder setGatewayDevice(Long gatewayDevice) {
         this.gatewayDevice = gatewayDevice;
         return this;
     }
     
-    public CoreDeviceBuilder setTechnicalInstallationDate(Date technicalInstallationDate) {
+    public DeviceBuilder setTechnicalInstallationDate(Date technicalInstallationDate) {
         this.technicalInstallationDate = technicalInstallationDate;
         return this;
     }
     
-    public CoreDeviceBuilder setDeviceModel(Long deviceModel) {
+    public DeviceBuilder setDeviceModel(Long deviceModel) {
         this.deviceModel = deviceModel;
         return this;
     }
     
-    public CoreDeviceBuilder setIsActive(boolean isActive) {
+    public DeviceBuilder setIsActive(boolean isActive) {
         this.isActive = isActive;
         return this;
     }
@@ -158,14 +160,14 @@ public class CoreDeviceBuilder implements Builder<Device>{
     
     
     
-    public CoreDeviceBuilder setOrganisationId(final String organisationId) {
-        this.organisationId = organisationId;
+    public DeviceBuilder setOrganisationId(final Long organisation) {
+        this.organisation = organisation;
         return this;
     }
     
     
-    public CoreDeviceBuilder buildDevice(final Map<String, String> inputSettings) {
-        
+    public DeviceBuilder buildDevice(final Map<String, String> inputSettings) {
+
         if (inputSettings.containsKey(Keys.KEY_VERSION)) {
             this.setVersion(Long.parseLong(inputSettings.get(Keys.KEY_VERSION)));
         }
@@ -200,7 +202,7 @@ public class CoreDeviceBuilder implements Builder<Device>{
             this.setProtocolInfo(Long.parseLong(inputSettings.get(Keys.KEY_PROTOCOL_INFO)));
         }
         if (inputSettings.containsKey(Keys.KEY_NETWORK_ADDRESS)) {
-            this.setNetworkAddress(Long.parseLong(inputSettings.get(Keys.KEY_NETWORK_ADDRESS)));
+            this.setNetworkAddress(inputSettings.get(Keys.KEY_NETWORK_ADDRESS));
         }
         if (inputSettings.containsKey(Keys.KEY_CONTAINER_MUNICIPALITY)) {
             this.setContainerMunicipality(inputSettings.get(Keys.KEY_CONTAINER_MUNICIPALITY));
@@ -215,7 +217,12 @@ public class CoreDeviceBuilder implements Builder<Device>{
             this.setGatewayDevice(Long.parseLong(inputSettings.get(Keys.KEY_GATEWAY_DEVICE)));
         }
         if (inputSettings.containsKey(Keys.KEY_TECHNICAL_INSTALLATION_DATE)) {
-            this.setTechnicalInstallationDate((inputSettings.get(Keys.KEY_TECHNICAL_INSTALLATION_DATE)));
+            try {
+                this.setTechnicalInstallationDate(format.parse(inputSettings.get(Keys.KEY_TECHNICAL_INSTALLATION_DATE)));
+            } catch (ParseException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
         if (inputSettings.containsKey(Keys.KEY_DEVICE_MODEL)) {
             this.setDeviceModel(Long.parseLong(inputSettings.get(Keys.KEY_DEVICE_MODEL)));
@@ -223,19 +230,23 @@ public class CoreDeviceBuilder implements Builder<Device>{
         if (inputSettings.containsKey(Keys.KEY_IS_ACTIVE)) {
             this.setIsActive(Boolean.parseBoolean(inputSettings.get(Keys.KEY_IS_ACTIVE)));
         }
-        
-        
-        
-        
         return this;
     }
     
     
     @Override
     public Device build() {
-        final Device coreDevice = new Device();
+        final Device coreDevice = new Device(this.deviceIdentification, this.alias, this.containerCity,
+                this.containerPostalCode, this.containerStreet, this.containerNumber,
+                this.containerMunicipality, this.gpsLatitude, this.gpsLongitude);
+
+        coreDevice.updateRegistrationData(this.networkAddress, this.deviceType);
+        coreDevice.updateProtocol(this.protocolInfo);
+        coreDevice.updateInMaintenance(this.inMaintenance);
+        coreDevice.updateGatewayDevice(this.gatewayDevice);
+        coreDevice.setVersion(this.version);
+        coreDevice.setDeviceModel(this.deviceModel);
+        coreDevice.setTechnicalInstallationDate(this.technicalInstallationDate);
         return coreDevice;
     }
-
-
 }

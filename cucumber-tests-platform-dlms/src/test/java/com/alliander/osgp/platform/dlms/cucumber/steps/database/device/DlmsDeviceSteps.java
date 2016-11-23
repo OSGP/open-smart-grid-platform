@@ -16,6 +16,7 @@ import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsSecurityKeyReposit
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 
 public abstract class DlmsDeviceSteps {
@@ -24,18 +25,17 @@ public abstract class DlmsDeviceSteps {
     private DlmsDeviceRepository dlmsDeviceRepository;
 
     @Autowired
-    private DlmsSecurityKeyRepository securityKeyRepository;
-
-    @Autowired
     private DeviceRepository coreDeviceRepository;
 
     DlmsDevice dlmsDevice = null;
-    SecurityKey securityKey = null;
     Device coreDevice = null;
+    DeviceAuthorization deviceAuthorization = null;
+    
 
     public void createDlmsDevice(final Map<String, String> inputSettings) {
         final DlmsDeviceBuilder dlmsDeviceBuilder = new DlmsDeviceBuilder().buildDlmsDevice(inputSettings);
-        final CoreDeviceBuilder coreDeviceBuilder = new CoreDeviceBuilder().buildDevice(inputSettings);
+        final DeviceBuilder coreDeviceBuilder = new DeviceBuilder().buildDevice(inputSettings);
+        final DeviceAuthorizationBuilder deviceAuthorizationBuilder = new DeviceAuthorization().buildDeviceAuthorization(inputSettings);
 
         // Access the builder for security keys.
         // dlmsDeviceBuilder.getAuthenticationSecurityKeyBuilder().setKey("").setValidFrom(new
@@ -49,5 +49,9 @@ public abstract class DlmsDeviceSteps {
 
         this.coreDevice = coreDeviceBuilder.build();
         this.coreDeviceRepository.save(this.coreDevice);
+        
+        
+        this.deviceAuthorization = deviceAuthorizationBuilder.build();
+        this.deviceAuthorizationRepository.save(this.deviceAuthorization);
     }
 }
