@@ -8,8 +8,14 @@
 package com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.openmuc.openiec61850.BasicDataAttribute;
 import org.openmuc.openiec61850.Fc;
@@ -19,6 +25,28 @@ import com.alliander.osgp.simulator.protocol.iec61850.server.QualityType;
 
 public class Pv extends LogicalDevice {
 
+    private static final String LLN0_HEALTH_STVAL = "LLN0.Health.stVal";
+    private static final String LLN0_HEALTH_Q = "LLN0.Health.q";
+    private static final String LLN0_HEALTH_T = "LLN0.Health.t";
+
+    private static final Set<String> INT8_NODES = Collections
+            .unmodifiableSet(new TreeSet<>(Arrays.asList(LLN0_HEALTH_STVAL)));
+    private static final Set<String> QUALITY_NODES = Collections
+            .unmodifiableSet(new TreeSet<>(Arrays.asList(LLN0_HEALTH_Q)));
+    private static final Set<String> TIMESTAMP_NODES = Collections
+            .unmodifiableSet(new TreeSet<>(Arrays.asList(LLN0_HEALTH_T)));
+
+    private static final Map<String, Fc> FC_BY_NODE;
+    static {
+        final Map<String, Fc> fcByNode = new TreeMap<>();
+
+        fcByNode.put(LLN0_HEALTH_STVAL, Fc.ST);
+        fcByNode.put(LLN0_HEALTH_Q, Fc.ST);
+        fcByNode.put(LLN0_HEALTH_T, Fc.ST);
+
+        FC_BY_NODE = Collections.unmodifiableMap(fcByNode);
+    }
+
     public Pv(final String physicalDeviceName, final String logicalDeviceName, final ServerModel serverModel) {
         super(physicalDeviceName, logicalDeviceName, serverModel);
     }
@@ -27,9 +55,9 @@ public class Pv extends LogicalDevice {
     public List<BasicDataAttribute> getValues(final Date timestamp) {
         final List<BasicDataAttribute> values = new ArrayList<>();
 
-        values.add(this.setRandomByte("LLN0.Health.stVal", Fc.ST, 1, 2));
-        values.add(this.setQuality("LLN0.Health.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime("LLN0.Health.t", Fc.ST, timestamp));
+        values.add(this.setRandomByte(LLN0_HEALTH_STVAL, Fc.ST, 1, 2));
+        values.add(this.setQuality(LLN0_HEALTH_Q, Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
+        values.add(this.setTime(LLN0_HEALTH_T, Fc.ST, timestamp));
 
         values.add(this.setRandomByte("LLN0.Beh.stVal", Fc.ST, 1, 2));
         values.add(this.setQuality("LLN0.Beh.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
@@ -109,4 +137,25 @@ public class Pv extends LogicalDevice {
         return values;
     }
 
+    @Override
+    public BasicDataAttribute getValue(final String node, final String value) {
+        final Fc fc = FC_BY_NODE.get(node);
+        if (fc == null) {
+            throw this.illegalNodeException(node);
+        }
+
+        if (INT8_NODES.contains(node)) {
+            return this.setByte(node, fc, Byte.parseByte(value));
+        }
+
+        if (QUALITY_NODES.contains(node)) {
+            return this.setQuality(node, fc, QualityType.valueOf(value).getValue());
+        }
+
+        if (TIMESTAMP_NODES.contains(node)) {
+            return this.setTime(node, fc, new Date()); // TODO parse value
+        }
+
+        throw this.nodeTypeNotConfiguredException(node);
+    }
 }
