@@ -17,12 +17,16 @@ import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.ProtocolInfo;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
+import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
+import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.dlms.cucumber.builders.entities.DeviceBuilder;
 import com.alliander.osgp.platform.dlms.cucumber.builders.entities.DlmsDeviceBuilder;
 import com.alliander.osgp.platform.dlms.cucumber.builders.entities.SmartMeterBuilder;
+import com.alliander.osgp.platform.dlms.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.dlms.cucumber.steps.Keys;
 
 import cucumber.api.java.en.Given;
@@ -41,14 +45,23 @@ public class DlmsDeviceSteps {
     @Autowired
     private DlmsDeviceRepository dlmsDeviceRepository;
 
+    @Autowired
+    private ProtocolInfoRepository protocolInfoRepository;
+
     @Given("^a dlms device$")
     public void aDlmsDevice(final Map<String, String> inputSettings) throws Throwable {
         if (this.isSmartMeter(inputSettings)) {
-            final SmartMeter smartMeter = new SmartMeterBuilder().withSettings(inputSettings).build();
+            final SmartMeter smartMeter = new SmartMeterBuilder().withSettings(inputSettings)
+                    .setProtocolInfo(this.getProtocolInfo(inputSettings)).build();
             this.smartMeterRepository.save(smartMeter);
+
+            ScenarioContext.Current().put(Keys.KEY_DEVICE_IDENTIFICATION, smartMeter.getDeviceIdentification());
         } else {
-            final Device device = new DeviceBuilder().withSettings(inputSettings).build();
+            final Device device = new DeviceBuilder().withSettings(inputSettings)
+                    .setProtocolInfo(this.getProtocolInfo(inputSettings)).build();
             this.deviceRepository.save(device);
+
+            ScenarioContext.Current().put(Keys.KEY_DEVICE_IDENTIFICATION, device.getDeviceIdentification());
         }
 
         // Protocol adapter
@@ -59,5 +72,22 @@ public class DlmsDeviceSteps {
     private boolean isSmartMeter(final Map<String, String> settings) {
         final String deviceType = settings.get(Keys.KEY_DEVICE_TYPE);
         return SMART_METER_E.equals(deviceType) || SMART_METER_G.equals(deviceType);
+    }
+
+    /**
+     * ProtocolInfo is fixed system data, inserted by flyway. Therefore the
+     * ProtocolInfo instance will be retrieved from the database, and not built.
+     *
+     * @param inputSettings
+     * @return ProtocolInfo
+     */
+    private ProtocolInfo getProtocolInfo(final Map<String, String> inputSettings) {
+        if (inputSettings.containsKey(Keys.KEY_PROTOCOL) && inputSettings.containsKey(Keys.KEY_PROTOCOL_VERSION)) {
+            return this.protocolInfoRepository.findByProtocolAndProtocolVersion(inputSettings.get(Keys.KEY_PROTOCOL),
+                    inputSettings.get(Keys.KEY_PROTOCOL_VERSION));
+        } else {
+            return this.protocolInfoRepository.findByProtocolAndProtocolVersion(Defaults.DEFAULT_PROTOCOL,
+                    Defaults.DEFAULT_PROTOCOL_VERSION);
+        }
     }
 }

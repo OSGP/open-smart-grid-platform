@@ -5,7 +5,7 @@ import java.util.Map;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.platform.dlms.cucumber.steps.Keys;
 
-public class SmartMeterBuilder extends BaseDeviceBuilder implements CucumberBuilder<SmartMeter> {
+public class SmartMeterBuilder extends BaseDeviceBuilder<SmartMeterBuilder> implements CucumberBuilder<SmartMeter> {
 
     private String supplier;
 

@@ -13,7 +13,6 @@ import java.util.Date;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
-import com.alliander.osgp.domain.core.entities.ProtocolInfo;
 
 public class Defaults {
 
@@ -59,7 +58,9 @@ public class Defaults {
     public static final Float DEFAULT_GPS_LONGITUDE = null;
     public static final String DEFAULT_CONTAINER_POSTAL_CODE = null;
     public static final String DEFAULT_CONTAINER_NUMBER = null;
-    public static final ProtocolInfo DEFAULT_PROTOCOL_INFO = null;
+    public static final String DEFAULT_PROTOCOL = "DSMR";
+    public static final String DEFAULT_PROTOCOL_VERSION = "4.2.2";
+
     public static final InetAddress DEFAULT_NETWORK_ADDRESS;
     public static final String DEFAULT_CONTAINER_MUNICIPALITY = null;
     public static final String DEFAULT_ALIAS = null;

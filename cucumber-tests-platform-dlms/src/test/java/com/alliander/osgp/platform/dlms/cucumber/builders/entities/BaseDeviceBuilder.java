@@ -11,7 +11,8 @@ import com.alliander.osgp.platform.dlms.cucumber.inputparsers.DateInputParser;
 import com.alliander.osgp.platform.dlms.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.dlms.cucumber.steps.Keys;
 
-abstract class BaseDeviceBuilder {
+@SuppressWarnings("unchecked")
+public abstract class BaseDeviceBuilder<T> {
     Long version = Defaults.DEFAULT_VERSION;
     String deviceIdentification = Defaults.DEFAULT_DEVICE_IDENTIFICATION;
     String deviceType = Defaults.DEFAULT_DEVICE_TYPE;
@@ -22,7 +23,7 @@ abstract class BaseDeviceBuilder {
     Float gpsLongitude = Defaults.DEFAULT_GPS_LONGITUDE;
     String containerPostalCode = Defaults.DEFAULT_CONTAINER_POSTAL_CODE;
     String containerNumber = Defaults.DEFAULT_CONTAINER_NUMBER;
-    ProtocolInfo protocolInfo = Defaults.DEFAULT_PROTOCOL_INFO;
+    ProtocolInfo protocolInfo = null;
     InetAddress networkAddress = Defaults.DEFAULT_NETWORK_ADDRESS;
     String containerMunicipality = Defaults.DEFAULT_CONTAINER_MUNICIPALITY;
     String alias = Defaults.DEFAULT_ALIAS;
@@ -32,102 +33,102 @@ abstract class BaseDeviceBuilder {
     DeviceModel deviceModel = Defaults.DEFAULT_DEVICE_MODEL;
     boolean isActive = Defaults.DEFAULT_IS_ACTIVE;
 
-    public BaseDeviceBuilder setVersion(final Long version) {
+    public T setVersion(final Long version) {
         this.version = version;
-        return this;
+        return (T) this;
     }
 
-    public BaseDeviceBuilder setDeviceIdentification(final String deviceIdentification) {
+    public T setDeviceIdentification(final String deviceIdentification) {
         this.deviceIdentification = deviceIdentification;
-        return this;
+        return (T) this;
     }
 
-    public BaseDeviceBuilder setDeviceType(final String deviceType) {
+    public T setDeviceType(final String deviceType) {
         this.deviceType = deviceType;
-        return this;
+        return (T) this;
     }
 
-    public BaseDeviceBuilder setIsActivated(final boolean isActivated) {
+    public T setIsActivated(final boolean isActivated) {
         this.isActivated = isActivated;
-        return this;
+        return (T) this;
     }
 
-    public BaseDeviceBuilder setContainerCity(final String containerCity) {
+    public T setContainerCity(final String containerCity) {
         this.containerCity = containerCity;
-        return this;
+        return (T) this;
     }
 
-    public BaseDeviceBuilder setContainerStreet(final String containerStreet) {
+    public T setContainerStreet(final String containerStreet) {
         this.containerStreet = containerStreet;
-        return this;
+        return (T) this;
     }
 
-    public BaseDeviceBuilder setGpsLatitude(final Float gpsLatitude) {
+    public T setGpsLatitude(final Float gpsLatitude) {
         this.gpsLatitude = gpsLatitude;
-        return this;
+        return (T) this;
     }
 
-    public BaseDeviceBuilder setGpsLongitude(final Float gpsLongitude) {
+    public T setGpsLongitude(final Float gpsLongitude) {
         this.gpsLongitude = gpsLongitude;
-        return this;
+        return (T) this;
     }
 
-    public BaseDeviceBuilder setContainerPostalCode(final String containerPostalCode) {
+    public T setContainerPostalCode(final String containerPostalCode) {
         this.containerPostalCode = containerPostalCode;
-        return this;
+        return (T) this;
     }
 
-    public BaseDeviceBuilder setContainerNumber(final String containerNumber) {
+    public T setContainerNumber(final String containerNumber) {
         this.containerNumber = containerNumber;
-        return this;
+        return (T) this;
     }
 
-    public BaseDeviceBuilder setProtocolInfo(final ProtocolInfo protocolInfo) {
+    public T setProtocolInfo(final ProtocolInfo protocolInfo) {
         this.protocolInfo = protocolInfo;
-        return this;
+        return (T) this;
     }
 
-    public BaseDeviceBuilder setNetworkAddress(final InetAddress networkAddress) {
+    public T setNetworkAddress(final InetAddress networkAddress) {
         this.networkAddress = networkAddress;
-        return this;
+        return (T) this;
     }
 
-    public BaseDeviceBuilder setContainerMunicipality(final String containerMunicipality) {
+    public T setContainerMunicipality(final String containerMunicipality) {
         this.containerMunicipality = containerMunicipality;
-        return this;
+        return (T) this;
     }
 
-    public BaseDeviceBuilder setAlias(final String alias) {
+    public T setAlias(final String alias) {
         this.alias = alias;
-        return this;
+        return (T) this;
     }
 
-    public BaseDeviceBuilder setInMaintenance(final Boolean inMaintenance) {
+    public T setInMaintenance(final Boolean inMaintenance) {
         this.inMaintenance = inMaintenance;
-        return this;
+        return (T) this;
     }
 
-    public BaseDeviceBuilder setGatewayDevice(final Device gatewayDevice) {
+    public T setGatewayDevice(final Device gatewayDevice) {
         this.gatewayDevice = gatewayDevice;
-        return this;
+        return (T) this;
     }
 
-    public BaseDeviceBuilder setTechnicalInstallationDate(final Date technicalInstallationDate) {
+    public T setTechnicalInstallationDate(final Date technicalInstallationDate) {
         this.technicalInstallationDate = technicalInstallationDate;
-        return this;
+        return (T) this;
     }
 
-    public BaseDeviceBuilder setDeviceModel(final DeviceModel deviceModel) {
+    public T setDeviceModel(final DeviceModel deviceModel) {
         this.deviceModel = deviceModel;
-        return this;
+        return (T) this;
     }
 
-    public BaseDeviceBuilder setIsActive(final boolean isActive) {
+    public T setIsActive(final boolean isActive) {
         this.isActive = isActive;
-        return this;
+        return (T) this;
     }
 
-    public BaseDeviceBuilder withSettings(final Map<String, String> inputSettings) {
+    public T withSettings(final Map<String, String> inputSettings) {
 
         if (inputSettings.containsKey(Keys.KEY_VERSION)) {
             this.setVersion(Long.parseLong(inputSettings.get(Keys.KEY_VERSION)));
@@ -175,7 +176,7 @@ abstract class BaseDeviceBuilder {
         if (inputSettings.containsKey(Keys.KEY_IS_ACTIVE)) {
             this.setIsActive(Boolean.parseBoolean(inputSettings.get(Keys.KEY_IS_ACTIVE)));
         }
-        return this;
+        return (T) this;
     }
 
 }

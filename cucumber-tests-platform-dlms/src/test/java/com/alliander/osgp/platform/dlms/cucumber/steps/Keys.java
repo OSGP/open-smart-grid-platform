@@ -40,8 +40,6 @@ public class Keys {
 
     // other
     public static final String KEY_DEVICE_TYPE = "DeviceType";
-    // public static final String KEY_PROTOCOL = "";
-    // public static final String KEY_PROTOCOL_VERSION = "";
     public static final String KEY_IS_ACTIVATED = null;
     public static final String KEY_CONTAINER_CITY = null;
     public static final String KEY_CONTAINER_STREET = null;
@@ -49,7 +47,6 @@ public class Keys {
     public static final String KEY_GPS_LONGITUDE = null;
     public static final String KEY_CONTAINER_POSTAL_CODE = null;
     public static final String KEY_CONTAINER_NUMBER = null;
-    public static final String KEY_PROTOCOL_INFO = null;
     public static final String KEY_NETWORK_ADDRESS = null;
     public static final String KEY_CONTAINER_MUNICIPALITY = null;
     public static final String KEY_ALIAS = null;
@@ -60,4 +57,6 @@ public class Keys {
     public static final String KEY_IS_ACTIVE = null;
     public static final Short KEY_CHANNEL = null;
     public static final String KEY_SUPPLIER = null;
+    public static final Object KEY_PROTOCOL = "Protocol";
+    public static final Object KEY_PROTOCOL_VERSION = "ProtocolVersion";
 }

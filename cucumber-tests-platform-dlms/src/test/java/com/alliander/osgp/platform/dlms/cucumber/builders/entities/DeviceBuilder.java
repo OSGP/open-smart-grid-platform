@@ -11,7 +11,7 @@ import java.util.Map;
 
 import com.alliander.osgp.domain.core.entities.Device;
 
-public class DeviceBuilder extends BaseDeviceBuilder implements CucumberBuilder<Device> {
+public class DeviceBuilder extends BaseDeviceBuilder<DeviceBuilder> implements CucumberBuilder<Device> {
 
     @Override
     public DeviceBuilder withSettings(final Map<String, String> inputSettings) {
