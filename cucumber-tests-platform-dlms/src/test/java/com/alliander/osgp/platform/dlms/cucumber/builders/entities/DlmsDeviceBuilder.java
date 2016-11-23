@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.dlms.cucumber.steps.database.device;
+package com.alliander.osgp.platform.dlms.cucumber.builders.entities;
 
 import java.util.Map;
 
@@ -15,7 +15,7 @@ import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import com.alliander.osgp.platform.dlms.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.dlms.cucumber.steps.Keys;
 
-public class DlmsDeviceBuilder implements Builder<DlmsDevice> {
+public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
 
     private String deviceIdentification = Defaults.DEFAULT_DEVICE_IDENTIFICATION;
     private Long version = Defaults.DEFAULT_VERSION;
@@ -25,7 +25,7 @@ public class DlmsDeviceBuilder implements Builder<DlmsDevice> {
     private boolean hls3active = Defaults.DEFAULT_HLS3ACTIVE;
     private boolean hls4active = Defaults.DEFAULT_HLS4ACTIVE;
     private boolean hls5active = Defaults.DEFAULT_HLS5ACTIVE;
-    private Long challengeLength = Defaults.DEFAULT_CHALLENGE_LENGTH;
+    private Integer challengeLength = Defaults.DEFAULT_CHALLENGE_LENGTH;
     private boolean withListSupported = Defaults.DEFAULT_WITH_LIST_SUPPORTED;
     private boolean selectiveAccessSupported = Defaults.DEFAULT_SELECTIVE_ACCESS_SUPPORTED;
     private boolean ipAddressIsStatic = Defaults.DEFAULT_IP_ADDRESS_IS_STATIC;
@@ -34,12 +34,12 @@ public class DlmsDeviceBuilder implements Builder<DlmsDevice> {
     private Long logicalId = Defaults.DEFAULT_LOGICAL_ID;
     private boolean inDebugMode = Defaults.DEFAULT_IN_DEBUG_MODE;
 
-    private final SecurityKeyBuilder authenticationSecurityKeyBuilder = new SecurityKeyBuilder()
-            .setSecurityKeyType(SecurityKeyType.E_METER_AUTHENTICATION).setKey(Defaults.DEFAULT_SECURITY_KEY_A);
-    private final SecurityKeyBuilder encryptionSecurityKeyBuilder = new SecurityKeyBuilder()
-            .setSecurityKeyType(SecurityKeyType.E_METER_ENCRYPTION).setKey(Defaults.DEFAULT_SECURITY_KEY_E);
-    private final SecurityKeyBuilder masterSecurityKeyBuilder = new SecurityKeyBuilder()
-            .setSecurityKeyType(SecurityKeyType.E_METER_MASTER).setKey(Defaults.DEFAULT_SECURITY_KEY_M);
+    private final SecurityKeyBuilder authenticationSecurityKeyBuilder = new SecurityKeyBuilder().setSecurityKeyType(
+            SecurityKeyType.E_METER_AUTHENTICATION).setKey(Defaults.DEFAULT_SECURITY_KEY_A);
+    private final SecurityKeyBuilder encryptionSecurityKeyBuilder = new SecurityKeyBuilder().setSecurityKeyType(
+            SecurityKeyType.E_METER_ENCRYPTION).setKey(Defaults.DEFAULT_SECURITY_KEY_E);
+    private final SecurityKeyBuilder masterSecurityKeyBuilder = new SecurityKeyBuilder().setSecurityKeyType(
+            SecurityKeyType.E_METER_MASTER).setKey(Defaults.DEFAULT_SECURITY_KEY_M);
 
     public DlmsDeviceBuilder setDeviceIdentification(final String deviceIdentification) {
         this.deviceIdentification = deviceIdentification;
@@ -81,7 +81,7 @@ public class DlmsDeviceBuilder implements Builder<DlmsDevice> {
         return this;
     }
 
-    public DlmsDeviceBuilder setChallengeLength(final Long challengeLength) {
+    public DlmsDeviceBuilder setChallengeLength(final Integer challengeLength) {
         this.challengeLength = challengeLength;
         return this;
     }
@@ -121,7 +121,6 @@ public class DlmsDeviceBuilder implements Builder<DlmsDevice> {
         return this;
     }
 
-
     /**
      * Retrieve the SecurityKeyBuilder in order to manipulate its values. A
      * SecurityKey can not be set directly because there is a circular
@@ -158,7 +157,8 @@ public class DlmsDeviceBuilder implements Builder<DlmsDevice> {
         return this.masterSecurityKeyBuilder;
     }
 
-    public DlmsDeviceBuilder buildDlmsDevice(final Map<String, String> inputSettings) {
+    @Override
+    public DlmsDeviceBuilder withSettings(final Map<String, String> inputSettings) {
         if (inputSettings.containsKey(Keys.KEY_DEVICE_IDENTIFICATION)) {
             this.setDeviceIdentification((inputSettings.get(Keys.KEY_DEVICE_IDENTIFICATION)));
         }
@@ -184,14 +184,14 @@ public class DlmsDeviceBuilder implements Builder<DlmsDevice> {
             this.setHls5Active(Boolean.parseBoolean(inputSettings.get(Keys.KEY_HLS5ACTIVE)));
         }
         if (inputSettings.containsKey(Keys.KEY_CHALLENGE_LENGTH)) {
-            this.setChallengeLength(Long.parseLong(inputSettings.get(Keys.KEY_CHALLENGE_LENGTH)));
+            this.setChallengeLength(Integer.parseInt(inputSettings.get(Keys.KEY_CHALLENGE_LENGTH)));
         }
         if (inputSettings.containsKey(Keys.KEY_WITH_LIST_SUPPORTED)) {
             this.setWithListSupported(Boolean.parseBoolean(inputSettings.get(Keys.KEY_WITH_LIST_SUPPORTED)));
         }
         if (inputSettings.containsKey(Keys.KEY_SELECTIVE_ACCESS_SUPPORTED)) {
-            this.setSelectiveAccessSupported(
-                    Boolean.parseBoolean(inputSettings.get(Keys.KEY_SELECTIVE_ACCESS_SUPPORTED)));
+            this.setSelectiveAccessSupported(Boolean.parseBoolean(inputSettings
+                    .get(Keys.KEY_SELECTIVE_ACCESS_SUPPORTED)));
         }
         if (inputSettings.containsKey(Keys.KEY_IP_ADDRESS_IS_STATIC)) {
             this.setIpAddressIsStatic(Boolean.parseBoolean(inputSettings.get(Keys.KEY_IP_ADDRESS_IS_STATIC)));
@@ -223,7 +223,7 @@ public class DlmsDeviceBuilder implements Builder<DlmsDevice> {
         dlmsDevice.setHls3Active(this.hls3active);
         dlmsDevice.setHls4Active(this.hls4active);
         dlmsDevice.setHls5Active(this.hls5active);
-        dlmsDevice.setChallengeLength(this.challengeLength.intValue());
+        dlmsDevice.setChallengeLength(this.challengeLength);
         dlmsDevice.setWithListSupported(this.withListSupported);
         dlmsDevice.setSelectiveAccessSupported(this.selectiveAccessSupported);
         dlmsDevice.setIpAddressIsStatic(this.ipAddressIsStatic);

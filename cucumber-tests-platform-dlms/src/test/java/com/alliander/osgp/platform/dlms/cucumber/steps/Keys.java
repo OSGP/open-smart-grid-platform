@@ -39,9 +39,9 @@ public class Keys {
     public static final String KEY_SECURITY_KEY_E = "SecurityKeyEncryption";
 
     // other
-    public static final String KEY_DEVICE_TYPE = "";
-//    public static final String KEY_PROTOCOL = "";
-//    public static final String KEY_PROTOCOL_VERSION = "";
+    public static final String KEY_DEVICE_TYPE = "DeviceType";
+    // public static final String KEY_PROTOCOL = "";
+    // public static final String KEY_PROTOCOL_VERSION = "";
     public static final String KEY_IS_ACTIVATED = null;
     public static final String KEY_CONTAINER_CITY = null;
     public static final String KEY_CONTAINER_STREET = null;
@@ -58,4 +58,6 @@ public class Keys {
     public static final String KEY_TECHNICAL_INSTALLATION_DATE = null;
     public static final String KEY_DEVICE_MODEL = null;
     public static final String KEY_IS_ACTIVE = null;
+    public static final Short KEY_CHANNEL = null;
+    public static final String KEY_SUPPLIER = null;
 }

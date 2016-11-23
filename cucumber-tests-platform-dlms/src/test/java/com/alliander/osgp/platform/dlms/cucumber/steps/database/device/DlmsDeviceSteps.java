@@ -7,51 +7,57 @@
  */
 package com.alliander.osgp.platform.dlms.cucumber.steps.database.device;
 
+import static com.alliander.osgp.platform.cucumber.steps.Defaults.SMART_METER_E;
+import static com.alliander.osgp.platform.cucumber.steps.Defaults.SMART_METER_G;
+
 import java.util.Map;
 
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
-import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsSecurityKeyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.domain.core.entities.Device;
-import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
+import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
+import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
+import com.alliander.osgp.platform.dlms.cucumber.builders.entities.DeviceBuilder;
+import com.alliander.osgp.platform.dlms.cucumber.builders.entities.DlmsDeviceBuilder;
+import com.alliander.osgp.platform.dlms.cucumber.builders.entities.SmartMeterBuilder;
+import com.alliander.osgp.platform.dlms.cucumber.steps.Keys;
 
-public abstract class DlmsDeviceSteps {
+import cucumber.api.java.en.Given;
+
+/**
+ * DLMS device specific steps.
+ */
+public class DlmsDeviceSteps {
+
+    @Autowired
+    private SmartMeterRepository smartMeterRepository;
+
+    @Autowired
+    private DeviceRepository deviceRepository;
 
     @Autowired
     private DlmsDeviceRepository dlmsDeviceRepository;
 
-    @Autowired
-    private DeviceRepository coreDeviceRepository;
+    @Given("^a dlms device$")
+    public void aDlmsDevice(final Map<String, String> inputSettings) throws Throwable {
+        if (this.isSmartMeter(inputSettings)) {
+            final SmartMeter smartMeter = new SmartMeterBuilder().withSettings(inputSettings).build();
+            this.smartMeterRepository.save(smartMeter);
+        } else {
+            final Device device = new DeviceBuilder().withSettings(inputSettings).build();
+            this.deviceRepository.save(device);
+        }
 
-    DlmsDevice dlmsDevice = null;
-    Device coreDevice = null;
-    DeviceAuthorization deviceAuthorization = null;
-    
+        // Protocol adapter
+        final DlmsDevice dlmsDevice = new DlmsDeviceBuilder().withSettings(inputSettings).build();
+        this.dlmsDeviceRepository.save(dlmsDevice);
+    }
 
-    public void createDlmsDevice(final Map<String, String> inputSettings) {
-        final DlmsDeviceBuilder dlmsDeviceBuilder = new DlmsDeviceBuilder().buildDlmsDevice(inputSettings);
-        final DeviceBuilder coreDeviceBuilder = new DeviceBuilder().buildDevice(inputSettings);
-        final DeviceAuthorizationBuilder deviceAuthorizationBuilder = new DeviceAuthorization().buildDeviceAuthorization(inputSettings);
-
-        // Access the builder for security keys.
-        // dlmsDeviceBuilder.getAuthenticationSecurityKeyBuilder().setKey("").setValidFrom(new
-        // Date());
-        dlmsDeviceBuilder.getAuthenticationSecurityKeyBuilder().buildSecurityKey(inputSettings);
-        dlmsDeviceBuilder.getEncryptionSecurityKeyBuilder().buildSecurityKey(inputSettings);
-        dlmsDeviceBuilder.getMasterSecurityKeyBuilder().buildSecurityKey(inputSettings);
-
-        this.dlmsDevice = dlmsDeviceBuilder.build();
-        this.dlmsDeviceRepository.save(this.dlmsDevice);
-
-        this.coreDevice = coreDeviceBuilder.build();
-        this.coreDeviceRepository.save(this.coreDevice);
-        
-        
-        this.deviceAuthorization = deviceAuthorizationBuilder.build();
-        this.deviceAuthorizationRepository.save(this.deviceAuthorization);
+    private boolean isSmartMeter(final Map<String, String> settings) {
+        final String deviceType = settings.get(Keys.KEY_DEVICE_TYPE);
+        return SMART_METER_E.equals(deviceType) || SMART_METER_G.equals(deviceType);
     }
 }

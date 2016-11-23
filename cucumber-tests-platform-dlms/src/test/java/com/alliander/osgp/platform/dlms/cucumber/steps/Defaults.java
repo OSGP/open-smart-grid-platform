@@ -7,7 +7,13 @@
  */
 package com.alliander.osgp.platform.dlms.cucumber.steps;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Date;
+
+import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.DeviceModel;
+import com.alliander.osgp.domain.core.entities.ProtocolInfo;
 
 public class Defaults {
 
@@ -20,7 +26,7 @@ public class Defaults {
     public static final boolean DEFAULT_HLS3ACTIVE = false;
     public static final boolean DEFAULT_HLS4ACTIVE = false;
     public static final boolean DEFAULT_HLS5ACTIVE = true;
-    public static final Long DEFAULT_CHALLENGE_LENGTH = null;
+    public static final Integer DEFAULT_CHALLENGE_LENGTH = null;
     public static final boolean DEFAULT_WITH_LIST_SUPPORTED = false;
     public static final boolean DEFAULT_SELECTIVE_ACCESS_SUPPORTED = false;
     public static final boolean DEFAULT_IP_ADDRESS_IS_STATIC = true;
@@ -30,7 +36,7 @@ public class Defaults {
     public static final boolean DEFAULT_IN_DEBUG_MODE = false;
 
     // Default values security_key
-    //public static final String DEFAULT_DLMS_DEVICE_ID = null;
+    // public static final String DEFAULT_DLMS_DEVICE_ID = null;
 
     public static final String DEFAULT_SECURITY_KEY_TYPE_M = "E_METER_MASTER";
     public static final String DEFAULT_SECURITY_KEY_TYPE_A = "E_METER_AUTHENTICATION";
@@ -53,13 +59,23 @@ public class Defaults {
     public static final Float DEFAULT_GPS_LONGITUDE = null;
     public static final String DEFAULT_CONTAINER_POSTAL_CODE = null;
     public static final String DEFAULT_CONTAINER_NUMBER = null;
-    public static final Long DEFAULT_PROTOCOL_INFO = null;
-    public static final String DEFAULT_NETWORK_ADDRESS = "localhost";
+    public static final ProtocolInfo DEFAULT_PROTOCOL_INFO = null;
+    public static final InetAddress DEFAULT_NETWORK_ADDRESS;
     public static final String DEFAULT_CONTAINER_MUNICIPALITY = null;
     public static final String DEFAULT_ALIAS = null;
     public static final boolean DEFAULT_IN_MAINTENANCE = false;
-    public static final Long DEFAULT_GATEWAY_DEVICE = null;
-    public static final Long DEFAULT_DEVICE_MODEL = null;
+    public static final Device DEFAULT_GATEWAY_DEVICE = null;
+    public static final DeviceModel DEFAULT_DEVICE_MODEL = null;
     public static final Date DEFAULT_TECHNICAL_INSTALLATION_DATE = new Date();
     public static final boolean DEFAULT_IS_ACTIVE = true;
+
+    static {
+        InetAddress localhost;
+        try {
+            localhost = InetAddress.getLocalHost();
+        } catch (final UnknownHostException e) {
+            localhost = null;
+        }
+        DEFAULT_NETWORK_ADDRESS = localhost;
+    }
 }
