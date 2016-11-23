@@ -26,10 +26,13 @@ public class NotificationServiceWs implements NotificationService {
     private SendNotificationServiceClient sendNotificationServiceClient;
 
     private String notificationUrl;
+    
+    private String notificationUsername;
 
-    public NotificationServiceWs(final SendNotificationServiceClient client, final String notificationUrl) {
+    public NotificationServiceWs(final SendNotificationServiceClient client, final String notificationUrl, final String notificationUsername) {
         this.sendNotificationServiceClient = client;
         this.notificationUrl = notificationUrl;
+        this.notificationUsername = notificationUsername;
     }
 
     /*
@@ -59,7 +62,7 @@ public class NotificationServiceWs implements NotificationService {
 
         try {
             this.sendNotificationServiceClient.sendNotification(organisationIdentification, notification,
-                    this.notificationUrl);
+                    this.notificationUrl, this.notificationUsername);
         } catch (final WebServiceSecurityException e) {
             LOGGER.error(e.getMessage(), e);
         }
