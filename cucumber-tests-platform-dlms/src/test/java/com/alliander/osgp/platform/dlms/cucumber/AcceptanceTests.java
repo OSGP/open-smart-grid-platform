@@ -15,7 +15,7 @@ import cucumber.api.SnippetType;
 import cucumber.api.junit.Cucumber;
 
 @RunWith(Cucumber.class)
-@CucumberOptions(features = "src/test/resources/features", tags = { "~@OslpMockServer" }, glue = {
+@CucumberOptions(features = "src/test/resources/features", tags = { "@test" }, glue = {
         "com.alliander.osgp.platform.cucumber", "com.alliander.osgp.platform.dlms.cucumber" }, plugin = { "pretty",
         "html:target/output/Cucumber-report", "html:target/output/Cucumber-html-report.html" }, snippets = SnippetType.CAMELCASE)
 public class AcceptanceTests extends AbstractTransactionalJUnit4SpringContextTests {

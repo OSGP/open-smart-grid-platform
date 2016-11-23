@@ -11,7 +11,7 @@ Feature: SmartMetering Configuration
       | DeviceIdentification        | TESTG102400000001 |
       | DeviceType                  | SMART_METER_G     |
       | GatewayDeviceIdentification | TEST1024000000001 |
-@OslpMockServer
+
   Scenario: Set special days on a device
     When the set special days request is received
       | DeviceIdentification | TEST1024000000001 |
