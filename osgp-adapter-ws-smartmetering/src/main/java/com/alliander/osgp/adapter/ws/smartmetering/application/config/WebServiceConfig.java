@@ -79,10 +79,10 @@ public class WebServiceConfig extends AbstractConfig {
 
     @Value("${web.service.keystore.location}")
     private String webserviceKeystoreLocation;
-    
+
     @Value("${web.service.keystore.password}")
     private String webserviceKeystorePassword;
-    
+
     @Value("${web.service.keystore.type}")
     private String webserviceKeystoreType;
 
@@ -91,7 +91,7 @@ public class WebServiceConfig extends AbstractConfig {
 
     @Value("${web.service.notification.username:#{null}}")
     private String webserviceNotificationUsername;
-    
+
     @Value("${application.name}")
     private String applicationName;
 
