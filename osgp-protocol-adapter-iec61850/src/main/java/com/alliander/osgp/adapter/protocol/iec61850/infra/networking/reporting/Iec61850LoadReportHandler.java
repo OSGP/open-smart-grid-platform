@@ -24,7 +24,11 @@ public class Iec61850LoadReportHandler implements Iec61850ReportHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850LoadReportHandler.class);
 
     private static final String SYSTEM_TYPE = "LOAD";
-    private static final String NODES_USING_ID = "TotWh,TotW,MaxWPhs,MinWPhs";
+    private static final List<String> NODES_USING_ID_LIST = new ArrayList<>();
+
+    static {
+        intializeNodesUsingIdList();
+    }
 
     private int systemId;
 
@@ -55,9 +59,20 @@ public class Iec61850LoadReportHandler implements Iec61850ReportHandler {
         }
     }
 
+    private static void intializeNodesUsingIdList() {
+        NODES_USING_ID_LIST.add("TotWh");
+        NODES_USING_ID_LIST.add("TotW");
+        NODES_USING_ID_LIST.add("MaxWPhs");
+        NODES_USING_ID_LIST.add("MinWPhs");
+    }
+
+    private static boolean useId(final String nodeName) {
+        return NODES_USING_ID_LIST.contains(nodeName);
+    }
+
     private String getCommandName(final ReadOnlyNodeContainer member) {
         final String nodeName = member.getFcmodelNode().getName();
-        if (NODES_USING_ID.contains(nodeName)) {
+        if (useId(nodeName)) {
             final String refName = member.getFcmodelNode().getReference().toString();
             final int startIndex = refName.length() - nodeName.length() - 2;
             return nodeName + refName.substring(startIndex, startIndex + 1);
@@ -65,4 +80,5 @@ public class Iec61850LoadReportHandler implements Iec61850ReportHandler {
             return nodeName;
         }
     }
+
 }
