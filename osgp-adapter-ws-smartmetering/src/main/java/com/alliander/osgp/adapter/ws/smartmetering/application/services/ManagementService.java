@@ -82,7 +82,7 @@ public class ManagementService {
 
     public String enqueueFindEventsRequest(final String organisationIdentification, final String deviceIdentification,
             final List<FindEventsRequestData> findEventsQueryList, final int messagePriority, final Long scheduleTime)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -106,8 +106,8 @@ public class ManagementService {
                 messagePriority, scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata)
-        .request(new FindEventsRequestDataList(findEventsQueryList)).build();
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .request(new FindEventsRequestDataList(findEventsQueryList)).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -173,7 +173,7 @@ public class ManagementService {
 
     public String enqueueEnableDebuggingRequest(final String organisationIdentification,
             final String deviceIdentification, final int messagePriority, final Long scheduleTime)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -199,7 +199,7 @@ public class ManagementService {
 
     public String enqueueDisableDebuggingRequest(final String organisationIdentification,
             final String deviceIdentification, final int messagePriority, final Long scheduleTime)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -247,15 +247,8 @@ public class ManagementService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        // Delay execution so the notification will not arrive before the
-        // response of this call.
-        new java.util.Timer().schedule(new java.util.TimerTask() {
-            @Override
-            public void run() {
-                ManagementService.this.findMessageLogsSyncRequestExecutor.execute(organisationIdentification,
-                        deviceIdentification, correlationUid, pageNumber);
-            }
-        }, 5000); // TODO put delay in property.
+        this.findMessageLogsSyncRequestExecutor.execute(organisationIdentification, deviceIdentification,
+                correlationUid, pageNumber);
 
         return correlationUid;
     }
