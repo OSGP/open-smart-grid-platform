@@ -77,6 +77,7 @@
 		<module>Platform/osgp-adapter-ws-publiclighting</module>
 		<module>Platform/osgp-adapter-ws-tariffswitching</module>
 		<module>Platform/osgp-adapter-ws-smartmetering</module>
+        <module>Platform/osgp-adapter-ws-microgrids</module>
 
 		<module>Platform/osgp-core</module>
 		<module>Platform/osgp-logging</module>
