@@ -14,10 +14,10 @@ import com.alliander.osgp.platform.dlms.cucumber.steps.Keys;
 public class SecurityKeyBuilder implements CucumberBuilder<SecurityKey> {
 
     private SecurityKeyType securityKeyType = null;
-    private Date validFrom = Defaults.DEFAULT_VALID_FROM;
-    private Date validTo = Defaults.DEFAULT_VALID_TO;
-    private Long version = Defaults.DEFAULT_VERSION;
-    private String key = Defaults.DEFAULT_SECURITY_KEY_A;
+    private Date validFrom = Defaults.VALID_FROM;
+    private Date validTo = Defaults.VALID_TO;
+    private Long version = Defaults.VERSION;
+    private String key = Defaults.SECURITY_KEY_A;
 
     private DlmsDevice dlmsDevice;
 
@@ -53,26 +53,26 @@ public class SecurityKeyBuilder implements CucumberBuilder<SecurityKey> {
 
     @Override
     public SecurityKeyBuilder withSettings(final Map<String, String> inputSettings) {
-        if (inputSettings.containsKey(Keys.KEY_VERSION)) {
-            this.setVersion(Long.parseLong(inputSettings.get(Keys.KEY_VERSION)));
+        if (inputSettings.containsKey(Keys.VERSION)) {
+            this.setVersion(Long.parseLong(inputSettings.get(Keys.VERSION)));
         }
-        if (inputSettings.containsKey(Keys.KEY_VALID_FROM)) {
-            this.setValidFrom(DateInputParser.parse(inputSettings.get(Keys.KEY_VALID_FROM)));
+        if (inputSettings.containsKey(Keys.VALID_FROM)) {
+            this.setValidFrom(DateInputParser.parse(inputSettings.get(Keys.VALID_FROM)));
         }
-        if (inputSettings.containsKey(Keys.KEY_VALID_TO)) {
-            this.setValidTo(DateInputParser.parse(inputSettings.get(Keys.KEY_VALID_TO)));
-        }
-
-        if (inputSettings.containsKey(Keys.KEY_SECURITY_KEY_A)) {
-            this.setKey(inputSettings.get(Keys.KEY_SECURITY_KEY_A));
+        if (inputSettings.containsKey(Keys.VALID_TO)) {
+            this.setValidTo(DateInputParser.parse(inputSettings.get(Keys.VALID_TO)));
         }
 
-        if (inputSettings.containsKey(Keys.KEY_SECURITY_KEY_M)) {
-            this.setKey(inputSettings.get(Keys.KEY_SECURITY_KEY_M));
+        if (inputSettings.containsKey(Keys.SECURITY_KEY_A)) {
+            this.setKey(inputSettings.get(Keys.SECURITY_KEY_A));
         }
 
-        if (inputSettings.containsKey(Keys.KEY_SECURITY_KEY_E)) {
-            this.setKey(inputSettings.get(Keys.KEY_SECURITY_KEY_E));
+        if (inputSettings.containsKey(Keys.SECURITY_KEY_M)) {
+            this.setKey(inputSettings.get(Keys.SECURITY_KEY_M));
+        }
+
+        if (inputSettings.containsKey(Keys.SECURITY_KEY_E)) {
+            this.setKey(inputSettings.get(Keys.SECURITY_KEY_E));
         }
 
         return this;

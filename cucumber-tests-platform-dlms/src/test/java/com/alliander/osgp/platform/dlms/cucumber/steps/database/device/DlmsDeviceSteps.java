@@ -55,13 +55,13 @@ public class DlmsDeviceSteps {
                     .setProtocolInfo(this.getProtocolInfo(inputSettings)).build();
             this.smartMeterRepository.save(smartMeter);
 
-            ScenarioContext.Current().put(Keys.KEY_DEVICE_IDENTIFICATION, smartMeter.getDeviceIdentification());
+            ScenarioContext.Current().put(Keys.DEVICE_IDENTIFICATION, smartMeter.getDeviceIdentification());
         } else {
             final Device device = new DeviceBuilder().withSettings(inputSettings)
                     .setProtocolInfo(this.getProtocolInfo(inputSettings)).build();
             this.deviceRepository.save(device);
 
-            ScenarioContext.Current().put(Keys.KEY_DEVICE_IDENTIFICATION, device.getDeviceIdentification());
+            ScenarioContext.Current().put(Keys.DEVICE_IDENTIFICATION, device.getDeviceIdentification());
         }
 
         // Protocol adapter
@@ -70,7 +70,7 @@ public class DlmsDeviceSteps {
     }
 
     private boolean isSmartMeter(final Map<String, String> settings) {
-        final String deviceType = settings.get(Keys.KEY_DEVICE_TYPE);
+        final String deviceType = settings.get(Keys.DEVICE_TYPE);
         return SMART_METER_E.equals(deviceType) || SMART_METER_G.equals(deviceType);
     }
 
@@ -82,12 +82,12 @@ public class DlmsDeviceSteps {
      * @return ProtocolInfo
      */
     private ProtocolInfo getProtocolInfo(final Map<String, String> inputSettings) {
-        if (inputSettings.containsKey(Keys.KEY_PROTOCOL) && inputSettings.containsKey(Keys.KEY_PROTOCOL_VERSION)) {
-            return this.protocolInfoRepository.findByProtocolAndProtocolVersion(inputSettings.get(Keys.KEY_PROTOCOL),
-                    inputSettings.get(Keys.KEY_PROTOCOL_VERSION));
+        if (inputSettings.containsKey(Keys.PROTOCOL) && inputSettings.containsKey(Keys.PROTOCOL_VERSION)) {
+            return this.protocolInfoRepository.findByProtocolAndProtocolVersion(inputSettings.get(Keys.PROTOCOL),
+                    inputSettings.get(Keys.PROTOCOL_VERSION));
         } else {
-            return this.protocolInfoRepository.findByProtocolAndProtocolVersion(Defaults.DEFAULT_PROTOCOL,
-                    Defaults.DEFAULT_PROTOCOL_VERSION);
+            return this.protocolInfoRepository.findByProtocolAndProtocolVersion(Defaults.PROTOCOL,
+                    Defaults.PROTOCOL_VERSION);
         }
     }
 }

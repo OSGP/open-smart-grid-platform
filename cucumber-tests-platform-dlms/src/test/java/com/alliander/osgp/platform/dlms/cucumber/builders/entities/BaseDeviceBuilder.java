@@ -13,25 +13,25 @@ import com.alliander.osgp.platform.dlms.cucumber.steps.Keys;
 
 @SuppressWarnings("unchecked")
 public abstract class BaseDeviceBuilder<T> {
-    Long version = Defaults.DEFAULT_VERSION;
-    String deviceIdentification = Defaults.DEFAULT_DEVICE_IDENTIFICATION;
-    String deviceType = Defaults.DEFAULT_DEVICE_TYPE;
-    boolean isActivated = Defaults.DEFAULT_IS_ACTIVATED;
-    String containerCity = Defaults.DEFAULT_CONTAINER_CITY;
-    String containerStreet = Defaults.DEFAULT_CONTAINER_STREET;
-    Float gpsLatitude = Defaults.DEFAULT_GPS_LATITUDE;
-    Float gpsLongitude = Defaults.DEFAULT_GPS_LONGITUDE;
-    String containerPostalCode = Defaults.DEFAULT_CONTAINER_POSTAL_CODE;
-    String containerNumber = Defaults.DEFAULT_CONTAINER_NUMBER;
+    Long version = Defaults.VERSION;
+    String deviceIdentification = Defaults.DEVICE_IDENTIFICATION;
+    String deviceType = Defaults.DEVICE_TYPE;
+    boolean isActivated = Defaults.IS_ACTIVATED;
+    String containerCity = Defaults.CONTAINER_CITY;
+    String containerStreet = Defaults.CONTAINER_STREET;
+    Float gpsLatitude = Defaults.GPS_LATITUDE;
+    Float gpsLongitude = Defaults.GPS_LONGITUDE;
+    String containerPostalCode = Defaults.CONTAINER_POSTAL_CODE;
+    String containerNumber = Defaults.CONTAINER_NUMBER;
     ProtocolInfo protocolInfo = null;
-    InetAddress networkAddress = Defaults.DEFAULT_NETWORK_ADDRESS;
-    String containerMunicipality = Defaults.DEFAULT_CONTAINER_MUNICIPALITY;
-    String alias = Defaults.DEFAULT_ALIAS;
-    boolean inMaintenance = Defaults.DEFAULT_IN_MAINTENANCE;
-    Device gatewayDevice = Defaults.DEFAULT_GATEWAY_DEVICE;
-    Date technicalInstallationDate = Defaults.DEFAULT_TECHNICAL_INSTALLATION_DATE;
-    DeviceModel deviceModel = Defaults.DEFAULT_DEVICE_MODEL;
-    boolean isActive = Defaults.DEFAULT_IS_ACTIVE;
+    InetAddress networkAddress = Defaults.NETWORK_ADDRESS;
+    String containerMunicipality = Defaults.CONTAINER_MUNICIPALITY;
+    String alias = Defaults.ALIAS;
+    boolean inMaintenance = Defaults.IN_MAINTENANCE;
+    Device gatewayDevice = Defaults.GATEWAY_DEVICE;
+    Date technicalInstallationDate = Defaults.TECHNICAL_INSTALLATION_DATE;
+    DeviceModel deviceModel = Defaults.DEVICE_MODEL;
+    boolean isActive = Defaults.IS_ACTIVE;
 
     public T setVersion(final Long version) {
         this.version = version;
@@ -130,51 +130,50 @@ public abstract class BaseDeviceBuilder<T> {
 
     public T withSettings(final Map<String, String> inputSettings) {
 
-        if (inputSettings.containsKey(Keys.KEY_VERSION)) {
-            this.setVersion(Long.parseLong(inputSettings.get(Keys.KEY_VERSION)));
+        if (inputSettings.containsKey(Keys.VERSION)) {
+            this.setVersion(Long.parseLong(inputSettings.get(Keys.VERSION)));
         }
-        if (inputSettings.containsKey(Keys.KEY_DEVICE_IDENTIFICATION)) {
-            this.setDeviceIdentification(inputSettings.get(Keys.KEY_DEVICE_IDENTIFICATION));
+        if (inputSettings.containsKey(Keys.DEVICE_IDENTIFICATION)) {
+            this.setDeviceIdentification(inputSettings.get(Keys.DEVICE_IDENTIFICATION));
         }
-        if (inputSettings.containsKey(Keys.KEY_DEVICE_TYPE)) {
-            this.setDeviceType(inputSettings.get(Keys.KEY_DEVICE_TYPE));
+        if (inputSettings.containsKey(Keys.DEVICE_TYPE)) {
+            this.setDeviceType(inputSettings.get(Keys.DEVICE_TYPE));
         }
-        if (inputSettings.containsKey(Keys.KEY_IS_ACTIVATED)) {
-            this.setIsActivated(Boolean.parseBoolean(inputSettings.get(Keys.KEY_IS_ACTIVATED)));
+        if (inputSettings.containsKey(Keys.IS_ACTIVATED)) {
+            this.setIsActivated(Boolean.parseBoolean(inputSettings.get(Keys.IS_ACTIVATED)));
         }
-        if (inputSettings.containsKey(Keys.KEY_CONTAINER_CITY)) {
-            this.setContainerCity(inputSettings.get(Keys.KEY_CONTAINER_CITY));
+        if (inputSettings.containsKey(Keys.CONTAINER_CITY)) {
+            this.setContainerCity(inputSettings.get(Keys.CONTAINER_CITY));
         }
-        if (inputSettings.containsKey(Keys.KEY_CONTAINER_STREET)) {
-            this.setContainerStreet(inputSettings.get(Keys.KEY_CONTAINER_STREET));
+        if (inputSettings.containsKey(Keys.CONTAINER_STREET)) {
+            this.setContainerStreet(inputSettings.get(Keys.CONTAINER_STREET));
         }
-        if (inputSettings.containsKey(Keys.KEY_GPS_LATITUDE)) {
-            this.setGpsLatitude(Float.parseFloat(inputSettings.get(Keys.KEY_GPS_LATITUDE)));
+        if (inputSettings.containsKey(Keys.GPS_LATITUDE)) {
+            this.setGpsLatitude(Float.parseFloat(inputSettings.get(Keys.GPS_LATITUDE)));
         }
-        if (inputSettings.containsKey(Keys.KEY_GPS_LONGITUDE)) {
-            this.setGpsLongitude(Float.parseFloat(inputSettings.get(Keys.KEY_GPS_LONGITUDE)));
+        if (inputSettings.containsKey(Keys.GPS_LONGITUDE)) {
+            this.setGpsLongitude(Float.parseFloat(inputSettings.get(Keys.GPS_LONGITUDE)));
         }
-        if (inputSettings.containsKey(Keys.KEY_CONTAINER_POSTAL_CODE)) {
-            this.setContainerPostalCode(inputSettings.get(Keys.KEY_CONTAINER_POSTAL_CODE));
+        if (inputSettings.containsKey(Keys.CONTAINER_POSTAL_CODE)) {
+            this.setContainerPostalCode(inputSettings.get(Keys.CONTAINER_POSTAL_CODE));
         }
-        if (inputSettings.containsKey(Keys.KEY_CONTAINER_NUMBER)) {
-            this.setContainerNumber(inputSettings.get(Keys.KEY_CONTAINER_NUMBER));
+        if (inputSettings.containsKey(Keys.CONTAINER_NUMBER)) {
+            this.setContainerNumber(inputSettings.get(Keys.CONTAINER_NUMBER));
         }
-        if (inputSettings.containsKey(Keys.KEY_CONTAINER_MUNICIPALITY)) {
-            this.setContainerMunicipality(inputSettings.get(Keys.KEY_CONTAINER_MUNICIPALITY));
+        if (inputSettings.containsKey(Keys.CONTAINER_MUNICIPALITY)) {
+            this.setContainerMunicipality(inputSettings.get(Keys.CONTAINER_MUNICIPALITY));
         }
-        if (inputSettings.containsKey(Keys.KEY_ALIAS)) {
-            this.setAlias(inputSettings.get(Keys.KEY_ALIAS));
+        if (inputSettings.containsKey(Keys.ALIAS)) {
+            this.setAlias(inputSettings.get(Keys.ALIAS));
         }
-        if (inputSettings.containsKey(Keys.KEY_IN_MAINTENANCE)) {
-            this.setInMaintenance(Boolean.parseBoolean(inputSettings.get(Keys.KEY_IN_MAINTENANCE)));
+        if (inputSettings.containsKey(Keys.IN_MAINTENANCE)) {
+            this.setInMaintenance(Boolean.parseBoolean(inputSettings.get(Keys.IN_MAINTENANCE)));
         }
-        if (inputSettings.containsKey(Keys.KEY_TECHNICAL_INSTALLATION_DATE)) {
-            this.setTechnicalInstallationDate(DateInputParser.parse(inputSettings
-                    .get(Keys.KEY_TECHNICAL_INSTALLATION_DATE)));
+        if (inputSettings.containsKey(Keys.TECHNICAL_INSTALLATION_DATE)) {
+            this.setTechnicalInstallationDate(DateInputParser.parse(inputSettings.get(Keys.TECHNICAL_INSTALLATION_DATE)));
         }
-        if (inputSettings.containsKey(Keys.KEY_IS_ACTIVE)) {
-            this.setIsActive(Boolean.parseBoolean(inputSettings.get(Keys.KEY_IS_ACTIVE)));
+        if (inputSettings.containsKey(Keys.IS_ACTIVE)) {
+            this.setIsActive(Boolean.parseBoolean(inputSettings.get(Keys.IS_ACTIVE)));
         }
         return (T) this;
     }

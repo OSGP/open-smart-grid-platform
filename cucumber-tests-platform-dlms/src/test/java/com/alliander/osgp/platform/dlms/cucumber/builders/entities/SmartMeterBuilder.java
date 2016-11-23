@@ -47,11 +47,11 @@ public class SmartMeterBuilder extends BaseDeviceBuilder<SmartMeterBuilder> impl
     public SmartMeterBuilder withSettings(final Map<String, String> inputSettings) {
         super.withSettings(inputSettings);
 
-        if (inputSettings.containsKey(Keys.KEY_CHANNEL)) {
-            this.setChannel(Short.parseShort(inputSettings.get(Keys.KEY_CHANNEL)));
+        if (inputSettings.containsKey(Keys.CHANNEL)) {
+            this.setChannel(Short.parseShort(inputSettings.get(Keys.CHANNEL)));
         }
-        if (inputSettings.containsKey(Keys.KEY_SUPPLIER)) {
-            this.setSupplier(inputSettings.get(Keys.KEY_SUPPLIER));
+        if (inputSettings.containsKey(Keys.SUPPLIER)) {
+            this.setSupplier(inputSettings.get(Keys.SUPPLIER));
         }
 
         return this;

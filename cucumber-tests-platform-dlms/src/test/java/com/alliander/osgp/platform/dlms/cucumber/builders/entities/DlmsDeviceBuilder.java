@@ -17,29 +17,29 @@ import com.alliander.osgp.platform.dlms.cucumber.steps.Keys;
 
 public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
 
-    private String deviceIdentification = Defaults.DEFAULT_DEVICE_IDENTIFICATION;
-    private Long version = Defaults.DEFAULT_VERSION;
-    private String iccId = Defaults.DEFAULT_ICC_ID;
-    private String communicationProvider = Defaults.DEFAULT_COMMUNICATION_PROVIDER;
-    private String communicationMethod = Defaults.DEFAULT_COMMUNICATION_METHOD;
-    private boolean hls3active = Defaults.DEFAULT_HLS3ACTIVE;
-    private boolean hls4active = Defaults.DEFAULT_HLS4ACTIVE;
-    private boolean hls5active = Defaults.DEFAULT_HLS5ACTIVE;
-    private Integer challengeLength = Defaults.DEFAULT_CHALLENGE_LENGTH;
-    private boolean withListSupported = Defaults.DEFAULT_WITH_LIST_SUPPORTED;
-    private boolean selectiveAccessSupported = Defaults.DEFAULT_SELECTIVE_ACCESS_SUPPORTED;
-    private boolean ipAddressIsStatic = Defaults.DEFAULT_IP_ADDRESS_IS_STATIC;
-    private Long port = Defaults.DEFAULT_PORT;
-    private Long clientId = Defaults.DEFAULT_CLIENT_ID;
-    private Long logicalId = Defaults.DEFAULT_LOGICAL_ID;
-    private boolean inDebugMode = Defaults.DEFAULT_IN_DEBUG_MODE;
+    private String deviceIdentification = Defaults.DEVICE_IDENTIFICATION;
+    private Long version = Defaults.VERSION;
+    private String iccId = Defaults.ICC_ID;
+    private String communicationProvider = Defaults.COMMUNICATION_PROVIDER;
+    private String communicationMethod = Defaults.COMMUNICATION_METHOD;
+    private boolean hls3active = Defaults.HLS3ACTIVE;
+    private boolean hls4active = Defaults.HLS4ACTIVE;
+    private boolean hls5active = Defaults.HLS5ACTIVE;
+    private Integer challengeLength = Defaults.CHALLENGE_LENGTH;
+    private boolean withListSupported = Defaults.WITH_LIST_SUPPORTED;
+    private boolean selectiveAccessSupported = Defaults.SELECTIVE_ACCESS_SUPPORTED;
+    private boolean ipAddressIsStatic = Defaults.IP_ADDRESS_IS_STATIC;
+    private Long port = Defaults.PORT;
+    private Long clientId = Defaults.CLIENT_ID;
+    private Long logicalId = Defaults.LOGICAL_ID;
+    private boolean inDebugMode = Defaults.IN_DEBUG_MODE;
 
     private final SecurityKeyBuilder authenticationSecurityKeyBuilder = new SecurityKeyBuilder().setSecurityKeyType(
-            SecurityKeyType.E_METER_AUTHENTICATION).setKey(Defaults.DEFAULT_SECURITY_KEY_A);
+            SecurityKeyType.E_METER_AUTHENTICATION).setKey(Defaults.SECURITY_KEY_A);
     private final SecurityKeyBuilder encryptionSecurityKeyBuilder = new SecurityKeyBuilder().setSecurityKeyType(
-            SecurityKeyType.E_METER_ENCRYPTION).setKey(Defaults.DEFAULT_SECURITY_KEY_E);
+            SecurityKeyType.E_METER_ENCRYPTION).setKey(Defaults.SECURITY_KEY_E);
     private final SecurityKeyBuilder masterSecurityKeyBuilder = new SecurityKeyBuilder().setSecurityKeyType(
-            SecurityKeyType.E_METER_MASTER).setKey(Defaults.DEFAULT_SECURITY_KEY_M);
+            SecurityKeyType.E_METER_MASTER).setKey(Defaults.SECURITY_KEY_M);
 
     public DlmsDeviceBuilder setDeviceIdentification(final String deviceIdentification) {
         this.deviceIdentification = deviceIdentification;
@@ -159,54 +159,53 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
 
     @Override
     public DlmsDeviceBuilder withSettings(final Map<String, String> inputSettings) {
-        if (inputSettings.containsKey(Keys.KEY_DEVICE_IDENTIFICATION)) {
-            this.setDeviceIdentification((inputSettings.get(Keys.KEY_DEVICE_IDENTIFICATION)));
+        if (inputSettings.containsKey(Keys.DEVICE_IDENTIFICATION)) {
+            this.setDeviceIdentification((inputSettings.get(Keys.DEVICE_IDENTIFICATION)));
         }
-        if (inputSettings.containsKey(Keys.KEY_VERSION)) {
-            this.setVersion(Long.parseLong(inputSettings.get(Keys.KEY_VERSION)));
+        if (inputSettings.containsKey(Keys.VERSION)) {
+            this.setVersion(Long.parseLong(inputSettings.get(Keys.VERSION)));
         }
-        if (inputSettings.containsKey(Keys.KEY_ICC_ID)) {
-            this.setIccId((inputSettings.get(Keys.KEY_ICC_ID)));
+        if (inputSettings.containsKey(Keys.ICC_ID)) {
+            this.setIccId((inputSettings.get(Keys.ICC_ID)));
         }
-        if (inputSettings.containsKey(Keys.KEY_COMMUNICATION_PROVIDER)) {
-            this.setCommunicationProvider((inputSettings.get(Keys.KEY_COMMUNICATION_PROVIDER)));
+        if (inputSettings.containsKey(Keys.COMMUNICATION_PROVIDER)) {
+            this.setCommunicationProvider((inputSettings.get(Keys.COMMUNICATION_PROVIDER)));
         }
-        if (inputSettings.containsKey(Keys.KEY_COMMUNICATION_METHOD)) {
-            this.setCommunicationMethod((inputSettings.get(Keys.KEY_COMMUNICATION_METHOD)));
+        if (inputSettings.containsKey(Keys.COMMUNICATION_METHOD)) {
+            this.setCommunicationMethod((inputSettings.get(Keys.COMMUNICATION_METHOD)));
         }
-        if (inputSettings.containsKey(Keys.KEY_HLS3ACTIVE)) {
-            this.setHls3Active(Boolean.parseBoolean(inputSettings.get(Keys.KEY_HLS3ACTIVE)));
+        if (inputSettings.containsKey(Keys.HLS3ACTIVE)) {
+            this.setHls3Active(Boolean.parseBoolean(inputSettings.get(Keys.HLS3ACTIVE)));
         }
-        if (inputSettings.containsKey(Keys.KEY_HLS4ACTIVE)) {
-            this.setHls4Active(Boolean.parseBoolean(inputSettings.get(Keys.KEY_HLS4ACTIVE)));
+        if (inputSettings.containsKey(Keys.HLS4ACTIVE)) {
+            this.setHls4Active(Boolean.parseBoolean(inputSettings.get(Keys.HLS4ACTIVE)));
         }
-        if (inputSettings.containsKey(Keys.KEY_HLS5ACTIVE)) {
-            this.setHls5Active(Boolean.parseBoolean(inputSettings.get(Keys.KEY_HLS5ACTIVE)));
+        if (inputSettings.containsKey(Keys.HLS5ACTIVE)) {
+            this.setHls5Active(Boolean.parseBoolean(inputSettings.get(Keys.HLS5ACTIVE)));
         }
-        if (inputSettings.containsKey(Keys.KEY_CHALLENGE_LENGTH)) {
-            this.setChallengeLength(Integer.parseInt(inputSettings.get(Keys.KEY_CHALLENGE_LENGTH)));
+        if (inputSettings.containsKey(Keys.CHALLENGE_LENGTH)) {
+            this.setChallengeLength(Integer.parseInt(inputSettings.get(Keys.CHALLENGE_LENGTH)));
         }
-        if (inputSettings.containsKey(Keys.KEY_WITH_LIST_SUPPORTED)) {
-            this.setWithListSupported(Boolean.parseBoolean(inputSettings.get(Keys.KEY_WITH_LIST_SUPPORTED)));
+        if (inputSettings.containsKey(Keys.WITH_LIST_SUPPORTED)) {
+            this.setWithListSupported(Boolean.parseBoolean(inputSettings.get(Keys.WITH_LIST_SUPPORTED)));
         }
-        if (inputSettings.containsKey(Keys.KEY_SELECTIVE_ACCESS_SUPPORTED)) {
-            this.setSelectiveAccessSupported(Boolean.parseBoolean(inputSettings
-                    .get(Keys.KEY_SELECTIVE_ACCESS_SUPPORTED)));
+        if (inputSettings.containsKey(Keys.SELECTIVE_ACCESS_SUPPORTED)) {
+            this.setSelectiveAccessSupported(Boolean.parseBoolean(inputSettings.get(Keys.SELECTIVE_ACCESS_SUPPORTED)));
         }
-        if (inputSettings.containsKey(Keys.KEY_IP_ADDRESS_IS_STATIC)) {
-            this.setIpAddressIsStatic(Boolean.parseBoolean(inputSettings.get(Keys.KEY_IP_ADDRESS_IS_STATIC)));
+        if (inputSettings.containsKey(Keys.IP_ADDRESS_IS_STATIC)) {
+            this.setIpAddressIsStatic(Boolean.parseBoolean(inputSettings.get(Keys.IP_ADDRESS_IS_STATIC)));
         }
-        if (inputSettings.containsKey(Keys.KEY_PORT)) {
-            this.setPort(Long.parseLong(inputSettings.get(Keys.KEY_PORT)));
+        if (inputSettings.containsKey(Keys.PORT)) {
+            this.setPort(Long.parseLong(inputSettings.get(Keys.PORT)));
         }
-        if (inputSettings.containsKey(Keys.KEY_CLIENT_ID)) {
-            this.setClientId(Long.parseLong(inputSettings.get(Keys.KEY_CLIENT_ID)));
+        if (inputSettings.containsKey(Keys.CLIENT_ID)) {
+            this.setClientId(Long.parseLong(inputSettings.get(Keys.CLIENT_ID)));
         }
-        if (inputSettings.containsKey(Keys.KEY_LOGICAL_ID)) {
-            this.setLogicalId(Long.parseLong(inputSettings.get(Keys.KEY_LOGICAL_ID)));
+        if (inputSettings.containsKey(Keys.LOGICAL_ID)) {
+            this.setLogicalId(Long.parseLong(inputSettings.get(Keys.LOGICAL_ID)));
         }
-        if (inputSettings.containsKey(Keys.KEY_IN_DEBUG_MODE)) {
-            this.setInDebugMode(Boolean.parseBoolean(inputSettings.get(Keys.KEY_IN_DEBUG_MODE)));
+        if (inputSettings.containsKey(Keys.IN_DEBUG_MODE)) {
+            this.setInDebugMode(Boolean.parseBoolean(inputSettings.get(Keys.IN_DEBUG_MODE)));
         }
 
         return this;
