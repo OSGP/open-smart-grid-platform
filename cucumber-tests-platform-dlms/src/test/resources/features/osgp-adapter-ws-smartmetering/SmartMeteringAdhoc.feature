@@ -13,7 +13,7 @@ Feature: SmartMetering AdHoc
       | DeviceIdentification | TEST1024000000001 |
     Then the objectlist should be returned
       | DeviceIdentification | TEST1024000000001 |
-@OslpMockServers
+@OslpMockServer
   Scenario: Retrieve all configuration objects from a device
     When receiving a retrieve configuration request
       | DeviceIdentification | TEST1024000000001 |
