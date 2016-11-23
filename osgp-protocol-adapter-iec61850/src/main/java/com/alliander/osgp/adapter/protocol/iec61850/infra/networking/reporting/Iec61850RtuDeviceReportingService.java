@@ -32,6 +32,8 @@ public class Iec61850RtuDeviceReportingService {
         this.enableBatteryReportingOnDevice(connection, deviceIdentification);
         this.enableEngineReportingOnDevice(connection, deviceIdentification);
         this.enableLoadReportingOnDevice(connection, deviceIdentification);
+        this.enableChpReportingOnDevice(connection, deviceIdentification);
+        this.enableHeatBufferReportingOnDevice(connection, deviceIdentification);
     }
 
     private void enableRtuReportingOnDevice(final DeviceConnection connection, final String deviceIdentification) {
@@ -92,6 +94,15 @@ public class Iec61850RtuDeviceReportingService {
                 DataAttribute.REPORT_MEASUREMENTS_ONE);
     }
 
+    private void enableHeatBufferReportingOnDevice(final DeviceConnection connection, final String deviceIdentification) {
+
+        this.enableStatusReportingOnDevice(connection, deviceIdentification, LogicalDevice.HEAT_BUFFER_ONE,
+                DataAttribute.REPORT_STATUS_ONE);
+
+        this.enableMeasurementReportingOnDevice(connection, deviceIdentification, LogicalDevice.HEAT_BUFFER_ONE,
+                DataAttribute.REPORT_MEASUREMENTS_ONE);
+    }
+
     private void enableStatusReportingOnDevice(final DeviceConnection deviceConnection,
             final String deviceIdentification, final LogicalDevice logicalDevice, final DataAttribute reportName) {
 
@@ -131,4 +142,13 @@ public class Iec61850RtuDeviceReportingService {
         }
 
     }
+
+    private void enableChpReportingOnDevice(final DeviceConnection connection, final String deviceIdentification) {
+        this.enableStatusReportingOnDevice(connection, deviceIdentification, LogicalDevice.CHP_ONE,
+                DataAttribute.REPORT_STATUS_ONE);
+
+        this.enableMeasurementReportingOnDevice(connection, deviceIdentification, LogicalDevice.CHP_ONE,
+                DataAttribute.REPORT_MEASUREMENTS_ONE);
+    }
+
 }
