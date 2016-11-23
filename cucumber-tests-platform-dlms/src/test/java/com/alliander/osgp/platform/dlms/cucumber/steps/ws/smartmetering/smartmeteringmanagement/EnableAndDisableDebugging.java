@@ -44,7 +44,7 @@ public class EnableAndDisableDebugging extends SmartMeteringStepsBase {
     @When("^the enable Debug request is received$")
     public void theEnableDebugRequestIsReceived(final Map<String, String> requestData) throws Throwable {
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
-                getString(requestData, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+                getString(requestData, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_ENABLE_REQUEST, TEST_CASE_XML,
                 TEST_SUITE_XML);
@@ -52,7 +52,7 @@ public class EnableAndDisableDebugging extends SmartMeteringStepsBase {
 
     @Then("^the device debug information should be enabled$")
     public void theDeviceDebugInformationShouldBeEnabled() throws Throwable {
-        final DlmsDevice device = dlmsDeviceRepository.findByDeviceIdentification(ScenarioContext.Current()
+        final DlmsDevice device = this.dlmsDeviceRepository.findByDeviceIdentification(ScenarioContext.Current()
                 .get(Keys.KEY_DEVICE_IDENTIFICATION).toString());
 
         assertTrue("Debug mode", device.isInDebugMode());
@@ -63,7 +63,7 @@ public class EnableAndDisableDebugging extends SmartMeteringStepsBase {
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION, ScenarioContext.Current()
                 .get(Keys.KEY_DEVICE_IDENTIFICATION).toString());
         PROPERTIES_MAP
-                .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
+        .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_ENABLE_RESPONSE, TEST_CASE_XML,
                 TEST_SUITE_XML);
@@ -74,7 +74,7 @@ public class EnableAndDisableDebugging extends SmartMeteringStepsBase {
     @When("^the disable Debug request is received$")
     public void theDisableDebugRequestIsReceived(final Map<String, String> requestData) throws Throwable {
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
-                getString(requestData, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+                getString(requestData, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_DISABLE_REQUEST, TEST_CASE_XML,
                 TEST_SUITE_XML);
@@ -82,7 +82,7 @@ public class EnableAndDisableDebugging extends SmartMeteringStepsBase {
 
     @Then("^the device debug information should be disabled$")
     public void theDeviceDebugInformationShouldBeDisabled() throws Throwable {
-        final DlmsDevice device = dlmsDeviceRepository.findByDeviceIdentification(ScenarioContext.Current()
+        final DlmsDevice device = this.dlmsDeviceRepository.findByDeviceIdentification(ScenarioContext.Current()
                 .get(Keys.KEY_DEVICE_IDENTIFICATION).toString());
 
         assertFalse("Debug mode", device.isInDebugMode());
@@ -93,7 +93,7 @@ public class EnableAndDisableDebugging extends SmartMeteringStepsBase {
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION, ScenarioContext.Current()
                 .get(Keys.KEY_DEVICE_IDENTIFICATION).toString());
         PROPERTIES_MAP
-                .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
+        .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_DISABLE_RESPONSE, TEST_CASE_XML,
                 TEST_SUITE_XML);

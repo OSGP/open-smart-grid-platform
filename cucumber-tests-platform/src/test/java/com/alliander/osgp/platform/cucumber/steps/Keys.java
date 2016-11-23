@@ -31,7 +31,7 @@ public class Keys {
     public static final String KEY_IS_ACTIVATED = "IsActivated";
     public static final String KEY_DEVICE_MODEL = "DeviceModel";
     public static final String KEY_TECH_INSTALL_DATE = "TechnicalInstallationDate";
-    public static final String KEY_ORGANIZATION_IDENTIFICATION =  "OrganizationIdentification";
+    public static final String KEY_ORGANIZATION_IDENTIFICATION = "OrganizationIdentification";
     public static final String KEY_USER_NAME = "UserName";
     public static final String KEY_DEVICE_FUNCTION_GRP = "DeviceFunctionGroup";
     public static final String KEY_COMM_METHOD = "CommunicationMethod";
@@ -58,6 +58,8 @@ public class Keys {
 
     public static final String KEY_EVENTS_NODELIST_EXPECTED = "event-nodelist-expected";
     public static final String KEY_DEVICE_UID = "DeviceUid";
+
+    public static final String KEY_PAGE = "Page";
 
     public static final String KEY_SYSTEM_ID = "SystemId";
     public static final String KEY_SYSTEM_TYPE = "SystemType";
