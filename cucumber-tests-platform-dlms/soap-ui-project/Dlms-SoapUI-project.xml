@@ -12017,7 +12017,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
    </soapenv:Header>\r
    <soapenv:Body>\r
       <ns1:SetSpecialDaysAsyncRequest>\r
-         <ns:DeviceIdentification>${=testCase.testSuite.project.getPropertyValue( "DeviceIdentification" )}</ns:DeviceIdentification>\r
+         <ns:DeviceIdentification>${=testCase.getPropertyValue( "DeviceIdentification" )}</ns:DeviceIdentification>\r
          <ns:CorrelationUid>${=testCase.getPropertyValue( "CorrelationUid" )}</ns:CorrelationUid>\r
       </ns1:SetSpecialDaysAsyncRequest>\r
    </soapenv:Body>\r
@@ -13690,7 +13690,7 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
 <con:properties>
   <con:property><con:name>DeviceIdentification</con:name><con:value>TEST1024000000001</con:value></con:property>
   <con:property><con:name>ServiceEndpoint</con:name><con:value>localhost:443</con:value></con:property>
-</con:properties></con:testCase></con:testSuite>
+</con:properties></con:testCase><con:properties/></con:testSuite>
 <con:properties>
   <con:property><con:name>CertBasePath</con:name><con:value>/home/dev/Sources/OSGP/Integration-Tests/cucumber-tests-platform/certificates</con:value></con:property>
 </con:properties><con:wssContainer><con:crypto><con:source>${#Project#CertBasePath}/test-org.pfx</con:source><con:password>1234</con:password><con:type>KEYSTORE</con:type></con:crypto></con:wssContainer><con:oAuth2ProfileContainer/><con:sensitiveInformation><ProjectSpecificExposureList>null###null</ProjectSpecificExposureList></con:sensitiveInformation></con:soapui-project>
