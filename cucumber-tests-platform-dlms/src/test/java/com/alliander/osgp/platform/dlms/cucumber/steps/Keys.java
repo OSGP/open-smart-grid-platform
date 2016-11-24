@@ -40,23 +40,23 @@ public class Keys {
 
     // other
     public static final String DEVICE_TYPE = "DeviceType";
-    public static final String IS_ACTIVATED = null;
-    public static final String CONTAINER_CITY = null;
-    public static final String CONTAINER_STREET = null;
-    public static final String GPS_LATITUDE = null;
-    public static final String GPS_LONGITUDE = null;
-    public static final String CONTAINER_POSTAL_CODE = null;
-    public static final String CONTAINER_NUMBER = null;
-    public static final String NETWORK_ADDRESS = null;
-    public static final String CONTAINER_MUNICIPALITY = null;
-    public static final String ALIAS = null;
-    public static final String IN_MAINTENANCE = null;
-    public static final String GATEWAY_DEVICE = null;
-    public static final String TECHNICAL_INSTALLATION_DATE = null;
-    public static final String DEVICE_MODEL = null;
-    public static final String IS_ACTIVE = null;
-    public static final Short CHANNEL = null;
-    public static final String SUPPLIER = null;
+    public static final String IS_ACTIVATED = "Activated";
+    public static final String CONTAINER_CITY = "ContainerCity";
+    public static final String CONTAINER_STREET = "ContainerStreet";
+    public static final String GPS_LATITUDE = "GpsLatitude";
+    public static final String GPS_LONGITUDE = "GpsLongitude";
+    public static final String CONTAINER_POSTAL_CODE = "ContainerPostalCode";
+    public static final String CONTAINER_NUMBER = "ContainerNumber";
+    public static final String NETWORK_ADDRESS = "NetworkAddress";
+    public static final String CONTAINER_MUNICIPALITY = "ContainerMunicipality";
+    public static final String ALIAS = "Alias";
+    public static final String IN_MAINTENANCE = "InMaintenance";
+    public static final String GATEWAY_DEVICE_IDENTIFICATION = "GatewayDeviceIdentification";
+    public static final String TECHNICAL_INSTALLATION_DATE = "TechnicalInstallationDate";
+    public static final String DEVICE_MODEL = "DeviceModel";
+    public static final String IS_ACTIVE = "Active";
+    public static final String CHANNEL = "Channel";
+    public static final String SUPPLIER = "Supplier";
     public static final Object PROTOCOL = "Protocol";
     public static final Object PROTOCOL_VERSION = "ProtocolVersion";
 }

@@ -24,10 +24,12 @@ public class DeviceBuilder extends BaseDeviceBuilder<DeviceBuilder> implements C
         final Device device = new Device(this.deviceIdentification, this.alias, this.containerCity,
                 this.containerPostalCode, this.containerStreet, this.containerNumber, this.containerMunicipality,
                 this.gpsLatitude, this.gpsLongitude);
-
-        device.setActivated(this.isActivated);
         device.setActive(this.isActive);
         device.updateRegistrationData(this.networkAddress, this.deviceType);
+
+        // After updateRegistrationData because that sets active to true again.
+        device.setActivated(this.isActivated);
+
         device.updateProtocol(this.protocolInfo);
         device.updateInMaintenance(this.inMaintenance);
         device.updateGatewayDevice(this.gatewayDevice);

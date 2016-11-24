@@ -35,8 +35,10 @@ public class SmartMeterBuilder extends BaseDeviceBuilder<SmartMeterBuilder> impl
                 this.gpsLatitude, this.gpsLongitude);
 
         device.setActivated(this.isActivated);
-        device.setActive(this.isActive);
         device.updateRegistrationData(this.networkAddress, this.deviceType);
+
+        // After updateRegistrationData because that sets active to true again.
+        device.setActive(this.isActive);
         device.updateProtocol(this.protocolInfo);
         device.updateInMaintenance(this.inMaintenance);
         device.updateGatewayDevice(this.gatewayDevice);

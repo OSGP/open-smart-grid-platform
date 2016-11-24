@@ -77,6 +77,13 @@ public class DlmsDeviceSteps {
 
         ScenarioContext.Current().put(Keys.DEVICE_IDENTIFICATION, device.getDeviceIdentification());
 
+        if (inputSettings.containsKey(Keys.GATEWAY_DEVICE_IDENTIFICATION)) {
+            final Device gatewayDevice = this.deviceRepository.findByDeviceIdentification(inputSettings
+                    .get(Keys.GATEWAY_DEVICE_IDENTIFICATION));
+            device.updateGatewayDevice(gatewayDevice);
+        }
+        device = this.deviceRepository.save(device);
+
         // Authorization
         final Organisation organisation = this.organisationRepo
                 .findByOrganisationIdentification(Defaults.ORGANISATION_IDENTIFICATION);
