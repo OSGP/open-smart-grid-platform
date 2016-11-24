@@ -56,7 +56,7 @@ public class AddDevice extends SmartMeteringStepsBase {
                 .assertXpath(
                         this.response,
                         PATH_DEVICE_IDENTIFICATION,
-                        getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
+                        getString(settings, Keys.KEY_ORGANISATION_IDENTIFICATION,
                                 Defaults.DEFAULT_ORGANISATION_IDENTIFICATION));
         this.runXpathResult.assertNotNull(this.response, PATH_CORRELATION_UID);
 

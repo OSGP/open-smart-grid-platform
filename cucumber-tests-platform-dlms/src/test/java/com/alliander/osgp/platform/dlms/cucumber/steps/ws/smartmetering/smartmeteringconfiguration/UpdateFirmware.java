@@ -64,11 +64,11 @@ public class UpdateFirmware extends SmartMeteringStepsBase {
 
     @When("^the request for a firmware upgrade is received$")
     public void theRequestForAFirmwareUpgradeIsReceived() throws Throwable {
-        final Object obj = ScenarioContext.Current().get(Keys.KEY_ORGANIZATION_IDENTIFICATION);
+        final Object obj = ScenarioContext.Current().get(Keys.KEY_ORGANISATION_IDENTIFICATION);
         final String organisationIdentification = obj == null ? Defaults.DEFAULT_ORGANISATION_IDENTIFICATION : obj
                 .toString();
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION_E_LABEL, organisationIdentification);
-        PROPERTIES_MAP.put(Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANISATION_IDENTIFICATION);
+        PROPERTIES_MAP.put(Keys.KEY_ORGANISATION_IDENTIFICATION, Defaults.DEFAULT_ORGANISATION_IDENTIFICATION);
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }

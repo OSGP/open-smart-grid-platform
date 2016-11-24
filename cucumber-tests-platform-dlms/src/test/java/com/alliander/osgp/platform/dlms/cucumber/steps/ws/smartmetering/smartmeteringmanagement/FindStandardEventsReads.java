@@ -48,7 +48,7 @@ public class FindStandardEventsReads extends AbstractFindEventsReads {
         // further use.
         saveCorrelationUidInScenarioContext(
                 this.runXpathResult.getValue(this.response, PATH_CORRELATION_UID),
-                getString(PROPERTIES_MAP, Keys.KEY_ORGANIZATION_IDENTIFICATION,
+                getString(PROPERTIES_MAP, Keys.KEY_ORGANISATION_IDENTIFICATION,
                         Defaults.DEFAULT_ORGANISATION_IDENTIFICATION));
     }
 
