@@ -76,6 +76,7 @@ public class DlmsDeviceSteps {
         }
 
         ScenarioContext.Current().put(Keys.DEVICE_IDENTIFICATION, device.getDeviceIdentification());
+
         // Authorization
         final Organisation organisation = this.organisationRepo
                 .findByOrganisationIdentification(Defaults.ORGANISATION_IDENTIFICATION);
