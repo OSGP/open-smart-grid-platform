@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class DeleteAllDevicesService {
 
     @Autowired
-    private DeviceRepository deviceRepositry;
+    private DeviceRepository deviceRepository;
 
     @Autowired
     private SsldRepository ssldRepository;
@@ -22,11 +22,19 @@ public class DeleteAllDevicesService {
     @Autowired
     private EventRepository eventRepository;
 
+    @Autowired
+    private DeviceModelRepository deviceModelRepository;
+
+    @Autowired
+    private DeviceFirmwareRepository deviceFirmwareRepository;
+    
     public void deleteAllDevices() {
         this.ssldRepository.deleteAllInBatch();
         this.eventRepository.deleteAllInBatch();
-        this.deviceRepositry.deleteAllEans();
-        this.deviceRepositry.deleteDeviceOutputSettings();
-        this.deviceRepositry.deleteAllInBatch();
+        this.deviceFirmwareRepository.deleteAllInBatch();
+        this.deviceRepository.deleteAllEans();
+        this.deviceRepository.deleteDeviceOutputSettings();
+        this.deviceModelRepository.deleteAllInBatch();
+        this.deviceRepository.deleteAllInBatch();
     }
 }

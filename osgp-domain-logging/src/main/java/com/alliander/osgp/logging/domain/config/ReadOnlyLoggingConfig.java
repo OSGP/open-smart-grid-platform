@@ -7,10 +7,11 @@
  */
 package com.alliander.osgp.logging.domain.config;
 
+import java.io.IOException;
 import java.util.Properties;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 import org.hibernate.ejb.HibernatePersistence;
@@ -18,31 +19,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
-import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
-import com.alliander.osgp.shared.application.config.AbstractConfig;
+import com.alliander.osgp.shared.application.config.AbstractCustomConfig;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 @EnableJpaRepositories(entityManagerFactoryRef = "readableEntityManagerFactory", basePackageClasses = { DeviceLogItemRepository.class })
 @Configuration
 @EnableTransactionManagement()
-@PropertySources({
-	@PropertySource("classpath:osgp-domain-logging.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "file:${osgp/DomainLogging/config}", ignoreResourceNotFound = true),
-})
-public class ReadOnlyLoggingConfig extends AbstractConfig {
+public class ReadOnlyLoggingConfig extends AbstractCustomConfig {
 
     private static final String PROPERTY_NAME_DATABASE_DRIVER = "db.driver";
-    private static final String PROPERTY_NAME_DATABASE_PASSWORD = "db.readonly.password.domain_logging";
+    private static final String PROPERTY_NAME_DATABASE_PW = "db.readonly.password.domain_logging";
     private static final String PROPERTY_NAME_DATABASE_URL = "db.url.domain_logging";
     private static final String PROPERTY_NAME_DATABASE_USERNAME = "db.readonly.username.domain_logging";
 
@@ -58,10 +51,18 @@ public class ReadOnlyLoggingConfig extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReadOnlyLoggingConfig.class);
 
-    @Resource
-    private Environment environment;
-
     private HikariDataSource dataSource;
+
+    /**
+     * Wire property sources to local environment.
+     * @throws IOException when required property source is not found.
+     */
+    @PostConstruct
+    protected void init() throws IOException {
+        addPropertySource("file:${osgp/DomainLogging/config}", true);
+        addPropertySource("file:${osgp/Global/config}", true);
+        addPropertySource("classpath:osgp-domain-logging.properties", false);        
+    }
 
     /**
      * Method for creating the Data Source.
@@ -72,14 +73,14 @@ public class ReadOnlyLoggingConfig extends AbstractConfig {
         if (this.dataSource == null) {
             final HikariConfig hikariConfig = new HikariConfig();
 
-            hikariConfig.setDriverClassName(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER));
-            hikariConfig.setJdbcUrl(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
-            hikariConfig.setUsername(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_USERNAME));
-            hikariConfig.setPassword(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_PASSWORD));
+            hikariConfig.setDriverClassName(ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER));
+            hikariConfig.setJdbcUrl(ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
+            hikariConfig.setUsername(ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_DATABASE_USERNAME));
+            hikariConfig.setPassword(ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_DATABASE_PW));
 
-            hikariConfig.setMaximumPoolSize(Integer.parseInt(this.environment
+            hikariConfig.setMaximumPoolSize(Integer.parseInt(ENVIRONMENT
                     .getRequiredProperty(PROPERTY_NAME_DATABASE_MAX_POOL_SIZE)));
-            hikariConfig.setAutoCommit(Boolean.parseBoolean(this.environment
+            hikariConfig.setAutoCommit(Boolean.parseBoolean(ENVIRONMENT
                     .getRequiredProperty(PROPERTY_NAME_DATABASE_AUTO_COMMIT)));
 
             this.dataSource = new HikariDataSource(hikariConfig);
@@ -124,19 +125,19 @@ public class ReadOnlyLoggingConfig extends AbstractConfig {
 
         entityManagerFactoryBean.setPersistenceUnitName("OSGP_DOMAIN_LOGGING");
         entityManagerFactoryBean.setDataSource(this.getReadableDataSource());
-        entityManagerFactoryBean.setPackagesToScan(this.environment
+        entityManagerFactoryBean.setPackagesToScan(ENVIRONMENT
                 .getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN));
         entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistence.class);
 
         final Properties jpaProperties = new Properties();
         jpaProperties.put(PROPERTY_NAME_HIBERNATE_DIALECT,
-                this.environment.getRequiredProperty(PROPERTY_NAME_HIBERNATE_DIALECT));
+                ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_HIBERNATE_DIALECT));
         jpaProperties.put(PROPERTY_NAME_HIBERNATE_FORMAT_SQL,
-                this.environment.getRequiredProperty(PROPERTY_NAME_HIBERNATE_FORMAT_SQL));
+                ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_HIBERNATE_FORMAT_SQL));
         jpaProperties.put(PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY,
-                this.environment.getRequiredProperty(PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY));
+                ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY));
         jpaProperties.put(PROPERTY_NAME_HIBERNATE_SHOW_SQL,
-                this.environment.getRequiredProperty(PROPERTY_NAME_HIBERNATE_SHOW_SQL));
+                ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_HIBERNATE_SHOW_SQL));
 
         entityManagerFactoryBean.setJpaProperties(jpaProperties);
 
