@@ -7,6 +7,7 @@ import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executors;
@@ -27,10 +28,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.protocol.oslp.device.DeviceResponse;
 import com.alliander.osgp.oslp.Oslp;
+import com.alliander.osgp.oslp.Oslp.EventNotificationResponse;
 import com.alliander.osgp.oslp.Oslp.GetFirmwareVersionResponse;
+import com.alliander.osgp.oslp.Oslp.GetStatusResponse;
+import com.alliander.osgp.oslp.Oslp.LinkType;
+import com.alliander.osgp.oslp.Oslp.LightType;
 import com.alliander.osgp.oslp.Oslp.Message;
+import com.alliander.osgp.oslp.Oslp.SetEventNotificationsResponse;
 import com.alliander.osgp.oslp.Oslp.SetLightResponse;
+import com.alliander.osgp.oslp.Oslp.StartSelfTestResponse;
+import com.alliander.osgp.oslp.Oslp.Status;
+import com.alliander.osgp.oslp.Oslp.StopSelfTestResponse;
 import com.alliander.osgp.oslp.OslpDecoder;
 import com.alliander.osgp.oslp.OslpEncoder;
 import com.alliander.osgp.shared.security.CertificateHelper;
@@ -87,6 +97,7 @@ public class MockOslpServer {
                 this.reponseDelayRandomRange, this.privateKey(), this.clientBootstrap(), this.mockResponses,
                 this.receivedRequests);
 
+        LOGGER.info("Started OSLP Mock server starting ...");
         this.server = this.serverBootstrap();
         this.server.bind(new InetSocketAddress(this.oslpPortServer));
         LOGGER.info("Started OSLP Mock server on port {}", this.oslpPortServer);
@@ -116,7 +127,7 @@ public class MockOslpServer {
                 Assert.fail("Polling for response failed, no reponse found");
             }
         }
-
+        
         return this.receivedRequests.get(requestType);
     }
 
@@ -197,6 +208,32 @@ public class MockOslpServer {
 	public void mockSetLightResponse(Oslp.Status status) {
 		this.mockResponses.put(DeviceRequestMessageType.SET_LIGHT, Oslp.Message.newBuilder()
 				.setSetLightResponse(SetLightResponse.newBuilder().setStatus(status))
+				.build());
+	}
+	
+	public void mockSetEventNotificationResponse(Oslp.Status status) {
+		this.mockResponses.put(DeviceRequestMessageType.SET_EVENT_NOTIFICATIONS, Oslp.Message.newBuilder()
+				.setSetEventNotificationsResponse(SetEventNotificationsResponse.newBuilder().setStatus(status))
+				.build());
+	}
+	
+	public void mockStartDeviceResponse(Oslp.Status status) {
+		this.mockResponses.put(DeviceRequestMessageType.START_SELF_TEST, Oslp.Message.newBuilder()
+				.setStartSelfTestResponse(StartSelfTestResponse.newBuilder().setStatus(status))
+				.build());
+	}
+	
+	public void mockStopDeviceResponse(com.google.protobuf.ByteString value, Oslp.Status status) {
+		this.mockResponses.put(DeviceRequestMessageType.STOP_SELF_TEST, Oslp.Message.newBuilder()
+				.setStopSelfTestResponse(StopSelfTestResponse.newBuilder().setSelfTestResult(value).setStatus(status))
+				.build());
+	}
+	
+	public void mockGetStatusResponse(LinkType preferred, LinkType actual, LightType lightType, int eventNotificationMask, Oslp.Status status) {
+		this.mockResponses.put(DeviceRequestMessageType.GET_STATUS, Oslp.Message.newBuilder()
+				.setGetStatusResponse(GetStatusResponse.newBuilder()
+						.setPreferredLinktype(preferred).setActualLinktype(actual).setLightType(lightType)
+						.setEventNotificationMask(eventNotificationMask).setStatus(status))
 				.build());
 	}
 }

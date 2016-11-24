@@ -26,7 +26,7 @@ public class ActivateDeviceSteps extends AdminStepsBase {
     private static final String TEST_CASE_NAME = "540 Activate device";
     private static final String TEST_CASE_NAME_REQUEST = "ActivateDevice - Request 1";
 
-    @When("^receiving a activate device request$")
+    @When("^receiving an activate device request$")
     public void receivingAActivateDeviceRequest(final Map<String, String> requestSettings) throws Throwable {
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION, requestSettings.get(Keys.KEY_DEVICE_IDENTIFICATION));
 

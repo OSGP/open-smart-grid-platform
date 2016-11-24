@@ -127,8 +127,7 @@ public class OrganizationSteps {
             final String organizationIdentification) throws Throwable {
         final Organisation entity = this.repo.findByOrganisationIdentification(organizationIdentification);
 
-        Assert.assertTrue(entity.isEnabled());
-//        Assert.assertTrue(entity.isEnabled() == false);
+        Assert.assertTrue(entity.isEnabled() == false);
     }
 
     /**

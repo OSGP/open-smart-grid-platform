@@ -18,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -143,6 +144,11 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         this.clientBootstrap = clientBootstrap;
         this.mockResponses = mockResponses;
         this.receivedRequests = receivedRequests;
+    }
+    
+    public ConcurrentMap<DeviceRequestMessageType, Message> getMap()
+    {
+    	return this.mockResponses;
     }
 
     /**
@@ -362,6 +368,22 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
             this.sleep(this.responseDelayTime + randomDelay);
         }
 
+        String keys = "";
+        
+        for (DeviceRequestMessageType k : mockResponses.keySet())
+        {
+        	if (!keys.isEmpty()) keys += " | ";
+        	keys += k.name();
+        }
+        LOGGER.error("Handler MockResponsesKeys: " + keys);
+		try {
+			LOGGER.info("Handler Sleeping for 5 seconds");
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
         // Handle requests
         if (request.hasGetFirmwareVersionRequest()
                 && this.mockResponses.containsKey(DeviceRequestMessageType.GET_FIRMWARE_VERSION)) {
@@ -369,6 +391,15 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         } else if (request.hasSetLightRequest() 
         		&& this.mockResponses.containsKey(DeviceRequestMessageType.SET_LIGHT)) {
         	response = processRequest(DeviceRequestMessageType.SET_LIGHT, request);
+        } else if (request.hasSetEventNotificationsRequest() 
+        		&& this.mockResponses.containsKey(DeviceRequestMessageType.SET_EVENT_NOTIFICATIONS)) {
+        	response = processRequest(DeviceRequestMessageType.SET_EVENT_NOTIFICATIONS, request);
+        } else if (request.hasStartSelfTestRequest() 
+        		&& this.mockResponses.containsKey(DeviceRequestMessageType.START_SELF_TEST)) {
+        	response = processRequest(DeviceRequestMessageType.START_SELF_TEST, request);
+        } else if (request.hasStopSelfTestRequest() 
+        		&& this.mockResponses.containsKey(DeviceRequestMessageType.STOP_SELF_TEST)) {
+        	response = processRequest(DeviceRequestMessageType.STOP_SELF_TEST, request);
         }
         // TODO: Implement further requests.
         else {
@@ -378,7 +409,7 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
 
         // Write log entry for response
         LOGGER.debug("Responding: " + response);
-
+        
         return response;
     }
     

@@ -82,22 +82,24 @@ Feature: Device installation
       | Message        | UNKNOWN_DEVICE                                                   |
       | Component      | WS_CORE                                                          |
       | InnerException | com.alliander.osgp.domain.core.exceptions.UnknownEntityException |
-	  | InnerMessage   | Device with id "TEST1024000000001" could not be found.           |
+	    | InnerMessage   | Device with id "TEST1024000000001" could not be found.           |
 			
 ### Converted Fitnesse tests to Cucumber ###
-	# RemoveDevice scenario's
-	Scenario Outline: Remove A Device
-		Given a device
-			| DeviceIdentification | <DeviceIdentification> |
-		And the device exists
-		When receiving a remove device request
-		Then the remove device response contains
-			| Result | <Result> |
-		And the device should be removed
-		
-		Examples:
-			| DeviceIdentification | Result |
-			| TEST1024000000001    | OK     |
+#	# RemoveDevice scenario's
+#	Scenario Outline: Remove A Device
+#		Given a device
+#			| DeviceIdentification | <DeviceIdentification> |
+#		And the device exists
+#		When receiving a remove device request
+#			| DeviceIdentification | <DeviceIdentification> |
+#		Then the remove device response contains
+#			| Result | <Result> |
+#		And the device should be removed
+#			| DeviceIdentification | <DeviceIdentification> |
+#		
+#		Examples:
+#			| DeviceIdentification | Result |
+#			| TEST1024000000001    | OK     |
 
 	# FindRecentDevices scenario's
 	Scenario Outline: Find recent devices
@@ -181,19 +183,36 @@ Feature: Device installation
     	| 1234567890 | TEST1024000000001    |            |           0 |            0 | 0.0.0.0        |             |          | OK     |
     	
 	# Start/Stop Device scenario's
-	Scenario Outline: Start/Stop Device
-		Given a device
+	@OslpMockServer
+	Scenario Outline: Start Device
+		Given an oslp device
 			| DeviceIdentification | <DeviceIdentification> |
 			| Status               | <Status>               |
-		And the device returns a "<Option>" device response over OSLP
-			| Result | <Result> |
-		When receiving a "<Option>" device request
-		Then the get status async response contains
+		And the device returns a start device response "<Result>" over OSLP
+		When receiving a start device request
+			| DeviceIdentification | <DeviceIdentification> |
+		Then the start device async response contains
       | DeviceIdentification | <DeviceIdentification> |
-    And a "<Option>" device OSLP message is sent to device "<DeviceIdentification>"
-		And the platform buffers a "<Option>" device response message for device "<DeviceIdentification>"
+    And a start device OSLP message is sent to device "<DeviceIdentification>"
+		And the platform buffers a start device response message for device "<DeviceIdentification>"
 		
 		Examples:
-			| DeviceIdentification | Status | Option | Result |
-			| TEST1024000000001    | active | start  | OK     |
-			| TEST1024000000001    | active | stop   | OK     |
+			| DeviceIdentification | Status | Result |
+			| TEST1024000000001    | active | OK     |
+			
+	@OslpMockServer
+	Scenario Outline: Stop Device
+		Given an oslp device
+			| DeviceIdentification | <DeviceIdentification> |
+			| Status               | <Status>               |
+		And the device returns a stop device response "<Result>" over OSLP
+		When receiving a stop device request
+			| DeviceIdentification | <DeviceIdentification> |
+		Then the stop device async response contains
+      | DeviceIdentification | <DeviceIdentification> |
+    And a stop device OSLP message is sent to device "<DeviceIdentification>"
+		And the platform buffers a stop device response message for device "<DeviceIdentification>"
+		
+		Examples:
+			| DeviceIdentification | Status | Result |
+			| TEST1024000000001    | active | OK     |

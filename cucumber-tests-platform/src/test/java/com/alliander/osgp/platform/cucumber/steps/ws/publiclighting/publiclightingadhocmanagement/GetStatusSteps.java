@@ -30,12 +30,12 @@ import cucumber.api.java.en.Then;
 /**
  * Class with all the set light requests steps
  */
-public class SetLightSteps extends PublicLightingStepsBase {
+public class GetStatusSteps extends PublicLightingStepsBase {
     private static final String TEST_SUITE_XML = "PublicLightingAdHocManagement";
-    private static final String TEST_CASE_ASYNC_REQ_XML = "AT Send SetLight Async";
-    private static final String TEST_CASE_ASYNC_NAME_REQUEST = "SetLight - Request 1";
-    private static final String TEST_CASE_RESULT_REQ_XML = "AT Retrieve SetLight Result";
-    private static final String TEST_CASE_RESULT_NAME_REQUEST = "GetSetLightResponse - Request 1";
+    private static final String TEST_CASE_ASYNC_REQ_XML = "GetStatus TestCase";
+    private static final String TEST_CASE_ASYNC_NAME_REQUEST = "GetStatus";
+    private static final String TEST_CASE_RESULT_REQ_XML = "GetGetStatusResponse TestCase";
+    private static final String TEST_CASE_RESULT_NAME_REQUEST = "GetGetStatusResponse";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetLightSteps.class);
 
@@ -47,16 +47,16 @@ public class SetLightSteps extends PublicLightingStepsBase {
      * @param requestParameters The table with the request parameters.
      * @throws Throwable
      */
-    @Given("^receiving a set light request$")
-    public void givenReceivingASetLightRequest(final Map<String, String> requestParameters) throws Throwable {
+    @Given("^receiving a get status request$")
+    public void givenReceivingAGetStatusRequest(final Map<String, String> requestParameters) throws Throwable {
 
         // Required parameters
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION, getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
         PROPERTIES_MAP.put(ON_LABEL, getString(requestParameters, ON_LABEL, DEFAULT_ON));
 
         // Now run the request.
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_ASYNC_NAME_REQUEST, TEST_CASE_ASYNC_REQ_XML,
-                TEST_SUITE_XML);
+//        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_ASYNC_NAME_REQUEST, TEST_CASE_ASYNC_REQ_XML, TEST_SUITE_XML);
+        this.requestRunner(TestStepStatus.UNKNOWN, PROPERTIES_MAP, TEST_CASE_ASYNC_NAME_REQUEST, TEST_CASE_ASYNC_REQ_XML, TEST_SUITE_XML);
     }
     
     /**
@@ -65,15 +65,25 @@ public class SetLightSteps extends PublicLightingStepsBase {
      * @note The response will contain the correlation uid, so store that in the current scenario context for later use.
      * @throws Throwable
      */
-    @Then("^the set light async response contains$")
-    public void thenTheSetLightResponseContains(final Map<String, String> expectedResponseData)
-            throws Throwable {
+    @Then("^the get status async response contains$")
+    public void thenTheGetStatusAsyncResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
         this.runXpathResult.assertXpath(this.response, PATH_DEVICE_IDENTIFICATION,
                 getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
         this.runXpathResult.assertNotNull(this.response, PATH_CORRELATION_UID);
 
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.
+        LOGGER.info("Correlation-UID: " + this.response + " | Path: " + PATH_CORRELATION_UID);
+        
+        try
+        {
+        	wait(7500);
+        }
+        catch (InterruptedException ie)
+        {
+        	
+        }
+        
         saveCorrelationUidInScenarioContext(this.runXpathResult.getValue(this.response, PATH_CORRELATION_UID),
                 getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
                         Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
@@ -81,13 +91,13 @@ public class SetLightSteps extends PublicLightingStepsBase {
         LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
     }
 
-    @Then("^the platform buffers a set light response message for device \"([^\"]*)\"$")
-    public void thenThePlatformBuffersASetLightResponseMessage(final String deviceIdentification) throws Throwable {
+    @Then("^the platform buffers a get status response message for device \"([^\"]*)\"$")
+    public void thenThePlatformBuffersAGetStatusResponseMessage(final String deviceIdentification) throws Throwable {
         // Required parameters
         PROPERTIES_MAP.put("__DEVICE_IDENTIFICATION__", deviceIdentification);
         PROPERTIES_MAP.put("__CORRELATION_UID__", (String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
 
-        this.waitForResponse(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_RESULT_NAME_REQUEST,
-                    TEST_CASE_RESULT_REQ_XML, TEST_SUITE_XML);
+//        this.waitForResponse(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_RESULT_NAME_REQUEST,
+//                    TEST_CASE_RESULT_REQ_XML, TEST_SUITE_XML);
     }
 }

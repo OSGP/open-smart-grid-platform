@@ -26,11 +26,14 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import com.alliander.osgp.platform.cucumber.core.Helpers;
 
 @Component
 public class RunXpathResult {
@@ -68,24 +71,11 @@ public class RunXpathResult {
 
     public boolean assertXpath(final String xml, final String nodeXPath, final String nodeRegex)
             throws XPathExpressionException, ParserConfigurationException, SAXException, IOException {
-    	
-    	try {
-    		final XpathResult xpathResult = this.runXPathExpression(xml, nodeXPath);
-    		final XPathExpression expr = xpathResult.getXpathExpression();
-    		final Pattern responsePattern = Pattern.compile(nodeRegex);
-    		final Matcher responseMatcher = responsePattern.matcher(expr.evaluate(xpathResult.getDocument()));
-    		return responseMatcher.find();
-    	}
-    	catch (NullPointerException npe)
-    	{
-    		final XpathResult xpathResult = this.runXPathExpression(xml, nodeXPath);
-            final XPathExpression expr = xpathResult.getXpathExpression();
-            final Pattern responsePattern = Pattern.compile(nodeRegex);
-            final Matcher responseMatcher = responsePattern.matcher(expr.evaluate(xpathResult.getDocument()));
-            return responseMatcher.find();
-    	}
-        
-        
+    	final XpathResult xpathResult = this.runXPathExpression(xml, nodeXPath);
+		final XPathExpression expr = xpathResult.getXpathExpression();
+		final Pattern responsePattern = Pattern.compile(nodeRegex);
+		final Matcher responseMatcher = responsePattern.matcher(expr.evaluate(xpathResult.getDocument()));
+		return responseMatcher.find();
     }
 
     public void assertXpathList(final String xml, final String nodeXPath, final String nodeRegex,

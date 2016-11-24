@@ -10,8 +10,7 @@ Feature: Adhoc Management
     Given an oslp device
       | DeviceIdentification | <DeviceIdentification> |
       | Status               | <Status>               |
-    And the device returns a set light over OSLP
-    	| Result | <Result> |
+    And the device returns a set light "<Result>" over OSLP
     When receiving a set light request
       | DeviceIdentification | <DeviceIdentification> |
       | Index                | <Index>                |
@@ -43,22 +42,22 @@ Feature: Adhoc Management
     	| DeviceIdentification | Status | Index | On    | ValidationError  |
     	| D01                  | active |       | true  | VALIDATION ERROR  |
 
-	@OslpMockServer
-	Scenario Outline: Receive A Get Set Light Response Request
-		Given an oslp device
-			| DeviceIdentification | <DeviceIdentification> |
-		And the device returns a set light over OSLP
-			| Result | <Result> |
-		When receiving a set light response request
-			| DeviceIdentification | <DeviceIdentification> |
-		Then the set light async response contains
-      | DeviceIdentification | <DeviceIdentification> |
-    And a set light OSLP message is sent to device "<DeviceIdentification>"
-		And the platform buffers a set light response message for device "<DeviceIdentification>"
-
-		Examples:
-			| DeviceIdentification | Result |
-			| D01                  | OK     |
+# Deze test is volgens mij gecombineerd met die hierboven staat (OSLP message)
+#	@OslpMockServer
+#	Scenario Outline: Receive A Get Set Light Response Request
+#		Given an oslp device
+#			| DeviceIdentification | <DeviceIdentification> |
+#		And the device returns a set light "<Result>" over OSLP
+#		When receiving a set light response request
+#			| DeviceIdentification | <DeviceIdentification> |
+#		Then the set light async response contains
+      #| DeviceIdentification | <DeviceIdentification> |
+    #And a set light OSLP message is sent to device "<DeviceIdentification>"
+#		And the platform buffers a set light response message for device "<DeviceIdentification>"
+#
+#		Examples:
+#			| DeviceIdentification | Result |
+#			| D01                  | OK     |
 
 	@OslpMockServer
 	Scenario Outline: Receive A Set Light Request With Multiple Light Values
@@ -102,8 +101,7 @@ Feature: Adhoc Management
     Given an oslp device
       | DeviceIdentification | <DeviceIdentification> |
       | Status               | <Status>               |
-    And the device returns a get status response over OSLP
-    	| Result | <Result> |
+    And the device returns a get status response "<Result>" over OSLP
     When receiving a get status request
       | DeviceIdentification | <DeviceIdentification> |
     Then the get status async response contains
