@@ -84,7 +84,7 @@
 
 		<!-- Fitnesse Acceptance Test Project (Obsolete, but in here because not 
 			all tests are moved to the cucumber projects -->
-		<module>osgp-platform-test</module>
+		<!--<module>osgp-platform-test</module>-->
 
 	</modules>
 </project>
