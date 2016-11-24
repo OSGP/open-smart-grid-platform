@@ -81,8 +81,8 @@ public class DlmsDeviceSteps {
             final Device gatewayDevice = this.deviceRepository.findByDeviceIdentification(inputSettings
                     .get(Keys.GATEWAY_DEVICE_IDENTIFICATION));
             device.updateGatewayDevice(gatewayDevice);
+            device = this.deviceRepository.save(device);
         }
-        device = this.deviceRepository.save(device);
 
         // Authorization
         final Organisation organisation = this.organisationRepo
