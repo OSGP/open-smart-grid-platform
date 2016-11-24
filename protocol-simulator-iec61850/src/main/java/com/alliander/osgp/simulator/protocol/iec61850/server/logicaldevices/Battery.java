@@ -238,7 +238,7 @@ public class Battery extends LogicalDevice {
 
         values.add(this.setRandomByte(LLN0_MOD_STVAL, Fc.ST, 1, 2));
         values.add(this.setQuality(LLN0_MOD_Q, Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
-        values.add(this.setTime(LLN0_MOD_Q, Fc.ST, timestamp));
+        values.add(this.setTime(LLN0_MOD_T, Fc.ST, timestamp));
 
         values.add(this.setRandomFloat(MMXU1_MAXWPHS_MAG_F, Fc.MX, 500, 1000));
         values.add(this.setQuality(MMXU1_MAXWPHS_Q, Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
@@ -295,19 +295,19 @@ public class Battery extends LogicalDevice {
         values.add(this.setQuality(GGIO1_INTIN2_Q, Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
         values.add(this.setTime(GGIO1_INTIN2_T, Fc.ST, timestamp));
 
-        values.add(this.setRandomInt(GGIO1_WRN1_STVAL, Fc.ST, 1, 100));
+        values.add(this.setBoolean(GGIO1_WRN1_STVAL, Fc.ST, false));
         values.add(this.setQuality(GGIO1_WRN1_Q, Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
         values.add(this.setTime(GGIO1_WRN1_T, Fc.ST, timestamp));
 
-        values.add(this.setRandomInt(GGIO1_WRN2_STVAL, Fc.ST, 1, 100));
+        values.add(this.setBoolean(GGIO1_WRN2_STVAL, Fc.ST, false));
         values.add(this.setQuality(GGIO1_WRN2_Q, Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
         values.add(this.setTime(GGIO1_WRN2_T, Fc.ST, timestamp));
 
-        values.add(this.setRandomInt(GGIO1_WRN3_STVAL, Fc.ST, 1, 100));
+        values.add(this.setBoolean(GGIO1_WRN3_STVAL, Fc.ST, false));
         values.add(this.setQuality(GGIO1_WRN3_Q, Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
         values.add(this.setTime(GGIO1_WRN3_T, Fc.ST, timestamp));
 
-        values.add(this.setRandomInt(GGIO1_WRN4_STVAL, Fc.ST, 1, 100));
+        values.add(this.setBoolean(GGIO1_WRN4_STVAL, Fc.ST, false));
         values.add(this.setQuality(GGIO1_WRN4_Q, Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
         values.add(this.setTime(GGIO1_WRN4_T, Fc.ST, timestamp));
 
