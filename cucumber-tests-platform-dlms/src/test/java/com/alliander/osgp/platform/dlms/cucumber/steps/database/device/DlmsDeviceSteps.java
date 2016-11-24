@@ -69,8 +69,7 @@ public class DlmsDeviceSteps {
     /**
      * check that the given dlms device is inserted
      *
-     * @param deviceId
-     * @return
+     * @param deviceIdentification
      */
     @Then("^the dlms device with id \"([^\"]*)\" exists$")
     public void theDlmsDeviceShouldExist(final String deviceIdentification) throws Throwable {
