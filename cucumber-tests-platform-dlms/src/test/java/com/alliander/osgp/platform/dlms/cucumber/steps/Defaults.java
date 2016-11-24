@@ -16,6 +16,8 @@ import com.alliander.osgp.domain.core.entities.DeviceModel;
 
 public class Defaults {
 
+    public static final String ORGANISATION_IDENTIFICATION = "test-org";
+
     // Defaults values dlms_device
     public static final String DEVICE_IDENTIFICATION = null;
     public static final Long VERSION = 0L;
@@ -33,9 +35,6 @@ public class Defaults {
     public static final Long CLIENT_ID = null;
     public static final Long LOGICAL_ID = 1L;
     public static final boolean IN_DEBUG_MODE = false;
-
-    // Default values security_key
-    // public static final String DLMS_DEVICE_ID = null;
 
     public static final String SECURITY_KEY_TYPE_M = "E_METER_MASTER";
     public static final String SECURITY_KEY_TYPE_A = "E_METER_AUTHENTICATION";

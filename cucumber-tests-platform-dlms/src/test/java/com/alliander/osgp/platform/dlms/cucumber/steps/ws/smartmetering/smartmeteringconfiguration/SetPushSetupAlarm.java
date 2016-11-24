@@ -72,7 +72,7 @@ public class SetPushSetupAlarm extends SmartMeteringStepsBase {
         PROPERTIES_MAP
                 .put(Keys.KEY_ORGANIZATION_IDENTIFICATION,
                         getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+                                Defaults.DEFAULT_ORGANISATION_IDENTIFICATION));
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }
@@ -156,7 +156,7 @@ public class SetPushSetupAlarm extends SmartMeteringStepsBase {
         PROPERTIES_MAP
                 .put(Keys.KEY_ORGANIZATION_IDENTIFICATION,
                         getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+                                Defaults.DEFAULT_ORGANISATION_IDENTIFICATION));
 
         this.requestRunner(TestStepStatus.FAILED, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }

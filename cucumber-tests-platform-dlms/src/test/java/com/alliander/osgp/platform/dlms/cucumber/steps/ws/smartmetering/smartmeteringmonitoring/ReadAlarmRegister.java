@@ -39,14 +39,14 @@ public class ReadAlarmRegister extends SmartMeteringStepsBase {
         PROPERTIES_MAP
                 .put(Keys.KEY_ORGANIZATION_IDENTIFICATION,
                         getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+                                Defaults.DEFAULT_ORGANISATION_IDENTIFICATION));
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
 
         Helpers.saveCorrelationUidInScenarioContext(
                 this.runXpathResult.getValue(this.response, PATH_CORRELATION_UID),
                 getString(PROPERTIES_MAP, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                        Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+                        Defaults.DEFAULT_ORGANISATION_IDENTIFICATION));
     }
 
     @Then("^the alarm register should be returned$")

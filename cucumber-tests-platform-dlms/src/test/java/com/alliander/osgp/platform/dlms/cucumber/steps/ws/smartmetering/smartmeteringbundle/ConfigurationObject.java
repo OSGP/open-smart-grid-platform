@@ -58,7 +58,7 @@ public class ConfigurationObject extends SmartMeteringStepsBase {
         PROPERTIES_MAP
                 .put(Keys.KEY_ORGANIZATION_IDENTIFICATION,
                         getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+                                Defaults.DEFAULT_ORGANISATION_IDENTIFICATION));
     }
 
     @Then("^the retrieve configuration response contains$")

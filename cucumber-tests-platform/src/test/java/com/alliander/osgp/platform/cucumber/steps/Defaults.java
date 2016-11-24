@@ -17,7 +17,7 @@ public class Defaults {
 
     // Values
     public static final String DEFAULT_ORGANIZATION_DESCRIPTION = "Test Organization";
-    public static final String DEFAULT_ORGANIZATION_IDENTIFICATION = "test-org";
+    public static final String DEFAULT_ORGANISATION_IDENTIFICATION = "test-org";
     public static final String DEFAULT_PREFIX = "MAA";
     public static final String DEFAULT_MANUFACTURER_ID = "Test";
     public static final String DEFAULT_MANUFACTURER_NAME = "Test Manufacturer";

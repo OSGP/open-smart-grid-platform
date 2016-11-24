@@ -17,7 +17,7 @@ public class DeviceLogItemBuilder {
 
     private String deviceIdentification = Defaults.DEFAULT_DEVICE_IDENTIFICATION;
 
-    private String organisationIdentification = Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION;
+    private String organisationIdentification = Defaults.DEFAULT_ORGANISATION_IDENTIFICATION;
 
     private boolean incoming = true;
 

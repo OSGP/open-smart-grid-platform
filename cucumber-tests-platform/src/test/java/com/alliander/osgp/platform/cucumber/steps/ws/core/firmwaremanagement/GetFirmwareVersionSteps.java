@@ -75,7 +75,7 @@ public class GetFirmwareVersionSteps extends CoreStepsBase {
         // further use.
         saveCorrelationUidInScenarioContext(this.runXpathResult.getValue(this.response, PATH_CORRELATION_UID),
                 getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                        Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+                        Defaults.DEFAULT_ORGANISATION_IDENTIFICATION));
 
         LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
     }

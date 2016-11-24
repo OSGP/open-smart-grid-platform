@@ -15,13 +15,19 @@ import java.util.Map;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
+import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
+import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
+import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.dlms.cucumber.builders.entities.DeviceBuilder;
 import com.alliander.osgp.platform.dlms.cucumber.builders.entities.DlmsDeviceBuilder;
@@ -34,6 +40,7 @@ import cucumber.api.java.en.Given;
 /**
  * DLMS device specific steps.
  */
+@Transactional(value = "txMgrCore")
 public class DlmsDeviceSteps {
 
     @Autowired
@@ -48,21 +55,33 @@ public class DlmsDeviceSteps {
     @Autowired
     private ProtocolInfoRepository protocolInfoRepository;
 
+    @Autowired
+    private OrganisationRepository organisationRepo;
+
+    @Autowired
+    private DeviceAuthorizationRepository deviceAuthorizationRepository;
+
     @Given("^a dlms device$")
     public void aDlmsDevice(final Map<String, String> inputSettings) throws Throwable {
+
+        Device device;
         if (this.isSmartMeter(inputSettings)) {
             final SmartMeter smartMeter = new SmartMeterBuilder().withSettings(inputSettings)
                     .setProtocolInfo(this.getProtocolInfo(inputSettings)).build();
-            this.smartMeterRepository.save(smartMeter);
-
-            ScenarioContext.Current().put(Keys.DEVICE_IDENTIFICATION, smartMeter.getDeviceIdentification());
+            device = this.smartMeterRepository.save(smartMeter);
         } else {
-            final Device device = new DeviceBuilder().withSettings(inputSettings)
+            device = new DeviceBuilder().withSettings(inputSettings)
                     .setProtocolInfo(this.getProtocolInfo(inputSettings)).build();
             this.deviceRepository.save(device);
-
-            ScenarioContext.Current().put(Keys.DEVICE_IDENTIFICATION, device.getDeviceIdentification());
         }
+
+        ScenarioContext.Current().put(Keys.DEVICE_IDENTIFICATION, device.getDeviceIdentification());
+        // Authorization
+        final Organisation organisation = this.organisationRepo
+                .findByOrganisationIdentification(Defaults.ORGANISATION_IDENTIFICATION);
+        final DeviceAuthorization deviceAuthorization = device
+                .addAuthorization(organisation, DeviceFunctionGroup.OWNER);
+        this.deviceAuthorizationRepository.save(deviceAuthorization);
 
         // Protocol adapter
         final DlmsDevice dlmsDevice = new DlmsDeviceBuilder().withSettings(inputSettings).build();

@@ -3,7 +3,6 @@ Feature: Enable and disable debugging
   I want to turn debugging of a device on or off
   So I can see extra information of a meter under investigation
 
-  @runnow
   Scenario: Enable debug information from a single meter
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
