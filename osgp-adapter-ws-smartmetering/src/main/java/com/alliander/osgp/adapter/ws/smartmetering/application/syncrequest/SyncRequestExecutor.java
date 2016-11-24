@@ -10,6 +10,7 @@ package com.alliander.osgp.adapter.ws.smartmetering.application.syncrequest;
 import java.io.Serializable;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.MeterResponseDataService;
@@ -28,6 +29,9 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
  *
  */
 public abstract class SyncRequestExecutor {
+
+    @Value("${sync.notification.delay}")
+    private int syncNotificationDelay;
 
     @Autowired
     private NotificationService notificationService;
@@ -59,8 +63,17 @@ public abstract class SyncRequestExecutor {
             final String correlationUid, final Serializable data) {
         this.storeMeterResponseData(organisationIdentification, deviceIdentification, correlationUid,
                 ResponseMessageResultType.OK, data);
-        this.sendNotification(organisationIdentification, deviceIdentification, correlationUid,
-                ResponseMessageResultType.OK);
+
+        // Delay execution so the notification will not arrive before the
+        // response of this call.
+        new java.util.Timer().schedule(new java.util.TimerTask() {
+            @Override
+            public void run() {
+                SyncRequestExecutor.this.sendNotification(organisationIdentification, deviceIdentification,
+                        correlationUid, ResponseMessageResultType.OK);
+            }
+        }, this.syncNotificationDelay);
+
     }
 
     /**
@@ -81,7 +94,7 @@ public abstract class SyncRequestExecutor {
     }
 
     private DeviceFunction getMessageType() {
-        return messageType;
+        return this.messageType;
     }
 
     private void storeMeterResponseData(final String organisationIdentification, final String deviceIdentification,
