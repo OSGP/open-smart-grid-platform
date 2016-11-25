@@ -9,7 +9,7 @@ package com.alliander.osgp.platform.dlms.cucumber.steps;
 
 public class Keys {
 
-    // Defaults keys dlms_device
+    // Default keys for dlms_device
     public static final String DEVICE_IDENTIFICATION = "DeviceIdentification";
     public static final String VERSION = "Version";
     public static final String ICC_ID = "IccId";
@@ -27,7 +27,7 @@ public class Keys {
     public static final String LOGICAL_ID = "LogicalId";
     public static final String IN_DEBUG_MODE = "InDebugMode";
 
-    // Default keys security_key
+    // Default keys for security_key
     public static final String DLMS_DEVICE_ID = "DlmsDeviceId";
     public static final String SECURITY_TYPE_M = "SecurityKeyTypeMaster";
     public static final String SECURITY_TYPE_A = "SecurityKeyTypeAuthentication";

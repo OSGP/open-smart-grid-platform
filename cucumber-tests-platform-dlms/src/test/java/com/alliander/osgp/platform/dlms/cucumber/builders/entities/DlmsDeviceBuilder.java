@@ -234,8 +234,8 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
         /**
          * It is not ideal that the build() method for security keys is called
          * here, but necessary because the security key needs the dlmsDevice in
-         * order to be created. This seems to be the only way to work aroud this
-         * circular dependency.
+         * order to be created. This seems to be the only way to work around
+         * this circular dependency.
          */
         dlmsDevice.addSecurityKey(this.authenticationSecurityKeyBuilder.setDlmsDevice(dlmsDevice).build());
         dlmsDevice.addSecurityKey(this.encryptionSecurityKeyBuilder.setDlmsDevice(dlmsDevice).build());

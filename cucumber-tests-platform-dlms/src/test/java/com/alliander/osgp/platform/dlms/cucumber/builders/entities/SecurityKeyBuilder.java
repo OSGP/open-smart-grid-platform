@@ -92,9 +92,8 @@ public class SecurityKeyBuilder implements CucumberBuilder<SecurityKey> {
 
         securityKey.setVersion(this.version);
         securityKey.setValidFrom(this.validFrom);
-        if (this.validTo != null) {
-            securityKey.setValidTo(this.validTo);
-        }
+        securityKey.setValidTo(this.validTo);
+
         return securityKey;
     }
 }

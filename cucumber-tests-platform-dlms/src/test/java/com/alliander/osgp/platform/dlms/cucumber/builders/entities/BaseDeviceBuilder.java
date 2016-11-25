@@ -19,7 +19,7 @@ import com.alliander.osgp.platform.dlms.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.dlms.cucumber.steps.Keys;
 
 @SuppressWarnings("unchecked")
-public abstract class BaseDeviceBuilder<T> {
+public abstract class BaseDeviceBuilder<T extends BaseDeviceBuilder<T>> {
     Long version = Defaults.VERSION;
     String deviceIdentification = Defaults.DEVICE_IDENTIFICATION;
     String deviceType = Defaults.DEVICE_TYPE;
@@ -138,7 +138,7 @@ public abstract class BaseDeviceBuilder<T> {
     public T withSettings(final Map<String, String> inputSettings) {
 
         if (inputSettings.containsKey(Keys.VERSION)) {
-            this.setVersion(Long.parseLong(inputSettings.get(Keys.VERSION)));
+            this.setVersion(Long.valueOf(inputSettings.get(Keys.VERSION)));
         }
         if (inputSettings.containsKey(Keys.DEVICE_IDENTIFICATION)) {
             this.setDeviceIdentification(inputSettings.get(Keys.DEVICE_IDENTIFICATION));
@@ -156,10 +156,10 @@ public abstract class BaseDeviceBuilder<T> {
             this.setContainerStreet(inputSettings.get(Keys.CONTAINER_STREET));
         }
         if (inputSettings.containsKey(Keys.GPS_LATITUDE)) {
-            this.setGpsLatitude(Float.parseFloat(inputSettings.get(Keys.GPS_LATITUDE)));
+            this.setGpsLatitude(Float.valueOf(inputSettings.get(Keys.GPS_LATITUDE)));
         }
         if (inputSettings.containsKey(Keys.GPS_LONGITUDE)) {
-            this.setGpsLongitude(Float.parseFloat(inputSettings.get(Keys.GPS_LONGITUDE)));
+            this.setGpsLongitude(Float.valueOf(inputSettings.get(Keys.GPS_LONGITUDE)));
         }
         if (inputSettings.containsKey(Keys.CONTAINER_POSTAL_CODE)) {
             this.setContainerPostalCode(inputSettings.get(Keys.CONTAINER_POSTAL_CODE));
