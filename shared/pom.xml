@@ -117,13 +117,15 @@
       <groupId>org.apache.activemq</groupId>
       <artifactId>activemq-client</artifactId>
     </dependency>
-    <!-- test deps -->
+
+    <!-- Bouncy castle -->
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcprov-jdk15on</artifactId>
       <version>1.54</version>
-      <scope>test</scope>
     </dependency>
+
+    <!-- test deps -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
