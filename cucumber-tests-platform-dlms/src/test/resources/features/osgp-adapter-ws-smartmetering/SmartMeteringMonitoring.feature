@@ -11,6 +11,7 @@ Feature: SmartMetering Monitoring
       | DeviceIdentification        | TESTG102400000001 |
       | DeviceType                  | SMART_METER_G     |
       | GatewayDeviceIdentification | TEST1024000000001 |
+      | Channel                     | 1                 |
 
   Scenario: Get the actual meter reads from a device
     When the get actual meter reads request is received

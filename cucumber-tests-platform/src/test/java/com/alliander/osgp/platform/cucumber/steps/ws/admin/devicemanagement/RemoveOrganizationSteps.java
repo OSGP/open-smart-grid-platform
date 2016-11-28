@@ -39,7 +39,7 @@ public class RemoveOrganizationSteps extends AdminStepsBase {
     public void receiving_a_remove_organization_request(Map<String, String> requestParameters) throws Throwable {
 
         // Required parameters
-        PROPERTIES_MAP.put("__ORGANIZATION_IDENTIFICATION__", requestParameters.get(Keys.KEY_ORGANIZATION_IDENTIFICATION));
+        PROPERTIES_MAP.put("__ORGANIZATION_IDENTIFICATION__", requestParameters.get(Keys.KEY_ORGANISATION_IDENTIFICATION));
     
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_NAME, TEST_SUITE);
     }

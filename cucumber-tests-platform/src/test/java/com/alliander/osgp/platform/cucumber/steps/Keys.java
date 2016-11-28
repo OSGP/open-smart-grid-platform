@@ -32,7 +32,10 @@ public class Keys {
     public static final String KEY_IS_ACTIVATED = "IsActivated";
     public static final String KEY_DEVICE_MODEL = "DeviceModel";
     public static final String KEY_TECH_INSTALL_DATE = "TechnicalInstallationDate";
-    public static final String KEY_ORGANIZATION_IDENTIFICATION = "OrganizationIdentification";
+
+    // TODO: It is called "Organisation" with an S in all webservices and
+    // sourcecode, this should be consistent.
+    public static final String KEY_ORGANISATION_IDENTIFICATION = "OrganizationIdentification";
     public static final String KEY_DEVICE_FUNCTION_GRP = "DeviceFunctionGroup";
     public static final String KEY_COMM_METHOD = "CommunicationMethod";
     public static final String KEY_IP_ADDR_IS_STATIC = "IpAddressIsStatic";

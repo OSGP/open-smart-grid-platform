@@ -32,7 +32,7 @@ import com.alliander.osgp.platform.cucumber.steps.Defaults;
 public class DatabaseSteps {
 
     @Autowired
-    private OrganisationRepository organizationRepo;
+    private OrganisationRepository organisationRepo;
 
     @Autowired
     private ManufacturerRepository manufacturerRepo;
@@ -65,16 +65,16 @@ public class DatabaseSteps {
         // steps.database package which will create the necessary basic
         // entities.
 
-        if (this.organizationRepo.findByOrganisationIdentification(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION) == null) {
+        if (this.organisationRepo.findByOrganisationIdentification(Defaults.DEFAULT_ORGANISATION_IDENTIFICATION) == null) {
             // Create test organization used within the tests.
-            final Organisation testOrg = new Organisation(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION,
-                    Defaults.DEFAULT_ORGANIZATION_DESCRIPTION, Defaults.DEFAULT_PREFIX, PlatformFunctionGroup.ADMIN);
+            final Organisation testOrg = new Organisation(Defaults.DEFAULT_ORGANISATION_IDENTIFICATION,
+                    Defaults.DEFAULT_ORGANISATION_DESCRIPTION, Defaults.DEFAULT_PREFIX, PlatformFunctionGroup.ADMIN);
             testOrg.addDomain(PlatformDomain.COMMON);
             testOrg.addDomain(PlatformDomain.PUBLIC_LIGHTING);
             testOrg.addDomain(PlatformDomain.TARIFF_SWITCHING);
             testOrg.setIsEnabled(true);
 
-            this.organizationRepo.save(testOrg);
+            this.organisationRepo.save(testOrg);
         }
 
         // Create default test manufacturer
@@ -96,7 +96,7 @@ public class DatabaseSteps {
         cleanRepoSerializable(this.deviceModelRepo);
         cleanRepoSerializable(this.manufacturerRepo);
         cleanRepoSerializable(this.ssldRepository);
-        cleanRepoSerializable(this.organizationRepo);
+        cleanRepoSerializable(this.organisationRepo);
 
         insertDefaultData();
     }
