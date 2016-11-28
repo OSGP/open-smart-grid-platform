@@ -13,7 +13,7 @@
   <!-- Description element is needed for the maven-jxr-plugin to generate 
     a maven site -->
   <description>Shared module.</description>
-
+  
   <parent>
     <groupId>com.alliander.osgp</groupId>
     <artifactId>parent-shared</artifactId>
@@ -101,7 +101,7 @@
       <artifactId>jackson-jaxrs-json-provider</artifactId>
       <version>${jackson.version}</version>
     </dependency>
-
+    
     <!-- Spring Security -->
     <dependency>
       <groupId>org.springframework.security</groupId>
@@ -122,7 +122,6 @@
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcprov-jdk15on</artifactId>
-      <version>1.54</version>
     </dependency>
 
     <!-- test deps -->

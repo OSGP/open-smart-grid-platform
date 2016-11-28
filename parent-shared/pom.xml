@@ -89,6 +89,7 @@
     <apache.commons.schema>2.0.3</apache.commons.schema>
     <maven.compiler.plugin.version>3.6.0</maven.compiler.plugin.version>
     <license.maven.plugin>2.11</license.maven.plugin>
+    <bouncycastle.version>1.54</bouncycastle.version>
   </properties>
 
   <repositories>
@@ -365,6 +366,12 @@
         <artifactId>commons-lang3</artifactId>
         <version>${apache.commons.lang.version}</version>
       </dependency>
+
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk15on</artifactId>
+      <version>${bouncycastle.version}</version>
+    </dependency>
 
             <!-- Logging dependencies -->
       <dependency>
