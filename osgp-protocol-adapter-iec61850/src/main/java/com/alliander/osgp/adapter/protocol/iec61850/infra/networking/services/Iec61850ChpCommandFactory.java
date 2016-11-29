@@ -23,16 +23,17 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.co
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850BehaviourCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850HealthCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850MaterialFlowCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850TemperatureCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850MaterialStatusCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850MaterialTypeCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850MaximumActualPowerCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850MinimumActualPowerCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850ModeCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850OperationalHoursCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850MaterialStatusCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850MaterialTypeCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850StateCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850TemperatureCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850TotalEnergyCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850WarningCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850WarningOtherCommand;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementFilterDto;
 
@@ -89,13 +90,13 @@ public final class Iec61850ChpCommandFactory implements RtuReadCommandFactory<Me
         RTU_COMMAND_MAP.put(DataAttribute.ALARM_TWO, new Iec61850AlarmCommand(TWO));
         RTU_COMMAND_MAP.put(DataAttribute.ALARM_THREE, new Iec61850AlarmCommand(THREE));
         RTU_COMMAND_MAP.put(DataAttribute.ALARM_FOUR, new Iec61850AlarmCommand(FOUR));
+        RTU_COMMAND_MAP.put(DataAttribute.ALARM_OTHER, new Iec61850AlarmOtherCommand());
 
         RTU_COMMAND_MAP.put(DataAttribute.WARNING_ONE, new Iec61850WarningCommand(ONE));
         RTU_COMMAND_MAP.put(DataAttribute.WARNING_TWO, new Iec61850WarningCommand(TWO));
         RTU_COMMAND_MAP.put(DataAttribute.WARNING_THREE, new Iec61850WarningCommand(THREE));
         RTU_COMMAND_MAP.put(DataAttribute.WARNING_FOUR, new Iec61850WarningCommand(FOUR));
-
-        RTU_COMMAND_MAP.put(DataAttribute.ALARM_OTHER, new Iec61850AlarmOtherCommand());
+        RTU_COMMAND_MAP.put(DataAttribute.WARNING_OTHER, new Iec61850WarningOtherCommand());
 
         for (int i = ONE; i <= TWO; i++) {
             RTU_COMMAND_MAP.put(DataAttribute.TEMPERATURE, new Iec61850TemperatureCommand(i));
