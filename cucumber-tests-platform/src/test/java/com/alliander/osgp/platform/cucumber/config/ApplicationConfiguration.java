@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.core;
+package com.alliander.osgp.platform.cucumber.config;
 
 import java.util.Properties;
 

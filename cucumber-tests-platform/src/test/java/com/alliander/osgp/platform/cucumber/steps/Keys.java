@@ -8,7 +8,8 @@
 package com.alliander.osgp.platform.cucumber.steps;
 
 /**
- * This class contains a number of static String variables that are used to put/get values from SessonContext
+ * This class contains a number of static String variables that are used to
+ * put/get values from ScenarioContext or step settings.
  */
 public class Keys {
 

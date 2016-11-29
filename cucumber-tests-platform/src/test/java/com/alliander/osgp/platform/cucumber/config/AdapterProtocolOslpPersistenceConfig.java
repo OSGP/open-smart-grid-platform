@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.core;
+package com.alliander.osgp.platform.cucumber.config;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -22,9 +22,9 @@ import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRe
 @EnableJpaRepositories(entityManagerFactoryRef = "entityMgrFactOslp", 
 	transactionManagerRef = "txMgrOslp", 
 	basePackageClasses = { OslpDeviceRepository.class })
-public class PersistenceConfigResponseOslp extends ApplicationConfiguration {
+public class AdapterProtocolOslpPersistenceConfig extends ApplicationConfiguration {
 
-    public PersistenceConfigResponseOslp() {
+    public AdapterProtocolOslpPersistenceConfig() {
     }
 
     @Value("${osgpadapterprotocoloslpdbs.url}")

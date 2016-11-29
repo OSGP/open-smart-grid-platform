@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.core;
+package com.alliander.osgp.platform.cucumber.config;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -13,26 +13,24 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
-import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
-import com.alliander.osgp.domain.core.repositories.DeviceRepository;
-import com.alliander.osgp.domain.microgrids.repositories.RtuDeviceRepository;
+import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
 
-@EnableJpaRepositories(entityManagerFactoryRef = "entityMgrCore", transactionManagerRef = "txMgrCore", basePackageClasses = {
-        DeviceRepository.class, DeviceAuthorizationRepository.class, RtuDeviceRepository.class })
-public class PersistenceConfigCore extends ApplicationConfiguration {
+@EnableJpaRepositories(entityManagerFactoryRef = "entityMgrRespData", 
+    transactionManagerRef = "txMgrRespData",
+    basePackageClasses = { MeterResponseDataRepository.class })
+public class AdapterWsSmartMeteringPersistenceConfig extends ApplicationConfiguration {
 
-    @Value("${osgpcoredbs.url}")
+    @Value("${osgpadapterwssmartmeteringdbs.url}")
     private String databaseUrl;
 
-    @Value("${entitymanager.packages.to.scan.core}")
+    @Value("${entitymanager.packages.to.scan}")
     private String entitymanagerPackagesToScan;
 
-    public PersistenceConfigCore() {
+    public AdapterWsSmartMeteringPersistenceConfig() {
     }
 
     @Override
@@ -50,8 +48,7 @@ public class PersistenceConfigCore extends ApplicationConfiguration {
      *
      * @return DataSource
      */
-    @Primary
-    @Bean(name = "dsCore")
+    @Bean(name = "dsRespData")
     public DataSource dataSource() {
         return this.makeDataSource();
     }
@@ -63,12 +60,11 @@ public class PersistenceConfigCore extends ApplicationConfiguration {
      * @throws ClassNotFoundException
      *             when class not found
      */
-    @Primary
-    @Bean(name = "entityMgrCore")
-    public LocalContainerEntityManagerFactoryBean entityMgrCore(@Qualifier("dsCore") final DataSource dataSource)
-            throws ClassNotFoundException {
+    @Bean(name = "entityMgrRespData")
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(
+            @Qualifier("dsRespData") final DataSource dataSource) throws ClassNotFoundException {
 
-        return this.makeEntityManager("OSGP_CUCUMBER_CORE", dataSource);
+        return this.makeEntityManager("OSGP_CUCUMBER_RESPDATA", dataSource);
     }
 
     /**
@@ -78,12 +74,9 @@ public class PersistenceConfigCore extends ApplicationConfiguration {
      * @throws ClassNotFoundException
      *             when class not found
      */
-    @Primary
-    @Bean(name = "txMgrCore")
-    public JpaTransactionManager txMgrCore(
-            @Qualifier("entityMgrCore") final EntityManagerFactory entityMgrCore) throws ClassNotFoundException {
-
-        return new JpaTransactionManager(entityMgrCore);
-    }
+    @Bean(name = "txMgrRespData")
+    public JpaTransactionManager transactionManager(
+            @Qualifier("entityMgrRespData") final EntityManagerFactory barEntityManagerFactory) {
+        return new JpaTransactionManager(barEntityManagerFactory);    }
 
 }

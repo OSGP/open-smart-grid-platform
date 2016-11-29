@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.core;
+package com.alliander.osgp.platform.cucumber.config;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -21,7 +21,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 
 @EnableJpaRepositories(entityManagerFactoryRef = "entityMgrLogging", transactionManagerRef = "txMgrLogging", basePackageClasses = { DeviceLogItemRepository.class })
-public class PersistenceConfigLogging extends ApplicationConfiguration {
+public class LoggingPersistenceConfig extends ApplicationConfiguration {
 
     @Value("${osgploggingdbs.url}")
     private String databaseUrl;
@@ -29,7 +29,7 @@ public class PersistenceConfigLogging extends ApplicationConfiguration {
     @Value("${entitymanager.packages.to.scan.logging}")
     private String entitymanagerPackagesToScan;
 
-    public PersistenceConfigLogging() {
+    public LoggingPersistenceConfig() {
     }
 
     @Override

@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.core;
+package com.alliander.osgp.platform.cucumber.config;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -20,9 +20,9 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 @EnableJpaRepositories(entityManagerFactoryRef = "entityMgrFactDlms", transactionManagerRef = "txMgrDlms", basePackageClasses = {
         DlmsDeviceRepository.class })
-public class PersistenceConfigResponseDlms extends ApplicationConfiguration {
+public class AdapterProtocolDlmsPersistenceConfig extends ApplicationConfiguration {
 
-    public PersistenceConfigResponseDlms() {
+    public AdapterProtocolDlmsPersistenceConfig() {
     }
 
     @Value("${osgpadapterprotocoldlmsdbs.url}")

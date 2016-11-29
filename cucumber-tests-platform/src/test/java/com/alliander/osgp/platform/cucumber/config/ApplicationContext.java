@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.core;
+package com.alliander.osgp.platform.cucumber.config;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -23,8 +23,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
         "com.alliander.osgp.adapter.protocol.oslp.domain.entities",
         "com.alliander.osgp.platform.cucumber.hooks" })
 @EnableTransactionManagement()
-@Import({ PersistenceConfigCore.class, PersistenceConfigResponseData.class, PersistenceConfigResponseDlms.class,
-        PersistenceConfigLogging.class, PersistenceConfigResponseOslp.class, PersistenceConfigResponseRtu.class })
+@Import({ CorePersistenceConfig.class, AdapterWsSmartMeteringPersistenceConfig.class, AdapterProtocolDlmsPersistenceConfig.class,
+        LoggingPersistenceConfig.class, AdapterProtocolOslpPersistenceConfig.class, AdapterWsMicrogridsPersistenceConfig.class })
 public class ApplicationContext {
 
 }

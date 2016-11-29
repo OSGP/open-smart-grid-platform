@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.core;
+package com.alliander.osgp.platform.cucumber.config;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -17,21 +17,20 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
-import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
+import com.alliander.osgp.adapter.ws.microgrids.domain.repositories.RtuResponseDataRepository;
 
-@EnableJpaRepositories(entityManagerFactoryRef = "entityMgrRespData", 
-    transactionManagerRef = "txMgrRespData",
-    basePackageClasses = { MeterResponseDataRepository.class })
-public class PersistenceConfigResponseData extends ApplicationConfiguration {
+@EnableJpaRepositories(entityManagerFactoryRef = "entityMgrFactWsMicrogrids", transactionManagerRef = "txMgrWsMicrogrids", basePackageClasses = {
+        RtuResponseDataRepository.class })
+public class AdapterWsMicrogridsPersistenceConfig extends ApplicationConfiguration {
 
-    @Value("${osgpadapterwssmartmeteringdbs.url}")
+    public AdapterWsMicrogridsPersistenceConfig() {
+    }
+
+    @Value("${osgpadapterwsmicrogridsdbs.url}")
     private String databaseUrl;
 
-    @Value("${entitymanager.packages.to.scan}")
+    @Value("${entitymanager.packages.to.scan.ws.microgrids}")
     private String entitymanagerPackagesToScan;
-
-    public PersistenceConfigResponseData() {
-    }
 
     @Override
     protected String getDatabaseUrl() {
@@ -48,7 +47,7 @@ public class PersistenceConfigResponseData extends ApplicationConfiguration {
      *
      * @return DataSource
      */
-    @Bean(name = "dsRespData")
+    @Bean(name = "dsWsMicrogrids")
     public DataSource dataSource() {
         return this.makeDataSource();
     }
@@ -60,11 +59,11 @@ public class PersistenceConfigResponseData extends ApplicationConfiguration {
      * @throws ClassNotFoundException
      *             when class not found
      */
-    @Bean(name = "entityMgrRespData")
+    @Bean(name = "entityMgrFactWsMicrogrids")
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(
-            @Qualifier("dsRespData") final DataSource dataSource) throws ClassNotFoundException {
+            @Qualifier("dsWsMicrogrids") final DataSource dataSource) throws ClassNotFoundException {
 
-        return this.makeEntityManager("OSGP_CUCUMBER_RESPDATA", dataSource);
+        return this.makeEntityManager("OSGP_CUCUMBER_WS_MICROGRIDS", dataSource);
     }
 
     /**
@@ -74,9 +73,10 @@ public class PersistenceConfigResponseData extends ApplicationConfiguration {
      * @throws ClassNotFoundException
      *             when class not found
      */
-    @Bean(name = "txMgrRespData")
+    @Bean(name = "txMgrWsMicrogrids")
     public JpaTransactionManager transactionManager(
-            @Qualifier("entityMgrRespData") final EntityManagerFactory barEntityManagerFactory) {
-        return new JpaTransactionManager(barEntityManagerFactory);    }
+            @Qualifier("entityMgrFactWsMicrogrids") final EntityManagerFactory barEntityManagerFactory) {
+        return new JpaTransactionManager(barEntityManagerFactory);
+    }
 
 }

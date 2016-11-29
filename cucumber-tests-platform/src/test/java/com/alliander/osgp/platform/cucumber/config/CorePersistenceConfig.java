@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.core;
+package com.alliander.osgp.platform.cucumber.config;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -13,24 +13,27 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
-import com.alliander.osgp.adapter.ws.microgrids.domain.repositories.RtuResponseDataRepository;
+import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
+import com.alliander.osgp.domain.core.repositories.DeviceRepository;
+import com.alliander.osgp.domain.microgrids.repositories.RtuDeviceRepository;
 
-@EnableJpaRepositories(entityManagerFactoryRef = "entityMgrFactWsMicrogrids", transactionManagerRef = "txMgrWsMicrogrids", basePackageClasses = {
-        RtuResponseDataRepository.class })
-public class PersistenceConfigResponseRtu extends ApplicationConfiguration {
+@EnableJpaRepositories(entityManagerFactoryRef = "entityMgrCore", transactionManagerRef = "txMgrCore", basePackageClasses = {
+        DeviceRepository.class, DeviceAuthorizationRepository.class, RtuDeviceRepository.class })
+public class CorePersistenceConfig extends ApplicationConfiguration {
 
-    public PersistenceConfigResponseRtu() {
-    }
-
-    @Value("${osgpadapterwsmicrogridsdbs.url}")
+    @Value("${osgpcoredbs.url}")
     private String databaseUrl;
 
-    @Value("${entitymanager.packages.to.scan.ws.microgrids}")
+    @Value("${entitymanager.packages.to.scan.core}")
     private String entitymanagerPackagesToScan;
+
+    public CorePersistenceConfig() {
+    }
 
     @Override
     protected String getDatabaseUrl() {
@@ -47,7 +50,8 @@ public class PersistenceConfigResponseRtu extends ApplicationConfiguration {
      *
      * @return DataSource
      */
-    @Bean(name = "dsWsMicrogrids")
+    @Primary
+    @Bean(name = "dsCore")
     public DataSource dataSource() {
         return this.makeDataSource();
     }
@@ -59,11 +63,12 @@ public class PersistenceConfigResponseRtu extends ApplicationConfiguration {
      * @throws ClassNotFoundException
      *             when class not found
      */
-    @Bean(name = "entityMgrFactWsMicrogrids")
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(
-            @Qualifier("dsWsMicrogrids") final DataSource dataSource) throws ClassNotFoundException {
+    @Primary
+    @Bean(name = "entityMgrCore")
+    public LocalContainerEntityManagerFactoryBean entityMgrCore(@Qualifier("dsCore") final DataSource dataSource)
+            throws ClassNotFoundException {
 
-        return this.makeEntityManager("OSGP_CUCUMBER_WS_MICROGRIDS", dataSource);
+        return this.makeEntityManager("OSGP_CUCUMBER_CORE", dataSource);
     }
 
     /**
@@ -73,10 +78,12 @@ public class PersistenceConfigResponseRtu extends ApplicationConfiguration {
      * @throws ClassNotFoundException
      *             when class not found
      */
-    @Bean(name = "txMgrWsMicrogrids")
-    public JpaTransactionManager transactionManager(
-            @Qualifier("entityMgrFactWsMicrogrids") final EntityManagerFactory barEntityManagerFactory) {
-        return new JpaTransactionManager(barEntityManagerFactory);
+    @Primary
+    @Bean(name = "txMgrCore")
+    public JpaTransactionManager txMgrCore(
+            @Qualifier("entityMgrCore") final EntityManagerFactory entityMgrCore) throws ClassNotFoundException {
+
+        return new JpaTransactionManager(entityMgrCore);
     }
 
 }
