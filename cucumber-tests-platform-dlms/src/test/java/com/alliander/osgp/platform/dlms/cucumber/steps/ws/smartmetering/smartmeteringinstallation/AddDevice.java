@@ -56,14 +56,14 @@ public class AddDevice extends SmartMeteringStepsBase {
                 .assertXpath(
                         this.response,
                         PATH_DEVICE_IDENTIFICATION,
-                        getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+                        getString(settings, Keys.KEY_ORGANISATION_IDENTIFICATION,
+                                Defaults.DEFAULT_ORGANISATION_IDENTIFICATION));
         this.runXpathResult.assertNotNull(this.response, PATH_CORRELATION_UID);
 
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.
         saveCorrelationUidInScenarioContext(this.runXpathResult.getValue(this.response, PATH_CORRELATION_UID),
-                getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+                getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANISATION_IDENTIFICATION));
     }
 
     @Then("^receiving an get add device response request$")

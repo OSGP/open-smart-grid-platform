@@ -51,8 +51,8 @@ public class GetDataSteps extends MicrogridsStepsBase {
     public void aGetDataRequestIsReceived(final Map<String, String> requestParameters) throws Throwable {
 
         final String organizationIdentification = (String) ScenarioContext.Current()
-                .get(Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
-        ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, organizationIdentification);
+                .get(Keys.KEY_ORGANISATION_IDENTIFICATION, Defaults.DEFAULT_ORGANISATION_IDENTIFICATION);
+        ScenarioContext.Current().put(Keys.KEY_ORGANISATION_IDENTIFICATION, organizationIdentification);
         final String userName = (String) ScenarioContext.Current().get(Keys.KEY_USER_NAME, Defaults.DEFAULT_USER_NAME);
         ScenarioContext.Current().put(Keys.KEY_USER_NAME, userName);
 

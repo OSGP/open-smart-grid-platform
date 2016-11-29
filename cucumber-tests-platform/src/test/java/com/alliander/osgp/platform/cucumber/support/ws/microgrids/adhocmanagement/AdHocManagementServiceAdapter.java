@@ -68,10 +68,10 @@ public class AdHocManagementServiceAdapter {
 
     private String getOrganizationIdentification() {
         final String organizationIdentification = (String) ScenarioContext.Current()
-                .get(Keys.KEY_ORGANIZATION_IDENTIFICATION);
+                .get(Keys.KEY_ORGANISATION_IDENTIFICATION);
         if (organizationIdentification == null) {
             throw new AssertionError("ScenarioContext must contain the organization identification for key \""
-                    + Keys.KEY_ORGANIZATION_IDENTIFICATION + "\" before calling a web service.");
+                    + Keys.KEY_ORGANISATION_IDENTIFICATION + "\" before calling a web service.");
         }
         return organizationIdentification;
     }

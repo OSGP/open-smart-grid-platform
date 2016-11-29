@@ -74,8 +74,8 @@ public class SetLightSteps extends PublicLightingStepsBase {
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.
         saveCorrelationUidInScenarioContext(this.runXpathResult.getValue(this.response, PATH_CORRELATION_UID),
-                getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                        Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+                getString(expectedResponseData, Keys.KEY_ORGANISATION_IDENTIFICATION,
+                        Defaults.DEFAULT_ORGANISATION_IDENTIFICATION));
 
         LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
     }
