@@ -62,7 +62,11 @@ public enum LogicalDevice {
     /**
      * Logical Device CHP 1
      */
-    CHP_ONE("CHP1");
+    CHP_ONE("CHP1"),
+    /**
+     * Logical Device Gas Furnace
+     */
+    GAS_FURNACE_ONE("GAS_FURNACE1");
 
     private String description;
 
