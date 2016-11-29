@@ -135,7 +135,16 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         try {
             // Handle message
             messageMetadata.handleMessage(message);
-            device = this.domainHelperService.findDlmsDevice(messageMetadata);
+            /**
+             * The happy flow for addMeter requires that the dlmsDevice does not
+             * exist. Because the findDlmsDevice below throws a runtime
+             * exception, we skip this call in the addMeter flow. The
+             * AddMeterRequestMessageProcessor will throw the appropriate
+             * 'dlmsDevice already exists' error if the dlmsDevice does exists!
+             */
+            if (!DeviceRequestMessageType.ADD_METER.name().equals(messageMetadata.getMessageType())) {
+                device = this.domainHelperService.findDlmsDevice(messageMetadata);
+            }
 
             LOGGER.info("{} called for device: {} for organisation: {}", message.getJMSType(),
                     messageMetadata.getDeviceIdentification(), messageMetadata.getOrganisationIdentification());

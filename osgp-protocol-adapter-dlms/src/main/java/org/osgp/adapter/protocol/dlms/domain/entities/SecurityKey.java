@@ -102,7 +102,11 @@ public class SecurityKey extends AbstractEntity {
     }
 
     public void setValidTo(final Date validTo) {
-        this.validTo = new Date(validTo.getTime());
+        if (validTo != null) {
+            this.validTo = new Date(validTo.getTime());
+        } else {
+            this.validTo = null;
+        }
     }
 
     public String getKey() {
