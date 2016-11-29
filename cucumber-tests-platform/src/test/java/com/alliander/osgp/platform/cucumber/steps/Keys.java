@@ -8,12 +8,10 @@
 package com.alliander.osgp.platform.cucumber.steps;
 
 /**
- * This class contains a number of static String variables that are used to put/get values from SessonContext
+ * This class contains a number of static String variables that are used to
+ * put/get values from SessonContext
  */
 public class Keys {
-
-    public Keys() {
-    }
 
     public static final String KEY_CORRELATION_UID = "CorrelationUid";
     public static final String KEY_DEVICE_IDENTIFICATION = "DeviceIdentification";
@@ -34,7 +32,10 @@ public class Keys {
     public static final String KEY_IS_ACTIVATED = "IsActivated";
     public static final String KEY_DEVICE_MODEL = "DeviceModel";
     public static final String KEY_TECH_INSTALL_DATE = "TechnicalInstallationDate";
-    public static final String KEY_ORGANIZATION_IDENTIFICATION =  "OrganizationIdentification";
+
+    // TODO: It is called "Organisation" with an S in all webservices and
+    // sourcecode, this should be consistent.
+    public static final String KEY_ORGANISATION_IDENTIFICATION = "OrganizationIdentification";
     public static final String KEY_DEVICE_FUNCTION_GRP = "DeviceFunctionGroup";
     public static final String KEY_COMM_METHOD = "CommunicationMethod";
     public static final String KEY_IP_ADDR_IS_STATIC = "IpAddressIsStatic";
@@ -59,5 +60,7 @@ public class Keys {
     public static final String KEY_DEVICE_IDENTIFICATION_G_LABEL = "DeviceIdentificationG";
 
     public static final String KEY_EVENTS_NODELIST_EXPECTED = "event-nodelist-expected";
+    public static final String KEY_DEVICE_UID = "DeviceUid";
 
+    public static final String KEY_PAGE = "Page";
 }

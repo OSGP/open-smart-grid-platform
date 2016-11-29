@@ -4,13 +4,14 @@ Feature: SmartMetering Monitoring
   In order to ...
 
   Background: 
-    Given a device
+    Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-    And a device
+    And a dlms device
       | DeviceIdentification        | TESTG102400000001 |
       | DeviceType                  | SMART_METER_G     |
       | GatewayDeviceIdentification | TEST1024000000001 |
+      | Channel                     | 1                 |
 
   Scenario: Get the actual meter reads from a device
     When the get actual meter reads request is received
@@ -51,7 +52,7 @@ Feature: SmartMetering Monitoring
       | DeviceIdentification | TEST1024000000001 |
 
   Scenario: Refuse an operation with an inactive device
-    Given a device
+    Given a dlms device
       | DeviceIdentification | E9998000014123414 |
       | DeviceType           | SMART_METER_E     |
       | Active               | False             |

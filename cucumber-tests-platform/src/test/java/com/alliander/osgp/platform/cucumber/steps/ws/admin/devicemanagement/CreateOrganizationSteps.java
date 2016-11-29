@@ -28,7 +28,6 @@ public class CreateOrganizationSteps extends AdminStepsBase {
     
     protected CreateOrganizationSteps() throws Throwable {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	private static final String TEST_SUITE = "DeviceManagement";
@@ -41,7 +40,7 @@ public class CreateOrganizationSteps extends AdminStepsBase {
      * @param requestParameters
      */
     private void fillPropertiesMap(Map<String, String> requestParameters) {
-        PROPERTIES_MAP.put("__ORGANIZATION_IDENTIFICATION__", requestParameters.get(Keys.KEY_ORGANIZATION_IDENTIFICATION));
+        PROPERTIES_MAP.put("__ORGANIZATION_IDENTIFICATION__", requestParameters.get(Keys.KEY_ORGANISATION_IDENTIFICATION));
         PROPERTIES_MAP.put("__NAME__", requestParameters.get("Name"));
         PROPERTIES_MAP.put("__PREFIX__", requestParameters.get("Prefix"));
         PROPERTIES_MAP.put("__FUNCTIONGROUP__", requestParameters.get("FunctionGroup"));

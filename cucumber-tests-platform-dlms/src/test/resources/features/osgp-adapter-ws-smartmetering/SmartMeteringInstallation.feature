@@ -3,7 +3,7 @@ Feature: SmartMetering Installation
   I want to be able to perform SmartMeteringInstallation operations on a device
 
   Scenario: Add a new device
-    When receiving an add device request
+    When receiving an smartmetering add device request
       | DeviceIdentification  | E0026000059790003 |
       | DeviceType            | SMART_METER_E     |
       | CommunicationMethod   | GPRS              |
@@ -15,7 +15,7 @@ Feature: SmartMetering Installation
       | HLS4_active           | false             |
       | HLS5_active           | true              |
       | Master_key            | true              |
-    Then the add device response contains
+    Then the smartmetering add device response contains
       | DeviceIdentification | E0026000059790003 |
     And receiving an get add device response request
       | DeviceIdentification | E0026000059790003 |

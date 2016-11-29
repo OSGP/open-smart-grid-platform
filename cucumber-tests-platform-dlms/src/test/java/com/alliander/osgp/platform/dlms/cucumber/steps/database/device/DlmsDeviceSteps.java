@@ -13,57 +13,108 @@ import static com.alliander.osgp.platform.cucumber.steps.Defaults.SMART_METER_G;
 import java.util.Map;
 
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.Assert;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.steps.database.DeviceSteps;
-import com.alliander.osgp.platform.cucumber.steps.database.RepoHelper;
+import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
+import com.alliander.osgp.domain.core.entities.Organisation;
+import com.alliander.osgp.domain.core.entities.ProtocolInfo;
+import com.alliander.osgp.domain.core.entities.SmartMeter;
+import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
+import com.alliander.osgp.domain.core.repositories.DeviceRepository;
+import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
+import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
+import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
+import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
+import com.alliander.osgp.platform.dlms.cucumber.builders.entities.DeviceBuilder;
+import com.alliander.osgp.platform.dlms.cucumber.builders.entities.DlmsDeviceBuilder;
+import com.alliander.osgp.platform.dlms.cucumber.builders.entities.SmartMeterBuilder;
+import com.alliander.osgp.platform.dlms.cucumber.steps.Defaults;
+import com.alliander.osgp.platform.dlms.cucumber.steps.Keys;
 
 import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
 
 /**
  * DLMS device specific steps.
  */
+@Transactional(value = "txMgrCore")
 public class DlmsDeviceSteps {
 
     @Autowired
-    private DeviceSteps deviceSteps;
+    private SmartMeterRepository smartMeterRepository;
 
     @Autowired
-    private RepoHelper repoHelper;
+    private DeviceRepository deviceRepository;
 
-    @Given("^a device$")
-    public void aDevice(final Map<String, String> settings) throws Throwable {
-        if (this.isSmartMeter(settings)) {
-            this.repoHelper.insertSmartMeter(settings);
-            this.repoHelper.insertDlmsDevice(settings);
+    @Autowired
+    private DlmsDeviceRepository dlmsDeviceRepository;
+
+    @Autowired
+    private ProtocolInfoRepository protocolInfoRepository;
+
+    @Autowired
+    private OrganisationRepository organisationRepo;
+
+    @Autowired
+    private DeviceAuthorizationRepository deviceAuthorizationRepository;
+
+    @Given("^a dlms device$")
+    public void aDlmsDevice(final Map<String, String> inputSettings) throws Throwable {
+
+        Device device;
+        if (this.isSmartMeter(inputSettings)) {
+            final SmartMeter smartMeter = new SmartMeterBuilder().withSettings(inputSettings)
+                    .setProtocolInfo(this.getProtocolInfo(inputSettings)).build();
+            device = this.smartMeterRepository.save(smartMeter);
         } else {
-            this.repoHelper.insertDevice(settings);
+            device = new DeviceBuilder().withSettings(inputSettings)
+                    .setProtocolInfo(this.getProtocolInfo(inputSettings)).build();
+            this.deviceRepository.save(device);
         }
+
+        ScenarioContext.Current().put(Keys.DEVICE_IDENTIFICATION, device.getDeviceIdentification());
+
+        if (inputSettings.containsKey(Keys.GATEWAY_DEVICE_IDENTIFICATION)) {
+            final Device gatewayDevice = this.deviceRepository.findByDeviceIdentification(inputSettings
+                    .get(Keys.GATEWAY_DEVICE_IDENTIFICATION));
+            device.updateGatewayDevice(gatewayDevice);
+            device = this.deviceRepository.save(device);
+        }
+
+        // Authorization
+        final Organisation organisation = this.organisationRepo
+                .findByOrganisationIdentification(Defaults.ORGANISATION_IDENTIFICATION);
+        final DeviceAuthorization deviceAuthorization = device
+                .addAuthorization(organisation, DeviceFunctionGroup.OWNER);
+        this.deviceAuthorizationRepository.save(deviceAuthorization);
+
+        // Protocol adapter
+        final DlmsDevice dlmsDevice = new DlmsDeviceBuilder().withSettings(inputSettings).build();
+        this.dlmsDeviceRepository.save(dlmsDevice);
     }
 
     private boolean isSmartMeter(final Map<String, String> settings) {
-        final String deviceType = settings.get(Keys.KEY_DEVICE_TYPE);
+        final String deviceType = settings.get(Keys.DEVICE_TYPE);
         return SMART_METER_E.equals(deviceType) || SMART_METER_G.equals(deviceType);
     }
 
-    @Then("^the device with the id \"([^\"]*)\" exists$")
-    public void theDeviceWithTheIdExists(final String deviceIdentification) throws Throwable {
-        this.deviceSteps.theDeviceWithIdExists(deviceIdentification);
-    }
-
     /**
-     * check that the given dlms device is inserted
+     * ProtocolInfo is fixed system data, inserted by flyway. Therefore the
+     * ProtocolInfo instance will be retrieved from the database, and not built.
      *
-     * @param deviceId
-     * @return
+     * @param inputSettings
+     * @return ProtocolInfo
      */
-    @Then("^the dlms device with id \"([^\"]*)\" exists$")
-    public void theDlmsDeviceShouldExist(final String deviceIdentification) throws Throwable {
-        final DlmsDevice dlmsDevice = this.repoHelper.findDlmsDevice(deviceIdentification);
-        Assert.notNull(dlmsDevice);
-        Assert.isTrue(dlmsDevice.getSecurityKeys().size() > 0);
+    private ProtocolInfo getProtocolInfo(final Map<String, String> inputSettings) {
+        if (inputSettings.containsKey(Keys.PROTOCOL) && inputSettings.containsKey(Keys.PROTOCOL_VERSION)) {
+            return this.protocolInfoRepository.findByProtocolAndProtocolVersion(inputSettings.get(Keys.PROTOCOL),
+                    inputSettings.get(Keys.PROTOCOL_VERSION));
+        } else {
+            return this.protocolInfoRepository.findByProtocolAndProtocolVersion(Defaults.PROTOCOL,
+                    Defaults.PROTOCOL_VERSION);
+        }
     }
 }

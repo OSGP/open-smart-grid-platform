@@ -31,8 +31,8 @@ public class AddDevice extends SmartMeteringStepsBase {
     private static final String TEST_CASE_NAME_REQUEST = "AddDevice - Request 1";
     private static final String TEST_CASE_NAME_GETRESPONSE_REQUEST = "GetAddDeviceResponse - Request 1";
 
-    @When("^receiving an add device request$")
-    public void receiving_an_add_device_request(final Map<String, String> setings) throws Throwable {
+    @When("^receiving an smartmetering add device request$")
+    public void receiving_an_smartmetering_add_device_request(final Map<String, String> setings) throws Throwable {
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
                 getString(setings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
         PROPERTIES_MAP
@@ -50,20 +50,20 @@ public class AddDevice extends SmartMeteringStepsBase {
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }
 
-    @Then("^the add device response contains$")
+    @Then("^the smartmetering add device response contains$")
     public void the_add_device_request_contains(final Map<String, String> settings) throws Throwable {
         this.runXpathResult
                 .assertXpath(
                         this.response,
                         PATH_DEVICE_IDENTIFICATION,
-                        getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+                        getString(settings, Keys.KEY_ORGANISATION_IDENTIFICATION,
+                                Defaults.DEFAULT_ORGANISATION_IDENTIFICATION));
         this.runXpathResult.assertNotNull(this.response, PATH_CORRELATION_UID);
 
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.
         saveCorrelationUidInScenarioContext(this.runXpathResult.getValue(this.response, PATH_CORRELATION_UID),
-                getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+                getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANISATION_IDENTIFICATION));
     }
 
     @Then("^receiving an get add device response request$")

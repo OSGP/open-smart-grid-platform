@@ -8,8 +8,10 @@
 package com.alliander.osgp.platform.dlms.cucumber.hooks;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
+import com.alliander.osgp.platform.cucumber.support.ServiceEndpoint;
 import com.alliander.osgp.platform.dlms.cucumber.steps.database.DlmsDatabaseSteps;
 
 import cucumber.api.java.After;
@@ -23,6 +25,18 @@ public class ScenarioHooks {
     @Autowired
     private DlmsDatabaseSteps databaseSteps;
 
+    @Autowired
+    private ServiceEndpoint serviceEndpoint;
+
+    @Value("${service.endpoint.host}")
+    private String serviceEndpointHost;
+
+    @Value("${alarm.notifications.host}")
+    private String alarmNotificationsHost;
+
+    @Value("${alarm.notifications.port}")
+    private int alarmNotificationsPort;
+
     /**
      * Executed before each scenario.
      *
@@ -33,6 +47,13 @@ public class ScenarioHooks {
     @Before
     public void beforeScenario() {
         this.databaseSteps.prepareDatabaseForScenario();
+        this.prepareServiceEndpoint();
+    }
+
+    private void prepareServiceEndpoint() {
+        this.serviceEndpoint.setServiceEndpoint(this.serviceEndpointHost);
+        this.serviceEndpoint.setAlarmNotificationsHost(this.alarmNotificationsHost);
+        this.serviceEndpoint.setAlarmNotificationsPort(this.alarmNotificationsPort);
     }
 
     /**

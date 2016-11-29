@@ -3,7 +3,7 @@ Feature: SmartMetering AdHoc
   I want to be able to perform SmartMeteringAdhoc operations on a device
 
   Background: 
-    Given a device
+    Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
       | Active               | true              |
@@ -13,7 +13,7 @@ Feature: SmartMetering AdHoc
       | DeviceIdentification | TEST1024000000001 |
     Then the objectlist should be returned
       | DeviceIdentification | TEST1024000000001 |
-
+@OslpMockServer
   Scenario: Retrieve all configuration objects from a device
     When receiving a retrieve configuration request
       | DeviceIdentification | TEST1024000000001 |

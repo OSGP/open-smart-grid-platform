@@ -7,7 +7,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.alliander.osgp</groupId>
 	<artifactId>integration-tests</artifactId>
-	<version>4.3.0-SNAPSHOT</version>
+	<version>4.4.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<!-- Description, Organization, Licences, URL and Distribution Management 
@@ -79,12 +79,12 @@
 		<!-- Temporary switched off, since the test servers are not available yet, 
 			only local deployment test (which will fail op build server -->
 		<!-- Automatic tests project -->
-		<!-- <module>cucumber-tests-platform</module> -->
-		<!--module>cucumber-tests-platform-dlms</module> -->
+		<module>cucumber-tests-platform</module>
+		<module>cucumber-tests-platform-dlms</module>
 
 		<!-- Fitnesse Acceptance Test Project (Obsolete, but in here because not 
 			all tests are moved to the cucumber projects -->
-		<module>osgp-platform-test</module>
+		<!--<module>osgp-platform-test</module>-->
 
 	</modules>
 </project>
