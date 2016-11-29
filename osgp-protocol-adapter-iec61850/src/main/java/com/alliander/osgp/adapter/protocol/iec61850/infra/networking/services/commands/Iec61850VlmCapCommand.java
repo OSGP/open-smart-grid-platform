@@ -8,6 +8,7 @@
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.openmuc.openiec61850.Fc;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
@@ -34,7 +35,8 @@ public class Iec61850VlmCapCommand implements RtuReadCommand<MeasurementDto> {
 
     @Override
     public MeasurementDto translate(final NodeContainer containingNode) {
-        return new MeasurementDto(1, DataAttribute.VLMCAP.getDescription(), 0, DateTime.now(), containingNode
-                .getChild(SubDataAttribute.MAGNITUDE_SETPOINT).getFloat(SubDataAttribute.FLOAT).getFloat());
+        return new MeasurementDto(1, DataAttribute.VLMCAP.getDescription(), 0, DateTime.now(DateTimeZone.UTC),
+                containingNode.getChild(SubDataAttribute.MAGNITUDE_SETPOINT).getFloat(SubDataAttribute.FLOAT)
+                        .getFloat());
     }
 }

@@ -8,6 +8,7 @@
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.openmuc.openiec61850.Fc;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
@@ -44,8 +45,8 @@ public class Iec61850TemperatureCommand implements RtuReadCommand<MeasurementDto
     @Override
     public MeasurementDto translate(final NodeContainer containingNode) {
         return new MeasurementDto(this.index, DataAttribute.TEMPERATURE.getDescription(),
-                QualityConverter.toShort(containingNode.getQuality(SubDataAttribute.QUALITY).getValue()),
-                new DateTime(), containingNode.getChild(SubDataAttribute.MAGNITUDE_INSTANTANEOUS)
-                        .getFloat(SubDataAttribute.FLOAT).getFloat());
+                QualityConverter.toShort(containingNode.getQuality(SubDataAttribute.QUALITY).getValue()), new DateTime(
+                        DateTimeZone.UTC), containingNode.getChild(SubDataAttribute.MAGNITUDE_INSTANTANEOUS)
+                .getFloat(SubDataAttribute.FLOAT).getFloat());
     }
 }
