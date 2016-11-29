@@ -1118,15 +1118,15 @@
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/common/devicemanagement-v1.0/DeviceManagementPort/SetDeviceVerificationKeyRequest"/></con:call></con:operation><con:operation id="8f9302be-ea3d-4dbf-bd57-37738d407e64" isOneWay="false" action="" name="SetEventNotifications" bindingOperationName="SetEventNotifications" type="Request-Response" outputName="SetEventNotificationsAsyncResponse" inputName="SetEventNotificationsRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="f4d0443a-9a42-4488-a1f6-3c4db00cafe1" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:443/osgp-adapter-ws-core/common/deviceManagementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/devicemanagement/2014/10">
    <soapenv:Header>
-      <ns:ApplicationName>?</ns:ApplicationName>
-      <ns:UserName>?</ns:UserName>
-      <ns:OrganisationIdentification>?</ns:OrganisationIdentification>
+      <ns:ApplicationName>SoapUI</ns:ApplicationName>
+      <ns:UserName>TestUser</ns:UserName>
+      <ns:OrganisationIdentification>test-org</ns:OrganisationIdentification>
    </soapenv:Header>
    <soapenv:Body>
       <ns1:SetEventNotificationsRequest>
-         <ns1:DeviceIdentification>?</ns1:DeviceIdentification>
+         <ns1:DeviceIdentification>TEST1024000000001</ns1:DeviceIdentification>
          <!--0 to 8 repetitions:-->
-         <ns1:EventNotifications>?</ns1:EventNotifications>
+         <ns1:EventNotifications>SECURITY_EVENTS</ns1:EventNotifications>
       </ns1:SetEventNotificationsRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/common/devicemanagement-v1.0/DeviceManagementPort/SetEventNotificationsRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="866b84e1-fd45-4f1d-b906-18a7175b5ef7" isOneWay="false" action="" name="SetMaintenanceStatus" bindingOperationName="SetMaintenanceStatus" type="Request-Response" outputName="SetMaintenanceStatusResponse" inputName="SetMaintenanceStatusRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="1f25e85d-4853-47a6-bc7c-3d982af06b95" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:443/osgp-adapter-ws-core/common/deviceManagementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/devicemanagement/2014/10">
