@@ -7,7 +7,9 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -41,10 +43,12 @@ public class Iec61850GasFurnaceCommandFactory implements RtuReadCommandFactory<M
     private static final int THREE = 3;
     private static final int FOUR = 4;
 
-    private static final Map<DataAttribute, RtuReadCommand<MeasurementDto>> RTU_COMMAND_MAP = new HashMap<>();
+    private static final Map<String, RtuReadCommand<MeasurementDto>> RTU_COMMAND_MAP = new HashMap<>();
+    private static final List<DataAttribute> DATA_ATTRIBUTE_USING_FILTER_ID_LIST = new ArrayList<>();
 
     static {
         initializeRtuCommandMap();
+        initializeDataAttributesUsingFilterIdList();
     }
 
     private Iec61850GasFurnaceCommandFactory() {
@@ -60,46 +64,58 @@ public class Iec61850GasFurnaceCommandFactory implements RtuReadCommandFactory<M
 
     @Override
     public RtuReadCommand<MeasurementDto> getCommand(final MeasurementFilterDto filter) {
-        return this.getCommand(DataAttribute.fromString(filter.getNode()));
+        final DataAttribute da = DataAttribute.fromString(filter.getNode());
+        if (this.useFilterId(da)) {
+            return this.getCommand(filter.getNode() + filter.getId());
+        } else {
+            return this.getCommand(filter.getNode());
+        }
     }
 
     @Override
     public RtuReadCommand<MeasurementDto> getCommand(final String node) {
-        return this.getCommand(DataAttribute.fromString(node));
+        final RtuReadCommand<MeasurementDto> command = RTU_COMMAND_MAP.get(node);
+
+        if (command == null) {
+            LOGGER.warn("No command found for node {}", node);
+        }
+
+        return command;
+    }
+
+    private boolean useFilterId(final DataAttribute da) {
+        return DATA_ATTRIBUTE_USING_FILTER_ID_LIST.contains(da);
     }
 
     private static void initializeRtuCommandMap() {
-        RTU_COMMAND_MAP.put(DataAttribute.BEHAVIOR, new Iec61850BehaviourCommand());
-        RTU_COMMAND_MAP.put(DataAttribute.HEALTH, new Iec61850HealthCommand());
-        RTU_COMMAND_MAP.put(DataAttribute.MODE, new Iec61850ModeCommand());
+        RTU_COMMAND_MAP.put(DataAttribute.BEHAVIOR.getDescription(), new Iec61850BehaviourCommand());
+        RTU_COMMAND_MAP.put(DataAttribute.HEALTH.getDescription(), new Iec61850HealthCommand());
+        RTU_COMMAND_MAP.put(DataAttribute.MODE.getDescription(), new Iec61850ModeCommand());
 
-        RTU_COMMAND_MAP.put(DataAttribute.ALARM_ONE, new Iec61850AlarmCommand(ONE));
-        RTU_COMMAND_MAP.put(DataAttribute.ALARM_TWO, new Iec61850AlarmCommand(TWO));
-        RTU_COMMAND_MAP.put(DataAttribute.ALARM_THREE, new Iec61850AlarmCommand(THREE));
-        RTU_COMMAND_MAP.put(DataAttribute.ALARM_FOUR, new Iec61850AlarmCommand(FOUR));
-        RTU_COMMAND_MAP.put(DataAttribute.ALARM_OTHER, new Iec61850AlarmOtherCommand());
+        RTU_COMMAND_MAP.put(DataAttribute.ALARM_ONE.getDescription(), new Iec61850AlarmCommand(ONE));
+        RTU_COMMAND_MAP.put(DataAttribute.ALARM_TWO.getDescription(), new Iec61850AlarmCommand(TWO));
+        RTU_COMMAND_MAP.put(DataAttribute.ALARM_THREE.getDescription(), new Iec61850AlarmCommand(THREE));
+        RTU_COMMAND_MAP.put(DataAttribute.ALARM_FOUR.getDescription(), new Iec61850AlarmCommand(FOUR));
+        RTU_COMMAND_MAP.put(DataAttribute.ALARM_OTHER.getDescription(), new Iec61850AlarmOtherCommand());
 
-        RTU_COMMAND_MAP.put(DataAttribute.WARNING_ONE, new Iec61850WarningCommand(ONE));
-        RTU_COMMAND_MAP.put(DataAttribute.WARNING_TWO, new Iec61850WarningCommand(TWO));
-        RTU_COMMAND_MAP.put(DataAttribute.WARNING_THREE, new Iec61850WarningCommand(THREE));
-        RTU_COMMAND_MAP.put(DataAttribute.WARNING_FOUR, new Iec61850WarningCommand(FOUR));
-        RTU_COMMAND_MAP.put(DataAttribute.WARNING_OTHER, new Iec61850WarningOtherCommand());
+        RTU_COMMAND_MAP.put(DataAttribute.WARNING_ONE.getDescription(), new Iec61850WarningCommand(ONE));
+        RTU_COMMAND_MAP.put(DataAttribute.WARNING_TWO.getDescription(), new Iec61850WarningCommand(TWO));
+        RTU_COMMAND_MAP.put(DataAttribute.WARNING_THREE.getDescription(), new Iec61850WarningCommand(THREE));
+        RTU_COMMAND_MAP.put(DataAttribute.WARNING_FOUR.getDescription(), new Iec61850WarningCommand(FOUR));
+        RTU_COMMAND_MAP.put(DataAttribute.WARNING_OTHER.getDescription(), new Iec61850WarningOtherCommand());
 
         for (int i = ONE; i <= TWO; i++) {
-            RTU_COMMAND_MAP.put(DataAttribute.TEMPERATURE, new Iec61850TemperatureCommand(i));
-            RTU_COMMAND_MAP.put(DataAttribute.MATERIAL_STATUS, new Iec61850MaterialStatusCommand(i));
-            RTU_COMMAND_MAP.put(DataAttribute.MATERIAL_TYPE, new Iec61850MaterialTypeCommand(i));
-            RTU_COMMAND_MAP.put(DataAttribute.MATERIAL_FLOW, new Iec61850MaterialFlowCommand(i));
+            RTU_COMMAND_MAP.put(DataAttribute.TEMPERATURE.getDescription() + i, new Iec61850TemperatureCommand(i));
+            RTU_COMMAND_MAP.put(DataAttribute.MATERIAL_STATUS.getDescription() + i,
+                    new Iec61850MaterialStatusCommand(i));
+            RTU_COMMAND_MAP.put(DataAttribute.MATERIAL_TYPE.getDescription() + i, new Iec61850MaterialTypeCommand(i));
+            RTU_COMMAND_MAP.put(DataAttribute.MATERIAL_FLOW.getDescription() + i, new Iec61850MaterialFlowCommand(i));
         }
     }
 
-    private RtuReadCommand<MeasurementDto> getCommand(final DataAttribute dataAttribute) {
-
-        final RtuReadCommand<MeasurementDto> command = RTU_COMMAND_MAP.get(dataAttribute);
-
-        if (command == null) {
-            LOGGER.warn("No command found for data attribute {}", dataAttribute);
-        }
-        return command;
+    private static void initializeDataAttributesUsingFilterIdList() {
+        DATA_ATTRIBUTE_USING_FILTER_ID_LIST.add(DataAttribute.TEMPERATURE);
+        DATA_ATTRIBUTE_USING_FILTER_ID_LIST.add(DataAttribute.MATERIAL_FLOW);
     }
+
 }
