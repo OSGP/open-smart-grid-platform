@@ -33,13 +33,9 @@ import com.alliander.osgp.shared.exceptionhandling.EncrypterException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.security.EncryptionService;
 
-public class Hls5Connector {
+public class Hls5Connector extends DlmsConnector {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Hls5Connector.class);
-
-    private final int responseTimeout;
-
-    private final int logicalDeviceAddress;
 
     private final int clientAccessPoint;
 
@@ -50,12 +46,12 @@ public class Hls5Connector {
 
     public Hls5Connector(final RecoverKeyProcessInitiator recoverKeyProcessInitiator, final int responseTimeout,
             final int logicalDeviceAddress, final int clientAccessPoint) {
+        super(responseTimeout, logicalDeviceAddress);
         this.recoverKeyProcessInitiator = recoverKeyProcessInitiator;
-        this.responseTimeout = responseTimeout;
-        this.logicalDeviceAddress = logicalDeviceAddress;
         this.clientAccessPoint = clientAccessPoint;
     }
 
+    @Override
     public DlmsConnection connect(final DlmsDevice device, final DlmsMessageListener dlmsMessageListener)
             throws TechnicalException {
 
@@ -83,19 +79,6 @@ public class Hls5Connector {
         }
     }
 
-    private void checkDevice(final DlmsDevice device) {
-        if (device == null) {
-            throw new IllegalStateException("Can not connect because no device is set.");
-        }
-    }
-
-    private void checkIpAddress(final DlmsDevice device) throws TechnicalException {
-        if (device.getIpAddress() == null) {
-            throw new TechnicalException(ComponentType.PROTOCOL_DLMS, "Unable to get HLS5 connection for device "
-                    + device.getDeviceIdentification() + ", because the IP address is not set.");
-        }
-    }
-
     /**
      * Create a connection with the device.
      *
@@ -109,6 +92,24 @@ public class Hls5Connector {
      */
     private DlmsConnection createConnection(final DlmsDevice device, final DlmsMessageListener dlmsMessageListener)
             throws IOException, TechnicalException {
+
+        // Setup connection to device
+        final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(InetAddress.getByName(device
+                .getIpAddress())).setResponseTimeout(this.responseTimeout)
+                .setLogicalDeviceId(this.logicalDeviceAddress);
+
+        this.setSecurity(device, tcpConnectionBuilder);
+        this.setOptionalValues(device, tcpConnectionBuilder);
+
+        if (device.isInDebugMode()) {
+            tcpConnectionBuilder.setRawMessageListener(dlmsMessageListener);
+        }
+
+        return tcpConnectionBuilder.build();
+    }
+
+    private void setSecurity(final DlmsDevice device, final TcpConnectionBuilder tcpConnectionBuilder)
+            throws TechnicalException {
         final SecurityKey validAuthenticationKey = this.getSecurityKey(device, SecurityKeyType.E_METER_AUTHENTICATION);
         final SecurityKey validEncryptionKey = this.getSecurityKey(device, SecurityKeyType.E_METER_ENCRYPTION);
 
@@ -131,32 +132,7 @@ public class Hls5Connector {
                 .setGlobalUnicastEncryptionKey(decryptedEncryption)
                 .setEncryptionMechanism(EncryptionMechanism.AES_GMC_128).build();
 
-        // Setup connection to device
-        final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(InetAddress.getByName(device
-                .getIpAddress())).setSecuritySuite(securitySuite).setResponseTimeout(this.responseTimeout)
-                .setLogicalDeviceId(this.logicalDeviceAddress).setClientId(this.clientAccessPoint);
-
-        this.setOptionalValues(device, tcpConnectionBuilder);
-
-        final Integer challengeLength = device.getChallengeLength();
-        if (challengeLength != null) {
-            tcpConnectionBuilder.setChallengeLength(challengeLength);
-        }
-
-        if (device.isInDebugMode()) {
-            tcpConnectionBuilder.setRawMessageListener(dlmsMessageListener);
-        }
-
-        return tcpConnectionBuilder.build();
-    }
-
-    private void setOptionalValues(final DlmsDevice device, final TcpConnectionBuilder tcpConnectionBuilder) {
-        if (device.getPort() != null) {
-            tcpConnectionBuilder.setTcpPort(device.getPort().intValue());
-        }
-        if (device.getLogicalId() != null) {
-            tcpConnectionBuilder.setLogicalDeviceId(device.getLogicalId().intValue());
-        }
+        tcpConnectionBuilder.setSecuritySuite(securitySuite).setClientId(this.clientAccessPoint);
     }
 
     /**

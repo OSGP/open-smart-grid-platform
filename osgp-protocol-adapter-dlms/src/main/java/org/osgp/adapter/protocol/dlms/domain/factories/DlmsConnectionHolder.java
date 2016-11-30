@@ -37,13 +37,13 @@ public class DlmsConnectionHolder implements AutoCloseable {
         }
     };
 
-    private final Hls5Connector connector;
+    private final DlmsConnector connector;
     private final DlmsDevice device;
     private final DlmsMessageListener dlmsMessageListener;
 
     private DlmsConnection dlmsConnection;
 
-    public DlmsConnectionHolder(final Hls5Connector connector, final DlmsDevice device,
+    public DlmsConnectionHolder(final DlmsConnector connector, final DlmsDevice device,
             final DlmsMessageListener dlmsMessageListener) {
         this.connector = connector;
         this.device = device;
@@ -54,7 +54,7 @@ public class DlmsConnectionHolder implements AutoCloseable {
         }
     }
 
-    public DlmsConnectionHolder(final Hls5Connector connector, final DlmsDevice device) {
+    public DlmsConnectionHolder(final DlmsConnector connector, final DlmsDevice device) {
         this(connector, device, null);
     }
 
@@ -112,7 +112,7 @@ public class DlmsConnectionHolder implements AutoCloseable {
             throw new IllegalStateException("Cannot create a new connection because a connection already exists.");
         }
 
-        this.dlmsConnection = connector.connect(device, dlmsMessageListener);
+        this.dlmsConnection = this.connector.connect(this.device, this.dlmsMessageListener);
     }
 
     /**

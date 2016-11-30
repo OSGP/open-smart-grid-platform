@@ -16,6 +16,7 @@ import org.openmuc.jdlms.DlmsConnection;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
@@ -24,7 +25,12 @@ import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 public class DlmsConnectionFactory {
 
     @Autowired
-    private Provider<Hls5Connector> hls5ConnectorProvider;
+    @Qualifier("hls5Connector")
+    private Provider<DlmsConnector> hls5ConnectorProvider;
+
+    @Autowired
+    @Qualifier("publicConnector")
+    private Provider<DlmsConnector> publicConnectorProvider;
 
     /**
      * Returns an open connection using the appropriate security settings for
@@ -47,13 +53,18 @@ public class DlmsConnectionFactory {
      */
     public DlmsConnectionHolder getConnection(final DlmsDevice device, final DlmsMessageListener dlmsMessageListener)
             throws TechnicalException {
+
+        DlmsConnector connector;
         if (device.isHls5Active()) {
-            final DlmsConnectionHolder holder = new DlmsConnectionHolder(this.hls5ConnectorProvider.get(), device,
-                    dlmsMessageListener);
-            holder.connect();
-            return holder;
+            connector = this.hls5ConnectorProvider.get();
+        } else if (device.communicateUnencrypted()) {
+            connector = this.publicConnectorProvider.get();
         } else {
-            throw new UnsupportedOperationException("Only HLS 5 connections are currently supported");
+            throw new UnsupportedOperationException("Only HLS 5 and public connections are currently supported");
         }
+
+        final DlmsConnectionHolder holder = new DlmsConnectionHolder(connector, device, dlmsMessageListener);
+        holder.connect();
+        return holder;
     }
 }
