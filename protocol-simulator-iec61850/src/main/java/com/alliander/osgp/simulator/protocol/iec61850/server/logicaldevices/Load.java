@@ -99,4 +99,8 @@ public class Load extends LogicalDevice {
         return values;
     }
 
+    @Override
+    public BasicDataAttribute getValue(final String node, final String value) {
+        throw this.nodeTypeNotConfiguredException(node);
+    }
 }

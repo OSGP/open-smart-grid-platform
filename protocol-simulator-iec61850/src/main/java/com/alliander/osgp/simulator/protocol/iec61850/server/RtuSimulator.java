@@ -10,8 +10,10 @@ package com.alliander.osgp.simulator.protocol.iec61850.server;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.PreDestroy;
 
@@ -48,6 +50,8 @@ public class RtuSimulator implements ServerEventListener {
     private final ServerModel serverModel;
 
     private boolean isStarted = false;
+
+    private final AtomicBoolean stopGeneratingValues = new AtomicBoolean(false);
 
     public RtuSimulator(final int port, final InputStream sclFile) throws SclParseException {
         final List<ServerSap> serverSaps = ServerSap.getSapsFromSclFile(sclFile);
@@ -103,17 +107,57 @@ public class RtuSimulator implements ServerEventListener {
         LOGGER.error("The SAP stopped listening");
     }
 
+    public void mockValue(final String logicalDeviceName, final String node, final String value) {
+        if (!this.stopGeneratingValues.get()) {
+            /*
+             * A mocked value is explicitly set, stop changing values with
+             * generateData, because one of those might break the mock value
+             * that will be expected.
+             */
+            this.ensurePeriodicDataGenerationIsStopped();
+        }
+        final LogicalDevice logicalDevice = this.getLogicalDevice(logicalDeviceName);
+        final BasicDataAttribute basicDataAttribute = logicalDevice.getValue(node, value);
+        this.server.setValues(Arrays.asList(basicDataAttribute));
+    }
+
+    private void ensurePeriodicDataGenerationIsStopped() {
+        synchronized (this.stopGeneratingValues) {
+            this.stopGeneratingValues.set(true);
+        }
+    }
+
+    public void resumeGeneratingValues() {
+        synchronized (this.stopGeneratingValues) {
+            this.stopGeneratingValues.set(false);
+        }
+    }
+
+    private LogicalDevice getLogicalDevice(final String logicalDeviceName) {
+        for (final LogicalDevice ld : this.logicalDevices) {
+            if (ld.getLogicalDeviceName().equals(logicalDeviceName)) {
+                return ld;
+            }
+        }
+        throw new IllegalArgumentException("A logical device with name \"" + logicalDeviceName
+                + "\" is not registered with simulated RTU device \"" + PHYSICAL_DEVICE + "\".");
+    }
+
     @Scheduled(fixedDelay = 60000)
     public void generateData() {
-        final Date timestamp = new Date();
+        synchronized (this.stopGeneratingValues) {
+            if (!this.stopGeneratingValues.get()) {
+                final Date timestamp = new Date();
 
-        final List<BasicDataAttribute> values = new ArrayList<>();
+                final List<BasicDataAttribute> values = new ArrayList<>();
 
-        for (final LogicalDevice ld : this.logicalDevices) {
-            values.addAll(ld.getValues(timestamp));
+                for (final LogicalDevice ld : this.logicalDevices) {
+                    values.addAll(ld.getValues(timestamp));
+                }
+
+                this.server.setValues(values);
+                LOGGER.info("Generated values");
+            }
         }
-
-        this.server.setValues(values);
-        LOGGER.info("Generated values");
     }
 }
