@@ -115,6 +115,8 @@ public class Iec61850GasFurnaceCommandFactory implements RtuReadCommandFactory<M
 
     private static void initializeDataAttributesUsingFilterIdList() {
         DATA_ATTRIBUTE_USING_FILTER_ID_LIST.add(DataAttribute.TEMPERATURE);
+        DATA_ATTRIBUTE_USING_FILTER_ID_LIST.add(DataAttribute.MATERIAL_STATUS);
+        DATA_ATTRIBUTE_USING_FILTER_ID_LIST.add(DataAttribute.MATERIAL_TYPE);
         DATA_ATTRIBUTE_USING_FILTER_ID_LIST.add(DataAttribute.MATERIAL_FLOW);
     }
 
