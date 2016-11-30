@@ -23,6 +23,14 @@ public class RtuDevice extends Device {
     @Column
     private Date lastCommunicationTime;
 
+    public RtuDevice() {
+        // No-arg constructor for frameworks.
+    }
+
+    public RtuDevice(final String deviceIdentification) {
+        super(deviceIdentification);
+    }
+
     public void messageReceived() {
         this.lastCommunicationTime = new Date();
     }
