@@ -149,6 +149,37 @@
     </xsd:complexType>
   </xsd:element>
 
+    <xsd:element name="SetDeviceAliasRequest">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="DeviceIdentification" type="common:Identification" />
+                <xsd:element name="DeviceAlias" type="xsd:string" />
+                <xsd:element name="RelayAliases" type="tns:MapItemType" minOccurs="0" maxOccurs="1" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="SetDeviceAliasResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="AsyncResponse" type="common:AsyncResponse" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:complexType name="MapItemType">
+        <xsd:sequence>
+            <xsd:element name="entry" minOccurs="0" maxOccurs="unbounded">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="key" type="xsd:int" />
+                        <xsd:element name="value" type="xsd:string" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
   <xsd:element name="SetMaintenanceStatusRequest">
     <xsd:complexType>
       <xsd:sequence>

@@ -121,6 +121,20 @@
         </wsdl:part>
     </wsdl:message>
 
+    <wsdl:message name="SetDeviceAliasHeader">
+        <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+        <wsdl:part element="common:UserName" name="UserName" />
+        <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+    </wsdl:message>
+    <wsdl:message name="SetDeviceAliasResponse">
+        <wsdl:part element="dman:SetDeviceAliasResponse" name="SetDeviceAliasResponse">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="SetDeviceAliasRequest">
+        <wsdl:part element="dman:SetDeviceAliasRequest" name="SetDeviceAliasRequest">
+        </wsdl:part>
+    </wsdl:message>
+
     <wsdl:message name="SetMaintenanceStatusHeader">
         <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
         <wsdl:part element="common:UserName" name="UserName" />
@@ -241,6 +255,13 @@
             <wsdl:input message="tns:UpdateDeviceRequest" name="UpdateDeviceRequest">
             </wsdl:input>
             <wsdl:output message="tns:UpdateDeviceResponse" name="UpdateDeviceResponse">
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="SetDeviceAlias">
+            <wsdl:input message="tns:SetDeviceAliasRequest" name="SetDeviceAliasRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:SetDeviceAliasResponse" name="SetDeviceAliasResponse">
             </wsdl:output>
         </wsdl:operation>
 
@@ -367,6 +388,19 @@
                 <soap:body use="literal" />
             </wsdl:input>
             <wsdl:output name="UpdateDeviceResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="SetDeviceAlias">
+            <soap:operation soapAction="" />
+            <wsdl:input name="SetDeviceAliasRequest">
+                <soap:header message="tns:UpdateDeviceHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:UpdateDeviceHeader" part="UserName" use="literal" />
+                <soap:header message="tns:UpdateDeviceHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="SetDeviceAliasResponse">
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>
