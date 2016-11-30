@@ -24,6 +24,11 @@ public class Iec61850HeatBufferReportHandler implements Iec61850ReportHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850HeatBufferReportHandler.class);
 
     private static final String SYSTEM_TYPE = "HEAT_BUFFER";
+    private static final List<String> NODES_USING_ID_LIST = new ArrayList<>();
+
+    static {
+        intializeNodesUsingIdList();
+    }
 
     private final int systemId;
 
@@ -44,13 +49,32 @@ public class Iec61850HeatBufferReportHandler implements Iec61850ReportHandler {
     public MeasurementDto handleMember(final ReadOnlyNodeContainer member) {
 
         final RtuReadCommand<MeasurementDto> command = Iec61850HeatBufferCommandFactory.getInstance().getCommand(
-                member.getFcmodelNode().getName());
+                this.getCommandName(member));
 
         if (command == null) {
             LOGGER.warn("No command found for node {}", member.getFcmodelNode().getName());
             return null;
         } else {
             return command.translate(member);
+        }
+    }
+
+    private static void intializeNodesUsingIdList() {
+        NODES_USING_ID_LIST.add("TmpSv");
+    }
+
+    private static boolean useId(final String nodeName) {
+        return NODES_USING_ID_LIST.contains(nodeName);
+    }
+
+    private String getCommandName(final ReadOnlyNodeContainer member) {
+        final String nodeName = member.getFcmodelNode().getName();
+        if (useId(nodeName)) {
+            final String refName = member.getFcmodelNode().getReference().toString();
+            final int startIndex = refName.length() - nodeName.length() - 2;
+            return nodeName + refName.substring(startIndex, startIndex + 1);
+        } else {
+            return nodeName;
         }
     }
 }
