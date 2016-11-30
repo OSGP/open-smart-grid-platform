@@ -18,8 +18,6 @@ import org.slf4j.LoggerFactory;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommandFactory;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850ActualPowerCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850ActualPowerLimitCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850AlarmCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850AlarmOtherCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850BehaviourCommand;
@@ -27,23 +25,18 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.co
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850MaterialFlowCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850MaterialStatusCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850MaterialTypeCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850MaximumActualPowerCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850MinimumActualPowerCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850ModeCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850OperationalHoursCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850StateCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850TemperatureCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850TotalEnergyCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850WarningCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850WarningOtherCommand;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementFilterDto;
 
-public final class Iec61850ChpCommandFactory implements RtuReadCommandFactory<MeasurementDto, MeasurementFilterDto> {
+public class Iec61850GasFurnaceCommandFactory implements RtuReadCommandFactory<MeasurementDto, MeasurementFilterDto> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850ChpCommandFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850GasFurnaceCommandFactory.class);
 
-    private static Iec61850ChpCommandFactory instance;
+    private static Iec61850GasFurnaceCommandFactory instance;
 
     private static final int ONE = 1;
     private static final int TWO = 2;
@@ -58,12 +51,13 @@ public final class Iec61850ChpCommandFactory implements RtuReadCommandFactory<Me
         initializeDataAttributesUsingFilterIdList();
     }
 
-    private Iec61850ChpCommandFactory() {
+    private Iec61850GasFurnaceCommandFactory() {
+        // Default constructor
     }
 
-    public static synchronized Iec61850ChpCommandFactory getInstance() {
+    public static synchronized Iec61850GasFurnaceCommandFactory getInstance() {
         if (instance == null) {
-            instance = new Iec61850ChpCommandFactory();
+            instance = new Iec61850GasFurnaceCommandFactory();
         }
         return instance;
     }
@@ -96,14 +90,7 @@ public final class Iec61850ChpCommandFactory implements RtuReadCommandFactory<Me
     private static void initializeRtuCommandMap() {
         RTU_COMMAND_MAP.put(DataAttribute.BEHAVIOR.getDescription(), new Iec61850BehaviourCommand());
         RTU_COMMAND_MAP.put(DataAttribute.HEALTH.getDescription(), new Iec61850HealthCommand());
-        RTU_COMMAND_MAP.put(DataAttribute.OPERATIONAL_HOURS.getDescription(), new Iec61850OperationalHoursCommand());
         RTU_COMMAND_MAP.put(DataAttribute.MODE.getDescription(), new Iec61850ModeCommand());
-        RTU_COMMAND_MAP.put(DataAttribute.ACTUAL_POWER.getDescription(), new Iec61850ActualPowerCommand());
-        RTU_COMMAND_MAP.put(DataAttribute.MAX_ACTUAL_POWER.getDescription(), new Iec61850MaximumActualPowerCommand());
-        RTU_COMMAND_MAP.put(DataAttribute.MIN_ACTUAL_POWER.getDescription(), new Iec61850MinimumActualPowerCommand());
-        RTU_COMMAND_MAP.put(DataAttribute.ACTUAL_POWER_LIMIT.getDescription(), new Iec61850ActualPowerLimitCommand());
-        RTU_COMMAND_MAP.put(DataAttribute.TOTAL_ENERGY.getDescription(), new Iec61850TotalEnergyCommand());
-        RTU_COMMAND_MAP.put(DataAttribute.STATE.getDescription(), new Iec61850StateCommand());
 
         RTU_COMMAND_MAP.put(DataAttribute.ALARM_ONE.getDescription(), new Iec61850AlarmCommand(ONE));
         RTU_COMMAND_MAP.put(DataAttribute.ALARM_TWO.getDescription(), new Iec61850AlarmCommand(TWO));
