@@ -248,6 +248,41 @@
 			<classifier>classes</classifier>
 		</dependency>
 
+        <dependency>
+            <groupId>com.alliander.osgp</groupId>
+            <artifactId>osgp-domain-microgrids</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alliander.osgp</groupId>
+            <artifactId>osgp-adapter-domain-microgrids</artifactId>
+            <classifier>classes</classifier>
+        </dependency>
+        <dependency>
+            <groupId>com.alliander.osgp</groupId>
+            <artifactId>osgp-adapter-ws-microgrids</artifactId>
+            <classifier>classes</classifier>
+        </dependency>
+        <dependency>
+            <groupId>com.alliander.osgp</groupId>
+            <artifactId>osgp-protocol-simulator-iec61850</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.openmuc</groupId>
+                    <artifactId>jasn1</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!--
+            Projects osgp-protocol-simulator-iec61850 and osgp-protocol-adapter-dlms
+            have different versions of the transient dependency to JASN1 (1.5.0 and
+            1.6.0 respectively). Make sure 1.5.0 is used for the IEC61850 simulator.
+        -->
+        <dependency>
+            <groupId>org.openmuc</groupId>
+            <artifactId>jasn1</artifactId>
+            <version>1.5.0</version>
+        </dependency>
+
 		<dependency>
 			<groupId>com.alliander.osgp</groupId>
 			<artifactId>osgp-domain-logging</artifactId>

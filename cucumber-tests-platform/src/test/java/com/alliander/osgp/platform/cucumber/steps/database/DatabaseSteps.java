@@ -51,10 +51,10 @@ public class DatabaseSteps {
 
     @Autowired
     private OslpDeviceRepository oslpDeviceRepo;
-    
+
     @Autowired
     private SsldRepository ssldRepository;
-    
+
     /**
      * This method is used to create default data not directly related to the
      * specific tests. For example: The test-org organization which is used to
@@ -98,6 +98,6 @@ public class DatabaseSteps {
         cleanRepoSerializable(this.ssldRepository);
         cleanRepoSerializable(this.organisationRepo);
 
-        insertDefaultData();
+        this.insertDefaultData();
     }
 }
