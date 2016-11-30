@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-
-    Copyright 2015 Smart Society Services B.V.
-
-    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
-
-        http://www.apache.org/licenses/LICENSE-2.0
-
+  Copyright 2015 Smart Society Services B.V.
+  
+  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  
+  You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -17,7 +14,8 @@
   <version>4.4.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>parent-shared</name>
-    <!-- Description, Organization, Licences, URL and Distribution Management elements are needed for the maven-jxr-plugin to generate a maven site -->
+  <!-- Description, Organization, Licences, URL and Distribution Management 
+    elements are needed for the maven-jxr-plugin to generate a maven site -->
   <description>Parent module.</description>
   <organization>
     <name>OSGP</name>
@@ -29,7 +27,7 @@
       <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
     </license>
   </licenses>
-    <!-- URL is passed in as a maven argument: -Dmaven.site.url=http://my/url/for/the/site -->
+  <!-- URL is passed in as a maven argument: -Dmaven.site.url=http://my/url/for/the/site -->
   <url>${maven.site.url}</url>
   <distributionManagement>
     <repository>
@@ -49,9 +47,10 @@
     <site>
       <id>shared-components</id>
       <name>shared-components</name>
-            <!-- <url>Use this example URL to generate maven site locally and have it deployed to a folder using: mvn site site:deploy or mvn site site:stage -->
-            <!-- <url>file:///C:/Users/Kevin/Desktop/shared-components</url> -->
-            <!-- URL is passed in as a maven argument: -Dmaven.site.distributionManagement.site.url=file:////the/path/to/deploy/the/site/to -->
+      <!-- <url>Use this example URL to generate maven site locally and have 
+        it deployed to a folder using: mvn site site:deploy or mvn site site:stage -->
+      <!-- <url>file:///C:/Users/Kevin/Desktop/shared-components</url> -->
+      <!-- URL is passed in as a maven argument: -Dmaven.site.distributionManagement.site.url=file:////the/path/to/deploy/the/site/to -->
       <url>${maven.site.distributionManagement.site.url}</url>
     </site>
   </distributionManagement>
@@ -108,7 +107,7 @@
 
   <dependencyManagement>
     <dependencies>
-            <!-- Spring Framework -->
+      <!-- Spring Framework -->
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-beans</artifactId>
@@ -154,7 +153,7 @@
         <artifactId>spring-webmvc</artifactId>
         <version>${spring.version}</version>
       </dependency>
-            <!-- Spring WS -->
+      <!-- Spring WS -->
       <dependency>
         <groupId>org.springframework.ws</groupId>
         <artifactId>spring-ws-core</artifactId>
@@ -171,21 +170,21 @@
         <version>${spring.ws.version}</version>
       </dependency>
 
-            <!-- Spring JMS -->
+      <!-- Spring JMS -->
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-jms</artifactId>
         <version>${spring.version}</version>
       </dependency>
 
-            <!-- Spring Data -->
+      <!-- Spring Data -->
       <dependency>
         <groupId>org.springframework.data</groupId>
         <artifactId>spring-data-jpa</artifactId>
         <version>${spring.data.version}</version>
       </dependency>
 
-            <!-- Spring Security -->
+      <!-- Spring Security -->
       <dependency>
         <groupId>org.springframework.security</groupId>
         <artifactId>spring-security-core</artifactId>
@@ -202,7 +201,7 @@
         <version>${spring.security.version}</version>
       </dependency>
 
-            <!-- Servlet API 3.0 -->
+      <!-- Servlet API 3.0 -->
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>javax.servlet-api</artifactId>
@@ -215,14 +214,14 @@
         <version>${servlet.jstl.version}</version>
       </dependency>
 
-            <!-- Joda Time (Date/Time functions) -->
+      <!-- Joda Time (Date/Time functions) -->
       <dependency>
         <groupId>joda-time</groupId>
         <artifactId>joda-time</artifactId>
         <version>${joda.version}</version>
       </dependency>
 
-            <!-- Hibernate -->
+      <!-- Hibernate -->
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-core</artifactId>
@@ -234,14 +233,14 @@
         <version>${hibernate.version}</version>
       </dependency>
 
-            <!-- Hibernate validator -->
+      <!-- Hibernate validator -->
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-validator</artifactId>
         <version>${hibernate.validator.version}</version>
       </dependency>
 
-            <!-- Jackson (JSON) -->
+      <!-- Jackson (JSON) -->
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-core</artifactId>
@@ -258,26 +257,26 @@
         <version>${jackson.version}</version>
       </dependency>
 
-            <!-- Jakarta commons codec -->
+      <!-- Jakarta commons codec -->
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
         <version>${commons.codec.version}</version>
       </dependency>
 
-            <!-- Apache HTTP client -->
+      <!-- Apache HTTP client -->
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
         <version>${apache.httpcomponents.version}</version>
       </dependency>
 
-            <!-- Apache MQ client -->
+      <!-- Apache MQ client -->
       <dependency>
         <groupId>org.apache.activemq</groupId>
         <artifactId>activemq-client</artifactId>
         <version>${apache.activemq.version}</version>
-                <!-- Exclude the non-client JAR files -->
+        <!-- Exclude the non-client JAR files -->
         <exclusions>
           <exclusion>
             <groupId>org.springframework</groupId>
@@ -339,21 +338,21 @@
         <version>${commons.pool.version}</version>
       </dependency>
 
-            <!-- REQUIRED FOR FITNESSE -->
+      <!-- REQUIRED FOR FITNESSE -->
       <dependency>
         <groupId>org.apache.activemq</groupId>
         <artifactId>activemq-kahadb-store</artifactId>
         <version>${apache.activemq.version}</version>
       </dependency>
 
-            <!-- Orika (mapping framework) -->
+      <!-- Orika (mapping framework) -->
       <dependency>
         <groupId>ma.glasnost.orika</groupId>
         <artifactId>orika-core</artifactId>
         <version>${orika.version}</version>
       </dependency>
 
-            <!-- Testing dependencies -->
+      <!-- Testing dependencies -->
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
