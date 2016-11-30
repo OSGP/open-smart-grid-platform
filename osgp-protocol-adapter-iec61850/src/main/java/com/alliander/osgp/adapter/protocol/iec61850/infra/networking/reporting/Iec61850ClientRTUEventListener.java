@@ -68,7 +68,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
         handlers.put("WAGO61850ServerLOAD1/LLN0$Measurements", new Iec61850LoadReportHandler(1));
         handlers.put("WAGO61850ServerCHP1/LLN0$Measurements", new Iec61850ChpReportHandler(1));
         handlers.put("WAGO61850ServerHEAT_BUFFER1/LLN0$Measurements", new Iec61850HeatBufferReportHandler(1));
-        handlers.put("WAGO61850ServerGAS_FURNACE1/LLN0%Measurements", new Iec61850GasFurnaceReportHandler(1));
+        handlers.put("WAGO61850ServerGAS_FURNACE1/LLN0$Measurements", new Iec61850GasFurnaceReportHandler(1));
 
         REPORT_HANDLERS = Collections.unmodifiableMap(handlers);
     }
