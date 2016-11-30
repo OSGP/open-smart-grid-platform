@@ -14,6 +14,18 @@ public class TechnicalException extends OsgpException {
      */
     private static final long serialVersionUID = 215662983108393459L;
 
+    public TechnicalException() {
+        super(ComponentType.UNKNOWN, null, null);
+    }
+
+    public TechnicalException(final String message) {
+        super(ComponentType.UNKNOWN, message, null);
+    }
+
+    public TechnicalException(final String message, final Throwable cause) {
+        super(ComponentType.UNKNOWN, message, cause);
+    }
+
     public TechnicalException(final ComponentType componentType, final String message) {
         super(componentType, message, null);
     }
