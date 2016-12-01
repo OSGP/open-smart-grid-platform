@@ -34,6 +34,7 @@ public class Iec61850RtuDeviceReportingService {
         this.enableLoadReportingOnDevice(connection, deviceIdentification);
         this.enableChpReportingOnDevice(connection, deviceIdentification);
         this.enableHeatBufferReportingOnDevice(connection, deviceIdentification);
+        this.enableGasFurnaceReportingOnDevice(connection, deviceIdentification);
     }
 
     private void enableRtuReportingOnDevice(final DeviceConnection connection, final String deviceIdentification) {
@@ -94,12 +95,22 @@ public class Iec61850RtuDeviceReportingService {
                 DataAttribute.REPORT_MEASUREMENTS_ONE);
     }
 
-    private void enableHeatBufferReportingOnDevice(final DeviceConnection connection, final String deviceIdentification) {
+    private void enableHeatBufferReportingOnDevice(final DeviceConnection connection,
+            final String deviceIdentification) {
 
         this.enableStatusReportingOnDevice(connection, deviceIdentification, LogicalDevice.HEAT_BUFFER_ONE,
                 DataAttribute.REPORT_STATUS_ONE);
 
         this.enableMeasurementReportingOnDevice(connection, deviceIdentification, LogicalDevice.HEAT_BUFFER_ONE,
+                DataAttribute.REPORT_MEASUREMENTS_ONE);
+    }
+
+    private void enableGasFurnaceReportingOnDevice(final DeviceConnection connection,
+            final String deviceIdentification) {
+
+        this.enableStatusReportingOnDevice(connection, deviceIdentification, LogicalDevice.GAS_FURNACE_ONE,
+                DataAttribute.REPORT_STATUS_ONE);
+        this.enableMeasurementReportingOnDevice(connection, deviceIdentification, LogicalDevice.GAS_FURNACE_ONE,
                 DataAttribute.REPORT_MEASUREMENTS_ONE);
     }
 
