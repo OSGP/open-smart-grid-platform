@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.ReadOnlyNodeContainer;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850GasFurnaceCommandFactory;
 import com.alliander.osgp.dto.valueobjects.microgrids.GetDataSystemIdentifierDto;
@@ -57,8 +58,10 @@ public class Iec61850GasFurnaceReportHandler implements Iec61850ReportHandler {
     }
 
     private static void intializeNodesUsingIdList() {
-        NODES_USING_ID_LIST.add("TmpSv");
-        NODES_USING_ID_LIST.add("FlwRte");
+        NODES_USING_ID_LIST.add(DataAttribute.TEMPERATURE.getDescription());
+        NODES_USING_ID_LIST.add(DataAttribute.MATERIAL_FLOW.getDescription());
+        NODES_USING_ID_LIST.add(DataAttribute.MATERIAL_STATUS.getDescription());
+        NODES_USING_ID_LIST.add(DataAttribute.MATERIAL_TYPE.getDescription());
     }
 
     private static boolean useId(final String nodeName) {
