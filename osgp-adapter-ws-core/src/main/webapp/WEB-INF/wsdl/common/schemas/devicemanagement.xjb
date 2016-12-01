@@ -10,11 +10,6 @@
         <jxb:schemaBindings>
             <jxb:package name="com.alliander.osgp.adapter.ws.schema.core.devicemanagement"></jxb:package>
         </jxb:schemaBindings>
-        <jxb:bindings node="//xs:element[@name='SetDeviceAliasRequest']//xs:element[@name='RelayAliases']">
-            <jxb:property>
-                <jxb:baseType name="java.util.Map&lt;Integer,String&gt;" />
-            </jxb:property>
-        </jxb:bindings>
     </jxb:bindings>
 
 </jxb:bindings>

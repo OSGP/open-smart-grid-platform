@@ -34,6 +34,7 @@ import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessage;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessageSender;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessageType;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceAuthorizationRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableSsldRepository;
@@ -534,6 +535,60 @@ public class DeviceManagementService {
         }
 
         this.writableSsldRepository.save(ssld);
+    }
+
+    @Transactional(value = "writableTransactionManager")
+    public void setDeviceAlias(@Identification final String organisationIdentification,
+            final String deviceIdentification, final String deviceAlias,
+            final List<DeviceOutputSetting> deviceOutputSettings) throws FunctionalException {
+
+        final Device existingDevice = this.writableDeviceRepository.findByDeviceIdentification(deviceIdentification);
+
+        if (existingDevice == null) {
+            // device does not exist
+            LOGGER.info("Device does not exist, cannot set Alias.");
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.WS_CORE,
+                    new UnknownEntityException(Device.class, deviceIdentification));
+        } else {
+
+            // Check to see if the organisation is METADATA_MANAGEMENT or OWNER
+            // authorized
+            boolean isAuthorized = false;
+            for (final DeviceAuthorization authorizations : existingDevice.getAuthorizations()) {
+                if (organisationIdentification.equals(authorizations.getOrganisation().getOrganisationIdentification())
+                        && (DeviceFunctionGroup.OWNER.equals(authorizations.getFunctionGroup())
+                                || DeviceFunctionGroup.METADATA_MANAGEMENT.equals(authorizations.getFunctionGroup()))) {
+                    isAuthorized = true;
+                    if (deviceAlias != null) {
+                        existingDevice.setAlias(deviceAlias);
+                        this.writableDeviceRepository.save(existingDevice);
+                    }
+                    if (deviceOutputSettings != null && !deviceOutputSettings.isEmpty()) {
+                        final Ssld ssldDevice = this.writableSsldRepository.findOne(existingDevice.getId());
+                        if (ssldDevice.getOutputSettings() != null) {
+                            for (final DeviceOutputSetting newSetting : deviceOutputSettings) {
+                                for (final com.alliander.osgp.domain.core.entities.DeviceOutputSetting oldSetting : ssldDevice
+                                        .getOutputSettings()) {
+                                    if (oldSetting.getExternalId() == newSetting.getExternalId()) {
+                                        oldSetting.setAlias(newSetting.getAlias());
+                                        break;
+                                    }
+                                }
+                            }
+
+                            this.writableSsldRepository.save(ssldDevice);
+                        }
+                    }
+                    break;
+                }
+            }
+
+            if (!isAuthorized) {
+                // unauthorized, throwing exception.
+                throw new FunctionalException(FunctionalExceptionType.UNAUTHORIZED, ComponentType.WS_CORE,
+                        new NotAuthorizedException(organisationIdentification));
+            }
+        }
     }
 
     @Transactional(value = "writableTransactionManager")
