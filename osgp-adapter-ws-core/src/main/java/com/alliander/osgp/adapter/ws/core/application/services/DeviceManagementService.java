@@ -540,55 +540,60 @@ public class DeviceManagementService {
     @Transactional(value = "writableTransactionManager")
     public void setDeviceAlias(@Identification final String organisationIdentification,
             final String deviceIdentification, final String deviceAlias,
-            final List<DeviceOutputSetting> deviceOutputSettings) throws FunctionalException {
+            final List<DeviceOutputSetting> newDeviceOutputSettings) throws FunctionalException {
 
-        final Device existingDevice = this.writableDeviceRepository.findByDeviceIdentification(deviceIdentification);
+        final Ssld existingSsld = this.writableSsldRepository.findByDeviceIdentification(deviceIdentification);
 
-        if (existingDevice == null) {
+        if (existingSsld == null) {
             // device does not exist
             LOGGER.info("Device does not exist, cannot set Alias.");
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.WS_CORE,
                     new UnknownEntityException(Device.class, deviceIdentification));
-        } else {
+        }
 
-            // Check to see if the organisation is METADATA_MANAGEMENT or OWNER
-            // authorized
-            boolean isAuthorized = false;
-            for (final DeviceAuthorization authorizations : existingDevice.getAuthorizations()) {
-                if (organisationIdentification.equals(authorizations.getOrganisation().getOrganisationIdentification())
-                        && (DeviceFunctionGroup.OWNER.equals(authorizations.getFunctionGroup())
-                                || DeviceFunctionGroup.METADATA_MANAGEMENT.equals(authorizations.getFunctionGroup()))) {
-                    isAuthorized = true;
-                    if (deviceAlias != null) {
-                        existingDevice.setAlias(deviceAlias);
-                        this.writableDeviceRepository.save(existingDevice);
-                    }
-                    if (deviceOutputSettings != null && !deviceOutputSettings.isEmpty()) {
-                        final Ssld ssldDevice = this.writableSsldRepository.findOne(existingDevice.getId());
-                        if (ssldDevice.getOutputSettings() != null) {
-                            for (final DeviceOutputSetting newSetting : deviceOutputSettings) {
-                                for (final com.alliander.osgp.domain.core.entities.DeviceOutputSetting oldSetting : ssldDevice
-                                        .getOutputSettings()) {
-                                    if (oldSetting.getExternalId() == newSetting.getExternalId()) {
-                                        oldSetting.setAlias(newSetting.getAlias());
-                                        break;
-                                    }
-                                }
-                            }
+        // Check to see if the organization is authorized for SET_DEVICE_ALIASES
+        final Organisation organisation = this.organisationRepository
+                .findByOrganisationIdentification(organisationIdentification);
+        this.domainHelperService.isAllowed(organisation, existingSsld, DeviceFunction.SET_DEVICE_ALIASES);
 
-                            this.writableSsldRepository.save(ssldDevice);
-                        }
-                    }
-                    break;
+        if (deviceAlias != null) {
+            existingSsld.setAlias(deviceAlias);
+            this.writableDeviceRepository.save(existingSsld);
+        }
+
+        if (newDeviceOutputSettings != null && !newDeviceOutputSettings.isEmpty()) {
+            this.updateRelayAliases(newDeviceOutputSettings, existingSsld);
+        }
+
+    }
+
+    private void updateRelayAliases(final List<DeviceOutputSetting> newDeviceOutputSettings, final Ssld ssld)
+            throws FunctionalException {
+
+        final List<com.alliander.osgp.domain.core.entities.DeviceOutputSetting> currentOutputSettings = ssld
+                .getOutputSettings();
+
+        if (currentOutputSettings == null) {
+            LOGGER.info("Trying to set relay alias(es) for a device without output settings");
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE);
+        }
+
+        for (final DeviceOutputSetting newSetting : newDeviceOutputSettings) {
+            boolean outputSettingFound = false;
+            for (final com.alliander.osgp.domain.core.entities.DeviceOutputSetting oldSetting : currentOutputSettings) {
+                if (oldSetting.getExternalId() == newSetting.getExternalId()) {
+                    oldSetting.setAlias(newSetting.getAlias());
+                    outputSettingFound = true;
                 }
             }
-
-            if (!isAuthorized) {
-                // unauthorized, throwing exception.
-                throw new FunctionalException(FunctionalExceptionType.UNAUTHORIZED, ComponentType.WS_CORE,
-                        new NotAuthorizedException(organisationIdentification));
+            if (!outputSettingFound) {
+                LOGGER.info("Trying to set alias {} for internal relay {}, which has no output settings",
+                        newSetting.getAlias(), newSetting.getInternalId());
+                throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE);
             }
         }
+
+        this.writableSsldRepository.save(ssld);
     }
 
     @Transactional(value = "writableTransactionManager")
