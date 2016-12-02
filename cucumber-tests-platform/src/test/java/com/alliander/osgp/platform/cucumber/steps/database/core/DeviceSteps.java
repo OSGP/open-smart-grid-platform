@@ -15,6 +15,7 @@ import static com.alliander.osgp.platform.cucumber.core.Helpers.getLong;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
 
@@ -34,6 +35,7 @@ import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
+import com.alliander.osgp.platform.cucumber.config.ApplicationConfiguration;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
@@ -52,6 +54,9 @@ public class DeviceSteps {
 
     @SuppressWarnings("unused")
     private final Long DEFAULT_DEVICE_ID = new java.util.Random().nextLong();
+    
+    @Autowired
+    private ApplicationConfiguration configuration;
 
     @Autowired
     private DeviceModelRepository deviceModelRepository;
@@ -124,7 +129,13 @@ public class DeviceSteps {
                 getString(settings, Keys.KEY_PROTOCOL, DeviceSteps.DEFAULT_PROTOCOL),
                 getString(settings, Keys.KEY_PROTOCOL_VERSION, DeviceSteps.DEFAULT_PROTOCOL_VERSION)));
 
-        device.updateRegistrationData(InetAddress.getLoopbackAddress(),
+        InetAddress inetAddress;
+        try {
+            inetAddress = InetAddress.getByName(configuration.oslpAddressClient);
+        } catch (UnknownHostException e) {
+            inetAddress = InetAddress.getLoopbackAddress();
+        }
+        device.updateRegistrationData(inetAddress,
                 getString(settings, "DeviceType", DeviceSteps.DEFAULT_DEVICE_TYPE));
 
         device.setVersion(getLong(settings, "Version"));
