@@ -85,6 +85,7 @@ public class RtuSimulator implements ServerEventListener {
 
     public void stop() {
         this.server.stop();
+        this.isStarted = false;
         LOGGER.info("Server was stopped.");
     }
 
