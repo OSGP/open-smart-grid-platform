@@ -35,7 +35,7 @@ import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
-import com.alliander.osgp.platform.cucumber.config.ApplicationConfiguration;
+import com.alliander.osgp.platform.cucumber.config.AdapterProtocolOslpPersistenceConfig;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
@@ -56,7 +56,7 @@ public class DeviceSteps {
     private final Long DEFAULT_DEVICE_ID = new java.util.Random().nextLong();
     
     @Autowired
-    private ApplicationConfiguration configuration;
+    private AdapterProtocolOslpPersistenceConfig configuration;
 
     @Autowired
     private DeviceModelRepository deviceModelRepository;
@@ -131,7 +131,7 @@ public class DeviceSteps {
 
         InetAddress inetAddress;
         try {
-            inetAddress = InetAddress.getByName(configuration.oslpAddressClient);
+            inetAddress = InetAddress.getByName(configuration.deviceNetworkaddress);
         } catch (UnknownHostException e) {
             inetAddress = InetAddress.getLoopbackAddress();
         }
