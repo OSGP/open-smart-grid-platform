@@ -40,6 +40,9 @@
 		<module>Shared/shared</module>
 		<module>Shared/osgp-dto</module>
 
+        <!-- Protocol-Adapter-OSLP -->
+        <module>Protocol-Adapter-IEC61850/protocol-simulator-iec61850</module>
+
 		<!-- Protocol-Adapter-OSLP -->
 		<module>Protocol-Adapter-OSLP/oslp</module>
 		<module>Protocol-Adapter-OSLP/web-device-simulator</module>
@@ -55,11 +58,13 @@
 		<!-- Platform -->
 		<module>Platform/osgp-domain-core</module>
 		<module>Platform/osgp-domain-logging</module>
+        <module>Platform/osgp-domain-microgrids</module>
 
 		<module>Platform/osgp-adapter-domain-shared</module>
 
 		<module>Platform/osgp-adapter-domain-admin</module>
 		<module>Platform/osgp-adapter-domain-core</module>
+        <module>Platform/osgp-adapter-domain-microgrids</module>
 		<module>Platform/osgp-adapter-domain-publiclighting</module>
 		<module>Platform/osgp-adapter-domain-tariffswitching</module>
 		<module>Platform/osgp-adapter-domain-smartmetering</module>
@@ -72,6 +77,7 @@
 		<module>Platform/osgp-adapter-ws-publiclighting</module>
 		<module>Platform/osgp-adapter-ws-tariffswitching</module>
 		<module>Platform/osgp-adapter-ws-smartmetering</module>
+        <module>Platform/osgp-adapter-ws-microgrids</module>
 
 		<module>Platform/osgp-core</module>
 		<module>Platform/osgp-logging</module>
@@ -84,7 +90,7 @@
 
 		<!-- Fitnesse Acceptance Test Project (Obsolete, but in here because not 
 			all tests are moved to the cucumber projects -->
-		<module>osgp-platform-test</module>
+		<!--<module>osgp-platform-test</module>-->
 
 	</modules>
 </project>

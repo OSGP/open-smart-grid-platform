@@ -49,11 +49,15 @@ public abstract class SmartMeteringStepsBase extends SoapUiRunner {
         }
     }
 
+    /**
+     * Saves the returned CorrelationUid in the Scenario related context for
+     * further use.
+     * 
+     * @throws Throwable
+     */
     protected void saveCorrelationId() throws Throwable {
-        // Save the returned CorrelationUid in the Scenario related context for
-        // further use.
         Helpers.saveCorrelationUidInScenarioContext(this.runXpathResult.getValue(this.response, PATH_CORRELATION_UID),
-                getString(PROPERTIES_MAP, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+                getString(PROPERTIES_MAP, "OrganizationIdentification", Defaults.DEFAULT_ORGANISATION_IDENTIFICATION));
 
     }
 }

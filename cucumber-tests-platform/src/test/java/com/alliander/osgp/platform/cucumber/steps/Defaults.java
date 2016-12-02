@@ -12,12 +12,10 @@ package com.alliander.osgp.platform.cucumber.steps;
  */
 public class Defaults {
 
-    // Labels
-    public static final String KEY_ORGANIZATION_IDENTIFICATION = "OrganizationIdentification";
-
     // Values
-    public static final String DEFAULT_ORGANIZATION_DESCRIPTION = "Test Organization";
-    public static final String DEFAULT_ORGANIZATION_IDENTIFICATION = "test-org";
+    public static final String DEFAULT_ORGANISATION_DESCRIPTION = "Test Organisation";
+    public static final String DEFAULT_ORGANISATION_IDENTIFICATION = "test-org";
+    public static final String DEFAULT_USER_NAME = "Cucumber";
     public static final String DEFAULT_PREFIX = "MAA";
     public static final String DEFAULT_MANUFACTURER_ID = "Test";
     public static final String DEFAULT_MANUFACTURER_NAME = "Test Manufacturer";
@@ -50,6 +48,7 @@ public class Defaults {
     public static final Float DEFAULT_LATITUDE = new Float(0);
     public static final Float DEFAULT_LONGITUDE = new Float(0);
     public static final Short DEFAULT_CHANNEL = new Short((short) 1);
+    public static final Short DEFAULT_PAGE = 0;
 
     // Expected values
     public static final String EXPECTED_RESULT_OK = "OK";

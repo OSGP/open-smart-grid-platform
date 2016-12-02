@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.core;
+package com.alliander.osgp.platform.cucumber.config;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -17,20 +17,19 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
-import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRepository;
+import com.alliander.osgp.adapter.ws.microgrids.domain.repositories.RtuResponseDataRepository;
 
-@EnableJpaRepositories(entityManagerFactoryRef = "entityMgrFactOslp", 
-	transactionManagerRef = "txMgrOslp", 
-	basePackageClasses = { OslpDeviceRepository.class })
-public class PersistenceConfigResponseOslp extends ApplicationConfiguration {
+@EnableJpaRepositories(entityManagerFactoryRef = "entityMgrFactWsMicrogrids", transactionManagerRef = "txMgrWsMicrogrids", basePackageClasses = {
+        RtuResponseDataRepository.class })
+public class AdapterWsMicrogridsPersistenceConfig extends ApplicationConfiguration {
 
-    public PersistenceConfigResponseOslp() {
+    public AdapterWsMicrogridsPersistenceConfig() {
     }
 
-    @Value("${osgpadapterprotocoloslpdbs.url}")
+    @Value("${osgpadapterwsmicrogridsdbs.url}")
     private String databaseUrl;
 
-    @Value("${entitymanager.packages.to.scan.oslp}")
+    @Value("${entitymanager.packages.to.scan.ws.microgrids}")
     private String entitymanagerPackagesToScan;
 
     @Override
@@ -48,7 +47,7 @@ public class PersistenceConfigResponseOslp extends ApplicationConfiguration {
      *
      * @return DataSource
      */
-    @Bean(name = "dsOslp")
+    @Bean(name = "dsWsMicrogrids")
     public DataSource dataSource() {
         return this.makeDataSource();
     }
@@ -60,11 +59,11 @@ public class PersistenceConfigResponseOslp extends ApplicationConfiguration {
      * @throws ClassNotFoundException
      *             when class not found
      */
-    @Bean(name = "entityMgrFactOslp")
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(@Qualifier("dsOslp") final DataSource dataSource)
-            throws ClassNotFoundException {
+    @Bean(name = "entityMgrFactWsMicrogrids")
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(
+            @Qualifier("dsWsMicrogrids") final DataSource dataSource) throws ClassNotFoundException {
 
-        return this.makeEntityManager("OSGP_CUCUMBER_OSLP", dataSource);
+        return this.makeEntityManager("OSGP_CUCUMBER_WS_MICROGRIDS", dataSource);
     }
 
     /**
@@ -74,9 +73,9 @@ public class PersistenceConfigResponseOslp extends ApplicationConfiguration {
      * @throws ClassNotFoundException
      *             when class not found
      */
-    @Bean(name = "txMgrOslp")
+    @Bean(name = "txMgrWsMicrogrids")
     public JpaTransactionManager transactionManager(
-            @Qualifier("entityMgrFactOslp") final EntityManagerFactory barEntityManagerFactory) {
+            @Qualifier("entityMgrFactWsMicrogrids") final EntityManagerFactory barEntityManagerFactory) {
         return new JpaTransactionManager(barEntityManagerFactory);
     }
 

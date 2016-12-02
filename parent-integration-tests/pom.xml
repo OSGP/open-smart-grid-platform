@@ -40,8 +40,9 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
     <module.baseUri>${project.baseUri}/../</module.baseUri>
-    <osgp.version>4.4.0-SNAPSHOT</osgp.version>
+    <osgp.version>${project.version}</osgp.version>
     <osgp.dlms.version>3.5.0-SNAPSHOT</osgp.dlms.version>
+    <osgp.iec61850.simulator.version>4.1.0-SNAPSHOT</osgp.iec61850.simulator.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <spring.version>4.3.3.RELEASE</spring.version>
@@ -54,6 +55,7 @@
     <postgresql.version>9.3-1102-jdbc41</postgresql.version>
     <hibernate.version>4.2.16.Final</hibernate.version>
     <hibernate.validator.version>4.3.1.Final</hibernate.validator.version>
+    <hibernate.jpa.version>1.0.1.Final</hibernate.jpa.version>
     <junit.version>4.11</junit.version>
     <joda.version>2.4</joda.version>
     <bonecp.version>0.8.0.RELEASE</bonecp.version>
@@ -311,6 +313,29 @@
       </dependency>
 
       <dependency>
+        <groupId>com.alliander.osgp</groupId>
+        <artifactId>osgp-domain-microgrids</artifactId>
+        <version>${osgp.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.alliander.osgp</groupId>
+        <artifactId>osgp-adapter-domain-microgrids</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+      <dependency>
+        <groupId>com.alliander.osgp</groupId>
+        <artifactId>osgp-adapter-ws-microgrids</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+      <dependency>
+        <groupId>com.alliander.osgp</groupId>
+        <artifactId>osgp-protocol-simulator-iec61850</artifactId>
+        <version>${osgp.iec61850.simulator.version}</version>
+      </dependency>
+
+      <dependency>
         <groupId>com.alliander</groupId>
         <artifactId>cucumber-tests-platform</artifactId>
         <version>${osgp.version}</version>
@@ -364,6 +389,12 @@
         <artifactId>spring-webmvc</artifactId>
         <version>${spring.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-test</artifactId>
+        <version>${spring.version}</version>
+        <scope>test</scope>
+      </dependency>
       <!-- Spring WS -->
       <dependency>
         <groupId>org.springframework.ws</groupId>
@@ -410,6 +441,12 @@
         <groupId>org.springframework.security</groupId>
         <artifactId>spring-security-config</artifactId>
         <version>${spring.security.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hibernate.javax.persistence</groupId>
+        <artifactId>hibernate-jpa-2.0-api</artifactId>
+        <version>${hibernate.jpa.version}</version>
       </dependency>
 
       <!-- Servlet API 3.0 -->

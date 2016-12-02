@@ -8,7 +8,8 @@
 package com.alliander.osgp.platform.cucumber.steps;
 
 /**
- * This class contains a number of static String variables that are used to put/get values from SessonContext
+ * This class contains a number of static String variables that are used to
+ * put/get values from ScenarioContext or step settings.
  */
 public class Keys {
 
@@ -31,7 +32,11 @@ public class Keys {
     public static final String KEY_IS_ACTIVATED = "IsActivated";
     public static final String KEY_DEVICE_MODEL = "DeviceModel";
     public static final String KEY_TECH_INSTALL_DATE = "TechnicalInstallationDate";
-    public static final String KEY_ORGANIZATION_IDENTIFICATION =  "OrganizationIdentification";
+
+    // TODO: It is called "Organisation" with an S in all webservices and
+    // sourcecode, this should be consistent.
+    public static final String KEY_ORGANISATION_IDENTIFICATION = "OrganizationIdentification";
+    public static final String KEY_USER_NAME = "UserName";
     public static final String KEY_DEVICE_FUNCTION_GRP = "DeviceFunctionGroup";
     public static final String KEY_COMM_METHOD = "CommunicationMethod";
     public static final String KEY_IP_ADDR_IS_STATIC = "IpAddressIsStatic";
@@ -58,4 +63,18 @@ public class Keys {
     public static final String KEY_EVENTS_NODELIST_EXPECTED = "event-nodelist-expected";
     public static final String KEY_DEVICE_UID = "DeviceUid";
 
+    public static final String KEY_PAGE = "Page";
+
+    public static final String KEY_SYSTEM_ID = "SystemId";
+    public static final String KEY_SYSTEM_TYPE = "SystemType";
+    public static final String KEY_MEASUREMENT_FILTER_NODE = "MeasurementFilterNode";
+    public static final String KEY_NUMBER_OF_SYSTEMS = "NumberOfSystems";
+    public static final String KEY_NUMBER_OF_MEASUREMENTS = "NumberOfMeasurements";
+    public static final String KEY_NUMBER_OF_PROFILES = "NumberOfProfiles";
+    public static final String KEY_MEASUREMENT_ID = "MeasurementId";
+    public static final String KEY_MEASUREMENT_NODE = "MeasurementNode";
+    public static final String KEY_MEASUREMENT_QUALIFIER = "MeasurementQualifier";
+    public static final String KEY_MEASUREMENT_VALUE = "MeasurementValue";
+
+    public static final String KEY_RESULT = "Result";
 }
