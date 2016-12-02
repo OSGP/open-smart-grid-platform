@@ -68,6 +68,7 @@ public class Keys {
     public static final String KEY_SYSTEM_ID = "SystemId";
     public static final String KEY_SYSTEM_TYPE = "SystemType";
     public static final String KEY_MEASUREMENT_FILTER_NODE = "MeasurementFilterNode";
+    public static final String KEY_MEASUREMENT_FILTER_ID = "MeasurementFilterId";
     public static final String KEY_NUMBER_OF_SYSTEMS = "NumberOfSystems";
     public static final String KEY_NUMBER_OF_MEASUREMENTS = "NumberOfMeasurements";
     public static final String KEY_NUMBER_OF_PROFILES = "NumberOfProfiles";

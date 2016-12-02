@@ -119,8 +119,8 @@ public class GetDataSteps extends MicrogridsStepsBase {
             final int numberOfSystems, final int systemIndex, final String systemDescription,
             final String indexPostfix) {
 
-        final int expectedNumberOfMeasurements = Integer.parseInt(
-                responseParameters.get(Keys.KEY_NUMBER_OF_MEASUREMENTS.concat(indexPostfix)));
+        final int expectedNumberOfMeasurements = Integer
+                .parseInt(responseParameters.get(Keys.KEY_NUMBER_OF_MEASUREMENTS.concat(indexPostfix)));
         assertEquals(systemDescription + " number of Measurements", expectedNumberOfMeasurements, measurements.size());
         for (int i = 0; i < expectedNumberOfMeasurements; i++) {
             this.assertMeasurementResponse(responseParameters, numberOfSystems, systemIndex, systemDescription,
