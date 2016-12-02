@@ -47,7 +47,8 @@ public class DlmsConnector {
         TcpConnectionBuilder tcpConnectionBuilder;
         try {
             tcpConnectionBuilder = new TcpConnectionBuilder(InetAddress.getByName(device.getIpAddress()))
-            .setResponseTimeout(this.responseTimeout).setLogicalDeviceId(this.logicalDeviceAddress);
+                    .setResponseTimeout(this.responseTimeout).setLogicalDeviceId(this.logicalDeviceAddress)
+                    .setClientId(this.clientAccessPoint);
         } catch (final UnknownHostException e) {
             throw new ConnectionException(e);
         }
