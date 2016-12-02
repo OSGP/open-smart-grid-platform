@@ -96,6 +96,10 @@ public class GetDataRequestBuilder {
 
         final String indexPostfix = "_" + (systemIndex + 1) + "_" + (measurementIndex + 1);
         final MeasurementFilter measurementFilter = new MeasurementFilter();
+        if (requestParameters.containsKey(Keys.KEY_MEASUREMENT_FILTER_ID.concat(indexPostfix))) {
+            measurementFilter.setId(
+                    Integer.parseInt(requestParameters.get(Keys.KEY_MEASUREMENT_FILTER_ID.concat(indexPostfix))));
+        }
         measurementFilter.setNode(requestParameters.get(Keys.KEY_MEASUREMENT_FILTER_NODE.concat(indexPostfix)));
         measurementFilters.add(measurementFilter);
     }
