@@ -124,10 +124,10 @@
     </dependency>
 
     <!-- Bouncy castle -->
-    <dependency>
-      <groupId>org.bouncycastle</groupId>
-      <artifactId>bcprov-jdk15on</artifactId>
-    </dependency>
+<!--     <dependency> -->
+<!--       <groupId>org.bouncycastle</groupId> -->
+<!--       <artifactId>bcprov-jdk15on</artifactId> -->
+<!--     </dependency> -->
 
     <!-- test deps -->
     <dependency>
