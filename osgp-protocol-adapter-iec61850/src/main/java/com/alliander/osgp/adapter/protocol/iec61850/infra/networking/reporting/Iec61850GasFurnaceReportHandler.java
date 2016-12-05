@@ -16,22 +16,22 @@ import org.slf4j.LoggerFactory;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.ReadOnlyNodeContainer;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850ChpCommandFactory;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850GasFurnaceCommandFactory;
 import com.alliander.osgp.dto.valueobjects.microgrids.GetDataSystemIdentifierDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
 
-public class Iec61850ChpReportHandler implements Iec61850ReportHandler {
+public class Iec61850GasFurnaceReportHandler implements Iec61850ReportHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850ChpReportHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850GasFurnaceReportHandler.class);
 
-    private static final String SYSTEM_TYPE = "CHP";
+    private static final String SYSTEM_TYPE = "GAS_FURNACE";
     private static final List<String> NODES_USING_ID_LIST = new ArrayList<>();
     static {
         intializeNodesUsingIdList();
     }
     private final int systemId;
 
-    public Iec61850ChpReportHandler(final int systemId) {
+    public Iec61850GasFurnaceReportHandler(final int systemId) {
         this.systemId = systemId;
     }
 
@@ -46,8 +46,7 @@ public class Iec61850ChpReportHandler implements Iec61850ReportHandler {
 
     @Override
     public MeasurementDto handleMember(final ReadOnlyNodeContainer member) {
-
-        final RtuReadCommand<MeasurementDto> command = Iec61850ChpCommandFactory.getInstance()
+        final RtuReadCommand<MeasurementDto> command = Iec61850GasFurnaceCommandFactory.getInstance()
                 .getCommand(this.getCommandName(member));
 
         if (command == null) {
@@ -79,4 +78,5 @@ public class Iec61850ChpReportHandler implements Iec61850ReportHandler {
             return nodeName;
         }
     }
+
 }
