@@ -25,15 +25,17 @@ import com.alliander.osgp.simulator.protocol.iec61850.server.QualityType;
 
 public class Chp extends LogicalDevice {
     private static final String TTMP1_TMPSV_INSTMAG_F = "TTMP1.TmpSv.instMag.f";
+    private static final String TTMP2_TMPSV_INSTMAG_F = "TTMP2.TmpSv.instMag.f";
 
-    private static final Set<String> FIXED_FLOAT_NODES = Collections.unmodifiableSet(new TreeSet<>(Arrays
-            .asList(TTMP1_TMPSV_INSTMAG_F)));
+    private static final Set<String> FIXED_FLOAT_NODES = Collections.unmodifiableSet(new TreeSet<>(Arrays.asList(
+            TTMP1_TMPSV_INSTMAG_F, TTMP2_TMPSV_INSTMAG_F)));
 
     private static final Map<String, Fc> FC_BY_NODE;
     static {
         final Map<String, Fc> fcByNode = new TreeMap<>();
 
         fcByNode.put(TTMP1_TMPSV_INSTMAG_F, Fc.MX);
+        fcByNode.put(TTMP2_TMPSV_INSTMAG_F, Fc.MX);
 
         FC_BY_NODE = Collections.unmodifiableMap(fcByNode);
     }
@@ -50,7 +52,7 @@ public class Chp extends LogicalDevice {
         values.add(this.setFixedFloat(TTMP1_TMPSV_INSTMAG_F, Fc.MX, 314));
         values.add(this.setQuality("TTMP1.TmpSv.q", Fc.MX, QualityType.INACCURATE.getValue()));
 
-        values.add(this.setFixedFloat("TTMP2.TmpSv.instMag.f", Fc.MX, 324));
+        values.add(this.setFixedFloat(TTMP2_TMPSV_INSTMAG_F, Fc.MX, 324));
         values.add(this.setQuality("TTMP2.TmpSv.q", Fc.MX, QualityType.VALIDITY_INVALID.getValue()));
 
         values.add(this.setFixedFloat("MFLW1.FlwRte.mag.f", Fc.MX, 314));
