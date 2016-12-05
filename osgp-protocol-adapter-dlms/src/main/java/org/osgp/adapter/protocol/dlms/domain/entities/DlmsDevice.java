@@ -102,8 +102,8 @@ public class DlmsDevice extends AbstractEntity {
     public String toString() {
         return String.format(
                 "DlmsDevice[deviceId=%s, hls3=%b, hls4=%b, hls5=%b, ipAddress=%s, port=%s, logicalId=%s, clientId=%s]",
-                this.deviceIdentification, this.hls3Active, this.hls4Active, this.hls5Active, this.ipAddress, this.port,
-                this.logicalId, this.clientId);
+                this.deviceIdentification, this.hls3Active, this.hls4Active, this.hls5Active, this.ipAddress,
+                this.port, this.logicalId, this.clientId);
     }
 
     @Override
@@ -351,6 +351,10 @@ public class DlmsDevice extends AbstractEntity {
         if (!keys.isEmpty()) {
             this.getSecurityKeys().removeAll(keys);
         }
+    }
+
+    public boolean communicateUnencrypted() {
+        return !(this.hls3Active || this.hls4Active || this.hls5Active);
     }
 
     /**

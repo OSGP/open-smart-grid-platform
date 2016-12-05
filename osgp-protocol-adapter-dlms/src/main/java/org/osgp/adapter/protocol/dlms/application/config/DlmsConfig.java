@@ -28,6 +28,7 @@ import org.osgp.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.osgp.adapter.protocol.dlms.application.threads.RecoverKeyProcess;
 import org.osgp.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
 import org.osgp.adapter.protocol.dlms.domain.factories.Hls5Connector;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnector;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.networking.DlmsChannelHandlerServer;
@@ -51,11 +52,9 @@ import com.alliander.osgp.shared.application.config.AbstractConfig;
  */
 @Configuration
 @EnableTransactionManagement()
-@PropertySources({
-	@PropertySource("classpath:osgp-adapter-protocol-dlms.properties"),
+@PropertySources({ @PropertySource("classpath:osgp-adapter-protocol-dlms.properties"),
     @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "file:${osgp/AdapterProtocolDlms/config}", ignoreResourceNotFound = true),
-})
+    @PropertySource(value = "file:${osgp/AdapterProtocolDlms/config}", ignoreResourceNotFound = true), })
 public class DlmsConfig extends AbstractConfig {
     private static final String PROPERTY_NAME_DLMS_PORT_SERVER = "dlms.port.server";
 
@@ -135,6 +134,13 @@ public class DlmsConfig extends AbstractConfig {
             @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress,
             @Value("${jdlms.client_access_point}") final int clientAccessPoint) {
         return new Hls5Connector(recoverKeyProcessInitiator, responseTimeout, logicalDeviceAddress, clientAccessPoint);
+    }
+
+    @Bean
+    @Autowired
+    public DlmsConnector publicConnector(@Value("${jdlms.response_timeout}") final int responseTimeout,
+            @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress) {
+        return new DlmsConnector(responseTimeout, logicalDeviceAddress);
     }
 
     @Bean
