@@ -414,6 +414,7 @@
       <xsd:enumeration value="TARIFF_SCHEDULING" />
       <xsd:enumeration value="CONFIGURATION" />
       <xsd:enumeration value="MONITORING" />
+      <xsd:enumeration value="METADATA_MANAGEMENT" />
     </xsd:restriction>
   </xsd:simpleType>
 

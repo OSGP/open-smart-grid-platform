@@ -573,9 +573,10 @@ public class DeviceManagementService {
         final List<com.alliander.osgp.domain.core.entities.DeviceOutputSetting> currentOutputSettings = ssld
                 .getOutputSettings();
 
-        if (currentOutputSettings == null) {
+        if (currentOutputSettings == null || currentOutputSettings.isEmpty()) {
             LOGGER.info("Trying to set relay alias(es) for a device without output settings");
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE);
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE_OUTPUT_SETTINGS,
+                    ComponentType.WS_CORE);
         }
 
         for (final DeviceOutputSetting newSetting : newDeviceOutputSettings) {
@@ -589,7 +590,8 @@ public class DeviceManagementService {
             if (!outputSettingFound) {
                 LOGGER.info("Trying to set alias {} for internal relay {}, which has no output settings",
                         newSetting.getAlias(), newSetting.getInternalId());
-                throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE);
+                throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE_OUTPUT_SETTINGS,
+                        ComponentType.WS_CORE);
             }
         }
 
