@@ -38,6 +38,8 @@ import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindEventsRequ
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindEventsResponse;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindScheduledTasksRequest;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindScheduledTasksResponse;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetDeviceAliasRequest;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetDeviceAliasResponse;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetDeviceVerificationKeyAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetDeviceVerificationKeyAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetDeviceVerificationKeyRequest;
@@ -118,9 +120,8 @@ public class DeviceManagementEndpoint {
         try {
             final List<Organisation> organisations = this.deviceManagementService
                     .findAllOrganisations(organisationIdentification);
-            response.getOrganisations().addAll(
-                    this.deviceManagementMapper.mapAsList(organisations,
-                            com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Organisation.class));
+            response.getOrganisations().addAll(this.deviceManagementMapper.mapAsList(organisations,
+                    com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Organisation.class));
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error(EXCEPTION, e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
@@ -174,8 +175,8 @@ public class DeviceManagementEndpoint {
         final SetEventNotificationsResponse response = new SetEventNotificationsResponse();
 
         try {
-            final ResponseMessage message = this.deviceManagementService.dequeueSetEventNotificationsResponse(request
-                    .getAsyncRequest().getCorrelationUid());
+            final ResponseMessage message = this.deviceManagementService
+                    .dequeueSetEventNotificationsResponse(request.getAsyncRequest().getCorrelationUid());
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
             }
@@ -201,10 +202,10 @@ public class DeviceManagementEndpoint {
             // Get the request parameters, make sure that they are in UTC.
             // Maybe add an adapter to the service, so that all datetime are
             // converted to utc automatically.
-            final DateTime from = request.getFrom() == null ? null : new DateTime(request.getFrom()
-                    .toGregorianCalendar()).toDateTime(DateTimeZone.UTC);
-            final DateTime until = request.getUntil() == null ? null : new DateTime(request.getUntil()
-                    .toGregorianCalendar()).toDateTime(DateTimeZone.UTC);
+            final DateTime from = request.getFrom() == null ? null
+                    : new DateTime(request.getFrom().toGregorianCalendar()).toDateTime(DateTimeZone.UTC);
+            final DateTime until = request.getUntil() == null ? null
+                    : new DateTime(request.getUntil().toGregorianCalendar()).toDateTime(DateTimeZone.UTC);
 
             // Get all events matching the request.
             final Page<com.alliander.osgp.domain.core.entities.Event> result = this.deviceManagementService.findEvents(
@@ -238,10 +239,10 @@ public class DeviceManagementEndpoint {
         final FindDevicesResponse response = new FindDevicesResponse();
 
         try {
-            Page<com.alliander.osgp.domain.core.entities.Device> result = this.deviceManagementService
-                    .findDevices(organisationIdentification, request.getPageSize(), request.getPage(),
-                            this.deviceManagementMapper.map(request.getDeviceFilter(),
-                                    com.alliander.osgp.domain.core.valueobjects.DeviceFilter.class));
+            Page<com.alliander.osgp.domain.core.entities.Device> result = this.deviceManagementService.findDevices(
+                    organisationIdentification, request.getPageSize(), request.getPage(),
+                    this.deviceManagementMapper.map(request.getDeviceFilter(),
+                            com.alliander.osgp.domain.core.valueobjects.DeviceFilter.class));
 
             if (result != null && response.getDevices() != null) {
                 response.getDevices().addAll(this.deviceManagementMapper.mapAsList(result.getContent(), Device.class));
@@ -255,14 +256,16 @@ public class DeviceManagementEndpoint {
                 int calls = 0;
                 while ((calls += 1) < result.getTotalPages()) {
                     request.setPage(calls);
-                    result = this.deviceManagementService.findDevices(organisationIdentification,  request.getPageSize(), request.getPage(),
-                            this.deviceManagementMapper.map(request.getDeviceFilter(),
+                    result = this.deviceManagementService.findDevices(organisationIdentification, request.getPageSize(),
+                            request.getPage(), this.deviceManagementMapper.map(request.getDeviceFilter(),
                                     com.alliander.osgp.domain.core.valueobjects.DeviceFilter.class));
-                    response.getDevices().addAll(this.deviceManagementMapper.mapAsList(result.getContent(), Device.class));
+                    response.getDevices()
+                            .addAll(this.deviceManagementMapper.mapAsList(result.getContent(), Device.class));
                 }
             }
         } catch (final ArgumentNullOrEmptyException ane) {
-            //TODO: Instead of using this exception, a different solution should be found to avoid using Exceptions.
+            // TODO: Instead of using this exception, a different solution
+            // should be found to avoid using Exceptions.
             LOGGER.error("No results found when finding devices", ane);
             response.setArgument(ane.getArgument());
             response.setMessage(ane.getMessage());
@@ -297,9 +300,8 @@ public class DeviceManagementEndpoint {
                         request.getDeviceIdentification());
             }
 
-            response.getScheduledTask().addAll(
-                    this.deviceManagementMapper.mapAsList(scheduledTasks,
-                            com.alliander.osgp.adapter.ws.schema.core.devicemanagement.ScheduledTask.class));
+            response.getScheduledTask().addAll(this.deviceManagementMapper.mapAsList(scheduledTasks,
+                    com.alliander.osgp.adapter.ws.schema.core.devicemanagement.ScheduledTask.class));
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("Exception find Scheduled tasks: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
@@ -316,12 +318,12 @@ public class DeviceManagementEndpoint {
     public UpdateDeviceResponse updateDevice(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final UpdateDeviceRequest request) throws OsgpException {
 
-        LOGGER.info("Updating device: Original {}, Updated: {}.", request.getDeviceIdentification(), request
-                .getUpdatedDevice().getDeviceIdentification());
+        LOGGER.info("Updating device: Original {}, Updated: {}.", request.getDeviceIdentification(),
+                request.getUpdatedDevice().getDeviceIdentification());
 
         try {
-            final com.alliander.osgp.domain.core.entities.Ssld device = this.deviceManagementMapper.map(
-                    request.getUpdatedDevice(), com.alliander.osgp.domain.core.entities.Ssld.class);
+            final com.alliander.osgp.domain.core.entities.Ssld device = this.deviceManagementMapper
+                    .map(request.getUpdatedDevice(), com.alliander.osgp.domain.core.entities.Ssld.class);
 
             this.deviceManagementService.updateDevice(organisationIdentification, device);
 
@@ -347,6 +349,41 @@ public class DeviceManagementEndpoint {
         updateDeviceResponse.setAsyncResponse(asyncResponse);
 
         return updateDeviceResponse;
+    }
+
+    @PayloadRoot(localPart = "SetDeviceAliasRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
+    @ResponsePayload
+    public SetDeviceAliasResponse setDeviceAlias(@OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SetDeviceAliasRequest request) throws OsgpException {
+
+        LOGGER.info("Setting device alias for device:{} to: {}.", request.getDeviceIdentification(),
+                request.getDeviceAlias());
+
+        try {
+            this.deviceManagementService.setDeviceAlias(organisationIdentification, request.getDeviceIdentification(),
+                    request.getDeviceAlias(), request.getDeviceOutputSettings());
+        } catch (final MethodConstraintViolationException e) {
+            LOGGER.error("Exception setting alias Device: {} ", e.getMessage(), e);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
+        } catch (final Exception e) {
+            LOGGER.error(EXCEPTION_WHILE_UPDATING_DEVICE,
+                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
+            this.handleException(e);
+        }
+
+        final SetDeviceAliasResponse setDeviceAliasResponse = new SetDeviceAliasResponse();
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                request.getDeviceIdentification());
+
+        final AsyncResponse asyncResponse = new AsyncResponse();
+        asyncResponse.setCorrelationUid(correlationUid);
+        asyncResponse.setDeviceId(request.getDeviceIdentification());
+
+        setDeviceAliasResponse.setAsyncResponse(asyncResponse);
+
+        return setDeviceAliasResponse;
     }
 
     @PayloadRoot(localPart = "SetMaintenanceStatusRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
@@ -400,7 +437,7 @@ public class DeviceManagementEndpoint {
             response.setAsyncResponse(asyncResponse);
 
         } catch (final MethodConstraintViolationException e) {
-            LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
+            LOGGER.error(EXCEPTION, e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -457,7 +494,7 @@ public class DeviceManagementEndpoint {
             response.setAsyncResponse(asyncResponse);
 
         } catch (final MethodConstraintViolationException e) {
-            LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
+            LOGGER.error(EXCEPTION, e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {

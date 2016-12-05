@@ -34,6 +34,7 @@ import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessage;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessageSender;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessageType;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceAuthorizationRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableSsldRepository;
@@ -531,6 +532,67 @@ public class DeviceManagementService {
 
         for (final Ean ean : updateDevice.getEans()) {
             ean.setDevice(ssld);
+        }
+
+        this.writableSsldRepository.save(ssld);
+    }
+
+    @Transactional(value = "writableTransactionManager")
+    public void setDeviceAlias(@Identification final String organisationIdentification,
+            final String deviceIdentification, final String deviceAlias,
+            final List<DeviceOutputSetting> newDeviceOutputSettings) throws FunctionalException {
+
+        final Ssld existingSsld = this.writableSsldRepository.findByDeviceIdentification(deviceIdentification);
+
+        if (existingSsld == null) {
+            // device does not exist
+            LOGGER.info("Device does not exist, cannot set Alias.");
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.WS_CORE,
+                    new UnknownEntityException(Device.class, deviceIdentification));
+        }
+
+        // Check to see if the organization is authorized for SET_DEVICE_ALIASES
+        final Organisation organisation = this.organisationRepository
+                .findByOrganisationIdentification(organisationIdentification);
+        this.domainHelperService.isAllowed(organisation, existingSsld, DeviceFunction.SET_DEVICE_ALIASES);
+
+        if (deviceAlias != null) {
+            existingSsld.setAlias(deviceAlias);
+            this.writableDeviceRepository.save(existingSsld);
+        }
+
+        if (newDeviceOutputSettings != null && !newDeviceOutputSettings.isEmpty()) {
+            this.updateRelayAliases(newDeviceOutputSettings, existingSsld);
+        }
+
+    }
+
+    private void updateRelayAliases(final List<DeviceOutputSetting> newDeviceOutputSettings, final Ssld ssld)
+            throws FunctionalException {
+
+        final List<com.alliander.osgp.domain.core.entities.DeviceOutputSetting> currentOutputSettings = ssld
+                .getOutputSettings();
+
+        if (currentOutputSettings == null || currentOutputSettings.isEmpty()) {
+            LOGGER.info("Trying to set relay alias(es) for a device without output settings");
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE_OUTPUT_SETTINGS,
+                    ComponentType.WS_CORE);
+        }
+
+        for (final DeviceOutputSetting newSetting : newDeviceOutputSettings) {
+            boolean outputSettingFound = false;
+            for (final com.alliander.osgp.domain.core.entities.DeviceOutputSetting oldSetting : currentOutputSettings) {
+                if (oldSetting.getExternalId() == newSetting.getExternalId()) {
+                    oldSetting.setAlias(newSetting.getAlias());
+                    outputSettingFound = true;
+                }
+            }
+            if (!outputSettingFound) {
+                LOGGER.info("Trying to set alias {} for internal relay {}, which has no output settings",
+                        newSetting.getAlias(), newSetting.getInternalId());
+                throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE_OUTPUT_SETTINGS,
+                        ComponentType.WS_CORE);
+            }
         }
 
         this.writableSsldRepository.save(ssld);

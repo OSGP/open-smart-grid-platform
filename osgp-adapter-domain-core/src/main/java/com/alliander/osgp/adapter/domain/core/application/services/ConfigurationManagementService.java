@@ -78,11 +78,12 @@ public class ConfigurationManagementService extends AbstractService {
             }
         }
 
-        final com.alliander.osgp.dto.valueobjects.ConfigurationDto configurationDto = this.domainCoreMapper.map(
-                configuration, com.alliander.osgp.dto.valueobjects.ConfigurationDto.class);
+        final com.alliander.osgp.dto.valueobjects.ConfigurationDto configurationDto = this.domainCoreMapper
+                .map(configuration, com.alliander.osgp.dto.valueobjects.ConfigurationDto.class);
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, configurationDto), messageType, device.getIpAddress(), scheduleTime);
+        this.osgpCoreRequestMessageSender.send(
+                new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, configurationDto),
+                messageType, device.getIpAddress(), scheduleTime);
     }
 
     private void updateDeviceOutputSettings(final Device device, final Configuration configuration) {
@@ -120,8 +121,9 @@ public class ConfigurationManagementService extends AbstractService {
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, null), messageType, device.getIpAddress());
+        this.osgpCoreRequestMessageSender.send(
+                new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, null), messageType,
+                device.getIpAddress());
     }
 
     public void handleGetConfigurationResponse(
@@ -142,16 +144,17 @@ public class ConfigurationManagementService extends AbstractService {
             final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
             final List<DeviceOutputSetting> outputSettings = this.findSsldForDevice(device).getOutputSettings();
 
-            final List<com.alliander.osgp.dto.valueobjects.RelayMapDto> newRelayMap = new ArrayList<com.alliander.osgp.dto.valueobjects.RelayMapDto>();
+            final List<com.alliander.osgp.dto.valueobjects.RelayMapDto> newRelayMap = new ArrayList<>();
             final List<com.alliander.osgp.dto.valueobjects.RelayMapDto> relayMapDto = configurationDto
                     .getRelayConfiguration().getRelayMap();
-            for (final DeviceOutputSetting ouputSetting : outputSettings) {
+            for (final DeviceOutputSetting outputSetting : outputSettings) {
                 for (final com.alliander.osgp.dto.valueobjects.RelayMapDto relaySettingDto : relayMapDto) {
-                    if (relaySettingDto.getIndex() == ouputSetting.getExternalId()) {
+                    if (relaySettingDto.getIndex() == outputSetting.getExternalId()) {
                         final com.alliander.osgp.dto.valueobjects.RelayMapDto newRelayMapDto = new com.alliander.osgp.dto.valueobjects.RelayMapDto(
-                                ouputSetting.getExternalId(), ouputSetting.getInternalId(),
-                                com.alliander.osgp.dto.valueobjects.RelayTypeDto.valueOf(ouputSetting.getOutputType()
-                                        .name()), ouputSetting.getAlias());
+                                outputSetting.getExternalId(), outputSetting.getInternalId(),
+                                com.alliander.osgp.dto.valueobjects.RelayTypeDto
+                                        .valueOf(outputSetting.getOutputType().name()),
+                                outputSetting.getAlias());
                         newRelayMap.add(newRelayMapDto);
                     }
                 }
@@ -186,14 +189,15 @@ public class ConfigurationManagementService extends AbstractService {
 
     public void switchConfiguration(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final String messageType, final String configurationBank)
-                    throws FunctionalException {
+            throws FunctionalException {
         LOGGER.debug("switchConfiguration called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, configurationBank), messageType, device.getIpAddress());
+        this.osgpCoreRequestMessageSender.send(
+                new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, configurationBank),
+                messageType, device.getIpAddress());
     }
 }

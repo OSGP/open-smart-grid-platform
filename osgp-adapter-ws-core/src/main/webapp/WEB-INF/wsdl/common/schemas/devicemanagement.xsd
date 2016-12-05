@@ -149,6 +149,24 @@
     </xsd:complexType>
   </xsd:element>
 
+    <xsd:element name="SetDeviceAliasRequest">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="DeviceIdentification" type="common:Identification" />
+                <xsd:element name="DeviceAlias" type="xsd:string" />
+                <xsd:element name="DeviceOutputSettings" type="tns:DeviceOutputSetting" minOccurs="0" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="SetDeviceAliasResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="AsyncResponse" type="common:AsyncResponse" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
   <xsd:element name="SetMaintenanceStatusRequest">
     <xsd:complexType>
       <xsd:sequence>
@@ -396,6 +414,7 @@
       <xsd:enumeration value="TARIFF_SCHEDULING" />
       <xsd:enumeration value="CONFIGURATION" />
       <xsd:enumeration value="MONITORING" />
+      <xsd:enumeration value="METADATA_MANAGEMENT" />
     </xsd:restriction>
   </xsd:simpleType>
 
