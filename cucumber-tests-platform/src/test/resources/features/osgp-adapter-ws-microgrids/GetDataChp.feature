@@ -16,7 +16,7 @@ Feature: Get CHP Data
       | SystemType_1              | HEAT_BUFFER |
       | NumberOfMeasurements_1    |           1 |
       | MeasurementFilterNode_1_1 | TmpSv       |
-      | MeasurementId_1_1         |           1 |
+      | MeasurementFilterId_1_1         |           1 |
     Then the get data response should be returned
       | DeviceIdentification     | RTU10001    |
       | Result                   | OK          |

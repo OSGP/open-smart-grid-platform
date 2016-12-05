@@ -1,4 +1,4 @@
-@Iec61850MockServer
+@Iec61850MockServer @runnow
 Feature: Get Heat Buffer Data
   As an OSGP client
   I want to get Heat Buffer data from an RTU
@@ -19,13 +19,13 @@ Feature: Get Heat Buffer Data
       | SystemType_1              | HEAT_BUFFER |
       | NumberOfMeasurements_1    |           4 |
       | MeasurementFilterNode_1_1 | TmpSv       |
-      | MeasurementId_1_1         |           1 |
+      | MeasurementFilterId_1_1         |           1 |
       | MeasurementFilterNode_1_2 | TmpSv       |
-      | MeasurementId_1_2         |           2 |
+      | MeasurementFilterId_1_2         |           2 |
       | MeasurementFilterNode_1_3 | TmpSv       |
-      | MeasurementId_1_3         |           3 |
+      | MeasurementFilterId_1_3         |           3 |
       | MeasurementFilterNode_1_4 | VlmCap      |
-      | MeasurementId_1_4         |           1 |
+      | MeasurementFilterId_1_4         |           1 |
     Then the get data response should be returned
       | DeviceIdentification     | RTU10001    |
       | Result                   | OK          |
