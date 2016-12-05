@@ -90,12 +90,13 @@
     <jacoco.maven.plugin.version>0.7.7.201606060606</jacoco.maven.plugin.version>
     <maven.jar.plugin.version>3.0.2</maven.jar.plugin.version>
     <maven.surefire.plugin.version>2.19.1</maven.surefire.plugin.version>
+    <maven.failsafe.plugin.version>2.19.1</maven.failsafe.plugin.version>
     <soapui.maven.plugin.version>5.2.1</soapui.maven.plugin.version>
     <jgoodies.version>1.0.5</jgoodies.version>
 
     <!-- Default always skip integration tests, to ensure all developer data 
       is retained -->
-    <skipIntegrationTests>true</skipIntegrationTests>
+    <skipITs>true</skipITs>
   </properties>
 
   <repositories>
@@ -806,14 +807,11 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <version>${maven.surefire.plugin.version}</version>
-          <configuration>
-            <argLine>${surefireArgLine}</argLine>
-            <includes>
-              <!-- Include your Cucumber tests, as an example -->
-              <include>**/*Tests.java</include>
-            </includes>
-            <skipTests>${skipIntegrationTests}</skipTests>
-          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>${maven.failsafe.plugin.version}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -892,7 +890,6 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <fork>true</fork>
-          <executable>${JAVA_1_7_HOME}/bin/javac</executable>
           <source>1.7</source>
           <target>1.7</target>
         </configuration>

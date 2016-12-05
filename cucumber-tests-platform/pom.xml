@@ -226,14 +226,6 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <executions>
           <execution>
@@ -252,9 +244,29 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <argLine>${surefireArgLine}</argLine>
+          <excludes>
+            <!-- Cucumber integration tests, included with Failsafe. -->
+            <exclude>**/cucumber/AcceptanceTests.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>integration-test</id>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <skipITs>${skipITs}</skipITs>
           <includes>
-            <!-- Include your Cucumber tests, as an example -->
-            <include>**/*Tests.java</include>
+            <!-- Cucumber integration tests, excluded with Surefire. -->
+            <include>**/cucumber/AcceptanceTests.java</include>
           </includes>
         </configuration>
       </plugin>
