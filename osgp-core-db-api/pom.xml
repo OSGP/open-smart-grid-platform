@@ -33,6 +33,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
+        <version>5.5.1</version>
         <configuration>
           <excludeRoots>
             <excludeRoot>
