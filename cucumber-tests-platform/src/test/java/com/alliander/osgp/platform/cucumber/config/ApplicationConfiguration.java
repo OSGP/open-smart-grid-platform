@@ -69,6 +69,9 @@ public abstract class ApplicationConfiguration extends AbstractConfig {
     @Value("${hibernate.show_sql}")
     protected String hibernateShowSql;
 
+    @Value("${device.networkaddress}")
+    public String deviceNetworkaddress;
+
     protected abstract String getDatabaseUrl();
 
     protected abstract String getEntitymanagerPackagesToScan();
