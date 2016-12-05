@@ -69,5 +69,6 @@ public enum DeviceFunctionDto {
     SET_DATA,
     ENABLE_DEBUGGING,
     DISABLE_DEBUGGING,
-    GET_MESSAGES;
+    GET_MESSAGES,
+    SET_DEVICE_ALIASES;
 }
