@@ -36,8 +36,11 @@
   </distributionManagement>
 
   <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
     <module.baseUri>${project.baseUri}/../</module.baseUri>
-    <osgp.version>4.4.0-SNAPSHOT</osgp.version>
+    <osgp.version>${project.version}</osgp.version>
     <osgp.dlms.version>3.5.0-SNAPSHOT</osgp.dlms.version>
     <osgp.iec61850.simulator.version>4.1.0-SNAPSHOT</osgp.iec61850.simulator.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -52,6 +55,7 @@
     <postgresql.version>9.3-1102-jdbc41</postgresql.version>
     <hibernate.version>4.2.16.Final</hibernate.version>
     <hibernate.validator.version>4.3.1.Final</hibernate.validator.version>
+    <hibernate.jpa.version>1.0.1.Final</hibernate.jpa.version>
     <junit.version>4.11</junit.version>
     <joda.version>2.4</joda.version>
     <bonecp.version>0.8.0.RELEASE</bonecp.version>
@@ -82,6 +86,17 @@
     <apache.commons.schema>2.0.3</apache.commons.schema>
     <maven.compiler.plugin.version>3.6.0</maven.compiler.plugin.version>
     <license.maven.plugin>2.11</license.maven.plugin>
+    <cucumber.version>1.2.4</cucumber.version>
+    <jacoco.maven.plugin.version>0.7.7.201606060606</jacoco.maven.plugin.version>
+    <maven.jar.plugin.version>3.0.2</maven.jar.plugin.version>
+    <maven.surefire.plugin.version>2.19.1</maven.surefire.plugin.version>
+    <maven.failsafe.plugin.version>2.19.1</maven.failsafe.plugin.version>
+    <soapui.maven.plugin.version>5.2.1</soapui.maven.plugin.version>
+    <jgoodies.version>1.0.5</jgoodies.version>
+
+    <!-- Default always skip integration tests, to ensure all developer data 
+      is retained -->
+    <skipITs>true</skipITs>
   </properties>
 
   <repositories>
@@ -106,6 +121,10 @@
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
+    </repository>
+    <repository>
+      <id>smartbear-sweden-plugin-repository</id>
+      <url>http://www.soapui.org/repository/maven2</url>
     </repository>
   </repositories>
 
@@ -143,6 +162,18 @@
       <dependency>
         <groupId>com.alliander.osgp</groupId>
         <artifactId>osgp-domain-core</artifactId>
+        <version>${osgp.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.alliander.osgp</groupId>
+        <artifactId>osgp-domain-publiclighting</artifactId>
+        <version>${osgp.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.alliander.osgp</groupId>
+        <artifactId>osgp-domain-tariffswitching</artifactId>
         <version>${osgp.version}</version>
       </dependency>
 
@@ -231,28 +262,6 @@
       </dependency>
       <dependency>
         <groupId>com.alliander.osgp</groupId>
-        <artifactId>osgp-domain-microgrids</artifactId>
-        <version>${osgp.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.alliander.osgp</groupId>
-        <artifactId>osgp-adapter-domain-microgrids</artifactId>
-        <version>${osgp.version}</version>
-        <classifier>classes</classifier>
-      </dependency>
-      <dependency>
-        <groupId>com.alliander.osgp</groupId>
-        <artifactId>osgp-adapter-ws-microgrids</artifactId>
-        <version>${osgp.version}</version>
-        <classifier>classes</classifier>
-      </dependency>
-      <dependency>
-        <groupId>com.alliander.osgp</groupId>
-        <artifactId>osgp-protocol-simulator-iec61850</artifactId>
-        <version>${osgp.iec61850.simulator.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.alliander.osgp</groupId>
         <artifactId>osgp-adapter-domain-smartmetering</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
@@ -304,6 +313,37 @@
         <classifier>classes</classifier>
       </dependency>
 
+      <dependency>
+        <groupId>com.alliander.osgp</groupId>
+        <artifactId>osgp-domain-microgrids</artifactId>
+        <version>${osgp.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.alliander.osgp</groupId>
+        <artifactId>osgp-adapter-domain-microgrids</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+      <dependency>
+        <groupId>com.alliander.osgp</groupId>
+        <artifactId>osgp-adapter-ws-microgrids</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+      <dependency>
+        <groupId>com.alliander.osgp</groupId>
+        <artifactId>osgp-protocol-simulator-iec61850</artifactId>
+        <version>${osgp.iec61850.simulator.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.alliander</groupId>
+        <artifactId>cucumber-tests-platform</artifactId>
+        <version>${osgp.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+
       <!-- Spring Framework -->
       <dependency>
         <groupId>org.springframework</groupId>
@@ -349,6 +389,12 @@
         <groupId>org.springframework</groupId>
         <artifactId>spring-webmvc</artifactId>
         <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-test</artifactId>
+        <version>${spring.version}</version>
+        <scope>test</scope>
       </dependency>
       <!-- Spring WS -->
       <dependency>
@@ -396,6 +442,12 @@
         <groupId>org.springframework.security</groupId>
         <artifactId>spring-security-config</artifactId>
         <version>${spring.security.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hibernate.javax.persistence</groupId>
+        <artifactId>hibernate-jpa-2.0-api</artifactId>
+        <version>${hibernate.jpa.version}</version>
       </dependency>
 
       <!-- Servlet API 3.0 -->
@@ -604,9 +656,9 @@
         <version>${slf4j.version}</version>
       </dependency>
       <dependency>
-          <groupId>org.slf4j</groupId>
-          <artifactId>log4j-over-slf4j</artifactId>
-          <version>${slf4j.version}</version>
+        <groupId>org.slf4j</groupId>
+        <artifactId>log4j-over-slf4j</artifactId>
+        <version>${slf4j.version}</version>
       </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
@@ -642,6 +694,49 @@
         <groupId>com.mycila</groupId>
         <artifactId>license-maven-plugin</artifactId>
         <version>${license.maven.plugin}</version>
+      </dependency>
+
+      <!-- Cucumber Framework -->
+      <dependency>
+        <groupId>info.cukes</groupId>
+        <artifactId>cucumber-junit</artifactId>
+        <version>${cucumber.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>info.cukes</groupId>
+        <artifactId>cucumber-java</artifactId>
+        <version>${cucumber.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>info.cukes</groupId>
+        <artifactId>cucumber-spring</artifactId>
+        <version>${cucumber.version}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <!-- SOAP-UI -->
+      <dependency>
+        <groupId>com.smartbear.soapui</groupId>
+        <artifactId>soapui-maven-plugin</artifactId>
+        <version>${soapui.maven.plugin.version}</version>
+        <scope>test</scope>
+        <exclusions>
+          <exclusion>
+            <artifactId>httpcore</artifactId>
+            <groupId>org.apache.httpcomponents</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>jfxrt</artifactId>
+            <groupId>javafx</groupId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <!-- Included because of open bug in SOAP-UI: https://sourceforge.net/p/soapui/bugs/694/ -->
+      <dependency>
+        <groupId>jgoodies</groupId>
+        <artifactId>forms</artifactId>
+        <version>${jgoodies.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -700,6 +795,89 @@
               <goals>
                 <goal>check</goal>
               </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>com.smartbear.soapui</groupId>
+          <artifactId>soapui-maven-plugin</artifactId>
+          <version>${soapui.maven.plugin.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>${maven.surefire.plugin.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>${maven.failsafe.plugin.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>${maven.jar.plugin.version}</version>
+          <executions>
+            <execution>
+              <goals>
+                <goal>test-jar</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>${jacoco.maven.plugin.version}</version>
+          <executions>
+            <!-- Prepares the property pointing to the JaCoCo runtime agent 
+              which is passed as VM argument when Maven the Surefire plugin is executed. -->
+            <execution>
+              <id>pre-unit-test</id>
+              <goals>
+                <goal>prepare-agent</goal>
+              </goals>
+              <configuration>
+                <!-- Sets the path to the file which contains the execution 
+                  data. -->
+                <destFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</destFile>
+                <!-- Sets the name of the property containing the settings 
+                  for JaCoCo runtime agent. -->
+                <propertyName>surefireArgLine</propertyName>
+                <skipTests>${skipTests}</skipTests>
+              </configuration>
+            </execution>
+            <execution>
+              <id>default-report</id>
+              <phase>verify</phase>
+              <goals>
+                <goal>report</goal>
+              </goals>
+              <configuration>
+                <!-- Sets the path to the file which contains the execution 
+                  data. -->
+                <dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile>
+                <!-- Sets the output directory for the code coverage report. -->
+                <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
+                <skipTests>${skipTests}</skipTests>
+              </configuration>
+            </execution>
+            <!-- Ensures that the code coverage report for unit tests is 
+              created after unit tests have been run. -->
+            <execution>
+              <id>post-unit-test</id>
+              <phase>test</phase>
+              <goals>
+                <goal>report</goal>
+              </goals>
+              <configuration>
+                <!-- Sets the path to the file which contains the execution 
+                  data. -->
+                <dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile>
+                <!-- Sets the output directory for the code coverage report. -->
+                <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
+                <skipTests>${skipTests}</skipTests>
+              </configuration>
             </execution>
           </executions>
         </plugin>
