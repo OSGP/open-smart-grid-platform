@@ -50,7 +50,8 @@ public class DeviceOutputSetting implements Serializable {
         // Default constructor
     }
 
-    public DeviceOutputSetting(final int internalId, final int externalId, final RelayType relayType, final String alias) {
+    public DeviceOutputSetting(final int internalId, final int externalId, final RelayType relayType,
+            final String alias) {
         this.internalId = internalId;
         this.externalId = externalId;
         this.alias = alias;
@@ -73,5 +74,9 @@ public class DeviceOutputSetting implements Serializable {
 
     public RelayType getOutputType() {
         return this.relayType;
+    }
+
+    public void setAlias(final String alias) {
+        this.alias = alias;
     }
 }

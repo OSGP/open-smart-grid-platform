@@ -430,6 +430,10 @@ public class Device implements Serializable {
         this.inMaintenance = inMaintenance;
     }
 
+    public void setAlias(final String alias) {
+        this.alias = alias;
+    }
+
     public void updateMetaData(final String alias, final String containerCity, final String containerPostalCode,
             final String containerStreet, final String containerNumber, final String containerMunicipality,
             final Float gpsLatitude, final Float gpsLongitude) {

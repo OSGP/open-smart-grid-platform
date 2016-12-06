@@ -77,7 +77,7 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
                 if (exactMatch) {
-                    return cb.equal(cb.upper(deviceRoot.<String> get("deviceIdentification")), deviceIdentification);
+                    return cb.equal(deviceRoot.<String> get("deviceIdentification"), deviceIdentification);
                 } else {
                     return cb.like(cb.upper(deviceRoot.<String> get("deviceIdentification")),
                             deviceIdentification.toUpperCase());
