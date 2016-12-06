@@ -8,8 +8,14 @@
 package com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.openmuc.openiec61850.BasicDataAttribute;
 import org.openmuc.openiec61850.Fc;
@@ -18,6 +24,27 @@ import org.openmuc.openiec61850.ServerModel;
 import com.alliander.osgp.simulator.protocol.iec61850.server.QualityType;
 
 public class HeatBuffer extends LogicalDevice {
+
+    private static final String TTMP1_TMPSV_INSTMAG_F = "TTMP1.TmpSv.instMag.f";
+    private static final String TTMP2_TMPSV_INSTMAG_F = "TTMP2.TmpSv.instMag.f";
+    private static final String TTMP3_TMPSV_INSTMAG_F = "TTMP3.TmpSv.instMag.f";
+    private static final String KTNK1_VLMCAP_SETMAG_F = "KTNK1.VlmCap.setMag.f";
+
+    private static final Set<String> FIXED_FLOAT_NODES = Collections.unmodifiableSet(new TreeSet<>(Arrays.asList(
+            TTMP1_TMPSV_INSTMAG_F, TTMP2_TMPSV_INSTMAG_F, TTMP3_TMPSV_INSTMAG_F, KTNK1_VLMCAP_SETMAG_F)));
+
+    private static final Map<String, Fc> FC_BY_NODE;
+    static {
+        final Map<String, Fc> fcByNode = new TreeMap<>();
+
+        fcByNode.put(TTMP1_TMPSV_INSTMAG_F, Fc.MX);
+        fcByNode.put(TTMP2_TMPSV_INSTMAG_F, Fc.MX);
+        fcByNode.put(TTMP3_TMPSV_INSTMAG_F, Fc.MX);
+
+        fcByNode.put(KTNK1_VLMCAP_SETMAG_F, Fc.SP);
+
+        FC_BY_NODE = Collections.unmodifiableMap(fcByNode);
+    }
 
     public HeatBuffer(final String physicalDeviceName, final String logicalDeviceName, final ServerModel serverModel) {
         super(physicalDeviceName, logicalDeviceName, serverModel);
@@ -28,16 +55,16 @@ public class HeatBuffer extends LogicalDevice {
 
         final List<BasicDataAttribute> values = new ArrayList<>();
 
-        values.add(this.setFixedFloat("TTMP1.TmpSv.instMag.f", Fc.MX, 314));
+        values.add(this.setFixedFloat(TTMP1_TMPSV_INSTMAG_F, Fc.MX, 314));
         values.add(this.setQuality("TTMP1.TmpSv.q", Fc.MX, QualityType.INACCURATE.getValue()));
 
-        values.add(this.setFixedFloat("TTMP2.TmpSv.instMag.f", Fc.MX, 324));
+        values.add(this.setFixedFloat(TTMP2_TMPSV_INSTMAG_F, Fc.MX, 324));
         values.add(this.setQuality("TTMP2.TmpSv.q", Fc.MX, QualityType.VALIDITY_INVALID.getValue()));
 
-        values.add(this.setFixedFloat("TTMP3.TmpSv.instMag.f", Fc.MX, 334));
+        values.add(this.setFixedFloat(TTMP3_TMPSV_INSTMAG_F, Fc.MX, 334));
         values.add(this.setQuality("TTMP3.TmpSv.q", Fc.MX, QualityType.VALIDITY_QUESTIONABLE.getValue()));
 
-        values.add(this.setFixedFloat("KTNK1.VlmCap.setMag.f", Fc.SP, 1313));
+        values.add(this.setFixedFloat(KTNK1_VLMCAP_SETMAG_F, Fc.SP, 1313));
 
         values.add(this.setRandomByte("LLN0.Health.stVal", Fc.ST, 1, 2));
         values.add(this.setQuality("LLN0.Health.q", Fc.ST, QualityType.VALIDITY_GOOD.getValue()));
@@ -96,6 +123,14 @@ public class HeatBuffer extends LogicalDevice {
 
     @Override
     public BasicDataAttribute getValue(final String node, final String value) {
+        final Fc fc = FC_BY_NODE.get(node);
+        if (fc == null) {
+            throw this.illegalNodeException(node);
+        }
+
+        if (FIXED_FLOAT_NODES.contains(node)) {
+            return this.setFixedFloat(node, fc, Integer.parseInt(value));
+        }
         throw this.nodeTypeNotConfiguredException(node);
     }
 }
