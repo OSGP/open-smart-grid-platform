@@ -82,8 +82,8 @@ public class GetDataRequestBuilder {
         if (!requestParameters.containsKey(Keys.KEY_NUMBER_OF_MEASUREMENTS.concat(indexPostfix))) {
             return;
         }
-        final int numberOfMeasurements = Integer
-                .parseInt(requestParameters.get(Keys.KEY_NUMBER_OF_MEASUREMENTS.concat(indexPostfix)));
+        final int numberOfMeasurements = Integer.parseInt(requestParameters.get(Keys.KEY_NUMBER_OF_MEASUREMENTS
+                .concat(indexPostfix)));
 
         final List<MeasurementFilter> measurementFilters = systemFilter.getMeasurementFilter();
         for (int i = 0; i < numberOfMeasurements; i++) {

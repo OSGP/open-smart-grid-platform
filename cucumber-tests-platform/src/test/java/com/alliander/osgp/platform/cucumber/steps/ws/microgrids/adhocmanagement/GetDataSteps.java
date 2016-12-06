@@ -12,8 +12,13 @@ package com.alliander.osgp.platform.cucumber.steps.ws.microgrids.adhocmanagement
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -44,14 +49,16 @@ public class GetDataSteps extends MicrogridsStepsBase {
      */
     private static final double DELTA_FOR_MEASUREMENT_VALUE = 0.0001;
 
+    private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
     @Autowired
     private AdHocManagementServiceAdapter adHocManagementServiceAdapter;
 
     @When("^a get data request is received$")
     public void aGetDataRequestIsReceived(final Map<String, String> requestParameters) throws Throwable {
 
-        final String organizationIdentification = (String) ScenarioContext.Current()
-                .get(Keys.KEY_ORGANISATION_IDENTIFICATION, Defaults.DEFAULT_ORGANISATION_IDENTIFICATION);
+        final String organizationIdentification = (String) ScenarioContext.Current().get(
+                Keys.KEY_ORGANISATION_IDENTIFICATION, Defaults.DEFAULT_ORGANISATION_IDENTIFICATION);
         ScenarioContext.Current().put(Keys.KEY_ORGANISATION_IDENTIFICATION, organizationIdentification);
         final String userName = (String) ScenarioContext.Current().get(Keys.KEY_USER_NAME, Defaults.DEFAULT_USER_NAME);
         ScenarioContext.Current().put(Keys.KEY_USER_NAME, userName);
@@ -105,8 +112,8 @@ public class GetDataSteps extends MicrogridsStepsBase {
         }
 
         if (responseParameters.containsKey(Keys.KEY_NUMBER_OF_MEASUREMENTS.concat(indexPostfix))) {
-            this.assertMeasurements(responseParameters, systemIdentifier.getMeasurement(), numberOfSystems, systemIndex,
-                    systemDescription, indexPostfix);
+            this.assertMeasurements(responseParameters, systemIdentifier.getMeasurement(), numberOfSystems,
+                    systemIndex, systemDescription, indexPostfix);
         }
 
         if (responseParameters.containsKey(Keys.KEY_NUMBER_OF_PROFILES.concat(indexPostfix))) {
@@ -116,11 +123,10 @@ public class GetDataSteps extends MicrogridsStepsBase {
     }
 
     private void assertMeasurements(final Map<String, String> responseParameters, final List<Measurement> measurements,
-            final int numberOfSystems, final int systemIndex, final String systemDescription,
-            final String indexPostfix) {
+            final int numberOfSystems, final int systemIndex, final String systemDescription, final String indexPostfix) {
 
-        final int expectedNumberOfMeasurements = Integer
-                .parseInt(responseParameters.get(Keys.KEY_NUMBER_OF_MEASUREMENTS.concat(indexPostfix)));
+        final int expectedNumberOfMeasurements = Integer.parseInt(responseParameters
+                .get(Keys.KEY_NUMBER_OF_MEASUREMENTS.concat(indexPostfix)));
         assertEquals(systemDescription + " number of Measurements", expectedNumberOfMeasurements, measurements.size());
         for (int i = 0; i < expectedNumberOfMeasurements; i++) {
             this.assertMeasurementResponse(responseParameters, numberOfSystems, systemIndex, systemDescription,
@@ -146,34 +152,43 @@ public class GetDataSteps extends MicrogridsStepsBase {
         final String expectedNode = responseParameters.get(Keys.KEY_MEASUREMENT_NODE.concat(indexPostfix));
         assertEquals(measurementDescription + " node", expectedNode, measurement.getNode());
 
-        final int expectedQualifier = Integer
-                .parseInt(responseParameters.get(Keys.KEY_MEASUREMENT_QUALIFIER.concat(indexPostfix)));
+        final int expectedQualifier = Integer.parseInt(responseParameters.get(Keys.KEY_MEASUREMENT_QUALIFIER
+                .concat(indexPostfix)));
         assertEquals(measurementDescription + " Qualifier", expectedQualifier, measurement.getQualifier());
 
         assertNotNull(measurementDescription + " Time", measurement.getTime());
+        assertTimeFormat(measurement.getTime());
 
-        final double expectedValue = Double
-                .parseDouble(responseParameters.get(Keys.KEY_MEASUREMENT_VALUE.concat(indexPostfix)));
+        final double expectedValue = Double.parseDouble(responseParameters.get(Keys.KEY_MEASUREMENT_VALUE
+                .concat(indexPostfix)));
         assertEquals(measurementDescription + " Value", expectedValue, measurement.getValue(),
                 DELTA_FOR_MEASUREMENT_VALUE);
     }
 
     private void assertProfiles(final Map<String, String> responseParameters, final List<Profile> profiles,
-            final int numberOfSystems, final int systemIndex, final String systemDescription,
-            final String indexPostfix) {
+            final int numberOfSystems, final int systemIndex, final String systemDescription, final String indexPostfix) {
 
-        final int expectedNumberOfProfiles = Integer
-                .parseInt(responseParameters.get(Keys.KEY_NUMBER_OF_PROFILES.concat(indexPostfix)));
+        final int expectedNumberOfProfiles = Integer.parseInt(responseParameters.get(Keys.KEY_NUMBER_OF_PROFILES
+                .concat(indexPostfix)));
         assertEquals(systemDescription + " number of Profiles", expectedNumberOfProfiles, profiles.size());
         for (int i = 0; i < expectedNumberOfProfiles; i++) {
-            this.assertProfileResponse(responseParameters, numberOfSystems, systemIndex, systemDescription, profiles,
-                    i);
+            this.assertProfileResponse(responseParameters, numberOfSystems, systemIndex, systemDescription, profiles, i);
         }
     }
 
     private void assertProfileResponse(final Map<String, String> responseParameters, final int numberOfSystems,
-            final int systemIndex, final String systemDescription, final List<Profile> profiles,
-            final int profileIndex) {
+            final int systemIndex, final String systemDescription, final List<Profile> profiles, final int profileIndex) {
         throw new PendingException();
+    }
+
+    public static void assertTimeFormat(final XMLGregorianCalendar value) {
+        try {
+            Date date = TIME_FORMAT.parse(value.toString());
+            if (!value.equals(TIME_FORMAT.format(date))) {
+                date = null;
+            }
+        } catch (final ParseException ex) {
+            throw new AssertionError("Incorrect date/time format: " + value);
+        }
     }
 }
