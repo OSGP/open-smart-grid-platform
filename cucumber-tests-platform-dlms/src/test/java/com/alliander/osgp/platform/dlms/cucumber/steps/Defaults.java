@@ -44,6 +44,8 @@ public class Defaults {
     public static final String SECURITY_KEY_M = "bc082efed278e1bbebddc0431877d4fa16374b00e96dd102beab666dcb72efbd1f0b868412497f6d3d0c62caa4700585";
     public static final String SECURITY_KEY_A = "bc082efed278e1bbebddc0431877d4fae80fa4e72925b6ad0bc67c84b8721598eda8458bcc1b2827fe6e5e7918ce22fd";
     public static final String SECURITY_KEY_E = "bc082efed278e1bbebddc0431877d4fa2df7728229f3e03c57b2549142b40d047b35011dbf9f77ad91db5fe6f19a7b9c";
+    public static final String SECURITY_KEY_G_ENCRYPTION = "bc082efed278e1bbebddc0431877d4fa2df7728229f3e03c57b2549142b40d047b35011dbf9f77ad91db5fe6f19a7b9c";
+    public static final String SECURITY_KEY_G_MASTER = "bc082efed278e1bbebddc0431877d4fa2df7728229f3e03c57b2549142b40d047b35011dbf9f77ad91db5fe6f19a7b9c";
 
     public static final String SMART_METER_E = "SMART_METER_E";
     public static final String SMART_METER_G = "SMART_METER_G";
