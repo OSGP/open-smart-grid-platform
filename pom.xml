@@ -84,6 +84,9 @@
     <module>Shared/shared</module>
     <module>Shared/osgp-dto</module>
 
+    <module>Platform/osgp-domain-core</module>
+    <module>Platform/osgp-domain-microgrids</module>
+
     <!-- Protocol Adapter IEC61850 -->
     <module>osgp-iec61850</module>
     <module>osgp-core-db-api-iec61850</module>
