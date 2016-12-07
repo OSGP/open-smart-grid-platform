@@ -16,7 +16,7 @@ import com.alliander.osgp.domain.core.entities.DeviceModel;
 
 public class Defaults {
 
-    public static final String ORGANISATION_IDENTIFICATION = "Infostroom";// "test-org";
+    public static final String ORGANISATION_IDENTIFICATION = "test-org";
 
     public static final String DEVICE_IDENTIFICATION = null;
     public static final Long VERSION = 0L;
