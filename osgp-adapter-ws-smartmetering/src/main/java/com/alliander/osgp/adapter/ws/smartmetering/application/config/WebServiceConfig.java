@@ -48,11 +48,9 @@ import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.WebServiceTemplateFa
 import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 @Configuration
-@PropertySources({
-	@PropertySource("classpath:osgp-adapter-ws-smartmetering.properties"),
+@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-smartmetering.properties"),
     @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "file:${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true),
-})
+    @PropertySource(value = "file:${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true), })
 public class WebServiceConfig extends AbstractConfig {
 
     @Value("${jaxb2.marshaller.context.path.smartmetering.adhoc}")
@@ -85,6 +83,9 @@ public class WebServiceConfig extends AbstractConfig {
 
     @Value("${web.service.keystore.type}")
     private String webserviceKeystoreType;
+
+    @Value("${web.service.notification.enabled}")
+    private boolean webserviceNotificationEnabled;
 
     @Value("${web.service.notification.url:#{null}}")
     private String webserviceNotificationUrl;
@@ -155,8 +156,9 @@ public class WebServiceConfig extends AbstractConfig {
 
     @Bean
     public NotificationService wsSmartMeteringNotificationService() throws GeneralSecurityException {
-        if (!StringUtils.isEmpty(this.notificationUrl())) {
-            return new NotificationServiceWs(this.sendNotificationServiceClient(), this.notificationUrl(), this.notificationUsername());
+        if (this.webserviceNotificationEnabled && !StringUtils.isEmpty(this.notificationUrl())) {
+            return new NotificationServiceWs(this.sendNotificationServiceClient(), this.notificationUrl(),
+                    this.notificationUsername());
         } else {
             return new NotificationServiceBlackHole();
         }
