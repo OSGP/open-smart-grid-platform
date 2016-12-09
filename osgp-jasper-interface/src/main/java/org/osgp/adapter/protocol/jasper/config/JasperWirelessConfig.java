@@ -31,17 +31,21 @@ import org.springframework.ws.soap.SoapVersion;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.soap.security.wss4j.Wss4jSecurityInterceptor;
 
+import com.alliander.osgp.shared.application.config.AbstractConfig;
+
 /**
  * An application context Java configuration class for Jasper Wireless settings.
  */
 @Configuration
 @PropertySources({ 
-	@PropertySource("classpath:jasper-interface.properties"),
+    @PropertySource("classpath:jasper-interface.properties"),
     @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "file:${osgp/JasperInterface/config}", ignoreResourceNotFound = true),
+    @PropertySource(value = "file:${osgp/JasperInterface/config}", ignoreResourceNotFound = true),
 })
 @ComponentScan(basePackages = { "org.osgp.adapter.protocol.jasper" })
-public class JasperWirelessConfig {
+public class JasperWirelessConfig extends AbstractConfig {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(JasperWirelessConfig.class);
 
     @Value("${jwcc.uri.terminal}")
     private String terminal;
@@ -66,9 +70,7 @@ public class JasperWirelessConfig {
 
     @Value("${jwcc.api_version}")
     private String apiVersion;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(JasperWirelessConfig.class);
-
+    
     public JasperWirelessConfig() {
         InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
     }
