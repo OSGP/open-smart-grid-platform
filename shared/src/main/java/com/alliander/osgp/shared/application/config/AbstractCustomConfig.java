@@ -21,20 +21,22 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  */
 public abstract class AbstractCustomConfig {
 
-    protected static final ConfigurableEnvironment ENVIRONMENT = new StandardServletEnvironment(); 
+    protected static final ConfigurableEnvironment ENVIRONMENT = new StandardServletEnvironment();
 
     /**
      * Create local property configurer, using local environment.
      * @return instance of {@link PropertySourcesPlaceholderConfigurer}
      */
     @Bean
-    public static PropertySourcesPlaceholderConfigurer placeholderConfigurer() {
+    public static PropertySourcesPlaceholderConfigurer propertyConfigurer() {
         PropertySourcesPlaceholderConfigurer ppc = new PropertySourcesPlaceholderConfigurer();
         ppc.setEnvironment(ENVIRONMENT);
         ppc.setIgnoreResourceNotFound(true);
+        ppc.setIgnoreUnresolvablePlaceholders(true);
+        
         return ppc;
     }
-
+    
     /**
      * Add a property source to the environment. Will always be added last (lowest priority)
      * @param location the location of the property source
