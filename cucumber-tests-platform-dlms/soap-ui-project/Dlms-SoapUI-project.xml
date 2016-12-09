@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<con:soapui-project id="d92a93f0-6cfc-4b17-982c-7d939bad20ac" activeEnvironment="Default" name="OSGP_SmartMetering_Soapui_Project" resourceRoot="" soapui-version="5.2.1" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.actions.iface.tools.soapui.TestRunnerAction@values-local"><![CDATA[<xml-fragment xmlns:con="http://eviware.com/soapui/config">
+<con:soapui-project id="d92a93f0-6cfc-4b17-982c-7d939bad20ac" activeEnvironment="Default" name="OSGP_SmartMetering_Soapui_Project" resourceRoot="" soapui-version="5.3.0" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.actions.iface.tools.soapui.TestRunnerAction@values-local"><![CDATA[<xml-fragment xmlns:con="http://eviware.com/soapui/config">
   <con:entry key="Environment" value="Default"/>
   <con:entry key="Global Properties" value=""/>
   <con:entry key="TestSuite" value="SmartmeterMonitoring"/>
@@ -3514,7 +3514,7 @@
          <ns:CorrelationUid>?</ns:CorrelationUid>\r
       </ns1:SpecificAttributeValueAsyncRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:credentials><con:username xsi:nil="true"/><con:password xsi:nil="true"/><con:domain xsi:nil="true"/><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-adhoc-v1.0/SmartmeteradhocPort/SpecificAttributeValueAsyncRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:interface xsi:type="con:WsdlInterface" id="9de10c54-0330-48dd-bd25-459e916be438" wsaVersion="NONE" name="SmartMeteringConfigurationPortSoap11" type="wsdl" bindingName="{http://www.alliander.com/definitions/osgp/smartmetering/sm-configuration-v1.0}SmartMeteringConfigurationPortSoap11" soapVersion="1_1" anonymous="optional" definition="https://localhost:443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringConfiguration.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="https://localhost:443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringConfiguration.wsdl"><con:part><con:url>https://localhost:443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringConfiguration.wsdl</con:url><con:content><![CDATA[<!--Platform version: 4.3.0-SNAPSHOT-jenkins-OSGP_Platform_development-746-->
+</soapenv:Envelope>]]></con:request><con:credentials><con:username xsi:nil="true"/><con:password xsi:nil="true"/><con:domain xsi:nil="true"/><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/smartmetering/sm-adhoc-v1.0/SmartmeteradhocPort/SpecificAttributeValueAsyncRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:interface xsi:type="con:WsdlInterface" id="9de10c54-0330-48dd-bd25-459e916be438" wsaVersion="NONE" name="SmartMeteringConfigurationPortSoap11" type="wsdl" bindingName="{http://www.alliander.com/definitions/osgp/smartmetering/sm-configuration-v1.0}SmartMeteringConfigurationPortSoap11" soapVersion="1_1" anonymous="optional" definition="https://localhost:443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringConfiguration.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="https://localhost:443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringConfiguration.wsdl"><con:part><con:url>https://localhost:443/osgp-adapter-ws-smartmetering/wsdl/smartmetering/SmartMeteringConfiguration.wsdl</con:url><con:content><![CDATA[<!--Platform version: 4.4.0-SNAPSHOT -->
 <wsdl:definitions targetNamespace="http://www.alliander.com/definitions/osgp/smartmetering/sm-configuration-v1.0" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:smconf="http://www.alliander.com/schemas/osgp/smartmetering/sm-configuration/2014/10" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.alliander.com/definitions/osgp/smartmetering/sm-configuration-v1.0">
   <wsdl:types>
     <xsd:schema targetNamespace="http://www.alliander.com/definitions/osgp/smartmetering/sm-configuration/imports" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
@@ -4372,7 +4372,7 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element minOccurs="1" name="Result" type="common:OsgpResultType"/>
-        <xsd:element name="Description" type="xsd:string"/>
+        <xsd:element minOccurs="0" name="Description" type="xsd:string"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -13693,4 +13693,4 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
 </con:properties></con:testCase><con:properties/></con:testSuite>
 <con:properties>
   <con:property><con:name>CertBasePath</con:name><con:value>/home/dev/Sources/OSGP/Integration-Tests/cucumber-tests-platform/certificates</con:value></con:property>
-</con:properties><con:wssContainer><con:crypto><con:source>${#Project#CertBasePath}/test-org.pfx</con:source><con:password>1234</con:password><con:type>KEYSTORE</con:type></con:crypto></con:wssContainer><con:oAuth2ProfileContainer/><con:sensitiveInformation><ProjectSpecificExposureList>null###null</ProjectSpecificExposureList></con:sensitiveInformation></con:soapui-project>
+</con:properties><con:wssContainer><con:crypto><con:source>${#Project#CertBasePath}/test-org.pfx</con:source><con:password>1234</con:password><con:type>KEYSTORE</con:type></con:crypto></con:wssContainer><con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/><con:sensitiveInformation><ProjectSpecificExposureList>null###null</ProjectSpecificExposureList></con:sensitiveInformation></con:soapui-project>
