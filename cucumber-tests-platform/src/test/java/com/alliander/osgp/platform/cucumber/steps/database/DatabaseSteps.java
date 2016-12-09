@@ -12,6 +12,7 @@ import static com.alliander.osgp.platform.cucumber.core.Helpers.cleanRepoSeriali
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRepository;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
@@ -60,6 +61,7 @@ public class DatabaseSteps {
      * specific tests. For example: The test-org organization which is used to
      * send authorized requests to the platform.
      */
+    @Transactional
     private void insertDefaultData() {
         // TODO: Better would be to have some sort of init method in the
         // steps.database package which will create the necessary basic
@@ -83,9 +85,9 @@ public class DatabaseSteps {
         this.manufacturerRepo.save(manufacturer);
 
         // Create the default test model
-        final DeviceModel deviceModel = new DeviceModel(manufacturer, Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE,
+        DeviceModel deviceModel = new DeviceModel(manufacturer, Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE,
                 Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION, true);
-        this.deviceModelRepo.save(deviceModel);
+        deviceModel = this.deviceModelRepo.save(deviceModel);
     }
 
     public void prepareDatabaseForScenario() {

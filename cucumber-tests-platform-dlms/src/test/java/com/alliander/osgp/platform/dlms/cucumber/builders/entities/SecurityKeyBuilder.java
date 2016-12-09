@@ -7,28 +7,22 @@
  */
 package com.alliander.osgp.platform.dlms.cucumber.builders.entities;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
-import java.util.TimeZone;
 
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.alliander.osgp.platform.dlms.cucumber.inputparsers.DateInputParser;
+import com.alliander.osgp.platform.cucumber.helpers.UtcDateHelper;
+import com.alliander.osgp.platform.cucumber.inputparsers.DateInputParser;
 import com.alliander.osgp.platform.dlms.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.dlms.cucumber.steps.Keys;
 
 public class SecurityKeyBuilder implements CucumberBuilder<SecurityKey> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SecurityKeyBuilder.class);
-
     private SecurityKeyType securityKeyType = null;
-    private Date validFrom = this.getUtcDate();
+    private Date validFrom = UtcDateHelper.getUtcDate();
     private Date validTo = Defaults.VALID_TO;
     private Long version = Defaults.VERSION;
     private String key = Defaults.SECURITY_KEY_A;
@@ -104,15 +98,4 @@ public class SecurityKeyBuilder implements CucumberBuilder<SecurityKey> {
         return securityKey;
     }
 
-    private Date getUtcDate() {
-        final SimpleDateFormat dateFormatGmt = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
-        dateFormatGmt.setTimeZone(TimeZone.getTimeZone("GMT"));
-        final SimpleDateFormat dateFormatLocal = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
-        try {
-            return dateFormatLocal.parse(dateFormatGmt.format(new Date()));
-        } catch (final ParseException e) {
-            LOGGER.error("error getting UTC date " + e);
-            throw new RuntimeException(e.getMessage());
-        }
-    }
 }
