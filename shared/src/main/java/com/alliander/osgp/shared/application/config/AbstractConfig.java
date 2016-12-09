@@ -24,7 +24,7 @@ import org.springframework.core.env.PropertySource;
 public abstract class AbstractConfig {
 
     /**
-     * Qualifier to detect a class path type resource (i.e. 
+     * Qualifier to detect a class path type resource
      */
     private static final String CLASS_PATH_QUALIFIER = "class path resource [";
     
