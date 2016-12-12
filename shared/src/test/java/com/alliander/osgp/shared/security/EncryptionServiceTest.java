@@ -24,7 +24,7 @@ public class EncryptionServiceTest {
         }
     }
 
-    private static final String BC = EncryptionService.PROVIDER;
+    private static final String PROVIDER = EncryptionService.PROVIDER;
     private static final String AES = EncryptionService.SECRET_KEY_SPEC;
 
     @Test
@@ -41,7 +41,7 @@ public class EncryptionServiceTest {
 
     private void testStringKey(final String input) throws NoSuchAlgorithmException, IOException,
             NoSuchProviderException {
-        final KeyGenerator keygen = KeyGenerator.getInstance(AES, BC);
+        final KeyGenerator keygen = KeyGenerator.getInstance(AES, PROVIDER);
         keygen.init(128);
         final SecretKey key = keygen.generateKey();
         final byte[] keyBytes = key.getEncoded();
@@ -55,7 +55,7 @@ public class EncryptionServiceTest {
 
     @Test
     public void testEnDecrypt() throws NoSuchAlgorithmException, IOException, NoSuchProviderException {
-        final KeyGenerator keygen = KeyGenerator.getInstance(AES, BC);
+        final KeyGenerator keygen = KeyGenerator.getInstance(AES, PROVIDER);
         keygen.init(128);
         final SecretKey key = keygen.generateKey();
         final byte[] keyBytes = key.getEncoded();
@@ -70,7 +70,7 @@ public class EncryptionServiceTest {
 
     @Test
     public void testEnDecryptDifferentService() throws NoSuchAlgorithmException, IOException, NoSuchProviderException {
-        final KeyGenerator keygen = KeyGenerator.getInstance(AES, BC);
+        final KeyGenerator keygen = KeyGenerator.getInstance(AES, PROVIDER);
         keygen.init(128);
         final SecretKey key = keygen.generateKey();
         final byte[] keyBytes = key.getEncoded();
