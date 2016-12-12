@@ -29,16 +29,20 @@ public class ScenarioHooks {
      * Remove all stuff from the database before each test. Each test should
      * stand on its own. Therefore you should guarantee that the scenario is
      * complete.
+     * 
+     * Order 0 ensures this will be run as first hook.
      */
-    @Before
+    @Before(order = 0)
     public void beforeScenario() {
     	databaseSteps.prepareDatabaseForScenario();
     }
 
     /**
      * Executed after each scenario.
+     * 
+     * Order 99999 ensures this will be run as last hook.
      */
-    @After
+    @After(order = 99999)
     public void afterScenario() {
         // Destroy scenario context as the scenario is finished.
         ScenarioContext.context = null;
