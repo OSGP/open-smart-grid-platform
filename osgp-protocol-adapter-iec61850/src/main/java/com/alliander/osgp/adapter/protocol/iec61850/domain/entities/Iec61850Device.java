@@ -11,10 +11,12 @@ import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
 @Entity
+@Table(name = "iec61850_device")
 public class Iec61850Device extends AbstractEntity {
 
     /**
