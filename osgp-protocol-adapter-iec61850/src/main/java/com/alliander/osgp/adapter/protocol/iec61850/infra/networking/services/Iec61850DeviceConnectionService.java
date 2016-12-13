@@ -37,7 +37,6 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Data
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Function;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.IED;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalDevice;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalNode;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.reporting.Iec61850ClientBaseEventListener;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.reporting.Iec61850ClientEventListenerFactory;
@@ -79,17 +78,17 @@ public class Iec61850DeviceConnectionService {
     private boolean isIcdFileUsed;
 
     public DeviceConnection connectWithoutConnectionCaching(final String ipAddress, final String deviceIdentification,
-            final IED ied, final LogicalDevice logicalDevice) throws ConnectionFailureException {
+            final IED ied, final String logicalDevice) throws ConnectionFailureException {
         return this.connect(ipAddress, deviceIdentification, ied, logicalDevice, false);
     }
 
     public DeviceConnection connect(final String ipAddress, final String deviceIdentification, final IED ied,
-            final LogicalDevice logicalDevice) throws ConnectionFailureException {
+            final String logicalDevice) throws ConnectionFailureException {
         return this.connect(ipAddress, deviceIdentification, ied, logicalDevice, true);
     }
 
     public synchronized DeviceConnection connect(final String ipAddress, final String deviceIdentification,
-            final IED ied, final LogicalDevice logicalDevice, final boolean cacheConnection)
+            final IED ied, final String logicalDevice, final boolean cacheConnection)
                     throws ConnectionFailureException {
         // When connection-caching is used, check if a connection is available
         // an usable for the given deviceIdentification.
@@ -170,7 +169,7 @@ public class Iec61850DeviceConnectionService {
     }
 
     private boolean testIfConnectionIsCachedAndAlive(final String deviceIdentification, final IED ied,
-            final LogicalDevice logicalDevice) {
+            final String logicalDevice) {
         try {
             LOGGER.info("Trying to find connection in cache for deviceIdentification: {}", deviceIdentification);
             final Iec61850Connection iec61850Connection = this.fetchIec61850Connection(deviceIdentification);
@@ -181,13 +180,13 @@ public class Iec61850DeviceConnectionService {
                 // requires manual reads of remote data.
                 if (ied != null && logicalDevice != null) {
                     LOGGER.info("Testing if connection is alive using {}{}/{}.{} for deviceIdentification: {}",
-                            ied.getDescription(), logicalDevice.getDescription(),
+                            ied.getDescription(), logicalDevice,
                             LogicalNode.LOGICAL_NODE_ZERO.getDescription(), DataAttribute.NAME_PLATE.getDescription(),
                             deviceIdentification);
                     this.iec61850Client.readNodeDataValues(
                             iec61850Connection.getClientAssociation(),
                             (FcModelNode) iec61850Connection.getServerModel().findModelNode(
-                                    ied.getDescription() + logicalDevice.getDescription() + "/"
+                                    ied.getDescription() + logicalDevice + "/"
                                             + LogicalNode.LOGICAL_NODE_ZERO.getDescription() + "."
                                             + DataAttribute.NAME_PLATE.getDescription(), Fc.DC));
                 } else {

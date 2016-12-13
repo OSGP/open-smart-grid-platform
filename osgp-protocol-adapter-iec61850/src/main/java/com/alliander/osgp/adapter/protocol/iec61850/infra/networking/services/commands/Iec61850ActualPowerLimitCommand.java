@@ -26,8 +26,8 @@ public class Iec61850ActualPowerLimitCommand implements RtuReadCommand<Measureme
 
     @Override
     public MeasurementDto execute(final Iec61850Client client, final DeviceConnection connection,
-            final LogicalDevice logicalDevice) throws NodeReadException {
-        final NodeContainer containingNode = connection.getFcModelNode(logicalDevice,
+            final LogicalDevice logicalDevice, final int logicalDeviceIndex) throws NodeReadException {
+        final NodeContainer containingNode = connection.getFcModelNode(logicalDevice, logicalDeviceIndex,
                 LogicalNode.DER_SUPERVISORY_CONTROL_ONE, DataAttribute.ACTUAL_POWER_LIMIT, Fc.SV);
         client.readNodeDataValues(connection.getConnection().getClientAssociation(), containingNode.getFcmodelNode());
         return this.translate(containingNode);

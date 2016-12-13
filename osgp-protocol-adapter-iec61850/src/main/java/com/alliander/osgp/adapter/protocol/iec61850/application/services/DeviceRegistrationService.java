@@ -67,7 +67,7 @@ public class DeviceRegistrationService {
             throws ProtocolAdapterException {
 
         final DeviceConnection deviceConnection = this.iec61850DeviceConnectionService.connectWithoutConnectionCaching(
-                ipAddress.getHostAddress(), deviceIdentification, ied, LogicalDevice.LIGHTING);
+                ipAddress.getHostAddress(), deviceIdentification, ied, LogicalDevice.LIGHTING.getDescription());
 
         final Function<Void> function = new Function<Void>() {
 

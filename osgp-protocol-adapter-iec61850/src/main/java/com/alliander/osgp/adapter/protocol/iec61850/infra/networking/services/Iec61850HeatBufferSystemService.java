@@ -30,21 +30,15 @@ import com.alliander.osgp.dto.valueobjects.microgrids.SystemFilterDto;
 public class Iec61850HeatBufferSystemService implements SystemService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850HeatBufferSystemService.class);
-    private static final String DEVICE = "HEAT_BUFFER";
-
-    private final int index;
-    private final LogicalDevice logicalDevice;
-
-    public Iec61850HeatBufferSystemService(final int index) {
-        this.index = index;
-        this.logicalDevice = LogicalDevice.fromString(DEVICE + index);
-    }
+    private static final LogicalDevice DEVICE = LogicalDevice.HEAT_BUFFER;
 
     @Override
     public GetDataSystemIdentifierDto getData(final SystemFilterDto systemFilter, final Iec61850Client client,
             final DeviceConnection connection) throws NodeReadException {
 
-        LOGGER.info("Get data called for logical device {}", DEVICE + this.index);
+        final int logicalDeviceIndex = systemFilter.getId();
+
+        LOGGER.info("Get data called for logical device {}{}", DEVICE.getDescription(), logicalDeviceIndex);
 
         final List<MeasurementDto> measurements = new ArrayList<>();
 
@@ -55,7 +49,7 @@ public class Iec61850HeatBufferSystemService implements SystemService {
             if (command == null) {
                 LOGGER.warn("Unsupported data attribute [{}], skip get data for it", filter.getNode());
             } else {
-                measurements.add(command.execute(client, connection, this.logicalDevice));
+                measurements.add(command.execute(client, connection, DEVICE, logicalDeviceIndex));
             }
 
         }

@@ -35,9 +35,9 @@ public class Iec61850LoadActualPowerCommand implements RtuReadCommand<Measuremen
 
     @Override
     public MeasurementDto execute(final Iec61850Client client, final DeviceConnection connection,
-            final LogicalDevice logicalDevice) throws NodeReadException {
-        final NodeContainer containingNode = connection.getFcModelNode(logicalDevice, this.logicalNode,
-                DataAttribute.ACTUAL_POWER, Fc.MX);
+            final LogicalDevice logicalDevice, final int logicalDeviceIndex) throws NodeReadException {
+        final NodeContainer containingNode = connection.getFcModelNode(logicalDevice, logicalDeviceIndex,
+                this.logicalNode, DataAttribute.ACTUAL_POWER, Fc.MX);
         client.readNodeDataValues(connection.getConnection().getClientAssociation(), containingNode.getFcmodelNode());
         return this.translate(containingNode);
     }

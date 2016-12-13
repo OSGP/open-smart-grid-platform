@@ -16,57 +16,37 @@ public enum LogicalDevice {
      */
     LIGHTING("IO"),
     /**
-     * Logical Device RTU 1
+     * Logical Device RTU
      */
-    RTU_ONE("RTU1"),
+    RTU("RTU"),
     /**
-     * Logical Device Photovoltaic 1
+     * Logical Device Photovoltaic
      */
-    PV_ONE("PV1"),
+    PV("PV"),
     /**
-     * Logical Device Photovoltaic 2
+     * Logical Device Battery
      */
-    PV_TWO("PV2"),
+    BATTERY("BATTERY"),
     /**
-     * Logical Device Photovoltaic 3
+     * Logical Device Engine
      */
-    PV_THREE("PV3"),
+    ENGINE("ENGINE"),
     /**
-     * Logical Device Battery 1
+     * Logical Device Load
      */
-    BATTERY_ONE("BATTERY1"),
+    LOAD("LOAD"),
     /**
-     * Logical Device Battery 2
+     * Logical Device Heat Buffer
      */
-    BATTERY_TWO("BATTERY2"),
+    HEAT_BUFFER("HEAT_BUFFER"),
     /**
-     * Logical Device Engine 1
+     * Logical Device CHP
      */
-    ENGINE_ONE("ENGINE1"),
-    /**
-     * Logical Device Engine 1
-     */
-    ENGINE_TWO("ENGINE2"),
-    /**
-     * Logical Device Engine 1
-     */
-    ENGINE_THREE("ENGINE3"),
-    /**
-     * Logical Device Load 1
-     */
-    LOAD_ONE("LOAD1"),
-    /**
-     * Logica Device Heat Buffer
-     */
-    HEAT_BUFFER_ONE("HEAT_BUFFER1"),
-    /**
-     * Logical Device CHP 1
-     */
-    CHP_ONE("CHP1"),
+    CHP("CHP"),
     /**
      * Logical Device Gas Furnace
      */
-    GAS_FURNACE_ONE("GAS_FURNACE1");
+    GAS_FURNACE("GAS_FURNACE");
 
     private String description;
 

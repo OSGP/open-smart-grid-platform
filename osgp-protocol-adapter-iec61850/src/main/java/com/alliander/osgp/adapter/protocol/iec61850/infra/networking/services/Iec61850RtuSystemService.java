@@ -32,21 +32,15 @@ import com.alliander.osgp.dto.valueobjects.microgrids.SystemFilterDto;
 public class Iec61850RtuSystemService implements SystemService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850RtuSystemService.class);
-    private static final String DEVICE = "RTU";
-
-    private int index;
-    private LogicalDevice logicalDevice;
-
-    public Iec61850RtuSystemService(final int index) {
-        this.index = index;
-        this.logicalDevice = LogicalDevice.fromString(DEVICE + index);
-    }
+    private static final LogicalDevice DEVICE = LogicalDevice.RTU;
 
     @Override
     public GetDataSystemIdentifierDto getData(final SystemFilterDto systemFilter, final Iec61850Client client,
             final DeviceConnection connection) throws NodeException {
 
-        LOGGER.info("Get data called for logical device {}", DEVICE + this.index);
+        final int logicalDeviceIndex = systemFilter.getId();
+
+        LOGGER.info("Get data called for logical device {}{}", DEVICE.getDescription(), logicalDeviceIndex);
 
         final List<MeasurementDto> measurements = new ArrayList<>();
 
@@ -56,7 +50,7 @@ public class Iec61850RtuSystemService implements SystemService {
             if (command == null) {
                 LOGGER.warn("Unsupported data attribute [{}], skip get data for it", filter.getNode());
             } else {
-                measurements.add(command.execute(client, connection, this.logicalDevice));
+                measurements.add(command.execute(client, connection, DEVICE, logicalDeviceIndex));
             }
 
         }
@@ -70,7 +64,7 @@ public class Iec61850RtuSystemService implements SystemService {
             if (command == null) {
                 LOGGER.warn("Unsupported data attribute [{}], skip get data for it", filter.getNode());
             } else {
-                profiles.add(command.execute(client, connection, this.logicalDevice));
+                profiles.add(command.execute(client, connection, DEVICE, logicalDeviceIndex));
             }
 
         }
@@ -83,7 +77,9 @@ public class Iec61850RtuSystemService implements SystemService {
     public void setData(final SetDataSystemIdentifierDto systemIdentifier, final Iec61850Client client,
             final DeviceConnection connection) throws NodeException {
 
-        LOGGER.info("Set data called for logical device {}", DEVICE + this.index);
+        final int logicalDeviceIndex = systemIdentifier.getId();
+
+        LOGGER.info("Set data called for logical device {}{}", DEVICE.getDescription(), logicalDeviceIndex);
 
         for (final SetPointDto sp : systemIdentifier.getSetPoints()) {
             final RtuWriteCommand<SetPointDto> command = Iec61850RtuSetPointCommandFactory.getInstance()
@@ -91,7 +87,7 @@ public class Iec61850RtuSystemService implements SystemService {
             if (command == null) {
                 LOGGER.warn("Unsupported set point [{}], skip set data for it.", sp.getNode() + sp.getId());
             } else {
-                command.executeWrite(client, connection, this.logicalDevice, sp);
+                command.executeWrite(client, connection, DEVICE, logicalDeviceIndex, sp);
             }
         }
 
@@ -101,7 +97,7 @@ public class Iec61850RtuSystemService implements SystemService {
             if (command == null) {
                 LOGGER.warn("Unsupported profile [{}], skip set data for it.", p.getNode() + p.getId());
             } else {
-                command.executeWrite(client, connection, this.logicalDevice, p);
+                command.executeWrite(client, connection, DEVICE, logicalDeviceIndex, p);
             }
         }
 

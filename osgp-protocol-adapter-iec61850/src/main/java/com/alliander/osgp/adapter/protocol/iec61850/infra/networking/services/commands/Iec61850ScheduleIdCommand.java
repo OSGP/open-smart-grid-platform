@@ -42,9 +42,9 @@ public class Iec61850ScheduleIdCommand implements RtuReadCommand<MeasurementDto>
 
     @Override
     public MeasurementDto execute(final Iec61850Client client, final DeviceConnection connection,
-            final LogicalDevice logicalDevice) throws NodeReadException {
-        final NodeContainer containingNode = connection.getFcModelNode(logicalDevice, this.logicalNode, DATA_ATTRIBUTE,
-                FC);
+            final LogicalDevice logicalDevice, final int logicalDeviceIndex) throws NodeReadException {
+        final NodeContainer containingNode = connection.getFcModelNode(logicalDevice, logicalDeviceIndex,
+                this.logicalNode, DATA_ATTRIBUTE, FC);
         client.readNodeDataValues(connection.getConnection().getClientAssociation(), containingNode.getFcmodelNode());
         return this.translate(containingNode);
     }
@@ -57,12 +57,13 @@ public class Iec61850ScheduleIdCommand implements RtuReadCommand<MeasurementDto>
 
     @Override
     public void executeWrite(final Iec61850Client client, final DeviceConnection connection,
-            final LogicalDevice logicalDevice, final SetPointDto setPoint) throws NodeWriteException {
+            final LogicalDevice logicalDevice, final int logicalDeviceIndex, final SetPointDto setPoint)
+                    throws NodeWriteException {
 
         final int value = this.checkValue(setPoint.getValue());
 
-        final NodeContainer containingNode = connection.getFcModelNode(logicalDevice, this.logicalNode, DATA_ATTRIBUTE,
-                FC);
+        final NodeContainer containingNode = connection.getFcModelNode(logicalDevice, logicalDeviceIndex,
+                this.logicalNode, DATA_ATTRIBUTE, FC);
         containingNode.writeInteger(SUB_DATA_ATTRIBUTE, value);
     }
 

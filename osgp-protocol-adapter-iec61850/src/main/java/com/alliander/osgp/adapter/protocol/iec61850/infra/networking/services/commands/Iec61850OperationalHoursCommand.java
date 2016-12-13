@@ -27,9 +27,9 @@ public class Iec61850OperationalHoursCommand implements RtuReadCommand<Measureme
 
     @Override
     public MeasurementDto execute(final Iec61850Client client, final DeviceConnection connection,
-            final LogicalDevice logicalDevice) throws NodeReadException {
-        final NodeContainer containingNode = connection.getFcModelNode(logicalDevice, LogicalNode.GENERATOR_ONE,
-                DataAttribute.OPERATIONAL_HOURS, Fc.ST);
+            final LogicalDevice logicalDevice, final int logicalDeviceIndex) throws NodeReadException {
+        final NodeContainer containingNode = connection.getFcModelNode(logicalDevice, logicalDeviceIndex,
+                LogicalNode.GENERATOR_ONE, DataAttribute.OPERATIONAL_HOURS, Fc.ST);
         client.readNodeDataValues(connection.getConnection().getClientAssociation(), containingNode.getFcmodelNode());
         return this.translate(containingNode);
     }

@@ -551,7 +551,7 @@ public class Iec61850SsldDeviceService implements SsldDeviceService {
 
     private DeviceConnection connectToDevice(final DeviceRequest deviceRequest) throws ConnectionFailureException {
         return this.iec61850DeviceConnectionService.connectWithoutConnectionCaching(deviceRequest.getIpAddress(),
-                deviceRequest.getDeviceIdentification(), IED.FLEX_OVL, LogicalDevice.LIGHTING);
+                deviceRequest.getDeviceIdentification(), IED.FLEX_OVL, LogicalDevice.LIGHTING.getDescription());
     }
 
     // ========================

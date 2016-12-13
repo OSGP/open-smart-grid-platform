@@ -140,7 +140,7 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
             throws ProtocolAdapterException {
 
         this.iec61850DeviceConnectionService.connect(deviceRequest.getIpAddress(),
-                deviceRequest.getDeviceIdentification(), IED.ZOWN_RTU, LogicalDevice.RTU_ONE);
+                deviceRequest.getDeviceIdentification(), IED.ZOWN_RTU, LogicalDevice.RTU.getDescription() + 1);
         return this.iec61850DeviceConnectionService.getServerModel(deviceRequest.getDeviceIdentification());
     }
 
@@ -191,7 +191,7 @@ public class Iec61850RtuDeviceService implements RtuDeviceService {
                 for (final SetDataSystemIdentifierDto identifier : setDataRequest.getSetDataSystemIdentifiers()) {
 
                     final SystemService systemService = Iec61850RtuDeviceService.this.systemServiceFactory
-                            .getSystemService(identifier.getId(), identifier.getSystemType());
+                            .getSystemService(identifier.getSystemType());
 
                     systemService.setData(identifier, Iec61850RtuDeviceService.this.iec61850Client, connection);
                 }
