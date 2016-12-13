@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.Firmware;
-import com.alliander.osgp.domain.core.repositories.DeviceFirmwareRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.FirmwareRepository;
@@ -26,6 +25,7 @@ import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.core.builders.FirmwareBuilder;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
+import com.alliander.osgp.platform.cucumber.steps.database.core.DeviceModelSteps;
 import com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.SmartMeteringStepsBase;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
@@ -61,7 +61,7 @@ public class UpdateFirmware extends SmartMeteringStepsBase {
     private FirmwareRepository firmwareRepository;
 
     @Autowired
-    private DeviceFirmwareRepository deviceFirmwareRepository;
+    private DeviceModelSteps deviceModelSteps;
 
     @Given("a firmware$")
     public void aFirmware(final Map<String, String> settings) {
@@ -92,7 +92,7 @@ public class UpdateFirmware extends SmartMeteringStepsBase {
     @Then("^firmware should be updated$")
     public void firmwareShouldBeUpdated() throws Throwable {
         PROPERTIES_MAP
-                .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
+        .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, TEST_CASE_XML, TEST_SUITE_XML);
 
@@ -134,7 +134,7 @@ public class UpdateFirmware extends SmartMeteringStepsBase {
     @Then("^the message \"([^\"]*)\" should be given$")
     public void theMessageShouldBeGiven(final String message) throws Throwable {
         PROPERTIES_MAP
-                .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
+        .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, TEST_CASE_XML, TEST_SUITE_XML);
 
@@ -156,23 +156,10 @@ public class UpdateFirmware extends SmartMeteringStepsBase {
     }
 
     private void insertCoreFirmware(final Map<String, String> settings) {
-        final com.alliander.osgp.domain.core.entities.DeviceModel deviceModel = this.findDeviceModel();
-
+        final com.alliander.osgp.domain.core.entities.DeviceModel deviceModel = this.deviceModelSteps
+                .insertDeviceModel(settings);
         com.alliander.osgp.domain.core.entities.Firmware firmware = new FirmwareBuilder().withSettings(settings)
                 .withDeviceModel(deviceModel).build();
         firmware = this.firmwareRepository.save(firmware);
     }
-
-    /**
-     * In the cucumber-platform prepareDatabase step, also a new DeviceModel is
-     * created. This DeviceModel van be used in all the current scenario's. We
-     * may have to enhance this method below if a scenario needs some specific
-     * DeviceModel
-     *
-     * @return the first DeviceModel that is found.
-     */
-    private com.alliander.osgp.domain.core.entities.DeviceModel findDeviceModel() {
-        return this.deviceModelRepository.findAll().get(0);
-    }
-
 }
