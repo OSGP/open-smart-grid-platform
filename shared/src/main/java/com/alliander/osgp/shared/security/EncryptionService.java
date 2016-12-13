@@ -53,11 +53,11 @@ public class EncryptionService {
     /**
      * the algorithm used for reading the secret key
      */
-    public static final String ALGORITHM = "AES/CBC/PKCS7PADDING";
+    public static final String ALGORITHM = "AES/CBC/PKCS5PADDING";
     /**
      * the id of the provider used
      */
-    public static final String PROVIDER = "BC";
+    public static final String PROVIDER = "SunJCE";
 
     @Value("${encryption.key.path}")
     private String keyPath;
