@@ -41,8 +41,8 @@ public class ManufacturerBuilder implements CucumberBuilder<Manufacturer> {
             this.withName(inputSettings.get(Keys.MANUFACTURER_NAME));
         }
 
-        if (inputSettings.containsKey(Keys.MANUFACTURER_USEPREFIX)) {
-            this.withUsePrefix(Boolean.parseBoolean(inputSettings.get(Keys.MANUFACTURER_USEPREFIX)));
+        if (inputSettings.containsKey(Keys.MANUFACTURER_USE_PREFIX)) {
+            this.withUsePrefix(Boolean.parseBoolean(inputSettings.get(Keys.MANUFACTURER_USE_PREFIX)));
         }
 
         return this;

@@ -60,8 +60,8 @@ public class DeviceModelBuilder implements CucumberBuilder<DeviceModel> {
             this.withModelCode(inputSettings.get(Keys.DEVICEMODEL_MODELCOE));
         }
 
-        if (inputSettings.containsKey(Keys.DEVICEMODEL_DESCRIPTION_)) {
-            this.withDescription(inputSettings.get(Keys.DEVICEMODEL_DESCRIPTION_));
+        if (inputSettings.containsKey(Keys.DEVICEMODEL_DESCRIPTION)) {
+            this.withDescription(inputSettings.get(Keys.DEVICEMODEL_DESCRIPTION));
         }
 
         if (inputSettings.containsKey(Keys.DEVICEMODEL_FILESTORAGE)) {

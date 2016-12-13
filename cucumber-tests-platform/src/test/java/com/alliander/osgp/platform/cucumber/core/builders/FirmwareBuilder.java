@@ -109,28 +109,28 @@ public class FirmwareBuilder implements CucumberBuilder<Firmware> {
             this.withDescription(inputSettings.get(Keys.FIRMWARE_DESCRIPTION));
         }
 
-        if (inputSettings.containsKey(Keys.FIRMWARE_PUSHTONEWDEVICES)) {
-            this.withPushToNewDevices(Boolean.parseBoolean(inputSettings.get(Keys.FIRMWARE_PUSHTONEWDEVICES)));
+        if (inputSettings.containsKey(Keys.FIRMWARE_PUSH_TO_NEW_DEVICES)) {
+            this.withPushToNewDevices(Boolean.parseBoolean(inputSettings.get(Keys.FIRMWARE_PUSH_TO_NEW_DEVICES)));
         }
 
-        if (inputSettings.containsKey(Keys.FIRMWARE_MODULEVERSIONCOMM)) {
-            this.withModuleVersionComm(inputSettings.get(Keys.FIRMWARE_MODULEVERSIONCOMM));
+        if (inputSettings.containsKey(Keys.FIRMWARE_MODULE_VERSION_COMM)) {
+            this.withModuleVersionComm(inputSettings.get(Keys.FIRMWARE_MODULE_VERSION_COMM));
         }
 
-        if (inputSettings.containsKey(Keys.FIRMWARE_MODULEVERSIONFUNC)) {
-            this.withModuleVersionFunc(inputSettings.get(Keys.FIRMWARE_MODULEVERSIONFUNC));
+        if (inputSettings.containsKey(Keys.FIRMWARE_MODULE_VERSION_FUNC)) {
+            this.withModuleVersionFunc(inputSettings.get(Keys.FIRMWARE_MODULE_VERSION_FUNC));
         }
 
-        if (inputSettings.containsKey(Keys.FIRMWARE_MODULEVERSIONMA)) {
-            this.withModuleVersionMa(inputSettings.get(Keys.FIRMWARE_MODULEVERSIONMA));
+        if (inputSettings.containsKey(Keys.FIRMWARE_MODULE_VERSION_MA)) {
+            this.withModuleVersionMa(inputSettings.get(Keys.FIRMWARE_MODULE_VERSION_MA));
         }
 
-        if (inputSettings.containsKey(Keys.FIRMWARE_MODULEVERSIONMBUS)) {
-            this.withModuleVersionMbus(inputSettings.get(Keys.FIRMWARE_MODULEVERSIONMBUS));
+        if (inputSettings.containsKey(Keys.FIRMWARE_MODULE_VERSION_MBUS)) {
+            this.withModuleVersionMbus(inputSettings.get(Keys.FIRMWARE_MODULE_VERSION_MBUS));
         }
 
-        if (inputSettings.containsKey(Keys.FIRMWARE_MODULEVERSIONSEC)) {
-            this.withModuleVersionSec(inputSettings.get(Keys.FIRMWARE_MODULEVERSIONSEC));
+        if (inputSettings.containsKey(Keys.FIRMWARE_MODULE_VERSION_SEC)) {
+            this.withModuleVersionSec(inputSettings.get(Keys.FIRMWARE_MODULE_VERSION_SEC));
         }
 
         if (inputSettings.containsKey(Keys.FIRMWARE_HASH)) {

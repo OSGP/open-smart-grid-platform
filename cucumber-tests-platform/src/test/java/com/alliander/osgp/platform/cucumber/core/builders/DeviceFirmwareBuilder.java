@@ -67,8 +67,8 @@ public class DeviceFirmwareBuilder implements CucumberBuilder<DeviceFirmware> {
             this.withInstallationDate(DateInputParser.parse(inputSettings.get(Keys.DEVICEFIRMWARE_INSTALLATIONDATE)));
         }
 
-        if (inputSettings.containsKey(Keys.DEVICEFIRMWARE_INSTALLEDBY)) {
-            this.withInstalledBy(inputSettings.get(Keys.DEVICEFIRMWARE_INSTALLEDBY));
+        if (inputSettings.containsKey(Keys.DEVICEFIRMWARE_INSTALLED_BY)) {
+            this.withInstalledBy(inputSettings.get(Keys.DEVICEFIRMWARE_INSTALLED_BY));
         }
 
         if (inputSettings.containsKey(Keys.DEVICEFIRMWARE_ACTIVE)) {
