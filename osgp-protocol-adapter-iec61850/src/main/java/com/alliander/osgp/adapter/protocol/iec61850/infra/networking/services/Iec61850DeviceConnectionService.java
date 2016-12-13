@@ -215,7 +215,7 @@ public class Iec61850DeviceConnectionService {
         ServerModel serverModel = this.readServerModelConfiguredForDevice(clientAssociation, deviceIdentification,
                 iec61850Device);
         if (serverModel == null) {
-            serverModel = this.readServerModelFromConfiguredIcdFile(clientAssociation, deviceIdentification);
+            serverModel = this.readServerModelFromConfiguredIcdFile(clientAssociation);
         }
         if (serverModel == null) {
             LOGGER.info("Reading ServerModel from device: {} using readServerModelFromDevice()", deviceIdentification);
@@ -247,8 +247,8 @@ public class Iec61850DeviceConnectionService {
         return this.iec61850Client.readServerModelFromSclFile(clientAssociation, filePath);
     }
 
-    private ServerModel readServerModelFromConfiguredIcdFile(final ClientAssociation clientAssociation,
-            final String deviceIdentification) throws ProtocolAdapterException {
+    private ServerModel readServerModelFromConfiguredIcdFile(final ClientAssociation clientAssociation)
+            throws ProtocolAdapterException {
 
         if (!this.isIcdFileUsed || StringUtils.isBlank(this.icdFilePath)) {
             return null;
