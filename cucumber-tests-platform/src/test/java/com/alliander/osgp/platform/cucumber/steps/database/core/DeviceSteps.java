@@ -299,8 +299,8 @@ public class DeviceSteps {
      * @param deviceIdentification
      * @return
      */
-    @Then("^the device with the id \"([^\"]*)\" exists$")
-    public void theDeviceWithIdExists(final String deviceIdentification) throws Throwable {
+    @Then("^the dlms device with id \"([^\"]*)\" exists$")
+    public void theDlmsDeviceWithIdExists(final String deviceIdentification) throws Throwable {
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
         final List<DeviceAuthorization> devAuths = this.deviceAuthorizationRepository.findByDevice(device);
 
