@@ -137,15 +137,7 @@ public class FirmwareBuilder implements CucumberBuilder<Firmware> {
             this.withHash(inputSettings.get(Keys.FIRMWARE_HASH));
         }
 
-        if (inputSettings.containsKey(Keys.FIRMWARE_FILE)) {
-            this.withFile(this.getBytesFormFile(inputSettings));
-        }
-
         return this;
     }
 
-    private byte[] getBytesFormFile(final Map<String, String> inputSettings) {
-        // TODO
-        return null;
-    }
 }

@@ -81,26 +81,26 @@ public class Keys {
 
     public static final String FIRMWARE_FILENAME = "FirmwareFilename";
     public static final String FIRMWARE_DESCRIPTION = "FirmwareDescription";
-    public static final String FIRMWARE_PUSHTONEWDEVICES = "FirmwarePushToNewDevices";
-    public static final String FIRMWARE_MODULEVERSIONCOMM = "FirmwareModuleVersionComm";
-    public static final String FIRMWARE_MODULEVERSIONFUNC = "FirmwareModuleVersionFunc";
-    public static final String FIRMWARE_MODULEVERSIONMA = "FirmwareModuleVersionMa";
-    public static final String FIRMWARE_MODULEVERSIONMBUS = "FirmwareModuleVersionMbus";
-    public static final String FIRMWARE_MODULEVERSIONSEC = "FirmwareModuleVersionSec";
+    public static final String FIRMWARE_PUSH_TO_NEW_DEVICES = "FirmwarePushToNewDevices";
+    public static final String FIRMWARE_MODULE_VERSION_COMM = "FirmwareModuleVersionComm";
+    public static final String FIRMWARE_MODULE_VERSION_FUNC = "FirmwareModuleVersionFunc";
+    public static final String FIRMWARE_MODULE_VERSION_MA = "FirmwareModuleVersionMa";
+    public static final String FIRMWARE_MODULE_VERSION_MBUS = "FirmwareModuleVersionMbus";
+    public static final String FIRMWARE_MODULE_VERSION_SEC = "FirmwareModuleVersionSec";
     public static final String FIRMWARE_FILE = "FirmwareFile";
     public static final String FIRMWARE_HASH = "FirmwareHash";
     public static final String FIRMWARE_VERSION = "FirmwareVersion";
 
     public static final String MANUFACTURER_ID = "ManufacturerId";
     public static final String MANUFACTURER_NAME = "ManufacturerName";
-    public static final String MANUFACTURER_USEPREFIX = "ManufacturerUsePrefix";
+    public static final String MANUFACTURER_USE_PREFIX = "ManufacturerUsePrefix";
 
     public static final String DEVICEFIRMWARE_INSTALLATIONDATE = "DevicefirmwareInstallationDate";
-    public static final String DEVICEFIRMWARE_INSTALLEDBY = "DevicefirmwareInstalledBy";
+    public static final String DEVICEFIRMWARE_INSTALLED_BY = "DevicefirmwareInstalledBy";
     public static final String DEVICEFIRMWARE_ACTIVE = "DevicefirmwareActive";
 
     public static final String DEVICEMODEL_MODELCOE = "DeviceModelmodelCode";
-    public static final String DEVICEMODEL_DESCRIPTION_ = "DeviceModelDescription";
+    public static final String DEVICEMODEL_DESCRIPTION = "DeviceModelDescription";
     public static final String DEVICEMODEL_FILESTORAGE = "DeviceModelFileStorage";
     public static final String DEVICEMODEL_METERED = "DeviceModelMetered";
 
