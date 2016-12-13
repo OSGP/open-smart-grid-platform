@@ -11,14 +11,19 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.Firmware;
+import com.alliander.osgp.domain.core.repositories.DeviceFirmwareRepository;
+import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.FirmwareRepository;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
+import com.alliander.osgp.platform.cucumber.core.builders.FirmwareBuilder;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.SmartMeteringStepsBase;
@@ -50,7 +55,18 @@ public class UpdateFirmware extends SmartMeteringStepsBase {
     private DeviceRepository deviceRepository;
 
     @Autowired
+    private DeviceModelRepository deviceModelRepository;
+
+    @Autowired
     private FirmwareRepository firmwareRepository;
+
+    @Autowired
+    private DeviceFirmwareRepository deviceFirmwareRepository;
+
+    @Given("a firmware$")
+    public void aFirmware(final Map<String, String> settings) {
+        this.insertCoreFirmware(settings);
+    }
 
     @Given("^a request for a firmware upgrade for device \"([^\"]*)\" from a client$")
     public void aRequestForAFirmwareUpgradeForDeviceFromAClient(final String deviceIdentification) throws Throwable {
@@ -76,7 +92,7 @@ public class UpdateFirmware extends SmartMeteringStepsBase {
     @Then("^firmware should be updated$")
     public void firmwareShouldBeUpdated() throws Throwable {
         PROPERTIES_MAP
-        .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
+                .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, TEST_CASE_XML, TEST_SUITE_XML);
 
@@ -118,7 +134,7 @@ public class UpdateFirmware extends SmartMeteringStepsBase {
     @Then("^the message \"([^\"]*)\" should be given$")
     public void theMessageShouldBeGiven(final String message) throws Throwable {
         PROPERTIES_MAP
-        .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
+                .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, TEST_CASE_XML, TEST_SUITE_XML);
 
@@ -138,4 +154,25 @@ public class UpdateFirmware extends SmartMeteringStepsBase {
         // Not influenced by cucumber at this time. Nothing can be done here to
         // make the update fail.
     }
+
+    private void insertCoreFirmware(final Map<String, String> settings) {
+        final com.alliander.osgp.domain.core.entities.DeviceModel deviceModel = this.findDeviceModel();
+
+        com.alliander.osgp.domain.core.entities.Firmware firmware = new FirmwareBuilder().withSettings(settings)
+                .withDeviceModel(deviceModel).build();
+        firmware = this.firmwareRepository.save(firmware);
+    }
+
+    /**
+     * In the cucumber-platform prepareDatabase step, also a new DeviceModel is
+     * created. This DeviceModel van be used in all the current scenario's. We
+     * may have to enhance this method below if a scenario needs some specific
+     * DeviceModel
+     *
+     * @return the first DeviceModel that is found.
+     */
+    private com.alliander.osgp.domain.core.entities.DeviceModel findDeviceModel() {
+        return this.deviceModelRepository.findAll().get(0);
+    }
+
 }
