@@ -3,7 +3,7 @@ Feature: Get PhotoVoltaic System Data
   As an OSGP client
   I want to get PV data from an RTU
 
-@Iec61850MockServer
+  @Iec61850MockServer
   Scenario: Request PV1 Health
     Given an rtu device
       | DeviceIdentification | RTU10001 |

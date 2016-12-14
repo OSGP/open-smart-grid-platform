@@ -1,42 +1,21 @@
 package com.alliander.osgp.platform.cucumber.steps.ws.admin.devicemanagement;
 
-import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
-import static com.alliander.osgp.platform.cucumber.core.Helpers.saveCorrelationUidInScenarioContext;
-
-import java.io.IOException;
 import java.util.Map;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathExpressionException;
-
 import org.junit.Assert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.xml.sax.SAXException;
 
-import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
-import com.alliander.osgp.platform.cucumber.mocks.oslpdevice.MockOslpServer;
-import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.steps.common.ResponseSteps;
 import com.alliander.osgp.platform.cucumber.steps.ws.admin.AdminStepsBase;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
-import cucumber.api.java.en.When;
 import cucumber.api.java.en.Then;
-import cucumber.api.java.en.And;
+import cucumber.api.java.en.When;
 
 public class RemoveDeviceSteps extends AdminStepsBase {
     
-	@Autowired
-    private MockOslpServer oslpMockServer;
-	
     private static final String TEST_SUITE = "DeviceManagement";
     private static final String TEST_CASE_NAME = "RemoveDevice TestCase";
     private static final String TEST_CASE_NAME_REQUEST = "RemoveDevice";
-    
-    private static final Logger LOGGER = LoggerFactory.getLogger(RemoveDeviceSteps.class);
     
     /**
      * Send a remove device request to the Platform.
@@ -62,14 +41,6 @@ public class RemoveDeviceSteps extends AdminStepsBase {
     @Then("^the remove device response is successfull$")
     public void the_remove_device_response_is_successfull() throws Throwable
     {
-    	LOGGER.info("Request: " + this.request);
-    	LOGGER.info("Response: " + this.response);
     	Assert.assertTrue(this.runXpathResult.assertXpath(this.response, "/Envelope/Body/RemoveDeviceResponse", ""));
-    }
-    
-    @And("^the device should be removed$")
-    public void the_device_should_be_removed(final Map<String, String> expectedResult) throws Throwable
-    {
-    	ResponseSteps.VerifyFaultResponse(this.runXpathResult, this.response, expectedResult);
     }
 }

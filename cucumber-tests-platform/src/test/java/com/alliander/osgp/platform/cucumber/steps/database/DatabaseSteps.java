@@ -10,13 +10,18 @@ package com.alliander.osgp.platform.cucumber.steps.database;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.cleanRepoAbstractEntity;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.cleanRepoSerializable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRepository;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
+import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
+import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
@@ -54,7 +59,7 @@ public class DatabaseSteps {
 
     @Autowired
     private SsldRepository ssldRepository;
-
+    
     /**
      * This method is used to create default data not directly related to the
      * specific tests. For example: The test-org organization which is used to
@@ -85,14 +90,24 @@ public class DatabaseSteps {
     }
 
     public void prepareDatabaseForScenario() {
-        cleanRepoAbstractEntity(this.oslpDeviceRepo);
+    	
+    	cleanRepoAbstractEntity(this.oslpDeviceRepo);
         cleanRepoAbstractEntity(this.deviceAuthorizationRepo);
         cleanRepoSerializable(this.smartMeterRepo);
+        
+        // The device output settings should be cleared before each test.
+        // TODO Can this be done better?
+        List<DeviceOutputSetting> settings = new ArrayList<DeviceOutputSetting>();
+        for (Ssld ssld : this.ssldRepository.findAll()) {
+        	ssld.updateOutputSettings(settings);
+        	this.ssldRepository.save(ssld);
+        }
+        
+        cleanRepoSerializable(this.ssldRepository);
         cleanRepoSerializable(this.deviceRepo);
+        cleanRepoSerializable(this.organizationRepo);
         cleanRepoSerializable(this.deviceModelRepo);
         cleanRepoSerializable(this.manufacturerRepo);
-        cleanRepoSerializable(this.ssldRepository);
-        cleanRepoSerializable(this.organizationRepo);
         
         insertDefaultData();
     }

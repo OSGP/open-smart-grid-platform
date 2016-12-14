@@ -17,7 +17,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alliander.osgp.domain.core.valueobjects.RelayType;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
@@ -25,8 +24,8 @@ import com.alliander.osgp.platform.cucumber.steps.common.ResponseSteps;
 import com.alliander.osgp.platform.cucumber.steps.ws.publiclighting.PublicLightingStepsBase;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
-import cucumber.api.java.en.When;
 import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
 
 /**
  * Class with all the set light requests steps
@@ -52,9 +51,6 @@ public class GetStatusSteps extends PublicLightingStepsBase {
     public void whenReceivingAGetStatusRequest(final Map<String, String> requestParameters) throws Throwable {
 
         // Required parameters
-//        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION, getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-//        PROPERTIES_MAP.put(ON_LABEL, getString(requestParameters, ON_LABEL, DEFAULT_ON));
-    	
     	if (requestParameters.containsKey("Index") && requestParameters.containsKey("On") && requestParameters.containsKey("DimValue"))
     	{
     		PROPERTIES_MAP.put("__DEVICE_IDENTIFICATION__", getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
@@ -69,7 +65,6 @@ public class GetStatusSteps extends PublicLightingStepsBase {
     	}
     	
         // Now run the request.
-//        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_ASYNC_NAME_REQUEST, TEST_CASE_ASYNC_REQ_XML, TEST_SUITE_XML);
         this.requestRunner(TestStepStatus.UNKNOWN, PROPERTIES_MAP, TEST_CASE_ASYNC_NAME_REQUEST, TEST_CASE_ASYNC_REQ_XML, TEST_SUITE_XML);
     }
     
@@ -110,8 +105,6 @@ public class GetStatusSteps extends PublicLightingStepsBase {
         PROPERTIES_MAP.put("__DEVICE_IDENTIFICATION__", deviceIdentification);
         PROPERTIES_MAP.put("__CORRELATION_UID__", (String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
 
-//        this.waitForResponse(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_RESULT_NAME_REQUEST,
-//                    TEST_CASE_RESULT_REQ_XML, TEST_SUITE_XML);
         this.waitForResponse(TestStepStatus.UNKNOWN, PROPERTIES_MAP, TEST_CASE_RESULT_NAME_REQUEST,
                 TEST_CASE_RESULT_REQ_XML, TEST_SUITE_XML);
     }
@@ -122,8 +115,6 @@ public class GetStatusSteps extends PublicLightingStepsBase {
         PROPERTIES_MAP.put("__DEVICE_IDENTIFICATION__", result.get("DeviceIdentification"));
         PROPERTIES_MAP.put("__CORRELATION_UID__", (String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
         
-//        this.waitForResponse(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_RESULT_NAME_REQUEST,
-//                    TEST_CASE_RESULT_REQ_XML, TEST_SUITE_XML);
         this.waitForResponse(TestStepStatus.UNKNOWN, PROPERTIES_MAP, TEST_CASE_RESULT_NAME_REQUEST,
                 TEST_CASE_RESULT_REQ_XML, TEST_SUITE_XML);
     }

@@ -39,10 +39,7 @@ import cucumber.api.java.en.When;
  */
 public class SetEventNotificationsSteps extends CoreStepsBase {
     
-	@Autowired
-    private MockOslpServer oslpMockServer;
-	
-    private static final String TEST_SUITE = "DeviceManagement";
+	private static final String TEST_SUITE = "DeviceManagement";
     private static final String TEST_CASE_NAME = "SetEventNotifications TestCase";
     private static final String TEST_CASE_NAME_REQUEST = "SetEventNotifications";
     
@@ -57,7 +54,6 @@ public class SetEventNotificationsSteps extends CoreStepsBase {
      */
     private void fillPropertiesMap(Map<String, String> requestParameters) {
         PROPERTIES_MAP.put("__DEVICE_IDENTIFICATION__", requestParameters.get(Keys.KEY_DEVICE_IDENTIFICATION));
-//        PROPERTIES_MAP.put("__EVENT__", requestParameters.get("Event"));
         PROPERTIES_MAP.put("__EVENT__", changeStringToAcceptanceString(requestParameters.get("Event")));
     }
     
@@ -101,12 +97,9 @@ public class SetEventNotificationsSteps extends CoreStepsBase {
     public void receiving_a_set_event_notification_message_request(final Map<String, String> requestParameters) throws Throwable
     {
     	// Required parameters
-//    	PROPERTIES_MAP.put("__DEVICE_IDENTIFICATION__", requestParameters.get(Keys.KEY_DEVICE_IDENTIFICATION));
     	fillPropertiesMap(requestParameters);
     	
-//    	this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_NAME, TEST_SUITE);
     	this.requestRunner(TestStepStatus.UNKNOWN, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_NAME, TEST_SUITE);
-    	LoggerFactory.getLogger(SetEventNotificationsSteps.class).info("Receiving a set event notification message request");
     }
     
     /**

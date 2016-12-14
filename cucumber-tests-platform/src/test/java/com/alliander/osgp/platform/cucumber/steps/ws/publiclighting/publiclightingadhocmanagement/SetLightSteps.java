@@ -22,23 +22,16 @@ import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.cucumber.steps.common.ResponseSteps;
 import com.alliander.osgp.platform.cucumber.steps.ws.publiclighting.PublicLightingStepsBase;
-import com.eviware.soapui.model.support.PropertiesMap;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.When;
 import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
 
 /**
  * Class with all the set light requests steps
  */
 public class SetLightSteps extends PublicLightingStepsBase {
-//    private static final String TEST_SUITE_XML = "PublicLightingAdHocManagement";
-//    private static final String TEST_CASE_ASYNC_REQ_XML = "AT Send SetLight Async";
-//    private static final String TEST_CASE_ASYNC_NAME_REQUEST = "SetLight - Request 1";
-//    private static final String TEST_CASE_RESULT_REQ_XML = "AT Retrieve SetLight Result";
-//    private static final String TEST_CASE_RESULT_NAME_REQUEST = "GetSetLightResponse - Request 1";
-	
+
 	private static final String TEST_SUITE_XML = "PublicLightingAdHocManagement";
     private static final String TEST_CASE_ASYNC_REQ_XML = "SetLight TestCase";
     private static final String TEST_CASE_ASYNC_NAME_REQUEST = "SetLight";
@@ -58,17 +51,12 @@ public class SetLightSteps extends PublicLightingStepsBase {
     @When("^receiving a set light request$")
     public void givenReceivingASetLightRequest(final Map<String, String> requestParameters) throws Throwable {
 
-        // Required parameters
-//        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION, getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-//        PROPERTIES_MAP.put(ON_LABEL, getString(requestParameters, ON_LABEL, DEFAULT_ON));
-    	    	
 		PROPERTIES_MAP.put("__DEVICE_IDENTIFICATION__", getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 		PROPERTIES_MAP.put("__INDEX__", getString(requestParameters, "Index", "0"));
 		PROPERTIES_MAP.put("__ON__", getString(requestParameters, ON_LABEL, DEFAULT_ON));
 		PROPERTIES_MAP.put("__DIM_VALUE__", getString(requestParameters, "DimValue", "1"));
 		
         // Now run the request.
-//        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_ASYNC_NAME_REQUEST, TEST_CASE_ASYNC_REQ_XML, TEST_SUITE_XML);
 		this.requestRunner(TestStepStatus.UNKNOWN, PROPERTIES_MAP, TEST_CASE_ASYNC_NAME_REQUEST, TEST_CASE_ASYNC_REQ_XML, TEST_SUITE_XML);
     }
     
@@ -93,9 +81,6 @@ public class SetLightSteps extends PublicLightingStepsBase {
                     getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
             this.runXpathResult.assertNotNull(this.response, PATH_CORRELATION_UID);
 
-            LOGGER.info("Correlation-UID: " + this.response + " | Path: " + PATH_CORRELATION_UID);
-//          LOGGER.info("Correlation-UID: " + this.runXpathResult.getValue(this.response, PATH_CORRELATION_UID) + " | Path: " + PATH_CORRELATION_UID);
-            
             // Save the returned CorrelationUid in the Scenario related context for further use.
             saveCorrelationUidInScenarioContext(this.runXpathResult.getValue(this.response, PATH_CORRELATION_UID),
                     getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
@@ -111,8 +96,6 @@ public class SetLightSteps extends PublicLightingStepsBase {
         PROPERTIES_MAP.put("__DEVICE_IDENTIFICATION__", deviceIdentification);
         PROPERTIES_MAP.put("__CORRELATION_UID__", (String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
 
-//        this.waitForResponse(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_RESULT_NAME_REQUEST,
-//                    TEST_CASE_RESULT_REQ_XML, TEST_SUITE_XML);
         this.waitForResponse(TestStepStatus.UNKNOWN, PROPERTIES_MAP, TEST_CASE_RESULT_NAME_REQUEST,
                 TEST_CASE_RESULT_REQ_XML, TEST_SUITE_XML);
     }

@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
         "com.alliander.osgp.domain.microgrids.repositories", "com.alliander.osgp.domain.microgrids.entities",
         "com.alliander.osgp.logging.domain.repositories", "com.alliander.osgp.adapter.protocol.oslp.domain.repositories",
         "com.alliander.osgp.adapter.protocol.oslp.domain.entities",
+        "com.alliander.osgp.adapter.ws.shared.db.domain.repositories",
         "com.alliander.osgp.platform.cucumber.hooks" })
 @EnableTransactionManagement()
 @Import({ CorePersistenceConfig.class, AdapterWsSmartMeteringPersistenceConfig.class, AdapterProtocolDlmsPersistenceConfig.class,

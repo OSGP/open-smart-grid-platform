@@ -11,22 +11,16 @@ package com.alliander.osgp.platform.cucumber.steps.ws.core.deviceinstallation;
 
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 
-import java.text.SimpleDateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Map;
 
 import org.junit.Assert;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alliander.osgp.domain.core.entities.Device;
-import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
-import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.cucumber.steps.common.ResponseSteps;
-import com.alliander.osgp.platform.cucumber.steps.database.core.DeviceSteps;
 import com.alliander.osgp.platform.cucumber.steps.ws.core.CoreStepsBase;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
@@ -87,9 +81,9 @@ public class CreateDeviceSteps extends CoreStepsBase {
         PROPERTIES_MAP.put("HasSchedule", getString(settings, "HasSchedule", DEFAULT_HASSCHEDULE));
         PROPERTIES_MAP.put("PublicKeyPresent", getString(settings, "PublicKeyPresent", DEFAULT_PUBLIC_KEY_PRESENT));
         PROPERTIES_MAP.put("Manufacturer", getString(settings, "DeviceModelManufacturer", DEFAULT_MANUFACTURER));
-        PROPERTIES_MAP.put("ModelCode", getString(settings, "ModelCode", DEFAULT_MODELCODE));
-        PROPERTIES_MAP.put("Description", getString(settings, "Description", DEFAULT_DESCRIPTION));
-        PROPERTIES_MAP.put("Metered", getString(settings, "Metered", DEFAULT_METERED));
+        PROPERTIES_MAP.put("ModelCode", getString(settings, "DeviceModelModelCode", DEFAULT_MODELCODE));
+        PROPERTIES_MAP.put("Description", getString(settings, "DeviceModelDescription", DEFAULT_DESCRIPTION));
+        PROPERTIES_MAP.put("Metered", getString(settings, "DeviceModelMetered", DEFAULT_METERED));
     }
     
     private void fillUpdatePropertiesMap(final Map<String, String> settings) {

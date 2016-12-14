@@ -15,27 +15,20 @@ import static com.alliander.osgp.platform.cucumber.core.Helpers.getLong;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.Date;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
-import com.alliander.osgp.domain.core.entities.Ean;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
@@ -47,10 +40,11 @@ import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.RelayType;
 import com.alliander.osgp.platform.cucumber.config.AdapterProtocolOslpPersistenceConfig;
+import com.alliander.osgp.platform.cucumber.config.CorePersistenceConfig;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
-import com.alliander.osgp.platform.cucumber.mocks.oslpdevice.MockOslpServer;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
+import com.alliander.osgp.platform.cucumber.steps.common.ResponseSteps;
 
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
@@ -68,7 +62,7 @@ public class DeviceSteps {
     private final Long DEFAULT_DEVICE_ID = new java.util.Random().nextLong();
     
     @Autowired
-    private AdapterProtocolOslpPersistenceConfig configuration;
+    private CorePersistenceConfig configuration;
 
     @Autowired
     private DeviceModelRepository deviceModelRepository;
@@ -205,7 +199,7 @@ public class DeviceSteps {
         int count = 0;
         while (!success) {
             try {
-                if (count > 120) {
+                if (count > configuration.getDefaultTimeout()) {
                     Assert.fail("Failed");
                 }
 
@@ -235,7 +229,7 @@ public class DeviceSteps {
         int count = 0;
         while (!success) {
             try {
-                if (count > 120) {
+                if (count > configuration.getDefaultTimeout()) {
                     Assert.fail("Failed");
                 }
 
@@ -263,16 +257,16 @@ public class DeviceSteps {
         boolean success = false;
         int count = 0;
         while (!success) {
+            if (count > configuration.getDefaultTimeout()) {
+                Assert.fail("Failed");
+            }
+
+            count++;
+            Thread.sleep(1000);
+            LoggerFactory.getLogger(DeviceSteps.class).info("Sleeping ls " + count);
+
             try {
-                if (count > 120) {
-                    Assert.fail("Failed");
-                }
-
                 // Wait for next try to retrieve a response
-                count++;
-                Thread.sleep(1000);
-                LoggerFactory.getLogger(DeviceSteps.class).info("Sleeping ls " + count);
-
                 final Device device = this.deviceRepository.findByDeviceIdentification(settings.get("DeviceIdentification"));
                 Assert.assertNotNull(device);
                 
@@ -324,21 +318,38 @@ public class DeviceSteps {
                 success = true;
             } catch (final Exception | AssertionError e) {
                 // Do nothing
-            	LoggerFactory.getLogger(DeviceSteps.class).info("Exception: " + e);
             }
         }
     }
 
     /**
+     * Checks whether the device exists in the database..
+     * 
      * @param deviceIdentification
      * @return
      */
-    @Then("^the dlms device with id \"([^\"]*)\" exists$")
-    public void theDlmsDeviceWithIdExists(final String deviceIdentification) throws Throwable {
+    @Then("^the device with id \"([^\"]*)\" exists$")
+    public void theDeviceWithIdExists(final String deviceIdentification) throws Throwable {
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
         final List<DeviceAuthorization> devAuths = this.deviceAuthorizationRepository.findByDevice(device);
 
         Assert.assertNotNull(device);
         Assert.assertTrue(devAuths.size() > 0);
+    }
+    
+    /**
+     * Checks whether the device does not exist in the database.
+     * 
+     * @param deviceIdentification
+     * @throws Throwable
+     */
+    @Then("^the device with id \"([^\"]*)\" does not exists$")
+    public void the_device_should_be_removed(final String deviceIdentification) throws Throwable
+    {
+        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+        final List<DeviceAuthorization> devAuths = this.deviceAuthorizationRepository.findByDevice(device);
+
+        Assert.assertNotNull(device);
+        Assert.assertTrue(devAuths.size() == 0);
     }
 }

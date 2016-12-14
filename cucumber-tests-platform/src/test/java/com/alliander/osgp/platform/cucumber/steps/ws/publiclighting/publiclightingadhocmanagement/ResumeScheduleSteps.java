@@ -24,9 +24,8 @@ import com.alliander.osgp.platform.cucumber.steps.common.ResponseSteps;
 import com.alliander.osgp.platform.cucumber.steps.ws.publiclighting.PublicLightingStepsBase;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.When;
 import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
 
 /**
  * Class with all the set light requests steps
@@ -54,7 +53,6 @@ public class ResumeScheduleSteps extends PublicLightingStepsBase {
     	PROPERTIES_MAP.put("__IS_IMMEDIATE__", requestParameters.get("IsImmediate"));
     	
         // Now run the request.
-//        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_ASYNC_NAME_REQUEST, TEST_CASE_ASYNC_REQ_XML, TEST_SUITE_XML);
         this.requestRunner(TestStepStatus.UNKNOWN, PROPERTIES_MAP, TEST_CASE_ASYNC_NAME_REQUEST, TEST_CASE_ASYNC_REQ_XML, TEST_SUITE_XML);
     }
     
@@ -72,7 +70,6 @@ public class ResumeScheduleSteps extends PublicLightingStepsBase {
     	PROPERTIES_MAP.put("__IS_IMMEDIATE__", requestParameters.get("IsImmediate"));
     	
         // Now run the request.
-//        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_ASYNC_NAME_REQUEST, TEST_CASE_ASYNC_REQ_XML, TEST_SUITE_XML);
         this.requestRunner(TestStepStatus.UNKNOWN, PROPERTIES_MAP, TEST_CASE_ASYNC_NAME_REQUEST, TEST_CASE_ASYNC_REQ_XML, TEST_SUITE_XML);
     }
     
@@ -88,11 +85,6 @@ public class ResumeScheduleSteps extends PublicLightingStepsBase {
                 getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
         this.runXpathResult.assertNotNull(this.response, PATH_CORRELATION_UID);
 
-//        LOGGER.info("Correlation-UID: " + this.response + " | Path: " + PATH_CORRELATION_UID);
-//        LOGGER.info("Correlation-UID: " + this.runXpathResult.getValue(this.response, PATH_CORRELATION_UID));
-        
-//        LOGGER.info("Response: " + this.response);
-        
         if (expectedResponseData.containsKey("FaultCode"))
         {
         	ResponseSteps.VerifyFaultResponse(this.runXpathResult, this.response, expectedResponseData);
@@ -114,8 +106,6 @@ public class ResumeScheduleSteps extends PublicLightingStepsBase {
         PROPERTIES_MAP.put("__DEVICE_IDENTIFICATION__", deviceIdentification);
         PROPERTIES_MAP.put("__CORRELATION_UID__", (String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
 
-//        this.waitForResponse(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_RESULT_NAME_REQUEST,
-//                    TEST_CASE_RESULT_REQ_XML, TEST_SUITE_XML);
         this.waitForResponse(TestStepStatus.UNKNOWN, PROPERTIES_MAP, TEST_CASE_RESULT_NAME_REQUEST,
                 TEST_CASE_RESULT_REQ_XML, TEST_SUITE_XML);
     }

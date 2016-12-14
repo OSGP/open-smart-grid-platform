@@ -22,12 +22,11 @@ import com.alliander.osgp.oslp.Oslp.TransitionType;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.steps.ws.core.CoreStepsBase;
 import com.alliander.osgp.platform.cucumber.steps.ws.publiclighting.PublicLightingStepsBase;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
-import cucumber.api.java.en.When;
 import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
 
 /**
  * Class with all the set light requests steps
@@ -40,9 +39,6 @@ public class SetTransitionSteps extends PublicLightingStepsBase {
     private static final String TEST_CASE_RESULT_NAME_REQUEST = "GetSetTransitionResponse";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetRebootSteps.class);
-
-    private static final String ON_LABEL = "On";
-    private static final String DEFAULT_ON = "true";
 
     /**
      * Sends a Get Status request to the platform for a given device identification.
@@ -62,7 +58,6 @@ public class SetTransitionSteps extends PublicLightingStepsBase {
     	PROPERTIES_MAP.put("__TIME__", cal.HOUR_OF_DAY + ":" + cal.MINUTE + ":" + cal.SECOND);
     	
         // Now run the request.
-//        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_ASYNC_NAME_REQUEST, TEST_CASE_ASYNC_REQ_XML, TEST_SUITE_XML);
         this.requestRunner(TestStepStatus.UNKNOWN, PROPERTIES_MAP, TEST_CASE_ASYNC_NAME_REQUEST, TEST_CASE_ASYNC_REQ_XML, TEST_SUITE_XML);
     }
     
@@ -79,8 +74,6 @@ public class SetTransitionSteps extends PublicLightingStepsBase {
         this.runXpathResult.assertNotNull(this.response, PATH_CORRELATION_UID);
 
         // Save the returned CorrelationUid in the Scenario related context for further use.
-        LOGGER.info("Correlation-UID: " + this.response + " | Path: " + PATH_CORRELATION_UID);
-        
         saveCorrelationUidInScenarioContext(this.runXpathResult.getValue(this.response, PATH_CORRELATION_UID),
                 getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
                         Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
@@ -94,8 +87,6 @@ public class SetTransitionSteps extends PublicLightingStepsBase {
         PROPERTIES_MAP.put("__DEVICE_IDENTIFICATION__", deviceIdentification);
         PROPERTIES_MAP.put("__CORRELATION_UID__", (String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
 
-//        this.waitForResponse(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_RESULT_NAME_REQUEST,
-//                    TEST_CASE_RESULT_REQ_XML, TEST_SUITE_XML);
         this.waitForResponse(TestStepStatus.UNKNOWN, PROPERTIES_MAP, TEST_CASE_RESULT_NAME_REQUEST,
                 TEST_CASE_RESULT_REQ_XML, TEST_SUITE_XML);
     }

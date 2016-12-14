@@ -23,7 +23,6 @@ Feature: Adhoc Management
       | DeviceIdentification | Status | Index | On    | Result |
       | TEST1024000000001    | active | 0     | true  | OK     |
 
-### Converted Fitnesse tests to Cucumber ###
 	Scenario Outline: Receive A Set Light Request With An Invalid Single Light Value
 		Given a device
 			| DeviceIdentification | TEST1024000000001 |
@@ -92,8 +91,6 @@ Feature: Adhoc Management
     	| internalId | externalId | Index | On    | DimValue |
       | 4          | 4          | 3     | false | 5        |
 			
-# GetStatus scenario's
-	# Succesfull: Status values
   @OslpMockServer
   Scenario Outline: Get Status Values
     Given an oslp device
@@ -111,7 +108,6 @@ Feature: Adhoc Management
       | DeviceIdentification | Status | Result |
       | TEST1024000000001    | active | OK     |
 	
-	# Failure: Status values
 	Scenario Outline: Fail To Get Status Values
 		Given a device
 			| DeviceIdentification | TEST1024000000001 |
@@ -129,7 +125,6 @@ Feature: Adhoc Management
 			| DeviceIdentification | Status       |
 			| unknown              | unknown      |
 	
-	# Multiple lights
 	@OslpMockServer
 	Scenario Outline: Get Status Values From A Device With Multiple Lights
 		Given an oslp device
@@ -153,7 +148,6 @@ Feature: Adhoc Management
     	| DeviceIdentification | On   | DimValue | Result                         |
     	| TEST1024000000001    | true | 1        | 1,1,TARIFF;2,2,LIGHT;3,3,LIGHT |
 
-# ResumeSchedule scenario's
 	@OslpMockServer
 	Scenario Outline: Resume Schedule
 		Given an oslp device
@@ -191,7 +185,6 @@ Feature: Adhoc Management
 			| DeviceIdentification | HasSchedule | Index | IsImmediate |
 			| TEST1024000000001    | true        |       | true        |
 	
-# SetReboot scenario's
 	@OslpMockServer
 	Scenario Outline: Set Reboot
 		Given an oslp device
@@ -208,7 +201,6 @@ Feature: Adhoc Management
 			| DeviceIdentification | Result |
 			| TEST1024000000001    | OK     |
 	
-# SetTransition scenario's
 	@OslpMockServer
 	Scenario Outline: Set Transition
 		Given an oslp device

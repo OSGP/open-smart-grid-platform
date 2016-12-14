@@ -34,6 +34,7 @@ public class DeviceModelSteps {
     private ManufacturerRepository manufacturerRepo;
 
     private final Boolean DEFAULT_FILESTORAGE = true;
+    private final Boolean DEFAULT_METERED = true;
 
     /**
      * Generic method which adds a device model using the settings.
@@ -48,13 +49,16 @@ public class DeviceModelSteps {
     	final Manufacturer manufacturer = this.manufacturerRepo.findByName(
     			getString(settings, "ManufacturerName", ManufacturerSteps.DEFAULT_NAME));
 
+    	final String description = getString(settings, "Description", Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION);
+    	
     	// Create the new device model.
     	final DeviceModel entity = new DeviceModel(
     			manufacturer,
     			getString(settings, "ModelCode", Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE),
-    			getString(settings, "Description", Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION),
+    			description,
     			getBoolean(settings, "FileStorage", this.DEFAULT_FILESTORAGE));
 
+    	entity.updateData(description, getBoolean(settings, "Metered", this.DEFAULT_METERED));
     	entity.setVersion(getLong(settings, "Version"));
 
 		this.repo.save(entity);
