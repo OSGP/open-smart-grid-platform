@@ -10,26 +10,21 @@ package com.alliander.osgp.platform.cucumber.steps.database;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.cleanRepoAbstractEntity;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.cleanRepoSerializable;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRepository;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
-import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
-import com.alliander.osgp.domain.core.entities.Ean;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
-import com.alliander.osgp.domain.core.entities.Ssld;
+import com.alliander.osgp.domain.core.repositories.DeleteAllDevicesService;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.ManufacturerRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
-import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.PlatformDomain;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
@@ -59,8 +54,8 @@ public class DatabaseSteps {
     private OslpDeviceRepository oslpDeviceRepo;
 
     @Autowired
-    private SsldRepository ssldRepository;
-    
+    private DeleteAllDevicesService deleteAllDevicesService;
+
     /**
      * This method is used to create default data not directly related to the
      * specific tests. For example: The test-org organization which is used to
@@ -90,31 +85,17 @@ public class DatabaseSteps {
         this.deviceModelRepo.save(deviceModel);
     }
 
+    @Transactional("txMgrCore")
     public void prepareDatabaseForScenario() {
     	
-        // The device output settings should be cleared before each test.
-        // TODO Can this be done better?
-        List<DeviceOutputSetting> settings = new ArrayList<DeviceOutputSetting>();
-        List<Ean> eans = new ArrayList<Ean>();
-        for (Ssld ssld : this.ssldRepository.findAll()) {
-        	ssld.setEans(eans);
-        	this.ssldRepository.save(ssld);
-        }
-        for (Ssld ssld : this.ssldRepository.findAll()) {
-        	ssld.updateOutputSettings(settings);
-        	this.ssldRepository.save(ssld);
-        }
-        
     	cleanRepoAbstractEntity(this.oslpDeviceRepo);
         cleanRepoAbstractEntity(this.deviceAuthorizationRepo);
+        
+        this.deleteAllDevicesService.deleteAllDevices();
         cleanRepoSerializable(this.smartMeterRepo);
-        
-        cleanRepoSerializable(this.ssldRepository);
-        cleanRepoSerializable(this.deviceRepo);
-        cleanRepoSerializable(this.organizationRepo);
-        cleanRepoSerializable(this.deviceModelRepo);
         cleanRepoSerializable(this.manufacturerRepo);
-        
-        insertDefaultData();
+        cleanRepoSerializable(this.organizationRepo);
+
+        this.insertDefaultData();
     }
 }
