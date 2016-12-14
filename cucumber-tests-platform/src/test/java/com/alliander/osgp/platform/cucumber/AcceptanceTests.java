@@ -22,7 +22,8 @@ import cucumber.api.junit.Cucumber;
 		plugin = { 
 				"pretty",
 				"html:target/output/Cucumber-report", 
-				"html:target/output/Cucumber-html-report.html" }, 
+				"html:target/output/Cucumber-html-report.html",
+                "json:target/output/cucumber.json" }, 
 		snippets = SnippetType.CAMELCASE)
 public class AcceptanceTests {
 

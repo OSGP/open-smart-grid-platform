@@ -61,10 +61,6 @@ public class DatabaseSteps {
      * send authorized requests to the platform.
      */
     private void insertDefaultData() {
-        // TODO: Better would be to have some sort of init method in the
-        // steps.database package which will create the necessary basic
-        // entities.
-
         if (this.organisationRepo.findByOrganisationIdentification(Defaults.DEFAULT_ORGANISATION_IDENTIFICATION) == null) {
             // Create test organization used within the tests.
             final Organisation testOrg = new Organisation(Defaults.DEFAULT_ORGANISATION_IDENTIFICATION,
