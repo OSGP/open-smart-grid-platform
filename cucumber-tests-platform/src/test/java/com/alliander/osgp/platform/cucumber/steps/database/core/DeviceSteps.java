@@ -17,6 +17,7 @@ import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Date;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
 
@@ -45,6 +46,7 @@ import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.RelayType;
+import com.alliander.osgp.platform.cucumber.config.AdapterProtocolOslpPersistenceConfig;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.mocks.oslpdevice.MockOslpServer;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
@@ -64,6 +66,9 @@ public class DeviceSteps {
 
     @SuppressWarnings("unused")
     private final Long DEFAULT_DEVICE_ID = new java.util.Random().nextLong();
+    
+    @Autowired
+    private AdapterProtocolOslpPersistenceConfig configuration;
 
     @Autowired
     private DeviceModelRepository deviceModelRepository;
@@ -155,13 +160,19 @@ public class DeviceSteps {
                 getString(settings, Keys.KEY_PROTOCOL, DeviceSteps.DEFAULT_PROTOCOL),
                 getString(settings, Keys.KEY_PROTOCOL_VERSION, DeviceSteps.DEFAULT_PROTOCOL_VERSION)));
 
-        device.updateRegistrationData(InetAddress.getLoopbackAddress(),
+        InetAddress inetAddress;
+        try {
+            inetAddress = InetAddress.getByName(configuration.deviceNetworkaddress);
+        } catch (UnknownHostException e) {
+            inetAddress = InetAddress.getLoopbackAddress();
+        }
+        device.updateRegistrationData(inetAddress,
                 getString(settings, "DeviceType", DeviceSteps.DEFAULT_DEVICE_TYPE));
 
         device.setVersion(getLong(settings, "Version"));
         device.setActive(getBoolean(settings, "Active", Defaults.DEFAULT_ACTIVE));
-        if (getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION).toLowerCase() != "null") {
-            device.addOrganisation(getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+        if (getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANISATION_IDENTIFICATION).toLowerCase() != "null") {
+            device.addOrganisation(getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANISATION_IDENTIFICATION));
         }
         device.updateMetaData(getString(settings, "Alias", Defaults.DEFAULT_ALIAS),
                 getString(settings, "containerCity", Defaults.DEFAULT_CONTAINER_CITY),
@@ -175,9 +186,9 @@ public class DeviceSteps {
         device = this.deviceRepository.save(device);
         
         final Organisation organization = this.organizationRepository.findByOrganisationIdentification(
-                getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+                getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANISATION_IDENTIFICATION));
 
-        if (getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION).toLowerCase() != "null") {
+        if (getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANISATION_IDENTIFICATION).toLowerCase() != "null") {
             final DeviceFunctionGroup functionGroup = getEnum(settings, "DeviceFunctionGroup", DeviceFunctionGroup.class,
                     DeviceFunctionGroup.OWNER);
             final DeviceAuthorization authorization = device.addAuthorization(organization, functionGroup);
@@ -322,8 +333,8 @@ public class DeviceSteps {
      * @param deviceIdentification
      * @return
      */
-    @Then("^the device with the id \"([^\"]*)\" exists$")
-    public void theDeviceWithIdExists(final String deviceIdentification) throws Throwable {
+    @Then("^the dlms device with id \"([^\"]*)\" exists$")
+    public void theDlmsDeviceWithIdExists(final String deviceIdentification) throws Throwable {
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
         final List<DeviceAuthorization> devAuths = this.deviceAuthorizationRepository.findByDevice(device);
 

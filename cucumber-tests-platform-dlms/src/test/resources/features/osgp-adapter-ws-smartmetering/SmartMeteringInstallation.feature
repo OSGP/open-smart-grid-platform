@@ -20,5 +20,4 @@ Feature: SmartMetering Installation
     And receiving an get add device response request
       | DeviceIdentification | E0026000059790003 |
     And the get add device request response should be ok
-    And the device with the id "E0026000059790003" exists
     And the dlms device with id "E0026000059790003" exists

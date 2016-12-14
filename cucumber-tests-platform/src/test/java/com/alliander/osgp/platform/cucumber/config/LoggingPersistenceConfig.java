@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.core;
+package com.alliander.osgp.platform.cucumber.config;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -18,31 +18,28 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
-import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
-import com.alliander.osgp.domain.core.repositories.DeviceRepository;
+import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 
-@EnableJpaRepositories(entityManagerFactoryRef = "entityMgrCore",  
-    transactionManagerRef = "txMgrCore",
-    basePackageClasses = { DeviceRepository.class, DeviceAuthorizationRepository.class })
-public class PersistenceConfigCore extends ApplicationConfiguration {
+@EnableJpaRepositories(entityManagerFactoryRef = "entityMgrLogging", transactionManagerRef = "txMgrLogging", basePackageClasses = { DeviceLogItemRepository.class })
+public class LoggingPersistenceConfig extends ApplicationConfiguration {
 
-    @Value("${osgpcoredbs.url}")
+    @Value("${osgploggingdbs.url}")
     private String databaseUrl;
 
-    @Value("${entitymanager.packages.to.scan.core}")
+    @Value("${entitymanager.packages.to.scan.logging}")
     private String entitymanagerPackagesToScan;
-      
-    public PersistenceConfigCore() {
+
+    public LoggingPersistenceConfig() {
     }
 
     @Override
     protected String getDatabaseUrl() {
-        return databaseUrl;
+        return this.databaseUrl;
     }
 
     @Override
     protected String getEntitymanagerPackagesToScan() {
-        return entitymanagerPackagesToScan;
+        return this.entitymanagerPackagesToScan;
     }
 
     /**
@@ -51,9 +48,9 @@ public class PersistenceConfigCore extends ApplicationConfiguration {
      * @return DataSource
      */
     @Primary
-    @Bean(name = "dsCore")    
+    @Bean(name = "dsLogging")
     public DataSource dataSource() {
-        return makeDataSource();
+        return this.makeDataSource();
     }
 
     /**
@@ -64,13 +61,13 @@ public class PersistenceConfigCore extends ApplicationConfiguration {
      *             when class not found
      */
     @Primary
-    @Bean(name = "entityMgrCore")
-    public LocalContainerEntityManagerFactoryBean entityMgrCore(@Qualifier("dsCore") DataSource dataSource)
+    @Bean(name = "entityMgrLogging")
+    public LocalContainerEntityManagerFactoryBean entityMgrCore(@Qualifier("dsLogging") final DataSource dataSource)
             throws ClassNotFoundException {
 
-        return makeEntityManager("OSGP_CUCUMBER_CORE", dataSource);
+        return this.makeEntityManager("OSGP_CUCUMBER_LOGGING", dataSource);
     }
-    
+
     /**
      * Method for creating the Transaction Manager.
      *
@@ -79,9 +76,9 @@ public class PersistenceConfigCore extends ApplicationConfiguration {
      *             when class not found
      */
     @Primary
-    @Bean(name = "txMgrCore")    
-    public JpaTransactionManager txMgrCore( 
-            @Qualifier("entityMgrCore") EntityManagerFactory entityMgrCore) throws ClassNotFoundException {
+    @Bean(name = "txMgrLogging")
+    public JpaTransactionManager txMgrCore(@Qualifier("entityMgrLogging") final EntityManagerFactory entityMgrCore)
+            throws ClassNotFoundException {
 
         return new JpaTransactionManager(entityMgrCore);
     }

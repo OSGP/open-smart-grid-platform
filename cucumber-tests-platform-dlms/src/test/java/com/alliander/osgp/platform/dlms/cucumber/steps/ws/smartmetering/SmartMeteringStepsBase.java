@@ -57,7 +57,7 @@ public abstract class SmartMeteringStepsBase extends SoapUiRunner {
      */
     protected void saveCorrelationId() throws Throwable {
         Helpers.saveCorrelationUidInScenarioContext(this.runXpathResult.getValue(this.response, PATH_CORRELATION_UID),
-                getString(PROPERTIES_MAP, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+                getString(PROPERTIES_MAP, "OrganizationIdentification", Defaults.DEFAULT_ORGANISATION_IDENTIFICATION));
 
     }
 }

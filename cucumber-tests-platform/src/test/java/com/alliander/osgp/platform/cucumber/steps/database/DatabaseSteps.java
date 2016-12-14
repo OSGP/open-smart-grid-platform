@@ -32,7 +32,7 @@ import com.alliander.osgp.platform.cucumber.steps.Defaults;
 public class DatabaseSteps {
 
     @Autowired
-    private OrganisationRepository organizationRepo;
+    private OrganisationRepository organisationRepo;
 
     @Autowired
     private ManufacturerRepository manufacturerRepo;
@@ -51,30 +51,26 @@ public class DatabaseSteps {
 
     @Autowired
     private OslpDeviceRepository oslpDeviceRepo;
-    
+
     @Autowired
     private SsldRepository ssldRepository;
-    
+
     /**
      * This method is used to create default data not directly related to the
      * specific tests. For example: The test-org organization which is used to
      * send authorized requests to the platform.
      */
     private void insertDefaultData() {
-        // TODO: Better would be to have some sort of init method in the
-        // steps.database package which will create the necessary basic
-        // entities.
-
-        if (this.organizationRepo.findByOrganisationIdentification(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION) == null) {
+        if (this.organisationRepo.findByOrganisationIdentification(Defaults.DEFAULT_ORGANISATION_IDENTIFICATION) == null) {
             // Create test organization used within the tests.
-            final Organisation testOrg = new Organisation(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION,
-                    Defaults.DEFAULT_ORGANIZATION_DESCRIPTION, Defaults.DEFAULT_PREFIX, PlatformFunctionGroup.ADMIN);
+            final Organisation testOrg = new Organisation(Defaults.DEFAULT_ORGANISATION_IDENTIFICATION,
+                    Defaults.DEFAULT_ORGANISATION_DESCRIPTION, Defaults.DEFAULT_PREFIX, PlatformFunctionGroup.ADMIN);
             testOrg.addDomain(PlatformDomain.COMMON);
             testOrg.addDomain(PlatformDomain.PUBLIC_LIGHTING);
             testOrg.addDomain(PlatformDomain.TARIFF_SWITCHING);
             testOrg.setIsEnabled(true);
 
-            this.organizationRepo.save(testOrg);
+            this.organisationRepo.save(testOrg);
         }
 
         // Create default test manufacturer

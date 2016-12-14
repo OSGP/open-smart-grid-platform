@@ -81,7 +81,7 @@ public class SetLightSteps extends PublicLightingStepsBase {
     @Then("^the set light async response contains$")
     public void thenTheSetLightResponseContains(final Map<String, String> expectedResponseData)
             throws Throwable {
-    	
+   	
     	if (expectedResponseData.containsKey("FaultCode"))
     	{
     		LOGGER.info("Response: " + this.response);
