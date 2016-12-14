@@ -106,6 +106,7 @@ public class SetEventNotificationsSteps extends CoreStepsBase {
     	
 //    	this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_NAME, TEST_SUITE);
     	this.requestRunner(TestStepStatus.UNKNOWN, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_NAME, TEST_SUITE);
+    	LoggerFactory.getLogger(SetEventNotificationsSteps.class).info("Receiving a set event notification message request");
     }
     
     /**
@@ -139,5 +140,6 @@ public class SetEventNotificationsSteps extends CoreStepsBase {
         
     	this.waitForResponse(TestStepStatus.UNKNOWN, PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE,
     			TEST_RESPONSE_CASE_NAME, TEST_SUITE);
+    	LoggerFactory.getLogger(SetEventNotificationsSteps.class).info("The platform buffers a set event notification response message for device");
     }
 }

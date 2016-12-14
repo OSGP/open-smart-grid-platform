@@ -166,7 +166,7 @@ Feature: Organisation management
 	Scenario Outline: Set Event Notifications
 		Given an oslp device
 			| DeviceIdentification | <DeviceIdentification> |
-		And the device returns an event notification "<Result>" over OSLP
+		And the device returns a set event notification "<Result>" over OSLP
     When receiving a set event notification message request on OSGP
     	| Event                | <Event>                |
     	| DeviceIdentification | <DeviceIdentification> |

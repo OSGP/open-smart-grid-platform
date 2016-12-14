@@ -187,7 +187,7 @@ public abstract class SoapUiRunner {
         int count = 0;
         do {
             if (count > 120) {
-                Assert.fail("Failed to retieve a response");
+                Assert.fail("Failed to retrieve a response");
             }
 
             // Wait for next try to retrieve a response

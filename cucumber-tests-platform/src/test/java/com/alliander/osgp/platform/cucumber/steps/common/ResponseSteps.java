@@ -10,10 +10,13 @@ package com.alliander.osgp.platform.cucumber.steps.common;
 import java.io.IOException;
 import java.util.Map;
 
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.junit.Assert;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.xml.sax.SAXException;
 
@@ -53,8 +56,20 @@ public class ResponseSteps {
             if (expectedResult.get("FaultType").equals("ValidationError")) {
                 final String[] validationErrors = expectedResult.get("ValidationErrors").split(";");
                 // TODO: Validation exact number of validation errors to be the
+                String value = null;
                 for (int i = 1; i <= validationErrors.length; i++) {
                     // TODO: Check validations ....
+//                	Assert.assertTrue(runXpathResult.assertXpath(response, "/Envelope/Body/Fault/detail/ValidationError[" + i + "]/text()", validationErrors[i]));
+                	
+					try {
+						value = runXpathResult.getValue(response, "/Envelope/Body/Fault/detail/ValidationError[" + i + "]");
+	            		boolean b = value.equals(validationErrors[i - 1]);
+	            		if (b) Assert.assertTrue(b);
+					} catch (Throwable e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
                 }
             } else {
                 // FunctionalError or TechnicalError

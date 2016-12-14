@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.oslp.device.DeviceResponse;
+import com.alliander.osgp.domain.core.valueobjects.LightValue;
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.Oslp.EventNotificationResponse;
 import com.alliander.osgp.oslp.Oslp.GetFirmwareVersionResponse;
@@ -36,8 +37,11 @@ import com.alliander.osgp.oslp.Oslp.GetStatusResponse;
 import com.alliander.osgp.oslp.Oslp.LinkType;
 import com.alliander.osgp.oslp.Oslp.LightType;
 import com.alliander.osgp.oslp.Oslp.Message;
+import com.alliander.osgp.oslp.Oslp.ResumeScheduleResponse;
 import com.alliander.osgp.oslp.Oslp.SetEventNotificationsResponse;
 import com.alliander.osgp.oslp.Oslp.SetLightResponse;
+import com.alliander.osgp.oslp.Oslp.SetRebootResponse;
+import com.alliander.osgp.oslp.Oslp.SetTransitionResponse;
 import com.alliander.osgp.oslp.Oslp.StartSelfTestResponse;
 import com.alliander.osgp.oslp.Oslp.Status;
 import com.alliander.osgp.oslp.Oslp.StopSelfTestResponse;
@@ -232,8 +236,26 @@ public class MockOslpServer {
 	public void mockGetStatusResponse(LinkType preferred, LinkType actual, LightType lightType, int eventNotificationMask, Oslp.Status status) {
 		this.mockResponses.put(DeviceRequestMessageType.GET_STATUS, Oslp.Message.newBuilder()
 				.setGetStatusResponse(GetStatusResponse.newBuilder()
-						.setPreferredLinktype(preferred).setActualLinktype(actual).setLightType(lightType)
-						.setEventNotificationMask(eventNotificationMask).setStatus(status))
+					.setPreferredLinktype(preferred).setActualLinktype(actual).setLightType(lightType)
+					.setEventNotificationMask(eventNotificationMask).setStatus(status))
+				.build());
+	}
+	
+	public void mockResumeScheduleResponse(Oslp.Status status) {
+		this.mockResponses.put(DeviceRequestMessageType.RESUME_SCHEDULE, Oslp.Message.newBuilder()
+				.setResumeScheduleResponse(ResumeScheduleResponse.newBuilder().setStatus(status))
+				.build());
+	}
+	
+	public void mockSetRebootResponse(Oslp.Status status) {
+		this.mockResponses.put(DeviceRequestMessageType.SET_REBOOT, Oslp.Message.newBuilder()
+				.setSetRebootResponse(SetRebootResponse.newBuilder().setStatus(status))
+				.build());
+	}
+	
+	public void mockSetTransitionResponse(Oslp.Status status) {
+		this.mockResponses.put(DeviceRequestMessageType.SET_TRANSITION, Oslp.Message.newBuilder()
+				.setSetTransitionResponse(SetTransitionResponse.newBuilder().setStatus(status))
 				.build());
 	}
 }

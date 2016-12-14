@@ -41,7 +41,7 @@ public class OslpDeviceSteps {
 
         // First create the device itself
         this.deviceSteps.aDevice(settings);
-
+        
         // Now create the OSLP device in the OSLP database
         final String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION,
                 Defaults.DEFAULT_DEVICE_IDENTIFICATION);

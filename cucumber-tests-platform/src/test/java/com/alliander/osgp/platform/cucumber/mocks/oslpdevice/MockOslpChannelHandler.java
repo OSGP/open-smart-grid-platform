@@ -369,20 +369,19 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         }
 
         String keys = "";
+		
+        LOGGER.info("Handler Sleeping for 2.5 seconds");
+		this.sleep(2500L);
         
-        for (DeviceRequestMessageType k : mockResponses.keySet())
+		for (DeviceRequestMessageType k : mockResponses.keySet())
         {
         	if (!keys.isEmpty()) keys += " | ";
         	keys += k.name();
         }
-        LOGGER.error("Handler MockResponsesKeys: " + keys);
-		try {
-			LOGGER.info("Handler Sleeping for 5 seconds");
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        LOGGER.info("Handler MockResponsesKeys: " + keys);
+	
+		LOGGER.info("Handler Sleeping for 2.5 seconds");
+		this.sleep(2500L);
 		
         // Handle requests
         if (request.hasGetFirmwareVersionRequest()
@@ -400,6 +399,18 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         } else if (request.hasStopSelfTestRequest() 
         		&& this.mockResponses.containsKey(DeviceRequestMessageType.STOP_SELF_TEST)) {
         	response = processRequest(DeviceRequestMessageType.STOP_SELF_TEST, request);
+        } else if (request.hasGetStatusRequest()
+        		&& this.mockResponses.containsKey(DeviceRequestMessageType.GET_STATUS)) {
+        	response = processRequest(DeviceRequestMessageType.GET_STATUS, request);
+        } else if (request.hasResumeScheduleRequest()
+        		&& this.mockResponses.containsKey(DeviceRequestMessageType.RESUME_SCHEDULE)) {
+        	response = processRequest(DeviceRequestMessageType.RESUME_SCHEDULE, request);
+        } else if (request.hasSetRebootRequest()
+        		&& this.mockResponses.containsKey(DeviceRequestMessageType.SET_REBOOT)) {
+        	response = processRequest(DeviceRequestMessageType.SET_REBOOT, request);
+        } else if (request.hasSetTransitionRequest()
+        		&& this.mockResponses.containsKey(DeviceRequestMessageType.SET_TRANSITION)) {
+        	response = processRequest(DeviceRequestMessageType.SET_TRANSITION, request);
         }
         // TODO: Implement further requests.
         else {

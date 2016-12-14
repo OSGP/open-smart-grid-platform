@@ -27,6 +27,7 @@ import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCase;
 import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCaseRunner;
 import com.eviware.soapui.model.support.PropertiesMap;
 import com.eviware.soapui.model.testsuite.TestCase;
+import com.eviware.soapui.model.testsuite.TestProperty;
 import com.eviware.soapui.support.SoapUIException;
 
 @Component
@@ -43,6 +44,11 @@ public class TestCaseRunner {
 
         for (final Entry<String, String> entry : propertiesMap.entrySet()) {
             wsdlTestCase.setPropertyValue(entry.getKey(), entry.getValue());
+        }
+        
+        for (final Entry<String, TestProperty> entry : wsdlTestCase.getProperties().entrySet())
+        {
+        	LOGGER.info(entry.getKey() + ": " + entry.getValue().getValue());
         }
 
         final WsdlTestCaseRunner wsdlTestCaseRunner = new WsdlTestCaseRunner(wsdlTestCase, new PropertiesMap());

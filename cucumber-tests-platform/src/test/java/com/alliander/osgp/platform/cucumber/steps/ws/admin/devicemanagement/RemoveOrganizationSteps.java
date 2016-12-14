@@ -59,7 +59,7 @@ public class RemoveOrganizationSteps extends AdminStepsBase {
      * @throws Throwable
      */
     @Then("^the remove organization response contains$")
-    public void the_remove_organization_response_contains(Map<String, String> expectedResult) throws Throwable {
+    public void the_remove_organization_response_contains(final Map<String, String> expectedResult) throws Throwable {
         ResponseSteps.VerifyFaultResponse(this.runXpathResult, this.response, expectedResult);
     }
 }

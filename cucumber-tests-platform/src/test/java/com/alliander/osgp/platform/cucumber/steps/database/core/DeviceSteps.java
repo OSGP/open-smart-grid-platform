@@ -15,16 +15,26 @@ import static com.alliander.osgp.platform.cucumber.core.Helpers.getLong;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
+import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
+import com.alliander.osgp.domain.core.entities.Ean;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
@@ -34,7 +44,9 @@ import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
+import com.alliander.osgp.domain.core.valueobjects.RelayType;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
+import com.alliander.osgp.platform.cucumber.mocks.oslpdevice.MockOslpServer;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
 
@@ -86,6 +98,25 @@ public class DeviceSteps {
         final Ssld ssld = new Ssld(deviceIdentification);
         
         ssld.setPublicKeyPresent(getBoolean(settings, "PublicKeyPresent", Defaults.DEFAULT_PUBLICKEYPRESENT));
+        ssld.setHasSchedule(getBoolean(settings, "HasSchedule", Defaults.DEFAULT_HASSCHEDULE));
+        
+        if (settings.containsKey("internalId") && settings.containsKey("externalId") && settings.containsKey("relayType"))
+        {
+        	List<DeviceOutputSetting> dosList = new ArrayList<>();
+            int internalId = Integer.parseInt(getString(settings, "internalId", "0")),
+            	   externalId = Integer.parseInt(getString(settings, "internalId", "0"));
+            String sRelayType = getString(settings, "relayType", "null");
+            RelayType relayType = (sRelayType.equals("LIGHT")) ? RelayType.LIGHT : 
+            			(sRelayType.equals("TARIFF")) ? RelayType.TARIFF : 
+            			(sRelayType.equals("TARIFF_REVERSED")) ? RelayType.TARIFF_REVERSED : null;
+            
+            if (relayType != null)
+            {
+            	dosList.add(new DeviceOutputSetting(internalId, externalId, relayType));
+            	
+                ssld.updateOutputSettings(dosList);
+            }
+        }
         
         this.ssldRepository.save(ssld);
         
@@ -229,6 +260,7 @@ public class DeviceSteps {
                 // Wait for next try to retrieve a response
                 count++;
                 Thread.sleep(1000);
+                LoggerFactory.getLogger(DeviceSteps.class).info("Sleeping ls " + count);
 
                 final Device device = this.deviceRepository.findByDeviceIdentification(settings.get("DeviceIdentification"));
                 Assert.assertNotNull(device);
@@ -262,6 +294,7 @@ public class DeviceSteps {
                 }
                 if (settings.containsKey("Activated")) {
                     Assert.assertTrue(Boolean.parseBoolean(settings.get("Activated")) == device.isActivated());
+//                	Assert.assertTrue(Boolean.parseBoolean(settings.get("Activated")));
                 }
                 if (settings.containsKey("HasSchedule") || settings.containsKey("PublicKeyPresent")) {
                     final Ssld ssld = this.ssldRepository.findByDeviceIdentification(settings.get("DeviceIdentification"));
@@ -280,6 +313,7 @@ public class DeviceSteps {
                 success = true;
             } catch (final Exception | AssertionError e) {
                 // Do nothing
+            	LoggerFactory.getLogger(DeviceSteps.class).info("Exception: " + e);
             }
         }
     }

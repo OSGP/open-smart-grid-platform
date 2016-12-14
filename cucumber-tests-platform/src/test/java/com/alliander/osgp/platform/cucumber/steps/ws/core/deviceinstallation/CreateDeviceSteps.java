@@ -11,12 +11,22 @@ package com.alliander.osgp.platform.cucumber.steps.ws.core.deviceinstallation;
 
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 
 import org.junit.Assert;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
+import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.cucumber.steps.common.ResponseSteps;
+import com.alliander.osgp.platform.cucumber.steps.database.core.DeviceSteps;
 import com.alliander.osgp.platform.cucumber.steps.ws.core.CoreStepsBase;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
@@ -33,9 +43,11 @@ public class CreateDeviceSteps extends CoreStepsBase {
     }
 
     private static final String TEST_SUITE = "DeviceInstallation";
+    private static final String TEST_SUITE_UPDATE = "DeviceManagement";
     private static final String TEST_CASE_NAME_ADD_DEVICE = "AT AddDevice";
     private static final String TEST_CASE_NAME_REQUEST_ADD_DEVICE = "AddDevice";
-    private static final String TEST_CASE_NAME_UPDATE_DEVICE = "AT UpdateDevice";
+//    private static final String TEST_CASE_NAME_UPDATE_DEVICE = "AT UpdateDevice";
+    private static final String TEST_CASE_NAME_UPDATE_DEVICE = "UpdateDevice TestCase";
     private static final String TEST_CASE_NAME_REQUEST_UPDATE_DEVICE = "UpdateDevice";
     private static final String DEFAULT_DEVICEUID = "";
     private static final String DEFAULT_ALIAS = "";
@@ -79,6 +91,65 @@ public class CreateDeviceSteps extends CoreStepsBase {
         PROPERTIES_MAP.put("Description", getString(settings, "Description", DEFAULT_DESCRIPTION));
         PROPERTIES_MAP.put("Metered", getString(settings, "Metered", DEFAULT_METERED));
     }
+    
+    private void fillUpdatePropertiesMap(final Map<String, String> settings) {
+    	fillPropertiesMap(settings);
+    	
+    	PROPERTIES_MAP.put("UpdateDeviceIdentification", getString(settings, "DeviceIdentification", Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+    	PROPERTIES_MAP.put("NetworkAddress", getString(settings, "NetworkAddress", "0.0.0.0"));
+    	PROPERTIES_MAP.put("Active", getString(settings, "Active", "false"));
+    	PROPERTIES_MAP.put("internalId", getString(settings, "internalId", "0"));
+    	PROPERTIES_MAP.put("externalId", getString(settings, "externalId", "0"));
+    	PROPERTIES_MAP.put("relayType", getString(settings, "relayType", "null"));
+    	PROPERTIES_MAP.put("code", getString(settings, "code", "0"));
+    	PROPERTIES_MAP.put("Index", getString(settings, "Index", "0"));
+    	PROPERTIES_MAP.put("LastKnownState", getString(settings, "LastKnownState", "false"));
+//    	PROPERTIES_MAP.put("LastKnowSwitchingTime", getString(settings, "LastKnowSwitchingTime", date.toString()));
+    	PROPERTIES_MAP.put("InMaintenance", getString(settings, "InMaintenance", "false"));
+//    	PROPERTIES_MAP.put("TechnicalInstallationDate", getString(settings, "TechnicalInstallationDate", date.toString()));
+    	PROPERTIES_MAP.put("UsePrefix", getString(settings, "UsePrefix", "false"));
+    	PROPERTIES_MAP.put("Metered", getString(settings, "Metered", "false"));
+    	
+    	Calendar cal = Calendar.getInstance();
+    	cal.set(Calendar.YEAR, 2016);
+    	cal.set(Calendar.MONTH, 12);
+    	cal.set(Calendar.DAY_OF_MONTH, 7);    	
+    	
+    	SimpleDateFormat df = (SimpleDateFormat) SimpleDateFormat.getDateInstance();
+    	df.applyPattern("yyyy-MM-dd HH:mm:ss.SSS");
+
+    	String sLastKnowSwitchingTimeDate = cal.getTime().toString();
+    	String sTechnicalInstallationDate = cal.getTime().toString();
+    	
+    	sTechnicalInstallationDate = getString(settings, "TechnicalInstallationDate", sTechnicalInstallationDate);
+    	sLastKnowSwitchingTimeDate = getString(settings, "LastKnowSwitchingTime", sLastKnowSwitchingTimeDate);
+    	
+    	SimpleDateFormat sdf = new SimpleDateFormat("EE MMM dd HH:mm:ss z yyyy", java.util.Locale.ENGLISH);
+    	
+    	if (!settings.containsKey("LastKnowSwitchingTime"))
+    	{
+    		try {
+        		sLastKnowSwitchingTimeDate = df.format(sdf.parse(sLastKnowSwitchingTimeDate));
+    		} catch (ParseException e) {
+    			// TODO Auto-generated catch block
+    		}
+    	}
+    	
+    	if (!settings.containsKey("TechnicalInstallationDate"))
+    	{
+    		try {
+    			sTechnicalInstallationDate = df.format(sdf.parse(sTechnicalInstallationDate));
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+			}
+    	}
+    	
+    	sLastKnowSwitchingTimeDate = sLastKnowSwitchingTimeDate.replaceAll(" ", "T");
+    	sTechnicalInstallationDate = sTechnicalInstallationDate.replaceAll(" ", "T");
+    	
+		PROPERTIES_MAP.put("LastKnowSwitchingTime", getString(settings, "LastKnowSwitchingTime", sLastKnowSwitchingTimeDate));
+		PROPERTIES_MAP.put("TechnicalInstallationDate", getString(settings, "TechnicalInstallationDate", sTechnicalInstallationDate));
+    }
 
     /**
      *
@@ -111,10 +182,10 @@ public class CreateDeviceSteps extends CoreStepsBase {
     @When("^receiving an update device request")
     public void receiving_an_update_device_request(final Map<String, String> requestParameters) throws Throwable {
 
-        this.fillPropertiesMap(requestParameters);
+        this.fillUpdatePropertiesMap(requestParameters);
 
         this.requestRunner(TestStepStatus.UNKNOWN, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST_UPDATE_DEVICE,
-                TEST_CASE_NAME_UPDATE_DEVICE, TEST_SUITE);
+                TEST_CASE_NAME_UPDATE_DEVICE, TEST_SUITE_UPDATE);
     }
 
     /**
@@ -125,7 +196,9 @@ public class CreateDeviceSteps extends CoreStepsBase {
      */
     @Then("^the update device response is successfull$")
     public void the_update_device_response_is_successfull() throws Throwable {
-        Assert.assertTrue(this.runXpathResult.assertXpath(this.response, "/Envelope/Body/UpdateDeviceResponse", ""));
+    	LoggerFactory.getLogger(CreateDeviceSteps.class).info("Request: " + this.request);
+    	LoggerFactory.getLogger(CreateDeviceSteps.class).info("Response: " + this.response);
+    	Assert.assertTrue(this.runXpathResult.assertXpath(this.response, "/Envelope/Body/UpdateDeviceResponse", ""));
     }
     
     /**
@@ -145,6 +218,6 @@ public class CreateDeviceSteps extends CoreStepsBase {
      */
     @Then("^the update device response contains$")
     public void the_update_device_response_contains(Map<String, String> expectedResult) throws Throwable {
-        ResponseSteps.VerifyFaultResponse(this.runXpathResult, this.response, expectedResult);
+    	ResponseSteps.VerifyFaultResponse(this.runXpathResult, this.response, expectedResult);
     }
 }

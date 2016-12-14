@@ -97,7 +97,7 @@ public class DatabaseSteps {
         cleanRepoSerializable(this.manufacturerRepo);
         cleanRepoSerializable(this.ssldRepository);
         cleanRepoSerializable(this.organizationRepo);
-
+        
         insertDefaultData();
     }
 }

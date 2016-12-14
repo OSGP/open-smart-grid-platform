@@ -17,13 +17,14 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alliander.osgp.domain.core.valueobjects.RelayType;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
+import com.alliander.osgp.platform.cucumber.steps.common.ResponseSteps;
 import com.alliander.osgp.platform.cucumber.steps.ws.publiclighting.PublicLightingStepsBase;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
-import cucumber.api.java.en.Given;
 import cucumber.api.java.en.When;
 import cucumber.api.java.en.Then;
 
@@ -37,23 +38,36 @@ public class GetStatusSteps extends PublicLightingStepsBase {
     private static final String TEST_CASE_RESULT_REQ_XML = "GetGetStatusResponse TestCase";
     private static final String TEST_CASE_RESULT_NAME_REQUEST = "GetGetStatusResponse";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SetLightSteps.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetStatusSteps.class);
 
     private static final String ON_LABEL = "On";
     private static final String DEFAULT_ON = "true";
 
     /**
-     * Sends a Set Light request to the platform for a given device identification.
+     * Sends a Get Status request to the platform for a given device identification.
      * @param requestParameters The table with the request parameters.
      * @throws Throwable
      */
-    @Given("^receiving a get status request$")
-    public void givenReceivingAGetStatusRequest(final Map<String, String> requestParameters) throws Throwable {
+    @When("^receiving a get status request$")
+    public void whenReceivingAGetStatusRequest(final Map<String, String> requestParameters) throws Throwable {
 
         // Required parameters
-        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION, getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-        PROPERTIES_MAP.put(ON_LABEL, getString(requestParameters, ON_LABEL, DEFAULT_ON));
-
+//        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION, getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+//        PROPERTIES_MAP.put(ON_LABEL, getString(requestParameters, ON_LABEL, DEFAULT_ON));
+    	
+    	if (requestParameters.containsKey("Index") && requestParameters.containsKey("On") && requestParameters.containsKey("DimValue"))
+    	{
+    		PROPERTIES_MAP.put("__DEVICE_IDENTIFICATION__", getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+    		PROPERTIES_MAP.put("__INDEX__", getString(requestParameters, "Index", "0"));
+    		PROPERTIES_MAP.put("__ON__", getString(requestParameters, ON_LABEL, DEFAULT_ON));
+    		PROPERTIES_MAP.put("__DIM_VALUE__", getString(requestParameters, "DimValue", "1"));
+    	}
+    	else
+    	{
+        	PROPERTIES_MAP.put("__DEVICE_IDENTIFICATION__", getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+        	PROPERTIES_MAP.put("__ON__", getString(requestParameters, ON_LABEL, DEFAULT_ON));
+    	}
+    	
         // Now run the request.
 //        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_ASYNC_NAME_REQUEST, TEST_CASE_ASYNC_REQ_XML, TEST_SUITE_XML);
         this.requestRunner(TestStepStatus.UNKNOWN, PROPERTIES_MAP, TEST_CASE_ASYNC_NAME_REQUEST, TEST_CASE_ASYNC_REQ_XML, TEST_SUITE_XML);
@@ -67,37 +81,50 @@ public class GetStatusSteps extends PublicLightingStepsBase {
      */
     @Then("^the get status async response contains$")
     public void thenTheGetStatusAsyncResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
-        this.runXpathResult.assertXpath(this.response, PATH_DEVICE_IDENTIFICATION,
-                getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-        this.runXpathResult.assertNotNull(this.response, PATH_CORRELATION_UID);
-
-        // Save the returned CorrelationUid in the Scenario related context for
-        // further use.
-        LOGGER.info("Correlation-UID: " + this.response + " | Path: " + PATH_CORRELATION_UID);
         
-        try
-        {
-        	wait(7500);
-        }
-        catch (InterruptedException ie)
-        {
-        	
-        }
-        
-        saveCorrelationUidInScenarioContext(this.runXpathResult.getValue(this.response, PATH_CORRELATION_UID),
-                getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                        Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
-
-        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
+    	if (expectedResponseData.containsKey("FaultCode"))
+    	{
+    		LOGGER.info("Response: " + this.response);
+    		ResponseSteps.VerifyFaultResponse(this.runXpathResult, this.response, expectedResponseData);
+    	}
+    	else
+    	{
+	    	this.runXpathResult.assertXpath(this.response, PATH_DEVICE_IDENTIFICATION,
+	                getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+	        this.runXpathResult.assertNotNull(this.response, PATH_CORRELATION_UID);
+	
+	        // Save the returned CorrelationUid in the Scenario related context for further use.
+	        LOGGER.info("Correlation-UID: " + this.response + " | Path: " + PATH_CORRELATION_UID);
+	        
+	        saveCorrelationUidInScenarioContext(this.runXpathResult.getValue(this.response, PATH_CORRELATION_UID),
+	                getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
+	                        Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+	
+	        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
+    	}
     }
 
     @Then("^the platform buffers a get status response message for device \"([^\"]*)\"$")
-    public void thenThePlatformBuffersAGetStatusResponseMessage(final String deviceIdentification) throws Throwable {
+    public void thenThePlatformBuffersAGetStatusResponseMessageForDevice(final String deviceIdentification) throws Throwable {
         // Required parameters
         PROPERTIES_MAP.put("__DEVICE_IDENTIFICATION__", deviceIdentification);
         PROPERTIES_MAP.put("__CORRELATION_UID__", (String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
 
 //        this.waitForResponse(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_RESULT_NAME_REQUEST,
 //                    TEST_CASE_RESULT_REQ_XML, TEST_SUITE_XML);
+        this.waitForResponse(TestStepStatus.UNKNOWN, PROPERTIES_MAP, TEST_CASE_RESULT_NAME_REQUEST,
+                TEST_CASE_RESULT_REQ_XML, TEST_SUITE_XML);
+    }
+    
+    @Then("^the platform buffers a get status response message for device$")
+    public void thenThePlatformBuffersAGetStatusResponseMessage(final Map<String, String> result) throws Throwable {
+        // Required parameters
+        PROPERTIES_MAP.put("__DEVICE_IDENTIFICATION__", result.get("DeviceIdentification"));
+        PROPERTIES_MAP.put("__CORRELATION_UID__", (String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
+        
+//        this.waitForResponse(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_RESULT_NAME_REQUEST,
+//                    TEST_CASE_RESULT_REQ_XML, TEST_SUITE_XML);
+        this.waitForResponse(TestStepStatus.UNKNOWN, PROPERTIES_MAP, TEST_CASE_RESULT_NAME_REQUEST,
+                TEST_CASE_RESULT_REQ_XML, TEST_SUITE_XML);
     }
 }
