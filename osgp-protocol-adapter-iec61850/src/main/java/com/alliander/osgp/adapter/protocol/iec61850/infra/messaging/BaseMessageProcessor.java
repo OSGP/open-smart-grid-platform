@@ -148,8 +148,7 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
             final Serializable messageData, final String domain, final String domainVersion, final String messageType,
             final boolean isScheduled, final int retryCount) {
 
-        final OsgpException ex = new TechnicalException(ComponentType.PROTOCOL_IEC61850,
-                t == null ? "no exception specified" : t.getMessage());
+        final OsgpException ex = this.ensureOsgpException(t);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(
                 deviceResponse.getDeviceIdentification(), deviceResponse.getOrganisationIdentification(),
@@ -159,6 +158,15 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
                 .result(ResponseMessageResultType.NOT_OK).osgpException(ex).retryCount(retryCount)
                 .dataObject(messageData).scheduled(isScheduled).build();
         this.responseMessageSender.send(protocolResponseMessage);
+    }
+
+    protected OsgpException ensureOsgpException(final Throwable t) {
+        if (t instanceof OsgpException) {
+            return (OsgpException) t;
+        }
+
+        return new TechnicalException(ComponentType.PROTOCOL_IEC61850,
+                t == null ? "no exception specified" : t.getMessage());
     }
 
     public void handleExpectedError(final OsgpException e, final String correlationUid,
