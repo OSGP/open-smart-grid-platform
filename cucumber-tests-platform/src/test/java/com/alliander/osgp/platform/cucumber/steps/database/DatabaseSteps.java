@@ -98,8 +98,8 @@ public class DatabaseSteps {
     public void prepareDatabaseForScenario() {
         cleanRepoAbstractEntity(this.oslpDeviceRepo);
         cleanRepoAbstractEntity(this.deviceAuthorizationRepo);
-        cleanRepoSerializable(this.smartMeterRepo);
         this.deleteAllDevicesService.deleteAllDevices();
+        cleanRepoSerializable(this.smartMeterRepo);
         cleanRepoSerializable(this.manufacturerRepo);
         cleanRepoSerializable(this.organisationRepo);
 
