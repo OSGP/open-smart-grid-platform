@@ -40,6 +40,13 @@ import com.googlecode.flyway.core.Flyway;
 @EnableTransactionManagement()
 public class Iec61850PersistenceConfig extends AbstractConfig {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850PersistenceConfig.class);
+
+    private static final String PROPERTY_NAME_HIBERNATE_DIALECT = "hibernate.dialect";
+    private static final String PROPERTY_NAME_HIBERNATE_FORMAT_SQL = "hibernate.format_sql";
+    private static final String PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY = "hibernate.ejb.naming_strategy";
+    private static final String PROPERTY_NAME_HIBERNATE_SHOW_SQL = "hibernate.show_sql";
+
     @Value("${db.driver}")
     private String databaseDriver;
     @Value("${db.password}")
@@ -49,10 +56,6 @@ public class Iec61850PersistenceConfig extends AbstractConfig {
     @Value("${db.username}")
     private String databaseUsername;
 
-    private static final String PROPERTY_NAME_HIBERNATE_DIALECT = "hibernate.dialect";
-    private static final String PROPERTY_NAME_HIBERNATE_FORMAT_SQL = "hibernate.format_sql";
-    private static final String PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY = "hibernate.ejb.naming_strategy";
-    private static final String PROPERTY_NAME_HIBERNATE_SHOW_SQL = "hibernate.show_sql";
     @Value("${hibernate.dialect}")
     private String hibernateDialect;
     @Value("${hibernate.format_sql}")
@@ -71,8 +74,6 @@ public class Iec61850PersistenceConfig extends AbstractConfig {
 
     @Value("${entitymanager.packages.to.scan}")
     private String entityManagerPackagesToScan;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850PersistenceConfig.class);
 
     public Iec61850PersistenceConfig() {
         InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
