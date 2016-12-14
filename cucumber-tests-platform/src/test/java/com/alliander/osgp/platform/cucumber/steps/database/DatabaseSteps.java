@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRepository;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
+import com.alliander.osgp.domain.core.entities.Ean;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.Ssld;
@@ -91,17 +92,22 @@ public class DatabaseSteps {
 
     public void prepareDatabaseForScenario() {
     	
-    	cleanRepoAbstractEntity(this.oslpDeviceRepo);
-        cleanRepoAbstractEntity(this.deviceAuthorizationRepo);
-        cleanRepoSerializable(this.smartMeterRepo);
-        
         // The device output settings should be cleared before each test.
         // TODO Can this be done better?
         List<DeviceOutputSetting> settings = new ArrayList<DeviceOutputSetting>();
+        List<Ean> eans = new ArrayList<Ean>();
+        for (Ssld ssld : this.ssldRepository.findAll()) {
+        	ssld.setEans(eans);
+        	this.ssldRepository.save(ssld);
+        }
         for (Ssld ssld : this.ssldRepository.findAll()) {
         	ssld.updateOutputSettings(settings);
         	this.ssldRepository.save(ssld);
         }
+        
+    	cleanRepoAbstractEntity(this.oslpDeviceRepo);
+        cleanRepoAbstractEntity(this.deviceAuthorizationRepo);
+        cleanRepoSerializable(this.smartMeterRepo);
         
         cleanRepoSerializable(this.ssldRepository);
         cleanRepoSerializable(this.deviceRepo);
