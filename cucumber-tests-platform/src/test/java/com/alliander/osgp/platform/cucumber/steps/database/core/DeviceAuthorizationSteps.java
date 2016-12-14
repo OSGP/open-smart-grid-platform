@@ -50,7 +50,7 @@ public class DeviceAuthorizationSteps {
     			getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
     	final Organisation organization = this.organizationRepository.findByOrganisationIdentification(
-    			getString(settings, Keys.KEY_ORGANISATION_IDENTIFICATION, Defaults.DEFAULT_ORGANISATION_IDENTIFICATION));
+    			getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
     	final DeviceFunctionGroup functionGroup = getEnum(settings, Keys.KEY_DEVICE_FUNCTION_GRP, DeviceFunctionGroup.class, DeviceFunctionGroup.OWNER);
 

@@ -13,8 +13,8 @@ package com.alliander.osgp.platform.cucumber.steps;
 public class Defaults {
 
     // Values
-    public static final String DEFAULT_ORGANISATION_DESCRIPTION = "Test Organisation";
-    public static final String DEFAULT_ORGANISATION_IDENTIFICATION = "test-org";
+    public static final String DEFAULT_ORGANIZATION_DESCRIPTION = "Test Organisation";
+    public static final String DEFAULT_ORGANIZATION_IDENTIFICATION = "test-org";
     public static final String DEFAULT_USER_NAME = "Cucumber";
     public static final String DEFAULT_PREFIX = "MAA";
     public static final String DEFAULT_MANUFACTURER_ID = "Test";

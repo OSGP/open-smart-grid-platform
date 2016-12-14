@@ -32,7 +32,7 @@ import com.alliander.osgp.platform.cucumber.steps.Defaults;
 public class DatabaseSteps {
 
     @Autowired
-    private OrganisationRepository organisationRepo;
+    private OrganisationRepository organizationRepo;
 
     @Autowired
     private ManufacturerRepository manufacturerRepo;
@@ -61,16 +61,16 @@ public class DatabaseSteps {
      * send authorized requests to the platform.
      */
     private void insertDefaultData() {
-        if (this.organisationRepo.findByOrganisationIdentification(Defaults.DEFAULT_ORGANISATION_IDENTIFICATION) == null) {
+        if (this.organizationRepo.findByOrganisationIdentification(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION) == null) {
             // Create test organization used within the tests.
-            final Organisation testOrg = new Organisation(Defaults.DEFAULT_ORGANISATION_IDENTIFICATION,
-                    Defaults.DEFAULT_ORGANISATION_DESCRIPTION, Defaults.DEFAULT_PREFIX, PlatformFunctionGroup.ADMIN);
+            final Organisation testOrg = new Organisation(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION,
+                    Defaults.DEFAULT_ORGANIZATION_DESCRIPTION, Defaults.DEFAULT_PREFIX, PlatformFunctionGroup.ADMIN);
             testOrg.addDomain(PlatformDomain.COMMON);
             testOrg.addDomain(PlatformDomain.PUBLIC_LIGHTING);
             testOrg.addDomain(PlatformDomain.TARIFF_SWITCHING);
             testOrg.setIsEnabled(true);
 
-            this.organisationRepo.save(testOrg);
+            this.organizationRepo.save(testOrg);
         }
 
         // Create default test manufacturer

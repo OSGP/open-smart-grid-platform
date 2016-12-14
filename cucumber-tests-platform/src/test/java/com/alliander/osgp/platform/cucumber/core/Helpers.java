@@ -199,7 +199,7 @@ public class Helpers {
     public static void saveCorrelationUidInScenarioContext(final String correlationUid,
             String organizationIdentification) throws Throwable {
         if (organizationIdentification == null || organizationIdentification.isEmpty()) {
-            organizationIdentification = Defaults.DEFAULT_ORGANISATION_IDENTIFICATION;
+            organizationIdentification = Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION;
         }
 
         // Validate the correlation-id starts with correct organization

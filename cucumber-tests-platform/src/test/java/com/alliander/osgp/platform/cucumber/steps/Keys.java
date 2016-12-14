@@ -35,7 +35,7 @@ public class Keys {
 
     // TODO: It is called "Organisation" with an S in all webservices and
     // sourcecode, this should be consistent.
-    public static final String KEY_ORGANISATION_IDENTIFICATION = "OrganizationIdentification";
+    public static final String KEY_ORGANIZATION_IDENTIFICATION = "OrganizationIdentification";
     public static final String KEY_USER_NAME = "UserName";
     public static final String KEY_DEVICE_FUNCTION_GRP = "DeviceFunctionGroup";
     public static final String KEY_COMM_METHOD = "CommunicationMethod";
