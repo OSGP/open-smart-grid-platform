@@ -18,6 +18,7 @@ import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRe
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
+import com.alliander.osgp.domain.core.repositories.DeleteAllDevicesService;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
@@ -56,6 +57,9 @@ public class DatabaseSteps {
     @Autowired
     private SsldRepository ssldRepository;
 
+    @Autowired
+    private DeleteAllDevicesService deleteAllDevicesService;
+
     /**
      * This method is used to create default data not directly related to the
      * specific tests. For example: The test-org organization which is used to
@@ -90,14 +94,13 @@ public class DatabaseSteps {
         deviceModel = this.deviceModelRepo.save(deviceModel);
     }
 
+    @Transactional("txMgrCore")
     public void prepareDatabaseForScenario() {
         cleanRepoAbstractEntity(this.oslpDeviceRepo);
         cleanRepoAbstractEntity(this.deviceAuthorizationRepo);
         cleanRepoSerializable(this.smartMeterRepo);
-        cleanRepoSerializable(this.deviceRepo);
-        cleanRepoSerializable(this.deviceModelRepo);
+        this.deleteAllDevicesService.deleteAllDevices();
         cleanRepoSerializable(this.manufacturerRepo);
-        cleanRepoSerializable(this.ssldRepository);
         cleanRepoSerializable(this.organisationRepo);
 
         this.insertDefaultData();
