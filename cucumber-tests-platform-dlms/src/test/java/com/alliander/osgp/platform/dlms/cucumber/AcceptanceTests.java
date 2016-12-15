@@ -18,7 +18,7 @@ import cucumber.api.junit.Cucumber;
 @CucumberOptions(features = "src/test/resources/features", tags = { "~@Skip" }, glue = {
         "com.alliander.osgp.platform.cucumber", "com.alliander.osgp.platform.dlms.cucumber" }, plugin = { "pretty",
         "html:target/output/Cucumber-report", "html:target/output/Cucumber-html-report.html",
-        "json:target/output/cucumber.json" }, snippets = SnippetType.CAMELCASE)
+"json:target/output/cucumber.json" }, snippets = SnippetType.CAMELCASE)
 public class AcceptanceTests extends AbstractTransactionalJUnit4SpringContextTests {
 
 }

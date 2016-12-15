@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.platform.dlms.cucumber.builders.entities;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -40,6 +42,10 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
             SecurityKeyType.E_METER_ENCRYPTION).setKey(Defaults.SECURITY_KEY_E);
     private final SecurityKeyBuilder masterSecurityKeyBuilder = new SecurityKeyBuilder().setSecurityKeyType(
             SecurityKeyType.E_METER_MASTER).setKey(Defaults.SECURITY_KEY_M);
+    private final SecurityKeyBuilder mbusEncryptionSecurityKeyBuilder = new SecurityKeyBuilder().setSecurityKeyType(
+            SecurityKeyType.G_METER_ENCRYPTION).setKey(Defaults.SECURITY_KEY_G_ENCRYPTION);
+    private final SecurityKeyBuilder mbusMasterSecurityKeyBuilder = new SecurityKeyBuilder().setSecurityKeyType(
+            SecurityKeyType.G_METER_MASTER).setKey(Defaults.SECURITY_KEY_G_MASTER);
 
     public DlmsDeviceBuilder setDeviceIdentification(final String deviceIdentification) {
         this.deviceIdentification = deviceIdentification;
@@ -157,6 +163,30 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
         return this.masterSecurityKeyBuilder;
     }
 
+    /**
+     * Retrieve the SecurityKeyBuilder in order to manipulate its values. A
+     * SecurityKey can not be set directly because there is a circular
+     * dependency with the DlmsDevice. This dependency is resolved in the
+     * {@link #build()} method of this class.
+     *
+     * @return Security key builder for master key.
+     */
+    public SecurityKeyBuilder getMbusEncryptionSecurityKeyBuilder() {
+        return this.mbusEncryptionSecurityKeyBuilder;
+    }
+
+    /**
+     * Retrieve the SecurityKeyBuilder in order to manipulate its values. A
+     * SecurityKey can not be set directly because there is a circular
+     * dependency with the DlmsDevice. This dependency is resolved in the
+     * {@link #build()} method of this class.
+     *
+     * @return Security key builder for master key.
+     */
+    public SecurityKeyBuilder getMbusMasterSecurityKeyBuilder() {
+        return this.mbusMasterSecurityKeyBuilder;
+    }
+
     @Override
     public DlmsDeviceBuilder withSettings(final Map<String, String> inputSettings) {
         if (inputSettings.containsKey(Keys.DEVICE_IDENTIFICATION)) {
@@ -237,9 +267,14 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
          * order to be created. This seems to be the only way to work around
          * this circular dependency.
          */
-        dlmsDevice.addSecurityKey(this.authenticationSecurityKeyBuilder.setDlmsDevice(dlmsDevice).build());
-        dlmsDevice.addSecurityKey(this.encryptionSecurityKeyBuilder.setDlmsDevice(dlmsDevice).build());
-        dlmsDevice.addSecurityKey(this.masterSecurityKeyBuilder.setDlmsDevice(dlmsDevice).build());
+        final List<SecurityKeyBuilder> keyBuilders = Arrays.asList(this.authenticationSecurityKeyBuilder,
+                this.encryptionSecurityKeyBuilder, this.masterSecurityKeyBuilder,
+                this.mbusEncryptionSecurityKeyBuilder, this.mbusMasterSecurityKeyBuilder);
+        for (final SecurityKeyBuilder keyBuilder : keyBuilders) {
+            if (keyBuilder.enabled()) {
+                dlmsDevice.addSecurityKey(keyBuilder.setDlmsDevice(dlmsDevice).build());
+            }
+        }
 
         return dlmsDevice;
     }
