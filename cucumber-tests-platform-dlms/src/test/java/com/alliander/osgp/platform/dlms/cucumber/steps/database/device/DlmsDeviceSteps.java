@@ -97,7 +97,18 @@ public class DlmsDeviceSteps {
         this.deviceAuthorizationRepository.save(deviceAuthorization);
 
         // Protocol adapter
-        final DlmsDevice dlmsDevice = new DlmsDeviceBuilder().withSettings(inputSettings).build();
+        final DlmsDeviceBuilder dlmsDeviceBuilder = new DlmsDeviceBuilder().withSettings(inputSettings);
+        if (inputSettings.containsKey(Keys.GATEWAY_DEVICE_IDENTIFICATION)) {
+            // MBUS devices dont need these keys.
+            dlmsDeviceBuilder.getEncryptionSecurityKeyBuilder().disable();
+            dlmsDeviceBuilder.getMasterSecurityKeyBuilder().disable();
+            dlmsDeviceBuilder.getAuthenticationSecurityKeyBuilder().disable();
+        } else {
+            dlmsDeviceBuilder.getMbusEncryptionSecurityKeyBuilder().disable();
+            dlmsDeviceBuilder.getMbusMasterSecurityKeyBuilder().disable();
+        }
+
+        final DlmsDevice dlmsDevice = dlmsDeviceBuilder.build();
         this.dlmsDeviceRepository.save(dlmsDevice);
     }
 

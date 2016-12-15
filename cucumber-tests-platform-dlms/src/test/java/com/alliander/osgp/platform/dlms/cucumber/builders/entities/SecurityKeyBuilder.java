@@ -21,6 +21,8 @@ import com.alliander.osgp.platform.dlms.cucumber.steps.Keys;
 
 public class SecurityKeyBuilder implements CucumberBuilder<SecurityKey> {
 
+    private boolean builderEnabled = true;
+
     private SecurityKeyType securityKeyType = null;
     private Date validFrom = UtcDateHelper.getUtcDate();
     private Date validTo = Defaults.VALID_TO;
@@ -98,4 +100,15 @@ public class SecurityKeyBuilder implements CucumberBuilder<SecurityKey> {
         return securityKey;
     }
 
+    public boolean enabled() {
+        return this.builderEnabled;
+    }
+
+    public void disable() {
+        this.builderEnabled = false;
+    }
+
+    public void enable() {
+        this.builderEnabled = true;
+    }
 }
