@@ -27,9 +27,9 @@ public class Iec61850ModeCommand implements RtuReadCommand<MeasurementDto> {
 
     @Override
     public MeasurementDto execute(final Iec61850Client client, final DeviceConnection connection,
-            final LogicalDevice logicalDevice) throws NodeReadException {
-        final NodeContainer containingNode = connection.getFcModelNode(logicalDevice, LogicalNode.LOGICAL_NODE_ZERO,
-                DataAttribute.MODE, Fc.ST);
+            final LogicalDevice logicalDevice, final int logicalDeviceIndex) throws NodeReadException {
+        final NodeContainer containingNode = connection.getFcModelNode(logicalDevice, logicalDeviceIndex,
+                LogicalNode.LOGICAL_NODE_ZERO, DataAttribute.MODE, Fc.ST);
         client.readNodeDataValues(connection.getConnection().getClientAssociation(), containingNode.getFcmodelNode());
         return this.translate(containingNode);
     }

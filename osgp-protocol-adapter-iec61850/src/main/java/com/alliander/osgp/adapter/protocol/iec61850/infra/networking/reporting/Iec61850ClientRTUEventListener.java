@@ -10,10 +10,9 @@ package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.reporting;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.joda.time.DateTime;
 import org.openmuc.openiec61850.BdaReasonForInclusion;
@@ -40,42 +39,71 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
      */
     private static final long IEC61850_ENTRY_TIME_OFFSET = 441763200000L;
 
-    private static final Map<String, Iec61850ReportHandler> REPORT_HANDLERS;
-    static {
-        final Map<String, Iec61850ReportHandler> handlers = new HashMap<>();
-        handlers.put("WAGO61850ServerRTU1/LLN0$Status", new Iec61850RtuReportHandler(1));
-        handlers.put("WAGO61850ServerPV1/LLN0$Status", new Iec61850PvReportHandler(1));
-        handlers.put("WAGO61850ServerPV2/LLN0$Status", new Iec61850PvReportHandler(2));
-        handlers.put("WAGO61850ServerPV3/LLN0$Status", new Iec61850PvReportHandler(3));
-        handlers.put("WAGO61850ServerBATTERY1/LLN0$Status", new Iec61850BatteryReportHandler(1));
-        handlers.put("WAGO61850ServerBATTERY2/LLN0$Status", new Iec61850BatteryReportHandler(2));
-        handlers.put("WAGO61850ServerENGINE1/LLN0$Status", new Iec61850EngineReportHandler(1));
-        handlers.put("WAGO61850ServerENGINE2/LLN0$Status", new Iec61850EngineReportHandler(2));
-        handlers.put("WAGO61850ServerENGINE3/LLN0$Status", new Iec61850EngineReportHandler(3));
-        handlers.put("WAGO61850ServerLOAD1/LLN0$Status", new Iec61850LoadReportHandler(1));
-        handlers.put("WAGO61850ServerCHP1/LLN0$Status", new Iec61850ChpReportHandler(1));
-        handlers.put("WAGO61850ServerHEAT_BUFFER1/LLN0$Status", new Iec61850HeatBufferReportHandler(1));
-        handlers.put("WAGO61850ServerGAS_FURNACE1/LLN0$Status", new Iec61850GasFurnaceReportHandler(1));
-
-        handlers.put("WAGO61850ServerPV1/LLN0$Measurements", new Iec61850PvReportHandler(1));
-        handlers.put("WAGO61850ServerPV2/LLN0$Measurements", new Iec61850PvReportHandler(2));
-        handlers.put("WAGO61850ServerPV3/LLN0$Measurements", new Iec61850PvReportHandler(3));
-        handlers.put("WAGO61850ServerBATTERY1/LLN0$Measurements", new Iec61850BatteryReportHandler(1));
-        handlers.put("WAGO61850ServerBATTERY2/LLN0$Measurements", new Iec61850BatteryReportHandler(2));
-        handlers.put("WAGO61850ServerENGINE1/LLN0$Measurements", new Iec61850EngineReportHandler(1));
-        handlers.put("WAGO61850ServerENGINE2/LLN0$Measurements", new Iec61850EngineReportHandler(2));
-        handlers.put("WAGO61850ServerENGINE3/LLN0$Measurements", new Iec61850EngineReportHandler(3));
-        handlers.put("WAGO61850ServerLOAD1/LLN0$Measurements", new Iec61850LoadReportHandler(1));
-        handlers.put("WAGO61850ServerCHP1/LLN0$Measurements", new Iec61850ChpReportHandler(1));
-        handlers.put("WAGO61850ServerHEAT_BUFFER1/LLN0$Measurements", new Iec61850HeatBufferReportHandler(1));
-        handlers.put("WAGO61850ServerGAS_FURNACE1/LLN0$Measurements", new Iec61850GasFurnaceReportHandler(1));
-
-        REPORT_HANDLERS = Collections.unmodifiableMap(handlers);
-    }
+    private static final Pattern RTU_REPORT_PATTERN = Pattern
+            .compile("\\AWAGO61850ServerRTU([1-9]\\d*+)/LLN0\\$Status\\Z");
+    private static final Pattern PV_REPORT_PATTERN = Pattern
+            .compile("\\AWAGO61850ServerPV([1-9]\\d*+)/LLN0\\$(Status|Measurements)\\Z");
+    private static final Pattern BATTERY_REPORT_PATTERN = Pattern
+            .compile("\\AWAGO61850ServerBATTERY([1-9]\\d*+)/LLN0\\$(Status|Measurements)\\Z");
+    private static final Pattern ENGINE_REPORT_PATTERN = Pattern
+            .compile("\\AWAGO61850ServerENGINE([1-9]\\d*+)/LLN0\\$(Status|Measurements)\\Z");
+    private static final Pattern LOAD_REPORT_PATTERN = Pattern
+            .compile("\\AWAGO61850ServerLOAD([1-9]\\d*+)/LLN0\\$(Status|Measurements)\\Z");
+    private static final Pattern CHP_REPORT_PATTERN = Pattern
+            .compile("\\AWAGO61850ServerCHP([1-9]\\d*+)/LLN0\\$(Status|Measurements)\\Z");
+    private static final Pattern HEAT_BUFFER_REPORT_PATTERN = Pattern
+            .compile("\\AWAGO61850ServerHEAT_BUFFER([1-9]\\d*+)/LLN0\\$(Status|Measurements)\\Z");
+    private static final Pattern GAS_FURNACE_REPORT_PATTERN = Pattern
+            .compile("\\AWAGO61850ServerGAS_FURNACE([1-9]\\d*+)/LLN0\\$(Status|Measurements)\\Z");
 
     public Iec61850ClientRTUEventListener(final String deviceIdentification,
             final DeviceManagementService deviceManagementService) throws ProtocolAdapterException {
         super(deviceIdentification, deviceManagementService, Iec61850ClientRTUEventListener.class);
+    }
+
+    private Iec61850ReportHandler getReportHandler(final String dataSetRef) {
+
+        Matcher reportMatcher = RTU_REPORT_PATTERN.matcher(dataSetRef);
+        if (reportMatcher.matches()) {
+            return new Iec61850RtuReportHandler(Integer.parseInt(reportMatcher.group(1)));
+        }
+
+        reportMatcher = PV_REPORT_PATTERN.matcher(dataSetRef);
+        if (reportMatcher.matches()) {
+            return new Iec61850PvReportHandler(Integer.parseInt(reportMatcher.group(1)));
+        }
+
+        reportMatcher = BATTERY_REPORT_PATTERN.matcher(dataSetRef);
+        if (reportMatcher.matches()) {
+            return new Iec61850BatteryReportHandler(Integer.parseInt(reportMatcher.group(1)));
+        }
+
+        reportMatcher = ENGINE_REPORT_PATTERN.matcher(dataSetRef);
+        if (reportMatcher.matches()) {
+            return new Iec61850EngineReportHandler(Integer.parseInt(reportMatcher.group(1)));
+        }
+
+        reportMatcher = LOAD_REPORT_PATTERN.matcher(dataSetRef);
+        if (reportMatcher.matches()) {
+            return new Iec61850LoadReportHandler(Integer.parseInt(reportMatcher.group(1)));
+        }
+
+        reportMatcher = CHP_REPORT_PATTERN.matcher(dataSetRef);
+        if (reportMatcher.matches()) {
+            return new Iec61850ChpReportHandler(Integer.parseInt(reportMatcher.group(1)));
+        }
+
+        reportMatcher = HEAT_BUFFER_REPORT_PATTERN.matcher(dataSetRef);
+        if (reportMatcher.matches()) {
+            return new Iec61850HeatBufferReportHandler(Integer.parseInt(reportMatcher.group(1)));
+        }
+
+        reportMatcher = GAS_FURNACE_REPORT_PATTERN.matcher(dataSetRef);
+        if (reportMatcher.matches()) {
+            return new Iec61850GasFurnaceReportHandler(Integer.parseInt(reportMatcher.group(1)));
+        }
+
+        return null;
     }
 
     @Override
@@ -96,7 +124,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
             return;
         }
 
-        final Iec61850ReportHandler reportHandler = REPORT_HANDLERS.get(report.getDataSetRef());
+        final Iec61850ReportHandler reportHandler = this.getReportHandler(report.getDataSetRef());
         if (reportHandler == null) {
             this.logger.warn("Skipping report because dataset is not supported {}", report.getDataSetRef());
             return;

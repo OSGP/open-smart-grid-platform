@@ -9,6 +9,7 @@ package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.file.Paths;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
@@ -24,6 +25,8 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.iec61850.application.services.DeviceManagementService;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850Device;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ConnectionFailureException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
@@ -34,7 +37,6 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Data
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Function;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.IED;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalDevice;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalNode;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.reporting.Iec61850ClientBaseEventListener;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.reporting.Iec61850ClientEventListenerFactory;
@@ -46,8 +48,13 @@ public class Iec61850DeviceConnectionService {
 
     private static ConcurrentHashMap<String, Iec61850Connection> cache = new ConcurrentHashMap<>();
 
+    private static final int IEC61850_DEFAULT_PORT = 102;
+
     @Autowired
     private DeviceManagementService deviceManagementService;
+
+    @Autowired
+    private Iec61850DeviceRepository iec61850DeviceRepository;
 
     @Autowired
     private Iec61850Client iec61850Client;
@@ -62,23 +69,26 @@ public class Iec61850DeviceConnectionService {
     private int responseTimeout;
 
     @Autowired
+    private String icdFilesFolder;
+
+    @Autowired
     private String icdFilePath;
 
     @Autowired
     private boolean isIcdFileUsed;
 
     public DeviceConnection connectWithoutConnectionCaching(final String ipAddress, final String deviceIdentification,
-            final IED ied, final LogicalDevice logicalDevice) throws ConnectionFailureException {
+            final IED ied, final String logicalDevice) throws ConnectionFailureException {
         return this.connect(ipAddress, deviceIdentification, ied, logicalDevice, false);
     }
 
     public DeviceConnection connect(final String ipAddress, final String deviceIdentification, final IED ied,
-            final LogicalDevice logicalDevice) throws ConnectionFailureException {
+            final String logicalDevice) throws ConnectionFailureException {
         return this.connect(ipAddress, deviceIdentification, ied, logicalDevice, true);
     }
 
     public synchronized DeviceConnection connect(final String ipAddress, final String deviceIdentification,
-            final IED ied, final LogicalDevice logicalDevice, final boolean cacheConnection)
+            final IED ied, final String logicalDevice, final boolean cacheConnection)
                     throws ConnectionFailureException {
         // When connection-caching is used, check if a connection is available
         // an usable for the given deviceIdentification.
@@ -103,16 +113,10 @@ public class Iec61850DeviceConnectionService {
                             + deviceIdentification, e);
         }
 
-        // For now, the port numbers are defined in the property file. If in
-        // the future a database is added to this component, the port
-        // numbers for particular devices should be saved using the
-        // database.
-        int port = 102;
-        if (IED.FLEX_OVL.equals(ied)) {
-            port = this.iec61850SsldPortServer;
-        } else if (IED.ZOWN_RTU.equals(ied)) {
-            port = this.iec61850RtuPortServer;
-        }
+        final Iec61850Device iec61850Device = this.iec61850DeviceRepository
+                .findByDeviceIdentification(deviceIdentification);
+
+        final int port = this.determinePortForIec61850Device(ied, iec61850Device);
 
         // Try to connect and receive the ClientAssociation.
         final Iec61850ClientAssociation iec61850ClientAssociation = this.iec61850Client.connect(deviceIdentification,
@@ -123,7 +127,7 @@ public class Iec61850DeviceConnectionService {
         // Read the ServerModel, either from the device or from a SCL file.
         ServerModel serverModel;
         try {
-            serverModel = this.readServerModel(clientAssociation, deviceIdentification);
+            serverModel = this.readServerModel(clientAssociation, deviceIdentification, iec61850Device);
         } catch (final ProtocolAdapterException e) {
             LOGGER.error("ProtocolAdapterException: unable to read ServerModel for deviceIdentification "
                     + deviceIdentification, e);
@@ -145,8 +149,27 @@ public class Iec61850DeviceConnectionService {
         return new DeviceConnection(iec61850Connection, deviceIdentification, ied);
     }
 
+    private int determinePortForIec61850Device(final IED ied, final Iec61850Device iec61850Device) {
+        final int port;
+        if (iec61850Device != null && iec61850Device.getPort() != null) {
+            /*
+             * For devices with specific port configuration stored, use the
+             * configuration from the database to override any protocol or type
+             * related default configuration.
+             */
+            port = iec61850Device.getPort().intValue();
+        } else if (IED.FLEX_OVL.equals(ied)) {
+            port = this.iec61850SsldPortServer;
+        } else if (IED.ZOWN_RTU.equals(ied)) {
+            port = this.iec61850RtuPortServer;
+        } else {
+            port = IEC61850_DEFAULT_PORT;
+        }
+        return port;
+    }
+
     private boolean testIfConnectionIsCachedAndAlive(final String deviceIdentification, final IED ied,
-            final LogicalDevice logicalDevice) {
+            final String logicalDevice) {
         try {
             LOGGER.info("Trying to find connection in cache for deviceIdentification: {}", deviceIdentification);
             final Iec61850Connection iec61850Connection = this.fetchIec61850Connection(deviceIdentification);
@@ -157,13 +180,13 @@ public class Iec61850DeviceConnectionService {
                 // requires manual reads of remote data.
                 if (ied != null && logicalDevice != null) {
                     LOGGER.info("Testing if connection is alive using {}{}/{}.{} for deviceIdentification: {}",
-                            ied.getDescription(), logicalDevice.getDescription(),
+                            ied.getDescription(), logicalDevice,
                             LogicalNode.LOGICAL_NODE_ZERO.getDescription(), DataAttribute.NAME_PLATE.getDescription(),
                             deviceIdentification);
                     this.iec61850Client.readNodeDataValues(
                             iec61850Connection.getClientAssociation(),
                             (FcModelNode) iec61850Connection.getServerModel().findModelNode(
-                                    ied.getDescription() + logicalDevice.getDescription() + "/"
+                                    ied.getDescription() + logicalDevice + "/"
                                             + LogicalNode.LOGICAL_NODE_ZERO.getDescription() + "."
                                             + DataAttribute.NAME_PLATE.getDescription(), Fc.DC));
                 } else {
@@ -185,23 +208,53 @@ public class Iec61850DeviceConnectionService {
         return false;
     }
 
-    private ServerModel readServerModel(final ClientAssociation clientAssociation, final String deviceIdentification)
-            throws ProtocolAdapterException {
-        if (this.isIcdFileUsed && StringUtils.isNotEmpty(this.icdFilePath)) {
-            LOGGER.info("Reading ServerModel from SCL / ICD file: {}", this.icdFilePath);
-            ServerModel serverModel = this.iec61850Client.readServerModelFromSclFile(clientAssociation,
-                    this.icdFilePath);
-            if (serverModel == null) {
-                LOGGER.warn(
-                        "Reading ServerModel from SCL / ICD file: {} failed, reading ServerModel from device: {} using readServerModelFromDevice() instead...",
-                        this.icdFilePath, deviceIdentification);
-                serverModel = this.iec61850Client.readServerModelFromDevice(clientAssociation);
-            }
-            return serverModel;
-        } else {
-            LOGGER.info("Reading ServerModel from device: {} using readServerModelFromDevice()", deviceIdentification);
-            return this.iec61850Client.readServerModelFromDevice(clientAssociation);
+    private ServerModel readServerModel(final ClientAssociation clientAssociation, final String deviceIdentification,
+            final Iec61850Device iec61850Device) throws ProtocolAdapterException {
+
+        ServerModel serverModel = this.readServerModelConfiguredForDevice(clientAssociation, deviceIdentification,
+                iec61850Device);
+        if (serverModel == null) {
+            serverModel = this.readServerModelFromConfiguredIcdFile(clientAssociation);
         }
+        if (serverModel == null) {
+            LOGGER.info("Reading ServerModel from device: {} using readServerModelFromDevice()", deviceIdentification);
+            serverModel = this.iec61850Client.readServerModelFromDevice(clientAssociation);
+        }
+        return serverModel;
+    }
+
+    private ServerModel readServerModelConfiguredForDevice(final ClientAssociation clientAssociation,
+            final String deviceIdentification, final Iec61850Device iec61850Device) throws ProtocolAdapterException {
+
+        if (iec61850Device == null || StringUtils.isBlank(iec61850Device.getIcdFilename())) {
+            /*
+             * No server model is configured for the device in the IEC61850
+             * protocol adapter database.
+             */
+            return null;
+        }
+
+        if (StringUtils.isBlank(this.icdFilesFolder)) {
+            LOGGER.warn("ICD files folder is not configured, ignoring file: {} for device: {}.",
+                    iec61850Device.getIcdFilename(), deviceIdentification);
+            return null;
+        }
+
+        final String filePath = Paths.get(this.icdFilesFolder, iec61850Device.getIcdFilename()).toString();
+        LOGGER.info("Reading ServerModel from SCL / ICD file: {} configured for device: {}", filePath,
+                deviceIdentification);
+        return this.iec61850Client.readServerModelFromSclFile(clientAssociation, filePath);
+    }
+
+    private ServerModel readServerModelFromConfiguredIcdFile(final ClientAssociation clientAssociation)
+            throws ProtocolAdapterException {
+
+        if (!this.isIcdFileUsed || StringUtils.isBlank(this.icdFilePath)) {
+            return null;
+        }
+
+        LOGGER.info("Reading ServerModel from SCL / ICD file: {}", this.icdFilePath);
+        return this.iec61850Client.readServerModelFromSclFile(clientAssociation, this.icdFilePath);
     }
 
     /**

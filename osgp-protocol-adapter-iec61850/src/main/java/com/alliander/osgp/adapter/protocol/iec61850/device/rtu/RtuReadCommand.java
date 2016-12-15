@@ -14,7 +14,8 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Logi
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.NodeContainer;
 
 public interface RtuReadCommand<T> {
-    T execute(Iec61850Client client, DeviceConnection connection, LogicalDevice logicalDevice) throws NodeReadException;
+    T execute(Iec61850Client client, DeviceConnection connection, LogicalDevice logicalDevice, int logicalDeviceIndex)
+            throws NodeReadException;
 
     T translate(final NodeContainer containingNode);
 }

@@ -1,3 +1,10 @@
+/**
+ * Copyright 2016 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.adapter.protocol.iec61850.device.rtu;
 
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeWriteException;
@@ -6,6 +13,6 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Devi
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalDevice;
 
 public interface RtuWriteCommand<T> {
-    void executeWrite(Iec61850Client client, DeviceConnection connection, LogicalDevice logicalDevice, T writeData)
-            throws NodeWriteException;
+    void executeWrite(Iec61850Client client, DeviceConnection connection, LogicalDevice logicalDevice,
+            int logicalDeviceIndex, T writeData) throws NodeWriteException;
 }

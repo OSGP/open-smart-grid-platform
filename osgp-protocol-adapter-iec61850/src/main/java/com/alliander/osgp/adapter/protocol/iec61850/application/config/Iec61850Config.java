@@ -30,6 +30,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850Device;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850ChannelHandlerServer;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.RegisterDeviceRequestDecoder;
@@ -38,9 +39,9 @@ import com.alliander.osgp.shared.application.config.AbstractConfig;
 @Configuration
 @EnableTransactionManagement()
 @PropertySources({
-	@PropertySource("classpath:osgp-adapter-protocol-iec61850.properties"),
+    @PropertySource("classpath:osgp-adapter-protocol-iec61850.properties"),
     @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "file:${osgp/AdapterProtocolIec61850/config}", ignoreResourceNotFound = true),
+    @PropertySource(value = "file:${osgp/AdapterProtocolIec61850/config}", ignoreResourceNotFound = true),
 })
 public class Iec61850Config extends AbstractConfig {
 
@@ -62,6 +63,8 @@ public class Iec61850Config extends AbstractConfig {
 
     private static final String PROPERTY_NAME_IEC61850_ICD_FILE_PATH = "iec61850.icd.file.path";
     private static final String PROPERTY_NAME_IEC61850_ICD_FILE_USE = "iec61850.icd.file.use";
+
+    private static final String PROPERTY_NAME_IEC61850_ICD_FILES_FOLDER = "iec61850.icd.files.folder";
 
     public Iec61850Config() {
         InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
@@ -233,6 +236,21 @@ public class Iec61850Config extends AbstractConfig {
             return filePath;
         }
         return null;
+    }
+
+    /**
+     * File path for a directory containing SCL / ICD files which describe the
+     * ServerModel of an IED.
+     * <p>
+     * The file name for files in this directory is configured for devices it
+     * applies to in the IEC61850 protocol database (see
+     * {@link Iec61850Device#getIcdFilename()}).
+     */
+    @Bean
+    public String icdFilesFolder() {
+        final String filesFolder = this.environment.getProperty(PROPERTY_NAME_IEC61850_ICD_FILES_FOLDER);
+        LOGGER.info("Using ICD files folder: {}", filesFolder);
+        return filesFolder;
     }
 
     @Bean

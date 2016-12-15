@@ -27,9 +27,9 @@ public class Iec61850WarningOtherCommand implements RtuReadCommand<MeasurementDt
 
     @Override
     public MeasurementDto execute(final Iec61850Client client, final DeviceConnection connection,
-            final LogicalDevice logicalDevice) throws NodeReadException {
-        final NodeContainer containingNode = connection.getFcModelNode(logicalDevice, LogicalNode.GENERIC_PROCESS_I_O,
-                DataAttribute.WARNING_OTHER, Fc.ST);
+            final LogicalDevice logicalDevice, final int logicalDeviceIndex) throws NodeReadException {
+        final NodeContainer containingNode = connection.getFcModelNode(logicalDevice, logicalDeviceIndex,
+                LogicalNode.GENERIC_PROCESS_I_O, DataAttribute.WARNING_OTHER, Fc.ST);
         client.readNodeDataValues(connection.getConnection().getClientAssociation(), containingNode.getFcmodelNode());
         return this.translate(containingNode);
     }
