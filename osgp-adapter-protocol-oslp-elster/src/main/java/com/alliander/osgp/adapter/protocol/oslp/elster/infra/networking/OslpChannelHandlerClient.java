@@ -58,7 +58,7 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
         final int channelId = e.getChannel().getId();
         if (this.callbackHandlers.containsKey(channelId)) {
             this.callbackHandlers.get(channelId).getDeviceResponseHandler()
-            .handleException(new NoDeviceResponseException());
+                    .handleException(new NoDeviceResponseException());
             this.callbackHandlers.remove(channelId);
         }
         super.channelDisconnected(ctx, e);
@@ -80,8 +80,8 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
                 LOGGER.info("{} Received OSLP Response (before callback): {}", channelId, message.getPayloadMessage());
 
                 // Check the sequence number
-                final Integer sequenceNumber = SequenceNumberUtils.convertByteArrayToInteger(message
-                        .getSequenceNumber());
+                final Integer sequenceNumber = SequenceNumberUtils
+                        .convertByteArrayToInteger(message.getSequenceNumber());
                 this.deviceRegistrationService.checkSequenceNumber(message.getDeviceId(), sequenceNumber);
 
                 final OslpCallbackHandler callbackHandler = this.callbackHandlers.get(channelId);

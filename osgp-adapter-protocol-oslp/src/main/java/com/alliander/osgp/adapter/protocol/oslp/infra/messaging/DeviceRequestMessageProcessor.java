@@ -56,7 +56,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
 
     protected final DeviceRequestMessageType deviceRequestMessageType;
 
-    protected final static String UNEXPECTED_EXCEPTION = "An unknown error occurred";
+    protected static final String UNEXPECTED_EXCEPTION = "An unknown error occurred";
 
     /**
      * Each MessageProcessor should register it's MessageType at construction.
@@ -144,7 +144,8 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
     }
 
     protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
-            final String deviceIdentification, final String domain, final String domainVersion, final String messageType) {
+            final String deviceIdentification, final String domain, final String domainVersion,
+            final String messageType) {
         LOGGER.error("Error while processing message", e);
         final OsgpException ex = new TechnicalException(ComponentType.PROTOCOL_OSLP, UNEXPECTED_EXCEPTION, e);
 
@@ -161,8 +162,8 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             final String messageType, final boolean isScheduled, final int retryCount) {
 
         final ResponseMessageResultType result = ResponseMessageResultType.NOT_OK;
-        final OsgpException ex = new TechnicalException(ComponentType.PROTOCOL_OSLP, StringUtils.isBlank(t.getMessage()) ?
-                UNEXPECTED_EXCEPTION : t.getMessage(), t);
+        final OsgpException ex = new TechnicalException(ComponentType.PROTOCOL_OSLP,
+                StringUtils.isBlank(t.getMessage()) ? UNEXPECTED_EXCEPTION : t.getMessage(), t);
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
                 deviceResponse.getCorrelationUid(), deviceResponse.getOrganisationIdentification(),
