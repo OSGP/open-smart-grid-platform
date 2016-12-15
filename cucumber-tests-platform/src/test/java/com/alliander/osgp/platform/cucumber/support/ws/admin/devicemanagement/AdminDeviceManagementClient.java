@@ -32,34 +32,34 @@ public class AdminDeviceManagementClient extends BaseClient {
 
     @Autowired
     private WebServiceTemplateFactory adminDeviceManagementWstf;
+    
+    private WebServiceTemplate wst;
+    
+    public AdminDeviceManagementClient() throws WebServiceSecurityException {
+    	wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
+    }
 
-    public ActivateDeviceResponse activateDevice(final ActivateDeviceRequest request) throws WebServiceSecurityException {
-        final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
+    public ActivateDeviceResponse activateDevice(final ActivateDeviceRequest request) {
         return (ActivateDeviceResponse) wst.marshalSendAndReceive(request);
     }
 
-    public DeactivateDeviceResponse deactivateDevice(final DeactivateDeviceRequest request) throws WebServiceSecurityException {
-        final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
+    public DeactivateDeviceResponse deactivateDevice(final DeactivateDeviceRequest request) {
         return (DeactivateDeviceResponse) wst.marshalSendAndReceive(request);
     }
 
-    public CreateOrganisationResponse createOrganization(final CreateOrganisationRequest request) throws WebServiceSecurityException {
-        final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
+    public CreateOrganisationResponse createOrganization(final CreateOrganisationRequest request)  {
         return (CreateOrganisationResponse) wst.marshalSendAndReceive(request);
     }
 
-    public ChangeOrganisationResponse changeOrganization(final ChangeOrganisationRequest request) throws WebServiceSecurityException {
-        final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
+    public ChangeOrganisationResponse changeOrganization(final ChangeOrganisationRequest request) {
         return (ChangeOrganisationResponse) wst.marshalSendAndReceive(request);
     }
 
-    public RemoveDeviceResponse removeDevice(final RemoveDeviceRequest request) throws WebServiceSecurityException {
-        final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
+    public RemoveDeviceResponse removeDevice(final RemoveDeviceRequest request) {
         return (RemoveDeviceResponse) wst.marshalSendAndReceive(request);
     }
 
-    public RemoveOrganisationResponse removeOrganization(final RemoveOrganisationRequest request) throws WebServiceSecurityException {
-        final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
+    public RemoveOrganisationResponse removeOrganization(final RemoveOrganisationRequest request) {
         return (RemoveOrganisationResponse) wst.marshalSendAndReceive(request);
     }
 }

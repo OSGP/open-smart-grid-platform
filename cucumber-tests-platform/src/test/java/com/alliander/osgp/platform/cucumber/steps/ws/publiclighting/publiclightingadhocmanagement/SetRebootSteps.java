@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.steps.ws.core.CoreStepsBase;
+import com.alliander.osgp.platform.cucumber.steps.ws.publiclighting.PublicLightingStepsBase;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
 import cucumber.api.java.en.Then;
@@ -29,7 +29,7 @@ import cucumber.api.java.en.When;
 /**
  * Class with all the set light requests steps
  */
-public class SetRebootSteps extends CoreStepsBase {
+public class SetRebootSteps extends PublicLightingStepsBase {
     private static final String TEST_SUITE_XML = "AdHocManagement";
     private static final String TEST_CASE_ASYNC_REQ_XML = "SetReboot TestCase";
     private static final String TEST_CASE_ASYNC_NAME_REQUEST = "SetReboot";

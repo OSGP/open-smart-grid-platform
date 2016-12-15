@@ -78,5 +78,7 @@ public class Defaults {
 	public static final String DEFAULT_NEW_ORGANIZATION_NAME = "New Organization";
 	public static final String DEFAULT_NEW_ORGANIZATION_IDENTIFICATION = "NewOrganization";
 	public static final PlatformFunctionGroup DEFAULT_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP = PlatformFunctionGroup.ADMIN;
-	
+	public static final String DEFAULT_OWNER = "test-org";
+	public static final Boolean DEFAULT_ACTIVATED = true;
+	public static final String DEFAULT_DEVICE_MODEL_MANUFACTURER = "Kaifa";
 }

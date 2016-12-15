@@ -10,7 +10,6 @@ import java.util.Map;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceActivatedFilterType;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceExternalManagedFilterType;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceFilter;
@@ -20,13 +19,12 @@ import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindDevicesRes
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FirmwareModuleFilterType;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.steps.ws.core.CoreStepsBase;
 import com.alliander.osgp.platform.cucumber.support.ws.core.devicemanagement.CoreDeviceManagementClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class FindDeviceSteps extends CoreStepsBase {
+public class FindDeviceSteps {
 
     @Autowired
     private CoreDeviceManagementClient client;

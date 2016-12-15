@@ -103,5 +103,14 @@ public class Keys {
 	public static final String KEY_FAULTCODE = "FaultCode";
 	public static final String KEY_NEW_ORGANIZATION_IDENTIFICATION = "NewOrganizationIdentification";
 	public static final String KEY_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP = "NewPlatformFunctionGroup";
+	public static final String KEY_ACTIVATED = "Activated";
+	public static final String KEY_DEVICE_MODEL_DESCRIPTION = "Description";
+	public static final String KEY_DEVICE_MODEL_MANUFACTURER = "Manufacturer";
+	public static final String KEY_DEVICE_MODEL_METERED = "Metered";
+	public static final String KEY_DEVICE_MODEL_MODELCODE = "ModelCode";
+	public static final String KEY_HAS_SCHEDULE = "HasSchedule";
+	public static final String KEY_PUBLICKEYPRESENT = "PublicKeyPresent";
+	public static final String KEY_EVENT = "Event";
+	public static final String KEY_DESCRIPTION = "Description";
 	
 }

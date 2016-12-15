@@ -22,6 +22,7 @@ import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.RemoveOrganis
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
+import com.alliander.osgp.platform.cucumber.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.platform.cucumber.support.ws.admin.devicemanagement.AdminDeviceManagementClient;
 
 import cucumber.api.java.en.Then;
@@ -69,8 +70,6 @@ public class RemoveOrganizationSteps {
      */
     @Then("^the remove organization response contains$")
     public void the_remove_organization_response_contains(final Map<String, String> expectedResult) throws Throwable {
-    	SoapFaultClientException response = (SoapFaultClientException) ScenarioContext.Current().get(Keys.RESPONSE);
-
-    	Assert.assertEquals(getString(expectedResult, Keys.KEY_MESSAGE), response.getMessage());
+        GenericResponseSteps.VerifySoapFault(expectedResult);
     }
 }

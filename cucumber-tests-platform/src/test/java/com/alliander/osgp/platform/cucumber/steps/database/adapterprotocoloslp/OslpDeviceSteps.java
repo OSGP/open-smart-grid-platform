@@ -26,7 +26,7 @@ import cucumber.api.java.en.Given;
  */
 public class OslpDeviceSteps {
 
-    private static final String DEFAULT_DEVICE_UID = "dGVzdDEyMzQ1Njc4";
+    public static final String DEFAULT_DEVICE_UID = "dGVzdDEyMzQ1Njc4";
     private static final String DEVICE_PUBLIC_KEY = "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEFhUImXFJdqmputquVAc2CPdnn9Ju"
             + "00M3m/Ice7wABNN+oAYKQbw/OceqvZmFF1+r4nO/vCm/f1JO5nEorE2jNQ==";
 
