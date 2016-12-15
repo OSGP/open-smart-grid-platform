@@ -25,6 +25,8 @@ import com.alliander.osgp.domain.microgrids.repositories.RtuDeviceRepository;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
 public class BaseService {
 
@@ -76,5 +78,13 @@ public class BaseService {
 
     protected RtuDevice findRtuDeviceForDevice(final Device device) {
         return this.rtuDeviceRepository.findById(device.getId());
+    }
+
+    protected OsgpException ensureOsgpException(final Throwable t, final String defaultMessage) {
+        if (t instanceof OsgpException) {
+            return (OsgpException) t;
+        }
+
+        return new TechnicalException(ComponentType.DOMAIN_MICROGRIDS, defaultMessage, t);
     }
 }

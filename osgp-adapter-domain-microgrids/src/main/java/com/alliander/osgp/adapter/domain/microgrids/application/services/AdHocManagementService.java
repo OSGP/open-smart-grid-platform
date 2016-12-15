@@ -29,10 +29,8 @@ import com.alliander.osgp.dto.valueobjects.microgrids.EmptyResponseDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.GetDataRequestDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.GetDataResponseDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.SetDataRequestDto;
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
@@ -97,8 +95,7 @@ public class AdHocManagementService extends BaseService {
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            exception = new TechnicalException(ComponentType.DOMAIN_MICROGRIDS, "Exception occurred while getting data",
-                    e);
+            exception = this.ensureOsgpException(e, "Exception occurred while getting data");
         }
 
         // Support for Push messages, generate correlationUid
@@ -152,8 +149,7 @@ public class AdHocManagementService extends BaseService {
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            exception = new TechnicalException(ComponentType.DOMAIN_MICROGRIDS, "Exception occurred while setting data",
-                    e);
+            exception = this.ensureOsgpException(e, "Exception occurred while setting data");
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
