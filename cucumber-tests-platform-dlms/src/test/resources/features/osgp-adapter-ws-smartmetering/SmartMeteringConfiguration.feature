@@ -53,7 +53,6 @@ Feature: SmartMetering Configuration
     Then the specified alarm notifications should be set on the device
       | DeviceIdentification | TEST1024000000001 |
 
-  @Skip
   Scenario: Exchange user key on a gas device
     When the exchange user key request is received
       | DeviceIdentification | TESTG102400000001 |
