@@ -20,11 +20,8 @@ import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.repositories.DeleteAllDevicesService;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
-import com.alliander.osgp.domain.core.repositories.DeviceFirmwareRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
-import com.alliander.osgp.domain.core.repositories.EventRepository;
-import com.alliander.osgp.domain.core.repositories.FirmwareRepository;
 import com.alliander.osgp.domain.core.repositories.ManufacturerRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
@@ -97,41 +94,10 @@ public class DatabaseSteps {
         deviceModel = this.deviceModelRepo.save(deviceModel);
     }
 
-    // --TODO tijdelijk om te kijken alle modellen nu wel verwijderd worden>
-
-    @Autowired
-    private DeviceRepository deviceRepository;
-
-    @Autowired
-    private EventRepository eventRepository;
-
-    @Autowired
-    private DeviceModelRepository deviceModelRepository;
-
-    @Autowired
-    private DeviceFirmwareRepository deviceFirmwareRepository;
-
-    @Autowired
-    private FirmwareRepository firmwareRepository;
-
-    // --<
-
     @Transactional("txMgrCore")
     public void prepareDatabaseForScenario() {
         cleanRepoAbstractEntity(this.oslpDeviceRepo);
         cleanRepoAbstractEntity(this.deviceAuthorizationRepo);
-
-        // --TODO tijdelijk om te kijken alle modellen nu wel verwijderd worden>
-        this.eventRepository.deleteAllInBatch();
-        this.deviceFirmwareRepository.deleteAllInBatch();
-        this.firmwareRepository.deleteAllInBatch();
-        this.ssldRepository.deleteAllInBatch();
-        this.deviceRepository.deleteAllEans();
-        this.deviceRepository.deleteDeviceOutputSettings();
-        this.deviceRepository.deleteAllInBatch();
-        this.deviceModelRepository.deleteAllInBatch();
-        // -->
-
         this.deleteAllDevicesService.deleteAllDevices();
         cleanRepoSerializable(this.smartMeterRepo);
         cleanRepoSerializable(this.manufacturerRepo);
