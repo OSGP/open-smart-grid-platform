@@ -13,6 +13,8 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -64,6 +66,7 @@ import com.alliander.osgp.dto.valueobjects.LinkTypeDto;
 import com.alliander.osgp.dto.valueobjects.PageInfoDto;
 import com.alliander.osgp.dto.valueobjects.PowerUsageDataDto;
 import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryResponseMessageDataContainerDto;
+import com.alliander.osgp.dto.valueobjects.RelayMapDto;
 import com.alliander.osgp.dto.valueobjects.ScheduleDto;
 import com.alliander.osgp.dto.valueobjects.ScheduleMessageDataContainerDto;
 import com.alliander.osgp.oslp.Oslp;
@@ -1270,6 +1273,17 @@ public class OslpDeviceService implements DeviceService {
     }
 
     private void buildOslpRequestSetConfiguration(final SetConfigurationDeviceRequest deviceRequest) {
+        // First, sort the relay mapping on (internal) index number (FLEX-2514)
+        if (deviceRequest.getConfiguration().getRelayConfiguration() != null) {
+            Collections.sort(deviceRequest.getConfiguration().getRelayConfiguration().getRelayMap(),
+                    new Comparator<RelayMapDto>() {
+                        @Override
+                        public int compare(final RelayMapDto o1, final RelayMapDto o2) {
+                            return o1.getIndex().compareTo(o2.getIndex());
+                        }
+                    });
+        }
+
         final Oslp.SetConfigurationRequest setConfigurationRequest = this.mapper.map(deviceRequest.getConfiguration(),
                 Oslp.SetConfigurationRequest.class);
 
