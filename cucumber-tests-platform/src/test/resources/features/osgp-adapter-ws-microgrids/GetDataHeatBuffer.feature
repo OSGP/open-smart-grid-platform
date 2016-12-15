@@ -1,9 +1,9 @@
-@Iec61850MockServer @runnow
 Feature: Get Heat Buffer Data
   As an OSGP client
   I want to get Heat Buffer data from an RTU
   So this data can be used by other processes
 
+@Iec61850MockServer @runnow
   Scenario: Request Heat Buffer
     Given an rtu device
       | DeviceIdentification | RTU10001 |

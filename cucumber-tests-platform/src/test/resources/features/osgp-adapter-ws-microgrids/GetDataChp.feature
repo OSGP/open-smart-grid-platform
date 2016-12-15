@@ -1,9 +1,9 @@
-@Iec61850MockServer
 Feature: Get CHP Data
   As an OSGP client
   I want to get CHP data from an RTU
   So this data can be used by other processes
 
+@Iec61850MockServer
   Scenario: Request CHP
     Given an rtu device
       | DeviceIdentification | RTU10001 |
