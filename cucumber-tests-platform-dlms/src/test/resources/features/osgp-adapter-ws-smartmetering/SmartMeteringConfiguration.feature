@@ -11,6 +11,7 @@ Feature: SmartMetering Configuration
       | DeviceIdentification        | TESTG102400000001 |
       | DeviceType                  | SMART_METER_G     |
       | GatewayDeviceIdentification | TEST1024000000001 |
+      | Channel                     | 1                 |
 
   Scenario: Set special days on a device
     When the set special days request is received
@@ -23,8 +24,7 @@ Feature: SmartMetering Configuration
       | DeviceIdentification | TEST1024000000001 |
     Then the configuration object should be set on the device
       | DeviceIdentification | TEST1024000000001 |
-
-@Skip
+  @Skip
   Scenario: Handle a received alarm notification from a known device
     When an alarm notification is received from a known device
       | DeviceIdentification | TEST1024000000001 |
@@ -33,7 +33,7 @@ Feature: SmartMetering Configuration
     And the alarm should be pushed to the osgp_logging database device_log_item table
       | DeviceIdentification | TEST1024000000001 |
 
-@Skip
+  @Skip
   Scenario: Handle a received alarm notification from an unknown device
     When an alarm notification is received from an unknown device
       | DeviceIdentification | UNKNOWN0000000001 |
@@ -53,7 +53,6 @@ Feature: SmartMetering Configuration
     Then the specified alarm notifications should be set on the device
       | DeviceIdentification | TEST1024000000001 |
 
-@Skip
   Scenario: Exchange user key on a gas device
     When the exchange user key request is received
       | DeviceIdentification | TESTG102400000001 |
@@ -93,7 +92,7 @@ Feature: SmartMetering Configuration
     Then the firmware version result should be returned
       | DeviceIdentification | TEST1024000000001 |
 
-@Skip
+  @Skip
   Scenario: successful upgrade of firmware
     Given a request for a firmware upgrade for device "TEST1024000000001" from a client
     And the installation file of version "KFPP_V060100FF" is available
