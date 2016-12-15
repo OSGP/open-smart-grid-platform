@@ -110,8 +110,8 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
             final String messageType, final int retryCount) {
         final int messagePriority = 0;
         final Long scheduleTime = null;
-        this.handleDeviceResponse(deviceResponse, responseMessageSender, domain, domainVersion, messageType,
-                retryCount, messagePriority, scheduleTime);
+        this.handleDeviceResponse(deviceResponse, responseMessageSender, domain, domainVersion, messageType, retryCount,
+                messagePriority, scheduleTime);
     }
 
     /**
