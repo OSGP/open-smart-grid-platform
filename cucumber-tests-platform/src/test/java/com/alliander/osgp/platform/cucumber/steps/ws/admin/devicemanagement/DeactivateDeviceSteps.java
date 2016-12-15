@@ -9,32 +9,42 @@
  */
 package com.alliander.osgp.platform.cucumber.steps.ws.admin.devicemanagement;
 
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getEnum;
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
+
 import java.util.Map;
 
 import org.junit.Assert;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
+import com.alliander.osgp.adapter.ws.schema.admin.common.OsgpResultType;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.DeactivateDeviceRequest;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.DeactivateDeviceResponse;
+import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
+import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.steps.ws.admin.AdminStepsBase;
-import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
+import com.alliander.osgp.platform.cucumber.support.ws.admin.devicemanagement.AdminDeviceManagementClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class DeactivateDeviceSteps extends AdminStepsBase {
+public class DeactivateDeviceSteps {
 
-    protected DeactivateDeviceSteps() throws Throwable {
-		super();
-	}
-
-	private static final String TEST_SUITE = "DeviceManagement";
-    private static final String TEST_CASE_NAME = "281 Deactivate device";
-    private static final String TEST_CASE_NAME_REQUEST = "DeactivateDevice - Request 1";
-
+	@Autowired
+	private AdminDeviceManagementClient client;
+	
     @When("^receiving a deactivate device request$")
     public void receivingADeactivateDeviceRequest(final Map<String, String> requestSettings) throws Throwable {
-        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION, requestSettings.get(Keys.KEY_DEVICE_IDENTIFICATION));
+    	
+    	DeactivateDeviceRequest request = new DeactivateDeviceRequest();
+    	request.setDeviceIdentification(getString(requestSettings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
         
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_NAME, TEST_SUITE);
+    	try {
+    		ScenarioContext.Current().put(Keys.RESPONSE, client.deactivateDevice(request));
+    	} catch(SoapFaultClientException ex) {
+    		ScenarioContext.Current().put(Keys.RESPONSE, ex);
+    	}
     }
 
     /**
@@ -43,6 +53,8 @@ public class DeactivateDeviceSteps extends AdminStepsBase {
      */
     @Then("^the deactivate device response contains$")
     public void the_deactivate_device_response_contains(Map<String, String> expectedResponse) throws Throwable {
-        Assert.assertTrue(this.runXpathResult.assertXpath(this.response, "/Envelope/Body/DeactivateDeviceResponse/Result/text()", expectedResponse.get("Result")));
+        DeactivateDeviceResponse response = (DeactivateDeviceResponse) ScenarioContext.Current().get(Keys.RESPONSE);
+        
+        Assert.assertEquals(getEnum(expectedResponse, Keys.KEY_RESULT, OsgpResultType.class), response.getResult());
     }
 }

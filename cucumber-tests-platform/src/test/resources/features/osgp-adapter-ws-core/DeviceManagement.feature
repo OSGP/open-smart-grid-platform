@@ -20,3 +20,17 @@ Feature: Core Device management
       | DeviceIdentification | Result | Event                         |
       | TEST1024000000001    | OK     | LIGHT_EVENTS, SECURITY_EVENTS |
       | TEST1024000000001    | OK     | SECURITY_EVENTS               |
+
+  Scenario Outline: Find devices parameterized
+    Given a device
+      | DeviceIdentification | <DeviceIdentification> |
+    When receiving a find devices request
+      | PageSize | <PageSize> |
+      | Page     | <Page>     |
+    Then the find devices response contains "<Number>" devices
+    And the find devices response contains at index "1"
+      | DeviceIdentification | <DeviceIdentification> |
+
+    Examples: 
+      | DeviceIdentification | PageSize | Page | Number |
+      | TEST1024000000001    |       25 |    0 |      1 |

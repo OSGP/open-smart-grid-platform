@@ -7,13 +7,15 @@
  */
 package com.alliander.osgp.platform.cucumber.steps;
 
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup;
+
 /**
  * Defaults within the database.
  */
 public class Defaults {
 
     // Values
-    public static final String DEFAULT_ORGANIZATION_DESCRIPTION = "Test Organisation";
+    public static final String DEFAULT_ORGANIZATION_DESCRIPTION = "Test Organization";
     public static final String DEFAULT_ORGANIZATION_IDENTIFICATION = "test-org";
     public static final String DEFAULT_USER_NAME = "Cucumber";
     public static final String DEFAULT_PREFIX = "MAA";
@@ -66,4 +68,15 @@ public class Defaults {
     // Types
     public static final String SMART_METER_E = "SMART_METER_E";
     public static final String SMART_METER_G = "SMART_METER_G";
+	public static final int DEFAULT_PAGE_SIZE = 25;
+	public static final Boolean DEFAULT_USE_PAGES = true;
+	public static final Boolean DEFAULT_ORGANIZATION_ENABLED = true;
+	public static final String DEFAULT_ORGANIZATION_NAME = "Test organization";
+	public static final String DEFAULT_ORGANIZATION_PREFIX = "cgi";
+	public static final PlatformFunctionGroup DEFAULT_PLATFORM_FUNCTION_GROUP = PlatformFunctionGroup.ADMIN;
+	public static final String DEFAULT_DOMAINS = "COMMON;PUBLIC_LIGHTING;TARIFF_SWITCHING";
+	public static final String DEFAULT_NEW_ORGANIZATION_NAME = "New Organization";
+	public static final String DEFAULT_NEW_ORGANIZATION_IDENTIFICATION = "NewOrganization";
+	public static final PlatformFunctionGroup DEFAULT_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP = PlatformFunctionGroup.ADMIN;
+	
 }

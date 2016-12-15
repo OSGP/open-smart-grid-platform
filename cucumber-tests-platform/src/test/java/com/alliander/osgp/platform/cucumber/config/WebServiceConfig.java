@@ -9,6 +9,11 @@
  */
 package com.alliander.osgp.platform.cucumber.config;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.xml.bind.PropertyException;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,9 +35,6 @@ public class WebServiceConfig extends AbstractConfig {
     @Value("${base.uri}")
     private String baseUri;
 
-    @Value("${web.service.template.default.uri.microgrids.adhocmanagement}")
-    private String webserviceTemplateDefaultUriMicrogridsAdHocManagement;
-
     @Value("${web.service.truststore.location}")
     private String webserviceTruststoreLocation;
 
@@ -51,6 +53,27 @@ public class WebServiceConfig extends AbstractConfig {
     @Value("${web.service.keystore.type}")
     private String webserviceKeystoreType;
 
+    @Value("${web.service.template.default.uri.core.devicemanagement}")
+    private String webserviceTemplateDefaultUriCoreDeviceManagement;
+
+    @Value("${jaxb2.marshaller.context.path.core.devicemanagement}")
+    private String contextPathCoreDeviceManagement;
+    
+    @Value("${web.service.template.default.uri.core.deviceinstallation}")
+    private String webserviceTemplateDefaultUriCoreDeviceInstallation;
+
+    @Value("${jaxb2.marshaller.context.path.core.deviceinstallation}")
+    private String contextPathCoreDeviceInstallation;
+    
+    @Value("${web.service.template.default.uri.admin.devicemanagement}")
+    private String webserviceTemplateDefaultUriAdminDeviceManagement;
+
+    @Value("${jaxb2.marshaller.context.path.admin.devicemanagement}")
+    private String contextPathAdminDeviceManagement;
+
+    @Value("${web.service.template.default.uri.microgrids.adhocmanagement}")
+    private String webserviceTemplateDefaultUriMicrogridsAdHocManagement;
+
     @Value("${jaxb2.marshaller.context.path.microgrids.adhocmanagement}")
     private String contextPathMicrogridsAdHocManagement;
 
@@ -67,6 +90,118 @@ public class WebServiceConfig extends AbstractConfig {
         factory.setPassword(this.webserviceTruststorePassword);
 
         return factory;
+    }
+    
+    @Bean
+    public WebServiceTemplateFactory coreDeviceManagementWstf() {
+        return new WebServiceTemplateFactory.Builder().setMarshaller(this.coreDeviceManagementMarshaller())
+                .setMessageFactory(this.messageFactory())
+                .setDefaultUri(this.baseUri.concat(this.webserviceTemplateDefaultUriCoreDeviceManagement))
+                .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
+                .setKeyStorePassword(this.webserviceKeystorePassword)
+                .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)
+                .build();
+    }
+
+    /**
+     * Method for creating the Marshaller for Core DeviceManagement.
+     *
+     * @return Jaxb2Marshaller
+     */
+    @Bean
+    public Jaxb2Marshaller coreDeviceManagementMarshaller() {
+        final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+
+        marshaller.setContextPath(this.contextPathCoreDeviceManagement);
+
+        return marshaller;
+    }
+
+    /**
+     * Method for creating the Marshalling Payload Method Processor for
+     * Core DeviceManagement.
+     *
+     * @return MarshallingPayloadMethodProcessor
+     */
+    @Bean
+    public MarshallingPayloadMethodProcessor coreDeviceManagementMarshallingPayloadMethodProcessor() {
+        return new MarshallingPayloadMethodProcessor(this.coreDeviceManagementMarshaller(),
+                this.coreDeviceManagementMarshaller());
+    }
+    
+    @Bean
+    public WebServiceTemplateFactory coreDeviceInstallationWstf() {
+        return new WebServiceTemplateFactory.Builder().setMarshaller(this.coreDeviceInstallationMarshaller())
+                .setMessageFactory(this.messageFactory())
+                .setDefaultUri(this.baseUri.concat(this.webserviceTemplateDefaultUriCoreDeviceInstallation))
+                .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
+                .setKeyStorePassword(this.webserviceKeystorePassword)
+                .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)
+                .build();
+    }
+
+    /**
+     * Method for creating the Marshaller for Core DeviceInstallation.
+     *
+     * @return Jaxb2Marshaller
+     */
+    @Bean
+    public Jaxb2Marshaller coreDeviceInstallationMarshaller() {
+        final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+
+        marshaller.setContextPath(this.contextPathCoreDeviceInstallation);
+
+        return marshaller;
+    }
+
+    /**
+     * Method for creating the Marshalling Payload Method Processor for
+     * Core DeviceInstallation.
+     *
+     * @return MarshallingPayloadMethodProcessor
+     */
+    @Bean
+    public MarshallingPayloadMethodProcessor coreDeviceInstallationMarshallingPayloadMethodProcessor() {
+        return new MarshallingPayloadMethodProcessor(this.coreDeviceInstallationMarshaller(),
+                this.coreDeviceInstallationMarshaller());
+    }
+    
+    @Bean
+    public WebServiceTemplateFactory adminDeviceManagementWstf() {
+        return new WebServiceTemplateFactory.Builder().setMarshaller(this.adminDeviceManagementMarshaller())
+                .setMessageFactory(this.messageFactory())
+                .setDefaultUri(this.baseUri.concat(this.webserviceTemplateDefaultUriAdminDeviceManagement))
+                .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
+                .setKeyStorePassword(this.webserviceKeystorePassword)
+                .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)
+                .build();
+    }
+
+    /**
+     * Method for creating the Marshaller for Admin DeviceManagement.
+     *
+     * @return Jaxb2Marshaller
+     * @throws PropertyException 
+     */
+    @Bean
+    public Jaxb2Marshaller adminDeviceManagementMarshaller() {
+    	final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+
+        marshaller.setContextPath(this.contextPathAdminDeviceManagement);
+        
+        return marshaller;
+    }
+
+    /**
+     * Method for creating the Marshalling Payload Method Processor for
+     * Admin DeviceManagement.
+     *
+     * @return MarshallingPayloadMethodProcessor
+     */
+    @Bean
+    public MarshallingPayloadMethodProcessor adminDeviceManagementMarshallingPayloadMethodProcessor() {
+        return new MarshallingPayloadMethodProcessor(this.adminDeviceManagementMarshaller(),
+                this.adminDeviceManagementMarshaller());
     }
 
     @Bean

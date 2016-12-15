@@ -35,6 +35,9 @@ public class ScenarioHooks {
     @Before(order = 0)
     public void beforeScenario() {
     	databaseSteps.prepareDatabaseForScenario();
+
+    	// Make sure that the scenario context is clean before each test.
+        ScenarioContext.context = null;
     }
 
     /**

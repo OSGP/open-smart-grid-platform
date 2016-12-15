@@ -40,19 +40,13 @@ Feature: Organisation management
       | Enabled                    | <Enabled>                    |
       | Domains                    | <Domains>                    |
     Then the create organization response contains
-      | FaultCode      | SOAP-ENV:Server                                                                                                               |
-      | FaultString    | com.alliander.osgp.shared.exceptionhandling.TechnicalException                                                                |
-      | FaultType      | TechnicalFault                                                                                                                |
-      | Component      | WS_ADMIN                                                                                                                      |
-      | InnerException | org.springframework.transaction.TransactionSystemException                                                                    |
-      | InnerMessage   | Could not commit JPA transaction; nested exception is javax.persistence.RollbackException: Transaction marked as rollbackOnly |
+      | Message | com.alliander.osgp.shared.exceptionhandling.TechnicalException |
     And the organization with name "Different Organisation" should not be created
 
     Examples: 
       | OrganizationIdentification | Original Name       | Prefix | FunctionGroup | Enabled | Domains | Different Name         |
       | ATestOrganization          | A Test Organization | MAA    | ADMIN         | true    | COMMON  | Different Organisation |
 
-  # For this a special test is created in the SoapUI project, which uses the Unknown Organisation as an OrganizationIdentification in the header.
   Scenario Outline: Create an Organisation as an unauthorized Organisation
     When receiving a create organization request as an unauthorized organization
       | OrganizationIdentification | <OrganizationIdentification> |
@@ -62,14 +56,7 @@ Feature: Organisation management
       | Enabled                    | <Enabled>                    |
       | Domains                    | <Domains>                    |
     Then the create organization response contains
-      | FaultCode      | SOAP-ENV:Server                                                  |
-      | FaultString    | UNKNOWN_ORGANISATION                                             |
-      | FaultType      | FunctionalFault                                                  |
-      | Code           |                                                              101 |
-      | Message        | UNKNOWN_ORGANISATION                                             |
-      | Component      | WS_ADMIN                                                         |
-      | InnerException | com.alliander.osgp.domain.core.exceptions.UnknownEntityException |
-      | InnerMessage   | Organisation with id "unknown-organization" could not be found.  |
+      | Message | UNKNOWN_ORGANISATION |
     And the organization with name "<Name>" should not be created
 
     Examples: 
@@ -85,10 +72,7 @@ Feature: Organisation management
       | Enabled                    | <Enabled>                             |
       | Domains                    | <Domains>                             |
     Then the create organization response contains
-      | FaultCode        | <FaultCode>         |
-      | FaultString      | <FaultString>       |
-      | FaultType        | <FaultType>         |
-      | ValidationErrors | <Validation Errors> |
+      | Message | Validation error |
     And the organization with name "<Name>" should not be created
 
     # Note: The validation errors are ; separated if there are multiple.
@@ -104,15 +88,16 @@ Feature: Organisation management
       | FunctionGroup              | <FunctionGroup>              |
       | Domains                    | <Domains>                    |
     When receiving an update organization request
-      | OrganizationIdentification | <OrganizationIdentification> |
-      | Name                       | <NewName>                    |
-      | FunctionGroup              | <FunctionGroup>              |
-      | Domains                    | <Domains>                    |
+      | OrganizationIdentification    | <OrganizationIdentification> |
+      | NewOrganizationIdentification | <OrganizationIdentification> |
+      | Name                          | <NewName>                    |
+      | FunctionGroup                 | <FunctionGroup>              |
+      | Domains                       | <Domains>                    |
     Then the update organization response is successfull
-    And the update organization response contains
+    And the organization exists
       | OrganizationIdentification | <OrganizationIdentification> |
       | Name                       | <NewName>                    |
-      | FunctionGroup              | <FunctionGroup>              |
+      | PlatformFunctionGroup      | <FunctionGroup>              |
       | Domains                    | <Domains>                    |
 
     Examples: 
@@ -144,14 +129,7 @@ Feature: Organisation management
       | Name                       | <Name>                       |
       | FunctionGroup              | <FunctionGroup>              |
     Then the remove organization response contains
-      | FaultCode      | SOAP-ENV:Server                                                         |
-      | FaultString    | UNKNOWN_ORGANISATION                                                    |
-      | FaultType      | FunctionalFault                                                         |
-      | Code           |                                                                     101 |
-      | Message        | UNKNOWN_ORGANISATION                                                    |
-      | Component      | WS_ADMIN                                                                |
-      | InnerException | com.alliander.osgp.domain.core.exceptions.UnknownEntityException        |
-      | InnerMessage   | Organisation with id "<OrganizationIdentification>" could not be found. |
+      | Message | UNKNOWN_ORGANISATION |
 
     Examples: 
       | OrganizationIdentification | Name                | FunctionGroup |

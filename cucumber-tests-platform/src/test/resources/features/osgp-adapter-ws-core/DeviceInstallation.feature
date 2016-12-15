@@ -218,19 +218,11 @@ Feature: Device installation
   Scenario Outline: Find recent devices without owner
     When receiving a find recent devices request
       | DeviceIdentification | <DeviceIdentification> |
-    Then the find recent devices response contains
-      | FaultCode      | SOAP-ENV:Server                                                  |
-      | FaultString    | <FaultString>                                                    |
-      | FaultType      | FunctionalFault                                                  |
-      | Code           |                                                              201 |
-      | Message        | <Message>                                                        |
-      | Component      | WS_CORE                                                          |
-      | InnerException | com.alliander.osgp.domain.core.exceptions.UnknownEntityException |
-      | InnerMessage   | <InnerMessage>                                                   |
-
+    Then the find recent devices response contains "0" devices
+    
     Examples: 
-      | DeviceIdentification | FaultString    | Message        | InnerMessage                                         |
-      | TEST1024000000002    | UNKNOWN_DEVICE | UNKNOWN_DEVICE | Can not find devices with unknown 'Owner' parameter. |
+      | DeviceIdentification | 
+      | TEST1024000000002    | 
 
   # RegisterDevices scenario's
   # Nieuwe classe? Hoe kan een device geregistreerd worden?

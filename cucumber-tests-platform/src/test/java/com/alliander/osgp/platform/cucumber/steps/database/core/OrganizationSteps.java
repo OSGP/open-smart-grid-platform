@@ -70,24 +70,33 @@ public class OrganizationSteps {
 
         // Save the created id for the organization in the scenario context.
         final Organisation savedEntity = this.repo.findByName(getString(settings, "Name", this.DEFAULT_NAME));
-        ScenarioContext.Current()
-        .put(Keys.KEY_ORGANIZATION_IDENTIFICATION, savedEntity.getOrganisationIdentification());
     }
     
     /**
      * Generic method to check if the organization exists in the database.
      * 
-     * @param organization
+     * @param expectedOrganization
      *            An organization which has to exist in the database
      * @throws Throwable
      */
     @Given("^the organization exists$")
-    public void theOrganizationExists(final Map<String, String> organization) throws Throwable
+    public void theOrganizationExists(final Map<String, String> expectedOrganization) throws Throwable
     {
-    	final Organisation entity = this.repo.findByOrganisationIdentification(organization
+    	final Organisation entity = this.repo.findByOrganisationIdentification(expectedOrganization
                 .get(Keys.KEY_ORGANIZATION_IDENTIFICATION));
     	
-    	Assert.assertTrue(entity != null);
+    	Assert.assertNotNull(entity);
+    	
+    	if (expectedOrganization.containsKey(Keys.KEY_NAME)) {
+    		Assert.assertEquals(getString(expectedOrganization, Keys.KEY_NAME), entity.getName());
+    	}
+    	if (expectedOrganization.containsKey(Keys.KEY_PLATFORM_FUNCTION_GROUP)) {
+    		Assert.assertEquals(getEnum(expectedOrganization, Keys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class), entity.getFunctionGroup());
+    	}
+    	// TODO:
+    	//if (expectedOrganization.containsKey(Keys.KEY_DOMAINS)) {
+    	//	Assert.assertEquals(getString(expectedOrganization, Keys.KEY_DOMAINS), entity.getDomains().);
+    	//}
     }
 
     /**

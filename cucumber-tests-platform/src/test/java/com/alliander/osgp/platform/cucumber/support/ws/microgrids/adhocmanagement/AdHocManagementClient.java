@@ -17,13 +17,12 @@ import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataAs
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataRequest;
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataResponse;
-import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
-import com.alliander.osgp.platform.cucumber.steps.Keys;
+import com.alliander.osgp.platform.cucumber.support.ws.BaseClient;
 import com.alliander.osgp.platform.cucumber.support.ws.WebServiceSecurityException;
 import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
 
 @Component
-public class AdHocManagementServiceAdapter {
+public class AdHocManagementClient extends BaseClient {
 
     @Autowired
     private WebServiceTemplateFactory webServiceTemplateFactoryMicrogridsAdHocManagement;
@@ -64,24 +63,5 @@ public class AdHocManagementServiceAdapter {
         } catch (final InterruptedException e) {
             throw new AssertionError("Waiting for RtuResponseData was interrupted.", e);
         }
-    }
-
-    private String getOrganizationIdentification() {
-        final String organizationIdentification = (String) ScenarioContext.Current()
-                .get(Keys.KEY_ORGANIZATION_IDENTIFICATION);
-        if (organizationIdentification == null) {
-            throw new AssertionError("ScenarioContext must contain the organization identification for key \""
-                    + Keys.KEY_ORGANIZATION_IDENTIFICATION + "\" before calling a web service.");
-        }
-        return organizationIdentification;
-    }
-
-    private String getUserName() {
-        final String userName = (String) ScenarioContext.Current().get(Keys.KEY_USER_NAME);
-        if (userName == null) {
-            throw new AssertionError("ScenarioContext must contain the user name for key \"" + Keys.KEY_USER_NAME
-                    + "\" before calling a web service.");
-        }
-        return userName;
     }
 }

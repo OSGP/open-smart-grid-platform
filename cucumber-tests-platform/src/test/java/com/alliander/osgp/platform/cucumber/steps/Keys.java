@@ -63,6 +63,7 @@ public class Keys {
     public static final String KEY_EVENTS_NODELIST_EXPECTED = "event-nodelist-expected";
     public static final String KEY_DEVICE_UID = "DeviceUid";
 
+    public static final String KEY_PAGE_SIZE = "PageSize";
     public static final String KEY_PAGE = "Page";
 
     public static final String KEY_SYSTEM_ID = "SystemId";
@@ -78,4 +79,29 @@ public class Keys {
     public static final String KEY_MEASUREMENT_VALUE = "MeasurementValue";
 
     public static final String KEY_RESULT = "Result";
+	public static final String KEY_MANUFACTURER = "Manufacturer";
+	public static final String KEY_DEVICE_EXTERNAL_MANAGED = "DeviceExternalManaged";
+	public static final String KEY_DEVICE_ACTIVATED = "DeviceActivated";
+	public static final String KEY_DEVICE_MAINTENANCE = "DeviceMaintenance";
+	public static final String KEY_SORT_DIR = "SortDir";
+	public static final String KEY_HAS_TECHNICAL_INSTALLATION = "HasTechnicalInstallation";
+	public static final String KEY_SORTED_BY = "SortedBy";
+	public static final String KEY_OWNER = "Owner";
+	public static final String KEY_FIRMWARE_MODULE_TYPE = "FirmwareModuleType";
+	public static final String KEY_FIRMWARE_MODULE_VERSION = "FirmwareModuleVersion";
+	public static final String KEY_EXACT_MATCH = "ExactMatch";
+	public static final String KEY_USE_PAGE = "UsePage";
+	public static final String RESPONSE = "Response";
+	public static final String KEY_USE_PAGES = "UsePages";
+	public static final String KEY_NETWORKADDRESS = "NetworkAddress";
+	public static final String KEY_ENABLED = "Enabled";
+	public static final String KEY_NAME = "Name";
+	public static final String KEY_PREFIX = "Prefix";
+	public static final String KEY_PLATFORM_FUNCTION_GROUP = "PlatformFunctionGroup";
+	public static final String KEY_DOMAINS = "Domain";
+	public static final String KEY_MESSAGE = "Message";
+	public static final String KEY_FAULTCODE = "FaultCode";
+	public static final String KEY_NEW_ORGANIZATION_IDENTIFICATION = "NewOrganizationIdentification";
+	public static final String KEY_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP = "NewPlatformFunctionGroup";
+	
 }
