@@ -8,14 +8,13 @@ Feature: SmartMetering AdHoc
       | DeviceType           | SMART_METER_E     |
       | Active               | true              |
 
-  @Disabled
   Scenario: Retrieve the association LN objectlist from a device
     When receiving a retrieve association LN objectlist request
       | DeviceIdentification | TEST1024000000001 |
     Then the objectlist should be returned
       | DeviceIdentification | TEST1024000000001 |
-  
-  @Disabled
+
+  @Skip
   Scenario: Retrieve all configuration objects from a device
     When receiving a retrieve configuration request
       | DeviceIdentification | TEST1024000000001 |
