@@ -25,6 +25,7 @@ import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.GetSt
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusResponse;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.AsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.common.OsgpResultType;
 import com.alliander.osgp.platform.cucumber.config.CorePersistenceConfig;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
@@ -86,6 +87,13 @@ public class GetStatusSteps {
         LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
     }
 
+    @Then("^the get status response contains soap fault$")
+    public void thenTheGetStatusResponseContainsSoapFault(final Map<String, String> expectedResponseData) {
+    	SoapFaultClientException response = (SoapFaultClientException)ScenarioContext.Current().get(Keys.RESPONSE);
+    	
+    	Assert.assertEquals(expectedResponseData.get(Keys.KEY_MESSAGE), response.getMessage());
+    }
+
     @Then("^the platform buffers a get status response message for device \"([^\"]*)\"$")
     public void thenThePlatformBuffersAGetStatusResponseMessageForDevice(final String deviceIdentification, final Map<String, String> expectedResult) throws Throwable {
     	GetStatusAsyncRequest request = new GetStatusAsyncRequest();
@@ -106,7 +114,7 @@ public class GetStatusSteps {
     		try {
     			GetStatusResponse response = client.getGetStatusResponse(request);
     			
-    			Assert.assertEquals(expectedResult.get(Keys.KEY_RESULT), response.getResult());
+    			Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.KEY_RESULT)), response.getResult());
     			
     			success = true; 
     		}

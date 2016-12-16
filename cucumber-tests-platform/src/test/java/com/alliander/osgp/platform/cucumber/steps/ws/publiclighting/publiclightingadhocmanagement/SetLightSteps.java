@@ -28,6 +28,7 @@ import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.SetLi
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.SetLightRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.SetLightResponse;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.AsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.common.OsgpResultType;
 import com.alliander.osgp.platform.cucumber.config.CorePersistenceConfig;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
@@ -95,6 +96,13 @@ public class SetLightSteps {
      	LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
     }
 
+    @Then("^the set light response contains soap fault$")
+    public void thenTheSetLightResponseContainsSoapFault(final Map<String, String> expectedResponseData) {
+    	SoapFaultClientException response = (SoapFaultClientException)ScenarioContext.Current().get(Keys.RESPONSE);
+    	
+    	Assert.assertEquals(expectedResponseData.get(Keys.KEY_MESSAGE), response.getMessage());
+    }
+    
     @Then("^the platform buffers a set light response message for device \"([^\"]*)\"$")
     public void thenThePlatformBuffersASetLightResponseMessage(final String deviceIdentification, final Map<String, String> expectedResult) throws Throwable {
     	SetLightAsyncRequest request = new SetLightAsyncRequest();
@@ -115,7 +123,7 @@ public class SetLightSteps {
     		try {
     			SetLightResponse response = client.getSetLightResponse(request);
     			
-    			Assert.assertEquals(expectedResult.get(Keys.KEY_RESULT), response.getResult());
+    			Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.KEY_RESULT)), response.getResult());
     			
     			success = true; 
     		}

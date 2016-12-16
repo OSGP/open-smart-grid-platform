@@ -33,7 +33,7 @@ public class StopDeviceSteps {
 	@Autowired
     private CoreDeviceInstallationClient client;
 	
-    private static final Logger LOGGER = LoggerFactory.getLogger(StartDeviceSteps.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StopDeviceSteps.class);
     
     /**
      * 

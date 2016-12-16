@@ -25,6 +25,7 @@ import com.alliander.osgp.adapter.ws.schema.core.adhocmanagement.SetRebootAsyncR
 import com.alliander.osgp.adapter.ws.schema.core.adhocmanagement.SetRebootRequest;
 import com.alliander.osgp.adapter.ws.schema.core.adhocmanagement.SetRebootResponse;
 import com.alliander.osgp.adapter.ws.schema.core.common.AsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.common.OsgpResultType;
 import com.alliander.osgp.platform.cucumber.config.CorePersistenceConfig;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
@@ -104,7 +105,7 @@ public class SetRebootSteps {
     		try {
     			SetRebootResponse response = client.getSetRebootResponse(request);
     			
-    			Assert.assertEquals(expectedResult.get(Keys.KEY_RESULT), response.getResult());
+    			Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.KEY_RESULT)), response.getResult());
     			
     			success = true; 
     		}

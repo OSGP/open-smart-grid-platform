@@ -27,6 +27,7 @@ import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.Resum
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.ResumeScheduleRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.ResumeScheduleResponse;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.AsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.common.OsgpResultType;
 import com.alliander.osgp.platform.cucumber.config.CorePersistenceConfig;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
@@ -108,7 +109,7 @@ public class ResumeScheduleSteps {
     		try {
     			ResumeScheduleResponse response = client.getResumeScheduleResponse(request);
     			
-    			Assert.assertEquals(expectedResult.get(Keys.KEY_RESULT), response.getResult());
+    			Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.KEY_RESULT)), response.getResult());
     			
     			success = true; 
     		}
