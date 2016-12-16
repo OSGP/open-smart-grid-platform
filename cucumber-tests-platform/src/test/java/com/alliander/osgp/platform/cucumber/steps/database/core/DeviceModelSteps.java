@@ -21,6 +21,7 @@ import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.ManufacturerRepository;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
+import com.alliander.osgp.platform.cucumber.steps.Keys;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -49,16 +50,16 @@ public class DeviceModelSteps {
     	final Manufacturer manufacturer = this.manufacturerRepo.findByName(
     			getString(settings, "ManufacturerName", ManufacturerSteps.DEFAULT_NAME));
 
-    	final String description = getString(settings, "Description", Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION);
+    	final String description = getString(settings, Keys.KEY_DESCRIPTION, Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION);
     	
     	// Create the new device model.
     	final DeviceModel entity = new DeviceModel(
     			manufacturer,
-    			getString(settings, "ModelCode", Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE),
+    			getString(settings, Keys.KEY_DEVICE_MODEL_MODELCODE, Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE),
     			description,
-    			getBoolean(settings, "FileStorage", this.DEFAULT_FILESTORAGE));
+    			getBoolean(settings, Keys.KEY_DEVICE_MODEL_FILESTORAGE, this.DEFAULT_FILESTORAGE));
 
-    	entity.updateData(description, getBoolean(settings, "Metered", this.DEFAULT_METERED));
+    	entity.updateData(description, getBoolean(settings, Keys.KEY_DEVICE_MODEL_METERED, this.DEFAULT_METERED));
     	entity.setVersion(getLong(settings, "Version"));
 
 		this.repo.save(entity);

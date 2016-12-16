@@ -352,10 +352,6 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         Oslp.Message response = null;
         final String deviceIdString = Base64.encodeBase64String(message.getDeviceId());
 
-        LOGGER.info("request received, sequenceNumber: {}", sequenceNumber);
-        LOGGER.info("manufacturerId byte[0]: {} byte[1]: {}", message.getDeviceId()[0], message.getDeviceId()[1]);
-        LOGGER.info("deviceId as BASE 64 STRING: {}", deviceIdString);
-
         // Calculate expected sequence number
         this.sequenceNumber = this.doGetNextSequence();
 
@@ -370,19 +366,12 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
 
         String keys = "";
 		
-        LOGGER.info("Handler Sleeping for 2.5 seconds");
-		this.sleep(2500L);
-        
 		for (DeviceRequestMessageType k : mockResponses.keySet())
         {
         	if (!keys.isEmpty()) keys += " | ";
         	keys += k.name();
         }
-        LOGGER.info("Handler MockResponsesKeys: " + keys);
-	
-		LOGGER.info("Handler Sleeping for 2.5 seconds");
-		this.sleep(2500L);
-		
+
         // Handle requests
         if (request.hasGetFirmwareVersionRequest()
                 && this.mockResponses.containsKey(DeviceRequestMessageType.GET_FIRMWARE_VERSION)) {

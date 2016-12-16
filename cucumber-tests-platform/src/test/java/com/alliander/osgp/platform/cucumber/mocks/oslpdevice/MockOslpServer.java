@@ -101,17 +101,17 @@ public class MockOslpServer {
                 this.reponseDelayRandomRange, this.privateKey(), this.clientBootstrap(), this.mockResponses,
                 this.receivedRequests);
 
-        LOGGER.info("Started OSLP Mock server starting ...");
+        LOGGER.info("OSLP Mock server starting on port {}", this.oslpPortServer);
         this.server = this.serverBootstrap();
         this.server.bind(new InetSocketAddress(this.oslpPortServer));
-        LOGGER.info("Started OSLP Mock server on port {}", this.oslpPortServer);
+        LOGGER.info("OSLP Mock server started.");
     }
 
     public void stop() {
     	if (this.server != null) {
             this.server.shutdown();
     	}
-        LOGGER.info("Shutdown OSLP Mock server");
+        LOGGER.info("OSLP Mock server shutdown.");
     }
     
     public void resetServer() {

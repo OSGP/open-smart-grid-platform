@@ -8,38 +8,38 @@ Feature: Device installation
       | ModelCode | <ModelCode> |
       | Metered   | <Metered>   |
     When receiving an add device request
-      | DeviceUid               | <DeviceUid>             |
-      | DeviceIdentification    | <DeviceIdentification>  |
-      | Alias                   | <Alias>                 |
-      | Owner                   | <Owner>                 |
-      | ContainerPostalCode     | <ContainerPostalCode>   |
-      | ContainerCity           | <ContainerCity>         |
-      | ContainerStreet         | <ContainerStreet>       |
-      | ContainerNumber         | <ContainerNumber>       |
-      | ContainerMunicipality   | <ContainerMunicipality> |
-      | GpsLatitude             | <GpsLatitude>           |
-      | GpsLongitude            | <GpsLongitude>          |
-      | Activated               | <Activated>             |
-      | HasSchedule             | <HasSchedule>           |
-      | PublicKeyPresent        | <PublicKeyPresent>      |
-      | DeviceModelManufacturer | <Manufacturer>          |
-      | DeviceModelModelCode    | <ModelCode>             |
-      | DeviceModelDescription  | <Description>           |
-      | DeviceModelMetered      | <Metered>               |
+      | DeviceUid             | <DeviceUid>             |
+      | DeviceIdentification  | <DeviceIdentification>  |
+      | alias                 | <Alias>                 |
+      | Owner                 | <Owner>                 |
+      | containerPostalCode   | <ContainerPostalCode>   |
+      | containerCity         | <ContainerCity>         |
+      | containerStreet       | <ContainerStreet>       |
+      | containerNumber       | <ContainerNumber>       |
+      | containerMunicipality | <ContainerMunicipality> |
+      | gpsLatitude           | <GpsLatitude>           |
+      | gpsLongitude          | <GpsLongitude>          |
+      | Activated             | <Activated>             |
+      | HasSchedule           | <HasSchedule>           |
+      | PublicKeyPresent      | <PublicKeyPresent>      |
+      | Manufacturer          | <Manufacturer>          |
+      | ModelCode             | <ModelCode>             |
+      | Description           | <Description>           |
+      | Metered               | <Metered>               |
     Then the add device response is successfull
     # 'Activated' is altijd 'false' wanneer een nieuwe device wordt aangemaakt.
     # Om deze stap volledig succesvol te laten verlopen moet de value van 'Activated' 'false' zijn.
     And the device exists
       | DeviceIdentification       | <DeviceIdentification>  |
-      | Alias                      | <Alias>                 |
+      | alias                      | <Alias>                 |
       | OrganizationIdentification | <Owner>                 |
-      | ContainerPostalCode        | <ContainerPostalCode>   |
-      | ContainerCity              | <ContainerCity>         |
-      | ContainerStreet            | <ContainerStreet>       |
-      | ContainerNumber            | <ContainerNumber>       |
-      | ContainerMunicipality      | <ContainerMunicipality> |
-      | GpsLatitude                | <GpsLatitude>           |
-      | GpsLongitude               | <GpsLongitude>          |
+      | containerPostalCode        | <ContainerPostalCode>   |
+      | containerCity              | <ContainerCity>         |
+      | containerStreet            | <ContainerStreet>       |
+      | containerNumber            | <ContainerNumber>       |
+      | containerMunicipality      | <ContainerMunicipality> |
+      | gpsLatitude                | <GpsLatitude>           |
+      | gpsLongitude               | <GpsLongitude>          |
       #| Activated                  | <Activated>             |
       | HasSchedule                | <HasSchedule>           |
       | PublicKeyPresent           | <PublicKeyPresent>      |
@@ -57,15 +57,15 @@ Feature: Device installation
     When receiving an add device request
       | DeviceUid               | <DeviceUid>             |
       | DeviceIdentification    | <DeviceIdentification>  |
-      | Alias                   | <Alias>                 |
-      | Owner                   | <Owner>                 |
-      | ContainerPostalCode     | <ContainerPostalCode>   |
-      | ContainerCity           | <ContainerCity>         |
-      | ContainerStreet         | <ContainerStreet>       |
-      | ContainerNumber         | <ContainerNumber>       |
-      | ContainerMunicipality   | <ContainerMunicipality> |
-      | GpsLatitude             | <GpsLatitude>           |
-      | GpsLongitude            | <GpsLongitude>          |
+      | alias                   | <Alias>                 |
+      | owner                   | <Owner>                 |
+      | containerPostalCode     | <ContainerPostalCode>   |
+      | containerCity           | <ContainerCity>         |
+      | containerStreet         | <ContainerStreet>       |
+      | containerNumber         | <ContainerNumber>       |
+      | containerMunicipality   | <ContainerMunicipality> |
+      | gpsLatitude             | <GpsLatitude>           |
+      | gpsLongitude            | <GpsLongitude>          |
       | Activated               | <Activated>             |
       | HasSchedule             | <HasSchedule>           |
       | PublicKeyPresent        | <PublicKeyPresent>      |
@@ -91,15 +91,15 @@ Feature: Device installation
     When receiving an add device request
       | DeviceUid               | <DeviceUid>             |
       | DeviceIdentification    | <DeviceIdentification>  |
-      | Alias                   | <Alias>                 |
-      | Owner                   | <Owner>                 |
-      | ContainerPostalCode     | <ContainerPostalCode>   |
-      | ContainerCity           | <ContainerCity>         |
-      | ContainerStreet         | <ContainerStreet>       |
-      | ContainerNumber         | <ContainerNumber>       |
-      | ContainerMunicipality   | <ContainerMunicipality> |
-      | GpsLatitude             | <GpsLatitude>           |
-      | GpsLongitude            | <GpsLongitude>          |
+      | alias                   | <Alias>                 |
+      | owner                   | <Owner>                 |
+      | containerPostalCode     | <ContainerPostalCode>   |
+      | containerCity           | <ContainerCity>         |
+      | containerStreet         | <ContainerStreet>       |
+      | containerNumber         | <ContainerNumber>       |
+      | containerMunicipality   | <ContainerMunicipality> |
+      | gpsLatitude             | <GpsLatitude>           |
+      | gpsLongitude            | <GpsLongitude>          |
       | Activated               | <Activated>             |
       | HasSchedule             | <HasSchedule>           |
       | PublicKeyPresent        | <PublicKeyPresent>      |
@@ -159,8 +159,8 @@ Feature: Device installation
     Then the update device response is successfull
     And the device exists
       | DeviceIdentification | TEST1024000000001 |
-      #| Alias                | AfterTest         |
 
+  #| Alias                | AfterTest         |
   Scenario: Updating a non existing device
     When receiving an update device request
       | DeviceIdentification      | TEST1024000000001       |
@@ -178,15 +178,8 @@ Feature: Device installation
       | TechnicalInstallationDate | 2016-12-07T09:10:33.684 |
       | UsePrefix                 | false                   |
       | Metered                   | false                   |
-    Then the update device response contains
-      | FaultCode      | SOAP-ENV:Server                                                  |
-      | FaultString    | UNKNOWN_DEVICE                                                   |
-      | FaultType      | FunctionalFault                                                  |
-      | Code           |                                                              201 |
-      | Message        | UNKNOWN_DEVICE                                                   |
-      | Component      | WS_CORE                                                          |
-      | InnerException | com.alliander.osgp.domain.core.exceptions.UnknownEntityException |
-      | InnerMessage   | Device with id "TEST1024000000001" could not be found.           |
+    Then the update device response contains soap fault
+      | Message | UNKNOWN_DEVICE |
 
   # This test doesn't work because the backend doesn't remove the device.
   #Scenario Outline: Remove A Device
@@ -282,6 +275,7 @@ Feature: Device installation
       | DeviceIdentification | TEST1024000000001 |
     And a start device OSLP message is sent to device "TEST1024000000001"
     And the platform buffers a start device response message for device "TEST1024000000001"
+      | Result | OK |
 
   @OslpMockServer
   Scenario: Stop Device
@@ -294,3 +288,4 @@ Feature: Device installation
       | DeviceIdentification | TEST1024000000001 |
     And a stop device OSLP message is sent to device "TEST1024000000001"
     And the platform buffers a stop device response message for device "TEST1024000000001"
+      | Result | OK |
