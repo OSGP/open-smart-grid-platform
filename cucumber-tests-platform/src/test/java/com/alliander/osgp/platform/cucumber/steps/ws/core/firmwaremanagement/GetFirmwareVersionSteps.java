@@ -108,12 +108,11 @@ public class GetFirmwareVersionSteps {
     		   	GetFirmwareVersionResponse response = client.getGetFirmwareVersion(request);
     		       			    			
     	    	Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResponseData.get(Keys.KEY_RESULT)), response.getResult());
-    	    	Assert.assertEquals(getString(expectedResponseData, Keys.KEY_DESCRIPTION), response.getDescription());
     			
     			success = true; 
     		}
     		catch(Exception ex) {
-    			// Do nothing
+    			LOGGER.debug(ex.getMessage());
     		}
     	}
     }

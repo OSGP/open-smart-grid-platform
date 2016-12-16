@@ -15,6 +15,7 @@ Feature: Core Device management
       | DeviceIdentification | <DeviceIdentification> |
     And a set event notification OSLP message is sent to device "<DeviceIdentification>"
     And the platform buffers a set event notification response message for device "<DeviceIdentification>"
+      | Result | <Result> |
 
     Examples: 
       | DeviceIdentification | Result | Event                         |

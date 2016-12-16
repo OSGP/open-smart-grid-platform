@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.alliander.osgp.adapter.ws.schema.core.common.AsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.core.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.EventNotificationType;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotificationsAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotificationsAsyncResponse;
@@ -111,12 +112,12 @@ public class SetEventNotificationsSteps {
     		try {
     			SetEventNotificationsResponse response = client.getSetEventNotificationsResponse(request);
     			    			
-    			Assert.assertEquals(expectedResult.get(Keys.KEY_RESULT), response.getResult());
+    			Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.KEY_RESULT)), response.getResult());
     			
     			success = true; 
     		}
     		catch(Exception ex) {
-    			// Do nothing
+    			LOGGER.debug(ex.getMessage());
     		}
     	}
     }

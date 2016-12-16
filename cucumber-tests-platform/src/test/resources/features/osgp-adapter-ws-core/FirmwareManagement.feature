@@ -18,9 +18,10 @@ Feature: Firmware management
       | DeviceIdentification | <DeviceIdentification> |
     And a get firmware version OSLP message is sent to device "<DeviceIdentification>"
     And the platform buffers a get firmware version response message for device "<DeviceIdentification>"
+      | Result             | OK                     |
       | FirmwareVersion    | <Firmware Version>     |
       | FirmwareModuleType | <Firmware Module Type> |
 
     Examples: 
       | DeviceIdentification | Status | Organization      | IsActivated | Firmware Version | Firmware Module Type |
-      | D01                  | active | Test Organization | true        | 0123             | FUNCTIONAL           |
+      | D01                  | active | Test Organization | true        |             0123 | FUNCTIONAL           |

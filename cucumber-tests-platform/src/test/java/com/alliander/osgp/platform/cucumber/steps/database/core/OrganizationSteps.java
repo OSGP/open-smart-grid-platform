@@ -11,8 +11,6 @@ import static com.alliander.osgp.platform.cucumber.core.Helpers.getBoolean;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getEnum;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -22,7 +20,6 @@ import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.valueobjects.PlatformDomain;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
-import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
 
 import cucumber.api.java.en.Given;

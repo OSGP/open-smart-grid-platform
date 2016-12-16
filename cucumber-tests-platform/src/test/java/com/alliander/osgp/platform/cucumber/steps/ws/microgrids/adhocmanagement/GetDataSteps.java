@@ -51,7 +51,7 @@ public class GetDataSteps {
     private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
     @Autowired
-    private AdHocManagementClient adHocManagementServiceAdapter;
+    private AdHocManagementClient client;
 
     @When("^a get data request is received$")
     public void aGetDataRequestIsReceived(final Map<String, String> requestParameters) throws Throwable {
@@ -63,7 +63,7 @@ public class GetDataSteps {
         ScenarioContext.Current().put(Keys.KEY_USER_NAME, userName);
 
         final GetDataRequest getDataRequest = GetDataRequestBuilder.fromParameterMap(requestParameters);
-        final GetDataAsyncResponse response = this.adHocManagementServiceAdapter.getDataAsync(getDataRequest);
+        final GetDataAsyncResponse response = this.client.getDataAsync(getDataRequest);
 
         ScenarioContext.Current().put(Keys.KEY_CORRELATION_UID, response.getAsyncResponse().getCorrelationUid());
     }
@@ -76,7 +76,7 @@ public class GetDataSteps {
                 Keys.KEY_CORRELATION_UID, correlationUid);
 
         final GetDataAsyncRequest getDataAsyncRequest = GetDataRequestBuilder.fromParameterMapAsync(extendedParameters);
-        final GetDataResponse response = this.adHocManagementServiceAdapter.getData(getDataAsyncRequest);
+        final GetDataResponse response = this.client.getData(getDataAsyncRequest);
 
         final String expectedResult = responseParameters.get(Keys.KEY_RESULT);
         assertNotNull("Result", response.getResult());

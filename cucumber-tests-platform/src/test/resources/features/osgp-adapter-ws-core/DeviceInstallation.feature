@@ -46,9 +46,9 @@ Feature: Device installation
       | DeviceModel                | <ModelCode>             |
 
     Examples: 
-      | DeviceUid  | DeviceIdentification                     | Alias       | Owner    | ContainerPostalCode | ContainerCity | ContainerStreet | ContainerNumber | ContainerMunicipality | GpsLatitude | GpsLongitude | Activated | HasSchedule | PublicKeyPresent | Manufacturer | ModelCode  | Description | Metered |
-      | 1234567890 | TEST1024000000001                        | Test device | test-org | 1234AA              | Maastricht    | Stationsstraat  |              12 |                       |           0 |            0 | true      | false       | false            | Test         | Test Model | Test        | true    |
-      | 3456789012 | 0123456789012345678901234567890123456789 | Test device | test-org | 1234AA              | Maastricht    | Stationsstraat  |              12 |                       |           0 |            0 | true      | false       | false            | Test         | Test Model | Test        | true    |
+      | DeviceUid  | DeviceIdentification                     | Alias | Owner    | ContainerPostalCode | ContainerCity | ContainerStreet | ContainerNumber | ContainerMunicipality | GpsLatitude | GpsLongitude | Activated | HasSchedule | PublicKeyPresent | Manufacturer | ModelCode  | Description | Metered |
+      | 1234567890 | TEST1024000000001                        |       | test-org | 1234AA              | Maastricht    | Stationsstraat  |              12 |                       |           0 |            0 | true      | false       | false            | Test         | Test Model | Test        | true    |
+      | 3456789012 | 0123456789012345678901234567890123456789 |       | test-org | 1234AA              | Maastricht    | Stationsstraat  |              12 |                       |           0 |            0 | true      | false       | false            | Test         | Test Model | Test        | true    |
 
   Scenario Outline: Add a device with an incorrect device identification
     Given a device model
@@ -159,7 +159,7 @@ Feature: Device installation
     Then the update device response is successfull
     And the device exists
       | DeviceIdentification | TEST1024000000001 |
-      | Alias                | AfterTest         |
+      #| Alias                | AfterTest         |
 
   Scenario: Updating a non existing device
     When receiving an update device request
@@ -219,10 +219,10 @@ Feature: Device installation
     When receiving a find recent devices request
       | DeviceIdentification | <DeviceIdentification> |
     Then the find recent devices response contains "0" devices
-    
+
     Examples: 
-      | DeviceIdentification | 
-      | TEST1024000000002    | 
+      | DeviceIdentification |
+      | TEST1024000000002    |
 
   # RegisterDevices scenario's
   # Nieuwe classe? Hoe kan een device geregistreerd worden?

@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,6 +51,8 @@ import cucumber.api.java.en.Then;
 
 @Transactional("txMgrCore")
 public class DeviceSteps {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceSteps.class);
 
     public static String DEFAULT_DEVICE_IDENTIFICATION = "test-device";
     public static String DEFAULT_DEVICE_TYPE = "OSLP";
@@ -265,7 +268,7 @@ public class DeviceSteps {
 
             try {
                 // Wait for next try to retrieve a response
-                final Device device = this.deviceRepository.findByDeviceIdentification(settings.get("DeviceIdentification"));
+                final Device device = this.deviceRepository.findByDeviceIdentification(settings.get(Keys.KEY_DEVICE_IDENTIFICATION));
                 Assert.assertNotNull(device);
                 
                 if (settings.containsKey("Alias")) {
@@ -297,7 +300,6 @@ public class DeviceSteps {
                 }
                 if (settings.containsKey("Activated")) {
                     Assert.assertTrue(Boolean.parseBoolean(settings.get("Activated")) == device.isActivated());
-//                	Assert.assertTrue(Boolean.parseBoolean(settings.get("Activated")));
                 }
                 if (settings.containsKey("HasSchedule") || settings.containsKey("PublicKeyPresent")) {
                     final Ssld ssld = this.ssldRepository.findByDeviceIdentification(settings.get("DeviceIdentification"));
@@ -315,7 +317,7 @@ public class DeviceSteps {
                 
                 success = true;
             } catch (final Exception | AssertionError e) {
-                // Do nothing
+                LOGGER.info(e.getMessage());
             }
         }
     }

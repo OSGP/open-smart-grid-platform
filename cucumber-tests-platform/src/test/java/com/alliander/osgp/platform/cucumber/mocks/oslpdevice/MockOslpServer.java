@@ -108,7 +108,9 @@ public class MockOslpServer {
     }
 
     public void stop() {
-        this.server.shutdown();
+    	if (this.server != null) {
+            this.server.shutdown();
+    	}
         LOGGER.info("Shutdown OSLP Mock server");
     }
     
