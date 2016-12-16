@@ -7,7 +7,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.steps.ws.publiclighting.publiclightingadhocmanagement;
+package com.alliander.osgp.platform.cucumber.steps.ws.core.adhocmanagement;
 
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.saveCorrelationUidInScenarioContext;
@@ -29,7 +29,7 @@ import com.alliander.osgp.platform.cucumber.config.CorePersistenceConfig;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.support.ws.publiclighting.PublicLightingAdHocManagementClient;
+import com.alliander.osgp.platform.cucumber.support.ws.core.CoreAdHocManagementClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -43,7 +43,7 @@ public class SetRebootSteps {
 	private CorePersistenceConfig configuration;
 	
 	@Autowired
-	private PublicLightingAdHocManagementClient client;
+	private CoreAdHocManagementClient client;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetRebootSteps.class);
 

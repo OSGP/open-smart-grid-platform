@@ -30,7 +30,7 @@ import com.alliander.osgp.platform.cucumber.config.CorePersistenceConfig;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.support.ws.core.CoreDeviceInstallationClient;
+import com.alliander.osgp.platform.cucumber.support.ws.core.CoreFirmwareManagementClient;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -43,7 +43,7 @@ public class GetFirmwareVersionSteps {
 	private CorePersistenceConfig configuration;
 
 	@Autowired
-    private CoreDeviceInstallationClient client;
+    private CoreFirmwareManagementClient client;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GetFirmwareVersionSteps.class);
 

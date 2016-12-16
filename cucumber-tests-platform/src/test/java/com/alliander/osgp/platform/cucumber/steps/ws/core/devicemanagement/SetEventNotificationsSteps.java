@@ -30,7 +30,7 @@ import com.alliander.osgp.platform.cucumber.config.CorePersistenceConfig;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.support.ws.core.CoreDeviceInstallationClient;
+import com.alliander.osgp.platform.cucumber.support.ws.core.CoreDeviceManagementClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -46,7 +46,7 @@ public class SetEventNotificationsSteps {
 	private CorePersistenceConfig configuration;
 
 	@Autowired
-    private CoreDeviceInstallationClient client;
+    private CoreDeviceManagementClient client;
     
     /**
      * Send an event notification request to the Platform

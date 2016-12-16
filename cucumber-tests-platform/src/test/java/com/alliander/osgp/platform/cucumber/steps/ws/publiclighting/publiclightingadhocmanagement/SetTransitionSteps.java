@@ -50,7 +50,7 @@ public class SetTransitionSteps {
 	@Autowired
 	private PublicLightingAdHocManagementClient client;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SetRebootSteps.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SetTransitionSteps.class);
 
     /**
      * Sends a Get Status request to the platform for a given device identification.

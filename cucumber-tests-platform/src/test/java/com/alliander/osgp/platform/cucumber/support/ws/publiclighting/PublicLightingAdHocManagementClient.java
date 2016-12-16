@@ -11,10 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
-import com.alliander.osgp.adapter.ws.schema.core.adhocmanagement.SetRebootAsyncRequest;
-import com.alliander.osgp.adapter.ws.schema.core.adhocmanagement.SetRebootAsyncResponse;
-import com.alliander.osgp.adapter.ws.schema.core.adhocmanagement.SetRebootRequest;
-import com.alliander.osgp.adapter.ws.schema.core.adhocmanagement.SetRebootResponse;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusRequest;
@@ -45,7 +41,7 @@ public class PublicLightingAdHocManagementClient extends BaseClient {
         final WebServiceTemplate webServiceTemplate = this.publicLightingAdHocManagementWstf
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (GetStatusAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
-	}
+	}   
 
 	public GetStatusResponse getGetStatusResponse(GetStatusAsyncRequest request) throws WebServiceSecurityException {
         final WebServiceTemplate webServiceTemplate = this.publicLightingAdHocManagementWstf
@@ -75,18 +71,6 @@ public class PublicLightingAdHocManagementClient extends BaseClient {
 	    final WebServiceTemplate webServiceTemplate = this.publicLightingAdHocManagementWstf
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (SetLightResponse) webServiceTemplate.marshalSendAndReceive(request);
-	}
-
-	public SetRebootAsyncResponse setReboot(SetRebootRequest request) throws WebServiceSecurityException {
-        final WebServiceTemplate webServiceTemplate = this.publicLightingAdHocManagementWstf
-                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
-        return (SetRebootAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
-	}
-
-	public SetRebootResponse getSetRebootResponse(SetRebootAsyncRequest request) throws WebServiceSecurityException {
-	    final WebServiceTemplate webServiceTemplate = this.publicLightingAdHocManagementWstf
-                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
-        return (SetRebootResponse) webServiceTemplate.marshalSendAndReceive(request);
 	}
 
 	public SetTransitionAsyncResponse setTransition(SetTransitionRequest request) throws WebServiceSecurityException {

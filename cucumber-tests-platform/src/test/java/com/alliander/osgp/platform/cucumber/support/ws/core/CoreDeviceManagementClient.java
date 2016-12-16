@@ -13,6 +13,10 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindDevicesRequest;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindDevicesResponse;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotificationsAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotificationsAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotificationsRequest;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotificationsResponse;
 import com.alliander.osgp.platform.cucumber.support.ws.BaseClient;
 import com.alliander.osgp.platform.cucumber.support.ws.WebServiceSecurityException;
 import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
@@ -28,4 +32,13 @@ public class CoreDeviceManagementClient extends BaseClient {
         return (FindDevicesResponse) wst.marshalSendAndReceive(request);
     }
     
+	public SetEventNotificationsAsyncResponse setEventNotifications(SetEventNotificationsRequest request) throws WebServiceSecurityException {
+        final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
+        return (SetEventNotificationsAsyncResponse) wst.marshalSendAndReceive(request);
+	}
+
+	public SetEventNotificationsResponse getSetEventNotificationsResponse(SetEventNotificationsAsyncRequest request) throws WebServiceSecurityException {
+        final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
+        return (SetEventNotificationsResponse) wst.marshalSendAndReceive(request);
+	}
 }
