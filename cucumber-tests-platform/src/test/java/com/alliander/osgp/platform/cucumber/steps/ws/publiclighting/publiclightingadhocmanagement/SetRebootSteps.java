@@ -25,7 +25,7 @@ import com.alliander.osgp.adapter.ws.schema.core.adhocmanagement.SetRebootAsyncR
 import com.alliander.osgp.adapter.ws.schema.core.adhocmanagement.SetRebootRequest;
 import com.alliander.osgp.adapter.ws.schema.core.adhocmanagement.SetRebootResponse;
 import com.alliander.osgp.adapter.ws.schema.core.common.AsyncRequest;
-import com.alliander.osgp.platform.cucumber.config.ApplicationConfiguration;
+import com.alliander.osgp.platform.cucumber.config.CorePersistenceConfig;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
@@ -40,7 +40,7 @@ import cucumber.api.java.en.When;
 public class SetRebootSteps {
 
 	@Autowired
-	private ApplicationConfiguration configuration;
+	private CorePersistenceConfig configuration;
 	
 	@Autowired
 	private PublicLightingAdHocManagementClient client;

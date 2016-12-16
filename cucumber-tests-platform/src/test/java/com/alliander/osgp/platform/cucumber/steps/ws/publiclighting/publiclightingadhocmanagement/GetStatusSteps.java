@@ -25,7 +25,7 @@ import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.GetSt
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusResponse;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.AsyncRequest;
-import com.alliander.osgp.platform.cucumber.config.ApplicationConfiguration;
+import com.alliander.osgp.platform.cucumber.config.CorePersistenceConfig;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
@@ -40,7 +40,7 @@ import cucumber.api.java.en.When;
 public class GetStatusSteps {
 
 	@Autowired
-	private ApplicationConfiguration configuration;
+	private CorePersistenceConfig configuration;
 	
 	@Autowired
 	private PublicLightingAdHocManagementClient client;

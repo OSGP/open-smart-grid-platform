@@ -16,6 +16,7 @@ import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StopDeviceTe
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StopDeviceTestAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StopDeviceTestRequest;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StopDeviceTestResponse;
+import com.alliander.osgp.platform.cucumber.config.CorePersistenceConfig;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
@@ -25,7 +26,10 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 public class StopDeviceSteps {
-    
+
+	@Autowired
+	private CorePersistenceConfig configuration;
+	
 	@Autowired
     private CoreDeviceInstallationClient client;
 	
@@ -75,7 +79,7 @@ public class StopDeviceSteps {
      * @throws Throwable
      */
     @Then("the platform buffers a stop device response message for device \"([^\"]*)\"")
-    public void the_platform_buffers_a_stop_device_response_message_for_device(final String deviceIdentification) throws Throwable
+    public void the_platform_buffers_a_stop_device_response_message_for_device(final String deviceIdentification, final Map<String, String> expectedResult) throws Throwable
     {
     	StopDeviceTestAsyncRequest request = new StopDeviceTestAsyncRequest();
     	AsyncRequest asyncRequest = new AsyncRequest();
@@ -83,6 +87,26 @@ public class StopDeviceSteps {
     	asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
     	request.setAsyncRequest(asyncRequest);
     	
-    	StopDeviceTestResponse response = client.getStopDeviceTestResponse(request);
+       	boolean success = false;
+    	int count = 0;
+    	while (!success) {
+    		if (count > configuration.getDefaultTimeout()) {
+    			Assert.fail("Timeout");
+    		}
+    		
+    		count++;
+    		
+    		try {
+    		   	StopDeviceTestResponse response = client.getStopDeviceTestResponse(request);
+    		       			
+    			Assert.assertEquals(expectedResult.get(Keys.KEY_RESULT), response.getResult());
+    			
+    			success = true; 
+    		}
+    		catch(Exception ex) {
+    			// Do nothing
+    		}
+    	}
+ 
     }
 }

@@ -27,7 +27,7 @@ import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.Resum
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.ResumeScheduleRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.ResumeScheduleResponse;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.AsyncRequest;
-import com.alliander.osgp.platform.cucumber.config.ApplicationConfiguration;
+import com.alliander.osgp.platform.cucumber.config.CorePersistenceConfig;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
@@ -41,7 +41,7 @@ import cucumber.api.java.en.When;
  */
 public class ResumeScheduleSteps {
 	@Autowired
-	private ApplicationConfiguration configuration;
+	private CorePersistenceConfig configuration;
 	
 	@Autowired
 	private PublicLightingAdHocManagementClient client;

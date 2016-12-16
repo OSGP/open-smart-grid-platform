@@ -26,6 +26,7 @@ import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotifi
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotificationsAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotificationsRequest;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotificationsResponse;
+import com.alliander.osgp.platform.cucumber.config.CorePersistenceConfig;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
@@ -41,6 +42,9 @@ public class SetEventNotificationsSteps {
     
 	private static final Logger LOGGER = LoggerFactory.getLogger(SetEventNotificationsSteps.class);
     
+	@Autowired
+	private CorePersistenceConfig configuration;
+
 	@Autowired
     private CoreDeviceInstallationClient client;
     
@@ -87,7 +91,7 @@ public class SetEventNotificationsSteps {
     }
     
     @Then("^the platform buffers a set event notification response message for device \"([^\"]*)\"")
-    public void the_platform_buffers_a_set_event_notification_response_message_for_device(final String deviceIdentification) throws Throwable
+    public void the_platform_buffers_a_set_event_notification_response_message_for_device(final String deviceIdentification, final Map<String, String> expectedResult) throws Throwable
     {
     	SetEventNotificationsAsyncRequest request = new SetEventNotificationsAsyncRequest();
     	AsyncRequest asyncRequest = new AsyncRequest();
@@ -95,8 +99,25 @@ public class SetEventNotificationsSteps {
     	asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
     	request.setAsyncRequest(asyncRequest);
     	
-		SetEventNotificationsResponse response = client.getSetEventNotificationsResponse(request);
-		
-    	LoggerFactory.getLogger(SetEventNotificationsSteps.class).info("The platform buffers a set event notification response message for device");
+    	boolean success = false;
+    	int count = 0;
+    	while (!success) {
+    		if (count > configuration.getDefaultTimeout()) {
+    			Assert.fail("Timeout");
+    		}
+    		
+    		count++;
+    		
+    		try {
+    			SetEventNotificationsResponse response = client.getSetEventNotificationsResponse(request);
+    			    			
+    			Assert.assertEquals(expectedResult.get(Keys.KEY_RESULT), response.getResult());
+    			
+    			success = true; 
+    		}
+    		catch(Exception ex) {
+    			// Do nothing
+    		}
+    	}
     }
 }

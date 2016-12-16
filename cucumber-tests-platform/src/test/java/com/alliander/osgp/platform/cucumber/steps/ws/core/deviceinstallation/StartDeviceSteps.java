@@ -16,6 +16,7 @@ import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StartDeviceT
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StartDeviceTestAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StartDeviceTestRequest;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StartDeviceTestResponse;
+import com.alliander.osgp.platform.cucumber.config.CorePersistenceConfig;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
@@ -27,6 +28,9 @@ import cucumber.api.java.en.When;
 public class StartDeviceSteps {
     
 	private static final Logger LOGGER = LoggerFactory.getLogger(StartDeviceSteps.class);
+
+	@Autowired
+	private CorePersistenceConfig configuration;
 
 	@Autowired
     private CoreDeviceInstallationClient client;
@@ -75,7 +79,7 @@ public class StartDeviceSteps {
      * @throws Throwable
      */
     @Then("the platform buffers a start device response message for device \"([^\"]*)\"")
-    public void the_platform_buffers_a_start_device_response_message_for_device(final String deviceIdentification) throws Throwable
+    public void the_platform_buffers_a_start_device_response_message_for_device(final String deviceIdentification, final Map<String, String> expectedResult) throws Throwable
     {
     	StartDeviceTestAsyncRequest request = new StartDeviceTestAsyncRequest();
     	AsyncRequest asyncRequest = new AsyncRequest();
@@ -83,6 +87,25 @@ public class StartDeviceSteps {
     	asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
     	request.setAsyncRequest(asyncRequest);
     	
-		StartDeviceTestResponse response = client.getStartDeviceTestResponse(request);
+    	boolean success = false;
+    	int count = 0;
+    	while (!success) {
+    		if (count > configuration.getDefaultTimeout()) {
+    			Assert.fail("Timeout");
+    		}
+    		
+    		count++;
+    		
+    		try {
+    			StartDeviceTestResponse response = client.getStartDeviceTestResponse(request);
+    			
+    			Assert.assertEquals(expectedResult.get(Keys.KEY_RESULT), response.getResult());
+    			
+    			success = true; 
+    		}
+    		catch(Exception ex) {
+    			// Do nothing
+    		}
+    	}
     }
 }

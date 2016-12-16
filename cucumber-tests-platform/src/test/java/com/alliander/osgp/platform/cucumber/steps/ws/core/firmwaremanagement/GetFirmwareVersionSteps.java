@@ -26,10 +26,10 @@ import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareV
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionResponse;
+import com.alliander.osgp.platform.cucumber.config.CorePersistenceConfig;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.steps.ws.core.devicemanagement.SetEventNotificationsSteps;
 import com.alliander.osgp.platform.cucumber.support.ws.core.CoreDeviceInstallationClient;
 
 import cucumber.api.java.en.Given;
@@ -39,6 +39,9 @@ import cucumber.api.java.en.Then;
  * Class with all the firmware requests steps
  */
 public class GetFirmwareVersionSteps {
+	@Autowired
+	private CorePersistenceConfig configuration;
+
 	@Autowired
     private CoreDeviceInstallationClient client;
 
@@ -92,12 +95,26 @@ public class GetFirmwareVersionSteps {
     	asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
     	request.setAsyncRequest(asyncRequest);
     	
-    	GetFirmwareVersionResponse response = client.getGetFirmwareVersion(request);
-    	
-    	Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResponseData.get(Keys.KEY_RESULT)), response.getResult());
-    	Assert.assertEquals(getString(expectedResponseData, Keys.KEY_DESCRIPTION), response.getDescription());
-    	// TODO: Check number of firmware versions.
-    	
-    	LoggerFactory.getLogger(SetEventNotificationsSteps.class).info("The platform buffers a set event notification response message for device");
+       	boolean success = false;
+    	int count = 0;
+    	while (!success) {
+    		if (count > configuration.getDefaultTimeout()) {
+    			Assert.fail("Timeout");
+    		}
+    		
+    		count++;
+    		
+    		try {
+    		   	GetFirmwareVersionResponse response = client.getGetFirmwareVersion(request);
+    		       			    			
+    	    	Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResponseData.get(Keys.KEY_RESULT)), response.getResult());
+    	    	Assert.assertEquals(getString(expectedResponseData, Keys.KEY_DESCRIPTION), response.getDescription());
+    			
+    			success = true; 
+    		}
+    		catch(Exception ex) {
+    			// Do nothing
+    		}
+    	}
     }
 }
