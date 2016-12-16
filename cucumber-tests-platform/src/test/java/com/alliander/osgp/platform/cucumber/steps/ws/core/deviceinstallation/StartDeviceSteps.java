@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
+import com.alliander.osgp.adapter.ws.schema.core.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.core.common.AsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StartDeviceTestAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StartDeviceTestAsyncResponse;
@@ -99,7 +100,7 @@ public class StartDeviceSteps {
     		try {
     			StartDeviceTestResponse response = client.getStartDeviceTestResponse(request);
     			
-    			Assert.assertEquals(expectedResult.get(Keys.KEY_RESULT), response.getResult());
+    			Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.KEY_RESULT)), response.getResult());
     			
     			success = true; 
     		}

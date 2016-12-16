@@ -107,11 +107,8 @@ Feature: Device installation
       | DeviceModelModelCode    | <ModelCode>             |
       | DeviceModelDescription  | <Description>           |
       | DeviceModelMetered      | <Metered>               |
-    Then the add device response contains
-      | FaultCode        | <FaultCode>         |
-      | FaultString      | <FaultString>       |
-      | FaultType        | <FaultType>         |
-      | ValidationErrors | <Validation Errors> |
+    Then the add device response contains soap fault
+      | Message | Validation Errors |
 
     Examples: 
       # TODO, deviceidentification with 40 characters.
@@ -126,15 +123,8 @@ Feature: Device installation
       | DeviceIdentification | TEST1024000000001 |
     When receiving an add device request
       | DeviceIdentification | TEST1024000000001 |
-    Then the add device response contains
-      | FaultCode      | SOAP-ENV:Server                                                   |
-      | FaultString    | EXISTING_DEVICE                                                   |
-      | FaultType      | FunctionalFault                                                   |
-      | Code           |                                                               204 |
-      | Message        | EXISTING_DEVICE                                                   |
-      | Component      | WS_CORE                                                           |
-      | InnerException | com.alliander.osgp.domain.core.exceptions.ExistingEntityException |
-      | InnerMessage   | Device with id TEST1024000000001 already exists.                  |
+    Then the add device response contains soap fault
+      | Message | EXISTING_DEVICE |
 
   Scenario: Updating a device
     Given a device

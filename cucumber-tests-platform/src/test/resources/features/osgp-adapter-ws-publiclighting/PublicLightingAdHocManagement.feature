@@ -171,7 +171,7 @@ Feature: Adhoc Management
 
     Examples: 
       | DeviceIdentification | HasSchedule | Index | IsImmediate |
-      | TEST1024000000001    | true        |       | true        |
+      | TEST1024000000001    | true        |     -1 | true        |
 
   @OslpMockServer
   Scenario Outline: Set Reboot

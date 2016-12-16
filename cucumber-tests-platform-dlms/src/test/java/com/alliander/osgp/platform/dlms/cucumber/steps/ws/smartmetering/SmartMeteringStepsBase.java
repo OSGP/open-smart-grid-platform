@@ -37,6 +37,7 @@ public abstract class SmartMeteringStepsBase extends SoapUiRunner {
      * to make this a separate step, as you definitely want to check this
      * response in my opinion.
      */
+    @Deprecated
     @Override
     protected void requestRunner(final TestStepStatus testStepStatus, final Map<String, String> propertiesMap,
             final String testCaseNameRequest, final String testCaseXml, final String testSuiteXml) throws Throwable {
