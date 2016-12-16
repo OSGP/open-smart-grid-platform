@@ -12,14 +12,12 @@ public class Iec61850MockServerHooks {
     @Autowired
     private Iec61850MockServer mockServer;
 
-    //    @Before("@Iec61850MockServer")
-    @Before
+    @Before("@Iec61850MockServer")
     public void startIec61850MockServer() throws Throwable {
         this.mockServer.start();
     }
 
-    // @After("@Iec61850MockServer")
-    @After
+    @After("@Iec61850MockServer")
     public void stopIec61850MockServer() {
         this.mockServer.stop();
     }
