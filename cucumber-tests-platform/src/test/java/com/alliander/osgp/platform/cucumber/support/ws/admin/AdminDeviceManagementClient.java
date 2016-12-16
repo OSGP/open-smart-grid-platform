@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.support.ws.admin.devicemanagement;
+package com.alliander.osgp.platform.cucumber.support.ws.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

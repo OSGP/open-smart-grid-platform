@@ -33,8 +33,8 @@ import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.helpers.SettingsHelper;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.support.ws.microgrids.adhocmanagement.AdHocManagementClient;
-import com.alliander.osgp.platform.cucumber.support.ws.microgrids.adhocmanagement.GetDataRequestBuilder;
+import com.alliander.osgp.platform.cucumber.support.ws.microgrids.AdHocManagementClient;
+import com.alliander.osgp.platform.cucumber.support.ws.microgrids.GetDataRequestBuilder;
 
 import cucumber.api.PendingException;
 import cucumber.api.java.en.Then;

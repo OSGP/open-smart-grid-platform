@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.platform.cucumber.Deprecta;
 import com.alliander.osgp.platform.cucumber.SoapUiRunner;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCase;
@@ -30,6 +31,7 @@ import com.eviware.soapui.model.testsuite.TestCase;
 import com.eviware.soapui.model.testsuite.TestProperty;
 import com.eviware.soapui.support.SoapUIException;
 
+@Deprecated
 @Component
 public class TestCaseRunner {
 

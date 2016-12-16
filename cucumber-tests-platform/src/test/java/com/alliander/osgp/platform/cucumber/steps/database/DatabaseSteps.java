@@ -18,13 +18,15 @@ import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRe
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
-import com.alliander.osgp.domain.core.repositories.DeleteAllDevicesService;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
+import com.alliander.osgp.domain.core.repositories.DeviceFirmwareRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
+import com.alliander.osgp.domain.core.repositories.EventRepository;
 import com.alliander.osgp.domain.core.repositories.ManufacturerRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
+import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.PlatformDomain;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
@@ -54,7 +56,13 @@ public class DatabaseSteps {
     private OslpDeviceRepository oslpDeviceRepo;
 
     @Autowired
-    private DeleteAllDevicesService deleteAllDevicesService;
+	private DeviceFirmwareRepository deviceFirmwareRepository;
+
+    @Autowired
+	private EventRepository eventRepository;
+
+    @Autowired
+	private SsldRepository ssldRepository;
 
     /**
      * This method is used to create default data not directly related to the
@@ -91,7 +99,14 @@ public class DatabaseSteps {
     	cleanRepoAbstractEntity(this.oslpDeviceRepo);
         cleanRepoAbstractEntity(this.deviceAuthorizationRepo);
         
-        this.deleteAllDevicesService.deleteAllDevices();
+        this.deviceRepo.deleteAllEans();
+        this.deviceRepo.deleteDeviceOutputSettings();
+        this.deviceFirmwareRepository.deleteAllInBatch();
+        this.eventRepository.deleteAllInBatch();
+        this.ssldRepository.deleteAllInBatch();
+        this.deviceRepo.deleteAllInBatch();
+        this.deviceModelRepo.deleteAllInBatch();
+
         cleanRepoSerializable(this.smartMeterRepo);
         cleanRepoSerializable(this.manufacturerRepo);
         cleanRepoSerializable(this.organizationRepo);

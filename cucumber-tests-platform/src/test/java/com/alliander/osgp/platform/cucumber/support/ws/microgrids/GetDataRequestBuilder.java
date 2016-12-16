@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.support.ws.microgrids.adhocmanagement;
+package com.alliander.osgp.platform.cucumber.support.ws.microgrids;
 
 import java.util.List;
 import java.util.Map;

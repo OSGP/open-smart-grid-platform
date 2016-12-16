@@ -112,5 +112,10 @@ public class Keys {
 	public static final String KEY_PUBLICKEYPRESENT = "PublicKeyPresent";
 	public static final String KEY_EVENT = "Event";
 	public static final String KEY_DESCRIPTION = "Description";
+	public static final String KEY_INDEX = "Index";
+	public static final String KEY_ISIMMEDIATE = "IsImmediate";
+	public static final String KEY_DIMVALUE = "DimValue";
+	public static final String KEY_ON = "On";
+	public static final String KEY_TRANSITION_TYPE = "TransitionType";
 	
 }

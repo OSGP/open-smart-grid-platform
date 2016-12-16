@@ -19,6 +19,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.platform.cucumber.Deprecta;
+
+@Deprecated
 @Component
 @Configuration
 public class ResponseNotifierImpl implements ResponseNotifier {

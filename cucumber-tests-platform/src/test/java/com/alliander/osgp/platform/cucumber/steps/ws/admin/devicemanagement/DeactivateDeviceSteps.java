@@ -24,7 +24,7 @@ import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.DeactivateDev
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.support.ws.admin.devicemanagement.AdminDeviceManagementClient;
+import com.alliander.osgp.platform.cucumber.support.ws.admin.AdminDeviceManagementClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;

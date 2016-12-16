@@ -17,6 +17,7 @@ import com.eviware.soapui.impl.wsdl.WsdlProject;
 import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCase;
 import com.eviware.soapui.support.SoapUIException;
 
+@Deprecated
 public class WsdlProjectFactory {
 
     private final WsdlProject project;

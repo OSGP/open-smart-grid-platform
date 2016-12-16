@@ -10,7 +10,7 @@ import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.FindRecentDe
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.FindRecentDevicesResponse;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.support.ws.core.deviceinstallation.CoreDeviceInstallationClient;
+import com.alliander.osgp.platform.cucumber.support.ws.core.CoreDeviceInstallationClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;

@@ -8,6 +8,7 @@
 package com.alliander.osgp.platform.cucumber.steps;
 
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.TransitionType;
 
 /**
  * Defaults within the database.
@@ -80,5 +81,10 @@ public class Defaults {
 	public static final PlatformFunctionGroup DEFAULT_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP = PlatformFunctionGroup.ADMIN;
 	public static final String DEFAULT_OWNER = "test-org";
 	public static final Boolean DEFAULT_ACTIVATED = true;
-	public static final String DEFAULT_DEVICE_MODEL_MANUFACTURER = "Kaifa";
+	public static final String DEFAULT_DEVICE_MODEL_MANUFACTURER = "Kaif";
+	public static final Integer DEFAULT_INDEX = 1;
+	public static final Boolean DEFAULT_ISIMMEDIATE = true;
+	public static final Integer DEFAULT_DIMVALUE = 100;
+	public static final Boolean DEFAULT_ON = true;
+	public static final TransitionType DEFAULT_TRANSITION_TYPE = TransitionType.DAY_NIGHT;
 }

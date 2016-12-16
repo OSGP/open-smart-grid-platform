@@ -19,7 +19,7 @@ import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindDevicesRes
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FirmwareModuleFilterType;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.support.ws.core.devicemanagement.CoreDeviceManagementClient;
+import com.alliander.osgp.platform.cucumber.support.ws.core.CoreDeviceManagementClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;

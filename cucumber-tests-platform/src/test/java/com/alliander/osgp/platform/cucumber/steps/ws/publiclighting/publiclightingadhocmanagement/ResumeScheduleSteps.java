@@ -9,20 +9,29 @@
  */
 package com.alliander.osgp.platform.cucumber.steps.ws.publiclighting.publiclightingadhocmanagement;
 
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getBoolean;
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getInteger;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.saveCorrelationUidInScenarioContext;
 
 import java.util.Map;
 
+import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
+import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.ResumeScheduleAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.ResumeScheduleAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.ResumeScheduleRequest;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.ResumeScheduleResponse;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.common.AsyncRequest;
+import com.alliander.osgp.platform.cucumber.config.ApplicationConfiguration;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.steps.common.ResponseSteps;
-import com.alliander.osgp.platform.cucumber.steps.ws.publiclighting.PublicLightingStepsBase;
-import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
+import com.alliander.osgp.platform.cucumber.support.ws.publiclighting.PublicLightingAdHocManagementClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -30,12 +39,12 @@ import cucumber.api.java.en.When;
 /**
  * Class with all the set light requests steps
  */
-public class ResumeScheduleSteps extends PublicLightingStepsBase {
-    private static final String TEST_SUITE_XML = "PublicLightingAdHocManagement";
-    private static final String TEST_CASE_ASYNC_REQ_XML = "ResumeSchedule TestCase";
-    private static final String TEST_CASE_ASYNC_NAME_REQUEST = "ResumeSchedule";
-    private static final String TEST_CASE_RESULT_REQ_XML = "GetResumeScheduleResponse TestCase";
-    private static final String TEST_CASE_RESULT_NAME_REQUEST = "GetResumeScheduleResponse";
+public class ResumeScheduleSteps {
+	@Autowired
+	private ApplicationConfiguration configuration;
+	
+	@Autowired
+	private PublicLightingAdHocManagementClient client;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ResumeScheduleSteps.class);
     
@@ -47,30 +56,16 @@ public class ResumeScheduleSteps extends PublicLightingStepsBase {
     @When("^receiving a resume schedule request$")
     public void whenReceivingAResumeScheduleRequest(final Map<String, String> requestParameters) throws Throwable {
 
-        // Required parameters
-    	PROPERTIES_MAP.put("__DEVICE_IDENTIFICATION__", getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-    	PROPERTIES_MAP.put("__INDEX__", requestParameters.get("Index"));
-    	PROPERTIES_MAP.put("__IS_IMMEDIATE__", requestParameters.get("IsImmediate"));
+    	ResumeScheduleRequest request = new ResumeScheduleRequest();
+    	request.setDeviceIdentification(getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+    	request.setIndex(getInteger(requestParameters, Keys.KEY_INDEX, Defaults.DEFAULT_INDEX));
+    	request.setIsImmediate(getBoolean(requestParameters, Keys.KEY_ISIMMEDIATE, Defaults.DEFAULT_ISIMMEDIATE));
     	
-        // Now run the request.
-        this.requestRunner(TestStepStatus.UNKNOWN, PROPERTIES_MAP, TEST_CASE_ASYNC_NAME_REQUEST, TEST_CASE_ASYNC_REQ_XML, TEST_SUITE_XML);
-    }
-    
-    /**
-     * Sends a Resume Schedule response to the platform for a given device identification.
-     * @param requestParameters The table with the request parameters.
-     * @throws Throwable
-     */
-    @When("^receiving a resume schedule response$")
-    public void whenReceivingAResumeScheduleResponse(final Map<String, String> requestParameters) throws Throwable {
-
-        // Required parameters
-    	PROPERTIES_MAP.put("__DEVICE_IDENTIFICATION__", getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-    	PROPERTIES_MAP.put("__INDEX__", requestParameters.get("Index"));
-    	PROPERTIES_MAP.put("__IS_IMMEDIATE__", requestParameters.get("IsImmediate"));
-    	
-        // Now run the request.
-        this.requestRunner(TestStepStatus.UNKNOWN, PROPERTIES_MAP, TEST_CASE_ASYNC_NAME_REQUEST, TEST_CASE_ASYNC_REQ_XML, TEST_SUITE_XML);
+    	try {
+    		ScenarioContext.Current().put(Keys.RESPONSE, client.resumeScheduleStatus(request));
+    	} catch(SoapFaultClientException ex) {
+    		ScenarioContext.Current().put(Keys.RESPONSE, ex);
+    	}
     }
     
     /**
@@ -81,32 +76,45 @@ public class ResumeScheduleSteps extends PublicLightingStepsBase {
      */
     @Then("^the resume schedule async response contains$")
     public void thenTheResumeScheduleAsyncResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
-        this.runXpathResult.assertXpath(this.response, PATH_DEVICE_IDENTIFICATION,
-                getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-        this.runXpathResult.assertNotNull(this.response, PATH_CORRELATION_UID);
+    	ResumeScheduleAsyncResponse response = (ResumeScheduleAsyncResponse)ScenarioContext.Current().get(Keys.RESPONSE);
+    	
+    	Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
+    	Assert.assertEquals(getString(expectedResponseData,  Keys.KEY_DEVICE_IDENTIFICATION), response.getAsyncResponse().getDeviceId());
 
-        if (expectedResponseData.containsKey("FaultCode"))
-        {
-        	ResponseSteps.VerifyFaultResponse(this.runXpathResult, this.response, expectedResponseData);
-        }
-        else
-        {
-        	// Save the returned CorrelationUid in the Scenario related context for further use.
-            saveCorrelationUidInScenarioContext(this.runXpathResult.getValue(this.response, PATH_CORRELATION_UID),
-                    getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                            Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
-            
-            LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
-        }
+        // Save the returned CorrelationUid in the Scenario related context for further use.
+        saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
+                getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+
+     	LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
     }
 
     @Then("^the platform buffers a resume schedule response message for device \"([^\"]*)\"$")
-    public void thenThePlatformBuffersAResumeScheduleResponseMessage(final String deviceIdentification) throws Throwable {
-        // Required parameters
-        PROPERTIES_MAP.put("__DEVICE_IDENTIFICATION__", deviceIdentification);
-        PROPERTIES_MAP.put("__CORRELATION_UID__", (String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
-
-        this.waitForResponse(TestStepStatus.UNKNOWN, PROPERTIES_MAP, TEST_CASE_RESULT_NAME_REQUEST,
-                TEST_CASE_RESULT_REQ_XML, TEST_SUITE_XML);
+    public void thenThePlatformBuffersAResumeScheduleResponseMessage(final String deviceIdentification, final Map<String, String> expectedResult) throws Throwable {
+    	ResumeScheduleAsyncRequest request = new ResumeScheduleAsyncRequest();
+    	AsyncRequest asyncRequest = new AsyncRequest();
+    	asyncRequest.setDeviceId(deviceIdentification);
+    	asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
+    	request.setAsyncRequest(asyncRequest);
+    	
+    	boolean success = false;
+    	int count = 0;
+    	while (!success) {
+    		if (count > configuration.getDefaultTimeout()) {
+    			Assert.fail("Timeout");
+    		}
+    		
+    		count++;
+    		
+    		try {
+    			ResumeScheduleResponse response = client.getResumeScheduleResponse(request);
+    			
+    			Assert.assertEquals(expectedResult.get(Keys.KEY_RESULT), response.getResult());
+    			
+    			success = true; 
+    		}
+    		catch(Exception ex) {
+    			// Do nothing
+    		}
+    	}
     }
 }

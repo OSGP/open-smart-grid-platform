@@ -10,13 +10,10 @@ package com.alliander.osgp.platform.cucumber.steps.common;
 import java.io.IOException;
 import java.util.Map;
 
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
 import org.junit.Assert;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.xml.sax.SAXException;
 
@@ -25,6 +22,7 @@ import com.alliander.osgp.platform.cucumber.support.RunXpathResult;
 /**
  * Class with generic response steps
  */
+@Deprecated
 @Component
 public class ResponseSteps {
 

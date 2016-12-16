@@ -12,6 +12,7 @@ package com.alliander.osgp.platform.cucumber.support;
  * has been delivered.
  *
  */
+@Deprecated
 public interface ResponseNotifier {
 
     /**

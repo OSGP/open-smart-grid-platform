@@ -39,12 +39,10 @@ import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.RelayType;
-import com.alliander.osgp.platform.cucumber.config.AdapterProtocolOslpPersistenceConfig;
 import com.alliander.osgp.platform.cucumber.config.CorePersistenceConfig;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.steps.common.ResponseSteps;
 
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;

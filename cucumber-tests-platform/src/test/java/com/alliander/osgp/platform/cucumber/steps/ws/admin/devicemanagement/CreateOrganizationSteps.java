@@ -16,8 +16,6 @@ import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 import java.util.Map;
 
 import org.junit.Assert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
@@ -30,7 +28,7 @@ import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.cucumber.steps.ws.GenericResponseSteps;
-import com.alliander.osgp.platform.cucumber.support.ws.admin.devicemanagement.AdminDeviceManagementClient;
+import com.alliander.osgp.platform.cucumber.support.ws.admin.AdminDeviceManagementClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;

@@ -30,7 +30,7 @@ import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.cucumber.steps.ws.core.devicemanagement.SetEventNotificationsSteps;
-import com.alliander.osgp.platform.cucumber.support.ws.core.deviceinstallation.CoreDeviceInstallationClient;
+import com.alliander.osgp.platform.cucumber.support.ws.core.CoreDeviceInstallationClient;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;

@@ -13,6 +13,9 @@ import javax.xml.xpath.XPathExpression;
 
 import org.w3c.dom.Document;
 
+import com.alliander.osgp.platform.cucumber.Deprecta;
+
+@Deprecated
 public class XpathResult {
     private Document doc;
     private XPathExpression expr;

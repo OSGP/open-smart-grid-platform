@@ -14,14 +14,22 @@ import static com.alliander.osgp.platform.cucumber.core.Helpers.saveCorrelationU
 
 import java.util.Map;
 
+import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
+import com.alliander.osgp.adapter.ws.schema.core.adhocmanagement.SetRebootAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.core.adhocmanagement.SetRebootAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.core.adhocmanagement.SetRebootRequest;
+import com.alliander.osgp.adapter.ws.schema.core.adhocmanagement.SetRebootResponse;
+import com.alliander.osgp.adapter.ws.schema.core.common.AsyncRequest;
+import com.alliander.osgp.platform.cucumber.config.ApplicationConfiguration;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.steps.ws.publiclighting.PublicLightingStepsBase;
-import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
+import com.alliander.osgp.platform.cucumber.support.ws.publiclighting.PublicLightingAdHocManagementClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -29,12 +37,13 @@ import cucumber.api.java.en.When;
 /**
  * Class with all the set light requests steps
  */
-public class SetRebootSteps extends PublicLightingStepsBase {
-    private static final String TEST_SUITE_XML = "AdHocManagement";
-    private static final String TEST_CASE_ASYNC_REQ_XML = "SetReboot TestCase";
-    private static final String TEST_CASE_ASYNC_NAME_REQUEST = "SetReboot";
-    private static final String TEST_CASE_RESULT_REQ_XML = "GetSetRebootResponse TestCase";
-    private static final String TEST_CASE_RESULT_NAME_REQUEST = "GetSetRebootResponse";
+public class SetRebootSteps {
+
+	@Autowired
+	private ApplicationConfiguration configuration;
+	
+	@Autowired
+	private PublicLightingAdHocManagementClient client;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetRebootSteps.class);
 
@@ -45,12 +54,14 @@ public class SetRebootSteps extends PublicLightingStepsBase {
      */
     @When("^receiving a set reboot request$")
     public void whenReceivingASetRebootRequest(final Map<String, String> requestParameters) throws Throwable {
-
-        // Required parameters
-    	PROPERTIES_MAP.put("__DEVICE_IDENTIFICATION__", getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+    	SetRebootRequest request = new SetRebootRequest();
+    	request.setDeviceIdentification(getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
     	
-        // Now run the request.
-        this.requestRunner(TestStepStatus.UNKNOWN, PROPERTIES_MAP, TEST_CASE_ASYNC_NAME_REQUEST, TEST_CASE_ASYNC_REQ_XML, TEST_SUITE_XML);
+    	try {
+    		ScenarioContext.Current().put(Keys.RESPONSE, client.setReboot(request));
+    	} catch(SoapFaultClientException ex) {
+    		ScenarioContext.Current().put(Keys.RESPONSE, ex);
+    	}    
     }
     
     /**
@@ -61,25 +72,45 @@ public class SetRebootSteps extends PublicLightingStepsBase {
      */
     @Then("^the set reboot async response contains$")
     public void thenTheSetRebootAsyncResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
-        this.runXpathResult.assertXpath(this.response, PATH_DEVICE_IDENTIFICATION,
-                getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-        this.runXpathResult.assertNotNull(this.response, PATH_CORRELATION_UID);
+    	SetRebootAsyncResponse response = (SetRebootAsyncResponse)ScenarioContext.Current().get(Keys.RESPONSE);
+    	
+    	Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
+    	Assert.assertEquals(getString(expectedResponseData,  Keys.KEY_DEVICE_IDENTIFICATION), response.getAsyncResponse().getDeviceId());
 
         // Save the returned CorrelationUid in the Scenario related context for further use.
-        saveCorrelationUidInScenarioContext(this.runXpathResult.getValue(this.response, PATH_CORRELATION_UID),
-                getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                        Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+        saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
+                getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
-        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
+     	LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
     }
 
     @Then("^the platform buffers a set reboot response message for device \"([^\"]*)\"$")
-    public void thenThePlatformBuffersASetRebootResponseMessage(final String deviceIdentification) throws Throwable {
-        // Required parameters
-        PROPERTIES_MAP.put("__DEVICE_IDENTIFICATION__", deviceIdentification);
-        PROPERTIES_MAP.put("__CORRELATION_UID__", (String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
-
-        this.waitForResponse(TestStepStatus.UNKNOWN, PROPERTIES_MAP, TEST_CASE_RESULT_NAME_REQUEST,
-                TEST_CASE_RESULT_REQ_XML, TEST_SUITE_XML);
+    public void thenThePlatformBuffersASetRebootResponseMessage(final String deviceIdentification, final Map<String, String> expectedResult) throws Throwable {
+    	SetRebootAsyncRequest request = new SetRebootAsyncRequest();
+    	AsyncRequest asyncRequest = new AsyncRequest();
+    	asyncRequest.setDeviceId(deviceIdentification);
+    	asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
+    	request.setAsyncRequest(asyncRequest);
+    	
+    	boolean success = false;
+    	int count = 0;
+    	while (!success) {
+    		if (count > configuration.getDefaultTimeout()) {
+    			Assert.fail("Timeout");
+    		}
+    		
+    		count++;
+    		
+    		try {
+    			SetRebootResponse response = client.getSetRebootResponse(request);
+    			
+    			Assert.assertEquals(expectedResult.get(Keys.KEY_RESULT), response.getResult());
+    			
+    			success = true; 
+    		}
+    		catch(Exception ex) {
+    			// Do nothing
+    		}
+    	}
     }
 }

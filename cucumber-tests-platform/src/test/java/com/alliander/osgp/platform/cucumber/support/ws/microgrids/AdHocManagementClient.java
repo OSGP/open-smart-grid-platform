@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.support.ws.microgrids.adhocmanagement;
+package com.alliander.osgp.platform.cucumber.support.ws.microgrids;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

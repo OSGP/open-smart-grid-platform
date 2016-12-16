@@ -7,8 +7,6 @@
  */
 package com.alliander.osgp.platform.cucumber.steps.mocks;
 
-import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
-
 import java.util.Map;
 
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
@@ -22,16 +20,12 @@ import com.alliander.osgp.oslp.Oslp.LightType;
 import com.alliander.osgp.oslp.Oslp.LinkType;
 import com.alliander.osgp.oslp.Oslp.Message;
 import com.alliander.osgp.oslp.Oslp.Status;
-import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.mocks.oslpdevice.MockOslpServer;
-import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.cucumber.steps.ws.core.devicemanagement.SetEventNotificationsSteps;
-import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 import com.google.protobuf.ByteString;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
 
 /**
  * Class which holds all the OSLP device mock steps in order to let the device
