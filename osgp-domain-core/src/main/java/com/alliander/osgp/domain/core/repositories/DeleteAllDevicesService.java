@@ -27,14 +27,18 @@ public class DeleteAllDevicesService {
 
     @Autowired
     private DeviceFirmwareRepository deviceFirmwareRepository;
-    
+
+    @Autowired
+    private FirmwareRepository firmwareRepository;
+
     public void deleteAllDevices() {
-        this.ssldRepository.deleteAllInBatch();
         this.eventRepository.deleteAllInBatch();
         this.deviceFirmwareRepository.deleteAllInBatch();
         this.deviceRepository.deleteAllEans();
         this.deviceRepository.deleteDeviceOutputSettings();
-        this.deviceModelRepository.deleteAllInBatch();
+        this.ssldRepository.deleteAllInBatch();
         this.deviceRepository.deleteAllInBatch();
+        this.firmwareRepository.deleteAllInBatch();
+        this.deviceModelRepository.deleteAllInBatch();
     }
 }
