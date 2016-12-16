@@ -55,7 +55,7 @@ public class SetEventNotificationsSteps {
     	SetEventNotificationsRequest request = new SetEventNotificationsRequest();
     	request.setDeviceIdentification(getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
     	for (String event : getString(requestParameters, Keys.KEY_EVENT).split(",")){
-        	request.getEventNotifications().add(Enum.valueOf(EventNotificationType.class, event));
+        	request.getEventNotifications().add(Enum.valueOf(EventNotificationType.class, event.trim()));
     	}
     	
     	try {

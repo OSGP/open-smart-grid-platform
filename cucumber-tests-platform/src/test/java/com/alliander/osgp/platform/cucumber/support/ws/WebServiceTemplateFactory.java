@@ -179,7 +179,7 @@ public class WebServiceTemplateFactory {
             throws WebServiceSecurityException {
 
         try {
-        	LOGGER.info("KeystoreLocation: [" + this.keyStoreLocation + "] + keystore [" + keystore + "]");
+        	LOGGER.debug("KeystoreLocation: [" + this.keyStoreLocation + "] + keystore [" + keystore + "]");
         	
             // Open keystore, assuming same identity
             final KeyStoreFactoryBean keyStoreFactory = new KeyStoreFactoryBean();

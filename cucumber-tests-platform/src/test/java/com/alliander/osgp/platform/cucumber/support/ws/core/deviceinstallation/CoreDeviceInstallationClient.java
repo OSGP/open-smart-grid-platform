@@ -40,56 +40,61 @@ import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory
 @Component
 public class CoreDeviceInstallationClient extends BaseClient {
 	
-	private WebServiceTemplate wst; 
-	
-	protected CoreDeviceInstallationClient() throws WebServiceSecurityException {
-        wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
-	}
-
     @Autowired
     private WebServiceTemplateFactory coreDeviceInstallationWstf;
 
-    public AddDeviceResponse addDevice(final AddDeviceRequest request) {
+    public AddDeviceResponse addDevice(final AddDeviceRequest request) throws WebServiceSecurityException {
+        final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (AddDeviceResponse) wst.marshalSendAndReceive(request);
     }
 
-    public UpdateDeviceResponse updateDevice(final UpdateDeviceRequest request) {
+    public UpdateDeviceResponse updateDevice(final UpdateDeviceRequest request) throws WebServiceSecurityException {
+        final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (UpdateDeviceResponse) wst.marshalSendAndReceive(request);
     }
 
-    public StartDeviceTestAsyncResponse startDeviceTest(final StartDeviceTestRequest request) {
+    public StartDeviceTestAsyncResponse startDeviceTest(final StartDeviceTestRequest request) throws WebServiceSecurityException {
+        final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (StartDeviceTestAsyncResponse) wst.marshalSendAndReceive(request);
     }
 
-    public FindRecentDevicesResponse findRecentDevices(final FindRecentDevicesRequest request) {
+    public FindRecentDevicesResponse findRecentDevices(final FindRecentDevicesRequest request) throws WebServiceSecurityException {
+        final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (FindRecentDevicesResponse) wst.marshalSendAndReceive(request);
     }
 
-	public StartDeviceTestResponse getStartDeviceTestResponse(StartDeviceTestAsyncRequest request) {
+	public StartDeviceTestResponse getStartDeviceTestResponse(StartDeviceTestAsyncRequest request) throws WebServiceSecurityException {
+        final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (StartDeviceTestResponse) wst.marshalSendAndReceive(request);
 	}
 
-	public StopDeviceTestAsyncResponse stopDeviceTest(StopDeviceTestRequest request) {
+	public StopDeviceTestAsyncResponse stopDeviceTest(StopDeviceTestRequest request) throws WebServiceSecurityException {
+        final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (StopDeviceTestAsyncResponse) wst.marshalSendAndReceive(request);
 	}
 
-	public StopDeviceTestResponse getStopDeviceTestResponse(StopDeviceTestAsyncRequest request) {
+	public StopDeviceTestResponse getStopDeviceTestResponse(StopDeviceTestAsyncRequest request) throws WebServiceSecurityException {
+        final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (StopDeviceTestResponse) wst.marshalSendAndReceive(request);
 	}
 
-	public SetEventNotificationsAsyncResponse setEventNotifications(SetEventNotificationsRequest request) {
+	public SetEventNotificationsAsyncResponse setEventNotifications(SetEventNotificationsRequest request) throws WebServiceSecurityException {
+        final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (SetEventNotificationsAsyncResponse) wst.marshalSendAndReceive(request);
 	}
 
-	public SetEventNotificationsResponse getSetEventNotificationsResponse(SetEventNotificationsAsyncRequest request) {
+	public SetEventNotificationsResponse getSetEventNotificationsResponse(SetEventNotificationsAsyncRequest request) throws WebServiceSecurityException {
+        final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (SetEventNotificationsResponse) wst.marshalSendAndReceive(request);
 	}
 
-	public GetFirmwareVersionAsyncResponse getFirmwareVersion(GetFirmwareVersionRequest request) {
+	public GetFirmwareVersionAsyncResponse getFirmwareVersion(GetFirmwareVersionRequest request) throws WebServiceSecurityException {
+        final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (GetFirmwareVersionAsyncResponse) wst.marshalSendAndReceive(request);
 	}
 
-	public GetFirmwareVersionResponse getGetFirmwareVersion(GetFirmwareVersionAsyncRequest request) {
+	public GetFirmwareVersionResponse getGetFirmwareVersion(GetFirmwareVersionAsyncRequest request) throws WebServiceSecurityException {
+        final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (GetFirmwareVersionResponse) wst.marshalSendAndReceive(request);
 	}    
 }

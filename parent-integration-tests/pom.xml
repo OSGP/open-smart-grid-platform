@@ -311,6 +311,18 @@
       </dependency>
       <dependency>
         <groupId>com.alliander.osgp</groupId>
+        <artifactId>osgp-adapter-ws-admin</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+      <dependency>
+        <groupId>com.alliander.osgp</groupId>
+        <artifactId>osgp-adapter-ws-core</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+      <dependency>
+        <groupId>com.alliander.osgp</groupId>
         <artifactId>osgp-adapter-ws-microgrids</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>

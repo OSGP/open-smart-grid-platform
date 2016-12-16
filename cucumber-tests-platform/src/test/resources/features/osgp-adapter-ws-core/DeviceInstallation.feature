@@ -276,7 +276,7 @@ Feature: Device installation
     Given an oslp device
       | DeviceIdentification | TEST1024000000001 |
     And the device returns a start device response "OK" over OSLP
-    When receiving a start device request
+    When receiving a start device test request
       | DeviceIdentification | TEST1024000000001 |
     Then the start device async response contains
       | DeviceIdentification | TEST1024000000001 |
