@@ -8,6 +8,7 @@
 package com.alliander.osgp.platform.cucumber.steps.mocks;
 
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getBoolean;
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getEnum;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getInteger;
 
 import java.util.Map;
@@ -25,7 +26,9 @@ import com.alliander.osgp.oslp.Oslp.LightType;
 import com.alliander.osgp.oslp.Oslp.LightValue;
 import com.alliander.osgp.oslp.Oslp.LinkType;
 import com.alliander.osgp.oslp.Oslp.Message;
+import com.alliander.osgp.oslp.Oslp.SetTransitionRequest;
 import com.alliander.osgp.oslp.Oslp.Status;
+import com.alliander.osgp.oslp.Oslp.TransitionType;
 import com.alliander.osgp.oslp.OslpUtils;
 import com.alliander.osgp.platform.cucumber.mocks.oslpdevice.MockOslpChannelHandler;
 import com.alliander.osgp.platform.cucumber.mocks.oslpdevice.MockOslpServer;
@@ -413,19 +416,17 @@ public class OslpDeviceSteps {
 	 * @throws Throwable
 	 */
 	@Then("^a set transition OSLP message is sent to device \"([^\"]*)\"$")
-	public void a_set_transition_OSLP_message_is_sent_to_device(final String deviceIdentification) throws Throwable {
-		// TODO: Sent an OSLP start device message to device
+	public void a_set_transition_OSLP_message_is_sent_to_device(final String deviceIdentification, final Map<String, String> expectedResult) throws Throwable {
 		final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.SET_TRANSITION);
 		Assert.assertNotNull(message);
 		Assert.assertTrue(message.hasSetTransitionRequest());
-	}
-
-	private byte[] convertIntegerToByteArray(final Integer value) {
-		// See: platform.service.SequenceNumberUtils
-		final byte[] bytes = new byte[2];
-		bytes[0] = (byte) (value >>> 8);
-		bytes[1] = (byte) (value >>> 0);
-		LOGGER.info("convertIntegerToByteArray() byte[0]: {} byte[1]: {} Integer value: {}", bytes[0], bytes[1], value);
-		return bytes;
+		
+		SetTransitionRequest request = message.getSetTransitionRequest();
+		
+		Assert.assertEquals(getEnum(expectedResult, Keys.KEY_TRANSITION_TYPE, TransitionType.class), request.getTransitionType());
+		if (expectedResult.containsKey(Keys.KEY_TIME)) {
+			// TODO: How to check the time?
+	 		//Assert.assertEquals(expectedResult.get(Keys.KEY_TIME), request.getTime());
+		}
 	}
 }

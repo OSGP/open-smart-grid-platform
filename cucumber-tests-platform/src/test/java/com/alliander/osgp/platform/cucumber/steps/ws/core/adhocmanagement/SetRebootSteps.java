@@ -65,6 +65,14 @@ public class SetRebootSteps {
     	}    
     }
     
+    @When("^receiving a set reboot request by an unknown organization$")
+    public void receivingASetRebootRequestByAnUnknownOrganization(final Map<String, String> requestParameters) throws Throwable {
+        // Force the request being send to the platform as a given organization.
+    	ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
+    	
+    	whenReceivingASetRebootRequest(requestParameters);
+    }
+    
     /**
      * The check for the response from the Platform.
      * @param expectedResponseData The table with the expected fields in the response.
@@ -113,5 +121,12 @@ public class SetRebootSteps {
     			// Do nothing
     		}
     	}
+    }
+    
+    @Then("^the set reboot async response contains a soap fault$")
+    public void theSetRebootAsyncResponseContainsASoapFault(final Map<String, String> expectedResult) {
+    	SoapFaultClientException response = (SoapFaultClientException)ScenarioContext.Current().get(Keys.RESPONSE);
+    	
+    	Assert.assertEquals(expectedResult.get(Keys.KEY_MESSAGE), response.getMessage());
     }
 }

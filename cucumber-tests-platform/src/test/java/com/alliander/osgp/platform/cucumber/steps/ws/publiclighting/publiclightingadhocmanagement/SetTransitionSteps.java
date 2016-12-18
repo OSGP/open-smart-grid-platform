@@ -13,6 +13,7 @@ import static com.alliander.osgp.platform.cucumber.core.Helpers.getEnum;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.saveCorrelationUidInScenarioContext;
 
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Map;
 
@@ -63,16 +64,33 @@ public class SetTransitionSteps {
 
     	SetTransitionRequest request = new SetTransitionRequest();
     	request.setDeviceIdentification(getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-    	request.setTransitionType(getEnum(requestParameters, Keys.KEY_TRANSITION_TYPE, TransitionType.class, Defaults.DEFAULT_TRANSITION_TYPE));
-    	GregorianCalendar gcal = new GregorianCalendar();
-        XMLGregorianCalendar xgcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
-		request.setTime(xgcal);
+
+    	if (requestParameters.containsKey(Keys.KEY_TRANSITION_TYPE) && !requestParameters.get(Keys.KEY_TRANSITION_TYPE).isEmpty()) {
+        	request.setTransitionType(getEnum(requestParameters, Keys.KEY_TRANSITION_TYPE, TransitionType.class, Defaults.DEFAULT_TRANSITION_TYPE));
+    	}
+    	
+    	if (requestParameters.containsKey(Keys.KEY_TIME) && !requestParameters.get(Keys.KEY_TIME).isEmpty()) {
+        	GregorianCalendar gcal = new GregorianCalendar();
+        	gcal.add(Calendar.HOUR, Integer.parseInt(requestParameters.get(Keys.KEY_TIME).substring(0, 2)));
+        	gcal.add(Calendar.MINUTE, Integer.parseInt(requestParameters.get(Keys.KEY_TIME).substring(2, 4)));
+        	gcal.add(Calendar.SECOND, Integer.parseInt(requestParameters.get(Keys.KEY_TIME).substring(4, 6)));
+            XMLGregorianCalendar xgcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
+    		request.setTime(xgcal);
+    	}
     	
     	try {
     		ScenarioContext.Current().put(Keys.RESPONSE, client.setTransition(request));
     	} catch(SoapFaultClientException ex) {
     		ScenarioContext.Current().put(Keys.RESPONSE, ex);
     	} 
+    }
+    
+    @When("^receiving a set transition request by an unknown organization$")
+    public void receivingASetTransitionRequestByAnUnknownOrganization(final Map<String, String> requestParameters) throws Throwable {
+        // Force the request being send to the platform as a given organization.
+    	ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
+    	
+    	whenReceivingASetTransitionRequest(requestParameters);
     }
     
     /**
@@ -123,5 +141,12 @@ public class SetTransitionSteps {
     			// Do nothing
     		}
     	}
+    }
+    
+    @Then("^the set transition async response contains a soap fault$")
+    public void theSetTransitionAsyncResponseContainsASoapFault(final Map<String, String> expectedResult) {
+    	SoapFaultClientException response = (SoapFaultClientException)ScenarioContext.Current().get(Keys.RESPONSE);
+    	
+    	Assert.assertEquals(expectedResult.get(Keys.KEY_MESSAGE), response.getMessage());
     }
 }
