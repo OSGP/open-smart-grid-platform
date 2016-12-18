@@ -118,5 +118,7 @@ public class Keys {
 	public static final String KEY_ON = "On";
 	public static final String KEY_TRANSITION_TYPE = "TransitionType";
 	public static final String KEY_DEVICE_MODEL_FILESTORAGE = "FileStorage";
-	
+	public static final String KEY_EXPECTED_INDEX = "ExpectedIndex";
+	public static final String KEY_EXPECTED_DIMVALUE = "ExpectedDimValue";
+	public static final String KEY_EXPECTED_ON = "ExpectedOn";
 }

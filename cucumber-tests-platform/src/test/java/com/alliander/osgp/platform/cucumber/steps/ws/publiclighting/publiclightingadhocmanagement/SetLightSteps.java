@@ -16,6 +16,7 @@ import static com.alliander.osgp.platform.cucumber.core.Helpers.saveCorrelationU
 
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,7 @@ import com.alliander.osgp.platform.cucumber.config.CorePersistenceConfig;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
+import com.alliander.osgp.platform.cucumber.support.ws.WebServiceSecurityException;
 import com.alliander.osgp.platform.cucumber.support.ws.publiclighting.PublicLightingAdHocManagementClient;
 
 import cucumber.api.java.en.Then;
@@ -43,7 +45,7 @@ import cucumber.api.java.en.When;
  */
 public class SetLightSteps {
 
-	@Autowired
+    @Autowired
 	private CorePersistenceConfig configuration;
 	
 	@Autowired
@@ -63,9 +65,31 @@ public class SetLightSteps {
     	request.setDeviceIdentification(getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
     	LightValue lightValue = new LightValue();
     	lightValue.setIndex(getInteger(requestParameters, Keys.KEY_INDEX, Defaults.DEFAULT_INDEX));
-    	lightValue.setDimValue(getInteger(requestParameters, Keys.KEY_DIMVALUE, Defaults.DEFAULT_DIMVALUE));
+    	if (requestParameters.containsKey(Keys.KEY_DIMVALUE) && !StringUtils.isEmpty(requestParameters.get(Keys.KEY_DIMVALUE))) {
+    		lightValue.setDimValue(getInteger(requestParameters, Keys.KEY_DIMVALUE, Defaults.DEFAULT_DIMVALUE));
+        }
     	lightValue.setOn(getBoolean(requestParameters, Keys.KEY_ON, Defaults.DEFAULT_ON));
     	request.getLightValue().add(lightValue);
+    	
+    	try {
+    		ScenarioContext.Current().put(Keys.RESPONSE, client.setLight(request));
+    	} catch(SoapFaultClientException ex) {
+    		ScenarioContext.Current().put(Keys.RESPONSE, ex);
+    	}
+    }
+    
+    @When("^receiving a set light request with \"([^\"]*)\" light values$")
+    public void givenReceivingASetLightRequestWithLightValues(final Integer nofLightValues, final Map<String, String> requestParameters) throws WebServiceSecurityException {
+    	SetLightRequest request = new SetLightRequest();
+    	request.setDeviceIdentification(getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+    	
+    	for (int i = 0; i < nofLightValues; i++) {
+        	LightValue lightValue = new LightValue();
+        	lightValue.setIndex(getInteger(requestParameters, Keys.KEY_INDEX, Defaults.DEFAULT_INDEX));
+        	lightValue.setDimValue(getInteger(requestParameters, Keys.KEY_DIMVALUE, Defaults.DEFAULT_DIMVALUE));
+        	lightValue.setOn(getBoolean(requestParameters, Keys.KEY_ON, Defaults.DEFAULT_ON));
+        	request.getLightValue().add(lightValue);
+    	}
     	
     	try {
     		ScenarioContext.Current().put(Keys.RESPONSE, client.setLight(request));

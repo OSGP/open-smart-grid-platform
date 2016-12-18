@@ -18,7 +18,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -438,7 +437,7 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         bytes[0] = (byte) (value >>> 8);
         bytes[1] = (byte) (value >>> 0);
         LOGGER.info(
-                "web-device-simulator.OslpChannelHandler.convertIntegerToByteArray() byte[0]: {} byte[1]: {} Integer value: {}",
+                "convertIntegerToByteArray() byte[0]: {} byte[1]: {} Integer value: {}",
                 bytes[0], bytes[1], value);
         return bytes;
     }
@@ -447,7 +446,7 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         // See: platform.service.SequenceNumberUtils
         final Integer value = (array[0] & 0xFF) << 8 | (array[1] & 0xFF);
         LOGGER.info(
-                "web-device-simulator.OslpChannelHandler.convertByteArrayToInteger() byte[0]: {} byte[1]: {} Integer value: {}",
+                "convertByteArrayToInteger() byte[0]: {} byte[1]: {} Integer value: {}",
                 array[0], array[1], value);
         return value;
     }

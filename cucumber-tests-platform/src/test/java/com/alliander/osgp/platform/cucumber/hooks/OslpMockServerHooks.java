@@ -18,10 +18,12 @@ public class OslpMockServerHooks {
 
     @Autowired
     private MockOslpServer mockServer;
-
+    
     @Before("@OslpMockServer")
     public void startOslpMockServer() throws Throwable {
     	if (this.mockServer != null) {
+    		this.mockServer.resetServer();
+    		
             this.mockServer.stop();
     	}
 
