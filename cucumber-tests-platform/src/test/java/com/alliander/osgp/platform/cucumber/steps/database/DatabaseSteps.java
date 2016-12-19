@@ -23,6 +23,7 @@ import com.alliander.osgp.domain.core.repositories.DeviceFirmwareRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.EventRepository;
+import com.alliander.osgp.domain.core.repositories.FirmwareRepository;
 import com.alliander.osgp.domain.core.repositories.ManufacturerRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
@@ -45,6 +46,9 @@ public class DatabaseSteps {
 
     @Autowired
     private DeviceFirmwareRepository deviceFirmwareRepo;
+
+    @Autowired
+    private FirmwareRepository firmwareRepo;
 
     @Autowired
     private DeviceRepository deviceRepo;
@@ -107,6 +111,7 @@ public class DatabaseSteps {
         cleanRepoSerializable(this.deviceAuthorizationRepo);
         cleanRepoSerializable(this.smartMeterRepo);
         cleanRepoSerializable(this.deviceRepo);
+        cleanRepoSerializable(this.firmwareRepo);
         cleanRepoSerializable(this.deviceModelRepo);
         cleanRepoSerializable(this.manufacturerRepo);
         cleanRepoSerializable(this.ssldRepository);
