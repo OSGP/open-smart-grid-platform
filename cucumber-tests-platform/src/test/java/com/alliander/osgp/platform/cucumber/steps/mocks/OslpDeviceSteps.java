@@ -10,7 +10,10 @@ package com.alliander.osgp.platform.cucumber.steps.mocks;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getBoolean;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getEnum;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getInteger;
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -20,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alliander.osgp.domain.core.valueobjects.RelayType;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.EventNotificationType;
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.Oslp.LightType;
 import com.alliander.osgp.oslp.Oslp.LightValue;
@@ -154,49 +157,40 @@ public class OslpDeviceSteps {
 	 */
 	@Given("^the device returns a get status response over OSLP$")
 	public void the_device_returns_a_get_status_response_over_OSLP(final Map<String, String> result) throws Throwable {
-		final String[] results = result.get("Result").split(";");
-
-		int internalId = 0, externalId = 0;
-		RelayType relayType = null;
-
-		String[] items = null;
-		for (int i = 0; i < results.length; i++) {
-			items = results[i].split(",");
-			internalId = Integer.parseInt(items[0]);
-			externalId = Integer.parseInt(items[1]);
-
-			relayType = (items[2].equals("LIGHT")) ? RelayType.LIGHT
-					: (items[2].equals("TARIFF")) ? RelayType.TARIFF
-							: (items[2].equals("TARIFF_REVERSED")) ? RelayType.TARIFF_REVERSED : null;
+	
+		int eventNotificationTypes = 0;
+		if (getString(result, Keys.KEY_EVENTNOTIFICATIONTYPES, Defaults.DEFAULT_EVENTNOTIFICATIONTYPES).trim().split(",").length > 0) {
+			for (String eventNotificationType : getString(result, Keys.KEY_EVENTNOTIFICATIONTYPES, Defaults.DEFAULT_EVENTNOTIFICATIONTYPES).trim().split(",")) {
+				if (!eventNotificationType.isEmpty()) {
+					eventNotificationTypes = eventNotificationTypes + Enum.valueOf(EventNotificationType.class, eventNotificationType.trim()).ordinal();
+				}
+			}	
+		}
+		
+		List<LightValue> lightValues = new ArrayList<LightValue>();
+		if (!getString(result, Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES).isEmpty() && 
+				getString(result, Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES).split(Keys.SEPARATOR).length > 0) {
+			
+			for (String lightValueString : getString(result, Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES).split(Keys.SEPARATOR)) {
+				String[] parts = lightValueString.split(Keys.SEPARATOR_SECOND);
+	
+				LightValue lightValue = LightValue.newBuilder()
+						.setIndex(OslpUtils.integerToByteString(Integer.parseInt(parts[0])))
+						.setOn(parts[1].toLowerCase().equals("true"))
+						.setDimValue(OslpUtils.integerToByteString(Integer.parseInt(parts[2])))
+						.build();
+						
+				lightValues.add(lightValue);
+			}
 		}
 
-		// TODO: Check which status is needed and check if the other values need
-		// to be set
-		this.oslpMockServer.mockGetStatusResponse(LinkType.LINK_NOT_SET, LinkType.LINK_NOT_SET, LightType.LT_NOT_SET, 0,
-				Status.OK);
-	}
-
-	/**
-	 * Setup method to get a status which should be returned by the mock.
-	 * 
-	 * @param result
-	 *            The get status to respond.
-	 * @throws Throwable
-	 */
-	@Given("^the device returns a get status response \"([^\"]*)\" over OSLP$")
-	public void the_device_returns_a_get_status_response_over_OSLP(final String result) throws Throwable {
-		Oslp.Status oslpStatus = Status.OK;
-
-		switch (result) {
-		case "OK":
-			oslpStatus = Status.OK;
-			// TODO: Implement other possible status
-		}
-
-		// TODO: Check which status is needed and check if the other values need
-		// to be set
-		this.oslpMockServer.mockGetStatusResponse(LinkType.LINK_NOT_SET, LinkType.LINK_NOT_SET, LightType.LT_NOT_SET, 0,
-				oslpStatus);
+		this.oslpMockServer.mockGetStatusResponse(
+			getEnum(result, Keys.KEY_PREFERRED_LINKTYPE, LinkType.class, Defaults.DEFAULT_PREFERRED_LINKTYPE),
+			getEnum(result, Keys.KEY_ACTUAL_LINKTYPE, LinkType.class, Defaults.DEFAULT_ACTUAL_LINKTYPE),
+			getEnum(result, Keys.KEY_LIGHTTYPE, LightType.class, Defaults.DEFAULT_LIGHTTYPE),
+			eventNotificationTypes,
+			getEnum(result, Keys.KEY_STATUS, Oslp.Status.class, Defaults.DEFAULT_STATUS),
+			lightValues);
 	}
 
 	/**

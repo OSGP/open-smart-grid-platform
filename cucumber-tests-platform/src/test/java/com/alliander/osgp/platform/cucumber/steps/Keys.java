@@ -119,4 +119,17 @@ public class Keys {
 	public static final String KEY_TRANSITION_TYPE = "TransitionType";
 	public static final String KEY_DEVICE_MODEL_FILESTORAGE = "FileStorage";
 	public static final String KEY_TIME = "Time";
+	public static final String KEY_RELAY_TYPE = "RelayType";
+	public static final String KEY_INTERNALID = "InternalId";
+	public static final String KEY_EXTERNALID = "ExternalId";
+	public static final String KEY_OSLP_RESULT = "OSLPResult";
+	public static final String KEY_EVENTNOTIFICATIONS = "EventNotifications";
+	public static final String KEY_PREFERRED_LINKTYPE = "PreferredLinkType";
+	public static final String KEY_ACTUAL_LINKTYPE = "ActualLinkType";
+	public static final String KEY_LIGHTTYPE = "LightType";
+	public static final String KEY_STATUS = "Status";
+	public static final String SEPARATOR = ",";
+	public static final String KEY_LIGHTVALUES = "LightValues";
+	public static final String KEY_EVENTNOTIFICATIONTYPES = "EventNotificationTypes";
+	public static final String SEPARATOR_SECOND = ";";
 }

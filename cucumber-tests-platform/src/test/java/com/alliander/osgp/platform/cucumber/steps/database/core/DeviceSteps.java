@@ -9,6 +9,7 @@ package com.alliander.osgp.platform.cucumber.steps.database.core;
 
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getBoolean;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getDate;
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getInteger;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getEnum;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getFloat;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getLong;
@@ -97,18 +98,16 @@ public class DeviceSteps {
         final String deviceIdentification = settings.get("DeviceIdentification");
         final Ssld ssld = new Ssld(deviceIdentification);
         
-        ssld.setPublicKeyPresent(getBoolean(settings, "PublicKeyPresent", Defaults.DEFAULT_PUBLICKEYPRESENT));
-        ssld.setHasSchedule(getBoolean(settings, "HasSchedule", Defaults.DEFAULT_HASSCHEDULE));
+        ssld.setPublicKeyPresent(getBoolean(settings, Keys.KEY_PUBLICKEYPRESENT, Defaults.DEFAULT_PUBLICKEYPRESENT));
+        ssld.setHasSchedule(getBoolean(settings, Keys.KEY_HAS_SCHEDULE, Defaults.DEFAULT_HASSCHEDULE));
         
-        if (settings.containsKey("internalId") && settings.containsKey("externalId") && settings.containsKey("relayType"))
+        if (settings.containsKey(Keys.KEY_INTERNALID) || settings.containsKey(Keys.KEY_EXTERNALID) || settings.containsKey(Keys.KEY_RELAY_TYPE))
         {
         	List<DeviceOutputSetting> dosList = new ArrayList<>();
-            int internalId = Integer.parseInt(getString(settings, "internalId", "0")),
-            	   externalId = Integer.parseInt(getString(settings, "internalId", "0"));
-            String sRelayType = getString(settings, "relayType", "null");
-            RelayType relayType = (sRelayType.equals("LIGHT")) ? RelayType.LIGHT : 
-            			(sRelayType.equals("TARIFF")) ? RelayType.TARIFF : 
-            			(sRelayType.equals("TARIFF_REVERSED")) ? RelayType.TARIFF_REVERSED : null;
+            int internalId = getInteger(settings, Keys.KEY_INTERNALID, Defaults.DEFAULT_INTERNALID),
+            	   externalId = getInteger(settings, Keys.KEY_EXTERNALID, Defaults.DEFAULT_EXTERNALID);
+            String sRelayType = getString(settings, Keys.KEY_RELAY_TYPE, "null");
+            RelayType relayType = getEnum(settings, Keys.KEY_RELAY_TYPE, RelayType.class, RelayType.LIGHT);
             
             if (relayType != null)
             {

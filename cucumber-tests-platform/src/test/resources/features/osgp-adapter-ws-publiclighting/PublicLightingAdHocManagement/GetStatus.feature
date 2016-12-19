@@ -2,24 +2,32 @@ Feature: Adhoc Management
   In order to ... 
   As a platform 
   I want to asynchronously handle set light requests
-  
+
   @OslpMockServer
-  Scenario Outline: Get Status Values
+  Scenario Outline: Get Status from a device
     Given an oslp device
-      | DeviceIdentification | <DeviceIdentification> |
-      | Status               | <Status>               |
-    And the device returns a get status response "<Result>" over OSLP
+      | DeviceIdentification | TEST1024000000001 |
+      | Status               | Active            |
+      | RelayType            | <RelayType>       |
+    And the device returns a get status response over OSLP
+      | PreferredLinkType  | <PreferredLinkType>  |
+      | ActualLinkType     | <ActualLinkType>     |
+      | LightType          | <LightType>          |
+      | EventNotifications | <EventNotifications> |
+      | Index              | <Index>              |
+      | On                 | <On>                 |
+      | DimValue           | <DimValue>           |
     When receiving a get status request
-      | DeviceIdentification | <DeviceIdentification> |
+      | DeviceIdentification | TEST1024000000001 |
     Then the get status async response contains
-      | DeviceIdentification | <DeviceIdentification> |
-    And a get status OSLP message is sent to device "<DeviceIdentification>"
-    And the platform buffers a get status response message for device "<DeviceIdentification>"
+      | DeviceIdentification | TEST1024000000001 |
+    And a get status OSLP message is sent to device "TEST1024000000001"
+    And the platform buffers a get status response message for device "TEST1024000000001"
       | Result | <Result> |
 
     Examples: 
-      | DeviceIdentification | Status | Result |
-      | TEST1024000000001    | active | OK     |
+      | RelayType | PreferredLinkType | ActualLinkType | LightType  | EventNotifications | Index | On   | DimValue | Result |
+      | LIGHT     | LINK_NOT_SET      | LINK_NOT_SET   | LT_NOT_SET |                    |     0 | true |          | OK     |
 
   Scenario Outline: Fail To Get Status Values
     Given a device

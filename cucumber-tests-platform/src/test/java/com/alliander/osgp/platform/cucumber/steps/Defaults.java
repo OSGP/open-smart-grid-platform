@@ -8,7 +8,11 @@
 package com.alliander.osgp.platform.cucumber.steps;
 
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.EventNotificationType;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.TransitionType;
+import com.alliander.osgp.oslp.Oslp.LightType;
+import com.alliander.osgp.oslp.Oslp.LinkType;
+import com.alliander.osgp.oslp.Oslp.Status;
 
 /**
  * Defaults within the database.
@@ -87,4 +91,13 @@ public class Defaults {
 	public static final Integer DEFAULT_DIMVALUE = 100;
 	public static final Boolean DEFAULT_ON = true;
 	public static final TransitionType DEFAULT_TRANSITION_TYPE = TransitionType.DAY_NIGHT;
+	public static final Integer DEFAULT_INTERNALID = 0;
+	public static final Integer DEFAULT_EXTERNALID = 0;
+	public static final String DEFAULT_EVENTNOTIFICATIONS = "";
+	public static final LinkType DEFAULT_PREFERRED_LINKTYPE = LinkType.LINK_NOT_SET;
+	public static final LinkType DEFAULT_ACTUAL_LINKTYPE = LinkType.LINK_NOT_SET;
+	public static final LightType DEFAULT_LIGHTTYPE = LightType.LT_NOT_SET;
+	public static final Status DEFAULT_STATUS = Status.OK;
+	public static final String DEFAULT_LIGHTVALUES = "";
+	public static final String DEFAULT_EVENTNOTIFICATIONTYPES = "";
 }

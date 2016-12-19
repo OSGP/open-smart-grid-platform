@@ -9,6 +9,7 @@
  */
 package com.alliander.osgp.platform.cucumber.steps.ws.publiclighting.publiclightingadhocmanagement;
 
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getEnum;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.saveCorrelationUidInScenarioContext;
 
@@ -20,10 +21,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
+import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.DeviceStatus;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.EventNotificationType;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusResponse;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.LightType;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.LinkType;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.AsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.OsgpResultType;
 import com.alliander.osgp.platform.cucumber.config.CorePersistenceConfig;
@@ -116,10 +121,25 @@ public class GetStatusSteps {
     			
     			Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.KEY_RESULT)), response.getResult());
     			
+    			DeviceStatus deviceStatus = response.getDeviceStatus();
+    			
+    			Assert.assertEquals(getEnum(expectedResult, Keys.KEY_PREFERRED_LINKTYPE, LinkType.class), deviceStatus.getPreferredLinkType());
+    			Assert.assertEquals(getEnum(expectedResult, Keys.KEY_ACTUAL_LINKTYPE, LinkType.class), deviceStatus.getActualLinkType());
+       			Assert.assertEquals(getEnum(expectedResult, Keys.KEY_LIGHTTYPE, LightType.class), deviceStatus.getLightType());
+       			
+       			Assert.assertEquals(getString(expectedResult,  Keys.KEY_EVENTNOTIFICATIONS, Defaults.DEFAULT_EVENTNOTIFICATIONS).split(Keys.SEPARATOR).length, deviceStatus.getEventNotifications().size());
+       			for (String eventNotification : getString(expectedResult,  Keys.KEY_EVENTNOTIFICATIONS, Defaults.DEFAULT_EVENTNOTIFICATIONS).split(Keys.SEPARATOR)) {
+           			Assert.assertTrue(deviceStatus.getEventNotifications().contains(Enum.valueOf(EventNotificationType.class, eventNotification)));
+       			}
+       			
+       			Assert.assertEquals(getString(expectedResult,  Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES).split(Keys.SEPARATOR).length, deviceStatus.getLightValues().size());
+       			deviceStatus.getLightValues();
+       		    			
     			success = true; 
     		}
     		catch(Exception ex) {
     			// Do nothing
+    			LOGGER.info(ex.getMessage());
     		}
     	}
     }

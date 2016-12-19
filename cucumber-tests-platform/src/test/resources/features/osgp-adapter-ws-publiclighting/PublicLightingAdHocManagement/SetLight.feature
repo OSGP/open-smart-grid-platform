@@ -44,27 +44,27 @@ Feature: Adhoc Management
       | Message | Validation error |
 
     Examples: 
-      | DeviceIdentification | Index | On    | DimValue |
-      | TEST1024000000001    |     1 | true  |        0 |
-      | TEST1024000000001    |    -1 | true  |        1 |
-      | TEST1024000000001    |     7 | true  |        1 |
-      | TEST1024000000001    |     1 | true  |       -1 |
-      | TEST1024000000001    |     1 | true  |      101 |
-      
+      | DeviceIdentification | Index | On   | DimValue |
+      | TEST1024000000001    |     1 | true |        0 |
+      | TEST1024000000001    |    -1 | true |        1 |
+      | TEST1024000000001    |     7 | true |        1 |
+      | TEST1024000000001    |     1 | true |       -1 |
+      | TEST1024000000001    |     1 | true |      101 |
+
   Scenario Outline: Receive A Set Light Request With An Invalid Single Light Value due to the On value
     Given a device
       | DeviceIdentification | TEST1024000000001 |
     When receiving a set light request
-      | DeviceIdentification | <DeviceIdentification> |
-      | Index                | <Index>                |
-      | On                   | <On>                   |
-      | DimValue             | <DimValue>             |
+      | DeviceIdentification | TEST1024000000001 |
+      | Index                | <Index>           |
+      | On                   | <On>              |
+      | DimValue             | <DimValue>        |
     Then the set light response contains soap fault
       | Message | VALIDATION_ERROR |
 
     Examples: 
-      | DeviceIdentification | Index | On    | DimValue |
-      | TEST1024000000001    |     1 | false |       75 |
+      | Index | On    | DimValue |
+      |     1 | false |       75 |
 
   @OslpMockServer
   Scenario Outline: Receive A Set Light Request With Multiple Light Values
@@ -88,14 +88,14 @@ Feature: Adhoc Management
   Scenario Outline: Receive A Set Light Request With Invalid Multiple Light Values
     Given a device
       | DeviceIdentification | TEST1024000000001 |
-    When receiving a set light request
+    When receiving a set light request with "<NofValidLightValues>" valid lightvalues and "<NofInvalidLightValues>" invalid lightvalues
       | DeviceIdentification | TEST1024000000001 |
-      | Index                | <Index>           |
-      | On                   | <On>              |
-      | DimValue             | <DimValue>        |
     Then the set light response contains soap fault
-      | Message | VALIDATION_ERROR |
+      | Message | Validation error |
 
     Examples: 
-      | internalId | externalId | Index | On    | DimValue |
-      |          4 |          4 |     3 | false |        5 |
+      | NofValidLightValues | NofInvalidLightValues |
+      |                   0 |                     0 |
+      |                   7 |                     0 |
+      |                   1 |                     1 |
+      |                   5 |                     1 |
