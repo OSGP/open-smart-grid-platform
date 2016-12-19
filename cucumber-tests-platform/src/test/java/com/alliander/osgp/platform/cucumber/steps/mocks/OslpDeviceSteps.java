@@ -26,6 +26,7 @@ import com.alliander.osgp.oslp.Oslp.LightType;
 import com.alliander.osgp.oslp.Oslp.LightValue;
 import com.alliander.osgp.oslp.Oslp.LinkType;
 import com.alliander.osgp.oslp.Oslp.Message;
+import com.alliander.osgp.oslp.Oslp.ResumeScheduleRequest;
 import com.alliander.osgp.oslp.Oslp.SetTransitionRequest;
 import com.alliander.osgp.oslp.Oslp.Status;
 import com.alliander.osgp.oslp.Oslp.TransitionType;
@@ -34,7 +35,6 @@ import com.alliander.osgp.platform.cucumber.mocks.oslpdevice.MockOslpChannelHand
 import com.alliander.osgp.platform.cucumber.mocks.oslpdevice.MockOslpServer;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.steps.ws.core.devicemanagement.SetEventNotificationsSteps;
 import com.google.protobuf.ByteString;
 
 import cucumber.api.java.en.Given;
@@ -321,8 +321,6 @@ public class OslpDeviceSteps {
 	@Then("^a set event notification OSLP message is sent to device \"([^\"]*)\"")
 	public void a_set_event_notification_oslp_message_is_sent_to_device(final String deviceIdentification)
 			throws Throwable {
-		LoggerFactory.getLogger(SetEventNotificationsSteps.class)
-				.info("A set event notification OSLP message is sent to device");
 		final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.SET_EVENT_NOTIFICATIONS);
 		Assert.assertNotNull(message);
 		Assert.assertTrue(message.hasSetEventNotificationsRequest());
@@ -384,11 +382,15 @@ public class OslpDeviceSteps {
 	 * @throws Throwable
 	 */
 	@Then("^a resume schedule OSLP message is sent to device \"([^\"]*)\"$")
-	public void a_resume_schedule_OSLP_message_is_sent_to_device(final String deviceIdentification) throws Throwable {
-		// TODO: Sent an OSLP start device message to device
+	public void a_resume_schedule_OSLP_message_is_sent_to_device(final String deviceIdentification, final Map<String, String> expectedRequest) throws Throwable {
 		final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.RESUME_SCHEDULE);
 		Assert.assertNotNull(message);
 		Assert.assertTrue(message.hasResumeScheduleRequest());
+		
+		ResumeScheduleRequest request = message.getResumeScheduleRequest();
+		
+		Assert.assertEquals(getBoolean(expectedRequest, Keys.KEY_ISIMMEDIATE), request.getImmediate());
+		Assert.assertEquals(getInteger(expectedRequest, Keys.KEY_INDEX), OslpUtils.byteStringToInteger(request.getIndex()));
 	}
 
 	/**

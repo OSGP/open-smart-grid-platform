@@ -69,6 +69,14 @@ public class ResumeScheduleSteps {
     	}
     }
     
+    @When("^receiving a set resume schedule by an unknown organization$")
+    public void receivingASetResumeScheduleByAnUnknownOrganization(final Map<String, String> requestParameters) throws Throwable {
+        // Force the request being send to the platform as a given organization.
+    	ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
+
+    	whenReceivingAResumeScheduleRequest(requestParameters);
+    }
+    
     /**
      * The check for the response from the Platform.
      * @param expectedResponseData The table with the expected fields in the response.
@@ -117,5 +125,12 @@ public class ResumeScheduleSteps {
     			// Do nothing
     		}
     	}
+    }
+    
+    @Then("^the resume schedule async response contains a soap fault$")
+    public void theResumeScheduleAsyncResponseContainsASoapFault(final Map<String, String> expectedResult) {
+    	SoapFaultClientException response = (SoapFaultClientException)ScenarioContext.Current().get(Keys.RESPONSE);
+    	
+    	Assert.assertEquals(expectedResult.get(Keys.KEY_MESSAGE), response.getMessage());
     }
 }
