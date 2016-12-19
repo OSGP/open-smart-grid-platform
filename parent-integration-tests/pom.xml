@@ -8,7 +8,7 @@
 
   <artifactId>parent-integration-tests</artifactId>
   <groupId>com.alliander.osgp</groupId>
-  <version>4.4.0-SNAPSHOT</version>
+  <version>4.5.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>parent-integration-tests</name>
   <!-- Description, Organization, Licences, URL and Distribution Management 
@@ -87,16 +87,23 @@
     <maven.compiler.plugin.version>3.6.0</maven.compiler.plugin.version>
     <license.maven.plugin>2.11</license.maven.plugin>
     <cucumber.version>1.2.4</cucumber.version>
-    <jacoco.maven.plugin.version>0.7.7.201606060606</jacoco.maven.plugin.version>
     <maven.jar.plugin.version>3.0.2</maven.jar.plugin.version>
     <maven.surefire.plugin.version>2.19.1</maven.surefire.plugin.version>
     <maven.failsafe.plugin.version>2.19.1</maven.failsafe.plugin.version>
     <soapui.maven.plugin.version>5.2.1</soapui.maven.plugin.version>
     <jgoodies.version>1.0.5</jgoodies.version>
+    <jacoco.version>0.7.8</jacoco.version>
 
     <!-- Default always skip integration tests, to ensure all developer data 
       is retained -->
     <skipITs>true</skipITs>
+    
+    <!-- Skip code coverage gathering with Jacoco on IT tests from Tomcat. 
+      Requires jacoco-agent to be setup on remote Tomcat -->
+    <skipITCoverage>true</skipITCoverage>
+    
+    <!-- Address of Tomcat instance -->
+    <addressITCoverage>localhost</addressITCoverage>
   </properties>
 
   <repositories>
@@ -205,12 +212,12 @@
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
       </dependency>
-      
       <dependency>
         <groupId>com.alliander.osgp</groupId>
         <artifactId>osgp-adapter-domain-shared</artifactId>
         <version>${osgp.version}</version>
       </dependency>
+
       <dependency>
         <groupId>com.alliander.osgp</groupId>
         <artifactId>osgp-adapter-domain-admin</artifactId>
@@ -769,11 +776,34 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <version>${maven.surefire.plugin.version}</version>
+          <configuration>
+            <argLine>${surefireArgLine}</argLine>
+            <excludes>
+              <!-- Cucumber integration tests, included with Failsafe. -->
+              <exclude>**/cucumber/**/AcceptanceTests.java</exclude>
+            </excludes>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
           <version>${maven.failsafe.plugin.version}</version>
+          <executions>
+            <execution>
+              <id>integration-test</id>
+              <goals>
+                <goal>integration-test</goal>
+                <goal>verify</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <skipITs>${skipITs}</skipITs>
+            <includes>
+              <!-- Cucumber integration tests, excluded with Surefire. -->
+              <include>**/cucumber/**/AcceptanceTests.java</include>
+            </includes>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -790,7 +820,7 @@
         <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
-          <version>${jacoco.maven.plugin.version}</version>
+          <version>${jacoco.version}</version>
           <executions>
             <!-- Prepares the property pointing to the JaCoCo runtime agent 
               which is passed as VM argument when Maven the Surefire plugin is executed. -->
@@ -839,6 +869,45 @@
                 <!-- Sets the output directory for the code coverage report. -->
                 <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
                 <skipTests>${skipTests}</skipTests>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>${jacoco.version}</version>
+          <executions>
+            <!-- Reset the code coverage before the integration tests are started. Ensures Tomcat startup code execution is ignored in report -->
+            <execution>
+              <id>pre-integration-test</id>
+              <phase>pre-integration-test</phase>
+              <goals>
+                <goal>dump</goal>
+              </goals>
+              <configuration>
+                <address>${addressITCoverage}</address>
+                <destFile>${project.build.directory}/coverage-reports/jacoco-it.exec</destFile>
+                <dump>false</dump>
+                <append>false</append>
+                <reset>true</reset>
+                <skip>${skipITCoverage}</skip>
+              </configuration>
+            </execution>
+            <!-- Download code coverage from Tomcat -->
+            <execution>
+              <id>post-integration-test</id>
+              <phase>post-integration-test</phase>
+              <goals>
+                <goal>dump</goal>
+              </goals>
+              <configuration>
+                <address>${addressITCoverage}</address>
+                <destFile>${project.build.directory}/coverage-reports/jacoco-it.exec</destFile>
+                <dump>true</dump>
+                <append>false</append>
+                <reset>true</reset>
+                <skip>${skipITCoverage}</skip>
               </configuration>
             </execution>
           </executions>
