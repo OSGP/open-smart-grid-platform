@@ -40,7 +40,8 @@
     <module>Shared/shared</module>
     <module>Shared/osgp-dto</module>
 
-    <!-- Protocol-Adapter-OSLP -->
+    <!-- Protocol-Adapter-IEC61850 -->
+    <module>Protocol-Adapter-IEC61850/osgp-protocol-adapter-iec61850</module>
     <module>Protocol-Adapter-IEC61850/protocol-simulator-iec61850</module>
 
     <!-- Protocol-Adapter-OSLP -->

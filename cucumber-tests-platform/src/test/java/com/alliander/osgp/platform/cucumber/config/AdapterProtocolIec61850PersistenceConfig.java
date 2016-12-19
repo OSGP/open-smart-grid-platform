@@ -13,30 +13,24 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
-import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
-import com.alliander.osgp.domain.core.repositories.DeviceFirmwareRepository;
-import com.alliander.osgp.domain.core.repositories.DeviceRepository;
-import com.alliander.osgp.domain.core.repositories.EventRepository;
-import com.alliander.osgp.domain.microgrids.repositories.RtuDeviceRepository;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
 
-@EnableJpaRepositories(entityManagerFactoryRef = "entityMgrCore", transactionManagerRef = "txMgrCore", basePackageClasses = {
-        DeviceFirmwareRepository.class, DeviceRepository.class, DeviceAuthorizationRepository.class,
-        RtuDeviceRepository.class, EventRepository.class })
-public class CorePersistenceConfig extends ApplicationConfiguration {
+@EnableJpaRepositories(entityManagerFactoryRef = "entityMgrFactIec61850", transactionManagerRef = "txMgrIec61850", basePackageClasses = {
+        Iec61850DeviceRepository.class })
+public class AdapterProtocolIec61850PersistenceConfig extends ApplicationConfiguration {
 
-    @Value("${osgpcoredbs.url}")
+    public AdapterProtocolIec61850PersistenceConfig() {
+    }
+
+    @Value("${osgpadapterprotocoliec61850dbs.url}")
     private String databaseUrl;
 
-    @Value("${entitymanager.packages.to.scan.core}")
+    @Value("${entitymanager.packages.to.scan.iec61850}")
     private String entitymanagerPackagesToScan;
-
-    public CorePersistenceConfig() {
-    }
 
     @Override
     protected String getDatabaseUrl() {
@@ -53,8 +47,7 @@ public class CorePersistenceConfig extends ApplicationConfiguration {
      *
      * @return DataSource
      */
-    @Primary
-    @Bean(name = "dsCore")
+    @Bean(name = "dsIec61850")
     public DataSource dataSource() {
         return this.makeDataSource();
     }
@@ -66,12 +59,11 @@ public class CorePersistenceConfig extends ApplicationConfiguration {
      * @throws ClassNotFoundException
      *             when class not found
      */
-    @Primary
-    @Bean(name = "entityMgrCore")
-    public LocalContainerEntityManagerFactoryBean entityMgrCore(@Qualifier("dsCore") final DataSource dataSource)
-            throws ClassNotFoundException {
+    @Bean(name = "entityMgrFactIec61850")
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(
+            @Qualifier("dsIec61850") final DataSource dataSource) throws ClassNotFoundException {
 
-        return this.makeEntityManager("OSGP_CUCUMBER_CORE", dataSource);
+        return this.makeEntityManager("OSGP_CUCUMBER_IEC61850", dataSource);
     }
 
     /**
@@ -81,12 +73,10 @@ public class CorePersistenceConfig extends ApplicationConfiguration {
      * @throws ClassNotFoundException
      *             when class not found
      */
-    @Primary
-    @Bean(name = "txMgrCore")
-    public JpaTransactionManager txMgrCore(
-            @Qualifier("entityMgrCore") final EntityManagerFactory entityMgrCore) throws ClassNotFoundException {
-
-        return new JpaTransactionManager(entityMgrCore);
+    @Bean(name = "txMgrIec61850")
+    public JpaTransactionManager transactionManager(
+            @Qualifier("entityMgrFactIec61850") final EntityManagerFactory barEntityManagerFactory) {
+        return new JpaTransactionManager(barEntityManagerFactory);
     }
 
 }

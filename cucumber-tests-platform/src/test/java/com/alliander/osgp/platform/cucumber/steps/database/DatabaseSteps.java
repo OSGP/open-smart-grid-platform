@@ -7,19 +7,22 @@
  */
 package com.alliander.osgp.platform.cucumber.steps.database;
 
-import static com.alliander.osgp.platform.cucumber.core.Helpers.cleanRepoAbstractEntity;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.cleanRepoSerializable;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
 import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRepository;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
+import com.alliander.osgp.domain.core.repositories.DeviceFirmwareRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
+import com.alliander.osgp.domain.core.repositories.EventRepository;
 import com.alliander.osgp.domain.core.repositories.ManufacturerRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
@@ -41,6 +44,9 @@ public class DatabaseSteps {
     private DeviceModelRepository deviceModelRepo;
 
     @Autowired
+    private DeviceFirmwareRepository deviceFirmwareRepo;
+
+    @Autowired
     private DeviceRepository deviceRepo;
 
     @Autowired
@@ -50,10 +56,16 @@ public class DatabaseSteps {
     private DeviceAuthorizationRepository deviceAuthorizationRepo;
 
     @Autowired
+    private Iec61850DeviceRepository iec61850DeviceRepo;
+
+    @Autowired
     private OslpDeviceRepository oslpDeviceRepo;
 
     @Autowired
     private SsldRepository ssldRepository;
+
+    @Autowired
+    private EventRepository eventRepo;
 
     /**
      * This method is used to create default data not directly related to the
@@ -84,9 +96,15 @@ public class DatabaseSteps {
         this.deviceModelRepo.save(deviceModel);
     }
 
+    @Transactional(transactionManager = "txMgrCore")
     public void prepareDatabaseForScenario() {
-        cleanRepoAbstractEntity(this.oslpDeviceRepo);
-        cleanRepoAbstractEntity(this.deviceAuthorizationRepo);
+        cleanRepoSerializable(this.eventRepo);
+        this.deviceRepo.deleteAllEans();
+        this.deviceRepo.deleteDeviceOutputSettings();
+        cleanRepoSerializable(this.deviceFirmwareRepo);
+        cleanRepoSerializable(this.iec61850DeviceRepo);
+        cleanRepoSerializable(this.oslpDeviceRepo);
+        cleanRepoSerializable(this.deviceAuthorizationRepo);
         cleanRepoSerializable(this.smartMeterRepo);
         cleanRepoSerializable(this.deviceRepo);
         cleanRepoSerializable(this.deviceModelRepo);

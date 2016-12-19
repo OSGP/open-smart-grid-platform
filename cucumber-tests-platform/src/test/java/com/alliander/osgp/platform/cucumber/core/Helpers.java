@@ -19,10 +19,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.util.Assert;
 
-import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
 public class Helpers {
 
@@ -205,23 +203,6 @@ public class Helpers {
         // Validate the correlation-id starts with correct organization
         Assert.isTrue(correlationUid.startsWith(organizationIdentification));
         ScenarioContext.Current().put(Keys.KEY_CORRELATION_UID, correlationUid);
-    }
-
-    /**
-     * When running automatic tests, it might be that not each project is
-     * started in tomcat. When the repo's are cleared at the beginning of a test
-     * run, you get some exceptions when the database wasn't found. Therefore
-     * this method is created to ignore that.
-     *
-     * @param repo
-     *            The repository to remove.
-     */
-    public static <T extends AbstractEntity> void cleanRepoAbstractEntity(final JpaRepository<T, Long> repo) {
-        try {
-            repo.deleteAllInBatch();
-        } catch (final Exception ex) {
-            LOGGER.error(ex.getMessage());
-        }
     }
 
     /**
