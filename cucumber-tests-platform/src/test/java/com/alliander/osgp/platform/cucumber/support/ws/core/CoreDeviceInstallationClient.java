@@ -7,6 +7,9 @@
  */
 package com.alliander.osgp.platform.cucumber.support.ws.core;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;
@@ -35,37 +38,37 @@ public class CoreDeviceInstallationClient extends BaseClient {
     @Autowired
     private WebServiceTemplateFactory coreDeviceInstallationWstf;
 
-    public AddDeviceResponse addDevice(final AddDeviceRequest request) throws WebServiceSecurityException {
+    public AddDeviceResponse addDevice(final AddDeviceRequest request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (AddDeviceResponse) wst.marshalSendAndReceive(request);
     }
 
-    public UpdateDeviceResponse updateDevice(final UpdateDeviceRequest request) throws WebServiceSecurityException {
+    public UpdateDeviceResponse updateDevice(final UpdateDeviceRequest request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (UpdateDeviceResponse) wst.marshalSendAndReceive(request);
     }
 
-    public StartDeviceTestAsyncResponse startDeviceTest(final StartDeviceTestRequest request) throws WebServiceSecurityException {
+    public StartDeviceTestAsyncResponse startDeviceTest(final StartDeviceTestRequest request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (StartDeviceTestAsyncResponse) wst.marshalSendAndReceive(request);
     }
 
-    public FindRecentDevicesResponse findRecentDevices(final FindRecentDevicesRequest request) throws WebServiceSecurityException {
+    public FindRecentDevicesResponse findRecentDevices(final FindRecentDevicesRequest request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (FindRecentDevicesResponse) wst.marshalSendAndReceive(request);
     }
 
-	public StartDeviceTestResponse getStartDeviceTestResponse(StartDeviceTestAsyncRequest request) throws WebServiceSecurityException {
+	public StartDeviceTestResponse getStartDeviceTestResponse(StartDeviceTestAsyncRequest request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (StartDeviceTestResponse) wst.marshalSendAndReceive(request);
 	}
 
-	public StopDeviceTestAsyncResponse stopDeviceTest(StopDeviceTestRequest request) throws WebServiceSecurityException {
+	public StopDeviceTestAsyncResponse stopDeviceTest(StopDeviceTestRequest request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (StopDeviceTestAsyncResponse) wst.marshalSendAndReceive(request);
 	}
 
-	public StopDeviceTestResponse getStopDeviceTestResponse(StopDeviceTestAsyncRequest request) throws WebServiceSecurityException {
+	public StopDeviceTestResponse getStopDeviceTestResponse(StopDeviceTestAsyncRequest request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (StopDeviceTestResponse) wst.marshalSendAndReceive(request);
 	}

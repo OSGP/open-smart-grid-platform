@@ -35,7 +35,6 @@ import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.cucumber.steps.ws.GenericResponseSteps;
-import com.alliander.osgp.platform.cucumber.support.ws.WebServiceSecurityException;
 import com.alliander.osgp.platform.cucumber.support.ws.publiclighting.PublicLightingAdHocManagementClient;
 
 import cucumber.api.java.en.Then;
@@ -87,7 +86,7 @@ public class SetLightSteps {
 	@When("^receiving a set light request with \"([^\"]*)\" valid lightvalues and \"([^\"]*)\" invalid lightvalues$")
 	public void receivingAsetLightRequestWithValidLightValuesAndInvalidLightValues(final Integer nofValidLightValues,
 			final Integer nofInvalidLightValues, final Map<String, String> requestParameters)
-			throws WebServiceSecurityException {
+			throws Throwable {
 		SetLightRequest request = new SetLightRequest();
 		request.setDeviceIdentification(
 				getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
@@ -117,7 +116,7 @@ public class SetLightSteps {
 
 	@When("^receiving a set light request with \"([^\"]*)\" light values$")
 	public void givenReceivingASetLightRequestWithLightValues(final Integer nofLightValues,
-			final Map<String, String> requestParameters) throws WebServiceSecurityException {
+			final Map<String, String> requestParameters) throws Throwable {
 		SetLightRequest request = new SetLightRequest();
 		request.setDeviceIdentification(
 				getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));

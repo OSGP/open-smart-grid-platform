@@ -11,6 +11,8 @@ import static com.alliander.osgp.platform.cucumber.core.Helpers.getBoolean;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getEnum;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -64,9 +66,6 @@ public class OrganizationSteps {
 
         // TODO: Add all the optional stuff
         this.repo.save(entity);
-
-        // Save the created id for the organization in the scenario context.
-        final Organisation savedEntity = this.repo.findByName(getString(settings, "Name", this.DEFAULT_NAME));
     }
     
     /**
@@ -110,7 +109,7 @@ public class OrganizationSteps {
         final Organisation entity = this.repo.findByOrganisationIdentification(expectedEntity
                 .get(Keys.KEY_ORGANIZATION_IDENTIFICATION));
 
-        /*Assert.assertEquals(expectedEntity.get("Name"), entity.getName());
+        Assert.assertEquals(expectedEntity.get("Name"), entity.getName());
         Assert.assertEquals(expectedEntity.get("Prefix"), entity.getPrefix());
         Assert.assertTrue(expectedEntity.get("FunctionGroup").toUpperCase()
                 .equals(entity.getFunctionGroup().toString()));
@@ -119,7 +118,7 @@ public class OrganizationSteps {
         Assert.assertEquals(expectedDomains.size(), entity.getDomains().size());
         for (final PlatformDomain domain : entity.getDomains()) {
             Assert.assertTrue(expectedDomains.contains(domain.toString()));
-        }*/
+        }
     }
 
     /**

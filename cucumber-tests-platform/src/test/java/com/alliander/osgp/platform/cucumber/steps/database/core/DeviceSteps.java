@@ -106,7 +106,6 @@ public class DeviceSteps {
         	List<DeviceOutputSetting> dosList = new ArrayList<>();
             int internalId = getInteger(settings, Keys.KEY_INTERNALID, Defaults.DEFAULT_INTERNALID),
             	   externalId = getInteger(settings, Keys.KEY_EXTERNALID, Defaults.DEFAULT_EXTERNALID);
-            String sRelayType = getString(settings, Keys.KEY_RELAY_TYPE, "null");
             RelayType relayType = getEnum(settings, Keys.KEY_RELAY_TYPE, RelayType.class, RelayType.LIGHT);
             
             if (relayType != null)

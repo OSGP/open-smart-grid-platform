@@ -23,7 +23,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import javax.persistence.Transient;
 
-import org.apache.commons.codec.binary.Base64;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -343,7 +342,6 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
 
         // Create response message
         Oslp.Message response = null;
-        final String deviceIdString = Base64.encodeBase64String(message.getDeviceId());
 
         // Calculate expected sequence number
         this.sequenceNumber = this.doGetNextSequence();

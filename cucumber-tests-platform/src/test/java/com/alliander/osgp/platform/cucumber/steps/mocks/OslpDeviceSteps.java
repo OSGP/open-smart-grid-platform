@@ -19,8 +19,6 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.EventNotificationType;
@@ -34,7 +32,6 @@ import com.alliander.osgp.oslp.Oslp.SetTransitionRequest;
 import com.alliander.osgp.oslp.Oslp.Status;
 import com.alliander.osgp.oslp.Oslp.TransitionType;
 import com.alliander.osgp.oslp.OslpUtils;
-import com.alliander.osgp.platform.cucumber.mocks.oslpdevice.MockOslpChannelHandler;
 import com.alliander.osgp.platform.cucumber.mocks.oslpdevice.MockOslpServer;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
@@ -48,8 +45,6 @@ import cucumber.api.java.en.Then;
  * mock behave correctly for the automatic test.
  */
 public class OslpDeviceSteps {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(MockOslpChannelHandler.class);
 
 	@Autowired
 	private MockOslpServer oslpMockServer;

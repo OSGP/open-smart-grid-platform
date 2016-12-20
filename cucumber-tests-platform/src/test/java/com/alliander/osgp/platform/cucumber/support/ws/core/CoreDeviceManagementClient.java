@@ -7,6 +7,9 @@
  */
 package com.alliander.osgp.platform.cucumber.support.ws.core;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;
@@ -27,17 +30,17 @@ public class CoreDeviceManagementClient extends BaseClient {
     @Autowired
     private WebServiceTemplateFactory coreDeviceManagementWstf;
 
-    public FindDevicesResponse findDevices(final FindDevicesRequest request) throws WebServiceSecurityException {
+    public FindDevicesResponse findDevices(final FindDevicesRequest request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (FindDevicesResponse) wst.marshalSendAndReceive(request);
     }
     
-	public SetEventNotificationsAsyncResponse setEventNotifications(SetEventNotificationsRequest request) throws WebServiceSecurityException {
+	public SetEventNotificationsAsyncResponse setEventNotifications(SetEventNotificationsRequest request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (SetEventNotificationsAsyncResponse) wst.marshalSendAndReceive(request);
 	}
 
-	public SetEventNotificationsResponse getSetEventNotificationsResponse(SetEventNotificationsAsyncRequest request) throws WebServiceSecurityException {
+	public SetEventNotificationsResponse getSetEventNotificationsResponse(SetEventNotificationsAsyncRequest request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (SetEventNotificationsResponse) wst.marshalSendAndReceive(request);
 	}
