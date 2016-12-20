@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-	<appender name="DB" class="ch.qos.logback.classic.db.DBAppender">
+	<!-- <appender name="DB" class="ch.qos.logback.classic.db.DBAppender">
 		<connectionSource
 			class="ch.qos.logback.core.db.DriverManagerConnectionSource">
 			<driverClass>org.postgresql.Driver</driverClass>
@@ -10,7 +10,7 @@
 			<password>1234</password>
 		</connectionSource>
 	</appender>
-
+ -->
 	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
 			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level (%file:%line\)	%logger{36} - %msg%n</pattern>
