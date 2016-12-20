@@ -200,14 +200,8 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
                     // Wrap the number back to 0 if the limit is reached or
                     // increment
                     if (number >= this.sequenceNumberMaximum) {
-                        LOGGER.info(
-                                "wrapping sequence number back to 0, current sequence number: {} next sequence number: 0",
-                                number);
                         number = 0;
                     } else {
-                        LOGGER.info(
-                                "incrementing sequence number, current sequence number: {} next sequence number: {}",
-                                number, number + 1);
                         number += 1;
                     }
 
@@ -436,18 +430,12 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         final byte[] bytes = new byte[2];
         bytes[0] = (byte) (value >>> 8);
         bytes[1] = (byte) (value >>> 0);
-        LOGGER.info(
-                "convertIntegerToByteArray() byte[0]: {} byte[1]: {} Integer value: {}",
-                bytes[0], bytes[1], value);
         return bytes;
     }
 
     private Integer convertByteArrayToInteger(final byte[] array) {
         // See: platform.service.SequenceNumberUtils
         final Integer value = (array[0] & 0xFF) << 8 | (array[1] & 0xFF);
-        LOGGER.info(
-                "convertByteArrayToInteger() byte[0]: {} byte[1]: {} Integer value: {}",
-                array[0], array[1], value);
         return value;
     }
 }

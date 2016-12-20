@@ -37,7 +37,7 @@ Feature: Adhoc Management
       | DeviceIdentification | TEST1024000000001 |
       | Index                | <Index>           |
       | IsImmediate          | <IsImmediate>     |
-    Then the resume schedule async response contains a soap fault
+    Then the resume schedule async response contains soap fault
       | Message | <Message> |
 
     Examples: 
@@ -47,14 +47,14 @@ Feature: Adhoc Management
   Scenario: Resume Schedule as an unknown organization
     When receiving a set resume schedule by an unknown organization
       | DeviceIdentification | TEST1024000000001 |
-    Then the resume schedule async response contains a soap fault
+    Then the resume schedule async response contains soap fault
       | Message | UNKNOWN_ORGANISATION |
 
   Scenario: Resume Schedule for an unknown device
     When receiving a resume schedule request
       | DeviceIdentification | TEST1024000000001 |
       | TransitionType       | DAY_NIGHT         |
-    Then the resume schedule async response contains a soap fault
+    Then the resume schedule async response contains soap fault
       | Message | UNKNOWN_DEVICE |
 
   Scenario Outline: Resume Schedule With Invalid Index

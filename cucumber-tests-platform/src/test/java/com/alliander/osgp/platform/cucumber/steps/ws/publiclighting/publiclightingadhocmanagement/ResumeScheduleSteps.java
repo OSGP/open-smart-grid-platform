@@ -32,6 +32,7 @@ import com.alliander.osgp.platform.cucumber.config.CorePersistenceConfig;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
+import com.alliander.osgp.platform.cucumber.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.platform.cucumber.support.ws.publiclighting.PublicLightingAdHocManagementClient;
 
 import cucumber.api.java.en.Then;
@@ -127,10 +128,8 @@ public class ResumeScheduleSteps {
     	}
     }
     
-    @Then("^the resume schedule async response contains a soap fault$")
-    public void theResumeScheduleAsyncResponseContainsASoapFault(final Map<String, String> expectedResult) {
-    	SoapFaultClientException response = (SoapFaultClientException)ScenarioContext.Current().get(Keys.RESPONSE);
-    	
-    	Assert.assertEquals(expectedResult.get(Keys.KEY_MESSAGE), response.getMessage());
+    @Then("^the resume schedule async response contains soap fault$")
+    public void theResumeScheduleAsyncResponseContainsSoapFault(final Map<String, String> expectedResult) {
+    	GenericResponseSteps.VerifySoapFault(expectedResult);
     }
 }

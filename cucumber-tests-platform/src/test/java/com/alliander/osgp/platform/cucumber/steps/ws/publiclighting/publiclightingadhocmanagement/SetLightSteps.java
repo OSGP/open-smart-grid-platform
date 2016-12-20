@@ -34,6 +34,7 @@ import com.alliander.osgp.platform.cucumber.config.CorePersistenceConfig;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
+import com.alliander.osgp.platform.cucumber.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.platform.cucumber.support.ws.WebServiceSecurityException;
 import com.alliander.osgp.platform.cucumber.support.ws.publiclighting.PublicLightingAdHocManagementClient;
 
@@ -164,10 +165,8 @@ public class SetLightSteps {
 	}
 
 	@Then("^the set light response contains soap fault$")
-	public void thenTheSetLightResponseContainsSoapFault(final Map<String, String> expectedResponseData) {
-		SoapFaultClientException response = (SoapFaultClientException) ScenarioContext.Current().get(Keys.RESPONSE);
-
-		Assert.assertEquals(expectedResponseData.get(Keys.KEY_MESSAGE), response.getMessage());
+	public void thenTheSetLightResponseContainsSoapFault(final Map<String, String> expectedResult) {
+		GenericResponseSteps.VerifySoapFault(expectedResult);
 	}
 
 	@Then("^the platform buffers a set light response message for device \"([^\"]*)\"$")

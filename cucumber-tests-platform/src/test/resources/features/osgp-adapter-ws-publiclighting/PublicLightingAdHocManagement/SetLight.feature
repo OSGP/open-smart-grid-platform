@@ -91,11 +91,11 @@ Feature: Adhoc Management
     When receiving a set light request with "<NofValidLightValues>" valid lightvalues and "<NofInvalidLightValues>" invalid lightvalues
       | DeviceIdentification | TEST1024000000001 |
     Then the set light response contains soap fault
-      | Message | Validation error |
+      | Message | <Message> |
 
     Examples: 
-      | NofValidLightValues | NofInvalidLightValues |
-      |                   0 |                     0 |
-      |                   7 |                     0 |
-      |                   1 |                     1 |
-      |                   5 |                     1 |
+      | NofValidLightValues | NofInvalidLightValues | Message          |
+      |                   0 |                     0 | Validation error |
+      |                   7 |                     0 | Validation error |
+      |                   1 |                     1 | VALIDATION_ERROR |
+      |                   5 |                     1 | VALIDATION_ERROR |

@@ -25,6 +25,7 @@ import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.DeviceModel;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.UpdateDeviceRequest;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.UpdateDeviceResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceAsyncResponse;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
@@ -135,7 +136,7 @@ public class CreateDeviceSteps {
      */
     @Then("^the add device response contains$")
     public void the_add_device_response_contains(final Map<String, String> expectedResult) throws Throwable {
-    	Assert.fail("Inconclusive");
+    	Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof AddDeviceResponse);
     }
     
     @Then("^the add device response contains soap fault$")
@@ -149,7 +150,7 @@ public class CreateDeviceSteps {
      */
     @Then("^the update device response contains$")
     public void the_update_device_response_contains(Map<String, String> expectedResult) throws Throwable {
-        Assert.fail("Inconclusive");
+    	Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof UpdateDeviceResponse);
     }
 
     /**

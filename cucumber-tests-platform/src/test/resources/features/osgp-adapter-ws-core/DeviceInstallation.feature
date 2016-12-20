@@ -73,7 +73,8 @@ Feature: Device installation
       | DeviceModelModelCode    | <ModelCode>             |
       | DeviceModelDescription  | <Description>           |
       | DeviceModelMetered      | <Metered>               |
-    Then the add device response contains
+    Then the add device response contains soap fault
+      | Message | Validation error |
       | FaultCode        | <FaultCode>         |
       | FaultString      | <FaultString>       |
       | FaultType        | <FaultType>         |
