@@ -28,6 +28,7 @@ import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.GetSt
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusResponse;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.LightType;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.LightValue;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.LinkType;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.AsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.OsgpResultType;
@@ -69,6 +70,14 @@ public class GetStatusSteps {
     	} catch(SoapFaultClientException ex) {
     		ScenarioContext.Current().put(Keys.RESPONSE, ex);
     	}
+    }
+    
+    @When("^receiving a get status request by an unknown organization$")
+    public void receivingAGetStatusRequestByAnUnknownOrganization(final Map<String, String> requestParameters) throws Throwable {
+        // Force the request being send to the platform as a given organization.
+    	ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
+    	
+    	whenReceivingAGetStatusRequest(requestParameters);
     }
     
     /**
@@ -115,6 +124,8 @@ public class GetStatusSteps {
     		}
     		
     		count++;
+
+			Thread.sleep(1000);
     		
     		try {
     			GetStatusResponse response = client.getGetStatusResponse(request);
@@ -127,13 +138,36 @@ public class GetStatusSteps {
     			Assert.assertEquals(getEnum(expectedResult, Keys.KEY_ACTUAL_LINKTYPE, LinkType.class), deviceStatus.getActualLinkType());
        			Assert.assertEquals(getEnum(expectedResult, Keys.KEY_LIGHTTYPE, LightType.class), deviceStatus.getLightType());
        			
-       			Assert.assertEquals(getString(expectedResult,  Keys.KEY_EVENTNOTIFICATIONS, Defaults.DEFAULT_EVENTNOTIFICATIONS).split(Keys.SEPARATOR).length, deviceStatus.getEventNotifications().size());
-       			for (String eventNotification : getString(expectedResult,  Keys.KEY_EVENTNOTIFICATIONS, Defaults.DEFAULT_EVENTNOTIFICATIONS).split(Keys.SEPARATOR)) {
-           			Assert.assertTrue(deviceStatus.getEventNotifications().contains(Enum.valueOf(EventNotificationType.class, eventNotification)));
+       			if (expectedResult.containsKey(Keys.KEY_EVENTNOTIFICATIONTYPES) && !expectedResult.get(Keys.KEY_EVENTNOTIFICATIONTYPES).isEmpty()) {
+           			Assert.assertEquals(getString(expectedResult,  Keys.KEY_EVENTNOTIFICATIONS, Defaults.DEFAULT_EVENTNOTIFICATIONS).split(Keys.SEPARATOR).length, deviceStatus.getEventNotifications().size());
+           			for (String eventNotification : getString(expectedResult,  Keys.KEY_EVENTNOTIFICATIONS, Defaults.DEFAULT_EVENTNOTIFICATIONS).split(Keys.SEPARATOR)) {
+               			Assert.assertTrue(deviceStatus.getEventNotifications().contains(Enum.valueOf(EventNotificationType.class, eventNotification)));
+           			}
        			}
        			
-       			Assert.assertEquals(getString(expectedResult,  Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES).split(Keys.SEPARATOR).length, deviceStatus.getLightValues().size());
-       			deviceStatus.getLightValues();
+       			if (expectedResult.containsKey(Keys.KEY_LIGHTVALUES) && !expectedResult.get(Keys.KEY_LIGHTVALUES).isEmpty()) {
+               		Assert.assertEquals(getString(expectedResult,  Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES).split(Keys.SEPARATOR).length, deviceStatus.getLightValues().size());
+	           		for (String lightValues : getString(expectedResult, Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES).split(Keys.SEPARATOR)) {
+	           			
+	       				String[] parts = lightValues.split(Keys.SEPARATOR_SEMICOLON);
+	       				Integer index = Integer.parseInt(parts[0]);
+	       				Boolean on = Boolean.parseBoolean(parts[1]);
+	       				Integer dimValue = Integer.parseInt(parts[2]);
+	       				
+	           			boolean found = false;
+	           			for (LightValue lightValue : deviceStatus.getLightValues()) {
+	
+	           				if (lightValue.getIndex() == index &&
+	           						lightValue.isOn() == on &&
+	           						lightValue.getDimValue() == dimValue)  {
+	           					found = true;
+	           					break;
+	           				}
+	           			}
+	           			
+	           			Assert.assertTrue(found);
+	           		}
+       			}
        		    			
     			success = true; 
     		}

@@ -172,7 +172,7 @@ public class OslpDeviceSteps {
 				getString(result, Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES).split(Keys.SEPARATOR).length > 0) {
 			
 			for (String lightValueString : getString(result, Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES).split(Keys.SEPARATOR)) {
-				String[] parts = lightValueString.split(Keys.SEPARATOR_SECOND);
+				String[] parts = lightValueString.split(Keys.SEPARATOR_SEMICOLON);
 	
 				LightValue lightValue = LightValue.newBuilder()
 						.setIndex(OslpUtils.integerToByteString(Integer.parseInt(parts[0])))

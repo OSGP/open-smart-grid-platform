@@ -224,6 +224,10 @@ public class Helpers {
 
 	public static <E extends Enum<E>> E getEnum(final Map<String, String> settings, final String key,
 			final Class<E> enumType) {
+		if (settings.get(key).isEmpty()) {
+			return null;
+		}
+		
 		return Enum.valueOf(enumType, settings.get(key));
 	}
 

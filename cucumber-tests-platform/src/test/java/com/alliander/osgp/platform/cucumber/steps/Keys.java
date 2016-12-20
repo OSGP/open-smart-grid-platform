@@ -131,5 +131,5 @@ public class Keys {
 	public static final String SEPARATOR = ",";
 	public static final String KEY_LIGHTVALUES = "LightValues";
 	public static final String KEY_EVENTNOTIFICATIONTYPES = "EventNotificationTypes";
-	public static final String SEPARATOR_SECOND = ";";
+	public static final String SEPARATOR_SEMICOLON = ";";
 }
