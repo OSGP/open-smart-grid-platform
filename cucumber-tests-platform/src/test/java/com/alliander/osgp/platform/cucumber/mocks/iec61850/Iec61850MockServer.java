@@ -83,4 +83,11 @@ public class Iec61850MockServer {
         }
         this.rtuSimulator.mockValue(logicalDeviceName, node, value);
     }
+
+    public boolean assertValue(final String logicalDeviceName, final String node, final String value) {
+        if (!this.isInitialised()) {
+            throw new AssertionError("RtuSimulator has not yet been initialised.");
+        }
+        return this.rtuSimulator.assertValue(logicalDeviceName, node, value);
+    }
 }

@@ -78,4 +78,11 @@ public class Keys {
     public static final String KEY_MEASUREMENT_VALUE = "MeasurementValue";
 
     public static final String KEY_RESULT = "Result";
+    public static final String KEY_SETPOINT_NODE = "SetPointNode";
+    public static final String KEY_SETPOINT_VALUE = "SetPointValue";
+    public static final String KEY_SETPOINT_ID = "SetPointId";
+    public static final String KEY_SETPOINT_START_TIME = "SetPointStartTime";
+    public static final String KEY_SETPOINT_END_TIME = "SetPointEndTime";
+    public static final String KEY_PROFILE_ID = "ProfileId";
+    public static final String KEY_PROFILE_NODE = "ProfileNode";
 }

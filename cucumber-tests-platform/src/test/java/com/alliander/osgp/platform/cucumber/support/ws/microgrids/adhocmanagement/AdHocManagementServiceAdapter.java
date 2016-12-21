@@ -17,6 +17,10 @@ import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataAs
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataRequest;
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataResponse;
+import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataRequest;
+import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataResponse;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.cucumber.support.ws.WebServiceSecurityException;
@@ -41,6 +45,12 @@ public class AdHocManagementServiceAdapter {
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (GetDataAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
     }
+    
+    public SetDataAsyncResponse setDataAsync(final SetDataRequest request) throws WebServiceSecurityException {
+        final WebServiceTemplate webServiceTemplate = this.webServiceTemplateFactoryMicrogridsAdHocManagement
+                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
+        return (SetDataAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
+    }
 
     public GetDataResponse getData(final GetDataAsyncRequest request) throws WebServiceSecurityException {
 
@@ -50,6 +60,16 @@ public class AdHocManagementServiceAdapter {
         final WebServiceTemplate webServiceTemplate = this.webServiceTemplateFactoryMicrogridsAdHocManagement
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (GetDataResponse) webServiceTemplate.marshalSendAndReceive(request);
+    }
+    
+    public SetDataResponse setData(final SetDataAsyncRequest request) throws WebServiceSecurityException {
+
+        final String correlationUid = request.getAsyncRequest().getCorrelationUid();
+        this.waitForRtuResponseData(correlationUid);
+
+        final WebServiceTemplate webServiceTemplate = this.webServiceTemplateFactoryMicrogridsAdHocManagement
+                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
+        return (SetDataResponse) webServiceTemplate.marshalSendAndReceive(request);
     }
 
     private void waitForRtuResponseData(final String correlationUid) {
