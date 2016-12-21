@@ -16,7 +16,7 @@ Feature: Connection security
       | DeviceIdentification | TEST1024000000001 |
     
   # Needs a DlmsDevice simulator with security.enabled=false on port 1025  
-  @Skip
+@Skip
   Scenario: Communicate unencrypted
     Given a dlms device
       | DeviceIdentification | TEST1025000000001 |
