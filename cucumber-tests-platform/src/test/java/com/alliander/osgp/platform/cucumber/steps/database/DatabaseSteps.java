@@ -18,6 +18,7 @@ import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRe
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
+import com.alliander.osgp.domain.core.repositories.DeleteAllDevicesService;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceFirmwareRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
@@ -64,11 +65,15 @@ public class DatabaseSteps {
     @Autowired
 	private SsldRepository ssldRepository;
 
+    @Autowired
+    private DeleteAllDevicesService deleteAllDevicesService;
+
     /**
      * This method is used to create default data not directly related to the
      * specific tests. For example: The test-org organization which is used to
      * send authorized requests to the platform.
      */
+    @Transactional
     private void insertDefaultData() {
         if (this.organizationRepo.findByOrganisationIdentification(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION) == null) {
             // Create test organization used within the tests.
@@ -88,9 +93,9 @@ public class DatabaseSteps {
         this.manufacturerRepo.save(manufacturer);
 
         // Create the default test model
-        final DeviceModel deviceModel = new DeviceModel(manufacturer, Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE,
+        DeviceModel deviceModel = new DeviceModel(manufacturer, Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE,
                 Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION, true);
-        this.deviceModelRepo.save(deviceModel);
+        deviceModel = this.deviceModelRepo.save(deviceModel);
     }
 
     @Transactional("txMgrCore")

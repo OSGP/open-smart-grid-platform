@@ -11,16 +11,21 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.Firmware;
+import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.FirmwareRepository;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
+import com.alliander.osgp.platform.cucumber.core.builders.FirmwareBuilder;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
+import com.alliander.osgp.platform.cucumber.steps.database.core.DeviceModelSteps;
 import com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.SmartMeteringStepsBase;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 
@@ -50,7 +55,18 @@ public class UpdateFirmware extends SmartMeteringStepsBase {
     private DeviceRepository deviceRepository;
 
     @Autowired
+    private DeviceModelRepository deviceModelRepository;
+
+    @Autowired
     private FirmwareRepository firmwareRepository;
+
+    @Autowired
+    private DeviceModelSteps deviceModelSteps;
+
+    @Given("a firmware$")
+    public void aFirmware(final Map<String, String> settings) {
+        this.insertCoreFirmware(settings);
+    }
 
     @Given("^a request for a firmware upgrade for device \"([^\"]*)\" from a client$")
     public void aRequestForAFirmwareUpgradeForDeviceFromAClient(final String deviceIdentification) throws Throwable {
@@ -137,5 +153,13 @@ public class UpdateFirmware extends SmartMeteringStepsBase {
     public void theUpgradeOfFirmwareDidNotSucceed() throws Throwable {
         // Not influenced by cucumber at this time. Nothing can be done here to
         // make the update fail.
+    }
+
+    private void insertCoreFirmware(final Map<String, String> settings) {
+        final com.alliander.osgp.domain.core.entities.DeviceModel deviceModel = this.deviceModelSteps
+                .insertDeviceModel(settings);
+        com.alliander.osgp.domain.core.entities.Firmware firmware = new FirmwareBuilder().withSettings(settings)
+                .withDeviceModel(deviceModel).build();
+        firmware = this.firmwareRepository.save(firmware);
     }
 }
