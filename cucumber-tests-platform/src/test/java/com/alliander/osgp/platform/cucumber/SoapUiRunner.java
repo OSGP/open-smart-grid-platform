@@ -36,7 +36,7 @@ import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
  * Super class for SOAP UI runner implementations. Each Runner will be called
  * from a subclass.
  * 
- * Deprecated. Please use a WebServiceFactoryTemplate construction to communicate with the endpoint.
+ * @deprecated use a WebServiceFactoryTemplate instead.
  */
 @Deprecated
 public abstract class SoapUiRunner {

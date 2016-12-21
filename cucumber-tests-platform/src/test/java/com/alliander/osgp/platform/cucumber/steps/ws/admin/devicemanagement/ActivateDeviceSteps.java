@@ -29,6 +29,9 @@ import com.alliander.osgp.platform.cucumber.support.ws.admin.AdminDeviceManageme
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
+/**
+ * Class with all the activate device steps.
+ */
 public class ActivateDeviceSteps {
 
     @Autowired

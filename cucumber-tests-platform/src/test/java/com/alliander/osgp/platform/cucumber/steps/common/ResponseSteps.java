@@ -21,6 +21,8 @@ import com.alliander.osgp.platform.cucumber.support.RunXpathResult;
 
 /**
  * Class with generic response steps
+ * 
+ * @deprecated Use @see com.alliander.osgp.platform.cucumber.steps.ws.GenericResponseSteps.
  */
 @Deprecated
 @Component
