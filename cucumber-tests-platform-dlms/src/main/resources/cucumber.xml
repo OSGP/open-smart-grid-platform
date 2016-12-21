@@ -11,4 +11,6 @@ http://www.springframework.org/schema/context/spring-context.xsd">
 
 	<bean class="com.alliander.osgp.platform.cucumber.steps.database.core.DeviceSteps" />
     <bean class="com.alliander.osgp.platform.cucumber.steps.database.core.SmartMeterSteps" />
+
+    <bean class="com.alliander.osgp.platform.dlms.cucumber.support.ws.smartmetering.SmartMeteringAdHocManagementClient" />
 </beans>

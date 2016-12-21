@@ -36,8 +36,8 @@ public class ResponseSteps {
      * @throws XPathExpressionException
      */
     public static void VerifyFaultResponse(final RunXpathResult runXpathResult, final String response,
-            final Map<String, String> expectedResult) throws XPathExpressionException, ParserConfigurationException,
-            SAXException, IOException {
+            final Map<String, String> expectedResult)
+            throws XPathExpressionException, ParserConfigurationException, SAXException, IOException {
 
         // First check the common stuff.
         if (expectedResult.containsKey("FaultCode")) {
@@ -57,39 +57,45 @@ public class ResponseSteps {
                 String value = null;
                 for (int i = 1; i <= validationErrors.length; i++) {
                     // TODO: Check validations ....
-//                	Assert.assertTrue(runXpathResult.assertXpath(response, "/Envelope/Body/Fault/detail/ValidationError[" + i + "]/text()", validationErrors[i]));
-                	
-					try {
-						value = runXpathResult.getValue(response, "/Envelope/Body/Fault/detail/ValidationError[" + i + "]");
-	            		boolean b = value.equals(validationErrors[i - 1]);
-	            		if (b) Assert.assertTrue(b);
-					} catch (Throwable e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+
+                    try {
+                        value = runXpathResult.getValue(response,
+                                "/Envelope/Body/Fault/detail/ValidationError[" + i + "]");
+                        boolean b = value.equals(validationErrors[i - 1]);
+                        if (b)
+                            Assert.assertTrue(b);
+                    } catch (Throwable e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
 
                 }
             } else {
                 // FunctionalError or TechnicalError
                 if (expectedResult.containsKey("Code")) {
-                    Assert.assertTrue(runXpathResult.assertXpath(response, "/Envelope/Body/Fault/detail/"
-                            + expectedResult.get("FaultType") + "/Code", expectedResult.get("Code")));
+                    Assert.assertTrue(runXpathResult.assertXpath(response,
+                            "/Envelope/Body/Fault/detail/" + expectedResult.get("FaultType") + "/Code",
+                            expectedResult.get("Code")));
                 }
                 if (expectedResult.containsKey("Message")) {
-                    Assert.assertTrue(runXpathResult.assertXpath(response, "/Envelope/Body/Fault/detail/"
-                            + expectedResult.get("FaultType") + "/Message", expectedResult.get("Message")));
+                    Assert.assertTrue(runXpathResult.assertXpath(response,
+                            "/Envelope/Body/Fault/detail/" + expectedResult.get("FaultType") + "/Message",
+                            expectedResult.get("Message")));
                 }
                 if (expectedResult.containsKey("Component")) {
-                    Assert.assertTrue(runXpathResult.assertXpath(response, "/Envelope/Body/Fault/detail/"
-                            + expectedResult.get("FaultType") + "/Component", expectedResult.get("Component")));
+                    Assert.assertTrue(runXpathResult.assertXpath(response,
+                            "/Envelope/Body/Fault/detail/" + expectedResult.get("FaultType") + "/Component",
+                            expectedResult.get("Component")));
                 }
                 if (expectedResult.containsKey("InnerException")) {
-                    Assert.assertTrue(runXpathResult.assertXpath(response, "/Envelope/Body/Fault/detail/"
-                            + expectedResult.get("FaultType") + "/InnerException", expectedResult.get("InnerException")));
+                    Assert.assertTrue(runXpathResult.assertXpath(response,
+                            "/Envelope/Body/Fault/detail/" + expectedResult.get("FaultType") + "/InnerException",
+                            expectedResult.get("InnerException")));
                 }
                 if (expectedResult.containsKey("InnerMessage")) {
-                    Assert.assertTrue(runXpathResult.assertXpath(response, "/Envelope/Body/Fault/detail/"
-                            + expectedResult.get("FaultType") + "/InnerMessage", expectedResult.get("InnerMessage")));
+                    Assert.assertTrue(runXpathResult.assertXpath(response,
+                            "/Envelope/Body/Fault/detail/" + expectedResult.get("FaultType") + "/InnerMessage",
+                            expectedResult.get("InnerMessage")));
                 }
             }
         }

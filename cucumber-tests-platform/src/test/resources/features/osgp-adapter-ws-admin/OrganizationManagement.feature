@@ -21,8 +21,8 @@ Feature: Organisation management
       | Domains                    | <Domains>                    |
 
     Examples: 
-      | OrganizationIdentification | Name                | Prefix | FunctionGroup | Enabled | Domains |
-      | ATestOrganization          | A Test Organization | MAA    | ADMIN         | true    | COMMON  |
+      | OrganizationIdentification | Name                | Prefix | FunctionGroup | Enabled | Domains                                 |
+      | ATestOrganization          | A Test Organization | MAA    | ADMIN         | true    | COMMON;PUBLIC_LIGHTING;TARIFF_SWITCHING |
 
   Scenario Outline: Create an already existing Organisation
     Given an organization

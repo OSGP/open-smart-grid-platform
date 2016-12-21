@@ -28,7 +28,7 @@ Feature: Adhoc Management
       | true        |     1 | true        | OK     |
       | true        |     6 | true        | OK     |
 
-  @OslpMockServer
+  @OslpMockServer @Skip
   Scenario Outline: Resume Schedule for a device with no has schedule
     Given an oslp device
       | DeviceIdentification | TEST1024000000001 |

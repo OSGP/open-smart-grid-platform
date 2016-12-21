@@ -58,12 +58,6 @@ public class DatabaseSteps {
     private OslpDeviceRepository oslpDeviceRepo;
 
     @Autowired
-    private DeviceFirmwareRepository deviceFirmwareRepository;
-
-    @Autowired
-    private EventRepository eventRepository;
-
-    @Autowired
     private SsldRepository ssldRepository;
 
     @Autowired
@@ -85,8 +79,8 @@ public class DatabaseSteps {
      */
     @Transactional
     private void insertDefaultData() {
-        if (this.organisationRepo
-                .findByOrganisationIdentification(Defaults.DEFAULT_ORGANISATION_IDENTIFICATION) == null) {
+        if (this.organizationRepo
+                .findByOrganisationIdentification(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION) == null) {
             // Create test organization used within the tests.
             final Organisation testOrg = new Organisation(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION,
                     Defaults.DEFAULT_ORGANIZATION_DESCRIPTION, Defaults.DEFAULT_PREFIX, PlatformFunctionGroup.ADMIN);
@@ -111,8 +105,8 @@ public class DatabaseSteps {
 
     @Transactional("txMgrCore")
     public void prepareDatabaseForScenario() {
-    	
-    	cleanRepoAbstractEntity(this.oslpDeviceRepo);
+
+        cleanRepoAbstractEntity(this.oslpDeviceRepo);
         cleanRepoAbstractEntity(this.deviceAuthorizationRepo);
 
         this.deviceLogItemRepository.deleteAllInBatch();
