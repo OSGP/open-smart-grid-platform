@@ -131,23 +131,22 @@ public class Iec61850Client {
      *            The {@link ClientAssociation} instance.
      *
      * @return A {@link ServerModel} instance.
+     * @throws ProtocolAdapterException
      */
-    public ServerModel readServerModelFromDevice(final ClientAssociation clientAssociation) {
-        ServerModel serverModel;
+    public ServerModel readServerModelFromDevice(final ClientAssociation clientAssociation)
+            throws ProtocolAdapterException {
         try {
             LOGGER.debug("Start reading server model from device");
             // RetrieveModel() will call all GetDirectory and GetDefinition ACSI
             // services needed to get the complete server model.
-            serverModel = clientAssociation.retrieveModel();
+            final ServerModel serverModel = clientAssociation.retrieveModel();
             LOGGER.debug("Completed reading server model from device");
             return serverModel;
         } catch (final ServiceError e) {
-            LOGGER.error("Service Error requesting model.", e);
             clientAssociation.close();
-            return null;
+            throw new ProtocolAdapterException("Service Error requesting model.", e);
         } catch (final IOException e) {
-            LOGGER.error("Fatal IOException requesting model.", e);
-            return null;
+            throw new ProtocolAdapterException("Fatal IOException requesting model.", e);
         }
     }
 
@@ -170,13 +169,10 @@ public class Iec61850Client {
             throw new ProtocolAdapterException("File path is empty");
         }
 
-        // Instead of calling retrieveModel you could read the model directly
-        // from an SCL file.
         try {
             return clientAssociation.getModelFromSclFile(filePath);
         } catch (final SclParseException e) {
-            LOGGER.error("Error parsing SCL file: " + filePath, e);
-            return null;
+            throw new ProtocolAdapterException("Error parsing SCL file: " + filePath, e);
         }
     }
 

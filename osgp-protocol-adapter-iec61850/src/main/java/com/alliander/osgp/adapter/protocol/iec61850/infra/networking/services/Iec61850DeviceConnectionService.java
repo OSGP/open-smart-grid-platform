@@ -211,16 +211,27 @@ public class Iec61850DeviceConnectionService {
     private ServerModel readServerModel(final ClientAssociation clientAssociation, final String deviceIdentification,
             final Iec61850Device iec61850Device) throws ProtocolAdapterException {
 
-        ServerModel serverModel = this.readServerModelConfiguredForDevice(clientAssociation, deviceIdentification,
-                iec61850Device);
-        if (serverModel == null) {
+        ServerModel serverModel;
+        try {
+            serverModel = this.readServerModelConfiguredForDevice(clientAssociation, deviceIdentification,
+                    iec61850Device);
+            if (serverModel != null) {
+                return serverModel;
+            }
+        } catch (final ProtocolAdapterException e) {
+            LOGGER.warn("Ignore exception reading server model based on per device configuration for device: {}.",
+                    deviceIdentification, e);
+        }
+        try {
             serverModel = this.readServerModelFromConfiguredIcdFile(clientAssociation);
+            if (serverModel != null) {
+                return serverModel;
+            }
+        } catch (final ProtocolAdapterException e) {
+            LOGGER.warn("Ignore exception reading server model based on configured ICD file.", e);
         }
-        if (serverModel == null) {
-            LOGGER.info("Reading ServerModel from device: {} using readServerModelFromDevice()", deviceIdentification);
-            serverModel = this.iec61850Client.readServerModelFromDevice(clientAssociation);
-        }
-        return serverModel;
+        LOGGER.info("Reading ServerModel from device: {} using readServerModelFromDevice()", deviceIdentification);
+        return this.iec61850Client.readServerModelFromDevice(clientAssociation);
     }
 
     private ServerModel readServerModelConfiguredForDevice(final ClientAssociation clientAssociation,
@@ -235,9 +246,8 @@ public class Iec61850DeviceConnectionService {
         }
 
         if (StringUtils.isBlank(this.icdFilesFolder)) {
-            LOGGER.warn("ICD files folder is not configured, ignoring file: {} for device: {}.",
-                    iec61850Device.getIcdFilename(), deviceIdentification);
-            return null;
+            throw new ProtocolAdapterException("ICD files folder is not configured, unable to locate file: "
+                    + iec61850Device.getIcdFilename() + " for device: " + deviceIdentification);
         }
 
         final String filePath = Paths.get(this.icdFilesFolder, iec61850Device.getIcdFilename()).toString();
