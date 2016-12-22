@@ -12,10 +12,11 @@ import com.alliander.osgp.platform.cucumber.steps.Keys;
 
 public class GenericResponseSteps {
 	public static void VerifySoapFault(final Map<String, String> expectedResult) {
-		SoapFaultClientException response = (SoapFaultClientException) ScenarioContext.Current().get(Keys.RESPONSE);
-		
+		final SoapFaultClientException response = (SoapFaultClientException) ScenarioContext.Current()
+				.get(Keys.RESPONSE);
+
 		Assert.assertEquals(getString(expectedResult, Keys.KEY_MESSAGE), response.getMessage());
 		// TODO Check the rest of the details.
-	
+
 	}
 }

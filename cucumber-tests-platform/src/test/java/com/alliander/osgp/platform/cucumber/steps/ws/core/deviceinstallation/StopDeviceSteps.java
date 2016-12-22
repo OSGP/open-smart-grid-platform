@@ -11,8 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import com.alliander.osgp.adapter.ws.schema.core.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.core.common.AsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.core.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StopDeviceTestAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StopDeviceTestAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StopDeviceTestRequest;
@@ -21,6 +21,7 @@ import com.alliander.osgp.platform.cucumber.config.CorePersistenceConfig;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
+import com.alliander.osgp.platform.cucumber.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.platform.cucumber.support.ws.core.CoreDeviceInstallationClient;
 
 import cucumber.api.java.en.Then;
@@ -28,86 +29,96 @@ import cucumber.api.java.en.When;
 
 public class StopDeviceSteps {
 
-	@Autowired
-	private CorePersistenceConfig configuration;
-	
-	@Autowired
+    @Autowired
+    private CorePersistenceConfig configuration;
+
+    @Autowired
     private CoreDeviceInstallationClient client;
-	
+
     private static final Logger LOGGER = LoggerFactory.getLogger(StopDeviceSteps.class);
-    
+
     /**
-     * 
+     *
      * @param requestParameters
      * @throws Throwable
      */
-    @When("receiving a stop device request")
-    public void receiving_a_stop_device_request(final Map<String, String> requestParameters) throws Throwable
-    {
-    	StopDeviceTestRequest request = new StopDeviceTestRequest();
-    	request.setDeviceIdentification(getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-    	
-    	try {
-    		ScenarioContext.Current().put(Keys.RESPONSE, client.stopDeviceTest(request));
-    	} catch(SoapFaultClientException ex) {
-    		ScenarioContext.Current().put(Keys.RESPONSE, ex);
-    	}
+    @When("receiving a stop device test request")
+    public void receiving_a_stop_device_request(final Map<String, String> requestParameters) throws Throwable {
+        final StopDeviceTestRequest request = new StopDeviceTestRequest();
+        request.setDeviceIdentification(
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+
+        try {
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.stopDeviceTest(request));
+        } catch (final SoapFaultClientException ex) {
+            ScenarioContext.Current().put(Keys.RESPONSE, ex);
+        }
     }
-    
+
     /**
-     * 
+     *
      * @param expectedResponseData
      * @throws Throwable
      */
     @Then("the stop device async response contains")
-    public void the_stop_device_async_response_contains(final Map<String, String> expectedResponseData) throws Throwable
-    {
-    	StopDeviceTestAsyncResponse response = (StopDeviceTestAsyncResponse)ScenarioContext.Current().get(Keys.RESPONSE);
-    	
-    	Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
-    	Assert.assertEquals(getString(expectedResponseData,  Keys.KEY_DEVICE_IDENTIFICATION), response.getAsyncResponse().getDeviceId());
+    public void the_stop_device_async_response_contains(final Map<String, String> expectedResponseData)
+            throws Throwable {
+        final StopDeviceTestAsyncResponse response = (StopDeviceTestAsyncResponse) ScenarioContext.Current()
+                .get(Keys.RESPONSE);
 
-        // Save the returned CorrelationUid in the Scenario related context for further use.
+        Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
+        Assert.assertEquals(getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION),
+                response.getAsyncResponse().getDeviceId());
+
+        // Save the returned CorrelationUid in the Scenario related context for
+        // further use.
         saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
-                getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+                getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
+                        Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
         LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
     }
-    
+
+    @Then("^the stop device response contains soap fault$")
+    public void the_stop_device_response_contains_soap_fault(final Map<String, String> expectedResult)
+            throws Throwable {
+        GenericResponseSteps.VerifySoapFault(expectedResult);
+    }
+
     /**
-     * 
+     *
      * @param deviceIdentification
      * @throws Throwable
      */
     @Then("the platform buffers a stop device response message for device \"([^\"]*)\"")
-    public void the_platform_buffers_a_stop_device_response_message_for_device(final String deviceIdentification, final Map<String, String> expectedResult) throws Throwable
-    {
-    	StopDeviceTestAsyncRequest request = new StopDeviceTestAsyncRequest();
-    	AsyncRequest asyncRequest = new AsyncRequest();
-    	asyncRequest.setDeviceId(deviceIdentification);
-    	asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
-    	request.setAsyncRequest(asyncRequest);
-    	
-       	boolean success = false;
-    	int count = 0;
-    	while (!success) {
-    		if (count > configuration.getDefaultTimeout()) {
-    			Assert.fail("Timeout");
-    		}
-    		
-    		count++;
-    		
-    		try {
-    		   	StopDeviceTestResponse response = client.getStopDeviceTestResponse(request);
-    		       			
-    			Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.KEY_RESULT)), response.getResult());
-    			
-    			success = true; 
-    		}
-    		catch(Exception ex) {
-    			// Do nothing
-    		}
-    	}
- 
+    public void the_platform_buffers_a_stop_device_response_message_for_device(final String deviceIdentification,
+            final Map<String, String> expectedResult) throws Throwable {
+        final StopDeviceTestAsyncRequest request = new StopDeviceTestAsyncRequest();
+        final AsyncRequest asyncRequest = new AsyncRequest();
+        asyncRequest.setDeviceId(deviceIdentification);
+        asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
+        request.setAsyncRequest(asyncRequest);
+
+        boolean success = false;
+        int count = 0;
+        while (!success) {
+            if (count > this.configuration.getDefaultTimeout()) {
+                Assert.fail("Timeout");
+            }
+
+            count++;
+
+            try {
+                final StopDeviceTestResponse response = this.client.getStopDeviceTestResponse(request);
+
+                Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.KEY_RESULT)),
+                        response.getResult());
+
+                success = true;
+            } catch (final Exception ex) {
+                // Do nothing
+            }
+        }
+
     }
 }
