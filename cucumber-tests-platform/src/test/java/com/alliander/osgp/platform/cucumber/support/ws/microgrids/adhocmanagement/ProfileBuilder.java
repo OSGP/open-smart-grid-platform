@@ -55,14 +55,10 @@ public class ProfileBuilder {
     private ProfileBuilder withSettings(final Map<String, String> settings, final int index) {
         if (this.hasKey(settings, Keys.KEY_PROFILE_ID, index)) {
             this.withId(Integer.parseInt(getStringValue(settings, Keys.KEY_PROFILE_ID, index)));
-        } else {
-            return null;
-        }
+        } 
         if (this.hasKey(settings, Keys.KEY_PROFILE_NODE, index)) {
             this.withNode(getStringValue(settings, Keys.KEY_PROFILE_NODE, index));
-        } else {
-            return null;
-        }
+        } 
         return this;
     }
 

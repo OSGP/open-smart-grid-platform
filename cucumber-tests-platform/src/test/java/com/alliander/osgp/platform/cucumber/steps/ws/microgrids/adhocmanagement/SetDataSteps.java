@@ -12,27 +12,15 @@ package com.alliander.osgp.platform.cucumber.steps.ws.microgrids.adhocmanagement
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.text.ParseException;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataAsyncRequest;
-import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataAsyncResponse;
-import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataRequest;
-import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataResponse;
-import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataSystemIdentifier;
-import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.Measurement;
-import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.Profile;
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataRequest;
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataResponse;
-import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataSystemIdentifier;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.helpers.SettingsHelper;
 import com.alliander.osgp.platform.cucumber.mocks.iec61850.Iec61850MockServer;
@@ -40,11 +28,8 @@ import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.cucumber.steps.ws.microgrids.MicrogridsStepsBase;
 import com.alliander.osgp.platform.cucumber.support.ws.microgrids.adhocmanagement.AdHocManagementServiceAdapter;
-import com.alliander.osgp.platform.cucumber.support.ws.microgrids.adhocmanagement.GetDataRequestBuilder;
 import com.alliander.osgp.platform.cucumber.support.ws.microgrids.adhocmanagement.SetDataRequestBuilder;
 
-import cucumber.api.DataTable;
-import cucumber.api.PendingException;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
@@ -99,9 +84,8 @@ public class SetDataSteps extends MicrogridsStepsBase {
             }
             final String logicalDeviceName = mockValue.get(INDEX_LOGICAL_DEVICE_NAME);
             final String node = mockValue.get(INDEX_NODE_NAME);
-            final String value = mockValue.get(INDEX_NODE_VALUE);
-            //this.mockServer.mockValue(logicalDeviceName, node, value);
-            this.mockServer.assertValue(logicalDeviceName, node, value);
+            final String value = mockValue.get(INDEX_NODE_VALUE);           
+            assertEquals("Simulator setting", true, (this.mockServer.assertValue(logicalDeviceName, node, value)) );
         }
     }
 

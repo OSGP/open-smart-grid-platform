@@ -31,8 +31,10 @@ public class TestSetpointBuilder {
         settings.put("SystemType_1", "RTU");
         settings.put("SetPointNode_1", "SchId");
         settings.put("SetPointValue_1", "1");
+        settings.put("SetPointId_1", "1");
         settings.put("SetPointNode_2", "SchType");
         settings.put("SetPointValue_2", "1");
+        settings.put("SetPointId_1", "1");
         SetDataRequest dataReq = SetDataRequestBuilder.fromParameterMap(settings);
         System.out.println(dataReq);
     }

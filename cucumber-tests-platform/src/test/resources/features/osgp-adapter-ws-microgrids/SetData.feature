@@ -1,7 +1,7 @@
 Feature: Set Data Service
   As scrum team I want to have cucumber tests for Set Data Services so that I am able to guarantee the quality of Microgrid Platform.
 
-  @Iec61850MockServer @test
+  @Iec61850MockServer
   Scenario: SetData Service
     Given an rtu device
       | DeviceIdentification | RTU10001 |
@@ -10,13 +10,13 @@ Feature: Set Data Service
       | NumberOfSystems      |                   1 |
       | SystemId_1           |                   1 |
       | SystemType_1         | RTU                 |
-      # | SetPointId_1         |                   1 |
+      | SetPointId_1         |                   1 |
       | SetPointNode_1       | SchdId              |
       | SetPointValue_1      |                   1 |
-      # | SetPointId_1         |                   1 |
+      | SetPointId_1         |                   1 |
       | SetPointNode_1       | SchdTyp             |
       | SetPointValue_1      |                   1 |
-      #| SetPointId_1         |                   1 |
+      | SetPointId_1         |                   1 |
       | SetPointNode_1       | SchdCat             |
       | SetPointValue_1      |                   1 |
       | ProfileId_1          |                   1 |

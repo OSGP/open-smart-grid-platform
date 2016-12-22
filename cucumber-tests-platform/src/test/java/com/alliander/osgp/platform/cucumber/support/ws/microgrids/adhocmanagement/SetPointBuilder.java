@@ -83,29 +83,19 @@ public class SetPointBuilder {// implements CucumberBuilder<SetPoint>{
     private SetPointBuilder withSettings(final Map<String, String> settings, final int index) {
         if (this.hasKey(settings, Keys.KEY_SETPOINT_START_TIME, index)) {
             this.withStartTime(DateInputParser.parse(getStringValue(settings, Keys.KEY_SETPOINT_START_TIME, index)));
-        } else {
-            return null;
-        }
+        } 
         if (this.hasKey(settings, Keys.KEY_SETPOINT_END_TIME, index)) {
             this.withEndTime(DateInputParser.parse(getStringValue(settings, Keys.KEY_SETPOINT_END_TIME, index)));
-        } else {
-            return null;
-        }
+        } 
         if (this.hasKey(settings, Keys.KEY_SETPOINT_ID, index)) {
             this.withId(Integer.parseInt(getStringValue(settings, Keys.KEY_SETPOINT_ID, index)));
-        } else {
-            return null;
-        }
+        } 
         if (this.hasKey(settings, Keys.KEY_SETPOINT_NODE, index)) {
             this.withNode(getStringValue(settings, Keys.KEY_SETPOINT_NODE, index));
-        } else {
-            return null;
-        }
+        } 
         if (this.hasKey(settings, Keys.KEY_SETPOINT_VALUE, index)) {
             this.withValue(Double.parseDouble(getStringValue(settings, Keys.KEY_SETPOINT_VALUE, index)));
-        } else {
-            return null;
-        }
+        } 
 
         return this;
     }

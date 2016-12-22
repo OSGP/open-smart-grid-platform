@@ -49,14 +49,10 @@ public class SystemBuilder {
     private SystemBuilder withSettings(final Map<String, String> settings, final int index) {
         if (this.hasKey(settings, Keys.KEY_SYSTEM_ID, index)) {
             this.withId(Integer.parseInt(getStringValue(settings, Keys.KEY_SYSTEM_ID, index)));
-        } else {
-            return null;
-        }
+        } 
         if (this.hasKey(settings, Keys.KEY_SYSTEM_TYPE, index)) {
             this.withType(getStringValue(settings, Keys.KEY_SYSTEM_TYPE, index));
-        } else {
-            return null;
-        }
+        } 
         return this;
     }
     
