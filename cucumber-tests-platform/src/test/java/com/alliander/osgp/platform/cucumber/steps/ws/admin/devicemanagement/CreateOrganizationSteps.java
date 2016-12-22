@@ -58,9 +58,10 @@ public class CreateOrganizationSteps {
     	PlatformFunctionGroup platformFunctionGroup = getEnum(requestSettings, Keys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class, Defaults.DEFAULT_PLATFORM_FUNCTION_GROUP);
     	organization.setFunctionGroup(platformFunctionGroup);
     	
-    	for (String domain : getString(requestSettings, Keys.KEY_DOMAINS, Defaults.DEFAULT_DOMAINS).split(";")) {
+		for (String domain : getString(requestSettings, Keys.KEY_DOMAINS, Defaults.DEFAULT_DEVICE_IDENTIFICATION).split(";")) {
         	organization.getDomains().add(Enum.valueOf(PlatformDomain.class, domain));
     	}
+    	
     	request.setOrganisation(organization);
         
     	try {

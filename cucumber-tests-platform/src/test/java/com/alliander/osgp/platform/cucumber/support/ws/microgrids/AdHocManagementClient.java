@@ -27,14 +27,6 @@ public class AdHocManagementClient extends BaseClient {
     @Autowired
     private WebServiceTemplateFactory webServiceTemplateFactoryMicrogridsAdHocManagement;
 
-    @Autowired
-    private RtuResponseDataRepository rtuResponseDataRepository;
-
-    @Value("${iec61850.rtu.response.wait.check.interval:1000}")
-    private int waitCheckIntervalMillis;
-    @Value("${iec61850.rtu.response.wait.fail.duration:15000}")
-    private int waitFailMillis;
-
     public GetDataAsyncResponse getDataAsync(final GetDataRequest request) throws WebServiceSecurityException {
         final WebServiceTemplate webServiceTemplate = this.webServiceTemplateFactoryMicrogridsAdHocManagement
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
@@ -43,25 +35,8 @@ public class AdHocManagementClient extends BaseClient {
 
     public GetDataResponse getData(final GetDataAsyncRequest request) throws WebServiceSecurityException {
 
-        final String correlationUid = request.getAsyncRequest().getCorrelationUid();
-        this.waitForRtuResponseData(correlationUid);
-
         final WebServiceTemplate webServiceTemplate = this.webServiceTemplateFactoryMicrogridsAdHocManagement
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (GetDataResponse) webServiceTemplate.marshalSendAndReceive(request);
-    }
-
-    private void waitForRtuResponseData(final String correlationUid) {
-        try {
-            for (int timeSpentWaiting = 0; timeSpentWaiting < this.waitFailMillis; timeSpentWaiting += this.waitCheckIntervalMillis) {
-                Thread.sleep(this.waitCheckIntervalMillis);
-                if (this.rtuResponseDataRepository.findSingleResultByCorrelationUid(correlationUid) != null) {
-                    return;
-                }
-            }
-            throw new AssertionError("RtuResponseData not available within " + this.waitFailMillis + " milliseconds.");
-        } catch (final InterruptedException e) {
-            throw new AssertionError("Waiting for RtuResponseData was interrupted.", e);
-        }
     }
 }

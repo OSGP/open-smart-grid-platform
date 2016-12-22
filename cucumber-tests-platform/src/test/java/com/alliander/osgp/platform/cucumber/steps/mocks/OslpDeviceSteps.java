@@ -96,7 +96,7 @@ public class OslpDeviceSteps {
 	 */
 
 	@Given("^the device returns a set event notification \"([^\"]*)\" over OSLP$")
-	public void the_device_returns_an_event_notification_over_OSLP(final String result) throws Throwable {
+	public void the_device_returns_a_set_event_notification_over_OSLP(final String result) throws Throwable {
 		Oslp.Status oslpStatus = Status.OK;
 
 		switch (result) {

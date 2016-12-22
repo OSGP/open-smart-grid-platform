@@ -59,9 +59,18 @@ public class ResumeScheduleSteps {
     public void whenReceivingAResumeScheduleRequest(final Map<String, String> requestParameters) throws Throwable {
 
     	ResumeScheduleRequest request = new ResumeScheduleRequest();
-    	request.setDeviceIdentification(getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+    	
+    	if (requestParameters.containsKey(Keys.KEY_DEVICE_IDENTIFICATION))
+    	{
+    		request.setDeviceIdentification(getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION));
+    	}
+    	
     	request.setIndex(getInteger(requestParameters, Keys.KEY_INDEX, Defaults.DEFAULT_INDEX));
     	request.setIsImmediate(getBoolean(requestParameters, Keys.KEY_ISIMMEDIATE, Defaults.DEFAULT_ISIMMEDIATE));
+    	
+//    	request.setDeviceIdentification(getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+//    	request.setIndex(getInteger(requestParameters, Keys.KEY_INDEX, Defaults.DEFAULT_INDEX));
+//    	request.setIsImmediate(getBoolean(requestParameters, Keys.KEY_ISIMMEDIATE, Defaults.DEFAULT_ISIMMEDIATE));
     	
     	try {
     		ScenarioContext.Current().put(Keys.RESPONSE, client.resumeScheduleStatus(request));

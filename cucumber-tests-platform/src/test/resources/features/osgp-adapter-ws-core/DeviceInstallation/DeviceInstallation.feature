@@ -150,8 +150,8 @@ Feature: Device installation
     Then the update device response is successfull
     And the device exists
       | DeviceIdentification | TEST1024000000001 |
-
-  #| Alias                | AfterTest         |
+  		#| Alias                | AfterTest         |
+  
   Scenario: Updating a non existing device
     When receiving an update device request
       | DeviceIdentification      | TEST1024000000001       |
@@ -184,6 +184,7 @@ Feature: Device installation
   #		Examples:
   #			| DeviceIdentification |
   #			| TEST1024000000001    |
+  #
   # Recent means today, yesterday and the day before yesterday (full days).
   # TODO Check response corretly.
   #	Scenario Outline: Find recent devices

@@ -98,7 +98,7 @@ public class Keys {
 	public static final String KEY_NAME = "Name";
 	public static final String KEY_PREFIX = "Prefix";
 	public static final String KEY_PLATFORM_FUNCTION_GROUP = "PlatformFunctionGroup";
-	public static final String KEY_DOMAINS = "Domain";
+	public static final String KEY_DOMAINS = "Domains";
 	public static final String KEY_MESSAGE = "Message";
 	public static final String KEY_FAULTCODE = "FaultCode";
 	public static final String KEY_NEW_ORGANIZATION_IDENTIFICATION = "NewOrganizationIdentification";

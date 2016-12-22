@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.oslp.Oslp;
+import com.alliander.osgp.oslp.Oslp.EventNotificationResponse;
 import com.alliander.osgp.oslp.Oslp.GetFirmwareVersionResponse;
 import com.alliander.osgp.oslp.Oslp.GetStatusResponse;
 import com.alliander.osgp.oslp.Oslp.GetStatusResponse.Builder;
