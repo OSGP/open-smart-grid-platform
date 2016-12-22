@@ -7,8 +7,6 @@
  */
 package com.alliander.osgp.platform.cucumber.steps.database;
 
-import static com.alliander.osgp.platform.cucumber.core.Helpers.cleanRepoSerializable;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,10 +24,12 @@ import com.alliander.osgp.domain.core.repositories.EventRepository;
 import com.alliander.osgp.domain.core.repositories.FirmwareRepository;
 import com.alliander.osgp.domain.core.repositories.ManufacturerRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
+import com.alliander.osgp.domain.core.repositories.ScheduledTaskRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.PlatformDomain;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
+import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 
 @Component
@@ -43,9 +43,6 @@ public class DatabaseSteps {
 
     @Autowired
     private DeviceModelRepository deviceModelRepo;
-
-    @Autowired
-    private DeviceFirmwareRepository deviceFirmwareRepo;
 
     @Autowired
     private FirmwareRepository firmwareRepo;
@@ -69,15 +66,26 @@ public class DatabaseSteps {
     private SsldRepository ssldRepository;
 
     @Autowired
-    private EventRepository eventRepo;
+    private DeviceFirmwareRepository deviceFirmwareRepository;
+
+    @Autowired
+    private EventRepository eventRepository;
+
+    @Autowired
+    private DeviceLogItemRepository deviceLogItemRepository;
+
+    @Autowired
+    private ScheduledTaskRepository scheduledTaskRepository;
 
     /**
      * This method is used to create default data not directly related to the
      * specific tests. For example: The test-org organization which is used to
      * send authorized requests to the platform.
      */
+    @Transactional
     private void insertDefaultData() {
-        if (this.organisationRepo.findByOrganisationIdentification(Defaults.DEFAULT_ORGANISATION_IDENTIFICATION) == null) {
+        if (this.organisationRepo
+                .findByOrganisationIdentification(Defaults.DEFAULT_ORGANISATION_IDENTIFICATION) == null) {
             // Create test organization used within the tests.
             final Organisation testOrg = new Organisation(Defaults.DEFAULT_ORGANISATION_IDENTIFICATION,
                     Defaults.DEFAULT_ORGANISATION_DESCRIPTION, Defaults.DEFAULT_PREFIX, PlatformFunctionGroup.ADMIN);
@@ -95,27 +103,29 @@ public class DatabaseSteps {
         this.manufacturerRepo.save(manufacturer);
 
         // Create the default test model
-        final DeviceModel deviceModel = new DeviceModel(manufacturer, Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE,
+        DeviceModel deviceModel = new DeviceModel(manufacturer, Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE,
                 Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION, true);
-        this.deviceModelRepo.save(deviceModel);
+        deviceModel = this.deviceModelRepo.save(deviceModel);
     }
 
-    @Transactional(transactionManager = "txMgrCore")
+    @Transactional("txMgrCore")
     public void prepareDatabaseForScenario() {
-        cleanRepoSerializable(this.eventRepo);
+        this.oslpDeviceRepo.deleteAllInBatch();
+        this.iec61850DeviceRepo.deleteAllInBatch();
+        this.deviceAuthorizationRepo.deleteAllInBatch();
+        this.deviceLogItemRepository.deleteAllInBatch();
+        this.scheduledTaskRepository.deleteAllInBatch();
         this.deviceRepo.deleteAllEans();
         this.deviceRepo.deleteDeviceOutputSettings();
-        cleanRepoSerializable(this.deviceFirmwareRepo);
-        cleanRepoSerializable(this.iec61850DeviceRepo);
-        cleanRepoSerializable(this.oslpDeviceRepo);
-        cleanRepoSerializable(this.deviceAuthorizationRepo);
-        cleanRepoSerializable(this.smartMeterRepo);
-        cleanRepoSerializable(this.deviceRepo);
-        cleanRepoSerializable(this.firmwareRepo);
-        cleanRepoSerializable(this.deviceModelRepo);
-        cleanRepoSerializable(this.manufacturerRepo);
-        cleanRepoSerializable(this.ssldRepository);
-        cleanRepoSerializable(this.organisationRepo);
+        this.deviceFirmwareRepository.deleteAllInBatch();
+        this.eventRepository.deleteAllInBatch();
+        this.smartMeterRepo.deleteAllInBatch();
+        this.ssldRepository.deleteAllInBatch();
+        this.deviceRepo.deleteAllInBatch();
+        this.firmwareRepo.deleteAllInBatch();
+        this.deviceModelRepo.deleteAllInBatch();
+        this.manufacturerRepo.deleteAllInBatch();
+        this.organisationRepo.deleteAllInBatch();
 
         this.insertDefaultData();
     }

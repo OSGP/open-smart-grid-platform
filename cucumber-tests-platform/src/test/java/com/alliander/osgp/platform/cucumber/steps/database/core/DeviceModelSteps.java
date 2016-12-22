@@ -38,49 +38,58 @@ public class DeviceModelSteps {
     /**
      * Generic method which adds a device model using the settings.
      *
-     * @param settings The settings for the device model to be used.
+     * @param settings
+     *            The settings for the device model to be used.
      * @throws Throwable
      */
     @Given("^a device model")
     public void aDeviceModel(final Map<String, String> settings) throws Throwable {
-
-    	// Get the given manufacturer (or the default).
-    	final Manufacturer manufacturer = this.manufacturerRepo.findByName(
-    			getString(settings, "ManufacturerName", ManufacturerSteps.DEFAULT_NAME));
-
-    	// Create the new device model.
-    	final DeviceModel entity = new DeviceModel(
-    			manufacturer,
-    			getString(settings, "ModelCode", Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE),
-    			getString(settings, "Description", Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION),
-    			getBoolean(settings, "FileStorage", this.DEFAULT_FILESTORAGE));
-
-    	entity.setVersion(getLong(settings, "Version"));
-
-		this.repo.save(entity);
-	}
+        this.insertDeviceModel(settings);
+    }
 
     /**
-     * Generic method to check if the device model is created as expected in the database.
+     * Generic method to check if the device model is created as expected in the
+     * database.
      *
-     * @param expectedEntity The expected settings.
+     * @param expectedEntity
+     *            The expected settings.
      * @throws Throwable
      */
     @Then("^the entity device model exists$")
     public void thenTheEntityDeviceModelExists(final Map<String, String> expectedEntity) throws Throwable {
 
-        final DeviceModel entity = this.repo.findByModelCode(
-        		getString(expectedEntity, "ModelCode", Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
+        final DeviceModel entity = this.repo.findByModelCode(getString(expectedEntity, "ModelCode",
+                Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
 
-        Assert.assertEquals(
-        		getString(expectedEntity, "ManufacturerId", Defaults.DEFAULT_MANUFACTURER_ID),
-        		entity.getManufacturerId().getManufacturerId());
-        Assert.assertEquals(
-        		getString(expectedEntity, "Description", Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION),
-        		entity.getDescription());
-        Assert.assertEquals(
-        		getBoolean(expectedEntity, "Metered", Defaults.DEFAULT_DEVICE_MODEL_METERED),
-        		entity.isMetered());
+        Assert.assertEquals(getString(expectedEntity, "ManufacturerId", Defaults.DEFAULT_MANUFACTURER_ID), entity
+                .getManufacturerId().getManufacturerId());
+        Assert.assertEquals(getString(expectedEntity, "Description", Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION),
+                entity.getDescription());
+        Assert.assertEquals(getBoolean(expectedEntity, "Metered", Defaults.DEFAULT_DEVICE_MODEL_METERED),
+                entity.isMetered());
+    }
+
+    /**
+     * This inserts a default DeviceModel
+     *
+     * @param settings
+     * @return
+     */
+    public DeviceModel insertDeviceModel(final Map<String, String> settings) {
+
+        // Get the given manufacturer (or the default).
+        final Manufacturer manufacturer = this.manufacturerRepo.findByName(getString(settings, "ManufacturerName",
+                ManufacturerSteps.DEFAULT_NAME));
+
+        // Create the new device model.
+        final DeviceModel entity = new DeviceModel(manufacturer, getString(settings, "ModelCode",
+                Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE), getString(settings, "Description",
+                Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION), getBoolean(settings, "FileStorage",
+                this.DEFAULT_FILESTORAGE));
+
+        entity.setVersion(getLong(settings, "Version"));
+
+        return this.repo.save(entity);
     }
 
 }

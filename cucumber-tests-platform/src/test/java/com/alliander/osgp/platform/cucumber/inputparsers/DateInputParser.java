@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.dlms.cucumber.inputparsers;
+package com.alliander.osgp.platform.cucumber.inputparsers;
 
 import java.text.DateFormat;
 import java.text.ParseException;
