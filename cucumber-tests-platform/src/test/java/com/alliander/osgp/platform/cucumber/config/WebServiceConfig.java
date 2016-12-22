@@ -33,6 +33,9 @@ public class WebServiceConfig extends AbstractConfig {
     @Value("${web.service.template.default.uri.microgrids.adhocmanagement}")
     private String webserviceTemplateDefaultUriMicrogridsAdHocManagement;
 
+    @Value("${web.service.template.default.uri.smartmetering.installationmanagement}")
+    private String webserviceTemplateDefaultUriSmartmeteringInstallationManagement;
+
     @Value("${web.service.truststore.location}")
     private String webserviceTruststoreLocation;
 
@@ -53,6 +56,9 @@ public class WebServiceConfig extends AbstractConfig {
 
     @Value("${jaxb2.marshaller.context.path.microgrids.adhocmanagement}")
     private String contextPathMicrogridsAdHocManagement;
+
+    @Value("${jaxb2.marshaller.context.path.smartmetering.installationmanagement}")
+    private String contextPathSmartmeteringInstallationManagement;
 
     @Bean
     public SaajSoapMessageFactory messageFactory() {
@@ -80,6 +86,19 @@ public class WebServiceConfig extends AbstractConfig {
                 .build();
     }
 
+    @Bean
+    public WebServiceTemplateFactory webServiceTemplateFactoryInstallationManagement() {
+        return new WebServiceTemplateFactory.Builder()
+        .setMarshaller(this.smartmeteringInstallationManagementMarshaller())
+        .setMessageFactory(this.messageFactory())
+        .setDefaultUri(
+                this.baseUri.concat(this.webserviceTemplateDefaultUriSmartmeteringInstallationManagement))
+                .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
+                .setKeyStorePassword(this.webserviceKeystorePassword)
+                .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)
+                .build();
+    }
+
     /**
      * Method for creating the Marshaller for Microgrids AdHocManagement.
      *
@@ -90,6 +109,20 @@ public class WebServiceConfig extends AbstractConfig {
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
         marshaller.setContextPath(this.contextPathMicrogridsAdHocManagement);
+
+        return marshaller;
+    }
+
+    /**
+     * Method for creating the Marshaller for Microgrids AdHocManagement.
+     *
+     * @return Jaxb2Marshaller
+     */
+    @Bean
+    public Jaxb2Marshaller smartmeteringInstallationManagementMarshaller() {
+        final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+
+        marshaller.setContextPath(this.contextPathSmartmeteringInstallationManagement);
 
         return marshaller;
     }

@@ -11,6 +11,7 @@ public class Keys {
 
     // Default keys for dlms_device
     public static final String DEVICE_IDENTIFICATION = "DeviceIdentification";
+    public static final String GAS_DEVICE_IDENTIFICATION = "GasDeviceIdentification";
     public static final String VERSION = "Version";
     public static final String ICC_ID = "IccId";
     public static final String COMMUNICATION_PROVIDER = "CommunicationProvider";
@@ -59,4 +60,5 @@ public class Keys {
     public static final String SUPPLIER = "Supplier";
     public static final Object PROTOCOL = "Protocol";
     public static final Object PROTOCOL_VERSION = "ProtocolVersion";
+    public static final String CORRELATION_UID = "CorrelationUid";
 }

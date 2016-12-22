@@ -27,12 +27,14 @@ import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Organisation;
+import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
+import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.platform.cucumber.config.AdapterProtocolOslpPersistenceConfig;
@@ -54,7 +56,7 @@ public class DeviceSteps {
 
     @SuppressWarnings("unused")
     private final Long DEFAULT_DEVICE_ID = new java.util.Random().nextLong();
-    
+
     @Autowired
     private AdapterProtocolOslpPersistenceConfig configuration;
 
@@ -63,6 +65,9 @@ public class DeviceSteps {
 
     @Autowired
     private DeviceRepository deviceRepository;
+
+    @Autowired
+    private SmartMeterRepository smartMeterRepository;
 
     @Autowired
     private OrganisationRepository organizationRepository;
@@ -85,33 +90,35 @@ public class DeviceSteps {
      */
     @Given("^a device$")
     public void aDevice(final Map<String, String> settings) throws Throwable {
-        
+
         // Set the required stuff
         final String deviceIdentification = settings.get("DeviceIdentification");
         final Ssld ssld = new Ssld(deviceIdentification);
-        
+
         ssld.setPublicKeyPresent(getBoolean(settings, "PublicKeyPresent", Defaults.DEFAULT_PUBLICKEYPRESENT));
-        
+
         this.ssldRepository.save(ssld);
-        
+
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
         this.updateDevice(device, settings);
     }
-    
+
     /**
      * Update a device entity given its deviceidentification.
-     * 
-     * @param deviceIdentification The deviceIdentification.
-     * @param settings The settings.
+     *
+     * @param deviceIdentification
+     *            The deviceIdentification.
+     * @param settings
+     *            The settings.
      */
-    public void updateDevice(String deviceIdentification, Map<String, String> settings) {
+    public void updateDevice(final String deviceIdentification, final Map<String, String> settings) {
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
         this.updateDevice(device, settings);
     }
 
     /**
      * Update an existing device with the given settings.
-     * 
+     *
      * @param device
      * @param settings
      */
@@ -121,8 +128,8 @@ public class DeviceSteps {
         device.setActivated(getBoolean(settings, "IsActivated", Defaults.DEFAULT_IS_ACTIVATED));
         device.setTechnicalInstallationDate(getDate(settings, "TechnicalInstallationDate").toDate());
 
-        final DeviceModel deviceModel = this.deviceModelRepository
-                .findByModelCode(getString(settings, "DeviceModel", Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
+        final DeviceModel deviceModel = this.deviceModelRepository.findByModelCode(getString(settings, "DeviceModel",
+                Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
         device.setDeviceModel(deviceModel);
 
         device.updateProtocol(this.protocolInfoRepository.findByProtocolAndProtocolVersion(
@@ -131,17 +138,18 @@ public class DeviceSteps {
 
         InetAddress inetAddress;
         try {
-            inetAddress = InetAddress.getByName(configuration.deviceNetworkaddress);
-        } catch (UnknownHostException e) {
+            inetAddress = InetAddress.getByName(this.configuration.deviceNetworkaddress);
+        } catch (final UnknownHostException e) {
             inetAddress = InetAddress.getLoopbackAddress();
         }
-        device.updateRegistrationData(inetAddress,
-                getString(settings, "DeviceType", DeviceSteps.DEFAULT_DEVICE_TYPE));
+        device.updateRegistrationData(inetAddress, getString(settings, "DeviceType", DeviceSteps.DEFAULT_DEVICE_TYPE));
 
         device.setVersion(getLong(settings, "Version"));
         device.setActive(getBoolean(settings, "Active", Defaults.DEFAULT_ACTIVE));
-        if (getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANISATION_IDENTIFICATION).toLowerCase() != "null") {
-            device.addOrganisation(getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANISATION_IDENTIFICATION));
+        if (getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANISATION_IDENTIFICATION)
+                .toLowerCase() != "null") {
+            device.addOrganisation(getString(settings, "OrganizationIdentification",
+                    Defaults.DEFAULT_ORGANISATION_IDENTIFICATION));
         }
         device.updateMetaData(getString(settings, "Alias", Defaults.DEFAULT_ALIAS),
                 getString(settings, "containerCity", Defaults.DEFAULT_CONTAINER_CITY),
@@ -153,13 +161,14 @@ public class DeviceSteps {
                 getFloat(settings, "gpsLongitude", Defaults.DEFAULT_LONGITUDE));
 
         device = this.deviceRepository.save(device);
-        
-        final Organisation organization = this.organizationRepository.findByOrganisationIdentification(
-                getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANISATION_IDENTIFICATION));
 
-        if (getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANISATION_IDENTIFICATION).toLowerCase() != "null") {
-            final DeviceFunctionGroup functionGroup = getEnum(settings, "DeviceFunctionGroup", DeviceFunctionGroup.class,
-                    DeviceFunctionGroup.OWNER);
+        final Organisation organization = this.organizationRepository.findByOrganisationIdentification(getString(
+                settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANISATION_IDENTIFICATION));
+
+        if (getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANISATION_IDENTIFICATION)
+                .toLowerCase() != "null") {
+            final DeviceFunctionGroup functionGroup = getEnum(settings, "DeviceFunctionGroup",
+                    DeviceFunctionGroup.class, DeviceFunctionGroup.OWNER);
             final DeviceAuthorization authorization = device.addAuthorization(organization, functionGroup);
             final Device savedDevice = this.deviceRepository.save(device);
             this.deviceAuthorizationRepository.save(authorization);
@@ -241,14 +250,16 @@ public class DeviceSteps {
                 count++;
                 Thread.sleep(1000);
 
-                final Device device = this.deviceRepository.findByDeviceIdentification(settings.get("DeviceIdentification"));
+                final Device device = this.deviceRepository.findByDeviceIdentification(settings
+                        .get("DeviceIdentification"));
                 Assert.assertNotNull(device);
-                
+
                 if (settings.containsKey("Alias")) {
                     Assert.assertEquals(settings.get("Alias"), device.getAlias());
                 }
                 if (settings.containsKey("OrganizationIdentification")) {
-                    Assert.assertEquals(settings.get("OrganizationIdentification"), device.getOwner().getOrganisationIdentification());
+                    Assert.assertEquals(settings.get("OrganizationIdentification"), device.getOwner()
+                            .getOrganisationIdentification());
                 }
                 if (settings.containsKey("ContainerPostalCode")) {
                     Assert.assertEquals(settings.get("ContainerPostalCode"), device.getContainerPostalCode());
@@ -275,19 +286,21 @@ public class DeviceSteps {
                     Assert.assertTrue(Boolean.parseBoolean(settings.get("Activated")) == device.isActivated());
                 }
                 if (settings.containsKey("HasSchedule") || settings.containsKey("PublicKeyPresent")) {
-                    final Ssld ssld = this.ssldRepository.findByDeviceIdentification(settings.get("DeviceIdentification"));
-                    
-                    if (settings.containsKey("HasSchedule")){
+                    final Ssld ssld = this.ssldRepository.findByDeviceIdentification(settings
+                            .get("DeviceIdentification"));
+
+                    if (settings.containsKey("HasSchedule")) {
                         Assert.assertTrue(Boolean.parseBoolean(settings.get("HasSchedule")) == ssld.getHasSchedule());
                     }
-                    if (settings.containsKey("PublicKeyPresent")){
-                        Assert.assertTrue(Boolean.parseBoolean(settings.get("PublicKeyPresent")) == ssld.isPublicKeyPresent());
+                    if (settings.containsKey("PublicKeyPresent")) {
+                        Assert.assertTrue(Boolean.parseBoolean(settings.get("PublicKeyPresent")) == ssld
+                                .isPublicKeyPresent());
                     }
                 }
                 if (settings.containsKey("DeviceModel")) {
                     Assert.assertEquals(settings.get("DeviceModel"), device.getDeviceModel().getModelCode());
                 }
-                
+
                 success = true;
             } catch (final Exception | AssertionError e) {
                 // Do nothing
@@ -307,4 +320,50 @@ public class DeviceSteps {
         Assert.assertNotNull(device);
         Assert.assertTrue(devAuths.size() > 0);
     }
+
+    @Then("^the mbus device \"([^\"]*)\" is coupled to device \"([^\"]*)\" on MBUS channel (\\d+)$")
+    public void theMbusDeviceIsCoupledToDeviceOnMBUSChannel(final String gmeter, final String emeter,
+            final Short channel) {
+
+        final SmartMeter gSmartmeter = this.smartMeterRepository.findByDeviceIdentification(gmeter);
+        final Device eDevice = this.deviceRepository.findByDeviceIdentification(emeter);
+
+        Assert.assertNotNull(eDevice);
+        Assert.assertNotNull(gSmartmeter);
+
+        Assert.assertEquals(gSmartmeter.getGatewayDevice(), eDevice);
+        Assert.assertEquals(gSmartmeter.getChannel(), channel);
+    }
+
+    @Then("^the mbus device \"([^\"]*)\" is not coupled to the device \"([^\"]*)\"$")
+    public void theMbusDeviceIsNotCoupledToTheDevice(final String gmeter, final String emeter) {
+        final SmartMeter gSmartmeter = this.smartMeterRepository.findByDeviceIdentification(gmeter);
+        final Device eDevice = this.deviceRepository.findByDeviceIdentification(emeter);
+
+        Assert.assertNotNull(eDevice);
+        Assert.assertNotNull(gSmartmeter);
+
+        Assert.assertNotEquals(gSmartmeter.getGatewayDevice(), eDevice);
+    }
+
+    @Then("^the G-meter \"([^\"]*)\" is decoupled to the device \"([^\"]*)\"$")
+    public void theGMeterIsDecoupledToTheDevice(final String gmeter, final String emeter) {
+        final SmartMeter gSmartmeter = this.smartMeterRepository.findByDeviceIdentification(gmeter);
+        final Device eDevice = this.deviceRepository.findByDeviceIdentification(emeter);
+
+        Assert.assertNotNull(eDevice);
+        Assert.assertNotNull(gSmartmeter);
+
+        Assert.assertNull(gSmartmeter.getGatewayDevice());
+    }
+
+    @Then("^the channel of device \"([^\"]*)\" is cleared$")
+    public void theChannelOfDeviceIsCleared(final String gmeter) {
+        final SmartMeter gSmartmeter = this.smartMeterRepository.findByDeviceIdentification(gmeter);
+
+        Assert.assertNotNull(gSmartmeter);
+
+        Assert.assertNull(gSmartmeter.getChannel());
+    }
+
 }

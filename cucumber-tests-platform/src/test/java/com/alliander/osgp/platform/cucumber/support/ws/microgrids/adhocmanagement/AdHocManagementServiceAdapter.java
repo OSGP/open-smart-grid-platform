@@ -8,6 +8,7 @@
 package com.alliander.osgp.platform.cucumber.support.ws.microgrids.adhocmanagement;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;
@@ -26,7 +27,8 @@ import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory
 public class AdHocManagementServiceAdapter {
 
     @Autowired
-    private WebServiceTemplateFactory webServiceTemplateFactoryMicrogridsAdHocManagement;
+    @Qualifier("webServiceTemplateFactoryMicrogridsAdHocManagement")
+    private WebServiceTemplateFactory webServiceTemplateFactory;
 
     @Autowired
     private RtuResponseDataRepository rtuResponseDataRepository;
@@ -37,8 +39,8 @@ public class AdHocManagementServiceAdapter {
     private int waitFailMillis;
 
     public GetDataAsyncResponse getDataAsync(final GetDataRequest request) throws WebServiceSecurityException {
-        final WebServiceTemplate webServiceTemplate = this.webServiceTemplateFactoryMicrogridsAdHocManagement
-                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
+        final WebServiceTemplate webServiceTemplate = this.webServiceTemplateFactory.getTemplate(
+                this.getOrganizationIdentification(), this.getUserName());
         return (GetDataAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
     }
 
@@ -47,8 +49,8 @@ public class AdHocManagementServiceAdapter {
         final String correlationUid = request.getAsyncRequest().getCorrelationUid();
         this.waitForRtuResponseData(correlationUid);
 
-        final WebServiceTemplate webServiceTemplate = this.webServiceTemplateFactoryMicrogridsAdHocManagement
-                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
+        final WebServiceTemplate webServiceTemplate = this.webServiceTemplateFactory.getTemplate(
+                this.getOrganizationIdentification(), this.getUserName());
         return (GetDataResponse) webServiceTemplate.marshalSendAndReceive(request);
     }
 
@@ -67,8 +69,8 @@ public class AdHocManagementServiceAdapter {
     }
 
     private String getOrganizationIdentification() {
-        final String organizationIdentification = (String) ScenarioContext.Current()
-                .get(Keys.KEY_ORGANISATION_IDENTIFICATION);
+        final String organizationIdentification = (String) ScenarioContext.Current().get(
+                Keys.KEY_ORGANISATION_IDENTIFICATION);
         if (organizationIdentification == null) {
             throw new AssertionError("ScenarioContext must contain the organization identification for key \""
                     + Keys.KEY_ORGANISATION_IDENTIFICATION + "\" before calling a web service.");
