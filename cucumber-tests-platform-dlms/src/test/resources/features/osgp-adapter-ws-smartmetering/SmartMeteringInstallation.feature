@@ -107,7 +107,7 @@ Feature: SmartMetering Installation
     When the Decouple G-meter "TESTG102400000001" request is received 
     Then the decouple response is "OK" and contains
       ||
-    Then the G-meter "TESTG102400000001" is decoupled to the device "TEST1024000000001"
+    And the G-meter "TESTG102400000001" is decoupled to the device "TEST1024000000001"
     And the channel of device "TESTG102400000001" is cleared
 
 @alleen

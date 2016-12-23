@@ -34,7 +34,7 @@ import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.cucumber.support.ws.WebServiceSecurityException;
 import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
 import com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.AbstractSmartMeteringSteps;
-import com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.PollingReader;
+import com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.OsgpResponsePoller;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -94,7 +94,7 @@ public class CoupleAndDecoupleDevice extends AbstractSmartMeteringSteps {
     @Then("^the Couple G-meter \"([^\"]*)\" to E-meter \"([^\"]*)\" request on channel (\\d+) throws an SoapException with message \"([^\"]*)\"$")
     public void theCoupleGMeterToEMeterRequestOnChannelThrowsAnSoapException(final String gasMeter,
             final String eMeter, final Short channel, final String soapExceptionMessage)
-            throws WebServiceSecurityException {
+                    throws WebServiceSecurityException {
         final CoupleMbusDeviceRequest request = new ObjectFactory().createCoupleMbusDeviceRequest();
         request.setDeviceIdentification(eMeter);
         request.setMbusDeviceIdentification(gasMeter);
@@ -178,16 +178,14 @@ public class CoupleAndDecoupleDevice extends AbstractSmartMeteringSteps {
     public void theCoupleResponseContains(final String status, final List<String> resultList)
             throws WebServiceSecurityException, InterruptedException {
 
-        // Thread.sleep(SLEEP);
-
         final CoupleMbusDeviceAsyncRequest request = new ObjectFactory().createCoupleMbusDeviceAsyncRequest();
         request.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
         request.setDeviceIdentification((String) ScenarioContext.Current().get(Keys.KEY_DEVICE_IDENTIFICATION));
 
-        final PollingReader pr = new PollingReader(this.maxTimeResponseAvailability) {
+        final OsgpResponsePoller responsePoller = new OsgpResponsePoller(this.maxTimeResponseAvailability) {
 
             @Override
-            public Object getResponsePolling() throws WebServiceSecurityException {
+            public Object polWsResponse() throws WebServiceSecurityException {
 
                 final CoupleMbusDeviceResponse response = (CoupleMbusDeviceResponse) CoupleAndDecoupleDevice.this.webServiceTemplateFactory
                         .getTemplate(Defaults.DEFAULT_ORGANISATION_IDENTIFICATION, Defaults.DEFAULT_USER_NAME)
@@ -197,7 +195,7 @@ public class CoupleAndDecoupleDevice extends AbstractSmartMeteringSteps {
         };
         final OsgpResultType resultType = OsgpResultType.fromValue(status);
 
-        final CoupleMbusDeviceResponse response = (CoupleMbusDeviceResponse) pr.run();
+        final CoupleMbusDeviceResponse response = (CoupleMbusDeviceResponse) responsePoller.startResponsePoller();
 
         assertTrue(resultType.equals(response.getResult()));
         assertTrue(this.checkDescription(response.getDescription(), resultList));
@@ -212,10 +210,10 @@ public class CoupleAndDecoupleDevice extends AbstractSmartMeteringSteps {
         request.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
         request.setDeviceIdentification((String) ScenarioContext.Current().get(Keys.KEY_DEVICE_IDENTIFICATION));
 
-        final PollingReader pr = new PollingReader(this.maxTimeResponseAvailability) {
+        final OsgpResponsePoller responsePoller = new OsgpResponsePoller(this.maxTimeResponseAvailability) {
 
             @Override
-            public Object getResponsePolling() throws WebServiceSecurityException {
+            public Object polWsResponse() throws WebServiceSecurityException {
                 final DeCoupleMbusDeviceResponse response = (DeCoupleMbusDeviceResponse) CoupleAndDecoupleDevice.this.webServiceTemplateFactory
                         .getTemplate(Defaults.DEFAULT_ORGANISATION_IDENTIFICATION, Defaults.DEFAULT_USER_NAME)
                         .marshalSendAndReceive(request);
@@ -226,7 +224,7 @@ public class CoupleAndDecoupleDevice extends AbstractSmartMeteringSteps {
             }
         };
 
-        final DeCoupleMbusDeviceResponse response = (DeCoupleMbusDeviceResponse) pr.run();
+        final DeCoupleMbusDeviceResponse response = (DeCoupleMbusDeviceResponse) responsePoller.startResponsePoller();
 
         final OsgpResultType resultType = OsgpResultType.fromValue(status);
 
