@@ -35,7 +35,7 @@ import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
-import com.alliander.osgp.platform.cucumber.config.AdapterProtocolOslpPersistenceConfig;
+import com.alliander.osgp.platform.cucumber.config.CoreDeviceConfig;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
@@ -54,9 +54,9 @@ public class DeviceSteps {
 
     @SuppressWarnings("unused")
     private final Long DEFAULT_DEVICE_ID = new java.util.Random().nextLong();
-    
+
     @Autowired
-    private AdapterProtocolOslpPersistenceConfig configuration;
+    private CoreDeviceConfig coreDeviceConfig;
 
     @Autowired
     private DeviceModelRepository deviceModelRepository;
@@ -85,33 +85,33 @@ public class DeviceSteps {
      */
     @Given("^a device$")
     public void aDevice(final Map<String, String> settings) throws Throwable {
-        
+
         // Set the required stuff
         final String deviceIdentification = settings.get("DeviceIdentification");
         final Ssld ssld = new Ssld(deviceIdentification);
-        
+
         ssld.setPublicKeyPresent(getBoolean(settings, "PublicKeyPresent", Defaults.DEFAULT_PUBLICKEYPRESENT));
-        
+
         this.ssldRepository.save(ssld);
-        
+
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
         this.updateDevice(device, settings);
     }
-    
+
     /**
      * Update a device entity given its deviceidentification.
-     * 
+     *
      * @param deviceIdentification The deviceIdentification.
      * @param settings The settings.
      */
-    public void updateDevice(String deviceIdentification, Map<String, String> settings) {
+    public void updateDevice(final String deviceIdentification, final Map<String, String> settings) {
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
         this.updateDevice(device, settings);
     }
 
     /**
      * Update an existing device with the given settings.
-     * 
+     *
      * @param device
      * @param settings
      */
@@ -131,8 +131,8 @@ public class DeviceSteps {
 
         InetAddress inetAddress;
         try {
-            inetAddress = InetAddress.getByName(configuration.deviceNetworkaddress);
-        } catch (UnknownHostException e) {
+            inetAddress = InetAddress.getByName(this.coreDeviceConfig.deviceNetworkAddress());
+        } catch (final UnknownHostException e) {
             inetAddress = InetAddress.getLoopbackAddress();
         }
         device.updateRegistrationData(inetAddress,
@@ -153,7 +153,7 @@ public class DeviceSteps {
                 getFloat(settings, "gpsLongitude", Defaults.DEFAULT_LONGITUDE));
 
         device = this.deviceRepository.save(device);
-        
+
         final Organisation organization = this.organizationRepository.findByOrganisationIdentification(
                 getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANISATION_IDENTIFICATION));
 
@@ -243,7 +243,7 @@ public class DeviceSteps {
 
                 final Device device = this.deviceRepository.findByDeviceIdentification(settings.get("DeviceIdentification"));
                 Assert.assertNotNull(device);
-                
+
                 if (settings.containsKey("Alias")) {
                     Assert.assertEquals(settings.get("Alias"), device.getAlias());
                 }
@@ -276,7 +276,7 @@ public class DeviceSteps {
                 }
                 if (settings.containsKey("HasSchedule") || settings.containsKey("PublicKeyPresent")) {
                     final Ssld ssld = this.ssldRepository.findByDeviceIdentification(settings.get("DeviceIdentification"));
-                    
+
                     if (settings.containsKey("HasSchedule")){
                         Assert.assertTrue(Boolean.parseBoolean(settings.get("HasSchedule")) == ssld.getHasSchedule());
                     }
@@ -287,7 +287,7 @@ public class DeviceSteps {
                 if (settings.containsKey("DeviceModel")) {
                     Assert.assertEquals(settings.get("DeviceModel"), device.getDeviceModel().getModelCode());
                 }
-                
+
                 success = true;
             } catch (final Exception | AssertionError e) {
                 // Do nothing

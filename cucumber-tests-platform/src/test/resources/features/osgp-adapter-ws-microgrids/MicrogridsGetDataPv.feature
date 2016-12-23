@@ -28,3 +28,18 @@ Feature: Get PhotoVoltaic System Data
       | MeasurementNode_1_1      | Health   |
       | MeasurementQualifier_1_1 |     1024 |
       | MeasurementValue_1_1     |      3.0 |
+
+  Scenario: Request PV1 Health for a non-existing logical device
+    Given an rtu device
+      | DeviceIdentification | RTU10001 |
+    When a get data request is received
+      | DeviceIdentification      | RTU10001 |
+      | NumberOfSystems           |        1 |
+      | SystemId_1                |        4 |
+      | SystemType_1              | PV       |
+      | NumberOfMeasurements_1    |        1 |
+      | MeasurementFilterNode_1_1 | Health   |
+    Then a SOAP fault should be returned
+      | DeviceIdentification | RTU10001                     |
+      | Component            | PROTOCOL_IEC61850            |
+      | Message              | fcmodelNode must not be null |
