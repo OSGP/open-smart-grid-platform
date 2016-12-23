@@ -37,7 +37,7 @@ import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
-import com.alliander.osgp.platform.cucumber.config.AdapterProtocolOslpPersistenceConfig;
+import com.alliander.osgp.platform.cucumber.config.CoreDeviceConfig;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
@@ -58,7 +58,7 @@ public class DeviceSteps {
     private final Long DEFAULT_DEVICE_ID = new java.util.Random().nextLong();
 
     @Autowired
-    private AdapterProtocolOslpPersistenceConfig configuration;
+    private CoreDeviceConfig coreDeviceConfig;
 
     @Autowired
     private DeviceModelRepository deviceModelRepository;
@@ -106,10 +106,16 @@ public class DeviceSteps {
     /**
      * Update a device entity given its deviceidentification.
      *
+     * <<<<<<< HEAD
+     *
      * @param deviceIdentification
      *            The deviceIdentification.
      * @param settings
-     *            The settings.
+     *            The settings. =======
+     * @param deviceIdentification
+     *            The deviceIdentification.
+     * @param settings
+     *            The settings. >>>>>>> development
      */
     public void updateDevice(final String deviceIdentification, final Map<String, String> settings) {
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
@@ -138,7 +144,7 @@ public class DeviceSteps {
 
         InetAddress inetAddress;
         try {
-            inetAddress = InetAddress.getByName(this.configuration.deviceNetworkaddress);
+            inetAddress = InetAddress.getByName(this.coreDeviceConfig.deviceNetworkAddress());
         } catch (final UnknownHostException e) {
             inetAddress = InetAddress.getLoopbackAddress();
         }

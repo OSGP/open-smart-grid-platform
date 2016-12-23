@@ -7,13 +7,11 @@
  */
 package com.alliander.osgp.platform.cucumber.steps.database;
 
-import static com.alliander.osgp.platform.cucumber.core.Helpers.cleanRepoAbstractEntity;
-import static com.alliander.osgp.platform.cucumber.core.Helpers.cleanRepoSerializable;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
 import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRepository;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
@@ -38,25 +36,28 @@ import com.alliander.osgp.platform.cucumber.steps.Defaults;
 public class DatabaseSteps {
 
     @Autowired
-    private OrganisationRepository organisationRepo;
+    private OrganisationRepository organisationRepository;
 
     @Autowired
-    private ManufacturerRepository manufacturerRepo;
+    private ManufacturerRepository manufacturerRepository;
 
     @Autowired
-    private DeviceModelRepository deviceModelRepo;
+    private DeviceModelRepository deviceModelRepository;
 
     @Autowired
-    private DeviceRepository deviceRepo;
+    private DeviceRepository deviceRepository;
 
     @Autowired
-    private SmartMeterRepository smartMeterRepo;
+    private SmartMeterRepository smartMeterRepository;
 
     @Autowired
-    private DeviceAuthorizationRepository deviceAuthorizationRepo;
+    private DeviceAuthorizationRepository deviceAuthorizationRepository;
 
     @Autowired
-    private OslpDeviceRepository oslpDeviceRepo;
+    private Iec61850DeviceRepository iec61850DeviceRepository;
+
+    @Autowired
+    private OslpDeviceRepository oslpDeviceRepository;
 
     @Autowired
     private SsldRepository ssldRepository;
@@ -83,7 +84,7 @@ public class DatabaseSteps {
      */
     @Transactional
     private void insertDefaultData() {
-        if (this.organisationRepo.findByOrganisationIdentification(Defaults.DEFAULT_ORGANISATION_IDENTIFICATION) == null) {
+        if (this.organisationRepository.findByOrganisationIdentification(Defaults.DEFAULT_ORGANISATION_IDENTIFICATION) == null) {
             // Create test organization used within the tests.
             final Organisation testOrg = new Organisation(Defaults.DEFAULT_ORGANISATION_IDENTIFICATION,
                     Defaults.DEFAULT_ORGANISATION_DESCRIPTION, Defaults.DEFAULT_PREFIX, PlatformFunctionGroup.ADMIN);
@@ -92,39 +93,38 @@ public class DatabaseSteps {
             testOrg.addDomain(PlatformDomain.TARIFF_SWITCHING);
             testOrg.setIsEnabled(true);
 
-            this.organisationRepo.save(testOrg);
+            this.organisationRepository.save(testOrg);
         }
 
         // Create default test manufacturer
         final Manufacturer manufacturer = new Manufacturer(Defaults.DEFAULT_MANUFACTURER_ID,
                 Defaults.DEFAULT_MANUFACTURER_NAME, false);
-        this.manufacturerRepo.save(manufacturer);
+        this.manufacturerRepository.save(manufacturer);
 
         // Create the default test model
         DeviceModel deviceModel = new DeviceModel(manufacturer, Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE,
                 Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION, true);
-        deviceModel = this.deviceModelRepo.save(deviceModel);
+        deviceModel = this.deviceModelRepository.save(deviceModel);
     }
 
     @Transactional("txMgrCore")
     public void prepareDatabaseForScenario() {
-        cleanRepoAbstractEntity(this.oslpDeviceRepo);
-        cleanRepoAbstractEntity(this.deviceAuthorizationRepo);
-
+        this.oslpDeviceRepository.deleteAllInBatch();
+        this.iec61850DeviceRepository.deleteAllInBatch();
+        this.deviceAuthorizationRepository.deleteAllInBatch();
         this.deviceLogItemRepository.deleteAllInBatch();
         this.scheduledTaskRepository.deleteAllInBatch();
-        this.deviceRepo.deleteAllEans();
-        this.deviceRepo.deleteDeviceOutputSettings();
+        this.deviceRepository.deleteAllEans();
+        this.deviceRepository.deleteDeviceOutputSettings();
         this.deviceFirmwareRepository.deleteAllInBatch();
         this.eventRepository.deleteAllInBatch();
+        this.smartMeterRepository.deleteAllInBatch();
         this.ssldRepository.deleteAllInBatch();
-        this.deviceRepo.deleteAllInBatch();
+        this.deviceRepository.deleteAllInBatch();
         this.firmwareRepository.deleteAllInBatch();
-        this.deviceModelRepo.deleteAllInBatch();
-
-        cleanRepoSerializable(this.smartMeterRepo);
-        cleanRepoSerializable(this.manufacturerRepo);
-        cleanRepoSerializable(this.organisationRepo);
+        this.deviceModelRepository.deleteAllInBatch();
+        this.manufacturerRepository.deleteAllInBatch();
+        this.organisationRepository.deleteAllInBatch();
 
         this.insertDefaultData();
     }
