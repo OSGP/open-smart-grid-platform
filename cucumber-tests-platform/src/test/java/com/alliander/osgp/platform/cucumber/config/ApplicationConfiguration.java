@@ -15,7 +15,6 @@ import org.hibernate.ejb.HibernatePersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
@@ -69,16 +68,6 @@ public abstract class ApplicationConfiguration extends AbstractConfig {
     protected static final String PROPERTY_NAME_HIBERNATE_SHOW_SQL = "hibernate.show_sql";
     @Value("${hibernate.show_sql}")
     protected String hibernateShowSql;
-
-    @Value("${device.networkaddress}")
-    public String deviceNetworkaddress;
-
-    @Value("${iec61850.mock.networkaddress}")
-    private String iec61850MockNetworkAddress;
-    @Value("${iec61850.mock.icd.filename}")
-    private String iec61850MockIcdFilename;
-    @Value("${iec61850.mock.port}")
-    private int iec61850MockPort;
 
     protected abstract String getDatabaseUrl();
 
@@ -142,20 +131,5 @@ public abstract class ApplicationConfiguration extends AbstractConfig {
         entityManagerFactoryBean.setJpaProperties(jpaProperties);
 
         return entityManagerFactoryBean;
-    }
-
-    @Bean(name = "iec61850MockNetworkAddress")
-    public String getIec61850MockNetworkAddress() {
-        return this.iec61850MockNetworkAddress;
-    }
-
-    @Bean(name = "iec61850MockPort")
-    public int getIec61850MockPort() {
-        return this.iec61850MockPort;
-    }
-
-    @Bean(name = "iec61850MockIcdFilename")
-    public String getIec61850MockIcdFilename() {
-        return this.iec61850MockIcdFilename;
     }
 }

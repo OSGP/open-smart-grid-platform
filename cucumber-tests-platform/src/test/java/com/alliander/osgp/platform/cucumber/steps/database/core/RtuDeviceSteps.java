@@ -20,6 +20,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850Devi
 import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
 import com.alliander.osgp.domain.microgrids.entities.RtuDevice;
 import com.alliander.osgp.domain.microgrids.repositories.RtuDeviceRepository;
+import com.alliander.osgp.platform.cucumber.config.Iec61850MockServerConfig;
 import com.alliander.osgp.platform.cucumber.helpers.SettingsHelper;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
 
@@ -48,11 +49,7 @@ public class RtuDeviceSteps {
             });
 
     @Autowired
-    private String iec61850MockNetworkAddress;
-    @Autowired
-    private String iec61850MockIcdFilename;
-    @Autowired
-    private int iec61850MockPort;
+    private Iec61850MockServerConfig iec61850MockServerConfig;
 
     @Autowired
     private RtuDeviceRepository rtuDeviceRespository;
@@ -80,12 +77,14 @@ public class RtuDeviceSteps {
          * IEC61850 mock server is used.
          */
         try {
-            final InetAddress inetAddress = InetAddress.getByName(this.iec61850MockNetworkAddress);
+            final InetAddress inetAddress = InetAddress
+                    .getByName(this.iec61850MockServerConfig.iec61850MockNetworkAddress());
             rtuDevice.updateRegistrationData(inetAddress, rtuSettings.get(Keys.KEY_DEVICE_TYPE));
             rtuDevice = this.rtuDeviceRespository.save(rtuDevice);
         } catch (final UnknownHostException e) {
             throw new AssertionError(
-                    "Unable to determine IP address for mock server: " + this.iec61850MockNetworkAddress);
+                    "Unable to determine IP address for mock server: "
+                            + this.iec61850MockServerConfig.iec61850MockNetworkAddress());
         }
 
         /*
@@ -93,8 +92,8 @@ public class RtuDeviceSteps {
          * settings will be used from the application to connect to the device.
          */
         final Iec61850Device iec61850Device = new Iec61850Device(deviceIdentification);
-        iec61850Device.setIcdFilename(this.iec61850MockIcdFilename);
-        iec61850Device.setPort(this.iec61850MockPort);
+        iec61850Device.setIcdFilename(this.iec61850MockServerConfig.iec61850MockIcdFilename());
+        iec61850Device.setPort(this.iec61850MockServerConfig.iec61850MockPort());
 
         this.iec61850DeviceRespository.save(iec61850Device);
     }

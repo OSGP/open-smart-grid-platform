@@ -7,24 +7,18 @@
  */
 package com.alliander.osgp.platform.cucumber.core;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.util.Assert;
 
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
 
 public class Helpers {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(Helpers.class);
 
     protected static final String XPATH_MATCHER_CORRELATIONUID = "\\|\\|\\|\\S{17}\\|\\|\\|\\S{17}";
 
@@ -206,21 +200,6 @@ public class Helpers {
     }
 
     /**
-     * When running automatic tests, in a beforestep all tables (except for some
-     * 'stamdata') are cleared, you get some exceptions when the database wasn't
-     * found. Therefore this method is created to ignore that
-     *
-     * @param repo
-     */
-    public static <T extends Serializable> void cleanRepoSerializable(final JpaRepository<T, Long> repo) {
-        try {
-            repo.deleteAllInBatch();
-        } catch (final Exception ex) {
-            LOGGER.error(ex.getMessage());
-        }
-    }
-
-    /**
      * This is a generic method which will translate the given string to a
      * datetime. Supported: now + 3 months tomorrow - 1 year yesterday + 2 weeks
      *
@@ -306,7 +285,7 @@ public class Helpers {
      */
     public static Map<String, String> addSetting(final Map<String, String> settings, final String key,
             final String value) {
-        final Map<String, String> result = new HashMap<String, String>();
+        final Map<String, String> result = new HashMap<>();
         result.putAll(settings);
         result.put(key, value);
         return result;

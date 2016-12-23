@@ -26,9 +26,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
         "com.alliander.osgp.adapter.protocol.oslp.domain.entities", "com.alliander.osgp.platform.cucumber.hooks" })
 @EnableTransactionManagement()
 @Import({ CorePersistenceConfig.class, AdapterWsSmartMeteringPersistenceConfig.class,
-        AdapterProtocolDlmsPersistenceConfig.class, LoggingPersistenceConfig.class,
-        AdapterProtocolIec61850PersistenceConfig.class, AdapterProtocolOslpPersistenceConfig.class,
-        AdapterWsMicrogridsPersistenceConfig.class })
+    AdapterProtocolDlmsPersistenceConfig.class, LoggingPersistenceConfig.class,
+    AdapterProtocolIec61850PersistenceConfig.class, AdapterProtocolOslpPersistenceConfig.class,
+    AdapterWsMicrogridsPersistenceConfig.class, CoreDeviceConfig.class, Iec61850MockServerConfig.class })
 public class ApplicationContext {
 
 }
