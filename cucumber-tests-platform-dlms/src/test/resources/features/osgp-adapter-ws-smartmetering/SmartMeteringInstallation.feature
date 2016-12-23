@@ -111,6 +111,7 @@ Feature: SmartMetering Installation
     Then the couple response is "NOT OK" and contains
      | SmartMeter with id "TESTunknownDevice" could not be found |
 
+@Skip
   Scenario: Decouple G-meter from unknown E-meter
     Given a dlms device
       | DeviceIdentification        | TESTG102400000001 |
@@ -131,6 +132,7 @@ Feature: SmartMetering Installation
     Then the decouple response is "NOT OK" and contains
       | Device TESTG102400000001 is not active in the platform |
 
+@Skip
   Scenario: Decouple G-meter to an inactive E-meter
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
