@@ -26,47 +26,44 @@ import cucumber.api.java.en.Then;
  * The manufacturer related steps.
  */
 public class ManufacturerSteps {
-    
+
     @Autowired
     private ManufacturerRepository repo;
-    
+
     private String DEFAULT_MANUFACTURER_ID = "1";
     public static String DEFAULT_NAME = "Test Manufacturer";
     private Boolean DEFAULT_USEPREFIX = true;
-    
+
     /**
      * Generic method which adds a manufacturer using the settings.
      * 
-     * @param settings The settings for the manufacturer to be used.
+     * @param settings
+     *            The settings for the manufacturer to be used.
      * @throws Throwable
      */
     @Given("^a manufacturer")
     public void aManufacturer(final Map<String, String> settings) throws Throwable {
-    	
-    	Manufacturer entity = new Manufacturer(
-    			getString(settings, "ManufacturerId", DEFAULT_MANUFACTURER_ID),
-    			getString(settings, "Name", DEFAULT_NAME),
-    			getBoolean(settings, "UsePrefix", DEFAULT_USEPREFIX));
 
-		repo.save(entity);
-	}
-    
+        Manufacturer entity = new Manufacturer(getString(settings, "ManufacturerId", DEFAULT_MANUFACTURER_ID),
+                getString(settings, "Name", DEFAULT_NAME), getBoolean(settings, "UsePrefix", DEFAULT_USEPREFIX));
+
+        repo.save(entity);
+    }
+
     /**
      * Verify whether the entity is created as expected.
+     * 
      * @param expectedEntity
      * @throws Throwable
      */
-	@Then("^the entity manufacturer exists$")
-	public void the_entity_manufacturer_exists(final Map<String, String> expectedEntity) throws Throwable {
-		// TODO: Wait until the stuff is created.
-        Manufacturer entity = repo.findByName(
-        		getString(expectedEntity, "Name", Defaults.DEFAULT_MANUFACTURER_NAME));
+    @Then("^the entity manufacturer exists$")
+    public void the_entity_manufacturer_exists(final Map<String, String> expectedEntity) throws Throwable {
+        // TODO: Wait until the stuff is created.
+        Manufacturer entity = repo.findByName(getString(expectedEntity, "Name", Defaults.DEFAULT_MANUFACTURER_NAME));
 
-        Assert.assertEquals(
-        		getString(expectedEntity, "ManufacturerId", Defaults.DEFAULT_MANUFACTURER_ID),
-        		entity.getManufacturerId());
-        Assert.assertEquals(
-        		getBoolean(expectedEntity, "UsesPrefix", Defaults.DEFAULT_MANUFACTURER_USE_PREFIX), 
-        		entity.isUsePrefix());
-	}
+        Assert.assertEquals(getString(expectedEntity, "ManufacturerId", Defaults.DEFAULT_MANUFACTURER_ID),
+                entity.getManufacturerId());
+        Assert.assertEquals(getBoolean(expectedEntity, "UsesPrefix", Defaults.DEFAULT_MANUFACTURER_USE_PREFIX),
+                entity.isUsePrefix());
+    }
 }

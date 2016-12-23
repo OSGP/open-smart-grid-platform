@@ -38,7 +38,6 @@ public class Defaults {
     public static final String SECURITY_KEY_TYPE_M = "E_METER_MASTER";
     public static final String SECURITY_KEY_TYPE_A = "E_METER_AUTHENTICATION";
     public static final String SECURITY_KEY_TYPE_E = "E_METER_ENCRYPTION";
-    public static final Date VALID_FROM = new Date();
     public static final Date VALID_TO = null;
 
     public static final String SECURITY_KEY_M = "bc082efed278e1bbebddc0431877d4fa16374b00e96dd102beab666dcb72efbd1f0b868412497f6d3d0c62caa4700585";

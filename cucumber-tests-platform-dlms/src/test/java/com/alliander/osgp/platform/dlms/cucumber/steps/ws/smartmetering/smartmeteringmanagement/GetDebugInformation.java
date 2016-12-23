@@ -64,8 +64,6 @@ public class GetDebugInformation extends SmartMeteringStepsBase {
     public void theDeviceDebugInformationShouldBeInTheResponseMessage() throws Throwable {
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION, ScenarioContext.Current()
                 .get(Keys.KEY_DEVICE_IDENTIFICATION).toString());
-        PROPERTIES_MAP
-        .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, TEST_CASE_XML, TEST_SUITE_XML);
 

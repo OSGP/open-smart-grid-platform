@@ -27,6 +27,9 @@ public class Keys {
     public static final String CLIENT_ID = "ClientId";
     public static final String LOGICAL_ID = "LogicalId";
     public static final String IN_DEBUG_MODE = "InDebugMode";
+    public static final String MODULE_ACTIVE_FIRMWARE = "module_active_firmware";
+    public static final String COMM_MODULE_ACTIVE_FIRMWARE = "communication_module_active_firmware";
+    public static final String ACTIVE_FIRMWARE = "active_firmware";
 
     // Default keys for security_key
     public static final String DLMS_DEVICE_ID = "DlmsDeviceId";
