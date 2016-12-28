@@ -105,7 +105,7 @@ public class FirmwareManagementEndpoint {
     private static final String REMOVE_MANUFACTURER_EXISTING_DEVICEMODEL = "feedback.message.manufacturer.removalnotpermitted.devicemodel";
     private static final String REMOVE_DEVICEMODEL_EXISTING_DEVICE = "feedback.message.devicemodel.removalnotpermitted.device";
     private static final String REMOVE_DEVICEMODEL_EXISTING_FIRMWARE = "feedback.message.devicemodel.removalnotpermitted.firmware";
-    private static final String REMOVE_FIRMWARE_EXISTING_FIRMWARE = "feedback.message.firmware.removalnotpermitted.firmware";
+    private static final String REMOVE_FIRMWARE_EXISTING_FIRMWARE = "feedback.message.firmware.removalnotpermitted.device";
 
     private final FirmwareManagementService firmwareManagementService;
     private final FirmwareManagementMapper firmwareManagementMapper;
@@ -321,20 +321,19 @@ public class FirmwareManagementEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final ChangeManufacturerRequest request) throws OsgpException {
 
-        LOGGER.info("Changeing manufacturer:{}.", request.getManufacturer().getName());
+        LOGGER.info("Changing manufacturer:{}.", request.getManufacturer().getName());
 
         try {
-            this.firmwareManagementService.changeManufacturer(organisationIdentification, new Manufacturer(request
-                    .getManufacturer().getManufacturerId(), request.getManufacturer().getName(), request
-                    .getManufacturer().isUsePrefix()));
+            this.firmwareManagementService.changeManufacturer(organisationIdentification,
+                    new Manufacturer(request.getManufacturer().getManufacturerId(), request.getManufacturer().getName(),
+                            request.getManufacturer().isUsePrefix()));
         } catch (final MethodConstraintViolationException e) {
-            LOGGER.error("Exception Changeing manufacturer: {} ", e.getMessage(), e);
+            LOGGER.error("Exception Changing manufacturer: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
-            LOGGER.error("Exception: {} while Changeing manufacturer: {} for organisation {}",
-                    new Object[] { e.getMessage(), request.getManufacturer().getManufacturerId(),
-                            organisationIdentification }, e);
+            LOGGER.error("Exception: {} while Changing manufacturer: {} for organisation {}", new Object[] {
+                    e.getMessage(), request.getManufacturer().getManufacturerId(), organisationIdentification }, e);
             this.handleException(e);
         }
 

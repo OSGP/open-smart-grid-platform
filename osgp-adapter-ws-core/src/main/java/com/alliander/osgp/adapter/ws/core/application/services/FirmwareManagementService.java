@@ -391,7 +391,7 @@ public class FirmwareManagementService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_FIRMWARE);
 
-        List<Firmware> firmwares = new ArrayList<Firmware>();
+        List<Firmware> firmwares = new ArrayList<>();
         if (manufacturer != null) {
             final Manufacturer databaseManufacturer = this.manufacturerRepository.findByManufacturerId(manufacturer);
             final DeviceModel databaseDeviceModel = this.deviceModelRepository.findByManufacturerIdAndModelCode(
@@ -595,10 +595,10 @@ public class FirmwareManagementService {
         final List<DeviceFirmware> deviceFirmwares = this.writableDeviceFirmwareRepository
                 .findByFirmware(removedFirmware);
         if (!deviceFirmwares.isEmpty()) {
-            LOGGER.info("Firmware is linked to firmware.");
+            LOGGER.info("Firmware is linked to device.");
             throw new FunctionalException(FunctionalExceptionType.EXISTING_FIRMWARE_DEVICEFIRMWARE,
-                    ComponentType.WS_CORE, new ExistingEntityException(DeviceFirmware.class, deviceFirmwares.get(0)
-                            .getFirmware().getDescription()));
+                    ComponentType.WS_CORE, new ExistingEntityException(DeviceFirmware.class,
+                            deviceFirmwares.get(0).getFirmware().getDescription()));
         }
 
         // Only remove the file if no other firmware is using it.
