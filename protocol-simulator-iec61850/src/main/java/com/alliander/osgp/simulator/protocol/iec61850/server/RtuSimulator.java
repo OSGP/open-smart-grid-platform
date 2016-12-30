@@ -213,6 +213,16 @@ public class RtuSimulator implements ServerEventListener {
         LOGGER.error("The SAP stopped listening");
     }
 
+    public boolean assertValue(final String logicalDeviceName, final String node, final String value) {
+        final LogicalDevice logicalDevice = this.getLogicalDevice(logicalDeviceName);
+        final BasicDataAttribute expected = logicalDevice.getValue(node, value);
+        final ModelNode actual = this.serverModel.findModelNode(expected.getReference(), expected.getFc());
+        if (actual instanceof BasicDataAttribute) {
+            return BasicDataAttributeEqualsHelper.equals(expected, (BasicDataAttribute) actual);
+        }
+        return false;
+    }
+
     public void mockValue(final String logicalDeviceName, final String node, final String value) {
         if (!this.stopGeneratingValues.get()) {
             /*
