@@ -7,8 +7,9 @@
  */
 package com.alliander.osgp.platform.cucumber.steps;
 
-import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup;
+//import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.TransitionType;
+import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
 import com.alliander.osgp.oslp.Oslp.LightType;
 import com.alliander.osgp.oslp.Oslp.LinkType;
 import com.alliander.osgp.oslp.Oslp.Status;
@@ -77,11 +78,13 @@ public class Defaults {
     public static final Boolean DEFAULT_ORGANIZATION_ENABLED = true;
     public static final String DEFAULT_ORGANIZATION_NAME = "Test organization";
     public static final String DEFAULT_ORGANIZATION_PREFIX = "cgi";
+
     public static final com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup DEFAULT_PLATFORM_FUNCTION_GROUP = com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup.ADMIN;
     public static final String DEFAULT_DOMAINS = "COMMON;PUBLIC_LIGHTING;TARIFF_SWITCHING";
     public static final String DEFAULT_NEW_ORGANIZATION_NAME = "New Organization";
     public static final String DEFAULT_NEW_ORGANIZATION_IDENTIFICATION = "NewOrganization";
     public static final PlatformFunctionGroup DEFAULT_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP = PlatformFunctionGroup.ADMIN;
+
     public static final String DEFAULT_OWNER = "test-org";
     public static final Boolean DEFAULT_ACTIVATED = true;
     public static final String DEFAULT_DEVICE_MODEL_MANUFACTURER = "Kaif";

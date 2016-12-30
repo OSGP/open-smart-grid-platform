@@ -5,23 +5,43 @@ Feature: Register Device
 
   # RegisterDevices scenario's
   # Nieuwe classe? Hoe kan een device geregistreerd worden?
-  #	Scenario Outline: A Device Performs First Time Registration
-  #		Given a not registered device
-  #			| DeviceIdentification | <DeviceIdentification> |
-  #		And the device returns a register device response over OSLP
-  #		When receiving a register device request
-  #		Then the register device response contains
-  #			| DeviceUid            | <DeviceUid>            |
-  #| DeviceIdentification | <DeviceIdentification> |
-  #| DeviceType           | <DeviceType>           |
-  #| GpsLatitude          | <GpsLatitude>          |
-  #| GpsLongitude         | <GpsLongitude>         |
-  #| CurrentTime          | <CurrentTime>          |
-  #| TimeZone             | <TimeZone>             |
+  Scenario Outline: A Device Performs First Time Registration
+    #Given a not registered device
+    Given an oslp device
+      | DeviceIdentification       | <DeviceIdentification>       |
+      | DeviceUid                  | <DeviceIdentification>       |
+      | OrganizationIdentification | <OrganizationIdentification> |
+    When receiving a register device request
+      | DeviceIdentification | <DeviceIdentification> |
+    Then the register device response contains
+      | DeviceUid            | <DeviceIdentification> |
+      | DeviceIdentification | <DeviceIdentification> |
+      | DeviceType           | <DeviceType>           |
+      | GpsLatitude          | <GpsLatitude>          |
+      | GpsLongitude         | <GpsLongitude>         |
+      | CurrentTime          | <CurrentTime>          |
+      | TimeZone             | <TimeZone>             |
+
+    Examples: 
+      | DeviceUid  | DeviceIdentification | DeviceType | GpsLatitude | GpsLongitude | CurrentTime | TimeZone |
+      | 1234567890 | TEST1024000000001    |            |           0 |            0 |             |          |
   #
-  #Examples:
-  #	| DeviceUid  | DeviceIdentification | DeviceType | GpsLatitude | GpsLongitude | CurrentTime | TimeZone |
-  #	| 1234567890 | TEST1024000000001    |            |           0 |            0 |             |          |
+    #Given an oslp device
+      #| DeviceIdentification | <DeviceIdentification> |
+      #| DeviceUid            | <DeviceIdentification> |
+    #When receiving a register device request
+    #Then the register device response contains
+      #| DeviceUid            | <DeviceUid>            |
+      #| DeviceIdentification | <DeviceIdentification> |
+      #| DeviceType           | <DeviceType>           |
+      #| GpsLatitude          | <GpsLatitude>          |
+      #| GpsLongitude         | <GpsLongitude>         |
+      #| CurrentTime          | <CurrentTime>          |
+      #| TimeZone             | <TimeZone>             |
+#
+    #Examples: 
+      #| DeviceUid  | DeviceIdentification | DeviceType | GpsLatitude | GpsLongitude | CurrentTime | TimeZone |
+      #| 1234567890 | TEST1024000000001    |            |           0 |            0 |             |          |
   #
   #  # Nieuwe classe? Hoe kan een device geregistreerd worden?
   #	Scenario Outline: A Device Performs First Time Registration
