@@ -42,7 +42,7 @@ import org.springframework.jms.listener.DefaultMessageListenerContainer;
  * <jmsPrefix>.<quename>.use.exponential.back.off where <quename> can be:
  * requests, responses or logging Example:
  * jms.smartmetering.requests.queue=domain
- * -smartmetering.1_0.ws-smartmetering.1_0.requests
+ * .smartmetering.1_0.ws-smartmetering.1_0.requests
  * jms.smartmetering.requests.explicit.qos.enabled=true
  * jms.smartmetering.requests.delivery.persistent=true
  * jms.smartmetering.requests.time.to.live=3600000
@@ -85,6 +85,18 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
     protected static final String PROPERTY_NAME_JMS_DEFAULT_DELIVERY_PERSISTENT = "jms.default.delivery.persistent";
     protected static final String PROPERTY_NAME_JMS_DEFAULT_CONCURRENT_CONSUMERS = "jms.default.concurrent.consumers";
     protected static final String PROPERTY_NAME_JMS_DEFAULT_MAX_CONCURRENT_CONSUMERS = "jms.default.max.concurrent.consumers";
+
+    protected static final String DEFAULT_JMS_VALUE_INITIAL_REDELIVERY_DELAY = "0";
+    protected static final String DEFAULT_JMS_VALUE_MAXIMUM_REDELIVERIES = "3";
+    protected static final String DEFAULT_JMS_VALUE_MAXIMUM_REDELIVERY_DELAY = "10000";
+    protected static final String DEFAULT_JMS_VALUE_REDELIVERY_DELAY = "60000";
+    protected static final String DEFAULT_JMS_VALUE_BACK_OFF_MULTIPLIER = "2";
+    protected static final String DEFAULT_JMS_VALUE_USE_EXPONENTIAL_BACK_OFF = "true";
+    protected static final String DEFAULT_JMS_VALUE_EXPLICIT_QOS_ENABLED = "true";
+    protected static final String DEFAULT_JMS_VALUE_TIME_TO_LIVE = "3600000";
+    protected static final String DEFAULT_JMS_VALUE_DELIVERY_PERSISTENT = "true";
+    protected static final String DEFAULT_JMS_VALUE_CONCURRENT_CONSUMERS = "2";
+    protected static final String DEFAULT_JMS_VALUE_MAX_CONCURRENT_CONSUMERS = "10";
 
     // the settings below are concatenated with the (abstract) prefix
     protected static final String PROPERTY_NAME_REQUESTS = "requests";
@@ -239,18 +251,18 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
 
     private RedeliveryPolicy defaultRedeliveryPolicy() {
         final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
-        redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY)));
-        redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES)));
-        redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERY_DELAY)));
-        redeliveryPolicy.setRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_REDELIVERY_DELAY)));
-        redeliveryPolicy.setBackOffMultiplier(Double.parseDouble(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_BACK_OFF_MULTIPLIER)));
-        redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_USE_EXPONENTIAL_BACK_OFF)));
+        redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(this.getPropertyValue(
+                PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY, DEFAULT_JMS_VALUE_INITIAL_REDELIVERY_DELAY)));
+        redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(this.getPropertyValue(
+                PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES, DEFAULT_JMS_VALUE_MAXIMUM_REDELIVERIES)));
+        redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(this.getPropertyValue(
+                PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERY_DELAY, DEFAULT_JMS_VALUE_MAXIMUM_REDELIVERY_DELAY)));
+        redeliveryPolicy.setRedeliveryDelay(Long.parseLong(this.getPropertyValue(
+                PROPERTY_NAME_JMS_DEFAULT_REDELIVERY_DELAY, DEFAULT_JMS_VALUE_REDELIVERY_DELAY)));
+        redeliveryPolicy.setBackOffMultiplier(Double.parseDouble(this.getPropertyValue(
+                PROPERTY_NAME_JMS_DEFAULT_BACK_OFF_MULTIPLIER, DEFAULT_JMS_VALUE_BACK_OFF_MULTIPLIER)));
+        redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(this.getPropertyValue(
+                PROPERTY_NAME_JMS_DEFAULT_USE_EXPONENTIAL_BACK_OFF, DEFAULT_JMS_VALUE_USE_EXPONENTIAL_BACK_OFF)));
 
         return redeliveryPolicy;
     }
@@ -279,12 +291,12 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
     private JmsTemplate defaultJmsTemplate(final ActiveMQDestination destinationQueue) {
         final JmsTemplate jmsTemplate = new JmsTemplate();
         jmsTemplate.setDefaultDestination(destinationQueue);
-        jmsTemplate.setExplicitQosEnabled(Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_EXPLICIT_QOS_ENABLED)));
-        jmsTemplate.setTimeToLive(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_TIME_TO_LIVE)));
-        jmsTemplate.setDeliveryPersistent(Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_DELIVERY_PERSISTENT)));
+        jmsTemplate.setExplicitQosEnabled(Boolean.parseBoolean(this.getPropertyValue(
+                PROPERTY_NAME_JMS_DEFAULT_EXPLICIT_QOS_ENABLED, DEFAULT_JMS_VALUE_EXPLICIT_QOS_ENABLED)));
+        jmsTemplate.setTimeToLive(Long.parseLong(this.getPropertyValue(PROPERTY_NAME_JMS_DEFAULT_TIME_TO_LIVE,
+                DEFAULT_JMS_VALUE_TIME_TO_LIVE)));
+        jmsTemplate.setDeliveryPersistent(Boolean.parseBoolean(this.getPropertyValue(
+                PROPERTY_NAME_JMS_DEFAULT_DELIVERY_PERSISTENT, DEFAULT_JMS_VALUE_DELIVERY_PERSISTENT)));
         jmsTemplate.setConnectionFactory(this.pooledConnectionFactory());
         return jmsTemplate;
     }
@@ -319,10 +331,10 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
         final DefaultMessageListenerContainer defaultMessageListenerContainer = new DefaultMessageListenerContainer();
         defaultMessageListenerContainer.setConnectionFactory(this.pooledConnectionFactory());
         defaultMessageListenerContainer.setDestination(destinationQueue);
-        defaultMessageListenerContainer.setConcurrentConsumers(Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_CONCURRENT_CONSUMERS)));
-        defaultMessageListenerContainer.setMaxConcurrentConsumers(Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAX_CONCURRENT_CONSUMERS)));
+        defaultMessageListenerContainer.setConcurrentConsumers(Integer.parseInt(this.getPropertyValue(
+                PROPERTY_NAME_JMS_DEFAULT_CONCURRENT_CONSUMERS, DEFAULT_JMS_VALUE_CONCURRENT_CONSUMERS)));
+        defaultMessageListenerContainer.setMaxConcurrentConsumers(Integer.parseInt(this.getPropertyValue(
+                PROPERTY_NAME_JMS_DEFAULT_MAX_CONCURRENT_CONSUMERS, DEFAULT_JMS_VALUE_MAX_CONCURRENT_CONSUMERS)));
         defaultMessageListenerContainer.setMessageListener(messageListener);
         defaultMessageListenerContainer.setSessionTransacted(true);
         return defaultMessageListenerContainer;
@@ -345,6 +357,11 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
 
     private String getPrefixedValue(final String postFix) {
         return this.environment.getProperty(this.makePrefixedKey(postFix));
+    }
+
+    private String getPropertyValue(final String key, final String defaultValue) {
+        final String value = this.environment.getProperty(key);
+        return value == null ? defaultValue : value;
     }
 
     private String makePrefixedKey(final String postFix) {
