@@ -37,69 +37,86 @@ import cucumber.api.java.en.When;
  * Class with all the create organization requests steps
  */
 public class CreateOrganizationSteps {
-    
+
     @Autowired
-	private AdminDeviceManagementClient client;
+    private AdminDeviceManagementClient client;
 
     /**
-     * 
+     *
      * @throws Throwable
      */
     @When("^receiving a create organization request$")
-    public void receiving_a_create_organization_request(Map<String, String> requestSettings) throws Throwable {
+    public void receiving_a_create_organization_request(final Map<String, String> requestSettings) throws Throwable {
 
-    	CreateOrganisationRequest request = new CreateOrganisationRequest();
-    	Organisation organization = new Organisation();
-    	organization.setEnabled(getBoolean(requestSettings, Keys.KEY_ENABLED, Defaults.DEFAULT_ORGANIZATION_ENABLED));
-    	organization.setName(getString(requestSettings, Keys.KEY_NAME, Defaults.DEFAULT_ORGANIZATION_NAME));
-    	organization.setOrganisationIdentification(getString(requestSettings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
-    	organization.setPrefix(getString(requestSettings, Keys.KEY_PREFIX, Defaults.DEFAULT_ORGANIZATION_PREFIX));
-    	
-    	PlatformFunctionGroup platformFunctionGroup = getEnum(requestSettings, Keys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class, Defaults.DEFAULT_PLATFORM_FUNCTION_GROUP);
-    	organization.setFunctionGroup(platformFunctionGroup);
-    	
-		for (String domain : getString(requestSettings, Keys.KEY_DOMAINS, Defaults.DEFAULT_DEVICE_IDENTIFICATION).split(";")) {
-        	organization.getDomains().add(Enum.valueOf(PlatformDomain.class, domain));
-    	}
-    	
-    	request.setOrganisation(organization);
-        
-    	try {
-    		ScenarioContext.Current().put(Keys.RESPONSE, client.createOrganization(request));
-    	} catch (SoapFaultClientException e) {
-    		ScenarioContext.Current().put(Keys.RESPONSE, e);
-    	}
+        final CreateOrganisationRequest request = new CreateOrganisationRequest();
+        final Organisation organization = new Organisation();
+        organization.setEnabled(getBoolean(requestSettings, Keys.KEY_ENABLED, Defaults.DEFAULT_ORGANIZATION_ENABLED));
+        organization.setName(getString(requestSettings, Keys.KEY_NAME, Defaults.DEFAULT_ORGANIZATION_NAME));
+        organization.setOrganisationIdentification(getString(requestSettings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
+                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+        organization.setPrefix(getString(requestSettings, Keys.KEY_PREFIX, Defaults.DEFAULT_ORGANIZATION_PREFIX));
+        if (organization.getPrefix().isEmpty()) {
+            organization.setPrefix(Defaults.DEFAULT_ORGANIZATION_PREFIX);
+        }
+
+        final PlatformFunctionGroup platformFunctionGroup = getEnum(requestSettings, Keys.KEY_PLATFORM_FUNCTION_GROUP,
+                PlatformFunctionGroup.class, Defaults.DEFAULT_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP);
+        organization.setFunctionGroup(platformFunctionGroup);
+
+        String domains = getString(requestSettings, Keys.KEY_DOMAINS, Defaults.DEFAULT_DOMAINS);
+        if (domains.isEmpty()) {
+            domains = Defaults.DEFAULT_DOMAINS;
+        }
+        for (final String domain : domains.split(";")) {
+            organization.getDomains().add(Enum.valueOf(PlatformDomain.class, domain));
+        }
+
+        request.setOrganisation(organization);
+
+        try {
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.createOrganization(request));
+        } catch (final SoapFaultClientException e) {
+            ScenarioContext.Current().put(Keys.RESPONSE, e);
+        }
     }
-    
+
     /**
-     * 
+     *
      * @throws Throwable
      */
     @When("^receiving a create organization request as an unauthorized organization$")
-    public void receiving_a_create_organization_request_as_an_unauthorized_organization(Map<String, String> requestSettings) throws Throwable {
+    public void receiving_a_create_organization_request_as_an_unauthorized_organization(
+            final Map<String, String> requestSettings) throws Throwable {
 
-    	// Force WSTF to use a different organization to send the requests with. (Cerificate is used from the certificates directory).
-    	ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
-    	
-    	this.receiving_a_create_organization_request(requestSettings);
+        // Force WSTF to use a different organization to send the requests with.
+        // (Cerificate is used from the certificates directory).
+        ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
+
+        this.receiving_a_create_organization_request(requestSettings);
     }
-    
+
     /**
      * Verify that the create organization response is successful.
+     *
      * @throws Throwable
      */
     @Then("^the create organization response is successfull$")
     public void the_create_organization_response_is_successfull() throws Throwable {
-    	Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof CreateOrganisationResponse);
+
+        final Object obj = ScenarioContext.Current().get(Keys.RESPONSE);
+
+        Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof CreateOrganisationResponse);
     }
-    
+
     /**
-     * Verify that the create organization response contains the fault with the given expectedResult parameters.
+     * Verify that the create organization response contains the fault with the
+     * given expectedResult parameters.
+     *
      * @param expectedResult
      * @throws Throwable
      */
     @Then("^the create organization response contains$")
-    public void the_create_organization_response_contains(Map<String, String> expectedResult) throws Throwable {
+    public void the_create_organization_response_contains(final Map<String, String> expectedResult) throws Throwable {
         GenericResponseSteps.VerifySoapFault(expectedResult);
     }
 }

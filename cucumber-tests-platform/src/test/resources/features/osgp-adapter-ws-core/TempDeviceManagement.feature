@@ -99,10 +99,10 @@ Feature: Temp Device management
   #| TEST1024000000001    | OK     | SECURITY_EVENTS               |
   #| TEST1024000000001    |       25 |    0 |      1 |
   #
-  Scenario: Adding a device which already exists
-    Given a device
-      | DeviceIdentification | TEST1024000000001 |
-    When receiving an add device request
-      | DeviceIdentification | TEST1024000000001 |
-    Then the add device response contains soap fault
-      | Message | EXISTING_DEVICE |
+  #Scenario: Adding a device which already exists
+    #Given a device
+      #| DeviceIdentification | TEST1024000000001 |
+    #When receiving an add device request
+      #| DeviceIdentification | TEST1024000000001 |
+    #Then the add device response contains soap fault
+      #| Message | EXISTING_DEVICE |
