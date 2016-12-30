@@ -14,7 +14,7 @@ import java.util.Map;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
-import com.alliander.osgp.platform.dlms.cucumber.inputparsers.DateInputParser;
+import com.alliander.osgp.platform.cucumber.inputparsers.DateInputParser;
 import com.alliander.osgp.platform.dlms.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.dlms.cucumber.steps.Keys;
 

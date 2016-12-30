@@ -19,12 +19,16 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @ComponentScan(basePackages = { "com.alliander.osgp.adapter.ws.smartmetering.domain.entities",
         "com.alliander.osgp.domain.core.repositories", "com.alliander.osgp.domain.core.entities",
         "com.alliander.osgp.domain.microgrids.repositories", "com.alliander.osgp.domain.microgrids.entities",
-        "com.alliander.osgp.logging.domain.repositories", "com.alliander.osgp.adapter.protocol.oslp.domain.repositories",
-        "com.alliander.osgp.adapter.protocol.oslp.domain.entities",
-        "com.alliander.osgp.platform.cucumber.hooks" })
+        "com.alliander.osgp.logging.domain.repositories",
+        "com.alliander.osgp.adapter.protocol.iec61850.domain.repositories",
+        "com.alliander.osgp.adapter.protocol.iec61850.domain.entities",
+        "com.alliander.osgp.adapter.protocol.oslp.domain.repositories",
+        "com.alliander.osgp.adapter.protocol.oslp.domain.entities", "com.alliander.osgp.platform.cucumber.hooks" })
 @EnableTransactionManagement()
-@Import({ CorePersistenceConfig.class, AdapterWsSmartMeteringPersistenceConfig.class, AdapterProtocolDlmsPersistenceConfig.class,
-        LoggingPersistenceConfig.class, AdapterProtocolOslpPersistenceConfig.class, AdapterWsMicrogridsPersistenceConfig.class })
+@Import({ CorePersistenceConfig.class, AdapterWsSmartMeteringPersistenceConfig.class,
+    AdapterProtocolDlmsPersistenceConfig.class, LoggingPersistenceConfig.class,
+    AdapterProtocolIec61850PersistenceConfig.class, AdapterProtocolOslpPersistenceConfig.class,
+    AdapterWsMicrogridsPersistenceConfig.class, CoreDeviceConfig.class, Iec61850MockServerConfig.class })
 public class ApplicationContext {
 
 }

@@ -11,12 +11,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Locale;
-
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 
 /**
  * Parses the date of a cucumber input string to a java.util.Date instance.
@@ -29,11 +24,6 @@ public class DateInputParser {
 
     private static final DateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
-    
-    //XMLGregorianCalendar date2 = DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar(YYYY, MM, DD));
-    
-    
-    
     /**
      * Parses the date of a cucumber input string to a java.util.Date instance.
      *
@@ -41,11 +31,11 @@ public class DateInputParser {
      *            string with format "yyyy-MM-dd"
      * @return Date instance
      */
-    public static XMLGregorianCalendar parse(final String input) {
+    public static Date parse(final String input) {
         try {
-            return DatatypeFactory.newInstance().newXMLGregorianCalendar(input);
-        } catch (final DatatypeConfigurationException e) {
-            throw new AssertionError(String.format("Input date '%s' could not be parsed to a XMLGregorianCalendar object.", input));
+            return FORMAT.parse(input);
+        } catch (final ParseException e) {
+            throw new AssertionError(String.format("Input date '%s' could not be parsed to a date object.", input));
+        }
     }
-}
 }

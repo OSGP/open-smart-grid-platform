@@ -14,9 +14,8 @@ import java.util.Map;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetPoint;
+import com.alliander.osgp.platform.cucumber.inputparsers.XmlGregorianCalendarInputParser;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
-
-import com.alliander.osgp.platform.cucumber.inputparsers.DateInputParser;
 
 
 public class SetPointBuilder {// implements CucumberBuilder<SetPoint>{
@@ -27,31 +26,31 @@ public class SetPointBuilder {// implements CucumberBuilder<SetPoint>{
     protected String node;
 
     protected List<SetPoint> setPoints = new ArrayList<>();
-    
+
     public SetPointBuilder() {
     }
 
-    public SetPointBuilder withStartTime(XMLGregorianCalendar startTime) {
+    public SetPointBuilder withStartTime(final XMLGregorianCalendar startTime) {
         this.startTime = startTime;
         return this;
     }
 
-    public SetPointBuilder withEndTime(XMLGregorianCalendar endTime) {
+    public SetPointBuilder withEndTime(final XMLGregorianCalendar endTime) {
         this.endTime = endTime;
         return this;
     }
 
-    public SetPointBuilder withId(Integer id) {
+    public SetPointBuilder withId(final Integer id) {
         this.id = id;
         return this;
     }
 
-    public SetPointBuilder withNode(String node) {
+    public SetPointBuilder withNode(final String node) {
         this.node = node;
         return this;
     }
 
-    public SetPointBuilder withValue(double value) {
+    public SetPointBuilder withValue(final double value) {
         this.value = value;
         return this;
     }
@@ -70,8 +69,8 @@ public class SetPointBuilder {// implements CucumberBuilder<SetPoint>{
     public List<SetPoint> buildList() {
         return this.setPoints;
     }
-    
- // @Override
+
+    // @Override
     public SetPointBuilder withSettings(final Map<String, String> settings) {
         for (int i = 1; i <= this.count(settings, Keys.KEY_SETPOINT_ID); i++) {
             this.setPoints.add(this.withSettings(settings, i).build());
@@ -79,23 +78,25 @@ public class SetPointBuilder {// implements CucumberBuilder<SetPoint>{
 
         return this;
     }
-    
+
     private SetPointBuilder withSettings(final Map<String, String> settings, final int index) {
         if (this.hasKey(settings, Keys.KEY_SETPOINT_START_TIME, index)) {
-            this.withStartTime(DateInputParser.parse(getStringValue(settings, Keys.KEY_SETPOINT_START_TIME, index)));
-        } 
+            this.withStartTime(XmlGregorianCalendarInputParser
+                    .parse(this.getStringValue(settings, Keys.KEY_SETPOINT_START_TIME, index)));
+        }
         if (this.hasKey(settings, Keys.KEY_SETPOINT_END_TIME, index)) {
-            this.withEndTime(DateInputParser.parse(getStringValue(settings, Keys.KEY_SETPOINT_END_TIME, index)));
-        } 
+            this.withEndTime(XmlGregorianCalendarInputParser
+                    .parse(this.getStringValue(settings, Keys.KEY_SETPOINT_END_TIME, index)));
+        }
         if (this.hasKey(settings, Keys.KEY_SETPOINT_ID, index)) {
-            this.withId(Integer.parseInt(getStringValue(settings, Keys.KEY_SETPOINT_ID, index)));
-        } 
+            this.withId(Integer.parseInt(this.getStringValue(settings, Keys.KEY_SETPOINT_ID, index)));
+        }
         if (this.hasKey(settings, Keys.KEY_SETPOINT_NODE, index)) {
-            this.withNode(getStringValue(settings, Keys.KEY_SETPOINT_NODE, index));
-        } 
+            this.withNode(this.getStringValue(settings, Keys.KEY_SETPOINT_NODE, index));
+        }
         if (this.hasKey(settings, Keys.KEY_SETPOINT_VALUE, index)) {
-            this.withValue(Double.parseDouble(getStringValue(settings, Keys.KEY_SETPOINT_VALUE, index)));
-        } 
+            this.withValue(Double.parseDouble(this.getStringValue(settings, Keys.KEY_SETPOINT_VALUE, index)));
+        }
 
         return this;
     }
@@ -108,17 +109,17 @@ public class SetPointBuilder {// implements CucumberBuilder<SetPoint>{
         }
         return 0;
     }
-    
+
     private boolean hasKey(final Map<String, String> settings, final String keyPrefix, final int index) {
-        return settings.containsKey(makeKey(keyPrefix, index));
+        return settings.containsKey(this.makeKey(keyPrefix, index));
     }
 
-    private String makeKey(final String keyPrefix, int index) {
+    private String makeKey(final String keyPrefix, final int index) {
         return keyPrefix + "_" + index;
     }
 
     private String getStringValue(final Map<String, String> settings, final String keyPrefix, final int index) {
-        String key = makeKey(keyPrefix, index);
+        final String key = this.makeKey(keyPrefix, index);
         return settings.get(key);
     }
 
