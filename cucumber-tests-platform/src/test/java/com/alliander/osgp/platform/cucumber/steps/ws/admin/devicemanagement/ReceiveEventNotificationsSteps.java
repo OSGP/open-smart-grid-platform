@@ -61,6 +61,9 @@ public class ReceiveEventNotificationsSteps {
         final ReceiveEventNotificationsRequest request = new ReceiveEventNotificationsRequest();
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+        // request.setOrganizationIdentification(getString(requestParameters,
+        // Keys.KEY_ORGANIZATION_IDENTIFICATION,
+        // Defaults.DEFAULT_NEW_ORGANIZATION_IDENTIFICATION));
 
         try {
             ScenarioContext.Current().put(Keys.RESPONSE, this.client.receiveEventNotifications(request));

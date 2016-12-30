@@ -200,6 +200,7 @@ Feature: Device installation
   #Examples:
   #	| DeviceIdentification | OrganizationIdentification |
   #	| TEST1024000000001    | test-org                   |
+  #
   Scenario Outline: Find recent devices without owner
     When receiving a find recent devices request
       | DeviceIdentification | <DeviceIdentification> |
@@ -274,7 +275,7 @@ Feature: Device installation
     Given an oslp device
       | DeviceIdentification | TEST1024000000001 |
     And the device returns a stop device response "OK" over OSLP
-    When receiving a stop device request
+    When receiving a stop device test request
       | DeviceIdentification | TEST1024000000001 |
     Then the stop device async response contains
       | DeviceIdentification | TEST1024000000001 |

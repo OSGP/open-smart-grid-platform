@@ -18,6 +18,8 @@ import java.util.Map;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 
+//import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformDomain;
+//import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.valueobjects.PlatformDomain;
@@ -121,7 +123,8 @@ public class OrganizationSteps {
         final String prefix = getString(expectedEntity, Keys.KEY_PREFIX, Defaults.DEFAULT_ORGANIZATION_PREFIX);
         Assert.assertEquals((prefix.isEmpty()) ? Defaults.DEFAULT_ORGANIZATION_PREFIX : prefix, entity.getPrefix());
 
-        Assert.assertEquals(getEnum(expectedEntity, Keys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class,
+        Assert.assertEquals(getEnum(expectedEntity, Keys.KEY_PLATFORM_FUNCTION_GROUP,
+                com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup.class,
                 Defaults.DEFAULT_PLATFORM_FUNCTION_GROUP), entity.getFunctionGroup());
         Assert.assertEquals(getBoolean(expectedEntity, Keys.KEY_ENABLED, Defaults.DEFAULT_ORGANIZATION_ENABLED),
                 entity.isEnabled());

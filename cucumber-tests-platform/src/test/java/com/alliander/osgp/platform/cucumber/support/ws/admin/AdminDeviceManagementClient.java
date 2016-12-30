@@ -82,6 +82,8 @@ public class AdminDeviceManagementClient extends BaseClient {
             final ReceiveEventNotificationsRequest request) throws WebServiceSecurityException {
         final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
+        final Object obj = wst.marshalSendAndReceive(request);
+        System.out.println(obj);
         return (ReceiveEventNotificationsAsyncResponse) wst.marshalSendAndReceive(request);
     }
 
