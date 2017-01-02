@@ -13,6 +13,7 @@ import java.net.UnknownHostException;
 
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.TcpConnectionBuilder;
+import org.openmuc.jdlms.settings.client.ReferencingMethod;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
@@ -46,9 +47,15 @@ public class DlmsConnector {
         // Setup connection to device
         TcpConnectionBuilder tcpConnectionBuilder;
         try {
+
             tcpConnectionBuilder = new TcpConnectionBuilder(InetAddress.getByName(device.getIpAddress()))
                     .setResponseTimeout(this.responseTimeout).setLogicalDeviceId(this.logicalDeviceAddress)
-                    .setClientId(this.clientAccessPoint);
+                    .setClientId(this.clientAccessPoint)
+                    .setReferencingMethod(device.isUseSn() ? ReferencingMethod.SHORT : ReferencingMethod.LOGICAL);
+
+            if (device.isUseHdlc()) {
+                tcpConnectionBuilder.useHdlc();
+            }
         } catch (final UnknownHostException e) {
             throw new ConnectionException(e);
         }

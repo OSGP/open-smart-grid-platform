@@ -81,6 +81,12 @@ public class DlmsDevice extends AbstractEntity {
     @Column
     private boolean inDebugMode;
 
+    @Column
+    private boolean useHdlc;
+
+    @Column
+    private boolean useSn;
+
     // -- This comes from: Core Device.
 
     @Transient
@@ -252,6 +258,22 @@ public class DlmsDevice extends AbstractEntity {
 
     public void setInDebugMode(final boolean inDebugMode) {
         this.inDebugMode = inDebugMode;
+    }
+
+    public boolean isUseHdlc() {
+        return this.useHdlc;
+    }
+
+    public void setUseHdlc(final boolean useHdlc) {
+        this.useHdlc = useHdlc;
+    }
+
+    public boolean isUseSn() {
+        return this.useSn;
+    }
+
+    public void setUseSn(final boolean useSn) {
+        this.useSn = useSn;
     }
 
     /**
