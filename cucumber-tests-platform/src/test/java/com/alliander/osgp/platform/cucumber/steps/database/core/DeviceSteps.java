@@ -9,9 +9,9 @@ package com.alliander.osgp.platform.cucumber.steps.database.core;
 
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getBoolean;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getDate;
-import static com.alliander.osgp.platform.cucumber.core.Helpers.getInteger;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getEnum;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getFloat;
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getInteger;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getLong;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 
@@ -41,7 +41,7 @@ import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.RelayType;
-import com.alliander.osgp.platform.cucumber.config.CorePersistenceConfig;
+import com.alliander.osgp.platform.cucumber.config.CoreDeviceConfiguration;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
@@ -64,7 +64,7 @@ public class DeviceSteps {
     private final Long DEFAULT_DEVICE_ID = new java.util.Random().nextLong();
 
     @Autowired
-    private CorePersistenceConfig configuration;
+    private CoreDeviceConfiguration configuration;
 
     @Autowired
     private DeviceModelRepository deviceModelRepository;
@@ -123,20 +123,26 @@ public class DeviceSteps {
 
     /**
      * Update a device entity given its deviceidentification.
+<<<<<<< HEAD
      * 
      * @param deviceIdentification
      *            The deviceIdentification.
      * @param settings
      *            The settings.
+=======
+     *
+     * @param deviceIdentification The deviceIdentification.
+     * @param settings The settings.
+>>>>>>> 980c3f4f33cab5c3f7934ceb3c4d3ffc7ee9a8ce
      */
-    public void updateDevice(String deviceIdentification, Map<String, String> settings) {
+    public void updateDevice(final String deviceIdentification, final Map<String, String> settings) {
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
         this.updateDevice(device, settings);
     }
 
     /**
      * Update an existing device with the given settings.
-     * 
+     *
      * @param device
      * @param settings
      */
@@ -156,8 +162,8 @@ public class DeviceSteps {
 
         InetAddress inetAddress;
         try {
-            inetAddress = InetAddress.getByName(configuration.deviceNetworkaddress);
-        } catch (UnknownHostException e) {
+            inetAddress = InetAddress.getByName(this.configuration.deviceNetworkaddress);
+        } catch (final UnknownHostException e) {
             inetAddress = InetAddress.getLoopbackAddress();
         }
         device.updateRegistrationData(inetAddress, getString(settings, "DeviceType", DeviceSteps.DEFAULT_DEVICE_TYPE));
@@ -273,7 +279,6 @@ public class DeviceSteps {
                 device = this.deviceRepository
                         .findByDeviceIdentification(settings.get(Keys.KEY_DEVICE_IDENTIFICATION));
                 Assert.assertNotNull(device);
-
 
                 success = true;
             } catch (final Exception | AssertionError e) {

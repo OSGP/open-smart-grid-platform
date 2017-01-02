@@ -28,7 +28,7 @@ import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.Resum
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.ResumeScheduleResponse;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.AsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.OsgpResultType;
-import com.alliander.osgp.platform.cucumber.config.CorePersistenceConfig;
+import com.alliander.osgp.platform.cucumber.config.CoreDeviceConfiguration;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
@@ -43,7 +43,7 @@ import cucumber.api.java.en.When;
  */
 public class ResumeScheduleSteps {
 	@Autowired
-	private CorePersistenceConfig configuration;
+	private CoreDeviceConfiguration configuration;
 	
 	@Autowired
 	private PublicLightingAdHocManagementClient client;
@@ -114,7 +114,8 @@ public class ResumeScheduleSteps {
     		}
     		
     		count++;
-    		
+            Thread.sleep(1000);
+
     		try {
     			ResumeScheduleResponse response = client.getResumeScheduleResponse(request);
     			
@@ -130,6 +131,6 @@ public class ResumeScheduleSteps {
     
     @Then("^the resume schedule async response contains soap fault$")
     public void theResumeScheduleAsyncResponseContainsSoapFault(final Map<String, String> expectedResult) {
-    	GenericResponseSteps.VerifySoapFault(expectedResult);
+    	GenericResponseSteps.verifySoapFault(expectedResult);
     }
 }

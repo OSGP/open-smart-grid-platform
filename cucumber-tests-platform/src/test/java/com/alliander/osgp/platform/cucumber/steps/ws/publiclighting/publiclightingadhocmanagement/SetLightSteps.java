@@ -30,7 +30,7 @@ import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.SetLi
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.SetLightResponse;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.AsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.OsgpResultType;
-import com.alliander.osgp.platform.cucumber.config.CorePersistenceConfig;
+import com.alliander.osgp.platform.cucumber.config.CoreDeviceConfiguration;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
@@ -46,7 +46,7 @@ import cucumber.api.java.en.When;
 public class SetLightSteps {
 
 	@Autowired
-	private CorePersistenceConfig configuration;
+	private CoreDeviceConfiguration configuration;
 
 	@Autowired
 	private PublicLightingAdHocManagementClient client;
@@ -165,7 +165,7 @@ public class SetLightSteps {
 
 	@Then("^the set light response contains soap fault$")
 	public void thenTheSetLightResponseContainsSoapFault(final Map<String, String> expectedResult) {
-		GenericResponseSteps.VerifySoapFault(expectedResult);
+		GenericResponseSteps.verifySoapFault(expectedResult);
 	}
 
 	@Then("^the platform buffers a set light response message for device \"([^\"]*)\"$")
@@ -185,6 +185,7 @@ public class SetLightSteps {
 			}
 
 			count++;
+            Thread.sleep(1000);
 
 			try {
 				SetLightResponse response = client.getSetLightResponse(request);
