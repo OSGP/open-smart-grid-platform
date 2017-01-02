@@ -109,9 +109,15 @@ public class DatabaseSteps {
 
     @Transactional("txMgrCore")
     public void prepareDatabaseForScenario() {
-        this.oslpDeviceRepository.deleteAllInBatch();
-        this.iec61850DeviceRepository.deleteAllInBatch();
-        this.deviceAuthorizationRepository.deleteAllInBatch();
+
+    	// First remove stuff from osgp_protocol_adapter_oslp
+    	this.oslpDeviceRepository.deleteAllInBatch();
+        
+    	// Then remove stuff from osgp_protocol_adapter_iec61850
+    	this.iec61850DeviceRepository.deleteAllInBatch();
+
+    	// Then remove stuff from osgp_core
+    	this.deviceAuthorizationRepository.deleteAllInBatch();
         this.deviceLogItemRepository.deleteAllInBatch();
         this.scheduledTaskRepository.deleteAllInBatch();
         this.deviceRepository.deleteAllEans();

@@ -40,7 +40,8 @@ Feature: Organisation management
       | Enabled                    | <Enabled>                    |
       | Domains                    | <Domains>                    |
     Then the create organization response contains
-      | Message | com.alliander.osgp.shared.exceptionhandling.TechnicalException |
+      | COMPONENT | WS_ADMIN                                                       |
+      | MESSAGE   | com.alliander.osgp.shared.exceptionhandling.TechnicalException |
     And the organization with name "Different Organisation" should not be created
 
     Examples: 
@@ -72,7 +73,7 @@ Feature: Organisation management
       | Enabled                    | <Enabled>                             |
       | Domains                    | <Domains>                             |
     Then the create organization response contains
-      | Message | Validation error |
+      | MESSAGE | Validation error |
     And the organization with name "<Name>" should not be created
 
     # Note: The validation errors are ; separated if there are multiple.

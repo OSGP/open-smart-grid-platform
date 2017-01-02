@@ -38,7 +38,7 @@ Feature: Adhoc Management
       | Index                | <Index>           |
       | IsImmediate          | <IsImmediate>     |
     Then the resume schedule async response contains soap fault
-      | Message | <Message> |
+      | MESSAGE | <Message> |
 
     Examples: 
       | Index | IsImmediate | Message          |
@@ -66,7 +66,7 @@ Feature: Adhoc Management
       | Index                | <Index>           |
       | IsImmediate          | true              |
     Then the resume schedule async response contains soap fault
-      | Message | <Message> |
+      | MESSAGE | <Message> |
 
     # | FaultCode        | SOAP-ENV:Client                                                                                                                                   |
     # | FaultString      | Validation error                                                                                                                                  |
