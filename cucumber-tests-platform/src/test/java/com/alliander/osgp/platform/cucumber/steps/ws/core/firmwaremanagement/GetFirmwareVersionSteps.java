@@ -1,11 +1,9 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2012-2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package com.alliander.osgp.platform.cucumber.steps.ws.core.firmwaremanagement;
 
@@ -53,7 +51,7 @@ public class GetFirmwareVersionSteps {
      * @throws Throwable
      */
     @Given("^receiving a get firmware version request$")
-    public void givenReceivingAGetFirmwareVersionRequest(final Map<String, String> requestParameters) throws Throwable {
+    public void receivingAGetFirmwareVersionRequest(final Map<String, String> requestParameters) throws Throwable {
 
     	GetFirmwareVersionRequest request = new GetFirmwareVersionRequest();
     	request.setDeviceIdentification(getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
@@ -72,7 +70,7 @@ public class GetFirmwareVersionSteps {
      * @throws Throwable
      */
     @Then("^the get firmware version async response contains$")
-    public void thenTheGetFirmwareVersionResponseContains(final Map<String, String> expectedResponseData)
+    public void theGetFirmwareVersionResponseContains(final Map<String, String> expectedResponseData)
             throws Throwable {
     	GetFirmwareVersionAsyncResponse response = (GetFirmwareVersionAsyncResponse)ScenarioContext.Current().get(Keys.RESPONSE);
     	
@@ -87,7 +85,7 @@ public class GetFirmwareVersionSteps {
     }
 
     @Then("^the platform buffers a get firmware version response message for device \"([^\"]*)\"$")
-    public void thenThePlatformBufferesAGetFirmwareVersionResponseMessage(final String deviceIdentification,
+    public void thePlatformBufferesAGetFirmwareVersionResponseMessage(final String deviceIdentification,
             final Map<String, String> expectedResponseData) throws Throwable {
     	GetFirmwareVersionAsyncRequest request = new GetFirmwareVersionAsyncRequest();
     	AsyncRequest asyncRequest = new AsyncRequest();

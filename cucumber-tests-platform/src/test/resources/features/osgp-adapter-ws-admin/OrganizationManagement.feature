@@ -11,7 +11,7 @@ Feature: Organisation management
       | FunctionGroup              | <FunctionGroup>              |
       | Enabled                    | <Enabled>                    |
       | Domains                    | <Domains>                    |
-    Then the create organization response is successfull
+    Then the create organization response is successful
     And the entity organization exists
       | OrganizationIdentification | <OrganizationIdentification> |
       | Name                       | <Name>                       |
@@ -93,7 +93,7 @@ Feature: Organisation management
       | Name                          | <NewName>                    |
       | FunctionGroup                 | <FunctionGroup>              |
       | Domains                       | <Domains>                    |
-    Then the update organization response is successfull
+    Then the update organization response is successful
     And the organization exists
       | OrganizationIdentification | <OrganizationIdentification> |
       | Name                       | <NewName>                    |
@@ -116,7 +116,7 @@ Feature: Organisation management
       | OrganizationIdentification | <OrganizationIdentification> |
       | Name                       | <Name>                       |
       | FunctionGroup              | <FunctionGroup>              |
-    Then the remove organization response is successfull
+    Then the remove organization response is successful
     And the organization with organization identification "<OrganizationIdentification>" should be disabled
 
     Examples: 

@@ -1,11 +1,9 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2012-2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package com.alliander.osgp.platform.cucumber.steps.ws.admin.devicemanagement;
 
@@ -46,7 +44,7 @@ public class ChangeOrganizationSteps {
 	 * @throws Throwable
 	 */
 	@When("^receiving an update organization request$")
-	public void receiving_an_update_organization_request(Map<String, String> requestSettings) throws Throwable {
+	public void receivingAnUpdateOrganizationRequest(Map<String, String> requestSettings) throws Throwable {
 		ChangeOrganisationRequest request = new ChangeOrganisationRequest();
 		request.setOrganisationIdentification(getString(requestSettings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
 				Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
@@ -70,8 +68,8 @@ public class ChangeOrganizationSteps {
 		}
 	}
 
-	@Then("^the update organization response is successfull$")
-	public void the_update_organization_response_is_successfull() throws Throwable {
+	@Then("^the update organization response is successful$")
+	public void theUpdateOrganizationResponseIsSuccessful() throws Throwable {
 		Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof ChangeOrganisationResponse);
 	}
 }

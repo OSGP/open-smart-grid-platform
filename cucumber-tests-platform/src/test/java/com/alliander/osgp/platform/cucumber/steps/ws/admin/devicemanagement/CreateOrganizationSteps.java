@@ -1,11 +1,9 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2012-2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package com.alliander.osgp.platform.cucumber.steps.ws.admin.devicemanagement;
 
@@ -46,7 +44,7 @@ public class CreateOrganizationSteps {
      * @throws Throwable
      */
     @When("^receiving a create organization request$")
-    public void receiving_a_create_organization_request(Map<String, String> requestSettings) throws Throwable {
+    public void receivingACreateOrganizationRequest(final Map<String, String> requestSettings) throws Throwable {
 
     	CreateOrganisationRequest request = new CreateOrganisationRequest();
     	Organisation organization = new Organisation();
@@ -75,20 +73,20 @@ public class CreateOrganizationSteps {
      * @throws Throwable
      */
     @When("^receiving a create organization request as an unauthorized organization$")
-    public void receiving_a_create_organization_request_as_an_unauthorized_organization(Map<String, String> requestSettings) throws Throwable {
+    public void receivingACreateOrganizationRequestAsAnUnauthorizedOrganization(final Map<String, String> requestSettings) throws Throwable {
 
     	// Force WSTF to use a different organization to send the requests with. (Cerificate is used from the certificates directory).
     	ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
     	
-    	this.receiving_a_create_organization_request(requestSettings);
+    	this.receivingACreateOrganizationRequest(requestSettings);
     }
     
     /**
      * Verify that the create organization response is successful.
      * @throws Throwable
      */
-    @Then("^the create organization response is successfull$")
-    public void the_create_organization_response_is_successfull() throws Throwable {
+    @Then("^the create organization response is successful$")
+    public void theCreateOrganizationResponseIsSuccessful() throws Throwable {
     	Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof CreateOrganisationResponse);
     }
     
@@ -98,7 +96,7 @@ public class CreateOrganizationSteps {
      * @throws Throwable
      */
     @Then("^the create organization response contains$")
-    public void the_create_organization_response_contains(Map<String, String> expectedResult) throws Throwable {
+    public void theCreateOrganizationResponseContains(final Map<String, String> expectedResult) throws Throwable {
         GenericResponseSteps.verifySoapFault(expectedResult);
     }
 }

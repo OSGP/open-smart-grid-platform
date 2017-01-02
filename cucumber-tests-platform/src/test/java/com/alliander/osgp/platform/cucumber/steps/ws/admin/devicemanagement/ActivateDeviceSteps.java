@@ -1,11 +1,9 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2012-2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package com.alliander.osgp.platform.cucumber.steps.ws.admin.devicemanagement;
 
@@ -38,7 +36,7 @@ public class ActivateDeviceSteps {
     private AdminDeviceManagementClient client;
 
     @When("^receiving an activate device request$")
-    public void receivingAActivateDeviceRequest(final Map<String, String> requestSettings) throws Throwable {
+    public void receivingAnActivateDeviceRequest(final Map<String, String> requestSettings) throws Throwable {
 
         ActivateDeviceRequest request = new ActivateDeviceRequest();
         request.setDeviceIdentification(
