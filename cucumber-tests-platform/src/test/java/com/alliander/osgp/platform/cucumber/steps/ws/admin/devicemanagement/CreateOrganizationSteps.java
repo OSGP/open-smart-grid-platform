@@ -99,6 +99,6 @@ public class CreateOrganizationSteps {
      */
     @Then("^the create organization response contains$")
     public void the_create_organization_response_contains(Map<String, String> expectedResult) throws Throwable {
-        GenericResponseSteps.VerifySoapFault(expectedResult);
+        GenericResponseSteps.verifySoapFault(expectedResult);
     }
 }

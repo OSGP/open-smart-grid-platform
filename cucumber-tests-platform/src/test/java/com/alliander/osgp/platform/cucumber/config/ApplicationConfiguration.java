@@ -73,12 +73,8 @@ public abstract class ApplicationConfiguration extends AbstractConfig {
     public String deviceNetworkaddress;
 
     @Value("${defaultTimeout}")
-    private String defaultTimeout;
+    public Integer defaultTimeout;
     
-    public Integer getDefaultTimeout() {
-    	return Integer.parseInt(defaultTimeout);
-    }
-
     protected abstract String getDatabaseUrl();
 
     protected abstract String getEntitymanagerPackagesToScan();

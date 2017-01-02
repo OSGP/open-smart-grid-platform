@@ -201,7 +201,7 @@ public class DeviceSteps {
         int count = 0;
         while (!success) {
             try {
-                if (count > configuration.getDefaultTimeout()) {
+                if (count > configuration.defaultTimeout) {
                     Assert.fail("Failed");
                 }
 
@@ -231,7 +231,7 @@ public class DeviceSteps {
         int count = 0;
         while (!success) {
             try {
-                if (count > configuration.getDefaultTimeout()) {
+                if (count > configuration.defaultTimeout) {
                     Assert.fail("Failed");
                 }
 
@@ -256,74 +256,76 @@ public class DeviceSteps {
      */
     @And("^the device exists")
     public void theDeviceExists(final Map<String, String> settings) throws Throwable {
+        Device device = null; 
+    	
         boolean success = false;
         int count = 0;
         while (!success) {
-            if (count > configuration.getDefaultTimeout()) {
+            if (count > configuration.defaultTimeout) {
                 Assert.fail("Failed");
             }
 
             count++;
             Thread.sleep(1000);
-            LoggerFactory.getLogger(DeviceSteps.class).info("Sleeping ls " + count);
 
             try {
                 // Wait for next try to retrieve a response
-                final Device device = this.deviceRepository
+                device = this.deviceRepository
                         .findByDeviceIdentification(settings.get(Keys.KEY_DEVICE_IDENTIFICATION));
                 Assert.assertNotNull(device);
 
-                if (settings.containsKey("Alias")) {
-                    Assert.assertEquals(settings.get("Alias"), device.getAlias());
-                }
-                if (settings.containsKey("OrganizationIdentification")) {
-                    Assert.assertEquals(settings.get("OrganizationIdentification"),
-                            device.getOwner().getOrganisationIdentification());
-                }
-                if (settings.containsKey("ContainerPostalCode")) {
-                    Assert.assertEquals(settings.get("ContainerPostalCode"), device.getContainerPostalCode());
-                }
-                if (settings.containsKey("ContainerCity")) {
-                    Assert.assertEquals(settings.get("ContainerCity"), device.getContainerCity());
-                }
-                if (settings.containsKey("ContainerStreet")) {
-                    Assert.assertEquals(settings.get("ContainerStreet"), device.getContainerStreet());
-                }
-                if (settings.containsKey("ContainerNumber")) {
-                    Assert.assertEquals(settings.get("ContainerNumber"), device.getContainerNumber());
-                }
-                if (settings.containsKey("ContainerMunicipality")) {
-                    Assert.assertEquals(settings.get("ContainerMunicipality"), device.getContainerMunicipality());
-                }
-                if (settings.containsKey("GpsLatitude")) {
-                    Assert.assertTrue(Float.parseFloat(settings.get("GpsLatitude")) == device.getGpsLatitude());
-                }
-                if (settings.containsKey("GpsLongitude")) {
-                    Assert.assertTrue(Float.parseFloat(settings.get("GpsLongitude")) == device.getGpsLongitude());
-                }
-                if (settings.containsKey("Activated")) {
-                    Assert.assertTrue(Boolean.parseBoolean(settings.get("Activated")) == device.isActivated());
-                }
-                if (settings.containsKey("HasSchedule") || settings.containsKey("PublicKeyPresent")) {
-                    final Ssld ssld = this.ssldRepository
-                            .findByDeviceIdentification(settings.get("DeviceIdentification"));
-
-                    if (settings.containsKey("HasSchedule")) {
-                        Assert.assertTrue(Boolean.parseBoolean(settings.get("HasSchedule")) == ssld.getHasSchedule());
-                    }
-                    if (settings.containsKey("PublicKeyPresent")) {
-                        Assert.assertTrue(
-                                Boolean.parseBoolean(settings.get("PublicKeyPresent")) == ssld.isPublicKeyPresent());
-                    }
-                }
-                if (settings.containsKey("DeviceModel")) {
-                    Assert.assertEquals(settings.get("DeviceModel"), device.getDeviceModel().getModelCode());
-                }
 
                 success = true;
             } catch (final Exception | AssertionError e) {
-                LOGGER.info(e.getMessage());
+                LOGGER.info("Waiting for device entity. [{}]", e.getMessage());
             }
+        }
+        
+        if (settings.containsKey("Alias")) {
+            Assert.assertEquals(settings.get("Alias"), device.getAlias());
+        }
+        if (settings.containsKey("OrganizationIdentification")) {
+            Assert.assertEquals(settings.get("OrganizationIdentification"),
+                    device.getOwner().getOrganisationIdentification());
+        }
+        if (settings.containsKey("ContainerPostalCode")) {
+            Assert.assertEquals(settings.get("ContainerPostalCode"), device.getContainerPostalCode());
+        }
+        if (settings.containsKey("ContainerCity")) {
+            Assert.assertEquals(settings.get("ContainerCity"), device.getContainerCity());
+        }
+        if (settings.containsKey("ContainerStreet")) {
+            Assert.assertEquals(settings.get("ContainerStreet"), device.getContainerStreet());
+        }
+        if (settings.containsKey("ContainerNumber")) {
+            Assert.assertEquals(settings.get("ContainerNumber"), device.getContainerNumber());
+        }
+        if (settings.containsKey("ContainerMunicipality")) {
+            Assert.assertEquals(settings.get("ContainerMunicipality"), device.getContainerMunicipality());
+        }
+        if (settings.containsKey("GpsLatitude")) {
+            Assert.assertTrue(Float.parseFloat(settings.get("GpsLatitude")) == device.getGpsLatitude());
+        }
+        if (settings.containsKey("GpsLongitude")) {
+            Assert.assertTrue(Float.parseFloat(settings.get("GpsLongitude")) == device.getGpsLongitude());
+        }
+        if (settings.containsKey("Activated")) {
+            Assert.assertTrue(Boolean.parseBoolean(settings.get("Activated")) == device.isActivated());
+        }
+        if (settings.containsKey("HasSchedule") || settings.containsKey("PublicKeyPresent")) {
+            final Ssld ssld = this.ssldRepository
+                    .findByDeviceIdentification(settings.get("DeviceIdentification"));
+
+            if (settings.containsKey("HasSchedule")) {
+                Assert.assertTrue(Boolean.parseBoolean(settings.get("HasSchedule")) == ssld.getHasSchedule());
+            }
+            if (settings.containsKey("PublicKeyPresent")) {
+                Assert.assertTrue(
+                        Boolean.parseBoolean(settings.get("PublicKeyPresent")) == ssld.isPublicKeyPresent());
+            }
+        }
+        if (settings.containsKey("DeviceModel")) {
+            Assert.assertEquals(settings.get("DeviceModel"), device.getDeviceModel().getModelCode());
         }
     }
 
@@ -349,11 +351,11 @@ public class DeviceSteps {
      * @throws Throwable
      */
     @Then("^the device with id \"([^\"]*)\" does not exists$")
-    public void the_device_should_be_removed(final String deviceIdentification) throws Throwable {
+    public void theDeviceShouldBeRemoved(final String deviceIdentification) throws Throwable {
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-        final List<DeviceAuthorization> devAuths = this.deviceAuthorizationRepository.findByDevice(device);
+        Assert.assertNull(device);
 
-        Assert.assertNotNull(device);
+        final List<DeviceAuthorization> devAuths = this.deviceAuthorizationRepository.findByDevice(device);
         Assert.assertTrue(devAuths.size() == 0);
     }
 }

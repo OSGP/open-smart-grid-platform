@@ -119,7 +119,6 @@
     <dependency>
       <groupId>com.alliander</groupId>
       <artifactId>cucumber-tests-platform</artifactId>
-      <version>${osgp.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>

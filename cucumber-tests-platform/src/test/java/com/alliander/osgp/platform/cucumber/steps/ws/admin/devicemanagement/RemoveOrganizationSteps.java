@@ -70,6 +70,6 @@ public class RemoveOrganizationSteps {
      */
     @Then("^the remove organization response contains$")
     public void the_remove_organization_response_contains(final Map<String, String> expectedResult) throws Throwable {
-        GenericResponseSteps.VerifySoapFault(expectedResult);
+        GenericResponseSteps.verifySoapFault(expectedResult);
     }
 }

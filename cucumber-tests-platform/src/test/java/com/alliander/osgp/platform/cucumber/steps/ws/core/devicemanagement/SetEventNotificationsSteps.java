@@ -103,12 +103,13 @@ public class SetEventNotificationsSteps {
     	boolean success = false;
     	int count = 0;
     	while (!success) {
-    		if (count > configuration.getDefaultTimeout()) {
+    		if (count > configuration.defaultTimeout) {
     			Assert.fail("Timeout");
     		}
     		
     		count++;
-    		
+            Thread.sleep(1000);
+
     		try {
     			SetEventNotificationsResponse response = client.getSetEventNotificationsResponse(request);
     			    			

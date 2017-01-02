@@ -140,7 +140,7 @@ public class CreateDeviceSteps {
     
     @Then("^the add device response contains soap fault$")
     public void the_add_device_response_contains_soap_fault(final Map<String, String> expectedResult) throws Throwable {
-        GenericResponseSteps.VerifySoapFault(expectedResult);
+        GenericResponseSteps.verifySoapFault(expectedResult);
     }
 
     /**
@@ -159,6 +159,6 @@ public class CreateDeviceSteps {
      */
     @Then("^the update device response contains soap fault$")
     public void the_update_device_response_contains_soap_fault(Map<String, String> expectedResult) throws Throwable {
-        GenericResponseSteps.VerifySoapFault(expectedResult);
+        GenericResponseSteps.verifySoapFault(expectedResult);
     }
 }

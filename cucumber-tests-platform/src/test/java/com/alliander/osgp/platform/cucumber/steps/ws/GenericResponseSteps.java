@@ -27,7 +27,7 @@ public class GenericResponseSteps {
 	 * 
 	 * @param expectedResult The list with expected result.
 	 */
-	public static void VerifySoapFault(final Map<String, String> expectedResult){
+	public static void verifySoapFault(final Map<String, String> expectedResult){
 		SoapFaultClientException response = (SoapFaultClientException) ScenarioContext.Current().get(Keys.RESPONSE);
 		
 		Assert.assertEquals(getString(expectedResult, Keys.KEY_MESSAGE), response.getMessage());

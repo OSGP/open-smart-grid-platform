@@ -133,7 +133,7 @@ public class MockOslpServer {
 				Assert.fail("Polling for response interrupted");
 			}
 
-			if (count > configuration.getDefaultTimeout()) {
+			if (count > configuration.defaultTimeout) {
 				Assert.fail("Polling for response failed, no reponse found");
 			}
 		}
