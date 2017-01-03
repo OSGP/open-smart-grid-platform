@@ -1,3 +1,10 @@
+/**
+ * Copyright 2016 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.
+ * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.platform.cucumber.steps.ws.microgrids.notification;
 
 import org.junit.Assert;
@@ -7,9 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.ws.schema.microgrids.notification.Notification;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
-import com.alliander.osgp.platform.cucumber.mocks.notification.MockNotificationService;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
+import com.alliander.osgp.platform.cucumber.support.ws.microgrids.NotificationService;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -22,7 +29,7 @@ public class NotificationSteps {
     private static final Logger LOGGER = LoggerFactory.getLogger(NotificationSteps.class);
 
     @Autowired
-    MockNotificationService mockNotificationService;
+    NotificationService mockNotificationService;
 
     @When("^the OSGP connection is lost with the RTU device$")
     public void theOSGPConnectionIsLostWithTheRTUDevice() throws Throwable {

@@ -16,9 +16,15 @@ import cucumber.api.SnippetType;
 import cucumber.api.junit.Cucumber;
 
 @RunWith(Cucumber.class)
-@CucumberOptions(features = "src/test/resources/features", tags = { "~@Skip", "@runnow" }, plugin = { "pretty",
-        "html:target/output/Cucumber-report", "html:target/output/Cucumber-html-report.html",
-        "json:target/output/cucumber.json" }, snippets = SnippetType.CAMELCASE)
+@CucumberOptions(
+		features = "src/test/resources/features", 
+		tags = { "~@Skip" }, 
+		plugin = { 
+				"pretty",
+				"html:target/output/Cucumber-report", 
+				"html:target/output/Cucumber-html-report.html",
+                "json:target/output/cucumber.json" }, 
+		snippets = SnippetType.CAMELCASE)
 public class AcceptanceTests {
 
 }

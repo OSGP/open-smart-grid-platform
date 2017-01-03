@@ -43,6 +43,12 @@ public class MicrogridsNotificationWebServiceConfig extends BaseWebServiceConfig
     @Value("${jaxb2.marshaller.context.path.microgrids.notification}")
     private String contextPathMicrogridsNotification;
 
+    @Value("${web.service.notification.context}")
+    private String notificationsContextPath;
+
+    @Value("${web.service.notification.port}")
+    private int notificationsPort;
+
     /**
      * Method for creating the Marshaller for Microgrids notification.
      *
@@ -69,38 +75,23 @@ public class MicrogridsNotificationWebServiceConfig extends BaseWebServiceConfig
                 this.microgridsNotificationMarshaller());
     }
 
-    /**
-     * Method for creating the Default Method Endpoint Adapter.
-     *
-     * @return DefaultMethodEndpointAdapter
-     */
     @Bean
     public DefaultMethodEndpointAdapter defaultMethodEndpointAdapter() {
         final DefaultMethodEndpointAdapter defaultMethodEndpointAdapter = new DefaultMethodEndpointAdapter();
 
         final List<MethodArgumentResolver> methodArgumentResolvers = new ArrayList<>();
-
-        // SMART METERING
         methodArgumentResolvers.add(this.microgridsNotificationMarshallingPayloadMethodProcessor());
-
         methodArgumentResolvers.add(new AnnotationMethodArgumentResolver(ORGANISATION_IDENTIFICATION_CONTEXT,
                 OrganisationIdentification.class));
-
         defaultMethodEndpointAdapter.setMethodArgumentResolvers(methodArgumentResolvers);
 
         final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<>();
-
-        // SMART METERING
         methodReturnValueHandlers.add(this.microgridsNotificationMarshallingPayloadMethodProcessor());
-
         defaultMethodEndpointAdapter.setMethodReturnValueHandlers(methodReturnValueHandlers);
 
         return defaultMethodEndpointAdapter;
     }
 
-    /**
-     * @return
-     */
     @Bean
     public SoapHeaderEndpointInterceptor organisationIdentificationInterceptor() {
         return new SoapHeaderEndpointInterceptor(ORGANISATION_IDENTIFICATION_HEADER,
@@ -126,13 +117,11 @@ public class MicrogridsNotificationWebServiceConfig extends BaseWebServiceConfig
         wsmrhh.setMessageFactory(messageFactory);
 
         final Map<String, HttpHandler> contexts = new HashMap<>();
-        // TODO: property
-        contexts.put("/notifications", wsmrhh);
+        contexts.put(this.notificationsContextPath, wsmrhh);
 
         final SimpleHttpServerFactoryBean httpServer = new SimpleHttpServerFactoryBean();
         httpServer.setContexts(contexts);
-        // TODO: property
-        httpServer.setPort(8088);
+        httpServer.setPort(this.notificationsPort);
 
         return httpServer;
     }
