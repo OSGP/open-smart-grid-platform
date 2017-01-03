@@ -29,10 +29,11 @@ Feature: SmartMetering Installation
     And a dlms device
       | DeviceIdentification        | TESTG102400000001 |
       | DeviceType                  | SMART_METER_G     |
+    And organisation "test-org"
+    And user "Cucumber"
     When the Couple G-meter "TESTG102400000001" request on channel 1 is received
-    Then the couple response is "OK" and contains
-      ||
-    Then the mbus device "TESTG102400000001" is coupled to device "TEST1024000000001" on MBUS channel 1
+    Then the couple response is "OK"
+    And the mbus device "TESTG102400000001" is coupled to device "TEST1024000000001" on MBUS channel 1
 
   Scenario: Couple G-meter to an E-meter on occupied MBUS channel 1
     Given a dlms device
@@ -88,7 +89,7 @@ Feature: SmartMetering Installation
       | DeviceType                  | SMART_METER_G     |
     When the Couple G-meter "TESTG102400000001" request on channel 1 is throws an SoapException with message "INACTIVE_DEVICE" 
 
-  Scenario: Decouple G-meter from E-meter
+  Scenario: DeCouple G-meter from E-meter
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
@@ -97,28 +98,27 @@ Feature: SmartMetering Installation
       | DeviceType                  | SMART_METER_G     |
       | GatewayDeviceIdentification | TEST1024000000001 |
       | Channel                     | 1                 |
-    When the Decouple G-meter "TESTG102400000001" request is received 
-    Then the decouple response is "OK" and contains
-      ||
-    And the G-meter "TESTG102400000001" is decoupled to the device "TEST1024000000001"
+    When the DeCouple G-meter "TESTG102400000001" request is received 
+    Then the DeCouple response is "OK"
+    And the G-meter "TESTG102400000001" is DeCoupled to the device "TEST1024000000001"
     And the channel of device "TESTG102400000001" is cleared
 
-  Scenario: Decouple unknown G-meter from E-meter
+  Scenario: DeCouple unknown G-meter from E-meter
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-    When the Decouple G-meter "TESTunknownDevice" request is received
+    When the DeCouple G-meter "TESTunknownDevice" request is received
     Then the couple response is "NOT OK" and contains
      | SmartMeter with id "TESTunknownDevice" could not be found |
 
 @Skip
-  Scenario: Decouple G-meter from unknown E-meter
+  Scenario: DeCouple G-meter from unknown E-meter
     Given a dlms device
       | DeviceIdentification        | TESTG102400000001 |
       | DeviceType                  | SMART_METER_G     |
     Then the DeCouple G-meter "TESTG102400000001" from E-meter "TEST102400unknown" request throws an SoapException with message "UNKNOWN_DEVICE"
 
-  Scenario: Decouple inactive G-meter from E-meter
+  Scenario: DeCouple inactive G-meter from E-meter
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
@@ -128,12 +128,12 @@ Feature: SmartMetering Installation
       | GatewayDeviceIdentification | TEST1024000000001 |
       | Channel                     | 1                 |
       | Active                      | False             |
-    When the Decouple G-meter "TESTG102400000001" request is received 
-    Then the decouple response is "NOT OK" and contains
+    When the DeCouple G-meter "TESTG102400000001" request is received
+    Then the DeCouple response is "NOT OK" and contains
       | Device TESTG102400000001 is not active in the platform |
 
 @Skip
-  Scenario: Decouple G-meter to an inactive E-meter
+  Scenario: DeCouple G-meter to an inactive E-meter
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |

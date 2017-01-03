@@ -104,18 +104,12 @@ public class DeviceSteps {
     }
 
     /**
-     * Update a device entity given its deviceidentification.
-     *
-     * <<<<<<< HEAD
+     * Update a device entity given its deviceIdentification.
      *
      * @param deviceIdentification
      *            The deviceIdentification.
      * @param settings
-     *            The settings. =======
-     * @param deviceIdentification
-     *            The deviceIdentification.
-     * @param settings
-     *            The settings. >>>>>>> development
+     *            The settings.
      */
     public void updateDevice(final String deviceIdentification, final Map<String, String> settings) {
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
@@ -352,7 +346,7 @@ public class DeviceSteps {
         Assert.assertNotEquals(gSmartmeter.getGatewayDevice(), eDevice);
     }
 
-    @Then("^the G-meter \"([^\"]*)\" is decoupled to the device \"([^\"]*)\"$")
+    @Then("^the G-meter \"([^\"]*)\" is DeCoupled to the device \"([^\"]*)\"$")
     public void theGMeterIsDecoupledToTheDevice(final String gmeter, final String emeter) {
         final SmartMeter gSmartmeter = this.smartMeterRepository.findByDeviceIdentification(gmeter);
         final Device eDevice = this.deviceRepository.findByDeviceIdentification(emeter);

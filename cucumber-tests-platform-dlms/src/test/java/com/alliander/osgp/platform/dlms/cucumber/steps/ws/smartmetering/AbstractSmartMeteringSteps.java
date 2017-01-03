@@ -26,8 +26,13 @@ public abstract class AbstractSmartMeteringSteps {
     }
 
     protected boolean checkDescription(final String description, final List<String> resultList) {
+
+        if (description == null) {
+            return true;
+        }
+
         for (final String item : resultList) {
-            if (description != null && !description.contains(item)) {
+            if (!description.contains(item)) {
                 return false;
             }
         }

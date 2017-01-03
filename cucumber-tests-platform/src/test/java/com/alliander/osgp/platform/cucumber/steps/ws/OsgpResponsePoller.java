@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering;
+package com.alliander.osgp.platform.cucumber.steps.ws;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,18 +13,19 @@ import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.alliander.osgp.platform.cucumber.support.ws.WebServiceSecurityException;
 
-public abstract class OsgpResponsePoller {
+public abstract class OsgpResponsePoller<T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OsgpResponsePoller.class);
 
-    private final int maxTimeResponseAvailability;
-    private final int sleepTime = 100;
+    private final int maxWaitTimeForResponse;
+    private final int sleepTime;
 
-    public OsgpResponsePoller(final int maxTimeResponseAvailability) {
-        this.maxTimeResponseAvailability = maxTimeResponseAvailability;
+    public OsgpResponsePoller(final int maxWaitTimeForResponse, final int sleepTime) {
+        this.maxWaitTimeForResponse = maxWaitTimeForResponse;
+        this.sleepTime = sleepTime;
     }
 
-    abstract protected Object polWsResponse() throws WebServiceSecurityException;
+    abstract protected T pollWsResponse() throws WebServiceSecurityException;
 
     /**
      * Polls OSGP for response availability for a max time.
@@ -35,13 +36,13 @@ public abstract class OsgpResponsePoller {
      * @throws WebServiceSecurityException
      *             if an unexpected ws exception occurs
      */
-    public Object startResponsePoller() throws InterruptedException, WebServiceSecurityException {
+    public T start() throws InterruptedException, WebServiceSecurityException {
 
         int timeSlept = 0;
 
-        while (timeSlept < this.maxTimeResponseAvailability) {
+        while (timeSlept < this.maxWaitTimeForResponse) {
             try {
-                final Object responseObject = this.polWsResponse();
+                final T responseObject = this.pollWsResponse();
                 return responseObject;
             } catch (final SoapFaultClientException e) {
                 if ("CorrelationUid is unknown.".equals(e.getMessage())) {
