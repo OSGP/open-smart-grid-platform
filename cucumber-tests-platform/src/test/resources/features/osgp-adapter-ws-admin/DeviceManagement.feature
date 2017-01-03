@@ -32,9 +32,10 @@ Feature: Device management
 				| TEST1024000000001    | true   | OK     |
 				
 	Scenario: Revoke Key For Device
-    Given a device
+    Given an oslp device
       | DeviceIdentification | TEST1024000000001 |
     When receiving a revoke key request
+    	| DeviceIdentification | TEST1024000000001 |
     Then the revoke key response contains
       | DeviceIdentification | TEST1024000000001 |
 

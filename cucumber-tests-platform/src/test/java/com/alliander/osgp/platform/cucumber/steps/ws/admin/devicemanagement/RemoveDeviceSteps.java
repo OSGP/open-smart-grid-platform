@@ -5,7 +5,6 @@ import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 import java.util.Map;
 
 import org.junit.Assert;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
@@ -32,7 +31,7 @@ public class RemoveDeviceSteps {
      * @throws Throwable
      */
     @When("^receiving a remove device request$")
-    public void receiving_a_remove_device_request(final Map<String, String> requestSettings) throws Throwable {
+    public void receivingARemoveDeviceRequest(final Map<String, String> requestSettings) throws Throwable {
         final RemoveDeviceRequest request = new RemoveDeviceRequest();
         request.setDeviceIdentification(
                 getString(requestSettings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
@@ -40,8 +39,7 @@ public class RemoveDeviceSteps {
         try {
             ScenarioContext.Current().put(Keys.RESPONSE, this.client.removeDevice(request));
         } catch (final SoapFaultClientException ex) {
-            LoggerFactory.getLogger(RemoveDeviceSteps.class).info("Response: " + ex);
-            // ScenarioContext.Current().put(Keys.RESPONSE, ex);
+            ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
     }
 
@@ -53,7 +51,7 @@ public class RemoveDeviceSteps {
      * @throws Throwable
      */
     @Then("^the remove device response is successfull$")
-    public void the_remove_device_response_is_successfull() throws Throwable {
+    public void theRemoveDeviceResponseIsSuccessfull() throws Throwable {
         Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof RemoveDeviceResponse);
     }
 

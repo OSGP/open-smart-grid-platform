@@ -3,16 +3,11 @@ Feature: Temp Organization management
   I want to ...
   In order ...
 
-#	Scenario: Revoke Key For Device
-    #Given a device
-      #| DeviceIdentification | TEST1024000000001 |
-    #When receiving a revoke key request
-    #	| DeviceIdentification | TEST1024000000001 |
-    #Then the revoke key response contains
-      #| DeviceIdentification | TEST1024000000001 |
-
-  Scenario: Revoke Key Request For Non-Existing Device
-    When receiving a revoke key request
-      | DeviceIdentification | TEST1024000000001 |
-    Then the revoke key response contains soap fault
-      | Message | UNKNOWN_DEVICE |
+  # This test doesn't work because the backend doesn't remove the device.
+  Scenario Outline: Remove A Device
+  		Given a device
+  			| DeviceIdentification | TEST1024000000001 |
+  		When receiving a remove device request
+  			| DeviceIdentification | TEST1024000000001 |
+  		Then the remove device response is successfull
+  		And the device with id "TEST1024000000001" does not exists
