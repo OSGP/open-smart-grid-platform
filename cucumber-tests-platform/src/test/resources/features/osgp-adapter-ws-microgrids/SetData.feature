@@ -35,7 +35,7 @@ Feature: Set Data Service
     And the rtu simulator should contain
       | RTU1 | DSCH1.SchdId.setVal     |                   1 |
       | RTU1 | DSCH1.SchdTyp.setVal    |                   1 |
-      | RTU1 | DSCH1.SchdCat.setVal    |                   1 |
+      | RTU1 | DSCH1.SchCat.setVal     |                   1 |
       | RTU1 | DSCH1.SchdAbsTm.val.0   |                  74 |
       | RTU1 | DSCH1.SchdAbsTm.time.0  | 2016-11-21T01:45:00 |
       | RTU1 | DSCH1.SchdAbsTm.val.1   |                  45 |
@@ -43,4 +43,4 @@ Feature: Set Data Service
       | RTU1 | DSCH1.SchdAbsTm.val.2   |                  15 |
       | RTU1 | DSCH1.SchdAbsTm.time.2  | 2016-11-22T00:00:00 |
       | RTU1 | DSCH1.SchdAbsTm.val.3   |                  21 |
-      | RTU1 | DSCH1.SchdAbsTm.time.03 | 2016-11-22T01:30:00 |
+      | RTU1 | DSCH1.SchdAbsTm.time.3  | 2016-11-22T01:30:00 |
