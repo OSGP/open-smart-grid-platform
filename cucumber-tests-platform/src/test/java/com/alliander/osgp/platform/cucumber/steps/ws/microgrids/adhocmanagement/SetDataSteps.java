@@ -84,7 +84,7 @@ public class SetDataSteps {
             final String logicalDeviceName = mockValue.get(INDEX_LOGICAL_DEVICE_NAME);
             final String node = mockValue.get(INDEX_NODE_NAME);
             final String value = mockValue.get(INDEX_NODE_VALUE);
-            assertEquals("Simulator setting", true, (this.mockServer.assertValue(logicalDeviceName, node, value)) );
+            this.mockServer.assertValue(logicalDeviceName, node, value);
         }
     }
 
