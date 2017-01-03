@@ -67,7 +67,7 @@ public class RtuDeviceSteps {
         final String deviceIdentification = rtuSettings.get(Keys.KEY_DEVICE_IDENTIFICATION);
 
         RtuDevice rtuDevice = new RtuDevice(deviceIdentification);      
-        this.rtuDeviceRespository.save(rtuDevice);
+        rtuDevice = this.rtuDeviceRespository.save(rtuDevice);
 
         this.deviceSteps.updateDevice(deviceIdentification, rtuSettings);
 
