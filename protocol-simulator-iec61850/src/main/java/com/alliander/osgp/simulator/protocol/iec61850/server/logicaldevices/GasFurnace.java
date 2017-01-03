@@ -288,7 +288,7 @@ public class GasFurnace extends LogicalDevice {
         }
 
         if (TIMESTAMP_NODES.contains(node)) {
-            return this.setTime(node, fc, new Date()); // TODO parse value
+            return this.setTime(node, fc, this.parseDate(value));
         }
 
         throw this.nodeTypeNotConfiguredException(node);
