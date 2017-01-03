@@ -7,19 +7,10 @@
  */
 package com.alliander.osgp.platform.cucumber.support.ws.core;
 
-import java.io.IOException;
-
-import javax.xml.transform.TransformerException;
-
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.ws.WebServiceMessage;
-import org.springframework.ws.client.core.WebServiceMessageCallback;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
-import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.SetOwnerRequest;
-import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.SetOwnerResponse;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindDevicesRequest;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindDevicesResponse;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotificationsAsyncRequest;
@@ -37,23 +28,22 @@ public class CoreDeviceManagementClient extends BaseClient {
     private WebServiceTemplateFactory coreDeviceManagementWstf;
 
     public FindDevicesResponse findDevices(final FindDevicesRequest request) throws WebServiceSecurityException {
-        final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
+        final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
         return (FindDevicesResponse) wst.marshalSendAndReceive(request);
     }
-    
-	public SetEventNotificationsAsyncResponse setEventNotifications(SetEventNotificationsRequest request) throws WebServiceSecurityException {
-        final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
-        return (SetEventNotificationsAsyncResponse) wst.marshalSendAndReceive(request);
-	}
 
-	public SetEventNotificationsResponse getSetEventNotificationsResponse(SetEventNotificationsAsyncRequest request) throws WebServiceSecurityException {
-        final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
+    public SetEventNotificationsAsyncResponse setEventNotifications(final SetEventNotificationsRequest request)
+            throws WebServiceSecurityException {
+        final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
+        return (SetEventNotificationsAsyncResponse) wst.marshalSendAndReceive(request);
+    }
+
+    public SetEventNotificationsResponse getSetEventNotificationsResponse(
+            final SetEventNotificationsAsyncRequest request) throws WebServiceSecurityException {
+        final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
         return (SetEventNotificationsResponse) wst.marshalSendAndReceive(request);
-	}
-	
-	public SetOwnerResponse setOwner(SetOwnerRequest request) throws WebServiceSecurityException {
-        final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
-        return (SetOwnerResponse) wst.marshalSendAndReceive(request);
-	}
-	
+    }
 }

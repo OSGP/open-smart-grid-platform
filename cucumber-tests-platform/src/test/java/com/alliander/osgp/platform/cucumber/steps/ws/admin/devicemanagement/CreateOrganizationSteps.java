@@ -19,8 +19,8 @@ import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.CreateOrganisationRequest;
-import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.CreateOrganisationResponse;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.CreateOrganizationRequest;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.CreateOrganizationResponse;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.Organisation;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformDomain;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup;
@@ -48,7 +48,7 @@ public class CreateOrganizationSteps {
     @When("^receiving a create organization request$")
     public void receiving_a_create_organization_request(final Map<String, String> requestSettings) throws Throwable {
 
-        final CreateOrganisationRequest request = new CreateOrganisationRequest();
+        final CreateOrganizationRequest request = new CreateOrganizationRequest();
         final Organisation organization = new Organisation();
         organization.setEnabled(getBoolean(requestSettings, Keys.KEY_ENABLED, Defaults.DEFAULT_ORGANIZATION_ENABLED));
         organization.setName(getString(requestSettings, Keys.KEY_NAME, Defaults.DEFAULT_ORGANIZATION_NAME));
@@ -105,7 +105,7 @@ public class CreateOrganizationSteps {
 
         final Object obj = ScenarioContext.Current().get(Keys.RESPONSE);
 
-        Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof CreateOrganisationResponse);
+        Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof CreateOrganizationResponse);
     }
 
     /**

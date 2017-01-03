@@ -57,8 +57,21 @@ public class OrganizationSteps {
      */
     @Given("^an organization$")
     public void anOrganization(final Map<String, String> settings) throws Throwable {
+
+        // final Organisation entity = new Organisation(
+        // getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
+        // this.DEFAULT_ORGANIZATION),
+        // getString(settings, "Name", this.DEFAULT_NAME), getString(settings,
+        // "Prefix", this.DEFAULT_PREFIX),
+        // getEnum(settings, "PlatformFunctionGroup",
+        // PlatformFunctionGroup.class,
+        // this.DEFAULT_PLATFORM_FUNCTION_GROUP));
+
+        final String organizationIdentification = getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
+                this.DEFAULT_ORGANIZATION);
         final Organisation entity = new Organisation(
-                getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION, this.DEFAULT_ORGANIZATION),
+                (organizationIdentification.isEmpty()) ? Defaults.DEFAULT_NEW_ORGANIZATION_IDENTIFICATION
+                        : organizationIdentification,
                 getString(settings, "Name", this.DEFAULT_NAME), getString(settings, "Prefix", this.DEFAULT_PREFIX),
                 getEnum(settings, "PlatformFunctionGroup", PlatformFunctionGroup.class,
                         this.DEFAULT_PLATFORM_FUNCTION_GROUP));

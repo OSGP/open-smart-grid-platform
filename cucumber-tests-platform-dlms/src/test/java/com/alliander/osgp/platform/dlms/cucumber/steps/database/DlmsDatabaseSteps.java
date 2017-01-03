@@ -14,14 +14,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
-<<<<<<< .merge_file_8TR7L8
-import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
-import com.alliander.osgp.domain.core.repositories.ScheduledTaskRepository;
-import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
-import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
-=======
->>>>>>> .merge_file_GV4Ij8
-
 
 /**
  * DLMS related database steps.
@@ -38,25 +30,11 @@ public class DlmsDatabaseSteps {
     @Autowired
     private MeterResponseDataRepository meterResponseDataRepo;
 
-<<<<<<< .merge_file_8TR7L8
-    @Autowired
-    private DeviceLogItemRepository deviceLogItemRepository;
-
-    @Autowired
-    private ScheduledTaskRepository scheduledTaskRepository;
-    
-=======
->>>>>>> .merge_file_GV4Ij8
     /**
      * Before each scenario dlms related stuff needs to be removed.
      */
     @Transactional(transactionManager = "txMgrCore")
     public void prepareDatabaseForScenario() {
-<<<<<<< .merge_file_8TR7L8
-        this.deviceAuthorization.deleteAllInBatch();
-        
-=======
->>>>>>> .merge_file_GV4Ij8
         this.dlmsDSecurityKeyRepo.deleteAllInBatch();
         this.dlmsDeviceRepo.deleteAllInBatch();
         this.meterResponseDataRepo.deleteAllInBatch();

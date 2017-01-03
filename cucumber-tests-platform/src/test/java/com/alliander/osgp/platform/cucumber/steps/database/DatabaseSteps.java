@@ -25,12 +25,10 @@ import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.EventRepository;
 import com.alliander.osgp.domain.core.repositories.ManufacturerRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
-import com.alliander.osgp.domain.core.repositories.ScheduledTaskRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.PlatformDomain;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
-import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 
 @Component
@@ -58,25 +56,13 @@ public class DatabaseSteps {
     private OslpDeviceRepository oslpDeviceRepo;
 
     @Autowired
-	private DeviceFirmwareRepository deviceFirmwareRepository;
-
-    @Autowired
-	private EventRepository eventRepository;
-
-    @Autowired
-	private SsldRepository ssldRepository;
-
-    @Autowired
     private DeviceFirmwareRepository deviceFirmwareRepository;
 
     @Autowired
     private EventRepository eventRepository;
 
     @Autowired
-    private DeviceLogItemRepository deviceLogItemRepository;
-
-    @Autowired
-    private ScheduledTaskRepository scheduledTaskRepository;
+    private SsldRepository ssldRepository;
 
     /**
      * This method is used to create default data not directly related to the
@@ -85,12 +71,8 @@ public class DatabaseSteps {
      */
     @Transactional
     private void insertDefaultData() {
-<<<<<<< .merge_file_OY2yRn
-        if (this.organizationRepo.findByOrganisationIdentification(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION) == null) {
-=======
-        if (this.organisationRepo
-                .findByOrganisationIdentification(Defaults.DEFAULT_ORGANISATION_IDENTIFICATION) == null) {
->>>>>>> .merge_file_PwSEIn
+        if (this.organizationRepo
+                .findByOrganisationIdentification(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION) == null) {
             // Create test organization used within the tests.
             final Organisation testOrg = new Organisation(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION,
                     Defaults.DEFAULT_ORGANIZATION_DESCRIPTION, Defaults.DEFAULT_PREFIX, PlatformFunctionGroup.ADMIN);
@@ -115,16 +97,11 @@ public class DatabaseSteps {
 
     @Transactional("txMgrCore")
     public void prepareDatabaseForScenario() {
-    	
-    	cleanRepoAbstractEntity(this.oslpDeviceRepo);
-        cleanRepoAbstractEntity(this.deviceAuthorizationRepo);
-<<<<<<< .merge_file_OY2yRn
-        
-=======
 
-        this.deviceLogItemRepository.deleteAllInBatch();
-        this.scheduledTaskRepository.deleteAllInBatch();
->>>>>>> .merge_file_PwSEIn
+        cleanRepoAbstractEntity(this.oslpDeviceRepo);
+        cleanRepoAbstractEntity(this.deviceAuthorizationRepo);
+        // this.deviceLogItemRepository.deleteAllInBatch();
+        // this.scheduledTaskRepository.deleteAllInBatch();
         this.deviceRepo.deleteAllEans();
         this.deviceRepo.deleteDeviceOutputSettings();
         this.deviceFirmwareRepository.deleteAllInBatch();
@@ -135,11 +112,7 @@ public class DatabaseSteps {
 
         cleanRepoSerializable(this.smartMeterRepo);
         cleanRepoSerializable(this.manufacturerRepo);
-<<<<<<< .merge_file_OY2yRn
         cleanRepoSerializable(this.organizationRepo);
-=======
-        cleanRepoSerializable(this.organisationRepo);
->>>>>>> .merge_file_PwSEIn
 
         this.insertDefaultData();
     }

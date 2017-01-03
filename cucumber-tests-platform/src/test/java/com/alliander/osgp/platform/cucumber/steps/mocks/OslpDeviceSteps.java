@@ -294,6 +294,26 @@ public class OslpDeviceSteps {
     }
 
     /**
+     * Setup method to update a key which should be returned by the mock.
+     *
+     * @param result
+     *            The update key to respond.
+     * @throws Throwable
+     */
+    @Given("^the device returns an update key response \"([^\"]*)\" over OSLP$")
+    public void the_device_returns_an_update_key_response_over_OSLP(final String result) throws Throwable {
+        Oslp.Status oslpStatus = Status.OK;
+
+        switch (result) {
+        case "OK":
+            oslpStatus = Status.OK;
+            // TODO: Implement other possible status
+        }
+        // TODO: Make Mock method
+        this.oslpMockServer.mockUpdateKeyResponse(oslpStatus);
+    }
+
+    /**
      * Verify that a get firmware version OSLP message is sent to the device.
      *
      * @param deviceIdentification
@@ -500,5 +520,20 @@ public class OslpDeviceSteps {
                 .waitForRequest(DeviceRequestMessageType.RECEIVE_EVENT_NOTIFICATIONS);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasEventNotificationRequest());
+    }
+
+    /**
+     * Verify that an update key OSLP message is sent to the device.
+     *
+     * @param deviceIdentification
+     *            The device identification expected in the message to the
+     *            device.
+     * @throws Throwable
+     */
+    @Then("^an update key OSLP message is sent to device \"([^\"]*)\"$")
+    public void an_update_key_OSLP_message_is_sent_to_device(final String deviceIdentification) throws Throwable {
+        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.UPDATE_KEY);
+        Assert.assertNotNull(message);
+        Assert.assertTrue(message.hasSetDeviceVerificationKeyRequest());
     }
 }

@@ -3,7 +3,7 @@ Feature: Organization management
   I want to manage the Organizations in the platform
   In order ...
 
-    Scenario Outline: Create A New Organization
+  Scenario Outline: Create A New Organization
     When receiving a create organization request
       | OrganizationIdentification | <OrganizationIdentification> |
       | Name                       | <Name>                       |
@@ -113,7 +113,7 @@ Feature: Organization management
       | Message | UNKNOWN_ORGANISATION |
     And the organization with name "org-test-name" should not be changed
 
-
+	# Note: Does only work if all the words 'organisation' are changed to 'organization', or it has to remain the same as it is.	
   Scenario Outline: Remove An Existing Organization
     Given an organization
       | OrganizationIdentification | <OrganizationIdentification> |
@@ -133,7 +133,7 @@ Feature: Organization management
       | OrganizationIdentification | Name                | Prefix | FunctionGroup | Enabled | Domains |
       | ATestOrganization          | A Test Organization | MAA    | ADMIN         | true    | COMMON  |
 
-  Scenario Outline: Remove A Non Existing Organization
+    Scenario Outline: Remove A Non Existing Organization
     When receiving a remove organization request
       | OrganizationIdentification | <OrganizationIdentification> |
       | Name                       | <Name>                       |

@@ -40,6 +40,7 @@ import com.alliander.osgp.oslp.Oslp.LinkType;
 import com.alliander.osgp.oslp.Oslp.Message;
 import com.alliander.osgp.oslp.Oslp.RegisterDeviceResponse;
 import com.alliander.osgp.oslp.Oslp.ResumeScheduleResponse;
+import com.alliander.osgp.oslp.Oslp.SetDeviceVerificationKeyResponse;
 import com.alliander.osgp.oslp.Oslp.SetEventNotificationsResponse;
 import com.alliander.osgp.oslp.Oslp.SetLightResponse;
 import com.alliander.osgp.oslp.Oslp.SetRebootResponse;
@@ -278,5 +279,11 @@ public class MockOslpServer {
     public void mockReceiveEventNotificationResponse(final Oslp.Status status) {
         this.mockResponses.put(DeviceRequestMessageType.RECEIVE_EVENT_NOTIFICATIONS, Oslp.Message.newBuilder()
                 .setEventNotificationResponse(EventNotificationResponse.newBuilder().setStatus(status)).build());
+    }
+
+    public void mockUpdateKeyResponse(final Oslp.Status status) {
+        this.mockResponses.put(DeviceRequestMessageType.UPDATE_KEY, Oslp.Message.newBuilder()
+                .setSetDeviceVerificationKeyResponse(SetDeviceVerificationKeyResponse.newBuilder().setStatus(status))
+                .build());
     }
 }

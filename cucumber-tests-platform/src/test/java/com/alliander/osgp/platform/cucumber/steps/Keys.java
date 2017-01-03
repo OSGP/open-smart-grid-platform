@@ -17,6 +17,7 @@ public class Keys {
     public static final String KEY_DEVICE_IDENTIFICATION = "DeviceIdentification";
     public static final String KEY_DEVICE_TYPE = "DeviceType";
     public static final String KEY_PROTOCOL = "Protocol";
+    public static final String KEY_PROTOCOL_INFO_ID = "ProtocolInfoId";
     public static final String KEY_PROTOCOL_VERSION = "ProtocolVersion";
     public static final String KEY_VERSION = "Version";
     public static final String KEY_ACTIVE = "Active";
@@ -111,6 +112,7 @@ public class Keys {
     public static final String KEY_DEVICE_MODEL_MODELCODE = "ModelCode";
     public static final String KEY_HAS_SCHEDULE = "HasSchedule";
     public static final String KEY_PUBLICKEYPRESENT = "PublicKeyPresent";
+    public static final String KEY_PUBLIC_KEY = "PublicKey";
     public static final String KEY_EVENT = "Event";
     public static final String KEY_DESCRIPTION = "Description";
     public static final String KEY_INDEX = "Index";

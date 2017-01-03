@@ -18,8 +18,8 @@ import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ChangeOrganisationRequest;
-import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ChangeOrganisationResponse;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ChangeOrganizationRequest;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ChangeOrganizationResponse;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformDomain;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
@@ -52,7 +52,7 @@ public class ChangeOrganizationSteps {
      */
     @When("^receiving an update organization request$")
     public void receiving_an_update_organization_request(final Map<String, String> requestSettings) throws Throwable {
-        final ChangeOrganisationRequest request = new ChangeOrganisationRequest();
+        final ChangeOrganizationRequest request = new ChangeOrganizationRequest();
 
         request.setOrganisationIdentification(getString(requestSettings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
                 Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
@@ -82,7 +82,7 @@ public class ChangeOrganizationSteps {
 
     @Then("^the update organization response is successfull$")
     public void the_update_organization_response_is_successfull() throws Throwable {
-        Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof ChangeOrganisationResponse);
+        Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof ChangeOrganizationResponse);
     }
 
     /**
