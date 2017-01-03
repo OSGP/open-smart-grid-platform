@@ -213,14 +213,23 @@ public class RtuSimulator implements ServerEventListener {
         LOGGER.error("The SAP stopped listening");
     }
 
-    public boolean assertValue(final String logicalDeviceName, final String node, final String value) {
+    public void assertValue(final String logicalDeviceName, final String node, final String value) {
         final LogicalDevice logicalDevice = this.getLogicalDevice(logicalDeviceName);
         final BasicDataAttribute expected = logicalDevice.getValue(node, value);
         final ModelNode actual = this.serverModel.findModelNode(expected.getReference(), expected.getFc());
-        if (actual instanceof BasicDataAttribute) {
-            return BasicDataAttributeEqualsHelper.equals(expected, (BasicDataAttribute) actual);
+        if (actual == null) {
+            throw new AssertionError("RTU Simulator does not have expected node \"" + node + "\" on logical device \""
+                    + logicalDeviceName + "\".");
         }
-        return false;
+        if (actual instanceof BasicDataAttribute) {
+            if (!BasicDataAttributeEqualsHelper.equals(expected, (BasicDataAttribute) actual)) {
+                throw new AssertionError("RTU Simulator attribute for node \"" + node + "\" on logical device \""
+                        + logicalDeviceName + "\" - expected: [" + expected + "], actual: [" + actual + "]");
+            }
+        } else {
+            throw new AssertionError("RTU Simulator value has node \"" + node + "\" on logical device \""
+                    + logicalDeviceName + "\", but it is not a BasicDataAttribute: " + actual.getClass().getName());
+        }
     }
 
     public void mockValue(final String logicalDeviceName, final String node, final String value) {
