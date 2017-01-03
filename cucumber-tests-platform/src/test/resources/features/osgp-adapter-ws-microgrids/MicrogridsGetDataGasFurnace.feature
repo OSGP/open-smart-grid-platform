@@ -3,7 +3,7 @@ Feature: Get Gas Furnace Data
   As an OSGP client
   I want to get Gas Furnace data from an RTU
 
-@Iec61850MockServer
+  @Iec61850MockServer
   Scenario: GetData for Gas Furnace
     Given an rtu device
       | DeviceIdentification | RTU10001 |

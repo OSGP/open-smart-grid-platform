@@ -37,6 +37,7 @@ public abstract class SmartMeteringStepsBase extends SoapUiRunner {
      * to make this a separate step, as you definitely want to check this
      * response in my opinion.
      */
+    @Deprecated
     @Override
     protected void requestRunner(final TestStepStatus testStepStatus, final Map<String, String> propertiesMap,
             final String testCaseNameRequest, final String testCaseXml, final String testSuiteXml) throws Throwable {
@@ -57,7 +58,7 @@ public abstract class SmartMeteringStepsBase extends SoapUiRunner {
      */
     protected void saveCorrelationId() throws Throwable {
         Helpers.saveCorrelationUidInScenarioContext(this.runXpathResult.getValue(this.response, PATH_CORRELATION_UID),
-                getString(PROPERTIES_MAP, "OrganizationIdentification", Defaults.DEFAULT_ORGANISATION_IDENTIFICATION));
+                getString(PROPERTIES_MAP, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
     }
 }

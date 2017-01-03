@@ -21,6 +21,7 @@ import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.ManufacturerRepository;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
+import com.alliander.osgp.platform.cucumber.steps.Keys;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -34,6 +35,7 @@ public class DeviceModelSteps {
     private ManufacturerRepository manufacturerRepo;
 
     private final Boolean DEFAULT_FILESTORAGE = true;
+    private final Boolean DEFAULT_METERED = true;
 
     /**
      * Generic method which adds a device model using the settings.
@@ -45,7 +47,7 @@ public class DeviceModelSteps {
     @Given("^a device model")
     public void aDeviceModel(final Map<String, String> settings) throws Throwable {
         this.insertDeviceModel(settings);
-    }
+	}
 
     /**
      * Generic method to check if the device model is created as expected in the
@@ -69,27 +71,25 @@ public class DeviceModelSteps {
                 entity.isMetered());
     }
 
-    /**
-     * This inserts a default DeviceModel
-     *
-     * @param settings
-     * @return
-     */
-    public DeviceModel insertDeviceModel(final Map<String, String> settings) {
-
+    public DeviceModel insertDeviceModel(Map<String, String> settings) {
         // Get the given manufacturer (or the default).
-        final Manufacturer manufacturer = this.manufacturerRepo.findByName(getString(settings, "ManufacturerName",
-                ManufacturerSteps.DEFAULT_NAME));
+        final Manufacturer manufacturer = this.manufacturerRepo.findByName(
+                getString(settings, "ManufacturerName", ManufacturerSteps.DEFAULT_NAME));
 
+        final String description = getString(settings, Keys.KEY_DESCRIPTION, Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION);
+        
         // Create the new device model.
-        final DeviceModel entity = new DeviceModel(manufacturer, getString(settings, "ModelCode",
-                Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE), getString(settings, "Description",
-                Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION), getBoolean(settings, "FileStorage",
-                this.DEFAULT_FILESTORAGE));
+        final DeviceModel entity = new DeviceModel(
+                manufacturer,
+                getString(settings, Keys.KEY_DEVICE_MODEL_MODELCODE, Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE),
+                description,
+                getBoolean(settings, Keys.KEY_DEVICE_MODEL_FILESTORAGE, this.DEFAULT_FILESTORAGE));
 
+        entity.updateData(description, getBoolean(settings, Keys.KEY_DEVICE_MODEL_METERED, this.DEFAULT_METERED));
         entity.setVersion(getLong(settings, "Version"));
 
-        return this.repo.save(entity);
+        this.repo.save(entity);
+        
+        return entity;
     }
-
 }

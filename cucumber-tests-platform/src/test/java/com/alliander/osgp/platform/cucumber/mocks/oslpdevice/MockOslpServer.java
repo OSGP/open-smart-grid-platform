@@ -7,6 +7,7 @@ import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executors;
@@ -24,179 +25,245 @@ import org.junit.Assert;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.Oslp.GetFirmwareVersionResponse;
+import com.alliander.osgp.oslp.Oslp.GetStatusResponse;
+import com.alliander.osgp.oslp.Oslp.GetStatusResponse.Builder;
+import com.alliander.osgp.oslp.Oslp.LightType;
+import com.alliander.osgp.oslp.Oslp.LightValue;
+import com.alliander.osgp.oslp.Oslp.LinkType;
 import com.alliander.osgp.oslp.Oslp.Message;
+import com.alliander.osgp.oslp.Oslp.ResumeScheduleResponse;
+import com.alliander.osgp.oslp.Oslp.SetEventNotificationsResponse;
 import com.alliander.osgp.oslp.Oslp.SetLightResponse;
+import com.alliander.osgp.oslp.Oslp.SetRebootResponse;
+import com.alliander.osgp.oslp.Oslp.SetTransitionResponse;
+import com.alliander.osgp.oslp.Oslp.StartSelfTestResponse;
+import com.alliander.osgp.oslp.Oslp.StopSelfTestResponse;
 import com.alliander.osgp.oslp.OslpDecoder;
 import com.alliander.osgp.oslp.OslpEncoder;
+import com.alliander.osgp.platform.cucumber.config.CoreDeviceConfiguration;
 import com.alliander.osgp.shared.security.CertificateHelper;
 
 @Component
 public class MockOslpServer {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MockOslpServer.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MockOslpServer.class);
 
-    @Value("${oslp.port.server}")
-    private int oslpPortServer;
+	@Autowired
+	private CoreDeviceConfiguration configuration;
 
-    @Value("${oslp.security.signature}")
-    private String oslpSignature;
+	@Value("${oslp.port.server}")
+	private int oslpPortServer;
 
-    @Value("${oslp.security.provider}")
-    private String oslpSignatureProvider;
+	@Value("${oslp.security.signature}")
+	private String oslpSignature;
 
-    @Value("${oslp.timeout.connect}")
-    private int connectionTimeout;
+	@Value("${oslp.security.provider}")
+	private String oslpSignatureProvider;
 
-    @Value("${oslp.security.signkey.path}")
-    private String signKeyPath;
+	@Value("${oslp.timeout.connect}")
+	private int connectionTimeout;
 
-    @Value("${oslp.security.verifykey.path}")
-    private String verifyKeyPath;
+	@Value("${oslp.security.signkey.path}")
+	private String signKeyPath;
 
-    @Value("${oslp.security.keytype}")
-    private String keytype;
+	@Value("${oslp.security.verifykey.path}")
+	private String verifyKeyPath;
 
-    @Value("${oslp.sequence.number.window}")
-    private Integer sequenceNumberWindow;
+	@Value("${oslp.security.keytype}")
+	private String keytype;
 
-    @Value("${oslp.sequence.number.maximum}")
-    private Integer sequenceNumberMaximum;
+	@Value("${oslp.sequence.number.window}")
+	private Integer sequenceNumberWindow;
 
-    @Value("${response.delay.time}")
-    private Long responseDelayTime;
+	@Value("${oslp.sequence.number.maximum}")
+	private Integer sequenceNumberMaximum;
 
-    @Value("${response.delay.random.range}")
-    private Long reponseDelayRandomRange;
+	@Value("${response.delay.time}")
+	private Long responseDelayTime;
 
-    private ServerBootstrap server;
+	@Value("${response.delay.random.range}")
+	private Long reponseDelayRandomRange;
 
-    // TODO split channel handler in client/server
-    private ChannelHandler channelHandler;
+	private ServerBootstrap server;
 
-    private final ConcurrentMap<DeviceRequestMessageType, Message> mockResponses = new ConcurrentHashMap<>();
-    private final ConcurrentMap<DeviceRequestMessageType, Message> receivedRequests = new ConcurrentHashMap<>();
+	// TODO split channel handler in client/server
+	private ChannelHandler channelHandler;
 
-    public void start() throws Throwable {
-        this.channelHandler = new MockOslpChannelHandler(this.oslpSignature, this.oslpSignatureProvider,
-                this.connectionTimeout, this.sequenceNumberWindow, this.sequenceNumberMaximum, this.responseDelayTime,
-                this.reponseDelayRandomRange, this.privateKey(), this.clientBootstrap(), this.mockResponses,
-                this.receivedRequests);
+	private final ConcurrentMap<DeviceRequestMessageType, Message> mockResponses = new ConcurrentHashMap<>();
+	private final ConcurrentMap<DeviceRequestMessageType, Message> receivedRequests = new ConcurrentHashMap<>();
 
-        this.server = this.serverBootstrap();
-        this.server.bind(new InetSocketAddress(this.oslpPortServer));
-        LOGGER.info("Started OSLP Mock server on port {}", this.oslpPortServer);
-    }
+	public void start() throws Throwable {
+		this.channelHandler = new MockOslpChannelHandler(this.oslpSignature, this.oslpSignatureProvider,
+				this.connectionTimeout, this.sequenceNumberWindow, this.sequenceNumberMaximum, this.responseDelayTime,
+				this.reponseDelayRandomRange, this.privateKey(), this.clientBootstrap(), this.mockResponses,
+				this.receivedRequests);
 
-    public void stop() {
-        this.server.shutdown();
-        LOGGER.info("Shutdown OSLP Mock server");
-    }
-    
-    public void resetServer() {
-        this.mockResponses.clear();
-    }
+		LOGGER.info("OSLP Mock server starting on port {}", this.oslpPortServer);
+		this.server = this.serverBootstrap();
+		this.server.bind(new InetSocketAddress(this.oslpPortServer));
+		LOGGER.info("OSLP Mock server started.");
+	}
 
-    public Message waitForRequest(final DeviceRequestMessageType requestType) {
-        int count = 0;
-        while (!this.receivedRequests.containsKey(requestType)) {
-            try {
-                count++;
-                LOGGER.info("Sleeping 1s " + count);
-                Thread.sleep(1000);
-            } catch (final InterruptedException e) {
-                Assert.fail("Polling for response interrupted");
-            }
+	public void stop() {
+		if (this.server != null) {
+			this.server.shutdown();
+		}
+		LOGGER.info("OSLP Mock server shutdown.");
+	}
 
-            if (count > 60) {
-                Assert.fail("Polling for response failed, no reponse found");
-            }
-        }
+	public void resetServer() {
+		this.receivedRequests.clear();
+		this.mockResponses.clear();
+	}
 
-        return this.receivedRequests.get(requestType);
-    }
+	public Message waitForRequest(final DeviceRequestMessageType requestType) {
+		int count = 0;
+		while (!this.receivedRequests.containsKey(requestType)) {
+			try {
+				count++;
+				LOGGER.info("Sleeping 1s " + count);
+				Thread.sleep(1000);
+			} catch (final InterruptedException e) {
+				Assert.fail("Polling for response interrupted");
+			}
 
-    private ServerBootstrap serverBootstrap() {
-        final ChannelFactory factory = new NioServerSocketChannelFactory(Executors.newCachedThreadPool(),
-                Executors.newCachedThreadPool());
+			if (count > configuration.defaultTimeout) {
+				Assert.fail("Polling for response failed, no reponse found");
+			}
+		}
 
-        final ServerBootstrap bootstrap = new ServerBootstrap(factory);
+		return this.receivedRequests.get(requestType);
+	}
 
-        bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
-            @Override
-            public ChannelPipeline getPipeline()
-                    throws InvalidKeySpecException, NoSuchAlgorithmException, IOException, NoSuchProviderException {
-                final ChannelPipeline pipeline = MockOslpServer.this.createPipeLine();
-                LOGGER.info("Created new server pipeline");
-                return pipeline;
-            }
-        });
+	private ServerBootstrap serverBootstrap() {
+		final ChannelFactory factory = new NioServerSocketChannelFactory(Executors.newCachedThreadPool(),
+				Executors.newCachedThreadPool());
 
-        bootstrap.setOption("child.tcpNoDelay", true);
-        bootstrap.setOption("child.keepAlive", false);
+		final ServerBootstrap bootstrap = new ServerBootstrap(factory);
 
-        return bootstrap;
-    }
+		bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
+			@Override
+			public ChannelPipeline getPipeline()
+					throws InvalidKeySpecException, NoSuchAlgorithmException, IOException, NoSuchProviderException {
+				final ChannelPipeline pipeline = MockOslpServer.this.createPipeLine();
+				LOGGER.info("Created new server pipeline");
+				return pipeline;
+			}
+		});
 
-    private ClientBootstrap clientBootstrap() {
-        final ChannelFactory factory = new NioClientSocketChannelFactory(Executors.newCachedThreadPool(),
-                Executors.newCachedThreadPool());
+		bootstrap.setOption("child.tcpNoDelay", true);
+		bootstrap.setOption("child.keepAlive", false);
 
-        final ChannelPipelineFactory pipelineFactory = new ChannelPipelineFactory() {
-            @Override
-            public ChannelPipeline getPipeline()
-                    throws InvalidKeySpecException, NoSuchAlgorithmException, IOException, NoSuchProviderException {
-                final ChannelPipeline pipeline = MockOslpServer.this.createPipeLine();
-                LOGGER.info("Created new client pipeline");
-                return pipeline;
-            }
-        };
+		return bootstrap;
+	}
 
-        final ClientBootstrap bootstrap = new ClientBootstrap(factory);
+	private ClientBootstrap clientBootstrap() {
+		final ChannelFactory factory = new NioClientSocketChannelFactory(Executors.newCachedThreadPool(),
+				Executors.newCachedThreadPool());
 
-        bootstrap.setOption("tcpNoDelay", true);
-        bootstrap.setOption("keepAlive", false);
-        bootstrap.setOption("connectTimeoutMillis", this.connectionTimeout);
+		final ChannelPipelineFactory pipelineFactory = new ChannelPipelineFactory() {
+			@Override
+			public ChannelPipeline getPipeline()
+					throws InvalidKeySpecException, NoSuchAlgorithmException, IOException, NoSuchProviderException {
+				final ChannelPipeline pipeline = MockOslpServer.this.createPipeLine();
+				LOGGER.info("Created new client pipeline");
+				return pipeline;
+			}
+		};
 
-        bootstrap.setPipelineFactory(pipelineFactory);
+		final ClientBootstrap bootstrap = new ClientBootstrap(factory);
 
-        return bootstrap;
-    }
+		bootstrap.setOption("tcpNoDelay", true);
+		bootstrap.setOption("keepAlive", false);
+		bootstrap.setOption("connectTimeoutMillis", this.connectionTimeout);
 
-    private ChannelPipeline createPipeLine()
-            throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException, IOException {
-        final ChannelPipeline pipeline = Channels.pipeline();
+		bootstrap.setPipelineFactory(pipelineFactory);
 
-        pipeline.addLast("oslpEncoder", new OslpEncoder());
-        pipeline.addLast("oslpDecoder", new OslpDecoder(this.oslpSignature, this.oslpSignatureProvider));
-        pipeline.addLast("oslpSecurity", new OslpSecurityHandler(this.publicKey()));
-        pipeline.addLast("oslpChannelHandler", this.channelHandler);
-        return pipeline;
-    }
+		return bootstrap;
+	}
 
-    private PublicKey publicKey()
-            throws NoSuchAlgorithmException, IOException, InvalidKeySpecException, NoSuchProviderException {
-        return CertificateHelper.createPublicKey(this.verifyKeyPath, this.keytype, this.oslpSignatureProvider);
-    }
+	private ChannelPipeline createPipeLine()
+			throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException, IOException {
+		final ChannelPipeline pipeline = Channels.pipeline();
 
-    private PrivateKey privateKey()
-            throws IOException, InvalidKeySpecException, NoSuchAlgorithmException, NoSuchProviderException {
-        return CertificateHelper.createPrivateKey(this.signKeyPath, this.keytype, this.oslpSignatureProvider);
-    }
+		pipeline.addLast("oslpEncoder", new OslpEncoder());
+		pipeline.addLast("oslpDecoder", new OslpDecoder(this.oslpSignature, this.oslpSignatureProvider));
+		pipeline.addLast("oslpSecurity", new OslpSecurityHandler(this.publicKey()));
+		pipeline.addLast("oslpChannelHandler", this.channelHandler);
+		return pipeline;
+	}
 
-    public void mockFirmwareResponse(final String fwVersion) {
-        this.mockResponses.put(DeviceRequestMessageType.GET_FIRMWARE_VERSION, Oslp.Message.newBuilder()
-                .setGetFirmwareVersionResponse(GetFirmwareVersionResponse.newBuilder().setFirmwareVersion(fwVersion))
-                .build());
-    }
+	private PublicKey publicKey()
+			throws NoSuchAlgorithmException, IOException, InvalidKeySpecException, NoSuchProviderException {
+		return CertificateHelper.createPublicKey(this.verifyKeyPath, this.keytype, this.oslpSignatureProvider);
+	}
+
+	private PrivateKey privateKey()
+			throws IOException, InvalidKeySpecException, NoSuchAlgorithmException, NoSuchProviderException {
+		return CertificateHelper.createPrivateKey(this.signKeyPath, this.keytype, this.oslpSignatureProvider);
+	}
+
+	public void mockFirmwareResponse(final String fwVersion) {
+		this.mockResponses.put(DeviceRequestMessageType.GET_FIRMWARE_VERSION, Oslp.Message.newBuilder()
+				.setGetFirmwareVersionResponse(GetFirmwareVersionResponse.newBuilder().setFirmwareVersion(fwVersion))
+				.build());
+	}
 
 	public void mockSetLightResponse(Oslp.Status status) {
-		this.mockResponses.put(DeviceRequestMessageType.SET_LIGHT, Oslp.Message.newBuilder()
-				.setSetLightResponse(SetLightResponse.newBuilder().setStatus(status))
+		this.mockResponses.put(DeviceRequestMessageType.SET_LIGHT,
+				Oslp.Message.newBuilder().setSetLightResponse(SetLightResponse.newBuilder().setStatus(status)).build());
+	}
+
+	public void mockSetEventNotificationResponse(Oslp.Status status) {
+		this.mockResponses.put(DeviceRequestMessageType.SET_EVENT_NOTIFICATIONS,
+				Oslp.Message.newBuilder()
+						.setSetEventNotificationsResponse(SetEventNotificationsResponse.newBuilder().setStatus(status))
+						.build());
+	}
+
+	public void mockStartDeviceResponse(Oslp.Status status) {
+		this.mockResponses.put(DeviceRequestMessageType.START_SELF_TEST, Oslp.Message.newBuilder()
+				.setStartSelfTestResponse(StartSelfTestResponse.newBuilder().setStatus(status)).build());
+	}
+
+	public void mockStopDeviceResponse(com.google.protobuf.ByteString value, Oslp.Status status) {
+		this.mockResponses.put(DeviceRequestMessageType.STOP_SELF_TEST, Oslp.Message.newBuilder()
+				.setStopSelfTestResponse(StopSelfTestResponse.newBuilder().setSelfTestResult(value).setStatus(status))
 				.build());
+	}
+
+	public void mockGetStatusResponse(final LinkType preferred, final LinkType actual, final LightType lightType,
+			final int eventNotificationMask, final Oslp.Status status, final List<LightValue> lightValues) {
+
+		Builder response = GetStatusResponse.newBuilder().setPreferredLinktype(preferred).setActualLinktype(actual)
+				.setLightType(lightType).setEventNotificationMask(eventNotificationMask).setStatus(status);
+
+		for (LightValue lightValue : lightValues) {
+			response.addValue(lightValue);
+		}
+
+		this.mockResponses.put(DeviceRequestMessageType.GET_STATUS,
+				Oslp.Message.newBuilder().setGetStatusResponse(response).build());
+	}
+
+	public void mockResumeScheduleResponse(Oslp.Status status) {
+		this.mockResponses.put(DeviceRequestMessageType.RESUME_SCHEDULE, Oslp.Message.newBuilder()
+				.setResumeScheduleResponse(ResumeScheduleResponse.newBuilder().setStatus(status)).build());
+	}
+
+	public void mockSetRebootResponse(Oslp.Status status) {
+		this.mockResponses.put(DeviceRequestMessageType.SET_REBOOT, Oslp.Message.newBuilder()
+				.setSetRebootResponse(SetRebootResponse.newBuilder().setStatus(status)).build());
+	}
+
+	public void mockSetTransitionResponse(Oslp.Status status) {
+		this.mockResponses.put(DeviceRequestMessageType.SET_TRANSITION, Oslp.Message.newBuilder()
+				.setSetTransitionResponse(SetTransitionResponse.newBuilder().setStatus(status)).build());
 	}
 }

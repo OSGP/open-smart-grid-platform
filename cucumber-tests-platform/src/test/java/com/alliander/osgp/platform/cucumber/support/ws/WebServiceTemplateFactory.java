@@ -9,17 +9,24 @@ package com.alliander.osgp.platform.cucumber.support.ws;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import javax.net.ssl.SSLContext;
+
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.HttpClient;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLContextBuilder;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
@@ -120,7 +127,7 @@ public class WebServiceTemplateFactory {
     }
 
     public WebServiceTemplate getTemplate(final String organisationIdentification, final String userName)
-            throws WebServiceSecurityException {
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
 
         if (StringUtils.isEmpty(organisationIdentification)) {
             LOGGER.error("organisationIdentification is empty or null");
@@ -153,7 +160,7 @@ public class WebServiceTemplateFactory {
     }
 
     private WebServiceTemplate createTemplate(final String organisationIdentification, final String userName)
-            throws WebServiceSecurityException {
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate webServiceTemplate = new WebServiceTemplate(this.messageFactory);
 
         webServiceTemplate.setDefaultUri(this.defaultUri);
@@ -176,34 +183,44 @@ public class WebServiceTemplateFactory {
     }
 
     private HttpComponentsMessageSender webServiceMessageSender(final String keystore)
-            throws WebServiceSecurityException {
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
 
-        try {
-            // Open keystore, assuming same identity
-            final KeyStoreFactoryBean keyStoreFactory = new KeyStoreFactoryBean();
-            keyStoreFactory.setType(this.keyStoreType);
-            keyStoreFactory.setLocation(new FileSystemResource(this.keyStoreLocation + "/" + keystore + ".pfx"));
-            keyStoreFactory.setPassword(this.keyStorePassword);
-            keyStoreFactory.afterPropertiesSet();
+        final KeyStoreFactoryBean keyStoreFactory = new KeyStoreFactoryBean();
+        keyStoreFactory.setType(this.keyStoreType);
+        keyStoreFactory.setLocation(new FileSystemResource(this.keyStoreLocation + "/" + keystore + ".pfx"));
+        keyStoreFactory.setPassword(this.keyStorePassword);
+        keyStoreFactory.afterPropertiesSet();
 
-            final KeyStore keyStore = keyStoreFactory.getObject();
-            if (keyStore == null || keyStore.size() == 0) {
-                throw new KeyStoreException("Key store is empty");
-            }
-
-            // Create HTTP sender and associate keystore to it
-            final HttpComponentsMessageSender sender = new HttpComponentsMessageSender();
-            final HttpClient client = sender.getHttpClient();
-            final SSLSocketFactory socketFactory = new SSLSocketFactory(keyStore, this.keyStorePassword,
-                    this.trustStoreFactory.getObject());
-
-            final Scheme scheme = new Scheme("https", 443, socketFactory);
-            client.getConnectionManager().getSchemeRegistry().register(scheme);
-
-            return sender;
-        } catch (IOException | GeneralSecurityException e) {
-            throw new WebServiceSecurityException("An exception occured while creating a secured connection.", e);
+        final KeyStore keyStore = keyStoreFactory.getObject();
+        if (keyStore == null || keyStore.size() == 0) {
+            throw new KeyStoreException("Key store is empty");
         }
+
+        final HttpComponentsMessageSender sender = new HttpComponentsMessageSender();
+        
+        //Use Builder
+        final HttpClientBuilder builder = HttpClients.custom();
+        
+        //Add custom interceptor to remove Content Length Header (See class ContentLengthHeaderRemoveInterceptor)
+        builder.addInterceptorFirst(new ContentLengthHeaderRemoveInterceptor());
+        try {
+            //Put keystores in SSLContext
+            final SSLContext sslContext = new SSLContextBuilder()
+                    .loadKeyMaterial(keyStore , this.keyStorePassword.toCharArray())
+                    .loadTrustMaterial(this.trustStoreFactory.getObject(), new TrustSelfSignedStrategy())
+                    .build();
+            
+            //Put SSLContext in SSLConnectionSocketFactory and add to the builder
+            final SSLConnectionSocketFactory sslConnectionFactory = new SSLConnectionSocketFactory(sslContext);
+            
+            //Build HttpClient and add to the HttpComponentMessageSender
+            builder.setSSLSocketFactory(sslConnectionFactory);
+            sender.setHttpClient(builder.build());
+        } catch (KeyManagementException | UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {
+            //Todo: Log Exceptions
+            e.printStackTrace();
+        }
+        return sender;
     }
 
 }
