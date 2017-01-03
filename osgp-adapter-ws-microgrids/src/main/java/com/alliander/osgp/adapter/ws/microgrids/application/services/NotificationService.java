@@ -33,6 +33,9 @@ public class NotificationService {
     @Autowired
     private String notificationURL;
 
+    @Autowired
+    private String notificationUsername;
+
     public NotificationService() {
         // Parameterless constructor required for transactions
     }
@@ -54,7 +57,7 @@ public class NotificationService {
 
         try {
             this.sendNotificationServiceClient.sendNotification(organisationIdentification, notification,
-                    this.notificationURL);
+                    this.notificationURL, this.notificationUsername);
         } catch (final WebServiceSecurityException e) {
             LOGGER.error(e.getMessage(), e);
         }

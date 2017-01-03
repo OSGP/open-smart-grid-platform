@@ -38,8 +38,8 @@ import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 @Configuration
 @PropertySources({ @PropertySource("classpath:osgp-adapter-ws-microgrids.properties"),
-        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true), })
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+    @PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true), })
 public class WebServiceConfig extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceConfig.class);
@@ -58,6 +58,7 @@ public class WebServiceConfig extends AbstractConfig {
     private static final String X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME = "CommonNameSet";
 
     private static final String WEB_SERVICE_NOTIFICATION_URL_PROPERTY_NAME = "web.service.notification.url";
+    private static final String WEB_SERVICE_NOTIFICATION_USERNAME_PROPERTY_NAME = "web.service.notification.username";
 
     private static final String SERVER = "SERVER";
 
@@ -184,6 +185,11 @@ public class WebServiceConfig extends AbstractConfig {
     }
 
     @Bean
+    String notificationUsername() {
+        return this.environment.getRequiredProperty(WEB_SERVICE_NOTIFICATION_URL_PROPERTY_NAME);
+    }
+
+    @Bean
     public SaajSoapMessageFactory messageFactory() {
         return new SaajSoapMessageFactory();
     }
@@ -191,8 +197,8 @@ public class WebServiceConfig extends AbstractConfig {
     @Bean
     public Jaxb2Marshaller notificationSenderMarshaller() {
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-        marshaller.setContextPath(
-                this.environment.getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_MICROGRIDS_NOTIFICATION));
+        marshaller.setContextPath(this.environment
+                .getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_MICROGRIDS_NOTIFICATION));
         return marshaller;
     }
 
@@ -202,7 +208,7 @@ public class WebServiceConfig extends AbstractConfig {
 
     @Bean
     public SendNotificationServiceClient sendNotificationServiceClient() throws java.security.GeneralSecurityException {
-        return new SendNotificationServiceClient(
-                this.createWebServiceTemplateFactory(this.notificationSenderMarshaller()));
+        return new SendNotificationServiceClient(this.createWebServiceTemplateFactory(this
+                .notificationSenderMarshaller()));
     }
 }

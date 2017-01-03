@@ -8,6 +8,7 @@
 package com.alliander.osgp.domain.microgrids.entities;
 
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -29,6 +30,9 @@ public class RtuDevice extends Device {
 
     public RtuDevice(final String deviceIdentification) {
         super(deviceIdentification);
+
+        // Defaults from database definition are not used, so set here.
+        this.lastCommunicationTime = new GregorianCalendar(2001, 0, 1).getTime();
     }
 
     public void messageReceived() {

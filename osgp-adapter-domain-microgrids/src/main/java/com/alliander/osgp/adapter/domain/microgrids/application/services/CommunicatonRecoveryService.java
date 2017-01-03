@@ -33,7 +33,7 @@ public class CommunicatonRecoveryService extends BaseService {
     private static final int SYSTEM_ID = 1;
     private static final String SYSTEM_TYPE = "RTU";
     private static final int MEASUREMENT_ID = 1;
-    private static final String MEASUREMENT_NODE = "Health";
+    private static final String MEASUREMENT_NODE = "Alm1";
 
     @Autowired
     private CorrelationIdProviderService correlationIdProviderService;
@@ -62,11 +62,11 @@ public class CommunicatonRecoveryService extends BaseService {
     }
 
     private String createCorrelationUid(final RtuDevice rtu) {
-        LOGGER.debug("Creating correlation uid for device {}, with owner {}", rtu.getDeviceIdentification(),
-                rtu.getOwner().getOrganisationIdentification());
+        LOGGER.debug("Creating correlation uid for device {}, with owner {}", rtu.getDeviceIdentification(), rtu
+                .getOwner().getOrganisationIdentification());
 
-        final String correlationUid = this.correlationIdProviderService
-                .getCorrelationId(rtu.getOwner().getOrganisationIdentification(), rtu.getDeviceIdentification());
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(rtu.getOwner()
+                .getOrganisationIdentification(), rtu.getDeviceIdentification());
 
         LOGGER.debug("Correlation uid {} created.", correlationUid);
 
