@@ -33,9 +33,7 @@ public class Keys {
     public static final String KEY_DEVICE_MODEL = "DeviceModel";
     public static final String KEY_TECH_INSTALL_DATE = "TechnicalInstallationDate";
 
-    // TODO: It is called "Organisation" with an S in all webservices and
-    // sourcecode, this should be consistent.
-    public static final String KEY_ORGANISATION_IDENTIFICATION = "OrganizationIdentification";
+    public static final String KEY_ORGANIZATION_IDENTIFICATION = "OrganizationIdentification";
     public static final String KEY_USER_NAME = "UserName";
     public static final String KEY_DEVICE_FUNCTION_GRP = "DeviceFunctionGroup";
     public static final String KEY_COMM_METHOD = "CommunicationMethod";
@@ -63,6 +61,7 @@ public class Keys {
     public static final String KEY_EVENTS_NODELIST_EXPECTED = "event-nodelist-expected";
     public static final String KEY_DEVICE_UID = "DeviceUid";
 
+    public static final String KEY_PAGE_SIZE = "PageSize";
     public static final String KEY_PAGE = "Page";
 
     public static final String KEY_SYSTEM_ID = "SystemId";
@@ -78,6 +77,60 @@ public class Keys {
     public static final String KEY_MEASUREMENT_VALUE = "MeasurementValue";
 
     public static final String KEY_RESULT = "Result";
+
+	public static final String KEY_MANUFACTURER = "Manufacturer";
+	public static final String KEY_DEVICE_EXTERNAL_MANAGED = "DeviceExternalManaged";
+	public static final String KEY_DEVICE_ACTIVATED = "DeviceActivated";
+	public static final String KEY_DEVICE_MAINTENANCE = "DeviceMaintenance";
+	public static final String KEY_SORT_DIR = "SortDir";
+	public static final String KEY_HAS_TECHNICAL_INSTALLATION = "HasTechnicalInstallation";
+	public static final String KEY_SORTED_BY = "SortedBy";
+	public static final String KEY_OWNER = "Owner";
+	public static final String KEY_FIRMWARE_MODULE_TYPE = "FirmwareModuleType";
+	public static final String KEY_FIRMWARE_MODULE_VERSION = "FirmwareModuleVersion";
+	public static final String KEY_EXACT_MATCH = "ExactMatch";
+	public static final String KEY_USE_PAGE = "UsePage";
+	public static final String RESPONSE = "Response";
+	public static final String KEY_USE_PAGES = "UsePages";
+	public static final String KEY_NETWORKADDRESS = "NetworkAddress";
+	public static final String KEY_ENABLED = "Enabled";
+	public static final String KEY_NAME = "Name";
+	public static final String KEY_PREFIX = "Prefix";
+	public static final String KEY_PLATFORM_FUNCTION_GROUP = "PlatformFunctionGroup";
+	public static final String KEY_DOMAINS = "Domain";
+	public static final String KEY_MESSAGE = "Message";
+	public static final String KEY_FAULTCODE = "FaultCode";
+	public static final String KEY_NEW_ORGANIZATION_IDENTIFICATION = "NewOrganizationIdentification";
+	public static final String KEY_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP = "NewPlatformFunctionGroup";
+	public static final String KEY_ACTIVATED = "Activated";
+	public static final String KEY_DEVICE_MODEL_DESCRIPTION = "Description";
+	public static final String KEY_DEVICE_MODEL_MANUFACTURER = "Manufacturer";
+	public static final String KEY_DEVICE_MODEL_METERED = "Metered";
+	public static final String KEY_DEVICE_MODEL_MODELCODE = "ModelCode";
+	public static final String KEY_HAS_SCHEDULE = "HasSchedule";
+	public static final String KEY_PUBLICKEYPRESENT = "PublicKeyPresent";
+	public static final String KEY_EVENT = "Event";
+	public static final String KEY_DESCRIPTION = "Description";
+	public static final String KEY_INDEX = "Index";
+	public static final String KEY_ISIMMEDIATE = "IsImmediate";
+	public static final String KEY_DIMVALUE = "DimValue";
+	public static final String KEY_ON = "On";
+	public static final String KEY_TRANSITION_TYPE = "TransitionType";
+	public static final String KEY_DEVICE_MODEL_FILESTORAGE = "FileStorage";
+	public static final String KEY_TIME = "Time";
+	public static final String KEY_RELAY_TYPE = "RelayType";
+	public static final String KEY_INTERNALID = "InternalId";
+	public static final String KEY_EXTERNALID = "ExternalId";
+	public static final String KEY_OSLP_RESULT = "OSLPResult";
+	public static final String KEY_EVENTNOTIFICATIONS = "EventNotifications";
+	public static final String KEY_PREFERRED_LINKTYPE = "PreferredLinkType";
+	public static final String KEY_ACTUAL_LINKTYPE = "ActualLinkType";
+	public static final String KEY_LIGHTTYPE = "LightType";
+	public static final String KEY_STATUS = "Status";
+	public static final String SEPARATOR = ",";
+	public static final String KEY_LIGHTVALUES = "LightValues";
+	public static final String KEY_EVENTNOTIFICATIONTYPES = "EventNotificationTypes";
+	public static final String SEPARATOR_SEMICOLON = ";";
 
     public static final String FIRMWARE_FILENAME = "FirmwareFilename";
     public static final String FIRMWARE_DESCRIPTION = "FirmwareDescription";
@@ -103,5 +156,4 @@ public class Keys {
     public static final String DEVICEMODEL_DESCRIPTION = "DeviceModelDescription";
     public static final String DEVICEMODEL_FILESTORAGE = "DeviceModelFileStorage";
     public static final String DEVICEMODEL_METERED = "DeviceModelMetered";
-
 }

@@ -12,6 +12,7 @@ package com.alliander.osgp.platform.cucumber.support;
 import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCaseRunner;
 import com.eviware.soapui.model.testsuite.TestStepResult;
 
+@Deprecated
 public class TestCaseResult {
     private TestStepResult runTestStepByName;
     private WsdlTestCaseRunner results;

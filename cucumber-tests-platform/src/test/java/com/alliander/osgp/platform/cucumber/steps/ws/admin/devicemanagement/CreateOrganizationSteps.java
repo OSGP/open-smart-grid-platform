@@ -1,22 +1,32 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package com.alliander.osgp.platform.cucumber.steps.ws.admin.devicemanagement;
+
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getBoolean;
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getEnum;
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 
 import java.util.Map;
 
 import org.junit.Assert;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.CreateOrganisationRequest;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.CreateOrganisationResponse;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.Organisation;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformDomain;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup;
+import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
+import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.steps.common.ResponseSteps;
-import com.alliander.osgp.platform.cucumber.steps.ws.admin.AdminStepsBase;
-import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
+import com.alliander.osgp.platform.cucumber.steps.ws.GenericResponseSteps;
+import com.alliander.osgp.platform.cucumber.support.ws.admin.AdminDeviceManagementClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -24,40 +34,38 @@ import cucumber.api.java.en.When;
 /**
  * Class with all the create organization requests steps
  */
-public class CreateOrganizationSteps extends AdminStepsBase {
+public class CreateOrganizationSteps {
     
-    protected CreateOrganizationSteps() throws Throwable {
-		super();
-	}
+    @Autowired
+	private AdminDeviceManagementClient client;
 
-	private static final String TEST_SUITE = "DeviceManagement";
-    private static final String TEST_CASE_NAME = "AT Create a new organization";
-    private static final String TEST_CASE_NAME_REQUEST = "CreateOrganization";
-    private static final String TEST_CASE_UNAUTHORIZED_NAME_REQUEST = "CreateOrganizationAsUnAuthorizedOrganization";
-
-    /**
-     * 
-     * @param requestParameters
-     */
-    private void fillPropertiesMap(Map<String, String> requestParameters) {
-        PROPERTIES_MAP.put("__ORGANIZATION_IDENTIFICATION__", requestParameters.get(Keys.KEY_ORGANISATION_IDENTIFICATION));
-        PROPERTIES_MAP.put("__NAME__", requestParameters.get("Name"));
-        PROPERTIES_MAP.put("__PREFIX__", requestParameters.get("Prefix"));
-        PROPERTIES_MAP.put("__FUNCTIONGROUP__", requestParameters.get("FunctionGroup"));
-        PROPERTIES_MAP.put("__ENABLED__", requestParameters.get("Enabled").toLowerCase());
-        PROPERTIES_MAP.put("__DOMAINS__", requestParameters.get("Domains"));
-    }
-    
     /**
      * 
      * @throws Throwable
      */
     @When("^receiving a create organization request$")
-    public void receiving_a_create_organization_request(Map<String, String> requestParameters) throws Throwable {
+    public void receivingACreateOrganizationRequest(final Map<String, String> requestSettings) throws Throwable {
 
-        this.fillPropertiesMap(requestParameters);
+    	CreateOrganisationRequest request = new CreateOrganisationRequest();
+    	Organisation organization = new Organisation();
+    	organization.setEnabled(getBoolean(requestSettings, Keys.KEY_ENABLED, Defaults.DEFAULT_ORGANIZATION_ENABLED));
+    	organization.setName(getString(requestSettings, Keys.KEY_NAME, Defaults.DEFAULT_ORGANIZATION_NAME));
+    	organization.setOrganisationIdentification(getString(requestSettings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+    	organization.setPrefix(getString(requestSettings, Keys.KEY_PREFIX, Defaults.DEFAULT_ORGANIZATION_PREFIX));
+    	
+    	PlatformFunctionGroup platformFunctionGroup = getEnum(requestSettings, Keys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class, Defaults.DEFAULT_PLATFORM_FUNCTION_GROUP);
+    	organization.setFunctionGroup(platformFunctionGroup);
+    	
+    	for (String domain : getString(requestSettings, Keys.KEY_DOMAINS, Defaults.DEFAULT_DOMAINS).split(";")) {
+        	organization.getDomains().add(Enum.valueOf(PlatformDomain.class, domain));
+    	}
+    	request.setOrganisation(organization);
         
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_NAME, TEST_SUITE);
+    	try {
+    		ScenarioContext.Current().put(Keys.RESPONSE, client.createOrganization(request));
+    	} catch (SoapFaultClientException e) {
+    		ScenarioContext.Current().put(Keys.RESPONSE, e);
+    	}
     }
     
     /**
@@ -65,20 +73,21 @@ public class CreateOrganizationSteps extends AdminStepsBase {
      * @throws Throwable
      */
     @When("^receiving a create organization request as an unauthorized organization$")
-    public void receiving_a_create_organization_request_as_an_unauthorized_organization(Map<String, String> requestParameters) throws Throwable {
+    public void receivingACreateOrganizationRequestAsAnUnauthorizedOrganization(final Map<String, String> requestSettings) throws Throwable {
 
-        this.fillPropertiesMap(requestParameters);
-    
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_UNAUTHORIZED_NAME_REQUEST, TEST_CASE_NAME, TEST_SUITE);
+    	// Force WSTF to use a different organization to send the requests with. (Cerificate is used from the certificates directory).
+    	ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
+    	
+    	this.receivingACreateOrganizationRequest(requestSettings);
     }
     
     /**
      * Verify that the create organization response is successful.
      * @throws Throwable
      */
-    @Then("^the create organization response is successfull$")
-    public void the_create_organization_response_is_successfull() throws Throwable {
-        Assert.assertTrue(this.runXpathResult.assertXpath(this.response, "/Envelope/Body/CreateOrganisationResponse", ""));
+    @Then("^the create organization response is successful$")
+    public void theCreateOrganizationResponseIsSuccessful() throws Throwable {
+    	Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof CreateOrganisationResponse);
     }
     
     /**
@@ -87,7 +96,7 @@ public class CreateOrganizationSteps extends AdminStepsBase {
      * @throws Throwable
      */
     @Then("^the create organization response contains$")
-    public void the_create_organization_response_contains(Map<String, String> expectedResult) throws Throwable {
-        ResponseSteps.VerifyFaultResponse(this.runXpathResult, this.response, expectedResult);
+    public void theCreateOrganizationResponseContains(final Map<String, String> expectedResult) throws Throwable {
+        GenericResponseSteps.verifySoapFault(expectedResult);
     }
 }

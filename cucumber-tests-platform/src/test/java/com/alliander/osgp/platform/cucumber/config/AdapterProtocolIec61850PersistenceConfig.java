@@ -21,7 +21,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850
 
 @EnableJpaRepositories(entityManagerFactoryRef = "entityMgrFactIec61850", transactionManagerRef = "txMgrIec61850", basePackageClasses = {
         Iec61850DeviceRepository.class })
-public class AdapterProtocolIec61850PersistenceConfig extends ApplicationConfiguration {
+public class AdapterProtocolIec61850PersistenceConfig extends ApplicationPersistenceConfiguration {
 
     public AdapterProtocolIec61850PersistenceConfig() {
     }

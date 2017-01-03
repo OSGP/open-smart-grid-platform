@@ -3,7 +3,7 @@ Feature: Get Heat Buffer Data
   I want to get Heat Buffer data from an RTU
   So this data can be used by other processes
 
-@Iec61850MockServer @runnow
+  @Iec61850MockServer
   Scenario: Request Heat Buffer
     Given an rtu device
       | DeviceIdentification | RTU10001 |
@@ -19,13 +19,13 @@ Feature: Get Heat Buffer Data
       | SystemType_1              | HEAT_BUFFER |
       | NumberOfMeasurements_1    |           4 |
       | MeasurementFilterNode_1_1 | TmpSv       |
-      | MeasurementFilterId_1_1         |           1 |
+      | MeasurementFilterId_1_1   |           1 |
       | MeasurementFilterNode_1_2 | TmpSv       |
-      | MeasurementFilterId_1_2         |           2 |
+      | MeasurementFilterId_1_2   |           2 |
       | MeasurementFilterNode_1_3 | TmpSv       |
-      | MeasurementFilterId_1_3         |           3 |
+      | MeasurementFilterId_1_3   |           3 |
       | MeasurementFilterNode_1_4 | VlmCap      |
-      | MeasurementFilterId_1_4         |           1 |
+      | MeasurementFilterId_1_4   |           1 |
     Then the get data response should be returned
       | DeviceIdentification     | RTU10001    |
       | Result                   | OK          |

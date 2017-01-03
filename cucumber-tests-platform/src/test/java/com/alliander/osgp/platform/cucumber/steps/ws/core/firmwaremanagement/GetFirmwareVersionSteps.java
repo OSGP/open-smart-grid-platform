@@ -1,11 +1,9 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package com.alliander.osgp.platform.cucumber.steps.ws.core.firmwaremanagement;
 
@@ -17,12 +15,20 @@ import java.util.Map;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
+import com.alliander.osgp.adapter.ws.schema.core.common.AsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.core.common.OsgpResultType;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionResponse;
+import com.alliander.osgp.platform.cucumber.config.CoreDeviceConfiguration;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.steps.ws.core.CoreStepsBase;
-import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
+import com.alliander.osgp.platform.cucumber.support.ws.core.CoreFirmwareManagementClient;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -30,17 +36,14 @@ import cucumber.api.java.en.Then;
 /**
  * Class with all the firmware requests steps
  */
-public class GetFirmwareVersionSteps extends CoreStepsBase {
-    private static final String TEST_SUITE_XML = "FirmwareManagement";
-    private static final String TEST_CASE_ASYNC_REQ_XML = "AT Send GetFirmwareVersion Async";
-    private static final String TEST_CASE_RESULT_REQ_XML = "AT Retrieve GetFirmwareVersion Result";
-    private static final String TEST_CASE_ASYNC_NAME_REQUEST = "GetFirmwareVersion - Request 1";
-    private static final String TEST_CASE_RESULT_NAME_REQUEST = "GetGetFirmwareVersion - Request 1";
+public class GetFirmwareVersionSteps {
+	@Autowired
+	private CoreDeviceConfiguration configuration;
 
-    private static final String PATH_FIRMWARE_TYPE = "//*[local-name()='FirmwareModuleType']/text()";
-    private static final String PATH_FIRMWARE_VERSION = "//*[local-name()='Version']/text()";
+	@Autowired
+    private CoreFirmwareManagementClient client;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetFirmwareVersionSteps.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(GetFirmwareVersionSteps.class);
 
     /**
      * Sends a Get Firmware Version request to the platform for a given device identification.
@@ -48,14 +51,16 @@ public class GetFirmwareVersionSteps extends CoreStepsBase {
      * @throws Throwable
      */
     @Given("^receiving a get firmware version request$")
-    public void givenReceivingAGetFirmwareVersionRequest(final Map<String, String> requestParameters) throws Throwable {
+    public void receivingAGetFirmwareVersionRequest(final Map<String, String> requestParameters) throws Throwable {
 
-        // Required parameters
-        PROPERTIES_MAP.put("__DEVICE_IDENTIFICATION__", requestParameters.get(Keys.KEY_DEVICE_IDENTIFICATION));
-
-        // Now run the request.
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_ASYNC_NAME_REQUEST, TEST_CASE_ASYNC_REQ_XML,
-                TEST_SUITE_XML);
+    	GetFirmwareVersionRequest request = new GetFirmwareVersionRequest();
+    	request.setDeviceIdentification(getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+    	
+    	try {
+    		ScenarioContext.Current().put(Keys.RESPONSE, client.getFirmwareVersion(request));
+    	} catch(SoapFaultClientException ex) {
+    		ScenarioContext.Current().put(Keys.RESPONSE, ex);
+    	}
     }
 
     /**
@@ -65,34 +70,49 @@ public class GetFirmwareVersionSteps extends CoreStepsBase {
      * @throws Throwable
      */
     @Then("^the get firmware version async response contains$")
-    public void thenTheGetFirmwareVersionResponseContains(final Map<String, String> expectedResponseData)
+    public void theGetFirmwareVersionResponseContains(final Map<String, String> expectedResponseData)
             throws Throwable {
-        this.runXpathResult.assertXpath(this.response, PATH_DEVICE_IDENTIFICATION,
-                getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-        this.runXpathResult.assertNotNull(this.response, PATH_CORRELATION_UID);
+    	GetFirmwareVersionAsyncResponse response = (GetFirmwareVersionAsyncResponse)ScenarioContext.Current().get(Keys.RESPONSE);
+    	
+    	Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
+    	Assert.assertEquals(getString(expectedResponseData,  Keys.KEY_DEVICE_IDENTIFICATION), response.getAsyncResponse().getDeviceId());
 
-        // Save the returned CorrelationUid in the Scenario related context for
-        // further use.
-        saveCorrelationUidInScenarioContext(this.runXpathResult.getValue(this.response, PATH_CORRELATION_UID),
-                getString(expectedResponseData, Keys.KEY_ORGANISATION_IDENTIFICATION,
-                        Defaults.DEFAULT_ORGANISATION_IDENTIFICATION));
+        // Save the returned CorrelationUid in the Scenario related context for further use.
+        saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
+                getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
         LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
     }
 
     @Then("^the platform buffers a get firmware version response message for device \"([^\"]*)\"$")
-    public void thenThePlatformBufferesAGetFirmwareVersionResponseMessage(final String deviceIdentification,
+    public void thePlatformBufferesAGetFirmwareVersionResponseMessage(final String deviceIdentification,
             final Map<String, String> expectedResponseData) throws Throwable {
-        // Required parameters
-        PROPERTIES_MAP.put("__DEVICE_IDENTIFICATION__", deviceIdentification);
-        PROPERTIES_MAP.put("__CORRELATION_UID__", (String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
+    	GetFirmwareVersionAsyncRequest request = new GetFirmwareVersionAsyncRequest();
+    	AsyncRequest asyncRequest = new AsyncRequest();
+    	asyncRequest.setDeviceId(deviceIdentification);
+    	asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
+    	request.setAsyncRequest(asyncRequest);
+    	
+       	boolean success = false;
+    	int count = 0;
+    	while (!success) {
+    		if (count > configuration.defaultTimeout) {
+    			Assert.fail("Timeout");
+    		}
+    		
+    		count++;
+            Thread.sleep(1000);
 
-        this.waitForResponse(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_RESULT_NAME_REQUEST,
-                    TEST_CASE_RESULT_REQ_XML, TEST_SUITE_XML);
-
-        Assert.assertEquals(getString(expectedResponseData, "FirmwareModuleType", ""),
-                this.runXpathResult.getValue(this.response, PATH_FIRMWARE_TYPE));
-        Assert.assertEquals(getString(expectedResponseData, "FirmwareVersion", ""),
-                this.runXpathResult.getValue(this.response, PATH_FIRMWARE_VERSION));
+    		try {
+    		   	GetFirmwareVersionResponse response = client.getGetFirmwareVersion(request);
+    		       			    			
+    	    	Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResponseData.get(Keys.KEY_RESULT)), response.getResult());
+    			
+    			success = true; 
+    		}
+    		catch(Exception ex) {
+    			LOGGER.debug(ex.getMessage());
+    		}
+    	}
     }
 }
