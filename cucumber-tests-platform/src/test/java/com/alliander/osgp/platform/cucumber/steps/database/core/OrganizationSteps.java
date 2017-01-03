@@ -63,7 +63,7 @@ public class OrganizationSteps {
         // Add all the mandatory stuff.
         entity.addDomain(getEnum(settings, "PlatformDomain", PlatformDomain.class, this.DEFAULT_PLATFORM_DOMAIN));
 
-        entity.setIsEnabled(getBoolean(settings, "Enabled", this.DEFAULT_ENABLED));
+        entity.setIsEnabled(getBoolean(settings, Keys.KEY_ENABLED, this.DEFAULT_ENABLED));
 
         // TODO: Add all the optional stuff
         this.repo.save(entity);
@@ -126,11 +126,25 @@ public class OrganizationSteps {
      * @throws Throwable
      */
     @Then("^the organization with organization identification \"([^\"]*)\" should be disabled$")
-    public void the_organization_with_organization_identification_should_be_disabled(
+    public void theOrganizationWithOrganizationIdentificationShouldBeDisabled(
             final String organizationIdentification) throws Throwable {
         final Organisation entity = this.repo.findByOrganisationIdentification(organizationIdentification);
 
         Assert.assertTrue(entity.isEnabled() == false);
+    }
+
+    /**
+     * Ensure that the organization is enabled.
+     *
+     * @param organizationIdentification
+     * @throws Throwable
+     */
+    @Then("^the organization with organization identification \"([^\"]*)\" should be enabled")
+    public void theOrganizationWithOrganizationIdentificationShouldBeEnabled(
+            final String organizationIdentification) throws Throwable {
+        final Organisation entity = this.repo.findByOrganisationIdentification(organizationIdentification);
+
+        Assert.assertTrue(entity.isEnabled() == true);
     }
 
     /**
@@ -140,7 +154,7 @@ public class OrganizationSteps {
      * @throws Throwable
      */
     @Then("^the organization with name \"([^\"]*)\" should not be created$")
-    public void the_organization_with_name_should_not_be_created(final String name) throws Throwable {
+    public void theOrganizationWithNameShouldNotBeCreated(final String name) throws Throwable {
         Assert.assertNull(this.repo.findByName(name));
     }
 }

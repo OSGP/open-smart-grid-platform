@@ -135,3 +135,12 @@ Feature: Organisation management
     Examples: 
       | OrganizationIdentification | Name                | FunctionGroup |
       | ATestOrganization          | A Test Organization | ADMIN         |
+
+  Scenario: Activate an organization
+    Given an organization
+      | OrganizationIdentification | AnOrganization |
+      | Enabled                    | false          |
+    When receiving an activate organization request
+      | OrganizationIdentification | AnOrganization |
+    Then the activate organization response is successful
+    And the organization with organization identification "AnOrganization" should be enabled

@@ -74,7 +74,7 @@ Feature: Add Device
       | DeviceModelDescription  | <Description>           |
       | DeviceModelMetered      | <Metered>               |
     Then the add device response contains soap fault
-      | Message          | Validation error    |
+      | MESSAGE          | Validation error    |
       | FaultCode        | <FaultCode>         |
       | FaultString      | <FaultString>       |
       | FaultType        | <FaultType>         |
@@ -109,7 +109,7 @@ Feature: Add Device
       | DeviceModelDescription  | <Description>           |
       | DeviceModelMetered      | <Metered>               |
     Then the add device response contains soap fault
-      | Message | Validation error |
+      | MESSAGE | Validation error |
 
     Examples: 
       # TODO, deviceidentification with 40 characters.

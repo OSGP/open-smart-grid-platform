@@ -330,7 +330,7 @@ public class OslpDeviceSteps {
 		Assert.assertNotNull(message);
 		Assert.assertTrue(message.hasStartSelfTestRequest());
 	}
-
+	
 	/**
 	 * Verify that a stop device OSLP message is sent to the device.
 	 * 

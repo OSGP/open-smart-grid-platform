@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.SetOwnerRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.SetOwnerResponse;
-import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.DeviceModel;
-import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.ChangeDeviceModelRequest;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
