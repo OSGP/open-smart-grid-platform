@@ -67,3 +67,4 @@ Feature: Adhoc Management
       | DeviceIdentification | TEST1024000000001 |
     Then the get status response contains soap fault
       | Message | UNKNOWN_DEVICE |
+      

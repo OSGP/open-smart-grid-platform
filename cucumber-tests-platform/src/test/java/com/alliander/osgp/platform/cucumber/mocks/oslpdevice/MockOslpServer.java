@@ -30,7 +30,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.oslp.Oslp;
-import com.alliander.osgp.oslp.Oslp.EventNotificationResponse;
 import com.alliander.osgp.oslp.Oslp.GetFirmwareVersionResponse;
 import com.alliander.osgp.oslp.Oslp.GetStatusResponse;
 import com.alliander.osgp.oslp.Oslp.GetStatusResponse.Builder;
@@ -47,7 +46,7 @@ import com.alliander.osgp.oslp.Oslp.StartSelfTestResponse;
 import com.alliander.osgp.oslp.Oslp.StopSelfTestResponse;
 import com.alliander.osgp.oslp.OslpDecoder;
 import com.alliander.osgp.oslp.OslpEncoder;
-import com.alliander.osgp.platform.cucumber.config.CorePersistenceConfig;
+import com.alliander.osgp.platform.cucumber.config.CoreDeviceConfiguration;
 import com.alliander.osgp.shared.security.CertificateHelper;
 
 @Component
@@ -56,7 +55,7 @@ public class MockOslpServer {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MockOslpServer.class);
 
 	@Autowired
-	private CorePersistenceConfig configuration;
+	private CoreDeviceConfiguration configuration;
 
 	@Value("${oslp.port.server}")
 	private int oslpPortServer;
@@ -134,7 +133,7 @@ public class MockOslpServer {
 				Assert.fail("Polling for response interrupted");
 			}
 
-			if (count > configuration.getDefaultTimeout()) {
+			if (count > configuration.defaultTimeout) {
 				Assert.fail("Polling for response failed, no reponse found");
 			}
 		}

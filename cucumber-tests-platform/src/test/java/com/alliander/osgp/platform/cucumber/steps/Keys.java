@@ -33,8 +33,6 @@ public class Keys {
     public static final String KEY_DEVICE_MODEL = "DeviceModel";
     public static final String KEY_TECH_INSTALL_DATE = "TechnicalInstallationDate";
 
-    // TODO: It is called "Organisation" with an S in all webservices and
-    // sourcecode, this should be consistent.
     public static final String KEY_ORGANIZATION_IDENTIFICATION = "OrganizationIdentification";
     public static final String KEY_USER_NAME = "UserName";
     public static final String KEY_DEVICE_FUNCTION_GRP = "DeviceFunctionGroup";
@@ -99,7 +97,7 @@ public class Keys {
     public static final String KEY_NAME = "Name";
     public static final String KEY_PREFIX = "Prefix";
     public static final String KEY_PLATFORM_FUNCTION_GROUP = "PlatformFunctionGroup";
-    public static final String KEY_DOMAINS = "Domains";
+    public static final String KEY_DOMAINS = "Domain";
     public static final String KEY_MESSAGE = "Message";
     public static final String KEY_FAULTCODE = "FaultCode";
     public static final String KEY_NEW_ORGANIZATION_IDENTIFICATION = "NewOrganizationIdentification";
@@ -158,5 +156,4 @@ public class Keys {
     public static final String DEVICEMODEL_DESCRIPTION = "DeviceModelDescription";
     public static final String DEVICEMODEL_FILESTORAGE = "DeviceModelFileStorage";
     public static final String DEVICEMODEL_METERED = "DeviceModelMetered";
-
 }

@@ -33,7 +33,7 @@ import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.SetTr
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.TransitionType;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.AsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.OsgpResultType;
-import com.alliander.osgp.platform.cucumber.config.CorePersistenceConfig;
+import com.alliander.osgp.platform.cucumber.config.CoreDeviceConfiguration;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
@@ -47,7 +47,7 @@ import cucumber.api.java.en.When;
  */
 public class SetTransitionSteps {
 	@Autowired
-	private CorePersistenceConfig configuration;
+	private CoreDeviceConfiguration configuration;
 	
 	@Autowired
 	private PublicLightingAdHocManagementClient client;
@@ -124,12 +124,13 @@ public class SetTransitionSteps {
     	boolean success = false;
     	int count = 0;
     	while (!success) {
-    		if (count > configuration.getDefaultTimeout()) {
+    		if (count > configuration.defaultTimeout) {
     			Assert.fail("Timeout");
     		}
     		
     		count++;
-    		
+            Thread.sleep(1000);
+
     		try {
     			SetTransitionResponse response = client.getSetTransitionResponse(request);
     			

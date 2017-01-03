@@ -60,13 +60,13 @@ public class DatabaseSteps {
     private OslpDeviceRepository oslpDeviceRepository;
 
     @Autowired
+    private SsldRepository ssldRepository;
+
+    @Autowired
     private DeviceFirmwareRepository deviceFirmwareRepository;
 
     @Autowired
     private EventRepository eventRepository;
-
-    @Autowired
-    private SsldRepository ssldRepository;
 
     @Autowired
     private DeviceLogItemRepository deviceLogItemRepository;
@@ -84,7 +84,8 @@ public class DatabaseSteps {
      */
     @Transactional
     private void insertDefaultData() {
-        if (this.organisationRepository.findByOrganisationIdentification(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION) == null) {
+        if (this.organisationRepository
+                .findByOrganisationIdentification(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION) == null) {
             // Create test organization used within the tests.
             final Organisation testOrg = new Organisation(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION,
                     Defaults.DEFAULT_ORGANIZATION_DESCRIPTION, Defaults.DEFAULT_PREFIX, PlatformFunctionGroup.ADMIN);
@@ -109,8 +110,14 @@ public class DatabaseSteps {
 
     @Transactional("txMgrCore")
     public void prepareDatabaseForScenario() {
+
+        // First remove stuff from osgp_protocol_adapter_oslp
         this.oslpDeviceRepository.deleteAllInBatch();
+
+        // Then remove stuff from osgp_protocol_adapter_iec61850
         this.iec61850DeviceRepository.deleteAllInBatch();
+
+        // Then remove stuff from osgp_core
         this.deviceAuthorizationRepository.deleteAllInBatch();
         this.deviceLogItemRepository.deleteAllInBatch();
         this.scheduledTaskRepository.deleteAllInBatch();

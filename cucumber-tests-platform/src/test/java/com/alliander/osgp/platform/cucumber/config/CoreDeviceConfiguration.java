@@ -8,17 +8,19 @@
 package com.alliander.osgp.platform.cucumber.config;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Base core device configuration.
+ */
 @Configuration
-public class CoreDeviceConfig {
+public class CoreDeviceConfiguration extends ApplicationConfiguration {
 
-    @Value("${device.networkaddress}")
-    private String deviceNetworkAddress;
+	@Value("${device.networkaddress}")
+	private String deviceNetworkaddress;
 
-    @Bean
-    public String deviceNetworkAddress() {
-        return this.deviceNetworkAddress;
-    }
+	public String getDeviceNetworkAddress() {
+	    return this.deviceNetworkaddress;
+	}
+	
 }

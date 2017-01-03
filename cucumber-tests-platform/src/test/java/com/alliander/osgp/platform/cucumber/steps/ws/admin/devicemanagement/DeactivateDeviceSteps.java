@@ -1,11 +1,9 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package com.alliander.osgp.platform.cucumber.steps.ws.admin.devicemanagement;
 
@@ -31,30 +29,32 @@ import cucumber.api.java.en.When;
 
 public class DeactivateDeviceSteps {
 
-	@Autowired
-	private AdminDeviceManagementClient client;
-	
+    @Autowired
+    private AdminDeviceManagementClient client;
+
     @When("^receiving a deactivate device request$")
     public void receivingADeactivateDeviceRequest(final Map<String, String> requestSettings) throws Throwable {
-    	
-    	DeactivateDeviceRequest request = new DeactivateDeviceRequest();
-    	request.setDeviceIdentification(getString(requestSettings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-        
-    	try {
-    		ScenarioContext.Current().put(Keys.RESPONSE, client.deactivateDevice(request));
-    	} catch(SoapFaultClientException ex) {
-    		ScenarioContext.Current().put(Keys.RESPONSE, ex);
-    	}
+
+        DeactivateDeviceRequest request = new DeactivateDeviceRequest();
+        request.setDeviceIdentification(
+                getString(requestSettings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+
+        try {
+            ScenarioContext.Current().put(Keys.RESPONSE, client.deactivateDevice(request));
+        } catch (SoapFaultClientException ex) {
+            ScenarioContext.Current().put(Keys.RESPONSE, ex);
+        }
     }
 
     /**
      * Verify that the deactivate device response is successful.
+     * 
      * @throws Throwable
      */
     @Then("^the deactivate device response contains$")
-    public void the_deactivate_device_response_contains(Map<String, String> expectedResponse) throws Throwable {
+    public void theDeactivateDeviceResponseContains(final Map<String, String> expectedResponse) throws Throwable {
         DeactivateDeviceResponse response = (DeactivateDeviceResponse) ScenarioContext.Current().get(Keys.RESPONSE);
-        
+
         Assert.assertEquals(getEnum(expectedResponse, Keys.KEY_RESULT, OsgpResultType.class), response.getResult());
     }
 }

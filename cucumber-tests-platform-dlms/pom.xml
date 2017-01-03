@@ -109,40 +109,20 @@
       <groupId>com.alliander.osgp</groupId>
       <artifactId>shared</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.alliander.osgp</groupId>
+      <artifactId>osgp-adapter-ws-smartmetering</artifactId>
+      <classifier>classes</classifier>
+    </dependency>
 
     <!-- Cucumber platform -->
     <dependency>
       <groupId>com.alliander</groupId>
       <artifactId>cucumber-tests-platform</artifactId>
-      <version>${osgp.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     
   </dependencies>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>com.smartbear.soapui</groupId>
-        <artifactId>soapui-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
 </project>

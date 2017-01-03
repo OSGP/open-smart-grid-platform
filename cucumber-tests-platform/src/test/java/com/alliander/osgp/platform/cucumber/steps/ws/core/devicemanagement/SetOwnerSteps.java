@@ -1,3 +1,10 @@
+/**
+ * Copyright 2017 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.platform.cucumber.steps.ws.core.devicemanagement;
 
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
@@ -9,8 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.SetOwnerRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.SetOwnerResponse;
-import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.DeviceModel;
-import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.ChangeDeviceModelRequest;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
