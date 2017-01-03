@@ -33,7 +33,7 @@ import org.springframework.jms.listener.DefaultMessageListenerContainer;
  */
 @Configuration
 @PropertySources({ @PropertySource("classpath:jms.properties"),
-        @PropertySource(value = "file:/etc/osp/jms.properties", ignoreResourceNotFound = true) })
+    @PropertySource(value = "file:/etc/osp/jms.properties", ignoreResourceNotFound = true) })
 public abstract class AbstractMessagingConfig extends AbstractConfig {
 
     @Value("${jms.requests.explicit.qos.enabled}")
@@ -238,6 +238,7 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
         jmsTemplate.setExplicitQosEnabled(qosEnabled);
         jmsTemplate.setTimeToLive(timeToLive);
         jmsTemplate.setDeliveryPersistent(deliveryPersistent);
+        jmsTemplate.setConnectionFactory(this.pooledConnectionFactory());
         return jmsTemplate;
     }
 
