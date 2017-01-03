@@ -9,6 +9,7 @@ package com.alliander.osgp.adapter.ws.smartmetering.application.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
@@ -20,36 +21,48 @@ import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringReques
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringResponseMessageListener;
 import com.alliander.osgp.shared.application.config.AbstractMessagingConfig;
 
+@ComponentScan(basePackages = { "com.alliander.osgp.shared.application.config" })
 @Configuration
 @PropertySources({ @PropertySource("classpath:osgp-adapter-ws-smartmetering.properties"),
     @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
     @PropertySource(value = "file:${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true), })
 public class MessagingConfig extends AbstractMessagingConfig {
 
-    private static final String PROPERTY_NAME_JMS_SMART_METERING_PREFIX = "jms.smartmetering.";
+    private static final String PROPERTY_NAME_JMS_SMART_METERING_REQUEST_QUEUE = "jms.smartmetering.requests.queue";
+    private static final String PROPERTY_NAME_JMS_SMART_METERING_RESPONSES_QUEUE = "jms.smartmetering.responses.queue";
+    private static final String PROPERTY_NAME_JMS_SMART_METERING_LOGING_QUEUE = "jms.smartmetering.logging.queue";
 
     @Autowired
     public SmartMeteringResponseMessageListener smartMeteringResponseMessageListener;
 
     @Override
-    protected String getJmsPropertyPrefix() {
-        return PROPERTY_NAME_JMS_SMART_METERING_PREFIX;
+    protected String getRequestQueueName() {
+        return this.environment.getRequiredProperty(PROPERTY_NAME_JMS_SMART_METERING_REQUEST_QUEUE);
+    }
+
+    @Override
+    protected String getResponsesQueueName() {
+        return this.environment.getRequiredProperty(PROPERTY_NAME_JMS_SMART_METERING_RESPONSES_QUEUE);
+    }
+
+    @Override
+    protected String getLoggingQueueName() {
+        return this.environment.getRequiredProperty(PROPERTY_NAME_JMS_SMART_METERING_LOGING_QUEUE);
     }
 
     @Bean
     public JmsTemplate loggingJmsTemplate() {
-        return super.jmsTemplate(PROPERTY_NAME_LOGGING, this.loggingQueue());
+        return super.jmsLoggingTemplate();
     }
 
     @Bean(name = "wsSmartMeteringOutgoingRequestsJmsTemplate")
     public JmsTemplate smartMeteringRequestsJmsTemplate() {
-        return super.jmsTemplate(PROPERTY_NAME_REQUESTS, this.requestsQueue());
+        return super.jmsRequestTemplate();
     }
 
     @Bean(name = "wsSmartMeteringResponsesMessageListenerContainer")
     public DefaultMessageListenerContainer smartMeteringResponseMessageListenerContainer() {
-        return super.messageListenerContainer(PROPERTY_NAME_RESPONSES, this.responsesQueue(),
-                this.smartMeteringResponseMessageListener);
+        return super.defaultResponsesMessageListenerContainer(this.smartMeteringResponseMessageListener);
     }
 
     /**
