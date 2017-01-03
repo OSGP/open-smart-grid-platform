@@ -103,7 +103,8 @@ public class StartDeviceSteps {
     		}
     		
     		count++;
-    		
+            Thread.sleep(1000);
+
     		try {
     			StartDeviceTestResponse response = client.getStartDeviceTestResponse(request);
     			
