@@ -17,9 +17,6 @@ import org.apache.activemq.pool.PooledConnectionFactory;
 import org.apache.activemq.spring.ActiveMQConnectionFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
@@ -27,118 +24,115 @@ import org.springframework.jms.listener.DefaultMessageListenerContainer;
  * This abstract class can be used by modules to configure to Jms configuration
  * with little code. The base class only needs to provide the names of the
  * request / responses / logging queue the rest is filled in by this class with
- * default values. The base class can overwrite these values, that can be found
- * in jms.properties, by providing its own in value in the corresponding
+ * default values. The base class can overwrite these values by providing its
+ * own property (using one of the keys below) in value in the corresponding
  * properties file.
  */
-@Configuration
-@PropertySources({ @PropertySource("classpath:jms.properties"),
-    @PropertySource(value = "file:/etc/osp/jms.properties", ignoreResourceNotFound = true) })
 public abstract class AbstractMessagingConfig extends AbstractConfig {
 
-    @Value("${jms.requests.explicit.qos.enabled}")
-    public boolean requestQosEnabled;
+    @Value("${jms.requests.explicit.qos.enabled:true}")
+    protected boolean requestQosEnabled;
 
-    @Value("${jms.requests.delivery.persistent}")
-    public boolean requestDeliveryPersistent;
+    @Value("${jms.requests.delivery.persistent:true}")
+    protected boolean requestDeliveryPersistent;
 
-    @Value("${jms.requests.time.to.live}")
-    public long requestTimeToLive;
+    @Value("${jms.requests.time.to.live:-1}")
+    protected long requestTimeToLive;
 
-    @Value("${jms.requests.concurrent.consumers}")
-    public int requestConcurrentConsumers;
+    @Value("${jms.requests.concurrent.consumers:2}")
+    protected int requestConcurrentConsumers;
 
-    @Value("${jms.requests.max.concurrent.consumers}")
-    public int requestMaxConcurrentConsumers;
+    @Value("${jms.requests.max.concurrent.consumers:10}")
+    protected int requestMaxConcurrentConsumers;
 
-    @Value("${jms.requests.maximum.redeliveries}")
-    public int requestMaxRedeliveries;
+    @Value("${jms.requests.maximum.redeliveries:3}")
+    protected int requestMaxRedeliveries;
 
-    @Value("${jms.requests.initial.redelivery.delay}")
-    public long requestInitialRedeliveryDelay;
+    @Value("${jms.requests.initial.redelivery.delay:60000}")
+    protected long requestInitialRedeliveryDelay;
 
-    @Value("${jms.requests.redelivery.delay}")
-    public int requestRedeliveryDelay;
+    @Value("${jms.requests.redelivery.delay:60000}")
+    protected int requestRedeliveryDelay;
 
-    @Value("${jms.requests.maximum.redelivery.delay}")
-    public long requestMaxRedeliveryDelay;
+    @Value("${jms.requests.maximum.redelivery.delay:300000}")
+    protected long requestMaxRedeliveryDelay;
 
-    @Value("${jms.requests.back.off.multiplier}")
-    public long requestBackOffMultiplier;
+    @Value("${jms.requests.back.off.multiplier:2}")
+    protected long requestBackOffMultiplier;
 
-    @Value("${jms.requests.use.exponential.back.off}")
-    public boolean requestUseExpBackOff;
+    @Value("${jms.requests.use.exponential.back.off:true}")
+    protected boolean requestUseExpBackOff;
 
-    @Value("${jms.responses.explicit.qos.enabled}")
-    public boolean responsesQosEnabled;
+    @Value("${jms.responses.explicit.qos.enabled:true}")
+    protected boolean responsesQosEnabled;
 
-    @Value("${jms.responses.delivery.persistent}")
-    public boolean responsesDeliveryPersistent;
+    @Value("${jms.responses.delivery.persistent:true}")
+    protected boolean responsesDeliveryPersistent;
 
-    @Value("${jms.responses.time.to.live}")
-    public long responsesTimeToLive;
+    @Value("${jms.responses.time.to.live:-1}")
+    protected long responsesTimeToLive;
 
-    @Value("${jms.responses.concurrent.consumers}")
-    public int responsesConcurrentConsumers;
+    @Value("${jms.responses.concurrent.consumers:2}")
+    protected int responsesConcurrentConsumers;
 
-    @Value("${jms.responses.max.concurrent.consumers}")
-    public int responsesMaxConcurrentConsumers;
+    @Value("${jms.responses.max.concurrent.consumers:10}")
+    protected int responsesMaxConcurrentConsumers;
 
-    @Value("${jms.responses.maximum.redeliveries}")
-    public int responsesMaxRedeliveries;
+    @Value("${jms.responses.maximum.redeliveries:3}")
+    protected int responsesMaxRedeliveries;
 
-    @Value("${jms.responses.initial.redelivery.delay}")
-    public long responsesInitialRedeliveryDelay;
+    @Value("${jms.responses.initial.redelivery.delay:60000}")
+    protected long responsesInitialRedeliveryDelay;
 
-    @Value("${jms.responses.redelivery.delay}")
-    public int responsesRedeliveryDelay;
+    @Value("${jms.responses.redelivery.delay:60000}")
+    protected int responsesRedeliveryDelay;
 
-    @Value("${jms.responses.maximum.redelivery.delay}")
-    public long responsesMaxRedeliveryDelay;
+    @Value("${jms.responses.maximum.redelivery.delay:300000}")
+    protected long responsesMaxRedeliveryDelay;
 
-    @Value("${jms.responses.back.off.multiplier}")
-    public long responsesBackOffMultiplier;
+    @Value("${jms.responses.back.off.multiplier:2}")
+    protected long responsesBackOffMultiplier;
 
-    @Value("${jms.responses.use.exponential.back.off}")
-    public boolean responsesUseExpBackOff;
+    @Value("${jms.responses.use.exponential.back.off:true}")
+    protected boolean responsesUseExpBackOff;
 
-    @Value("${jms.logging.explicit.qos.enabled}")
-    public boolean loggingQosEnabled;
+    @Value("${jms.logging.explicit.qos.enabled:true}")
+    protected boolean loggingQosEnabled;
 
-    @Value("${jms.logging.delivery.persistent}")
-    public boolean loggingDeliveryPersistent;
+    @Value("${jms.logging.delivery.persistent:true}")
+    protected boolean loggingDeliveryPersistent;
 
-    @Value("${jms.logging.time.to.live}")
-    public long loggingTimeToLive;
+    @Value("${jms.logging.time.to.live:-1}")
+    protected long loggingTimeToLive;
 
-    @Value("${jms.logging.concurrent.consumers}")
-    public int loggingConcurrentConsumers;
+    @Value("${jms.logging.concurrent.consumers:2}")
+    protected int loggingConcurrentConsumers;
 
-    @Value("${jms.logging.max.concurrent.consumers}")
-    public int loggingMaxConcurrentConsumers;
+    @Value("${jms.logging.max.concurrent.consumers:10}")
+    protected int loggingMaxConcurrentConsumers;
 
-    @Value("${jms.logging.maximum.redeliveries}")
-    public int loggingMaxRedeliveries;
+    @Value("${jms.logging.maximum.redeliveries:3}")
+    protected int loggingMaxRedeliveries;
 
-    @Value("${jms.logging.initial.redelivery.delay}")
-    public long loggingInitialRedeliveryDelay;
+    @Value("${jms.logging.initial.redelivery.delay:60000}")
+    protected long loggingInitialRedeliveryDelay;
 
-    @Value("${jms.logging.redelivery.delay}")
-    public int loggingRedeliveryDelay;
+    @Value("${jms.logging.redelivery.delay:60000}")
+    protected int loggingRedeliveryDelay;
 
-    @Value("${jms.logging.maximum.redelivery.delay}")
-    public long loggingMaxRedeliveryDelay;
+    @Value("${jms.logging.maximum.redelivery.delay:300000}")
+    protected long loggingMaxRedeliveryDelay;
 
-    @Value("${jms.logging.back.off.multiplier}")
-    public long loggingBackOffMultiplier;
+    @Value("${jms.logging.back.off.multiplier:2}")
+    protected long loggingBackOffMultiplier;
 
-    @Value("${jms.logging.use.exponential.back.off}")
-    public boolean loggingUseExpBackOff;
+    @Value("${jms.logging.use.exponential.back.off:true}")
+    protected boolean loggingUseExpBackOff;
 
     protected static final String PROPERTY_NAME_JMS_ACTIVEMQ_BROKER_URL = "jms.activemq.broker.url";
 
     @Bean(destroyMethod = "stop")
-    public PooledConnectionFactory pooledConnectionFactory() {
+    protected PooledConnectionFactory pooledConnectionFactory() {
         final PooledConnectionFactory pooledConnectionFactory = new PooledConnectionFactory();
         pooledConnectionFactory.setConnectionFactory(this.connectionFactory());
         return pooledConnectionFactory;
