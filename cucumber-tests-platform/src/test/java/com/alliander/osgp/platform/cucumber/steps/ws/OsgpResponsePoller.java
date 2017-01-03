@@ -7,6 +7,9 @@
  */
 package com.alliander.osgp.platform.cucumber.steps.ws;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ws.soap.client.SoapFaultClientException;
@@ -25,7 +28,7 @@ public abstract class OsgpResponsePoller<T> {
         this.sleepTime = sleepTime;
     }
 
-    abstract protected T pollWsResponse() throws WebServiceSecurityException;
+    abstract protected T pollWsResponse() throws WebServiceSecurityException, GeneralSecurityException, IOException;
 
     /**
      * Polls OSGP for response availability for a max time.
@@ -35,8 +38,10 @@ public abstract class OsgpResponsePoller<T> {
      *             if interrupted during sleep
      * @throws WebServiceSecurityException
      *             if an unexpected ws exception occurs
+     * @throws IOException
+     * @throws GeneralSecurityException
      */
-    public T start() throws InterruptedException, WebServiceSecurityException {
+    public T start() throws InterruptedException, WebServiceSecurityException, GeneralSecurityException, IOException {
 
         int timeSlept = 0;
 

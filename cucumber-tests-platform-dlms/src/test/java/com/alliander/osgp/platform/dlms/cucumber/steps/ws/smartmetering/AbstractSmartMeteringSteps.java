@@ -11,11 +11,12 @@ import java.util.List;
 
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
+import com.alliander.osgp.platform.cucumber.support.ws.BaseClient;
 
 /**
  * Super class for Smartmetering general methods.
  */
-public abstract class AbstractSmartMeteringSteps {
+public abstract class AbstractSmartMeteringSteps extends BaseClient {
 
     protected void checkAndSaveCorrelationId(final String correlationUid) {
 

@@ -11,6 +11,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,16 +32,13 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.DeCoupleM
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.DeCoupleMbusDeviceRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.DeCoupleMbusDeviceResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.ObjectFactory;
-import com.alliander.osgp.platform.cucumber.core.Helpers;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
-import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.cucumber.steps.ws.OsgpResponsePoller;
 import com.alliander.osgp.platform.cucumber.support.ws.WebServiceSecurityException;
 import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
 import com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.AbstractSmartMeteringSteps;
 
-import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
@@ -59,7 +58,7 @@ public class CoupleAndDeCoupleDevice extends AbstractSmartMeteringSteps {
 
     @When("^the Couple G-meter \"([^\"]*)\" request on channel (\\d+) is received$")
     public void theCoupleGMeterRequestIsReceived(final String gasMeter, final Short channel)
-            throws WebServiceSecurityException {
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
 
         final CoupleMbusDeviceRequest request = new ObjectFactory().createCoupleMbusDeviceRequest();
         request.setDeviceIdentification((String) ScenarioContext.Current().get(Keys.KEY_DEVICE_IDENTIFICATION));
@@ -67,26 +66,14 @@ public class CoupleAndDeCoupleDevice extends AbstractSmartMeteringSteps {
         request.setChannel(channel);
 
         final CoupleMbusDeviceAsyncResponse response = (CoupleMbusDeviceAsyncResponse) this.webServiceTemplateFactory
-                .getTemplate(this.getOrganisationIdentification(), this.getUser()).marshalSendAndReceive(request);
+                .getTemplate(this.getOrganizationIdentification(), this.getUserName()).marshalSendAndReceive(request);
 
         this.checkAndSaveCorrelationId(response.getCorrelationUid());
     }
 
-    @And("^organisation \"([^\"]*)\"$")
-    public void organisation(final String organisation) {
-        PROPERTIES_MAP.put(Keys.KEY_ORGANISATION_IDENTIFICATION, organisation);
-
-    }
-
-    @And("^user \"([^\"]*)\"$")
-    public void user(final String user) {
-        PROPERTIES_MAP.put(Keys.KEY_USER_NAME, user);
-
-    }
-
     @When("^the Couple G-meter \"([^\"]*)\" to E-meter \"([^\"]*)\" request on channel (\\d+) is received$")
     public void theCoupleGMeterToEMeterRequestOnChannelIsReceived(final String gasMeter, final String eMeter,
-            final Short channel) throws WebServiceSecurityException {
+            final Short channel) throws WebServiceSecurityException, GeneralSecurityException, IOException {
 
         final CoupleMbusDeviceRequest request = new ObjectFactory().createCoupleMbusDeviceRequest();
         request.setDeviceIdentification(eMeter);
@@ -94,34 +81,23 @@ public class CoupleAndDeCoupleDevice extends AbstractSmartMeteringSteps {
         request.setChannel(channel);
 
         final CoupleMbusDeviceResponse response = (CoupleMbusDeviceResponse) this.webServiceTemplateFactory
-                .getTemplate(this.getOrganisationIdentification(), this.getUser()).marshalSendAndReceive(request);
+                .getTemplate(this.getOrganizationIdentification(), this.getUserName()).marshalSendAndReceive(request);
 
         final OsgpResultType result = response.getResult();
         assertTrue(OsgpResultType.OK.equals(result));
     }
 
-    /**
-     * @param gasMeter
-     *            the device identification of the gas meter
-     * @param eMeter
-     *            the device identification of the e meter
-     * @param channel
-     *            the channel of the gas meter on the e meter
-     * @throws WebServiceSecurityException
-     *             should not be thrown in this test. This fault situation is
-     *             not tested here.
-     */
     @Then("^the Couple G-meter \"([^\"]*)\" to E-meter \"([^\"]*)\" request on channel (\\d+) throws an SoapException with message \"([^\"]*)\"$")
     public void theCoupleGMeterToEMeterRequestOnChannelThrowsAnSoapException(final String gasMeter,
             final String eMeter, final Short channel, final String soapExceptionMessage)
-            throws WebServiceSecurityException {
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final CoupleMbusDeviceRequest request = new ObjectFactory().createCoupleMbusDeviceRequest();
         request.setDeviceIdentification(eMeter);
         request.setMbusDeviceIdentification(gasMeter);
         request.setChannel(channel);
 
         try {
-            this.webServiceTemplateFactory.getTemplate(this.getOrganisationIdentification(), this.getUser())
+            this.webServiceTemplateFactory.getTemplate(this.getOrganizationIdentification(), this.getUserName())
                     .marshalSendAndReceive(request);
             fail("A SoapFaultClientException should be thrown");
         } catch (final SoapFaultClientException e) {
@@ -132,13 +108,14 @@ public class CoupleAndDeCoupleDevice extends AbstractSmartMeteringSteps {
 
     @Then("^the DeCouple G-meter \"([^\"]*)\" from E-meter \"([^\"]*)\" request throws an SoapException with message \"([^\"]*)\"$")
     public void theDeCoupleGMeterToEMeterRequestThrowsAnSoapException(final String gasMeter, final String eMeter,
-            final String soapExceptionMessage) throws WebServiceSecurityException {
+            final String soapExceptionMessage) throws WebServiceSecurityException, GeneralSecurityException,
+            IOException {
         final DeCoupleMbusDeviceRequest request = new ObjectFactory().createDeCoupleMbusDeviceRequest();
         request.setDeviceIdentification(eMeter);
         request.setMbusDeviceIdentification(gasMeter);
 
         try {
-            this.webServiceTemplateFactory.getTemplate(this.getOrganisationIdentification(), this.getUser())
+            this.webServiceTemplateFactory.getTemplate(this.getOrganizationIdentification(), this.getUserName())
                     .marshalSendAndReceive(request);
             fail("A SoapFaultClientException should be thrown");
         } catch (final SoapFaultClientException e) {
@@ -149,14 +126,15 @@ public class CoupleAndDeCoupleDevice extends AbstractSmartMeteringSteps {
 
     @When("^the Couple G-meter \"([^\"]*)\" request on channel (\\d+) is throws an SoapException with message \"([^\"]*)\"$")
     public void theCoupleGMeterRequestOnChannelIsThrowsAnSoapExceptionWithMessage(final String gasMeter,
-            final Short channel, final String soapExceptionMessage) throws WebServiceSecurityException {
+            final Short channel, final String soapExceptionMessage) throws WebServiceSecurityException,
+            GeneralSecurityException, IOException {
         final CoupleMbusDeviceRequest request = new ObjectFactory().createCoupleMbusDeviceRequest();
         request.setDeviceIdentification((String) ScenarioContext.Current().get(Keys.KEY_DEVICE_IDENTIFICATION));
         request.setMbusDeviceIdentification(gasMeter);
         request.setChannel(channel);
 
         try {
-            this.webServiceTemplateFactory.getTemplate(this.getOrganisationIdentification(), this.getUser())
+            this.webServiceTemplateFactory.getTemplate(this.getOrganizationIdentification(), this.getUserName())
                     .marshalSendAndReceive(request);
             fail("A SoapFaultClientException should be thrown");
         } catch (final SoapFaultClientException e) {
@@ -166,32 +144,34 @@ public class CoupleAndDeCoupleDevice extends AbstractSmartMeteringSteps {
     }
 
     @When("^the DeCouple G-meter \"([^\"]*)\" request is received$")
-    public void theDecoupleGMeterRequestIsReceived(final String gasMeter) throws WebServiceSecurityException {
+    public void theDecoupleGMeterRequestIsReceived(final String gasMeter) throws WebServiceSecurityException,
+    GeneralSecurityException, IOException {
 
         final DeCoupleMbusDeviceRequest request = new ObjectFactory().createDeCoupleMbusDeviceRequest();
         request.setDeviceIdentification((String) ScenarioContext.Current().get(Keys.KEY_DEVICE_IDENTIFICATION));
         request.setMbusDeviceIdentification(gasMeter);
         final DeCoupleMbusDeviceAsyncResponse response = (DeCoupleMbusDeviceAsyncResponse) this.webServiceTemplateFactory
-                .getTemplate(this.getOrganisationIdentification(), this.getUser()).marshalSendAndReceive(request);
+                .getTemplate(this.getOrganizationIdentification(), this.getUserName()).marshalSendAndReceive(request);
 
         this.checkAndSaveCorrelationId(response.getCorrelationUid());
     }
 
     @When("^the DeCouple G-meter \"([^\"]*)\" from E-meter \"([^\"]*)\" request is received$")
     public void theDeCoupleGMeterFromEMeterRequestIsReceived(final String gasMeter, final String eMeter)
-            throws WebServiceSecurityException {
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
 
         final DeCoupleMbusDeviceRequest request = new ObjectFactory().createDeCoupleMbusDeviceRequest();
         request.setDeviceIdentification(eMeter);
         request.setMbusDeviceIdentification(gasMeter);
         final DeCoupleMbusDeviceAsyncResponse response = (DeCoupleMbusDeviceAsyncResponse) this.webServiceTemplateFactory
-                .getTemplate(this.getOrganisationIdentification(), this.getUser()).marshalSendAndReceive(request);
+                .getTemplate(this.getOrganizationIdentification(), this.getUserName()).marshalSendAndReceive(request);
 
         this.checkAndSaveCorrelationId(response.getCorrelationUid());
     }
 
     @Then("^the couple response is \"([^\"]*)\"$")
-    public void theCoupleResponseIs(final String status) throws WebServiceSecurityException, InterruptedException {
+    public void theCoupleResponseIs(final String status) throws WebServiceSecurityException, InterruptedException,
+    GeneralSecurityException, IOException {
 
         final CoupleMbusDeviceAsyncRequest request = new ObjectFactory().createCoupleMbusDeviceAsyncRequest();
         request.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
@@ -208,7 +188,7 @@ public class CoupleAndDeCoupleDevice extends AbstractSmartMeteringSteps {
 
     @Then("^the couple response is \"([^\"]*)\" and contains$")
     public void theCoupleResponseContains(final String status, final List<String> resultList)
-            throws WebServiceSecurityException, InterruptedException {
+            throws WebServiceSecurityException, InterruptedException, GeneralSecurityException, IOException {
 
         final CoupleMbusDeviceAsyncRequest request = new ObjectFactory().createCoupleMbusDeviceAsyncRequest();
         request.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
@@ -226,7 +206,7 @@ public class CoupleAndDeCoupleDevice extends AbstractSmartMeteringSteps {
 
     @Then("^the DeCouple response is \"([^\"]*)\" and contains$")
     public void theDeCoupleResponseIsAndContains(final String status, final List<String> resultList)
-            throws WebServiceSecurityException, InterruptedException {
+            throws WebServiceSecurityException, InterruptedException, GeneralSecurityException, IOException {
 
         final DeCoupleMbusDeviceAsyncRequest request = new ObjectFactory().createDeCoupleMbusDeviceAsyncRequest();
         request.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
@@ -244,7 +224,7 @@ public class CoupleAndDeCoupleDevice extends AbstractSmartMeteringSteps {
 
     @Then("^the DeCouple response is \"([^\"]*)\"$")
     public void theDeCoupleResponseIsAndContains(final String status) throws WebServiceSecurityException,
-    InterruptedException {
+    InterruptedException, GeneralSecurityException, IOException {
 
         final DeCoupleMbusDeviceAsyncRequest request = new ObjectFactory().createDeCoupleMbusDeviceAsyncRequest();
         request.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
@@ -265,10 +245,10 @@ public class CoupleAndDeCoupleDevice extends AbstractSmartMeteringSteps {
                 this.sleepTime) {
 
             @Override
-            public Object pollWsResponse() throws WebServiceSecurityException {
+            public Object pollWsResponse() throws WebServiceSecurityException, GeneralSecurityException, IOException {
                 final DeCoupleMbusDeviceResponse response = (DeCoupleMbusDeviceResponse) CoupleAndDeCoupleDevice.this.webServiceTemplateFactory
-                        .getTemplate(CoupleAndDeCoupleDevice.this.getOrganisationIdentification(),
-                                CoupleAndDeCoupleDevice.this.getUser()).marshalSendAndReceive(request);
+                        .getTemplate(CoupleAndDeCoupleDevice.this.getOrganizationIdentification(),
+                                CoupleAndDeCoupleDevice.this.getUserName()).marshalSendAndReceive(request);
 
                 response.getDescription();
 
@@ -278,25 +258,16 @@ public class CoupleAndDeCoupleDevice extends AbstractSmartMeteringSteps {
         return responsePoller;
     }
 
-    private String getUser() {
-        return Helpers.getString(PROPERTIES_MAP, Keys.KEY_USER_NAME, Defaults.DEFAULT_USER_NAME);
-    }
-
-    private String getOrganisationIdentification() {
-        return Helpers.getString(PROPERTIES_MAP, Keys.KEY_ORGANISATION_IDENTIFICATION,
-                Defaults.DEFAULT_ORGANISATION_IDENTIFICATION);
-    }
-
     private OsgpResponsePoller<Object> createCoupleMbusResponsePoller(final CoupleMbusDeviceAsyncRequest request) {
         final OsgpResponsePoller<Object> responsePoller = new OsgpResponsePoller<Object>(this.maxWaitTimeForResponse,
                 this.sleepTime) {
 
             @Override
-            public Object pollWsResponse() throws WebServiceSecurityException {
+            public Object pollWsResponse() throws WebServiceSecurityException, GeneralSecurityException, IOException {
 
                 final CoupleMbusDeviceResponse response = (CoupleMbusDeviceResponse) CoupleAndDeCoupleDevice.this.webServiceTemplateFactory
-                        .getTemplate(CoupleAndDeCoupleDevice.this.getOrganisationIdentification(),
-                                CoupleAndDeCoupleDevice.this.getUser()).marshalSendAndReceive(request);
+                        .getTemplate(CoupleAndDeCoupleDevice.this.getOrganizationIdentification(),
+                                CoupleAndDeCoupleDevice.this.getUserName()).marshalSendAndReceive(request);
                 return response;
             }
         };
