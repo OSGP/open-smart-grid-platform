@@ -17,6 +17,10 @@ import org.springframework.context.annotation.Configuration;
 public class CoreDeviceConfiguration extends ApplicationConfiguration {
 
 	@Value("${device.networkaddress}")
-	public String deviceNetworkaddress;
+	private String deviceNetworkaddress;
 
+	public String getDeviceNetworkAddress() {
+	    return this.deviceNetworkaddress;
+	}
+	
 }

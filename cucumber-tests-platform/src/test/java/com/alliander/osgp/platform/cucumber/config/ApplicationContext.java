@@ -22,15 +22,13 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
         "com.alliander.osgp.logging.domain.repositories",
         "com.alliander.osgp.adapter.protocol.iec61850.domain.repositories",
         "com.alliander.osgp.adapter.protocol.iec61850.domain.entities",
-        //"com.alliander.osgp.adapter.ws.shared.db.domain.repositories",
         "com.alliander.osgp.adapter.protocol.oslp.domain.repositories",
-        "com.alliander.osgp.adapter.protocol.oslp.domain.entities", 
-        "com.alliander.osgp.platform.cucumber.hooks" })
+        "com.alliander.osgp.adapter.protocol.oslp.domain.entities", "com.alliander.osgp.platform.cucumber.hooks" })
 @EnableTransactionManagement()
 @Import({ CorePersistenceConfig.class, AdapterWsSmartMeteringPersistenceConfig.class,
-    AdapterProtocolDlmsPersistenceConfig.class, LoggingPersistenceConfig.class,
-    AdapterProtocolIec61850PersistenceConfig.class, AdapterProtocolOslpPersistenceConfig.class,
-    AdapterWsMicrogridsPersistenceConfig.class, CoreDeviceConfiguration.class, Iec61850MockServerConfig.class })
+        AdapterProtocolDlmsPersistenceConfig.class, LoggingPersistenceConfig.class,
+        AdapterProtocolIec61850PersistenceConfig.class, AdapterProtocolOslpPersistenceConfig.class,
+        AdapterWsMicrogridsPersistenceConfig.class, CoreDeviceConfiguration.class, Iec61850MockServerConfig.class })
 public class ApplicationContext {
 
 }

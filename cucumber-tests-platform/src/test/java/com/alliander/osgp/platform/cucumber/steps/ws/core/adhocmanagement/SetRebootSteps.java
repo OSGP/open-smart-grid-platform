@@ -54,7 +54,7 @@ public class SetRebootSteps {
      * @throws Throwable
      */
     @When("^receiving a set reboot request$")
-    public void whenReceivingASetRebootRequest(final Map<String, String> requestParameters) throws Throwable {
+    public void receivingASetRebootRequest(final Map<String, String> requestParameters) throws Throwable {
     	SetRebootRequest request = new SetRebootRequest();
     	request.setDeviceIdentification(getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
     	
@@ -70,7 +70,7 @@ public class SetRebootSteps {
         // Force the request being send to the platform as a given organization.
     	ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
     	
-    	whenReceivingASetRebootRequest(requestParameters);
+    	receivingASetRebootRequest(requestParameters);
     }
     
     /**
@@ -80,7 +80,7 @@ public class SetRebootSteps {
      * @throws Throwable
      */
     @Then("^the set reboot async response contains$")
-    public void thenTheSetRebootAsyncResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
+    public void theSetRebootAsyncResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
     	SetRebootAsyncResponse response = (SetRebootAsyncResponse)ScenarioContext.Current().get(Keys.RESPONSE);
     	
     	Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());

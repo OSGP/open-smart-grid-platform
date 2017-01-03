@@ -123,17 +123,11 @@ public class DeviceSteps {
 
     /**
      * Update a device entity given its deviceidentification.
-<<<<<<< HEAD
      * 
      * @param deviceIdentification
      *            The deviceIdentification.
      * @param settings
      *            The settings.
-=======
-     *
-     * @param deviceIdentification The deviceIdentification.
-     * @param settings The settings.
->>>>>>> 980c3f4f33cab5c3f7934ceb3c4d3ffc7ee9a8ce
      */
     public void updateDevice(final String deviceIdentification, final Map<String, String> settings) {
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
@@ -162,7 +156,7 @@ public class DeviceSteps {
 
         InetAddress inetAddress;
         try {
-            inetAddress = InetAddress.getByName(this.configuration.deviceNetworkaddress);
+            inetAddress = InetAddress.getByName(this.configuration.getDeviceNetworkAddress());
         } catch (final UnknownHostException e) {
             inetAddress = InetAddress.getLoopbackAddress();
         }
@@ -262,8 +256,8 @@ public class DeviceSteps {
      */
     @And("^the device exists")
     public void theDeviceExists(final Map<String, String> settings) throws Throwable {
-        Device device = null; 
-    	
+        Device device = null;
+
         boolean success = false;
         int count = 0;
         while (!success) {
@@ -276,16 +270,17 @@ public class DeviceSteps {
 
             try {
                 // Wait for next try to retrieve a response
-                device = this.deviceRepository
-                        .findByDeviceIdentification(settings.get(Keys.KEY_DEVICE_IDENTIFICATION));
-                Assert.assertNotNull(device);
+                device = this.deviceRepository.findByDeviceIdentification(settings.get(Keys.KEY_DEVICE_IDENTIFICATION));
+                if (device == null) {
+                    continue;
+                }
 
                 success = true;
-            } catch (final Exception | AssertionError e) {
+            } catch (final Exception e) {
                 LOGGER.info("Waiting for device entity. [{}]", e.getMessage());
             }
         }
-        
+
         if (settings.containsKey("Alias")) {
             Assert.assertEquals(settings.get("Alias"), device.getAlias());
         }
@@ -318,15 +313,13 @@ public class DeviceSteps {
             Assert.assertTrue(Boolean.parseBoolean(settings.get("Activated")) == device.isActivated());
         }
         if (settings.containsKey("HasSchedule") || settings.containsKey("PublicKeyPresent")) {
-            final Ssld ssld = this.ssldRepository
-                    .findByDeviceIdentification(settings.get("DeviceIdentification"));
+            final Ssld ssld = this.ssldRepository.findByDeviceIdentification(settings.get("DeviceIdentification"));
 
             if (settings.containsKey("HasSchedule")) {
                 Assert.assertTrue(Boolean.parseBoolean(settings.get("HasSchedule")) == ssld.getHasSchedule());
             }
             if (settings.containsKey("PublicKeyPresent")) {
-                Assert.assertTrue(
-                        Boolean.parseBoolean(settings.get("PublicKeyPresent")) == ssld.isPublicKeyPresent());
+                Assert.assertTrue(Boolean.parseBoolean(settings.get("PublicKeyPresent")) == ssld.isPublicKeyPresent());
             }
         }
         if (settings.containsKey("DeviceModel")) {
@@ -343,9 +336,9 @@ public class DeviceSteps {
     @Then("^the device with id \"([^\"]*)\" exists$")
     public void theDeviceWithIdExists(final String deviceIdentification) throws Throwable {
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-        final List<DeviceAuthorization> devAuths = this.deviceAuthorizationRepository.findByDevice(device);
-
         Assert.assertNotNull(device);
+
+        final List<DeviceAuthorization> devAuths = this.deviceAuthorizationRepository.findByDevice(device);
         Assert.assertTrue(devAuths.size() > 0);
     }
 
@@ -358,7 +351,7 @@ public class DeviceSteps {
     @Then("^the device with id \"([^\"]*)\" does not exists$")
     public void theDeviceShouldBeRemoved(final String deviceIdentification) throws Throwable {
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-        Assert.assertNull(device);
+        Assert.assertNotNull(device);
 
         final List<DeviceAuthorization> devAuths = this.deviceAuthorizationRepository.findByDevice(device);
         Assert.assertTrue(devAuths.size() == 0);
