@@ -20,7 +20,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 @EnableJpaRepositories(entityManagerFactoryRef = "entityMgrFactDlms", transactionManagerRef = "txMgrDlms", basePackageClasses = {
         DlmsDeviceRepository.class })
-public class AdapterProtocolDlmsPersistenceConfig extends ApplicationConfiguration {
+public class AdapterProtocolDlmsPersistenceConfig extends ApplicationPersistenceConfiguration {
 
     public AdapterProtocolDlmsPersistenceConfig() {
     }

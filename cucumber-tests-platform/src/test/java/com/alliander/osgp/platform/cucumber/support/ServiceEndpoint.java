@@ -9,6 +9,7 @@ package com.alliander.osgp.platform.cucumber.support;
 
 import org.springframework.stereotype.Component;
 
+@Deprecated
 @Component
 public class ServiceEndpoint {
     private String serviceEndpoint;

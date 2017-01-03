@@ -10,12 +10,11 @@ import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.mocks.notification.MockNotificationService;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.steps.ws.microgrids.MicrogridsStepsBase;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class NotificationSteps extends MicrogridsStepsBase {
+public class NotificationSteps {
 
     private int WAIT_FOR_NEXT_NOTIFICATION_CHECK = 1000;
     private int MAX_WAIT_FOR_NOTIFICATION = 1200000;
@@ -46,9 +45,9 @@ public class NotificationSteps extends MicrogridsStepsBase {
 
             // Organisation Identification is always needed to retrieve a
             // response.
-            if (!ScenarioContext.Current().containsKey(Keys.KEY_ORGANISATION_IDENTIFICATION)) {
-                ScenarioContext.Current().put(Keys.KEY_ORGANISATION_IDENTIFICATION,
-                        Defaults.DEFAULT_ORGANISATION_IDENTIFICATION);
+            if (!ScenarioContext.Current().containsKey(Keys.KEY_ORGANIZATION_IDENTIFICATION)) {
+                ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION,
+                        Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
             }
 
             // Username is always needed to retrieve a

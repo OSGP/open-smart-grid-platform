@@ -23,7 +23,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import javax.persistence.Transient;
 
-import org.apache.commons.codec.binary.Base64;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -145,6 +144,10 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         this.receivedRequests = receivedRequests;
     }
 
+    public ConcurrentMap<DeviceRequestMessageType, Message> getMap() {
+        return this.mockResponses;
+    }
+
     /**
      * Get an OutOfSequenceEvent for given device id. The OutOfSequenceEvent
      * instance will be removed from the list, before the instance is returned.
@@ -195,14 +198,8 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
                     // Wrap the number back to 0 if the limit is reached or
                     // increment
                     if (number >= this.sequenceNumberMaximum) {
-                        LOGGER.info(
-                                "wrapping sequence number back to 0, current sequence number: {} next sequence number: 0",
-                                number);
                         number = 0;
                     } else {
-                        LOGGER.info(
-                                "incrementing sequence number, current sequence number: {} next sequence number: {}",
-                                number, number + 1);
                         number += 1;
                     }
 
@@ -344,11 +341,6 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
 
         // Create response message
         Oslp.Message response = null;
-        final String deviceIdString = Base64.encodeBase64String(message.getDeviceId());
-
-        LOGGER.info("request received, sequenceNumber: {}", sequenceNumber);
-        LOGGER.info("manufacturerId byte[0]: {} byte[1]: {}", message.getDeviceId()[0], message.getDeviceId()[1]);
-        LOGGER.info("deviceId as BASE 64 STRING: {}", deviceIdString);
 
         // Calculate expected sequence number
         this.sequenceNumber = this.doGetNextSequence();
@@ -362,13 +354,41 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
             this.sleep(this.responseDelayTime + randomDelay);
         }
 
+        String keys = "";
+
+        for (DeviceRequestMessageType k : mockResponses.keySet()) {
+            if (!keys.isEmpty())
+                keys += " | ";
+            keys += k.name();
+        }
+
         // Handle requests
         if (request.hasGetFirmwareVersionRequest()
                 && this.mockResponses.containsKey(DeviceRequestMessageType.GET_FIRMWARE_VERSION)) {
-        	response = processRequest(DeviceRequestMessageType.GET_FIRMWARE_VERSION, request);
-        } else if (request.hasSetLightRequest() 
-        		&& this.mockResponses.containsKey(DeviceRequestMessageType.SET_LIGHT)) {
-        	response = processRequest(DeviceRequestMessageType.SET_LIGHT, request);
+            response = processRequest(DeviceRequestMessageType.GET_FIRMWARE_VERSION, request);
+        } else if (request.hasSetLightRequest() && this.mockResponses.containsKey(DeviceRequestMessageType.SET_LIGHT)) {
+            response = processRequest(DeviceRequestMessageType.SET_LIGHT, request);
+        } else if (request.hasSetEventNotificationsRequest()
+                && this.mockResponses.containsKey(DeviceRequestMessageType.SET_EVENT_NOTIFICATIONS)) {
+            response = processRequest(DeviceRequestMessageType.SET_EVENT_NOTIFICATIONS, request);
+        } else if (request.hasStartSelfTestRequest()
+                && this.mockResponses.containsKey(DeviceRequestMessageType.START_SELF_TEST)) {
+            response = processRequest(DeviceRequestMessageType.START_SELF_TEST, request);
+        } else if (request.hasStopSelfTestRequest()
+                && this.mockResponses.containsKey(DeviceRequestMessageType.STOP_SELF_TEST)) {
+            response = processRequest(DeviceRequestMessageType.STOP_SELF_TEST, request);
+        } else if (request.hasGetStatusRequest()
+                && this.mockResponses.containsKey(DeviceRequestMessageType.GET_STATUS)) {
+            response = processRequest(DeviceRequestMessageType.GET_STATUS, request);
+        } else if (request.hasResumeScheduleRequest()
+                && this.mockResponses.containsKey(DeviceRequestMessageType.RESUME_SCHEDULE)) {
+            response = processRequest(DeviceRequestMessageType.RESUME_SCHEDULE, request);
+        } else if (request.hasSetRebootRequest()
+                && this.mockResponses.containsKey(DeviceRequestMessageType.SET_REBOOT)) {
+            response = processRequest(DeviceRequestMessageType.SET_REBOOT, request);
+        } else if (request.hasSetTransitionRequest()
+                && this.mockResponses.containsKey(DeviceRequestMessageType.SET_TRANSITION)) {
+            response = processRequest(DeviceRequestMessageType.SET_TRANSITION, request);
         }
         // TODO: Implement further requests.
         else {
@@ -381,15 +401,15 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
 
         return response;
     }
-    
+
     private Oslp.Message processRequest(final DeviceRequestMessageType type, final Oslp.Message request) {
-    	Oslp.Message response = null;
-    	
-    	this.receivedRequests.put(type, request);
-    	response = this.mockResponses.get(type);
-    	this.mockResponses.remove(type);
-    	
-    	return response;
+        Oslp.Message response = null;
+
+        this.receivedRequests.put(type, request);
+        response = this.mockResponses.get(type);
+        this.mockResponses.remove(type);
+
+        return response;
     }
 
     private int doGetNextSequence() {
@@ -406,18 +426,12 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         final byte[] bytes = new byte[2];
         bytes[0] = (byte) (value >>> 8);
         bytes[1] = (byte) (value >>> 0);
-        LOGGER.info(
-                "web-device-simulator.OslpChannelHandler.convertIntegerToByteArray() byte[0]: {} byte[1]: {} Integer value: {}",
-                bytes[0], bytes[1], value);
         return bytes;
     }
 
     private Integer convertByteArrayToInteger(final byte[] array) {
         // See: platform.service.SequenceNumberUtils
         final Integer value = (array[0] & 0xFF) << 8 | (array[1] & 0xFF);
-        LOGGER.info(
-                "web-device-simulator.OslpChannelHandler.convertByteArrayToInteger() byte[0]: {} byte[1]: {} Integer value: {}",
-                array[0], array[1], value);
         return value;
     }
 }

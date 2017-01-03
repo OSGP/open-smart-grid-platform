@@ -33,15 +33,14 @@ import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.helpers.SettingsHelper;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.steps.ws.microgrids.MicrogridsStepsBase;
-import com.alliander.osgp.platform.cucumber.support.ws.microgrids.adhocmanagement.AdHocManagementServiceAdapter;
-import com.alliander.osgp.platform.cucumber.support.ws.microgrids.adhocmanagement.GetDataRequestBuilder;
+import com.alliander.osgp.platform.cucumber.support.ws.microgrids.AdHocManagementClient;
+import com.alliander.osgp.platform.cucumber.support.ws.microgrids.GetDataRequestBuilder;
 
 import cucumber.api.PendingException;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class GetDataSteps extends MicrogridsStepsBase {
+public class GetDataSteps {
 
     /**
      * Delta value for which two measurement values are considered equal if
@@ -52,19 +51,19 @@ public class GetDataSteps extends MicrogridsStepsBase {
     private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
     @Autowired
-    private AdHocManagementServiceAdapter adHocManagementServiceAdapter;
+    private AdHocManagementClient client;
 
     @When("^a get data request is received$")
     public void aGetDataRequestIsReceived(final Map<String, String> requestParameters) throws Throwable {
 
         final String organizationIdentification = (String) ScenarioContext.Current().get(
-                Keys.KEY_ORGANISATION_IDENTIFICATION, Defaults.DEFAULT_ORGANISATION_IDENTIFICATION);
-        ScenarioContext.Current().put(Keys.KEY_ORGANISATION_IDENTIFICATION, organizationIdentification);
+                Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
+        ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, organizationIdentification);
         final String userName = (String) ScenarioContext.Current().get(Keys.KEY_USER_NAME, Defaults.DEFAULT_USER_NAME);
         ScenarioContext.Current().put(Keys.KEY_USER_NAME, userName);
 
         final GetDataRequest getDataRequest = GetDataRequestBuilder.fromParameterMap(requestParameters);
-        final GetDataAsyncResponse response = this.adHocManagementServiceAdapter.getDataAsync(getDataRequest);
+        final GetDataAsyncResponse response = this.client.getDataAsync(getDataRequest);
 
         ScenarioContext.Current().put(Keys.KEY_CORRELATION_UID, response.getAsyncResponse().getCorrelationUid());
     }
@@ -77,7 +76,7 @@ public class GetDataSteps extends MicrogridsStepsBase {
                 Keys.KEY_CORRELATION_UID, correlationUid);
 
         final GetDataAsyncRequest getDataAsyncRequest = GetDataRequestBuilder.fromParameterMapAsync(extendedParameters);
-        final GetDataResponse response = this.adHocManagementServiceAdapter.getData(getDataAsyncRequest);
+        final GetDataResponse response = this.client.getData(getDataAsyncRequest);
 
         final String expectedResult = responseParameters.get(Keys.KEY_RESULT);
         assertNotNull("Result", response.getResult());

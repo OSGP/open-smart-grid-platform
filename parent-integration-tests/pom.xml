@@ -43,8 +43,7 @@
     <osgp.version>${project.version}</osgp.version>
     <osgp.dlms.version>3.5.0-SNAPSHOT</osgp.dlms.version>
     <osgp.iec61850.simulator.version>4.1.0-SNAPSHOT</osgp.iec61850.simulator.version>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
     <spring.version>4.3.3.RELEASE</spring.version>
     <spring.ws.version>2.2.2.RELEASE</spring.ws.version>
     <spring.data.version>1.6.4.RELEASE</spring.data.version>
@@ -73,7 +72,6 @@
     <checkstyle.version>2.12.1</checkstyle.version>
     <pmd.version>4.3</pmd.version>
     <jxr.version>2.5</jxr.version>
-    <maven.project.info.reports.plugin.version>2.9</maven.project.info.reports.plugin.version>
     <findbug.version>3.0.0</findbug.version>
     <apache.activemq.version>5.10.0</apache.activemq.version>
     <commons.pool.version>1.6</commons.pool.version>
@@ -85,6 +83,7 @@
     <SunriseSunsetCalculator.version>1.1</SunriseSunsetCalculator.version>
     <mockito.version>1.9.5</mockito.version>
     <apache.commons.schema>2.0.3</apache.commons.schema>
+    <maven.project.info.reports.plugin.version>2.9</maven.project.info.reports.plugin.version>
     <maven.compiler.plugin.version>3.6.0</maven.compiler.plugin.version>
     <license.maven.plugin>2.11</license.maven.plugin>
     <cucumber.version>1.2.4</cucumber.version>
@@ -98,11 +97,11 @@
     <!-- Default always skip integration tests, to ensure all developer data 
       is retained -->
     <skipITs>true</skipITs>
-    
+
     <!-- Skip code coverage gathering with Jacoco on IT tests from Tomcat. 
       Requires jacoco-agent to be setup on remote Tomcat -->
     <skipITCoverage>true</skipITCoverage>
-    
+
     <!-- Address of Tomcat instance -->
     <addressITCoverage>localhost</addressITCoverage>
   </properties>
@@ -157,25 +156,13 @@
 
       <dependency>
         <groupId>com.alliander.osgp</groupId>
-        <artifactId>osgp-adapter-ws-shared</artifactId>
-        <version>${osgp.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.alliander.osgp</groupId>
-        <artifactId>osgp-adapter-ws-shared-db</artifactId>
-        <version>${osgp.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.alliander.osgp</groupId>
         <artifactId>osgp-domain-core</artifactId>
         <version>${osgp.version}</version>
       </dependency>
 
       <dependency>
         <groupId>com.alliander.osgp</groupId>
-        <artifactId>osgp-adapter-ws-smartmetering</artifactId>
+        <artifactId>osgp-domain-microgrids</artifactId>
         <version>${osgp.version}</version>
       </dependency>
 
@@ -185,35 +172,46 @@
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
       </dependency>
-
       <dependency>
         <groupId>com.alliander.osgp</groupId>
         <artifactId>osgp-adapter-ws-core</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
       </dependency>
-
+      <dependency>
+        <groupId>com.alliander.osgp</groupId>
+        <artifactId>osgp-adapter-ws-shared</artifactId>
+        <version>${osgp.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.alliander.osgp</groupId>
+        <artifactId>osgp-adapter-ws-shared-db</artifactId>
+        <version>${osgp.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.alliander.osgp</groupId>
+        <artifactId>osgp-adapter-ws-microgrids</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
       <dependency>
         <groupId>com.alliander.osgp</groupId>
         <artifactId>osgp-adapter-ws-publiclighting</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
       </dependency>
-
       <dependency>
         <groupId>com.alliander.osgp</groupId>
         <artifactId>osgp-adapter-ws-tariffswitching</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
       </dependency>
-
       <dependency>
         <groupId>com.alliander.osgp</groupId>
         <artifactId>osgp-adapter-ws-smartmetering</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
       </dependency>
-
       <dependency>
         <groupId>com.alliander.osgp</groupId>
         <artifactId>osgp-adapter-domain-shared</artifactId>
@@ -229,6 +227,12 @@
       <dependency>
         <groupId>com.alliander.osgp</groupId>
         <artifactId>osgp-adapter-domain-core</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+      <dependency>
+        <groupId>com.alliander.osgp</groupId>
+        <artifactId>osgp-adapter-domain-microgrids</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
       </dependency>
@@ -304,23 +308,6 @@
         <classifier>classes</classifier>
       </dependency>
 
-      <dependency>
-        <groupId>com.alliander.osgp</groupId>
-        <artifactId>osgp-domain-microgrids</artifactId>
-        <version>${osgp.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.alliander.osgp</groupId>
-        <artifactId>osgp-adapter-domain-microgrids</artifactId>
-        <version>${osgp.version}</version>
-        <classifier>classes</classifier>
-      </dependency>
-      <dependency>
-        <groupId>com.alliander.osgp</groupId>
-        <artifactId>osgp-adapter-ws-microgrids</artifactId>
-        <version>${osgp.version}</version>
-        <classifier>classes</classifier>
-      </dependency>
       <dependency>
         <groupId>com.alliander.osgp</groupId>
         <artifactId>osgp-protocol-simulator-iec61850</artifactId>
@@ -835,6 +822,16 @@
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <configuration>
+            <source>1.7</source>
+            <target>1.7</target>
+            <encoding>${project.build.sourceEncoding}</encoding>
+          </configuration>
+          <version>${maven.compiler.plugin.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
           <version>${maven.jar.plugin.version}</version>
           <executions>
@@ -906,7 +903,8 @@
           <artifactId>jacoco-maven-plugin</artifactId>
           <version>${jacoco.version}</version>
           <executions>
-            <!-- Reset the code coverage before the integration tests are started. Ensures Tomcat startup code execution is ignored in report -->
+            <!-- Reset the code coverage before the integration tests are 
+              started. Ensures Tomcat startup code execution is ignored in report -->
             <execution>
               <id>pre-integration-test</id>
               <phase>pre-integration-test</phase>
@@ -942,18 +940,6 @@
         </plugin>
       </plugins>
     </pluginManagement>
-
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <fork>true</fork>
-          <source>1.7</source>
-          <target>1.7</target>
-        </configuration>
-      </plugin>
-    </plugins>
   </build>
 
   <reporting>
