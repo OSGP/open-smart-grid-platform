@@ -1,3 +1,10 @@
+/**
+ * Copyright 2017 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.platform.cucumber.steps.ws.microgrids.adhocmanagement;
 
 import java.util.List;
@@ -5,11 +12,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.platform.cucumber.mocks.iec61850.Iec61850MockServer;
-import com.alliander.osgp.platform.cucumber.steps.ws.microgrids.MicrogridsStepsBase;
 
 import cucumber.api.java.en.Given;
 
-public class RtuSimulatorSteps extends MicrogridsStepsBase {
+public class RtuSimulatorSteps {
 
     private static final int NUMBER_OF_INPUTS_FOR_MOCK_VALUE = 3;
     private static final int INDEX_LOGICAL_DEVICE_NAME = 0;

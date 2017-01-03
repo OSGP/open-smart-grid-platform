@@ -35,7 +35,10 @@ import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 /**
  * Super class for SOAP UI runner implementations. Each Runner will be called
  * from a subclass.
+ * 
+ * @deprecated use a WebServiceFactoryTemplate instead.
  */
+@Deprecated
 public abstract class SoapUiRunner {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Helpers.class);
@@ -125,22 +128,26 @@ public abstract class SoapUiRunner {
     protected void requestRunner(final TestStepStatus testStepStatus, final Map<String, String> propertiesMap,
             final String testCaseNameRequest, final String testCaseXml, final String testSuiteXml) throws Throwable {
 
+    	
         LOGGER.debug("Sending request [{} => {} => {}] ...", testSuiteXml, testCaseXml, testCaseNameRequest);
         propertiesMap.put(SERVICE_ENDPOINT_LABEL, this.serviceEndpoint);
 
         this.testCase = this.wsdlProjectFactory.createWsdlTestCase(testSuiteXml, testCaseXml);
         this.assertRequest(testCaseNameRequest, testCaseXml, testSuiteXml);
-
+        
         final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase, propertiesMap,
                 testCaseNameRequest);
         final TestStepResult runTestStepByNameResult = runTestStepByName.getRunTestStepByName();
+        
         assertEquals(testStepStatus, runTestStepByNameResult.getStatus());
 
         final WsdlTestCaseRunner wsdlTestCaseRunner = runTestStepByName.getResults();
         final MessageExchange messageExchange = (MessageExchange) wsdlTestCaseRunner.getResults().get(0);
         this.request = messageExchange.getRequestContent();
+
         this.response = messageExchange.getResponseContent();
-        LOGGER.debug("Got response for request [{} => {} => {}] : [{}]", testSuiteXml, testCaseXml, testCaseNameRequest, this.response);        
+        
+        LOGGER.debug("Got response for request [{} => {} => {}] : [{}]", testSuiteXml, testCaseXml, testCaseNameRequest, this.response);
     }
 
     /**
@@ -153,10 +160,12 @@ public abstract class SoapUiRunner {
      */
     private void assertRequest(final String testCaseNameRequest, final String testCaseXml, final String testSuiteXml) {
         final WsdlTestCase wsdlTestcase = (WsdlTestCase) this.testCase;
+        
         final String xml = wsdlTestcase.getConfig().toString();
-        final boolean flag1 = xml.indexOf(testCaseNameRequest) > 0;
+    	final boolean flag1 = xml.indexOf(testCaseNameRequest) > 0;
         final boolean flag2 = xml.indexOf(testCaseXml) > 0;
         final boolean flag3 = xml.indexOf(testSuiteXml) > 0;
+        
         if (!flag1 || !flag2 || !flag3) {
             // this.LOGGER.error(String.format(ERRMSG, xml, testSuiteXml,
             // testCaseXml, testCaseNameRequest));
@@ -181,15 +190,14 @@ public abstract class SoapUiRunner {
         int count = 0;
         do {
             if (count > 120) {
-                Assert.fail("Failed to retieve a response");
+                Assert.fail("Failed to retrieve a response");
             }
 
             // Wait for next try to retrieve a response
             count++;
             Thread.sleep(1000);
 
-            this.requestRunner(testStepStatus, propertiesMap, testCaseResultNameRequest, testCaseResultReqXml,
-                    testSuiteXml);
+            this.requestRunner(testStepStatus, propertiesMap, testCaseResultNameRequest, testCaseResultReqXml, testSuiteXml);            
         } while (!this.runXpathResult.assertXpath(this.response, PATH_RESULT, "OK"));
     }
 }

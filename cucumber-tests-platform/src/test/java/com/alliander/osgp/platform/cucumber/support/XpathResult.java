@@ -13,6 +13,7 @@ import javax.xml.xpath.XPathExpression;
 
 import org.w3c.dom.Document;
 
+@Deprecated
 public class XpathResult {
     private Document doc;
     private XPathExpression expr;

@@ -1,5 +1,0 @@
-!1 Remarks
-
-!2 What is recent?
-
-Recent means today, yesterday and the day before yesterday (full days).

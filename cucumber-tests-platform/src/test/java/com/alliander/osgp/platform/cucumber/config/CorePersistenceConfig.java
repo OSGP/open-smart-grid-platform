@@ -23,7 +23,7 @@ import com.alliander.osgp.domain.microgrids.repositories.RtuDeviceRepository;
 
 @EnableJpaRepositories(entityManagerFactoryRef = "entityMgrCore", transactionManagerRef = "txMgrCore", basePackageClasses = {
         DeviceRepository.class, RtuDeviceRepository.class })
-public class CorePersistenceConfig extends ApplicationConfiguration {
+public class CorePersistenceConfig extends ApplicationPersistenceConfiguration {
 
     @Value("${osgpcoredbs.url}")
     private String databaseUrl;

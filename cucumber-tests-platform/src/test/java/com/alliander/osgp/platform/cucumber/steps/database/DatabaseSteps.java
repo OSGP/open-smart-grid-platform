@@ -84,10 +84,10 @@ public class DatabaseSteps {
      */
     @Transactional
     private void insertDefaultData() {
-        if (this.organisationRepository.findByOrganisationIdentification(Defaults.DEFAULT_ORGANISATION_IDENTIFICATION) == null) {
+        if (this.organisationRepository.findByOrganisationIdentification(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION) == null) {
             // Create test organization used within the tests.
-            final Organisation testOrg = new Organisation(Defaults.DEFAULT_ORGANISATION_IDENTIFICATION,
-                    Defaults.DEFAULT_ORGANISATION_DESCRIPTION, Defaults.DEFAULT_PREFIX, PlatformFunctionGroup.ADMIN);
+            final Organisation testOrg = new Organisation(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION,
+                    Defaults.DEFAULT_ORGANIZATION_DESCRIPTION, Defaults.DEFAULT_PREFIX, PlatformFunctionGroup.ADMIN);
             testOrg.addDomain(PlatformDomain.COMMON);
             testOrg.addDomain(PlatformDomain.PUBLIC_LIGHTING);
             testOrg.addDomain(PlatformDomain.TARIFF_SWITCHING);
@@ -109,9 +109,15 @@ public class DatabaseSteps {
 
     @Transactional("txMgrCore")
     public void prepareDatabaseForScenario() {
-        this.oslpDeviceRepository.deleteAllInBatch();
-        this.iec61850DeviceRepository.deleteAllInBatch();
-        this.deviceAuthorizationRepository.deleteAllInBatch();
+
+    	// First remove stuff from osgp_protocol_adapter_oslp
+    	this.oslpDeviceRepository.deleteAllInBatch();
+        
+    	// Then remove stuff from osgp_protocol_adapter_iec61850
+    	this.iec61850DeviceRepository.deleteAllInBatch();
+
+    	// Then remove stuff from osgp_core
+    	this.deviceAuthorizationRepository.deleteAllInBatch();
         this.deviceLogItemRepository.deleteAllInBatch();
         this.scheduledTaskRepository.deleteAllInBatch();
         this.deviceRepository.deleteAllEans();

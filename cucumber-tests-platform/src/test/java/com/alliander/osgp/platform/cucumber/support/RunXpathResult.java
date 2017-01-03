@@ -33,6 +33,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+@Deprecated
 @Component
 public class RunXpathResult {
 
@@ -69,12 +70,11 @@ public class RunXpathResult {
 
     public boolean assertXpath(final String xml, final String nodeXPath, final String nodeRegex)
             throws XPathExpressionException, ParserConfigurationException, SAXException, IOException {
-        final XpathResult xpathResult = this.runXPathExpression(xml, nodeXPath);
-        final XPathExpression expr = xpathResult.getXpathExpression();
-        final Pattern responsePattern = Pattern.compile(nodeRegex);
-        final Matcher responseMatcher = responsePattern.matcher(expr.evaluate(xpathResult.getDocument()));
-
-        return responseMatcher.find();
+    	final XpathResult xpathResult = this.runXPathExpression(xml, nodeXPath);
+		final XPathExpression expr = xpathResult.getXpathExpression();
+		final Pattern responsePattern = Pattern.compile(nodeRegex);
+		final Matcher responseMatcher = responsePattern.matcher(expr.evaluate(xpathResult.getDocument()));
+		return responseMatcher.find();
     }
 
     public void assertXpathList(final String xml, final String nodeXPath, final String nodeRegex,

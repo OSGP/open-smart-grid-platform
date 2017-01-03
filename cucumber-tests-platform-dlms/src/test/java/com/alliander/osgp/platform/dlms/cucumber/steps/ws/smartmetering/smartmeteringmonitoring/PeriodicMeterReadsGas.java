@@ -45,9 +45,9 @@ public class PeriodicMeterReadsGas extends SmartMeteringStepsBase {
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
                 getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
         PROPERTIES_MAP
-                .put(Keys.KEY_ORGANISATION_IDENTIFICATION,
-                        getString(settings, Keys.KEY_ORGANISATION_IDENTIFICATION,
-                                Defaults.DEFAULT_ORGANISATION_IDENTIFICATION));
+                .put(Keys.KEY_ORGANIZATION_IDENTIFICATION,
+                        getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
+                                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
         PROPERTIES_MAP.put(PERIOD_TYPE_LABEL, getString(settings, Keys.KEY_PERIOD_TYPE, Defaults.DEFAULT_PERIOD_TYPE));
         PROPERTIES_MAP.put(BEGIN_DATE_LABEL, getString(settings, Keys.KEY_BEGIN_DATE, Defaults.DEFAULT_BEGIN_DATE));
         PROPERTIES_MAP.put(END_DATE_LABEL, getString(settings, Keys.KEY_END_DATE, Defaults.DEFAULT_END_DATE));

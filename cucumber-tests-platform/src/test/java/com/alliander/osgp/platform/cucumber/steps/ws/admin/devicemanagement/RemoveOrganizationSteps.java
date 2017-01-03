@@ -1,22 +1,27 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package com.alliander.osgp.platform.cucumber.steps.ws.admin.devicemanagement;
+
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 
 import java.util.Map;
 
 import org.junit.Assert;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.RemoveOrganisationRequest;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.RemoveOrganisationResponse;
+import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
+import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.steps.common.ResponseSteps;
-import com.alliander.osgp.platform.cucumber.steps.ws.admin.AdminStepsBase;
-import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
+import com.alliander.osgp.platform.cucumber.steps.ws.GenericResponseSteps;
+import com.alliander.osgp.platform.cucumber.support.ws.admin.AdminDeviceManagementClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -24,11 +29,10 @@ import cucumber.api.java.en.When;
 /**
  * Class with all the remove organization requests steps
  */
-public class RemoveOrganizationSteps extends AdminStepsBase {
+public class RemoveOrganizationSteps {
     
-    private static final String TEST_SUITE = "DeviceManagement";
-    private static final String TEST_CASE_NAME = "AT Remove an organization";
-    private static final String TEST_CASE_NAME_REQUEST = "RemoveOrganization";
+	@Autowired
+	private AdminDeviceManagementClient client;
 
     /**
      * Send a remove organization request to the Platform.
@@ -36,21 +40,25 @@ public class RemoveOrganizationSteps extends AdminStepsBase {
      * @throws Throwable
      */
     @When("^receiving a remove organization request$")
-    public void receiving_a_remove_organization_request(Map<String, String> requestParameters) throws Throwable {
+    public void receivingARemoveOrganizationRequest(Map<String, String> requestSettings) throws Throwable {
 
-        // Required parameters
-        PROPERTIES_MAP.put("__ORGANIZATION_IDENTIFICATION__", requestParameters.get(Keys.KEY_ORGANISATION_IDENTIFICATION));
-    
-        this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_NAME, TEST_SUITE);
+    	RemoveOrganisationRequest request = new RemoveOrganisationRequest();
+        request.setOrganisationIdentification(getString(requestSettings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+    	
+        try {
+            ScenarioContext.Current().put(Keys.RESPONSE, client.removeOrganization(request));
+        } catch (SoapFaultClientException e){
+            ScenarioContext.Current().put(Keys.RESPONSE, e);        	
+        }
     }
     
     /**
      * Verify that the create organization response is successful.
      * @throws Throwable
      */
-    @Then("^the remove organization response is successfull$")
-    public void the_remove_organization_response_is_successfull() throws Throwable {
-        Assert.assertTrue(this.runXpathResult.assertXpath(this.response, "/Envelope/Body/RemoveOrganisationResponse", ""));
+    @Then("^the remove organization response is successful$")
+    public void theRemoveOrganizationResponseIsSuccessful() throws Throwable {
+    	Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof RemoveOrganisationResponse);
     }
 
     /**
@@ -59,7 +67,7 @@ public class RemoveOrganizationSteps extends AdminStepsBase {
      * @throws Throwable
      */
     @Then("^the remove organization response contains$")
-    public void the_remove_organization_response_contains(Map<String, String> expectedResult) throws Throwable {
-        ResponseSteps.VerifyFaultResponse(this.runXpathResult, this.response, expectedResult);
+    public void theRemoveOrganizationResponseContains(final Map<String, String> expectedResult) throws Throwable {
+        GenericResponseSteps.verifySoapFault(expectedResult);
     }
 }

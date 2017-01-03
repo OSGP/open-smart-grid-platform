@@ -9,16 +9,28 @@
  */
 package com.alliander.osgp.platform.cucumber.steps.ws.core.deviceinstallation;
 
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getBoolean;
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getFloat;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 
 import java.util.Map;
 
 import org.junit.Assert;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
+import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.AddDeviceRequest;
+import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.AddDeviceResponse;
+import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device;
+import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.DeviceModel;
+import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.UpdateDeviceRequest;
+import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.UpdateDeviceResponse;
+import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
-import com.alliander.osgp.platform.cucumber.steps.common.ResponseSteps;
-import com.alliander.osgp.platform.cucumber.steps.ws.core.CoreStepsBase;
-import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
+import com.alliander.osgp.platform.cucumber.steps.Keys;
+import com.alliander.osgp.platform.cucumber.steps.database.adapterprotocoloslp.OslpDeviceSteps;
+import com.alliander.osgp.platform.cucumber.steps.ws.GenericResponseSteps;
+import com.alliander.osgp.platform.cucumber.support.ws.core.CoreDeviceInstallationClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -26,59 +38,10 @@ import cucumber.api.java.en.When;
 /**
  * Class with all the create organization requests steps
  */
-public class CreateDeviceSteps extends CoreStepsBase {
+public class CreateDeviceSteps {
 
-    protected CreateDeviceSteps() throws Throwable {
-        super();
-    }
-
-    private static final String TEST_SUITE = "DeviceInstallation";
-    private static final String TEST_CASE_NAME_ADD_DEVICE = "AT AddDevice";
-    private static final String TEST_CASE_NAME_REQUEST_ADD_DEVICE = "AddDevice";
-    private static final String TEST_CASE_NAME_UPDATE_DEVICE = "AT UpdateDevice";
-    private static final String TEST_CASE_NAME_REQUEST_UPDATE_DEVICE = "UpdateDevice";
-    private static final String DEFAULT_DEVICEUID = "";
-    private static final String DEFAULT_ALIAS = "";
-    private static final String DEFAULT_OWNER = "";
-    private static final String DEFAULT_CONTAINER_POSTAL_CODE = "";
-    private static final String DEFAULT_CONTAINER_CITY = "";
-    private static final String DEFAULT_CONTAINER_STREET = "";
-    private static final String DEFAULT_CONTAINER_NUMBER = "";
-    private static final String DEFAULT_GPSLATITUDE = "0";
-    private static final String DEFAULT_GPSLONGITUDE = "0";
-    private static final String DEFAULT_HASSCHEDULE = "false";
-    private static final String DEFAULT_CONTAINER_MUNICIPALITY = "";
-    private static final String DEFAULT_ACTIVATED = "true";
-    private static final String DEFAULT_PUBLIC_KEY_PRESENT = "false";
-    private static final String DEFAULT_MANUFACTURER = "Test";
-    private static final String DEFAULT_MODELCODE = "TestModel";
-    private static final String DEFAULT_DESCRIPTION = "Test";
-    private static final String DEFAULT_METERED = "true";
-
-    /**
-     *
-     * @param requestParameters
-     */
-    private void fillPropertiesMap(final Map<String, String> settings) {
-        PROPERTIES_MAP.put("DeviceUid", getString(settings, "DeviceUid", DEFAULT_DEVICEUID));
-        PROPERTIES_MAP.put("DeviceIdentification", getString(settings, "DeviceIdentification", Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-        PROPERTIES_MAP.put("Alias", getString(settings, "Alias", DEFAULT_ALIAS));
-        PROPERTIES_MAP.put("Owner", getString(settings, "Owner", DEFAULT_OWNER));
-        PROPERTIES_MAP.put("ContainerPostalCode", getString(settings, "ContainerPostalCode", DEFAULT_CONTAINER_POSTAL_CODE));
-        PROPERTIES_MAP.put("ContainerCity", getString(settings, "ContainerCity", DEFAULT_CONTAINER_CITY));
-        PROPERTIES_MAP.put("ContainerStreet", getString(settings, "ContainerStreet", DEFAULT_CONTAINER_STREET));
-        PROPERTIES_MAP.put("ContainerNumber", getString(settings, "ContainerNumber", DEFAULT_CONTAINER_NUMBER));
-        PROPERTIES_MAP.put("ContainerMunicipality", getString(settings, "ContainerMunicipality", DEFAULT_CONTAINER_MUNICIPALITY));
-        PROPERTIES_MAP.put("GpsLatitude", getString(settings, "GpsLatitude", DEFAULT_GPSLATITUDE));
-        PROPERTIES_MAP.put("GpsLongitude", getString(settings, "GpsLongitude", DEFAULT_GPSLONGITUDE));
-        PROPERTIES_MAP.put("Activated", getString(settings, "Activated", DEFAULT_ACTIVATED));
-        PROPERTIES_MAP.put("HasSchedule", getString(settings, "HasSchedule", DEFAULT_HASSCHEDULE));
-        PROPERTIES_MAP.put("PublicKeyPresent", getString(settings, "PublicKeyPresent", DEFAULT_PUBLIC_KEY_PRESENT));
-        PROPERTIES_MAP.put("Manufacturer", getString(settings, "DeviceModelManufacturer", DEFAULT_MANUFACTURER));
-        PROPERTIES_MAP.put("ModelCode", getString(settings, "ModelCode", DEFAULT_MODELCODE));
-        PROPERTIES_MAP.put("Description", getString(settings, "Description", DEFAULT_DESCRIPTION));
-        PROPERTIES_MAP.put("Metered", getString(settings, "Metered", DEFAULT_METERED));
-    }
+    @Autowired
+    private CoreDeviceInstallationClient client;
 
     /**
      *
@@ -87,10 +50,15 @@ public class CreateDeviceSteps extends CoreStepsBase {
     @When("^receiving an add device request$")
     public void receiving_an_add_device_request(final Map<String, String> settings) throws Throwable {
 
-        this.fillPropertiesMap(settings);
-
-        this.requestRunner(TestStepStatus.UNKNOWN, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST_ADD_DEVICE,
-                TEST_CASE_NAME_ADD_DEVICE, TEST_SUITE);
+    	AddDeviceRequest request = new AddDeviceRequest();
+    	Device device = createDevice(settings);
+    	request.setDevice(device);
+    	
+    	try {
+    		ScenarioContext.Current().put(Keys.RESPONSE, client.addDevice(request));
+    	} catch(SoapFaultClientException ex) {
+    		ScenarioContext.Current().put(Keys.RESPONSE, ex);
+    	}
     }
     
     /**
@@ -101,7 +69,7 @@ public class CreateDeviceSteps extends CoreStepsBase {
      */
     @Then("^the add device response is successfull$")
     public void the_add_device_response_is_successfull() throws Throwable {
-        Assert.assertTrue(this.runXpathResult.assertXpath(this.response, "/Envelope/Body/AddDeviceResponse", ""));
+    	Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof AddDeviceResponse);
     }
 
     /**
@@ -109,15 +77,47 @@ public class CreateDeviceSteps extends CoreStepsBase {
      * @throws Throwable
      */
     @When("^receiving an update device request")
-    public void receiving_an_update_device_request(final Map<String, String> requestParameters) throws Throwable {
-
-        this.fillPropertiesMap(requestParameters);
-
-        this.requestRunner(TestStepStatus.UNKNOWN, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST_UPDATE_DEVICE,
-                TEST_CASE_NAME_UPDATE_DEVICE, TEST_SUITE);
+    public void receiving_an_update_device_request(final Map<String, String> settings) throws Throwable {
+    	UpdateDeviceRequest request = new UpdateDeviceRequest();
+    	
+    	request.setDeviceIdentification(getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+    	Device device = createDevice(settings);
+    	request.setUpdatedDevice(device);
+    	
+    	try {
+    		ScenarioContext.Current().put(Keys.RESPONSE, client.updateDevice(request));
+    	} catch(SoapFaultClientException ex) {
+    		ScenarioContext.Current().put(Keys.RESPONSE, ex);
+    	}        
     }
 
-    /**
+    private Device createDevice(Map<String, String> settings) {
+		Device device = new Device();
+    	device.setActivated(getBoolean(settings, Keys.KEY_ACTIVATED, Defaults.DEFAULT_ACTIVATED));
+    	device.setAlias(getString(settings, Keys.KEY_ALIAS, Defaults.DEFAULT_ALIAS));
+    	device.setContainerCity(getString(settings, Keys.KEY_CITY, Defaults.DEFAULT_CONTAINER_CITY));
+    	device.setContainerMunicipality(getString(settings, Keys.KEY_MUNICIPALITY, Defaults.DEFAULT_CONTAINER_MUNICIPALITY));
+    	device.setContainerNumber(getString(settings, Keys.KEY_NUMBER, Defaults.DEFAULT_CONTAINER_NUMBER));
+    	device.setContainerPostalCode(getString(settings, Keys.KEY_POSTCODE, Defaults.DEFAULT_CONTAINER_POSTALCODE));
+    	device.setContainerStreet(getString(settings, Keys.KEY_STREET, Defaults.DEFAULT_CONTAINER_STREET));
+    	device.setDeviceIdentification(getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+    	DeviceModel deviceModel = new DeviceModel();
+    	deviceModel.setDescription(getString(settings, Keys.KEY_DEVICE_MODEL_DESCRIPTION, Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION));
+    	deviceModel.setManufacturer(getString(settings, Keys.KEY_DEVICE_MODEL_MANUFACTURER, Defaults.DEFAULT_DEVICE_MODEL_MANUFACTURER));
+    	deviceModel.setMetered(getBoolean(settings, Keys.KEY_DEVICE_MODEL_METERED, Defaults.DEFAULT_DEVICE_MODEL_METERED));
+    	deviceModel.setModelCode(getString(settings, Keys.KEY_DEVICE_MODEL_MODELCODE, Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
+    	device.setDeviceModel(deviceModel);
+    	device.setDeviceUid(getString(settings, Keys.KEY_DEVICE_UID, OslpDeviceSteps.DEFAULT_DEVICE_UID));
+    	device.setGpsLatitude(getFloat(settings, Keys.KEY_LATITUDE, Defaults.DEFAULT_LATITUDE));
+    	device.setGpsLongitude(getFloat(settings, Keys.KEY_LONGITUDE, Defaults.DEFAULT_LONGITUDE));
+    	device.setHasSchedule(getBoolean(settings, Keys.KEY_HAS_SCHEDULE, Defaults.DEFAULT_HASSCHEDULE));
+    	device.setOwner(getString(settings, Keys.KEY_OWNER, Defaults.DEFAULT_OWNER));
+    	device.setPublicKeyPresent(getBoolean(settings, Keys.KEY_PUBLICKEYPRESENT, Defaults.DEFAULT_PUBLICKEYPRESENT));
+    	
+    	return device;
+	}
+
+	/**
      * Verify the response of a update device request.
      * 
      * @param settings
@@ -125,7 +125,7 @@ public class CreateDeviceSteps extends CoreStepsBase {
      */
     @Then("^the update device response is successfull$")
     public void the_update_device_response_is_successfull() throws Throwable {
-        Assert.assertTrue(this.runXpathResult.assertXpath(this.response, "/Envelope/Body/UpdateDeviceResponse", ""));
+    	Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof UpdateDeviceResponse);
     }
     
     /**
@@ -134,17 +134,31 @@ public class CreateDeviceSteps extends CoreStepsBase {
      * @throws Throwable
      */
     @Then("^the add device response contains$")
-    public void the_add_device_response_contains(Map<String, String> expectedResult) throws Throwable {
-        ResponseSteps.VerifyFaultResponse(this.runXpathResult, this.response, expectedResult);
+    public void the_add_device_response_contains(final Map<String, String> expectedResult) throws Throwable {
+    	Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof AddDeviceResponse);
     }
     
+    @Then("^the add device response contains soap fault$")
+    public void the_add_device_response_contains_soap_fault(final Map<String, String> expectedResult) throws Throwable {
+        GenericResponseSteps.verifySoapFault(expectedResult);
+    }
+
     /**
-     * Verify that the update device response contains the fault with the given expectedResult parameters.
      * @param expectedResult
      * @throws Throwable
      */
     @Then("^the update device response contains$")
     public void the_update_device_response_contains(Map<String, String> expectedResult) throws Throwable {
-        ResponseSteps.VerifyFaultResponse(this.runXpathResult, this.response, expectedResult);
+    	Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof UpdateDeviceResponse);
+    }
+
+    /**
+     * Verify that the update device response contains the fault with the given expectedResult parameters.
+     * @param expectedResult
+     * @throws Throwable
+     */
+    @Then("^the update device response contains soap fault$")
+    public void the_update_device_response_contains_soap_fault(Map<String, String> expectedResult) throws Throwable {
+        GenericResponseSteps.verifySoapFault(expectedResult);
     }
 }

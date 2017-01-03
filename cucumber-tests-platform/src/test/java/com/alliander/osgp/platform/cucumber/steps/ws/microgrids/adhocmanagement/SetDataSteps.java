@@ -26,14 +26,13 @@ import com.alliander.osgp.platform.cucumber.helpers.SettingsHelper;
 import com.alliander.osgp.platform.cucumber.mocks.iec61850.Iec61850MockServer;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.steps.ws.microgrids.MicrogridsStepsBase;
-import com.alliander.osgp.platform.cucumber.support.ws.microgrids.adhocmanagement.AdHocManagementServiceAdapter;
+import com.alliander.osgp.platform.cucumber.support.ws.microgrids.AdHocManagementClient;
 import com.alliander.osgp.platform.cucumber.support.ws.microgrids.adhocmanagement.SetDataRequestBuilder;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class SetDataSteps extends MicrogridsStepsBase {
+public class SetDataSteps {
 
     private static final int NUMBER_OF_INPUTS_FOR_MOCK_VALUE = 3;
     private static final int INDEX_LOGICAL_DEVICE_NAME = 0;
@@ -44,18 +43,18 @@ public class SetDataSteps extends MicrogridsStepsBase {
     private Iec61850MockServer mockServer;
 
     @Autowired
-    private AdHocManagementServiceAdapter adHocManagementServiceAdapter;
+    private AdHocManagementClient client;
 
     @When("^a set data request is received$")
     public void aSetDataRequestIsReceived(final Map<String, String> requestParameters) throws Throwable {
         final String organizationIdentification = (String) ScenarioContext.Current()
-                .get(Keys.KEY_ORGANISATION_IDENTIFICATION, Defaults.DEFAULT_ORGANISATION_IDENTIFICATION);
-        ScenarioContext.Current().put(Keys.KEY_ORGANISATION_IDENTIFICATION, organizationIdentification);
+                .get(Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
+        ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, organizationIdentification);
         final String userName = (String) ScenarioContext.Current().get(Keys.KEY_USER_NAME, Defaults.DEFAULT_USER_NAME);
         ScenarioContext.Current().put(Keys.KEY_USER_NAME, userName);
 
         final SetDataRequest setDataRequest = SetDataRequestBuilder.fromParameterMap(requestParameters);
-        final SetDataAsyncResponse response = this.adHocManagementServiceAdapter.setDataAsync(setDataRequest);
+        final SetDataAsyncResponse response = this.client.setDataAsync(setDataRequest);
 
         ScenarioContext.Current().put(Keys.KEY_CORRELATION_UID, response.getAsyncResponse().getCorrelationUid());
     }
@@ -68,7 +67,7 @@ public class SetDataSteps extends MicrogridsStepsBase {
                 Keys.KEY_CORRELATION_UID, correlationUid);
 
         final SetDataAsyncRequest setDataAsyncRequest = SetDataRequestBuilder.fromParameterMapAsync(extendedParameters);
-        final SetDataResponse response = this.adHocManagementServiceAdapter.setData(setDataAsyncRequest);
+        final SetDataResponse response = this.client.setData(setDataAsyncRequest);
 
         final String expectedResult = responseParameters.get(Keys.KEY_RESULT);
         assertNotNull("Result", response.getResult());
@@ -84,7 +83,7 @@ public class SetDataSteps extends MicrogridsStepsBase {
             }
             final String logicalDeviceName = mockValue.get(INDEX_LOGICAL_DEVICE_NAME);
             final String node = mockValue.get(INDEX_NODE_NAME);
-            final String value = mockValue.get(INDEX_NODE_VALUE);           
+            final String value = mockValue.get(INDEX_NODE_VALUE);
             assertEquals("Simulator setting", true, (this.mockServer.assertValue(logicalDeviceName, node, value)) );
         }
     }
