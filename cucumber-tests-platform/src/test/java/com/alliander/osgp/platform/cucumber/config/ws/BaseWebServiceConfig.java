@@ -52,7 +52,7 @@ public abstract class BaseWebServiceConfig extends AbstractConfig {
         factory.setType(this.webserviceTruststoreType);
         factory.setLocation(new FileSystemResource(this.webserviceTruststoreLocation));
         factory.setPassword(this.webserviceTruststorePassword);
-
+        
         return factory;
     }
 }
