@@ -18,6 +18,15 @@
   </parent>
 
   <dependencies>
+  
+    <!--  TODO implement neatly -->
+    <dependency>
+        <groupId>com.sun.net.httpserver</groupId>
+        <artifactId>http</artifactId>
+        <version>20070405</version>
+    </dependency>
+      
+  
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
