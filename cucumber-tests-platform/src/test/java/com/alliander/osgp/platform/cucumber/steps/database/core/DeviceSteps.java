@@ -41,7 +41,7 @@ import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.RelayType;
-import com.alliander.osgp.platform.cucumber.config.CorePersistenceConfig;
+import com.alliander.osgp.platform.cucumber.config.CoreDeviceConfiguration;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
@@ -64,7 +64,7 @@ public class DeviceSteps {
 	private final Long DEFAULT_DEVICE_ID = new java.util.Random().nextLong();
 
 	@Autowired
-	private CorePersistenceConfig configuration;
+	private CoreDeviceConfiguration configuration;
 
 	@Autowired
 	private DeviceModelRepository deviceModelRepository;
@@ -106,7 +106,6 @@ public class DeviceSteps {
 			final List<DeviceOutputSetting> dosList = new ArrayList<>();
 			final int internalId = getInteger(settings, Keys.KEY_INTERNALID, Defaults.DEFAULT_INTERNALID),
 					externalId = getInteger(settings, Keys.KEY_EXTERNALID, Defaults.DEFAULT_EXTERNALID);
-			final String sRelayType = getString(settings, Keys.KEY_RELAY_TYPE, "null");
 			final RelayType relayType = getEnum(settings, Keys.KEY_RELAY_TYPE, RelayType.class, RelayType.LIGHT);
 
 			if (relayType != null) {
@@ -157,7 +156,7 @@ public class DeviceSteps {
 
 		InetAddress inetAddress;
 		try {
-			inetAddress = InetAddress.getByName(this.configuration.deviceNetworkaddress);
+			inetAddress = InetAddress.getByName(this.configuration.getDeviceNetworkAddress());
 		} catch (final UnknownHostException e) {
 			inetAddress = InetAddress.getLoopbackAddress();
 		}
@@ -202,7 +201,7 @@ public class DeviceSteps {
 		int count = 0;
 		while (!success) {
 			try {
-				if (count > this.configuration.getDefaultTimeout()) {
+				if (count > this.configuration.defaultTimeout) {
 					Assert.fail("Failed");
 				}
 
@@ -232,7 +231,7 @@ public class DeviceSteps {
 		int count = 0;
 		while (!success) {
 			try {
-				if (count > this.configuration.getDefaultTimeout()) {
+				if (count > this.configuration.defaultTimeout) {
 					Assert.fail("Failed");
 				}
 
@@ -260,7 +259,7 @@ public class DeviceSteps {
 		boolean success = false;
 		int count = 0;
 		while (!success) {
-			if (count > this.configuration.getDefaultTimeout()) {
+			if (count > this.configuration.defaultTimeout) {
 				Assert.fail("Failed");
 			}
 

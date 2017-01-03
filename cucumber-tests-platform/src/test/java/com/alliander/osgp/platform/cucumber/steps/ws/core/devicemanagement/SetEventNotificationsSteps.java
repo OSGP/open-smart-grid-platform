@@ -27,7 +27,7 @@ import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotifi
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotificationsAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotificationsRequest;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotificationsResponse;
-import com.alliander.osgp.platform.cucumber.config.CorePersistenceConfig;
+import com.alliander.osgp.platform.cucumber.config.CoreDeviceConfiguration;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
@@ -44,7 +44,7 @@ public class SetEventNotificationsSteps {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SetEventNotificationsSteps.class);
     
 	@Autowired
-	private CorePersistenceConfig configuration;
+	private CoreDeviceConfiguration configuration;
 
 	@Autowired
     private CoreDeviceManagementClient client;
@@ -55,7 +55,7 @@ public class SetEventNotificationsSteps {
      * @throws Throwable
      */
     @When("^receiving a set event notification message request(?: on OSGP)?$")
-    public void receiving_a_set_event_notification_message_request(final Map<String, String> requestParameters) throws Throwable
+    public void receivingASetEventNotificationMessageRequest(final Map<String, String> requestParameters) throws Throwable
     {
     	SetEventNotificationsRequest request = new SetEventNotificationsRequest();
     	request.setDeviceIdentification(getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
@@ -77,7 +77,7 @@ public class SetEventNotificationsSteps {
      * @throws Throwable
      */
     @Then("^the set event notification async response contains$")
-    public void the_set_event_notification_async_response_contains(final Map<String, String> expectedResponseData)
+    public void theSetEventNotificationAsyncResponseContains(final Map<String, String> expectedResponseData)
             throws Throwable {
     	SetEventNotificationsAsyncResponse response = (SetEventNotificationsAsyncResponse)ScenarioContext.Current().get(Keys.RESPONSE);
     	
@@ -92,7 +92,7 @@ public class SetEventNotificationsSteps {
     }
     
     @Then("^the platform buffers a set event notification response message for device \"([^\"]*)\"")
-    public void the_platform_buffers_a_set_event_notification_response_message_for_device(final String deviceIdentification, final Map<String, String> expectedResult) throws Throwable
+    public void thePlatformBuffersASetEventNotificationResponseMessageForDevice(final String deviceIdentification, final Map<String, String> expectedResult) throws Throwable
     {
     	SetEventNotificationsAsyncRequest request = new SetEventNotificationsAsyncRequest();
     	AsyncRequest asyncRequest = new AsyncRequest();
@@ -103,12 +103,13 @@ public class SetEventNotificationsSteps {
     	boolean success = false;
     	int count = 0;
     	while (!success) {
-    		if (count > configuration.getDefaultTimeout()) {
+    		if (count > configuration.defaultTimeout) {
     			Assert.fail("Timeout");
     		}
     		
     		count++;
-    		
+            Thread.sleep(1000);
+
     		try {
     			SetEventNotificationsResponse response = client.getSetEventNotificationsResponse(request);
     			    			

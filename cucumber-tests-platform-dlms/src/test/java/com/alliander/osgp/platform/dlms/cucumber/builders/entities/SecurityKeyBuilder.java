@@ -14,7 +14,8 @@ import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 
-import com.alliander.osgp.platform.dlms.cucumber.inputparsers.DateInputParser;
+import com.alliander.osgp.platform.cucumber.helpers.UtcDateHelper;
+import com.alliander.osgp.platform.cucumber.inputparsers.DateInputParser;
 import com.alliander.osgp.platform.dlms.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.dlms.cucumber.steps.Keys;
 
@@ -23,7 +24,7 @@ public class SecurityKeyBuilder implements CucumberBuilder<SecurityKey> {
     private boolean builderEnabled = true;
 
     private SecurityKeyType securityKeyType = null;
-    private Date validFrom = Defaults.VALID_FROM;
+    private Date validFrom = UtcDateHelper.getUtcDate();
     private Date validTo = Defaults.VALID_TO;
     private Long version = Defaults.VERSION;
     private String key = Defaults.SECURITY_KEY_A;

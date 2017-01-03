@@ -116,6 +116,11 @@
       <artifactId>osgp-protocol-adapter-oslp</artifactId>
       <classifier>classes</classifier>
     </dependency>
+    <dependency>
+      <groupId>com.alliander.osgp</groupId>
+      <artifactId>osgp-protocol-adapter-iec61850</artifactId>
+      <classifier>classes</classifier>
+    </dependency>
 
     <dependency>
       <groupId>com.alliander.osgp</groupId>

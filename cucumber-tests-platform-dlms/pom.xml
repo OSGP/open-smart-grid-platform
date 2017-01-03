@@ -109,16 +109,20 @@
       <groupId>com.alliander.osgp</groupId>
       <artifactId>shared</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.alliander.osgp</groupId>
+      <artifactId>osgp-adapter-ws-smartmetering</artifactId>
+      <classifier>classes</classifier>
+    </dependency>
 
     <!-- Cucumber platform -->
     <dependency>
       <groupId>com.alliander</groupId>
       <artifactId>cucumber-tests-platform</artifactId>
-      <version>${osgp.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
-    
+
   </dependencies>
 
   <build>
@@ -145,4 +149,5 @@
       </plugin>
     </plugins>
   </build>
+
 </project>

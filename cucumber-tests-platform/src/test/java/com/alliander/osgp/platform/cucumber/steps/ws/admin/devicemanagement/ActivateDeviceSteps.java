@@ -1,11 +1,9 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package com.alliander.osgp.platform.cucumber.steps.ws.admin.devicemanagement;
 
@@ -29,32 +27,38 @@ import com.alliander.osgp.platform.cucumber.support.ws.admin.AdminDeviceManageme
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
+/**
+ * Class with all the activate device steps.
+ */
 public class ActivateDeviceSteps {
-	
-	@Autowired
-	private AdminDeviceManagementClient client;
+
+    @Autowired
+    private AdminDeviceManagementClient client;
 
     @When("^receiving an activate device request$")
-    public void receivingAActivateDeviceRequest(final Map<String, String> requestSettings) throws Throwable {
-        
-    	ActivateDeviceRequest request = new ActivateDeviceRequest();
-        request.setDeviceIdentification(getString(requestSettings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-        
+    public void receivingAnActivateDeviceRequest(final Map<String, String> requestSettings) throws Throwable {
+
+        ActivateDeviceRequest request = new ActivateDeviceRequest();
+        request.setDeviceIdentification(
+                getString(requestSettings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+
         try {
             ScenarioContext.Current().put(Keys.RESPONSE, client.activateDevice(request));
-        } catch(SoapFaultClientException ex) {
+        } catch (SoapFaultClientException ex) {
             ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
     }
 
     /**
      * Verify that the activate device response is successful.
+     * 
      * @throws Throwable
      */
     @Then("^the activate device response contains$")
     public void theActivateDeviceResponseContains(final Map<String, String> expectedResponse) throws Throwable {
-    	ActivateDeviceResponse response = (ActivateDeviceResponse) ScenarioContext.Current().get(Keys.RESPONSE);
-    	
-    	Assert.assertEquals(response.getResult(), getEnum(expectedResponse, Keys.KEY_RESULT, OsgpResultType.class, OsgpResultType.OK));
+        ActivateDeviceResponse response = (ActivateDeviceResponse) ScenarioContext.Current().get(Keys.RESPONSE);
+
+        Assert.assertEquals(response.getResult(),
+                getEnum(expectedResponse, Keys.KEY_RESULT, OsgpResultType.class, OsgpResultType.OK));
     }
 }

@@ -18,13 +18,12 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
-import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.microgrids.repositories.RtuDeviceRepository;
 
 @EnableJpaRepositories(entityManagerFactoryRef = "entityMgrCore", transactionManagerRef = "txMgrCore", basePackageClasses = {
-        DeviceRepository.class, DeviceAuthorizationRepository.class, RtuDeviceRepository.class })
-public class CorePersistenceConfig extends ApplicationConfiguration {
+        DeviceRepository.class, RtuDeviceRepository.class })
+public class CorePersistenceConfig extends ApplicationPersistenceConfiguration {
 
     @Value("${osgpcoredbs.url}")
     private String databaseUrl;

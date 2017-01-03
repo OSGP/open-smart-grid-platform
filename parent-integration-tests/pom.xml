@@ -43,7 +43,7 @@
     <osgp.version>${project.version}</osgp.version>
     <osgp.dlms.version>3.5.0-SNAPSHOT</osgp.dlms.version>
     <osgp.iec61850.simulator.version>4.1.0-SNAPSHOT</osgp.iec61850.simulator.version>
-    
+
     <spring.version>4.3.3.RELEASE</spring.version>
     <spring.ws.version>2.2.2.RELEASE</spring.ws.version>
     <spring.data.version>1.6.4.RELEASE</spring.data.version>
@@ -97,11 +97,11 @@
     <!-- Default always skip integration tests, to ensure all developer data 
       is retained -->
     <skipITs>true</skipITs>
-    
+
     <!-- Skip code coverage gathering with Jacoco on IT tests from Tomcat. 
       Requires jacoco-agent to be setup on remote Tomcat -->
     <skipITCoverage>true</skipITCoverage>
-    
+
     <!-- Address of Tomcat instance -->
     <addressITCoverage>localhost</addressITCoverage>
   </properties>
@@ -303,8 +303,23 @@
 
       <dependency>
         <groupId>com.alliander.osgp</groupId>
+        <artifactId>osgp-protocol-adapter-iec61850</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+
+      <dependency>
+        <groupId>com.alliander.osgp</groupId>
         <artifactId>osgp-protocol-simulator-iec61850</artifactId>
         <version>${osgp.iec61850.simulator.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.alliander</groupId>
+        <artifactId>cucumber-tests-platform</artifactId>
+        <version>${osgp.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
       </dependency>
 
       <!-- Spring Framework -->
@@ -807,6 +822,16 @@
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <configuration>
+            <source>1.7</source>
+            <target>1.7</target>
+            <encoding>${project.build.sourceEncoding}</encoding>
+          </configuration>
+          <version>${maven.compiler.plugin.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
           <version>${maven.jar.plugin.version}</version>
           <executions>
@@ -878,7 +903,8 @@
           <artifactId>jacoco-maven-plugin</artifactId>
           <version>${jacoco.version}</version>
           <executions>
-            <!-- Reset the code coverage before the integration tests are started. Ensures Tomcat startup code execution is ignored in report -->
+            <!-- Reset the code coverage before the integration tests are 
+              started. Ensures Tomcat startup code execution is ignored in report -->
             <execution>
               <id>pre-integration-test</id>
               <phase>pre-integration-test</phase>
@@ -914,31 +940,6 @@
         </plugin>
       </plugins>
     </pluginManagement>
-
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
-          <encoding>${project.build.sourceEncoding}</encoding>
-        </configuration>
-        <version>${maven.compiler.plugin.version}</version>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>${maven.jar.plugin.version}</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>test-jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
   </build>
 
   <reporting>

@@ -94,7 +94,12 @@ Feature: SmartMetering Configuration
 
   @Skip
   Scenario: successful upgrade of firmware
-    Given a request for a firmware upgrade for device "TEST1024000000001" from a client
+  	Given a firmware
+    	| FirmwareModuleVersionComm | Telit 10.00.154 |
+    	| FirmwareModuleVersionMa		| BL_012 XMX_N42_GprsV09 |
+    	|	FirmwareModuleVersionFunc | M57 4836 |
+    	|	FirmwareFilename					| KFPP_V060100FF |
+    And a request for a firmware upgrade for device "TEST1024000000001" from a client
     And the installation file of version "KFPP_V060100FF" is available
     When the request for a firmware upgrade is received
     Then firmware should be updated
