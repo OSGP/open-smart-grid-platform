@@ -56,8 +56,7 @@ public class CommunicationMonitoringTask implements Runnable {
         }
 
         if (this.taskAlreadyRan(task)) {
-            LOGGER.info(
-                    "Communication Monitoring Task already ran within minimum time between runs. Skipping this run.");
+            LOGGER.info("Communication Monitoring Task already ran within minimum time between runs. Skipping this run.");
             return;
         }
 
@@ -69,6 +68,7 @@ public class CommunicationMonitoringTask implements Runnable {
         for (final RtuDevice rtu : rtuDevices) {
             LOGGER.debug("Restoring communication for device {}.", rtu.getDeviceIdentification());
 
+            this.communicationRecoveryService.signalConnectionLost(rtu);
             this.communicationRecoveryService.restoreCommunication(rtu);
         }
 
@@ -124,7 +124,7 @@ public class CommunicationMonitoringTask implements Runnable {
     private List<RtuDevice> loadDevices(final Task task) {
         LOGGER.debug("Loading devices from repository for which communication should be restored.");
         final DateTime lastCommunicationTime = new DateTime(task.getStartTime())
-                .minusMinutes(this.maximumTimeWithoutCommunication);
+        .minusMinutes(this.maximumTimeWithoutCommunication);
         return this.rtuDeviceRepository.findByIsActiveAndLastCommunicationTimeBefore(true,
                 lastCommunicationTime.toDate());
     }
