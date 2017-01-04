@@ -12,19 +12,23 @@ import static com.alliander.osgp.platform.cucumber.core.Helpers.getEnum;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getInteger;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
-import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.EventNotificationType;
 import com.alliander.osgp.oslp.Oslp;
+import com.alliander.osgp.oslp.Oslp.Event;
+import com.alliander.osgp.oslp.Oslp.EventNotification;
+import com.alliander.osgp.oslp.Oslp.EventNotificationRequest;
+import com.alliander.osgp.oslp.Oslp.EventNotificationResponse;
 import com.alliander.osgp.oslp.Oslp.LightType;
 import com.alliander.osgp.oslp.Oslp.LightValue;
 import com.alliander.osgp.oslp.Oslp.LinkType;
@@ -34,7 +38,8 @@ import com.alliander.osgp.oslp.Oslp.SetTransitionRequest;
 import com.alliander.osgp.oslp.Oslp.Status;
 import com.alliander.osgp.oslp.Oslp.TransitionType;
 import com.alliander.osgp.oslp.OslpUtils;
-import com.alliander.osgp.platform.cucumber.mocks.oslpdevice.MockOslpChannelHandler;
+import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
+import com.alliander.osgp.platform.cucumber.mocks.oslpdevice.DeviceSimulatorException;
 import com.alliander.osgp.platform.cucumber.mocks.oslpdevice.MockOslpServer;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
@@ -42,6 +47,7 @@ import com.google.protobuf.ByteString;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
 
 /**
  * Class which holds all the OSLP device mock steps in order to let the device
@@ -49,7 +55,6 @@ import cucumber.api.java.en.Then;
  */
 public class OslpDeviceSteps {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(MockOslpChannelHandler.class);
 
 	@Autowired
 	private MockOslpServer oslpMockServer;
@@ -62,7 +67,7 @@ public class OslpDeviceSteps {
 	 * @throws Throwable
 	 */
 	@Given("^the device returns a set light response \"([^\"]*)\" over OSLP$")
-	public void the_device_returns_a_set_light_over_OSLP(final String result) throws Throwable {
+	public void theDeviceReturnsASetLightOverOSLP(final String result) throws Throwable {
 		Oslp.Status oslpStatus = Status.OK;
 
 		switch (result) {
@@ -82,7 +87,7 @@ public class OslpDeviceSteps {
 	 * @throws Throwable
 	 */
 	@Given("^the device returns firmware version \"([^\"]*)\" over OSLP$")
-	public void the_device_returns_firmware_version_over_OSLP(final String firmwareVersion) throws Throwable {
+	public void theDeviceReturnsFirmwareVersionOverOSLP(final String firmwareVersion) throws Throwable {
 		this.oslpMockServer.mockFirmwareResponse(firmwareVersion);
 	}
 
@@ -96,7 +101,7 @@ public class OslpDeviceSteps {
 	 */
 
 	@Given("^the device returns a set event notification \"([^\"]*)\" over OSLP$")
-	public void the_device_returns_a_set_event_notification_over_OSLP(final String result) throws Throwable {
+	public void theDeviceReturnsAnEventNotificationOverOSLP(final String result) throws Throwable {
 		Oslp.Status oslpStatus = Status.OK;
 
 		switch (result) {
@@ -116,7 +121,7 @@ public class OslpDeviceSteps {
 	 * @throws Throwable
 	 */
 	@Given("^the device returns a start device response \"([^\"]*)\" over OSLP$")
-	public void the_device_returns_a_start_device_response_over_OSLP(final String result) throws Throwable {
+	public void theDeviceReturns_AStartDeviceResponseOverOSLP(final String result) throws Throwable {
 		Oslp.Status oslpStatus = Status.OK;
 
 		switch (result) {
@@ -136,7 +141,7 @@ public class OslpDeviceSteps {
 	 * @throws Throwable
 	 */
 	@Given("^the device returns a stop device response \"([^\"]*)\" over OSLP$")
-	public void the_device_returns_a_stop_device_response_over_OSLP(final String result) throws Throwable {
+	public void theDeviceReturnsAStopDeviceResponseOverOSLP(final String result) throws Throwable {
 		Oslp.Status oslpStatus = Status.OK;
 
 		switch (result) {
@@ -156,7 +161,7 @@ public class OslpDeviceSteps {
 	 * @throws Throwable
 	 */
 	@Given("^the device returns a get status response over OSLP$")
-	public void the_device_returns_a_get_status_response_over_OSLP(final Map<String, String> result) throws Throwable {
+	public void theDeviceReturnsAGetStatusResponseOverOSLP(final Map<String, String> result) throws Throwable {
 	
 		int eventNotificationTypes = 0;
 		if (getString(result, Keys.KEY_EVENTNOTIFICATIONTYPES, Defaults.DEFAULT_EVENTNOTIFICATIONTYPES).trim().split(",").length > 0) {
@@ -201,7 +206,7 @@ public class OslpDeviceSteps {
 	 * @throws Throwable
 	 */
 	@Given("^the device returns a resume schedule response \"([^\"]*)\" over OSLP$")
-	public void the_device_returns_a_resume_schedule_response_over_OSLP(final String result) throws Throwable {
+	public void theDeviceReturnsAResumeScheduleResponseOverOSLP(final String result) throws Throwable {
 		Oslp.Status oslpStatus = Status.OK;
 
 		switch (result) {
@@ -221,7 +226,7 @@ public class OslpDeviceSteps {
 	 * @throws Throwable
 	 */
 	@Given("^the device returns a set reboot response \"([^\"]*)\" over OSLP$")
-	public void the_device_returns_a_set_reboot_response_over_OSLP(final String result) throws Throwable {
+	public void theDeviceReturnsASetRebootResponseOverOSLP(final String result) throws Throwable {
 		Oslp.Status oslpStatus = Status.OK;
 
 		switch (result) {
@@ -241,7 +246,7 @@ public class OslpDeviceSteps {
 	 * @throws Throwable
 	 */
 	@Given("^the device returns a set transition response \"([^\"]*)\" over OSLP$")
-	public void the_device_returns_a_set_transition_response_over_OSLP(final String result) throws Throwable {
+	public void theDeviceReturnsASetTransitionResponseOverOSLP(final String result) throws Throwable {
 		Oslp.Status oslpStatus = Status.OK;
 
 		switch (result) {
@@ -262,7 +267,7 @@ public class OslpDeviceSteps {
 	 * @throws Throwable
 	 */
 	@Then("^a get firmware version OSLP message is sent to device \"([^\"]*)\"$")
-	public void a_get_firmware_version_OSLP_message_is_sent_to_device(final String deviceIdentification)
+	public void aGetFirmwareVersionOSLPMessageIsSentToDevice(final String deviceIdentification)
 			throws Throwable {
 		final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.GET_FIRMWARE_VERSION);
 		Assert.assertNotNull(message);
@@ -276,7 +281,7 @@ public class OslpDeviceSteps {
 	 * @throws Throwable
 	 */
 	@Then("^a set light OSLP message with one light value is sent to the device$")
-	public void a_set_light_OSLP_message_with_one_lightvalue_is_sent_to_the_device(
+	public void aSetLightOSLPMessageWithOneLightvalueIsSentToTheDevice(
 			final Map<String, String> expectedParameters) throws Throwable {
 		final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.SET_LIGHT);
 		Assert.assertNotNull(message);
@@ -313,7 +318,7 @@ public class OslpDeviceSteps {
 	 * @throws Throwable
 	 */
 	@Then("^a set event notification OSLP message is sent to device \"([^\"]*)\"")
-	public void a_set_event_notification_oslp_message_is_sent_to_device(final String deviceIdentification)
+	public void aSetEventNotificationOslpMessageIsSentToDevice(final String deviceIdentification)
 			throws Throwable {
 		final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.SET_EVENT_NOTIFICATIONS);
 		Assert.assertNotNull(message);
@@ -329,13 +334,13 @@ public class OslpDeviceSteps {
 	 * @throws Throwable
 	 */
 	@Then("^a start device OSLP message is sent to device \"([^\"]*)\"$")
-	public void a_start_device_OSLP_message_is_sent_to_device(final String deviceIdentification) throws Throwable {
+	public void aStartDeviceOSLPMessageIsSentToDevice(final String deviceIdentification) throws Throwable {
 		// TODO: Sent an OSLP start device message to device
 		final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.START_SELF_TEST);
 		Assert.assertNotNull(message);
 		Assert.assertTrue(message.hasStartSelfTestRequest());
 	}
-
+	
 	/**
 	 * Verify that a stop device OSLP message is sent to the device.
 	 * 
@@ -345,7 +350,7 @@ public class OslpDeviceSteps {
 	 * @throws Throwable
 	 */
 	@Then("^a stop device OSLP message is sent to device \"([^\"]*)\"$")
-	public void a_stop_device_OSLP_message_is_sent_to_device(final String deviceIdentification) throws Throwable {
+	public void aStopDeviceOSLPMessageIsSentToDevice(final String deviceIdentification) throws Throwable {
 		// TODO: Sent an OSLP start device message to device
 		final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.STOP_SELF_TEST);
 		Assert.assertNotNull(message);
@@ -361,7 +366,7 @@ public class OslpDeviceSteps {
 	 * @throws Throwable
 	 */
 	@Then("^a get status OSLP message is sent to device \"([^\"]*)\"$")
-	public void a_get_status_OSLP_message_is_sent_to_device(final String deviceIdentification) throws Throwable {
+	public void aGetStatusOSLPMessageIsSentToDevice(final String deviceIdentification) throws Throwable {
 		final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.GET_STATUS);
 		Assert.assertNotNull(message);
 		Assert.assertTrue(message.hasGetStatusRequest());
@@ -376,7 +381,7 @@ public class OslpDeviceSteps {
 	 * @throws Throwable
 	 */
 	@Then("^a resume schedule OSLP message is sent to device \"([^\"]*)\"$")
-	public void a_resume_schedule_OSLP_message_is_sent_to_device(final String deviceIdentification, final Map<String, String> expectedRequest) throws Throwable {
+	public void aResumeScheduleOSLPMessageIsSentToDevice(final String deviceIdentification, final Map<String, String> expectedRequest) throws Throwable {
 		final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.RESUME_SCHEDULE);
 		Assert.assertNotNull(message);
 		Assert.assertTrue(message.hasResumeScheduleRequest());
@@ -396,7 +401,7 @@ public class OslpDeviceSteps {
 	 * @throws Throwable
 	 */
 	@Then("^a set reboot OSLP message is sent to device \"([^\"]*)\"$")
-	public void a_set_reboot_OSLP_message_is_sent_to_device(final String deviceIdentification) throws Throwable {
+	public void aSetRebootOSLPMessageIsSentToDevice(final String deviceIdentification) throws Throwable {
 		// TODO: Sent an OSLP start device message to device
 		final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.SET_REBOOT);
 		Assert.assertNotNull(message);
@@ -412,7 +417,7 @@ public class OslpDeviceSteps {
 	 * @throws Throwable
 	 */
 	@Then("^a set transition OSLP message is sent to device \"([^\"]*)\"$")
-	public void a_set_transition_OSLP_message_is_sent_to_device(final String deviceIdentification, final Map<String, String> expectedResult) throws Throwable {
+	public void aSetTransitionOSLPMessageIsSentToDevice(final String deviceIdentification, final Map<String, String> expectedResult) throws Throwable {
 		final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.SET_TRANSITION);
 		Assert.assertNotNull(message);
 		Assert.assertTrue(message.hasSetTransitionRequest());
@@ -425,4 +430,42 @@ public class OslpDeviceSteps {
 	 		//Assert.assertEquals(expectedResult.get(Keys.KEY_TIME), request.getTime());
 		}
 	}
+	
+    @Then("^an update key OSLP message is sent to device \"([^\"]*)\"$")
+    public void anUpdateKeyOSLPMessageIsSentToDevice(final String deviceIdentification) throws Throwable {
+        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.UPDATE_KEY);
+        Assert.assertNotNull(message);
+        Assert.assertTrue(message.hasSetDeviceVerificationKeyRequest());
+    }
+    
+    /**
+     * Simulates sending an OSLP EventNotification message to the OSLP Protocol adapter.
+     * @param settings
+     * @throws DeviceSimulatorException
+     * @throws IOException
+     * @throws ParseException
+     */
+    @When("^receiving an OSLP event notification message$")
+    public void receivingAnOSLPEventNotificationMessage(final Map<String, String> settings) throws DeviceSimulatorException, IOException, ParseException {
+        
+        EventNotification eventNotification = EventNotification.newBuilder()
+                .setDescription(getString(settings, Keys.KEY_DESCRIPTION, ""))
+                .setEvent(getEnum(settings, Keys.KEY_EVENT, Event.class)).build();
+        
+        Message message = Oslp.Message.newBuilder()
+        .setEventNotificationRequest(
+                EventNotificationRequest.newBuilder().addNotifications(eventNotification)).build();
+
+        // Save the OSLP response for later validation.
+        ScenarioContext.Current().put(Keys.RESPONSE, this.oslpMockServer.sendRequest(message));
+    }
+    
+    @Then("^the OSLP event notification response contains$")
+    public void theOSLPEventNotificationResponseContains(final Map<String, String> expectedResponse) {
+        Message responseMessage = (Message) ScenarioContext.Current().get(Keys.RESPONSE);
+        
+        EventNotificationResponse response = responseMessage.getEventNotificationResponse();
+        
+        Assert.assertEquals(getString(expectedResponse, Keys.KEY_STATUS), response.getStatus());
+    }
 }

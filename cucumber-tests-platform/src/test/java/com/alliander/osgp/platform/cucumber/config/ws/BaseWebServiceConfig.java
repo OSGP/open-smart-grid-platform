@@ -16,14 +16,14 @@ import org.springframework.ws.soap.security.support.KeyStoreFactoryBean;
 import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 public abstract class BaseWebServiceConfig extends AbstractConfig {
-    
+
     @Value("${application.name}")
-	protected String applicationName;
+    protected String applicationName;
 
     @Value("${base.uri}")
-	protected String baseUri;
+    protected String baseUri;
 
-	@Value("${web.service.truststore.location}")
+    @Value("${web.service.truststore.location}")
     private String webserviceTruststoreLocation;
 
     @Value("${web.service.truststore.password}")
@@ -33,7 +33,7 @@ public abstract class BaseWebServiceConfig extends AbstractConfig {
     private String webserviceTruststoreType;
 
     @Value("${web.service.keystore.basepath}")
-	protected String webserviceKeystoreLocation;
+    protected String webserviceKeystoreLocation;
 
     @Value("${web.service.keystore.password}")
     protected String webserviceKeystorePassword;
@@ -52,7 +52,7 @@ public abstract class BaseWebServiceConfig extends AbstractConfig {
         factory.setType(this.webserviceTruststoreType);
         factory.setLocation(new FileSystemResource(this.webserviceTruststoreLocation));
         factory.setPassword(this.webserviceTruststorePassword);
-
+        
         return factory;
     }
 }

@@ -48,7 +48,7 @@ public class CreateDeviceSteps {
 	 * @throws Throwable
 	 */
 	@When("^receiving an add device request$")
-	public void receiving_an_add_device_request(final Map<String, String> settings) throws Throwable {
+	public void receivingAnAddDeviceRequest(final Map<String, String> settings) throws Throwable {
 
 		final AddDeviceRequest request = new AddDeviceRequest();
 		final Device device = this.createDevice(settings);
@@ -68,7 +68,7 @@ public class CreateDeviceSteps {
 	 * @throws Throwable
 	 */
 	@Then("^the add device response is successfull$")
-	public void the_add_device_response_is_successfull() throws Throwable {
+	public void theAddDeviceResponseIsSuccessfull() throws Throwable {
 		Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof AddDeviceResponse);
 	}
 
@@ -77,7 +77,7 @@ public class CreateDeviceSteps {
 	 * @throws Throwable
 	 */
 	@When("^receiving an update device request")
-	public void receiving_an_update_device_request(final Map<String, String> settings) throws Throwable {
+	public void receivingAnUpdateDeviceRequest(final Map<String, String> settings) throws Throwable {
 		final UpdateDeviceRequest request = new UpdateDeviceRequest();
 
 		request.setDeviceIdentification(
@@ -131,7 +131,7 @@ public class CreateDeviceSteps {
 	 * @throws Throwable
 	 */
 	@Then("^the update device response is successfull$")
-	public void the_update_device_response_is_successfull() throws Throwable {
+	public void theUpdateDeviceResponseIsSuccessfull() throws Throwable {
 		Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof UpdateDeviceResponse);
 	}
 
@@ -143,13 +143,13 @@ public class CreateDeviceSteps {
 	 * @throws Throwable
 	 */
 	@Then("^the add device response contains$")
-	public void the_add_device_response_contains(final Map<String, String> expectedResult) throws Throwable {
+	public void theAddDeviceResponseContains(final Map<String, String> expectedResult) throws Throwable {
 		Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof AddDeviceResponse);
 	}
 
 	@Then("^the add device response contains soap fault$")
-	public void the_add_device_response_contains_soap_fault(final Map<String, String> expectedResult) throws Throwable {
-		GenericResponseSteps.VerifySoapFault(expectedResult);
+	public void theAddDeviceResponseContainsSoapFault(final Map<String, String> expectedResult) throws Throwable {
+		GenericResponseSteps.verifySoapFault(expectedResult);
 	}
 
 	/**
@@ -157,7 +157,7 @@ public class CreateDeviceSteps {
 	 * @throws Throwable
 	 */
 	@Then("^the update device response contains$")
-	public void the_update_device_response_contains(final Map<String, String> expectedResult) throws Throwable {
+	public void theUpdateDeviceResponseContains(final Map<String, String> expectedResult) throws Throwable {
 		Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof UpdateDeviceResponse);
 	}
 
@@ -169,8 +169,8 @@ public class CreateDeviceSteps {
 	 * @throws Throwable
 	 */
 	@Then("^the update device response contains soap fault$")
-	public void the_update_device_response_contains_soap_fault(final Map<String, String> expectedResult)
+	public void theUpdateDeviceResponseContainsSoapFault(final Map<String, String> expectedResult)
 			throws Throwable {
-		GenericResponseSteps.VerifySoapFault(expectedResult);
+		GenericResponseSteps.verifySoapFault(expectedResult);
 	}
 }

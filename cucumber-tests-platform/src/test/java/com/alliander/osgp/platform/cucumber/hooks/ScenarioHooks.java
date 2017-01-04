@@ -1,9 +1,9 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not 
- * use this file except in compliance with the License.  
- * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package com.alliander.osgp.platform.cucumber.hooks;
 
@@ -22,28 +22,29 @@ public class ScenarioHooks {
 
     @Autowired
     private DatabaseSteps databaseSteps;
-    
+
     /**
      * Executed before each scenario.
      *
      * Remove all stuff from the database before each test. Each test should
      * stand on its own. Therefore you should guarantee that the scenario is
      * complete.
-     * 
+     *
      * Order 0 ensures this will be run as first hook.
      */
     @Before(order = 0)
     public void beforeScenario() {
-    	databaseSteps.prepareDatabaseForScenario();
+        this.databaseSteps.prepareDatabaseForScenario();
 
-    	// Make sure that the scenario context is clean before each test.
+        // Make sure that the scenario context is clean before each test.
         ScenarioContext.context = null;
     }
 
     /**
      * Executed after each scenario.
-     * 
-     * Order 99999 ensures this will be run as last hook.
+     *
+     * Order 99999 ensures this will be run as one of the first hooks after the
+     * scenario.
      */
     @After(order = 99999)
     public void afterScenario() {

@@ -26,7 +26,7 @@ import com.alliander.osgp.adapter.ws.schema.core.adhocmanagement.SetRebootReques
 import com.alliander.osgp.adapter.ws.schema.core.adhocmanagement.SetRebootResponse;
 import com.alliander.osgp.adapter.ws.schema.core.common.AsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.common.OsgpResultType;
-import com.alliander.osgp.platform.cucumber.config.CorePersistenceConfig;
+import com.alliander.osgp.platform.cucumber.config.CoreDeviceConfiguration;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
@@ -41,7 +41,7 @@ import cucumber.api.java.en.When;
 public class SetRebootSteps {
 
 	@Autowired
-	private CorePersistenceConfig configuration;
+	private CoreDeviceConfiguration configuration;
 	
 	@Autowired
 	private CoreAdHocManagementClient client;
@@ -54,7 +54,7 @@ public class SetRebootSteps {
      * @throws Throwable
      */
     @When("^receiving a set reboot request$")
-    public void whenReceivingASetRebootRequest(final Map<String, String> requestParameters) throws Throwable {
+    public void receivingASetRebootRequest(final Map<String, String> requestParameters) throws Throwable {
     	SetRebootRequest request = new SetRebootRequest();
     	request.setDeviceIdentification(getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
     	
@@ -70,7 +70,7 @@ public class SetRebootSteps {
         // Force the request being send to the platform as a given organization.
     	ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
     	
-    	whenReceivingASetRebootRequest(requestParameters);
+    	receivingASetRebootRequest(requestParameters);
     }
     
     /**
@@ -80,7 +80,7 @@ public class SetRebootSteps {
      * @throws Throwable
      */
     @Then("^the set reboot async response contains$")
-    public void thenTheSetRebootAsyncResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
+    public void theSetRebootAsyncResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
     	SetRebootAsyncResponse response = (SetRebootAsyncResponse)ScenarioContext.Current().get(Keys.RESPONSE);
     	
     	Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
@@ -104,12 +104,13 @@ public class SetRebootSteps {
     	boolean success = false;
     	int count = 0;
     	while (!success) {
-    		if (count > configuration.getDefaultTimeout()) {
+    		if (count > configuration.defaultTimeout) {
     			Assert.fail("Timeout");
     		}
     		
     		count++;
-    		
+            Thread.sleep(1000);
+
     		try {
     			SetRebootResponse response = client.getSetRebootResponse(request);
     			

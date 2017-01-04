@@ -23,7 +23,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import javax.persistence.Transient;
 
-import org.apache.commons.codec.binary.Base64;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -32,10 +31,10 @@ import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
 import org.joda.time.DateTime;
-import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.Oslp.Message;
 import com.alliander.osgp.oslp.OslpEnvelope;
@@ -58,6 +57,10 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
 
     // Device settings
     private Integer sequenceNumber = 0;
+    
+    public Integer getSequenceNumber() {
+        return this.sequenceNumber;
+    }
 
     private static class Callback {
 
@@ -144,10 +147,9 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         this.mockResponses = mockResponses;
         this.receivedRequests = receivedRequests;
     }
-    
-    public ConcurrentMap<DeviceRequestMessageType, Message> getMap()
-    {
-    	return this.mockResponses;
+
+    public ConcurrentMap<DeviceRequestMessageType, Message> getMap() {
+        return this.mockResponses;
     }
 
     /**
@@ -337,13 +339,12 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         }
     }
 
-    private Oslp.Message handleRequest(final OslpEnvelope message, final int sequenceNumber)
+    public Oslp.Message handleRequest(final OslpEnvelope message, final int sequenceNumber)
             throws DeviceSimulatorException, IOException, ParseException {
         final Oslp.Message request = message.getPayloadMessage();
 
         // Create response message
         Oslp.Message response = null;
-        final String deviceIdString = Base64.encodeBase64String(message.getDeviceId());
 
         // Calculate expected sequence number
         this.sequenceNumber = this.doGetNextSequence();
@@ -358,41 +359,49 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         }
 
         String keys = "";
-		
-		for (DeviceRequestMessageType k : mockResponses.keySet())
-        {
-        	if (!keys.isEmpty()) keys += " | ";
-        	keys += k.name();
+
+        for (DeviceRequestMessageType k : mockResponses.keySet()) {
+            if (!keys.isEmpty())
+                keys += " | ";
+            keys += k.name();
         }
 
         // Handle requests
         if (request.hasGetFirmwareVersionRequest()
                 && this.mockResponses.containsKey(DeviceRequestMessageType.GET_FIRMWARE_VERSION)) {
-        	response = processRequest(DeviceRequestMessageType.GET_FIRMWARE_VERSION, request);
-        } else if (request.hasSetLightRequest() 
-        		&& this.mockResponses.containsKey(DeviceRequestMessageType.SET_LIGHT)) {
-        	response = processRequest(DeviceRequestMessageType.SET_LIGHT, request);
-        } else if (request.hasSetEventNotificationsRequest() 
-        		&& this.mockResponses.containsKey(DeviceRequestMessageType.SET_EVENT_NOTIFICATIONS)) {
-        	response = processRequest(DeviceRequestMessageType.SET_EVENT_NOTIFICATIONS, request);
-        } else if (request.hasStartSelfTestRequest() 
-        		&& this.mockResponses.containsKey(DeviceRequestMessageType.START_SELF_TEST)) {
-        	response = processRequest(DeviceRequestMessageType.START_SELF_TEST, request);
-        } else if (request.hasStopSelfTestRequest() 
-        		&& this.mockResponses.containsKey(DeviceRequestMessageType.STOP_SELF_TEST)) {
-        	response = processRequest(DeviceRequestMessageType.STOP_SELF_TEST, request);
+            response = this.processRequest(DeviceRequestMessageType.GET_FIRMWARE_VERSION, request);
+        } else if (request.hasSetLightRequest() && this.mockResponses.containsKey(DeviceRequestMessageType.SET_LIGHT)) {
+            response = this.processRequest(DeviceRequestMessageType.SET_LIGHT, request);
+        } else if (request.hasSetEventNotificationsRequest()
+                && this.mockResponses.containsKey(DeviceRequestMessageType.SET_EVENT_NOTIFICATIONS)) {
+            response = this.processRequest(DeviceRequestMessageType.SET_EVENT_NOTIFICATIONS, request);
+        } else if (request.hasStartSelfTestRequest()
+                && this.mockResponses.containsKey(DeviceRequestMessageType.START_SELF_TEST)) {
+            response = this.processRequest(DeviceRequestMessageType.START_SELF_TEST, request);
+        } else if (request.hasStopSelfTestRequest()
+                && this.mockResponses.containsKey(DeviceRequestMessageType.STOP_SELF_TEST)) {
+            response = this.processRequest(DeviceRequestMessageType.STOP_SELF_TEST, request);
         } else if (request.hasGetStatusRequest()
-        		&& this.mockResponses.containsKey(DeviceRequestMessageType.GET_STATUS)) {
-        	response = processRequest(DeviceRequestMessageType.GET_STATUS, request);
+                && this.mockResponses.containsKey(DeviceRequestMessageType.GET_STATUS)) {
+            response = this.processRequest(DeviceRequestMessageType.GET_STATUS, request);
         } else if (request.hasResumeScheduleRequest()
-        		&& this.mockResponses.containsKey(DeviceRequestMessageType.RESUME_SCHEDULE)) {
-        	response = processRequest(DeviceRequestMessageType.RESUME_SCHEDULE, request);
+                && this.mockResponses.containsKey(DeviceRequestMessageType.RESUME_SCHEDULE)) {
+            response = this.processRequest(DeviceRequestMessageType.RESUME_SCHEDULE, request);
         } else if (request.hasSetRebootRequest()
-        		&& this.mockResponses.containsKey(DeviceRequestMessageType.SET_REBOOT)) {
-        	response = processRequest(DeviceRequestMessageType.SET_REBOOT, request);
+                && this.mockResponses.containsKey(DeviceRequestMessageType.SET_REBOOT)) {
+            response = this.processRequest(DeviceRequestMessageType.SET_REBOOT, request);
         } else if (request.hasSetTransitionRequest()
-        		&& this.mockResponses.containsKey(DeviceRequestMessageType.SET_TRANSITION)) {
-        	response = processRequest(DeviceRequestMessageType.SET_TRANSITION, request);
+                && this.mockResponses.containsKey(DeviceRequestMessageType.SET_TRANSITION)) {
+            response = this.processRequest(DeviceRequestMessageType.SET_TRANSITION, request);
+        } else if (request.hasRegisterDeviceRequest()
+                && this.mockResponses.containsKey(DeviceRequestMessageType.REGISTER_DEVICE)) {
+            response = this.processRequest(DeviceRequestMessageType.REGISTER_DEVICE, request);
+        } else if (request.hasEventNotificationRequest()
+                && this.mockResponses.containsKey(DeviceRequestMessageType.RECEIVE_EVENT_NOTIFICATIONS)) {
+            response = this.processRequest(DeviceRequestMessageType.RECEIVE_EVENT_NOTIFICATIONS, request);
+        } else if (request.hasSetDeviceVerificationKeyRequest()
+                && this.mockResponses.containsKey(DeviceRequestMessageType.UPDATE_KEY)) {
+            response = this.processRequest(DeviceRequestMessageType.UPDATE_KEY, request);
         }
         // TODO: Implement further requests.
         else {
@@ -402,18 +411,18 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
 
         // Write log entry for response
         LOGGER.debug("Responding: " + response);
-        
+
         return response;
     }
-    
+
     private Oslp.Message processRequest(final DeviceRequestMessageType type, final Oslp.Message request) {
-    	Oslp.Message response = null;
-    	
-    	this.receivedRequests.put(type, request);
-    	response = this.mockResponses.get(type);
-    	this.mockResponses.remove(type);
-    	
-    	return response;
+        Oslp.Message response = null;
+
+        this.receivedRequests.put(type, request);
+        response = this.mockResponses.get(type);
+        this.mockResponses.remove(type);
+
+        return response;
     }
 
     private int doGetNextSequence() {

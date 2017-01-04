@@ -69,6 +69,7 @@ public class DlmsDeviceSteps {
             final SmartMeter smartMeter = new SmartMeterBuilder().withSettings(inputSettings)
                     .setProtocolInfo(this.getProtocolInfo(inputSettings)).build();
             device = this.smartMeterRepository.save(smartMeter);
+
         } else {
             device = new DeviceBuilder().withSettings(inputSettings)
                     .setProtocolInfo(this.getProtocolInfo(inputSettings)).build();

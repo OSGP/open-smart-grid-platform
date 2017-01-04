@@ -30,12 +30,11 @@ import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.SetLi
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.SetLightResponse;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.AsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.OsgpResultType;
-import com.alliander.osgp.platform.cucumber.config.CorePersistenceConfig;
+import com.alliander.osgp.platform.cucumber.config.CoreDeviceConfiguration;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.cucumber.steps.ws.GenericResponseSteps;
-import com.alliander.osgp.platform.cucumber.support.ws.WebServiceSecurityException;
 import com.alliander.osgp.platform.cucumber.support.ws.publiclighting.PublicLightingAdHocManagementClient;
 
 import cucumber.api.java.en.Then;
@@ -47,7 +46,7 @@ import cucumber.api.java.en.When;
 public class SetLightSteps {
 
 	@Autowired
-	private CorePersistenceConfig configuration;
+	private CoreDeviceConfiguration configuration;
 
 	@Autowired
 	private PublicLightingAdHocManagementClient client;
@@ -87,7 +86,7 @@ public class SetLightSteps {
 	@When("^receiving a set light request with \"([^\"]*)\" valid lightvalues and \"([^\"]*)\" invalid lightvalues$")
 	public void receivingAsetLightRequestWithValidLightValuesAndInvalidLightValues(final Integer nofValidLightValues,
 			final Integer nofInvalidLightValues, final Map<String, String> requestParameters)
-			throws WebServiceSecurityException {
+			throws Throwable {
 		SetLightRequest request = new SetLightRequest();
 		request.setDeviceIdentification(
 				getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
@@ -117,7 +116,7 @@ public class SetLightSteps {
 
 	@When("^receiving a set light request with \"([^\"]*)\" light values$")
 	public void givenReceivingASetLightRequestWithLightValues(final Integer nofLightValues,
-			final Map<String, String> requestParameters) throws WebServiceSecurityException {
+			final Map<String, String> requestParameters) throws Throwable {
 		SetLightRequest request = new SetLightRequest();
 		request.setDeviceIdentification(
 				getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
@@ -166,7 +165,7 @@ public class SetLightSteps {
 
 	@Then("^the set light response contains soap fault$")
 	public void thenTheSetLightResponseContainsSoapFault(final Map<String, String> expectedResult) {
-		GenericResponseSteps.VerifySoapFault(expectedResult);
+		GenericResponseSteps.verifySoapFault(expectedResult);
 	}
 
 	@Then("^the platform buffers a set light response message for device \"([^\"]*)\"$")
@@ -181,11 +180,12 @@ public class SetLightSteps {
 		boolean success = false;
 		int count = 0;
 		while (!success) {
-			if (count > configuration.getDefaultTimeout()) {
+			if (count > configuration.defaultTimeout) {
 				Assert.fail("Timeout");
 			}
 
 			count++;
+            Thread.sleep(1000);
 
 			try {
 				SetLightResponse response = client.getSetLightResponse(request);

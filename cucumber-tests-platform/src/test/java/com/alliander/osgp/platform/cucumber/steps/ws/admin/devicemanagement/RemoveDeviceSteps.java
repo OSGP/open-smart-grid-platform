@@ -1,3 +1,10 @@
+/**
+ * Copyright 2017 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.platform.cucumber.steps.ws.admin.devicemanagement;
 
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
@@ -25,13 +32,13 @@ public class RemoveDeviceSteps {
 
     /**
      * Send a remove device request to the Platform.
-     * 
+     *
      * @param requestParameters
      *            An list with request parameters for the request.
      * @throws Throwable
      */
     @When("^receiving a remove device request$")
-    public void receiving_a_remove_device_request(final Map<String, String> requestSettings) throws Throwable {
+    public void receivingARemoveDeviceRequest(final Map<String, String> requestSettings) throws Throwable {
         final RemoveDeviceRequest request = new RemoveDeviceRequest();
         request.setDeviceIdentification(
                 getString(requestSettings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
@@ -45,14 +52,13 @@ public class RemoveDeviceSteps {
 
     /**
      * The check for the response from the Platform.
-     * 
+     *
      * @param expectedResponseData
      *            The table with the expected fields in the response.
      * @throws Throwable
      */
-    @Then("^the remove device response is successfull$")
-    public void the_remove_device_response_is_successfull() throws Throwable {
+    @Then("^the remove device response is successful$")
+    public void theRemoveDeviceResponseIsSuccessful() throws Throwable {
         Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof RemoveDeviceResponse);
     }
-
 }

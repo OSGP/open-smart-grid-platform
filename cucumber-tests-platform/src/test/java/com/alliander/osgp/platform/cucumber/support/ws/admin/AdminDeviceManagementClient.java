@@ -7,22 +7,35 @@
  */
 package com.alliander.osgp.platform.cucumber.support.ws.admin;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ActivateDeviceRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ActivateDeviceResponse;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ActivateOrganisationRequest;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ActivateOrganisationResponse;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ChangeOrganisationRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ChangeOrganisationResponse;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.CreateOrganisationRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.CreateOrganisationResponse;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.DeactivateDeviceRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.DeactivateDeviceResponse;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.FindDevicesWhichHaveNoOwnerRequest;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.FindDevicesWhichHaveNoOwnerResponse;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.RemoveDeviceRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.RemoveDeviceResponse;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.RemoveOrganisationRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.RemoveOrganisationResponse;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.RevokeKeyRequest;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.RevokeKeyResponse;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.SetOwnerRequest;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.SetOwnerResponse;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.UpdateKeyRequest;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.UpdateKeyResponse;
 import com.alliander.osgp.platform.cucumber.support.ws.BaseClient;
 import com.alliander.osgp.platform.cucumber.support.ws.WebServiceSecurityException;
 import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
@@ -32,34 +45,79 @@ public class AdminDeviceManagementClient extends BaseClient {
 
     @Autowired
     private WebServiceTemplateFactory adminDeviceManagementWstf;
-    
-    public ActivateDeviceResponse activateDevice(final ActivateDeviceRequest request) throws WebServiceSecurityException {
-    	final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
+
+    public ActivateDeviceResponse activateDevice(final ActivateDeviceRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
         return (ActivateDeviceResponse) wst.marshalSendAndReceive(request);
     }
 
-    public DeactivateDeviceResponse deactivateDevice(final DeactivateDeviceRequest request) throws WebServiceSecurityException {
-    	final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
+    public DeactivateDeviceResponse deactivateDevice(final DeactivateDeviceRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
         return (DeactivateDeviceResponse) wst.marshalSendAndReceive(request);
     }
 
-    public CreateOrganisationResponse createOrganization(final CreateOrganisationRequest request) throws WebServiceSecurityException  {
-    	final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
+    public CreateOrganisationResponse createOrganization(final CreateOrganisationRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
         return (CreateOrganisationResponse) wst.marshalSendAndReceive(request);
     }
 
-    public ChangeOrganisationResponse changeOrganization(final ChangeOrganisationRequest request) throws WebServiceSecurityException {
-    	final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
+    public ChangeOrganisationResponse changeOrganization(final ChangeOrganisationRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
         return (ChangeOrganisationResponse) wst.marshalSendAndReceive(request);
     }
 
-    public RemoveDeviceResponse removeDevice(final RemoveDeviceRequest request) throws WebServiceSecurityException {
-    	final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
+    public RemoveDeviceResponse removeDevice(final RemoveDeviceRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
         return (RemoveDeviceResponse) wst.marshalSendAndReceive(request);
     }
 
-    public RemoveOrganisationResponse removeOrganization(final RemoveOrganisationRequest request) throws WebServiceSecurityException {
-    	final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
+    public RemoveOrganisationResponse removeOrganization(final RemoveOrganisationRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
         return (RemoveOrganisationResponse) wst.marshalSendAndReceive(request);
+    }
+
+    public ActivateOrganisationResponse activateOrganization(ActivateOrganisationRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
+        return (ActivateOrganisationResponse) wst.marshalSendAndReceive(request);
+    }
+
+    public RevokeKeyResponse getRevokeKeyResponse(final RevokeKeyRequest request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
+        return (RevokeKeyResponse) wst.marshalSendAndReceive(request);
+    }
+
+    public SetOwnerResponse setOwner(final SetOwnerRequest request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
+        return (SetOwnerResponse) wst.marshalSendAndReceive(request);
+    }
+
+    public UpdateKeyResponse getUpdateKeyResponse(final UpdateKeyRequest request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
+        return (UpdateKeyResponse) wst.marshalSendAndReceive(request);
+    }
+
+    public FindDevicesWhichHaveNoOwnerResponse findDevicesWithoutOwner(final FindDevicesWhichHaveNoOwnerRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+
+        final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
+        return (FindDevicesWhichHaveNoOwnerResponse) wst.marshalSendAndReceive(request);
     }
 }

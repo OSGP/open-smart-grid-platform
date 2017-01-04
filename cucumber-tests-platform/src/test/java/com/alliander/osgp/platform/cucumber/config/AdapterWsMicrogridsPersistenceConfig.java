@@ -21,7 +21,7 @@ import com.alliander.osgp.adapter.ws.microgrids.domain.repositories.RtuResponseD
 
 @EnableJpaRepositories(entityManagerFactoryRef = "entityMgrFactWsMicrogrids", transactionManagerRef = "txMgrWsMicrogrids", basePackageClasses = {
         RtuResponseDataRepository.class })
-public class AdapterWsMicrogridsPersistenceConfig extends ApplicationConfiguration {
+public class AdapterWsMicrogridsPersistenceConfig extends ApplicationPersistenceConfiguration {
 
     public AdapterWsMicrogridsPersistenceConfig() {
     }
