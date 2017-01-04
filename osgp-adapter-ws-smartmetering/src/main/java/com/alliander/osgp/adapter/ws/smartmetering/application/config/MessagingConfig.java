@@ -9,7 +9,6 @@ package com.alliander.osgp.adapter.ws.smartmetering.application.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
@@ -21,9 +20,8 @@ import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringReques
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringResponseMessageListener;
 import com.alliander.osgp.shared.application.config.AbstractMessagingConfig;
 
-@ComponentScan(basePackages = { "com.alliander.osgp.shared.application.config" })
 @Configuration
-@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-smartmetering.properties"),
+@PropertySources({ @PropertySource(value = "classpath:osgp-adapter-ws-smartmetering.properties"),
     @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
     @PropertySource(value = "file:${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true), })
 public class MessagingConfig extends AbstractMessagingConfig {
