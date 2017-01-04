@@ -47,9 +47,23 @@ public abstract class LogicalDevice {
         this.serverModel = serverModel;
     }
 
-    public abstract List<BasicDataAttribute> getValues(Date timestamp);
+    public abstract List<BasicDataAttribute> getAttributesAndSetValues(Date timestamp);
 
-    public abstract BasicDataAttribute getValue(String node, String value);
+    public abstract BasicDataAttribute getAttributeAndSetValue(String node, String value);
+
+    protected abstract Fc getFunctionalConstraint(String node);
+
+    public BasicDataAttribute getBasicDataAttribute(final String node) {
+        final Fc fc = this.getFunctionalConstraint(node);
+        if (fc == null) {
+            throw this.illegalNodeException(node);
+        }
+        return this.getBasicDataAttribute(node, fc);
+    }
+
+    protected BasicDataAttribute getBasicDataAttribute(final String node, final Fc fc) {
+        return (BasicDataAttribute) this.serverModel.findModelNode(this.createNodeName(node), fc);
+    }
 
     public String getPhysicalDeviceName() {
         return this.physicalDeviceName;

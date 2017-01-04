@@ -24,7 +24,7 @@ public class Engine extends LogicalDevice {
     }
 
     @Override
-    public List<BasicDataAttribute> getValues(final Date timestamp) {
+    public List<BasicDataAttribute> getAttributesAndSetValues(final Date timestamp) {
         final List<BasicDataAttribute> values = new ArrayList<>();
 
         values.add(this.setRandomByte("LLN0.Health.stVal", Fc.ST, 1, 2));
@@ -110,7 +110,12 @@ public class Engine extends LogicalDevice {
     }
 
     @Override
-    public BasicDataAttribute getValue(final String node, final String value) {
+    public BasicDataAttribute getAttributeAndSetValue(final String node, final String value) {
         throw this.nodeTypeNotConfiguredException(node);
+    }
+
+    @Override
+    public Fc getFunctionalConstraint(final String node) {
+        return null;
     }
 }
