@@ -69,17 +69,6 @@ Feature: Adhoc Management
     Then the get status response contains soap fault
       | Message | UNKNOWN_DEVICE |
 
-  Scenario: Get status for an unregistered device
-    Given an oslp device
-      | DeviceIdentification      | TEST1024000000001 |
-      | IsActivated               | false             |
-      | IsActive                  | false             |
-      | TechnicalInstallationDate |                   |
-    When receiving a get status request
-      | DeviceIdentification | TEST1024000000001 |
-    Then the get status response contains soap fault
-      | Message | UNREGISTERED_DEVICE |
-
   Scenario Outline: Get status for an inactive device
     Given an oslp device
       | DeviceIdentification | TEST1024000000001 |

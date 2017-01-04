@@ -37,7 +37,6 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.oslp.Oslp;
-import com.alliander.osgp.oslp.Oslp.EventNotificationResponse;
 import com.alliander.osgp.oslp.Oslp.GetFirmwareVersionResponse;
 import com.alliander.osgp.oslp.Oslp.GetStatusResponse;
 import com.alliander.osgp.oslp.Oslp.GetStatusResponse.Builder;
@@ -45,7 +44,6 @@ import com.alliander.osgp.oslp.Oslp.LightType;
 import com.alliander.osgp.oslp.Oslp.LightValue;
 import com.alliander.osgp.oslp.Oslp.LinkType;
 import com.alliander.osgp.oslp.Oslp.Message;
-import com.alliander.osgp.oslp.Oslp.RegisterDeviceResponse;
 import com.alliander.osgp.oslp.Oslp.ResumeScheduleResponse;
 import com.alliander.osgp.oslp.Oslp.SetDeviceVerificationKeyResponse;
 import com.alliander.osgp.oslp.Oslp.SetEventNotificationsResponse;
@@ -285,16 +283,6 @@ public class MockOslpServer {
     public void mockSetTransitionResponse(final Oslp.Status status) {
         this.mockResponses.put(DeviceRequestMessageType.SET_TRANSITION, Oslp.Message.newBuilder()
                 .setSetTransitionResponse(SetTransitionResponse.newBuilder().setStatus(status)).build());
-    }
-
-    public void mockRegisterDeviceResponse(final Oslp.Status status) {
-        this.mockResponses.put(DeviceRequestMessageType.REGISTER_DEVICE, Oslp.Message.newBuilder()
-                .setRegisterDeviceResponse(RegisterDeviceResponse.newBuilder().setStatus(status)).build());
-    }
-
-    public void mockReceiveEventNotificationResponse(final Oslp.Status status) {
-        this.mockResponses.put(DeviceRequestMessageType.RECEIVE_EVENT_NOTIFICATIONS, Oslp.Message.newBuilder()
-                .setEventNotificationResponse(EventNotificationResponse.newBuilder().setStatus(status)).build());
     }
 
     public void mockUpdateKeyResponse(final Oslp.Status status) {
