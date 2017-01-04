@@ -103,10 +103,10 @@ public class DeviceSteps {
 
         if (settings.containsKey(Keys.KEY_INTERNALID) || settings.containsKey(Keys.KEY_EXTERNALID)
                 || settings.containsKey(Keys.KEY_RELAY_TYPE)) {
-            List<DeviceOutputSetting> dosList = new ArrayList<>();
-            int internalId = getInteger(settings, Keys.KEY_INTERNALID, Defaults.DEFAULT_INTERNALID),
+            final List<DeviceOutputSetting> dosList = new ArrayList<>();
+            final int internalId = getInteger(settings, Keys.KEY_INTERNALID, Defaults.DEFAULT_INTERNALID),
                     externalId = getInteger(settings, Keys.KEY_EXTERNALID, Defaults.DEFAULT_EXTERNALID);
-            RelayType relayType = getEnum(settings, Keys.KEY_RELAY_TYPE, RelayType.class, RelayType.LIGHT);
+            final RelayType relayType = getEnum(settings, Keys.KEY_RELAY_TYPE, RelayType.class, RelayType.LIGHT);
 
             if (relayType != null) {
                 dosList.add(new DeviceOutputSetting(internalId, externalId, relayType));
@@ -201,7 +201,7 @@ public class DeviceSteps {
         int count = 0;
         while (!success) {
             try {
-                if (count > configuration.defaultTimeout) {
+                if (count > this.configuration.defaultTimeout) {
                     Assert.fail("Failed");
                 }
 
@@ -231,7 +231,7 @@ public class DeviceSteps {
         int count = 0;
         while (!success) {
             try {
-                if (count > configuration.defaultTimeout) {
+                if (count > this.configuration.defaultTimeout) {
                     Assert.fail("Failed");
                 }
 
@@ -261,12 +261,13 @@ public class DeviceSteps {
         boolean success = false;
         int count = 0;
         while (!success) {
-            if (count > configuration.defaultTimeout) {
+            if (count > this.configuration.defaultTimeout) {
                 Assert.fail("Failed");
             }
 
             count++;
             Thread.sleep(1000);
+            LoggerFactory.getLogger(DeviceSteps.class).info("Sleeping ls " + count);
 
             try {
                 // Wait for next try to retrieve a response
@@ -275,10 +276,11 @@ public class DeviceSteps {
                 if (device == null) {
                     continue;
                 }
+                ;
 
                 success = true;
             } catch (final Exception e) {
-                LOGGER.info("Waiting for device entity. [{}]", e.getMessage());
+                LOGGER.info(e.getMessage());
             }
         }
 
@@ -337,9 +339,9 @@ public class DeviceSteps {
     @Then("^the device with id \"([^\"]*)\" exists$")
     public void theDeviceWithIdExists(final String deviceIdentification) throws Throwable {
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-        Assert.assertNotNull(device);
-
         final List<DeviceAuthorization> devAuths = this.deviceAuthorizationRepository.findByDevice(device);
+
+        Assert.assertNotNull(device);
         Assert.assertTrue(devAuths.size() > 0);
     }
 
@@ -352,9 +354,9 @@ public class DeviceSteps {
     @Then("^the device with id \"([^\"]*)\" does not exists$")
     public void theDeviceShouldBeRemoved(final String deviceIdentification) throws Throwable {
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-        Assert.assertNotNull(device);
-
         final List<DeviceAuthorization> devAuths = this.deviceAuthorizationRepository.findByDevice(device);
+
+        Assert.assertNotNull(device);
         Assert.assertTrue(devAuths.size() == 0);
     }
 }

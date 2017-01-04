@@ -50,12 +50,6 @@ public class DatabaseSteps {
     private DeviceRepository deviceRepository;
 
     @Autowired
-    private RtuDeviceRepository rtuDeviceRepository;
-    
-    @Autowired
-    private RtuResponseDataRepository rtuResponseDataRepository;
-
-    @Autowired
     private SmartMeterRepository smartMeterRepository;
 
     @Autowired
@@ -68,7 +62,13 @@ public class DatabaseSteps {
     private OslpDeviceRepository oslpDeviceRepository;
 
     @Autowired
-    private SsldRepository ssldRepository;
+    private DeviceLogItemRepository deviceLogItemRepository;
+
+    @Autowired
+    private ScheduledTaskRepository scheduledTaskRepository;
+
+    @Autowired
+    private FirmwareRepository firmwareRepository;
 
     @Autowired
     private DeviceFirmwareRepository deviceFirmwareRepository;
@@ -77,13 +77,13 @@ public class DatabaseSteps {
     private EventRepository eventRepository;
 
     @Autowired
-    private DeviceLogItemRepository deviceLogItemRepository;
+    private SsldRepository ssldRepository;
 
     @Autowired
-    private ScheduledTaskRepository scheduledTaskRepository;
+    private RtuDeviceRepository rtuDeviceRepository;
 
     @Autowired
-    private FirmwareRepository firmwareRepository;
+    private RtuResponseDataRepository rtuResponseDataRepository;
 
     /**
      * This method is used to create default data not directly related to the
@@ -118,13 +118,12 @@ public class DatabaseSteps {
 
     @Transactional("txMgrCore")
     public void prepareDatabaseForScenario() {
-
         // First remove stuff from osgp_adapter_protocol_oslp
         this.oslpDeviceRepository.deleteAllInBatch();
 
         // Then remove stuff from osgp_adapter_protocol_iec61850
         this.iec61850DeviceRepository.deleteAllInBatch();
-        
+
         // Then remove stuf from the osgp_adapter_ws_microgrids
         this.rtuResponseDataRepository.deleteAllInBatch();
 

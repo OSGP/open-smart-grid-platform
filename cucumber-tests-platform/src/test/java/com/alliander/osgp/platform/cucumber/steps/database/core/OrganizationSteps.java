@@ -22,6 +22,7 @@ import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.valueobjects.PlatformDomain;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
+import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
 
 import cucumber.api.java.en.Given;
@@ -54,8 +55,12 @@ public class OrganizationSteps {
      */
     @Given("^an organization$")
     public void anOrganization(final Map<String, String> settings) throws Throwable {
+
+        final String organizationIdentification = getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
+                this.DEFAULT_ORGANIZATION);
         final Organisation entity = new Organisation(
-                getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION, this.DEFAULT_ORGANIZATION),
+                (organizationIdentification.isEmpty()) ? Defaults.DEFAULT_NEW_ORGANIZATION_IDENTIFICATION
+                        : organizationIdentification,
                 getString(settings, "Name", this.DEFAULT_NAME), getString(settings, "Prefix", this.DEFAULT_PREFIX),
                 getEnum(settings, "PlatformFunctionGroup", PlatformFunctionGroup.class,
                         this.DEFAULT_PLATFORM_FUNCTION_GROUP));
@@ -63,7 +68,7 @@ public class OrganizationSteps {
         // Add all the mandatory stuff.
         entity.addDomain(getEnum(settings, "PlatformDomain", PlatformDomain.class, this.DEFAULT_PLATFORM_DOMAIN));
 
-        entity.setIsEnabled(getBoolean(settings, "Enabled", this.DEFAULT_ENABLED));
+        entity.setIsEnabled(getBoolean(settings, Keys.KEY_ENABLED, this.DEFAULT_ENABLED));
 
         // TODO: Add all the optional stuff
         this.repo.save(entity);
@@ -71,7 +76,7 @@ public class OrganizationSteps {
 
     /**
      * Generic method to check if the organization exists in the database.
-     * 
+     *
      * @param expectedOrganization
      *            An organization which has to exist in the database
      * @throws Throwable
@@ -91,6 +96,13 @@ public class OrganizationSteps {
                     getEnum(expectedOrganization, Keys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class),
                     entity.getFunctionGroup());
         }
+
+        if (expectedOrganization.containsKey(Keys.KEY_DOMAINS) && !expectedOrganization.get(Keys.KEY_DOMAINS).isEmpty()) {
+            for (String domain : expectedOrganization.get(Keys.KEY_DOMAINS).split(Keys.SEPARATOR_SEMICOLON))
+            {
+                Assert.assertTrue(entity.getDomains().contains(PlatformDomain.valueOf(domain)));
+            }
+        }
     }
 
     /**
@@ -107,12 +119,22 @@ public class OrganizationSteps {
         final Organisation entity = this.repo
                 .findByOrganisationIdentification(expectedEntity.get(Keys.KEY_ORGANIZATION_IDENTIFICATION));
 
-        Assert.assertEquals(expectedEntity.get("Name"), entity.getName());
-        Assert.assertEquals(expectedEntity.get("Prefix"), entity.getPrefix());
-        Assert.assertTrue(
-                expectedEntity.get("FunctionGroup").toUpperCase().equals(entity.getFunctionGroup().toString()));
-        Assert.assertTrue(expectedEntity.get("Enabled").toLowerCase().equals("true") == entity.isEnabled());
-        final List<String> expectedDomains = Arrays.asList(expectedEntity.get("Domains").split(Keys.SEPARATOR_SEMICOLON));
+        Assert.assertEquals(getString(expectedEntity, Keys.KEY_NAME, Defaults.DEFAULT_NEW_ORGANIZATION_NAME),
+                entity.getName());
+        final String prefix = getString(expectedEntity, Keys.KEY_PREFIX, Defaults.DEFAULT_ORGANIZATION_PREFIX);
+        Assert.assertEquals((prefix.isEmpty()) ? Defaults.DEFAULT_ORGANIZATION_PREFIX : prefix, entity.getPrefix());
+
+        Assert.assertEquals(getEnum(expectedEntity, Keys.KEY_PLATFORM_FUNCTION_GROUP,
+                com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup.class,
+                Defaults.DEFAULT_PLATFORM_FUNCTION_GROUP), entity.getFunctionGroup());
+        Assert.assertEquals(getBoolean(expectedEntity, Keys.KEY_ENABLED, Defaults.DEFAULT_ORGANIZATION_ENABLED),
+                entity.isEnabled());
+
+        String domains = getString(expectedEntity, Keys.KEY_DOMAINS, Defaults.DEFAULT_DOMAINS);
+        if (domains.isEmpty()) {
+            domains = Defaults.DEFAULT_DOMAINS;
+        }
+        final List<String> expectedDomains = Arrays.asList(domains.split(";"));
         Assert.assertEquals(expectedDomains.size(), entity.getDomains().size());
         for (final PlatformDomain domain : entity.getDomains()) {
             Assert.assertTrue(expectedDomains.contains(domain.toString()));
@@ -126,11 +148,25 @@ public class OrganizationSteps {
      * @throws Throwable
      */
     @Then("^the organization with organization identification \"([^\"]*)\" should be disabled$")
-    public void the_organization_with_organization_identification_should_be_disabled(
+    public void theOrganizationWithOrganizationIdentificationShouldBeDisabled(
             final String organizationIdentification) throws Throwable {
         final Organisation entity = this.repo.findByOrganisationIdentification(organizationIdentification);
 
         Assert.assertTrue(entity.isEnabled() == false);
+    }
+
+    /**
+     * Ensure that the organization is enabled.
+     *
+     * @param organizationIdentification
+     * @throws Throwable
+     */
+    @Then("^the organization with organization identification \"([^\"]*)\" should be enabled")
+    public void theOrganizationWithOrganizationIdentificationShouldBeEnabled(
+            final String organizationIdentification) throws Throwable {
+        final Organisation entity = this.repo.findByOrganisationIdentification(organizationIdentification);
+
+        Assert.assertTrue(entity.isEnabled() == true);
     }
 
     /**
@@ -140,7 +176,7 @@ public class OrganizationSteps {
      * @throws Throwable
      */
     @Then("^the organization with name \"([^\"]*)\" should not be created$")
-    public void the_organization_with_name_should_not_be_created(final String name) throws Throwable {
+    public void theOrganizationWithNameShouldNotBeCreated(final String name) throws Throwable {
         Assert.assertNull(this.repo.findByName(name));
     }
 }

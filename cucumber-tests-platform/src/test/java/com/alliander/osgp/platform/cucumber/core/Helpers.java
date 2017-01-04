@@ -159,7 +159,6 @@ public class Helpers {
     }
 
     /**
-     * 
      * @param settings
      * @param key
      * @return

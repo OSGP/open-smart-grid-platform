@@ -66,7 +66,7 @@ public class RtuDeviceSteps {
         final Map<String, String> rtuSettings = SettingsHelper.addAsDefaults(settings, RTU_DEFAULT_SETTINGS);
         final String deviceIdentification = rtuSettings.get(Keys.KEY_DEVICE_IDENTIFICATION);
 
-        RtuDevice rtuDevice = new RtuDevice(deviceIdentification);      
+        RtuDevice rtuDevice = new RtuDevice(deviceIdentification);
         rtuDevice = this.rtuDeviceRespository.save(rtuDevice);
 
         this.deviceSteps.updateDevice(deviceIdentification, rtuSettings);
@@ -82,9 +82,8 @@ public class RtuDeviceSteps {
             rtuDevice.updateRegistrationData(inetAddress, rtuSettings.get(Keys.KEY_DEVICE_TYPE));
             rtuDevice = this.rtuDeviceRespository.save(rtuDevice);
         } catch (final UnknownHostException e) {
-            throw new AssertionError(
-                    "Unable to determine IP address for mock server: "
-                            + this.iec61850MockServerConfig.iec61850MockNetworkAddress());
+            throw new AssertionError("Unable to determine IP address for mock server: "
+                    + this.iec61850MockServerConfig.iec61850MockNetworkAddress());
         }
 
         /*

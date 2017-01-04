@@ -13,8 +13,6 @@ import static com.alliander.osgp.platform.cucumber.core.Helpers.saveCorrelationU
 import java.util.Map;
 
 import org.junit.Assert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
@@ -35,8 +33,6 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 public class StartDeviceSteps {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(StartDeviceSteps.class);
 
     @Autowired
     private CoreDeviceConfiguration configuration;
@@ -81,8 +77,6 @@ public class StartDeviceSteps {
         saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
                 getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
                         Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
-
-        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
     }
 
     @Then("^the start device response contains soap fault$")

@@ -40,40 +40,44 @@ public class CreateOrganizationSteps {
     private AdminDeviceManagementClient client;
 
     /**
-     * 
+     *
      * @throws Throwable
      */
     @When("^receiving a create organization request$")
     public void receivingACreateOrganizationRequest(final Map<String, String> requestSettings) throws Throwable {
 
-        CreateOrganisationRequest request = new CreateOrganisationRequest();
-        Organisation organization = new Organisation();
-        organization.setEnabled(getBoolean(requestSettings, Keys.KEY_ENABLED, Defaults.DEFAULT_ORGANIZATION_ENABLED));
+    	CreateOrganisationRequest request = new CreateOrganisationRequest();
+    	Organisation organization = new Organisation();
+    	
+    	// Required fields
         organization.setName(getString(requestSettings, Keys.KEY_NAME, Defaults.DEFAULT_ORGANIZATION_NAME));
-        organization.setOrganisationIdentification(getString(requestSettings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
-        organization.setPrefix(getString(requestSettings, Keys.KEY_PREFIX, Defaults.DEFAULT_ORGANIZATION_PREFIX));
+    	organization.setOrganisationIdentification(getString(requestSettings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+    	organization.setPrefix(getString(requestSettings, Keys.KEY_PREFIX, Defaults.DEFAULT_ORGANIZATION_PREFIX));
+    	
+    	PlatformFunctionGroup platformFunctionGroup = getEnum(requestSettings, 
+    	        Keys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class, Defaults.DEFAULT_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP);
+    	organization.setFunctionGroup(platformFunctionGroup);
 
-        PlatformFunctionGroup platformFunctionGroup = getEnum(requestSettings, Keys.KEY_PLATFORM_FUNCTION_GROUP,
-                PlatformFunctionGroup.class, Defaults.DEFAULT_PLATFORM_FUNCTION_GROUP);
-        organization.setFunctionGroup(platformFunctionGroup);
-
-        for (String domain : getString(requestSettings, Keys.KEY_DOMAINS, Defaults.DEFAULT_DOMAINS)
-                .split(";")) {
+	    for (String domain : getString(requestSettings, Keys.KEY_DOMAINS, Defaults.DEFAULT_DOMAINS).split(";")) {
             organization.getDomains().add(Enum.valueOf(PlatformDomain.class, domain));
         }
-
-        request.setOrganisation(organization);
-
-        try {
-            ScenarioContext.Current().put(Keys.RESPONSE, client.createOrganization(request));
-        } catch (SoapFaultClientException e) {
-            ScenarioContext.Current().put(Keys.RESPONSE, e);
-        }
+    	
+	    // Optional fields
+	    if (requestSettings.containsKey(Keys.KEY_ENABLED) && !requestSettings.get(Keys.KEY_ENABLED).isEmpty()) {
+	        organization.setEnabled(getBoolean(requestSettings, Keys.KEY_ENABLED));
+	    }
+	    
+	    request.setOrganisation(organization);
+        
+    	try {
+    		ScenarioContext.Current().put(Keys.RESPONSE, client.createOrganization(request));
+    	} catch (SoapFaultClientException e) {
+    		ScenarioContext.Current().put(Keys.RESPONSE, e);
+    	}
     }
 
     /**
-     * 
+     *
      * @throws Throwable
      */
     @When("^receiving a create organization request as an unauthorized organization$")
@@ -89,7 +93,6 @@ public class CreateOrganizationSteps {
 
     /**
      * Verify that the create organization response is successful.
-     * 
      * @throws Throwable
      */
     @Then("^the create organization response is successful$")
@@ -100,7 +103,6 @@ public class CreateOrganizationSteps {
     /**
      * Verify that the create organization response contains the fault with the
      * given expectedResult parameters.
-     * 
      * @param expectedResult
      * @throws Throwable
      */

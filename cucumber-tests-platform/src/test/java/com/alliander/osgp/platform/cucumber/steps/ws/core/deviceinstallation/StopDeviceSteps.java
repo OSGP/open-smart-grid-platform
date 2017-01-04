@@ -49,7 +49,7 @@ public class StopDeviceSteps {
      * @param requestParameters
      * @throws Throwable
      */
-    @When("^receiving a stop device request$")
+    @When("receiving a stop device test request")
     public void receivingAStopDeviceRequest(final Map<String, String> requestParameters) throws Throwable {
         final StopDeviceTestRequest request = new StopDeviceTestRequest();
         request.setDeviceIdentification(

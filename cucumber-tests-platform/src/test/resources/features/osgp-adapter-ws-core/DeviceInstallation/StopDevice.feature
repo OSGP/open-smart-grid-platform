@@ -35,3 +35,4 @@ Feature: Stop Device
       | ORGANIZATION_ID_EMPTY      | UNAUTHORIZED |
       | ORGANIZATION_ID_SPACES     | UNAUTHORIZED |
       
+      

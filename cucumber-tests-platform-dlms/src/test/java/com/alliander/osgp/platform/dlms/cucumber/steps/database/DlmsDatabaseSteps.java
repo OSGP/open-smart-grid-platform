@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 
-
 /**
  * DLMS related database steps.
  */
@@ -37,6 +36,7 @@ public class DlmsDatabaseSteps {
      */
     @Transactional(transactionManager = "txMgrCore")
     public void prepareDatabaseForScenario() {
+
         this.dlmsDSecurityKeyRepo.deleteAllInBatch();
         this.dlmsDeviceRepo.deleteAllInBatch();
         this.meterResponseDataRepo.deleteAllInBatch();

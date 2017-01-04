@@ -72,6 +72,12 @@ public class DeviceModelSteps {
                 entity.isMetered());
     }
 
+    /**
+     * This inserts a default DeviceModel
+     *
+     * @param settings
+     * @return
+     */
     public DeviceModel insertDeviceModel(Map<String, String> settings) {
         // Get the given manufacturer (or the default).
         final Manufacturer manufacturer = this.manufacturerRepo

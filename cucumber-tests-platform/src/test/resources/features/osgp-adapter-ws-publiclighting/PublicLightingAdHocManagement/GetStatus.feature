@@ -68,3 +68,9 @@ Feature: Adhoc Management
     Then the get status response contains soap fault
       | Message | UNKNOWN_DEVICE |
       
+  Scenario: Get status for an unregistered device
+
+  Scenario: Get status of a device with multiple lights
+
+  Scenario: Get status for an unregistered device
+      
