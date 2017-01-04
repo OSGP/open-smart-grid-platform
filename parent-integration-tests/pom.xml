@@ -723,14 +723,11 @@
         <artifactId>forms</artifactId>
         <version>${jgoodies.version}</version>
       </dependency>
-      
-    <dependency>
+      <dependency>
         <groupId>com.sun.net.httpserver</groupId>
         <artifactId>http</artifactId>
         <version>${sun.httpserver.version}</version>
-    </dependency>
-      
-      
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
