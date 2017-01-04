@@ -24,7 +24,7 @@ Feature: Organization management
       | OrganizationIdentification | Name                | Prefix | FunctionGroup | Enabled | Domains                                 |
       | ATestOrganization          | A Test Organization | MAA    | ADMIN         | true    | COMMON                                  |
       | ATestOrganization          | A Test Organization | MAA    | ADMIN         | true    | COMMON;PUBLIC_LIGHTING;TARIFF_SWITCHING |
-      | Heerlen                    | Gemeente Heerlen    |        | USER          |         |                                         |
+      | Heerlen                    | Gemeente Heerlen    | MAA    | USER          |         | COMMON                                  |
 
   Scenario Outline: Create An Already Existing Organization
     Given an organization

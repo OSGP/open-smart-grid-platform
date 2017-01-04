@@ -48,8 +48,9 @@ public class CreateOrganizationSteps {
 
     	CreateOrganisationRequest request = new CreateOrganisationRequest();
     	Organisation organization = new Organisation();
-    	organization.setEnabled(getBoolean(requestSettings, Keys.KEY_ENABLED, Defaults.DEFAULT_ORGANIZATION_ENABLED));
-    	organization.setName(getString(requestSettings, Keys.KEY_NAME, Defaults.DEFAULT_ORGANIZATION_NAME));
+    	
+    	// Required fields
+        organization.setName(getString(requestSettings, Keys.KEY_NAME, Defaults.DEFAULT_ORGANIZATION_NAME));
     	organization.setOrganisationIdentification(getString(requestSettings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
     	organization.setPrefix(getString(requestSettings, Keys.KEY_PREFIX, Defaults.DEFAULT_ORGANIZATION_PREFIX));
     	
@@ -57,14 +58,16 @@ public class CreateOrganizationSteps {
     	        Keys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class, Defaults.DEFAULT_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP);
     	organization.setFunctionGroup(platformFunctionGroup);
 
-    	String domains = getString(requestSettings, Keys.KEY_DOMAINS, Defaults.DEFAULT_DOMAINS);
-    	if (!domains.isEmpty()) {
-            for (String domain : domains.split(";")) {
-                organization.getDomains().add(Enum.valueOf(PlatformDomain.class, domain));
-            }
-    	}
-
-    	request.setOrganisation(organization);
+	    for (String domain : getString(requestSettings, Keys.KEY_DOMAINS, Defaults.DEFAULT_DOMAINS).split(";")) {
+            organization.getDomains().add(Enum.valueOf(PlatformDomain.class, domain));
+        }
+    	
+	    // Optional fields
+	    if (requestSettings.containsKey(Keys.KEY_ENABLED) && !requestSettings.get(Keys.KEY_ENABLED).isEmpty()) {
+	        organization.setEnabled(getBoolean(requestSettings, Keys.KEY_ENABLED));
+	    }
+	    
+	    request.setOrganisation(organization);
         
     	try {
     		ScenarioContext.Current().put(Keys.RESPONSE, client.createOrganization(request));
