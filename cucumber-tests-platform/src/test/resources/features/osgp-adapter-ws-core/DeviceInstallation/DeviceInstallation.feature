@@ -10,7 +10,7 @@ Feature: Device installation
     When receiving an add device request
       | DeviceUid             | <DeviceUid>             |
       | DeviceIdentification  | <DeviceIdentification>  |
-      | alias                 | <Alias>                 |
+      | Alias                 | <Alias>                 |
       | Owner                 | <Owner>                 |
       | containerPostalCode   | <ContainerPostalCode>   |
       | containerCity         | <ContainerCity>         |
@@ -27,11 +27,11 @@ Feature: Device installation
       | Description           | <Description>           |
       | Metered               | <Metered>               |
     Then the add device response is successfull
-    # 'Activated' is altijd 'false' wanneer een nieuwe device wordt aangemaakt.
-    # Om deze stap volledig succesvol te laten verlopen moet de value van 'Activated' 'false' zijn.
+    # 'Activated' has always the value 'false' when a device is created.
+    # To execute this step successfull, 'Activated' needs to have the value 'false'.
     And the device exists
       | DeviceIdentification       | <DeviceIdentification>  |
-      | alias                      | <Alias>                 |
+      | Alias                      | <Alias>                 |
       | OrganizationIdentification | <Owner>                 |
       | containerPostalCode        | <ContainerPostalCode>   |
       | containerCity              | <ContainerCity>         |
@@ -40,15 +40,15 @@ Feature: Device installation
       | containerMunicipality      | <ContainerMunicipality> |
       | gpsLatitude                | <GpsLatitude>           |
       | gpsLongitude               | <GpsLongitude>          |
-      #| Activated                  | <Activated>             |
+      | Activated                  | <Activated>             |
       | HasSchedule                | <HasSchedule>           |
       | PublicKeyPresent           | <PublicKeyPresent>      |
       | DeviceModel                | <ModelCode>             |
 
     Examples: 
       | DeviceUid  | DeviceIdentification                     | Alias | Owner    | ContainerPostalCode | ContainerCity | ContainerStreet | ContainerNumber | ContainerMunicipality | GpsLatitude | GpsLongitude | Activated | HasSchedule | PublicKeyPresent | Manufacturer | ModelCode  | Description | Metered |
-      | 1234567890 | TEST1024000000001                        |       | test-org | 1234AA              | Maastricht    | Stationsstraat  |              12 |                       |           0 |            0 | true      | false       | false            | Test         | Test Model | Test        | true    |
-      | 3456789012 | 0123456789012345678901234567890123456789 |       | test-org | 1234AA              | Maastricht    | Stationsstraat  |              12 |                       |           0 |            0 | true      | false       | false            | Test         | Test Model | Test        | true    |
+      | 1234567890 | TEST1024000000001                        |       | test-org | 1234AA              | Maastricht    | Stationsstraat  |              12 |                       |           0 |            0 | false      | false       | false            | Test         | Test Model | Test        | true    |
+      | 3456789012 | 0123456789012345678901234567890123456789 |       | test-org | 1234AA              | Maastricht    | Stationsstraat  |              12 |                       |           0 |            0 | false      | false       | false            | Test         | Test Model | Test        | true    |
 
   Scenario Outline: Add a device with an incorrect device identification
     Given a device model
@@ -112,13 +112,14 @@ Feature: Device installation
       | Message | Validation Errors |
 
     Examples: 
-      # TODO, deviceidentification with 40 characters.
-      # Empty owner, is defaulted
-      # Unknown is also default as I am requesting with test-org in the headers.
+      # TODO: deviceidentification with 40 characters.
+      # Note: Empty owner, is defaulted
+      # Note: Unknown is also default as I am requesting with test-org in the headers.
       | DeviceUid | DeviceIdentification | Alias | Owner | ContainerPostalCode | ContainerCity | ContainerStreet | ContainerNumber | ContainerMunicipality | GpsLatitude | GpsLongitude | Activated | HasSchedule | PublicKeyPresent | Manufacturer | ModelCode | Description | Metered |
 
   #| 5678901234 | TEST1024000000001    | Test device |         | 1234AA              | Maastricht    | Stationsstraat  |              12 |                       |           0 |            0 | true      | false       | false            | Test         | Test Model | Test        | true    |
   #| 6789012345 | TEST1024000000001    | Test device | unknown | 1234AA              | Maastricht    | Stationsstraat  |              12 |                       |           0 |            0 | true      | false       | false            | Test         | Test Model | Test        | true    |
+  #
   Scenario: Adding a device which already exists
     Given a device
       | DeviceIdentification | TEST1024000000001 |
@@ -151,7 +152,7 @@ Feature: Device installation
     And the device exists
       | DeviceIdentification | TEST1024000000001 |
   		#| Alias                | AfterTest         |
-  
+  #
   Scenario: Updating a non existing device
     When receiving an update device request
       | DeviceIdentification      | TEST1024000000001       |
@@ -186,21 +187,19 @@ Feature: Device installation
   #			| TEST1024000000001    |
   #
   # Recent means today, yesterday and the day before yesterday (full days).
-  # TODO Check response corretly.
-  #	Scenario Outline: Find recent devices
-  #		Given a device
-  #| DeviceIdentification | <DeviceIdentification> |
-  #When receiving a find recent devices request
-  #	| DeviceIdentification       | <DeviceIdentification>       |
-  #	| OrganizationIdentification | <OrganizationIdentification> |
-  #Then the find recent devices response contains
-  #	| DeviceIdentification       | <DeviceIdentification>       |
-  #	| OrganizationIdentification | <OrganizationIdentification> |
-  #
-  #Examples:
-  #	| DeviceIdentification | OrganizationIdentification |
-  #	| TEST1024000000001    | test-org                   |
-  #
+  Scenario Outline: Find recent devices
+    Given a device
+      | DeviceIdentification | <DeviceIdentification> |
+    When receiving a find recent devices request
+    Then the find recent devices response contains "1" device
+    And the find recent devices response contains at index "1"
+      | DeviceIdentification       | <DeviceIdentification>       |
+      | OrganizationIdentification | <OrganizationIdentification> |
+
+    Examples: 
+      | DeviceIdentification | OrganizationIdentification |
+      | TEST1024000000001    | test-org                   |
+
   Scenario Outline: Find recent devices without owner
     When receiving a find recent devices request
       | DeviceIdentification | <DeviceIdentification> |
@@ -257,6 +256,7 @@ Feature: Device installation
   #Examples:
   #	| DeviceUid  | DeviceIdentification | DeviceType | GpsLatitude | GpsLongitude | NetworkAddress | CurrentTime | TimeZone | Result |
   #	| 1234567890 | TEST1024000000001    |            |           0 |            0 | 0.0.0.0        |             |          | OK     |
+  #
   @OslpMockServer
   Scenario: Start Device
     Given an oslp device

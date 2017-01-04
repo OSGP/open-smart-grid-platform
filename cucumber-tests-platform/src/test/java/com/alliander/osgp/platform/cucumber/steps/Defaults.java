@@ -9,7 +9,6 @@ package com.alliander.osgp.platform.cucumber.steps;
 
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.TransitionType;
-import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
 import com.alliander.osgp.oslp.Oslp.LightType;
 import com.alliander.osgp.oslp.Oslp.LinkType;
 import com.alliander.osgp.oslp.Oslp.Status;
@@ -43,6 +42,7 @@ public class Defaults {
     public static final String DEFAULT_DEVICE_TYPE = "OSLP";
     public static final String DEFAULT_PROTOCOL = "OSLP";
     public static final String DEFAULT_PROTOCOL_VERSION = "1.0";
+    public static final Long DEFAULT_PROTOCOL_INFO_ID = new java.util.Random().nextLong();
     public static final Long DEFAULT_DEVICE_ID = new java.util.Random().nextLong();
     public static final Boolean DEFAULT_IS_ACTIVATED = true;
     public static final Boolean DEFAULT_ACTIVE = true;
@@ -63,6 +63,7 @@ public class Defaults {
     public static final Boolean DEFAULT_HASSCHEDULE = false;
 
     public static final Boolean DEFAULT_PUBLICKEYPRESENT = true;
+    public static final String DEFAULT_PUBLIC_KEY = "123456abcdef";
 
     public static final String DEFAULT_PERIOD_TYPE = "INTERVAL";
     public static final String DEFAULT_BEGIN_DATE = "";
@@ -83,7 +84,7 @@ public class Defaults {
     public static final String DEFAULT_DOMAINS = "COMMON;PUBLIC_LIGHTING;TARIFF_SWITCHING";
     public static final String DEFAULT_NEW_ORGANIZATION_NAME = "New Organization";
     public static final String DEFAULT_NEW_ORGANIZATION_IDENTIFICATION = "NewOrganization";
-    public static final PlatformFunctionGroup DEFAULT_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP = PlatformFunctionGroup.ADMIN;
+    public static final com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup DEFAULT_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP = com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup.ADMIN;
 
     public static final String DEFAULT_OWNER = "test-org";
     public static final Boolean DEFAULT_ACTIVATED = true;

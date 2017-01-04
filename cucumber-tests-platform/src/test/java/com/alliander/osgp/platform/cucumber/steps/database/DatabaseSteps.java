@@ -24,12 +24,10 @@ import com.alliander.osgp.domain.core.repositories.EventRepository;
 import com.alliander.osgp.domain.core.repositories.FirmwareRepository;
 import com.alliander.osgp.domain.core.repositories.ManufacturerRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
-import com.alliander.osgp.domain.core.repositories.ScheduledTaskRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.PlatformDomain;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
-import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 
 @Component
@@ -69,6 +67,7 @@ public class DatabaseSteps {
     private EventRepository eventRepository;
 
     @Autowired
+<<<<<<< HEAD
     private DeviceLogItemRepository deviceLogItemRepository;
 
     @Autowired
@@ -78,16 +77,15 @@ public class DatabaseSteps {
     private FirmwareRepository firmwareRepository;
 
     @Autowired
+=======
+>>>>>>> 9e04c9442481152415dc74dccba037259b711b6e
     private DeviceFirmwareRepository deviceFirmwareRepository;
 
     @Autowired
     private EventRepository eventRepository;
 
     @Autowired
-    private DeviceLogItemRepository deviceLogItemRepository;
-
-    @Autowired
-    private ScheduledTaskRepository scheduledTaskRepository;
+    private SsldRepository ssldRepository;
 
     /**
      * This method is used to create default data not directly related to the
@@ -96,7 +94,12 @@ public class DatabaseSteps {
      */
     @Transactional
     private void insertDefaultData() {
+<<<<<<< HEAD
         if (this.organisationRepository.findByOrganisationIdentification(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION) == null) {
+=======
+        if (this.organizationRepo
+                .findByOrganisationIdentification(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION) == null) {
+>>>>>>> 9e04c9442481152415dc74dccba037259b711b6e
             // Create test organization used within the tests.
             final Organisation testOrg = new Organisation(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION,
                     Defaults.DEFAULT_ORGANIZATION_DESCRIPTION, Defaults.DEFAULT_PREFIX, PlatformFunctionGroup.ADMIN);
@@ -121,9 +124,6 @@ public class DatabaseSteps {
 
     @Transactional("txMgrCore")
     public void prepareDatabaseForScenario() {
-        this.deviceLogItemRepository.deleteAllInBatch();
-        this.scheduledTaskRepository.deleteAllInBatch();
-
     	// First remove stuff from osgp_protocol_adapter_oslp
     	this.oslpDeviceRepository.deleteAllInBatch();
         

@@ -395,7 +395,9 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         } else if (request.hasEventNotificationRequest()
                 && this.mockResponses.containsKey(DeviceRequestMessageType.RECEIVE_EVENT_NOTIFICATIONS)) {
             response = this.processRequest(DeviceRequestMessageType.RECEIVE_EVENT_NOTIFICATIONS, request);
-
+        } else if (request.hasSetDeviceVerificationKeyRequest()
+                && this.mockResponses.containsKey(DeviceRequestMessageType.UPDATE_KEY)) {
+            response = this.processRequest(DeviceRequestMessageType.UPDATE_KEY, request);
         }
         // TODO: Implement further requests.
         else {

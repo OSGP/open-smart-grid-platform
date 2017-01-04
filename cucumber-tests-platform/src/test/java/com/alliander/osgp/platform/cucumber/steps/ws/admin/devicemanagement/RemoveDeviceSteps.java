@@ -12,7 +12,6 @@ import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 import java.util.Map;
 
 import org.junit.Assert;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
@@ -39,24 +38,15 @@ public class RemoveDeviceSteps {
      * @throws Throwable
      */
     @When("^receiving a remove device request$")
-<<<<<<< HEAD
-    public void receiving_a_remove_device_request(final Map<String, String> requestSettings) throws Throwable {
+    public void receivingARemoveDeviceRequest(final Map<String, String> requestSettings) throws Throwable {
         final RemoveDeviceRequest request = new RemoveDeviceRequest();
         request.setDeviceIdentification(
                 getString(requestSettings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-=======
-    public void receivingARemoveDeviceRequest(final Map<String, String> requestSettings) throws Throwable
-    {
-    	RemoveDeviceRequest request = new RemoveDeviceRequest();
-        request.setDeviceIdentification(getString(requestSettings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-    	
->>>>>>> e9ae808eaaf0b2e324bd083ec79f70f573c72434
         try {
             ScenarioContext.Current().put(Keys.RESPONSE, this.client.removeDevice(request));
         } catch (final SoapFaultClientException ex) {
-            LoggerFactory.getLogger(RemoveDeviceSteps.class).info("Response: " + ex);
-            // ScenarioContext.Current().put(Keys.RESPONSE, ex);
+            ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
     }
 
@@ -67,16 +57,10 @@ public class RemoveDeviceSteps {
      *            The table with the expected fields in the response.
      * @throws Throwable
      */
-<<<<<<< HEAD
-    @Then("^the remove device response is successfull$")
-    public void the_remove_device_response_is_successfull() throws Throwable {
-        Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof RemoveDeviceResponse);
-=======
     @Then("^the remove device response is successful$")
     public void theRemoveDeviceResponseIsSuccessful() throws Throwable
     {
     	Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof RemoveDeviceResponse);
->>>>>>> e9ae808eaaf0b2e324bd083ec79f70f573c72434
     }
 
 }

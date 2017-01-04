@@ -40,6 +40,7 @@ import com.alliander.osgp.oslp.Oslp.LinkType;
 import com.alliander.osgp.oslp.Oslp.Message;
 import com.alliander.osgp.oslp.Oslp.RegisterDeviceResponse;
 import com.alliander.osgp.oslp.Oslp.ResumeScheduleResponse;
+import com.alliander.osgp.oslp.Oslp.SetDeviceVerificationKeyResponse;
 import com.alliander.osgp.oslp.Oslp.SetEventNotificationsResponse;
 import com.alliander.osgp.oslp.Oslp.SetLightResponse;
 import com.alliander.osgp.oslp.Oslp.SetRebootResponse;
@@ -280,162 +281,10 @@ public class MockOslpServer {
         this.mockResponses.put(DeviceRequestMessageType.RECEIVE_EVENT_NOTIFICATIONS, Oslp.Message.newBuilder()
                 .setEventNotificationResponse(EventNotificationResponse.newBuilder().setStatus(status)).build());
     }
-=======
-	public void stop() {
-		if (this.server != null) {
-			this.server.shutdown();
-		}
-		LOGGER.info("OSLP Mock server shutdown.");
-	}
 
-	public void resetServer() {
-		this.receivedRequests.clear();
-		this.mockResponses.clear();
-	}
-
-	public Message waitForRequest(final DeviceRequestMessageType requestType) {
-		int count = 0;
-		while (!this.receivedRequests.containsKey(requestType)) {
-			try {
-				count++;
-				LOGGER.info("Sleeping 1s " + count);
-				Thread.sleep(1000);
-			} catch (final InterruptedException e) {
-				Assert.fail("Polling for response interrupted");
-			}
-
-			if (count > configuration.defaultTimeout) {
-				Assert.fail("Polling for response failed, no reponse found");
-			}
-		}
-
-		return this.receivedRequests.get(requestType);
-	}
-
-	private ServerBootstrap serverBootstrap() {
-		final ChannelFactory factory = new NioServerSocketChannelFactory(Executors.newCachedThreadPool(),
-				Executors.newCachedThreadPool());
-
-		final ServerBootstrap bootstrap = new ServerBootstrap(factory);
-
-		bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
-			@Override
-			public ChannelPipeline getPipeline()
-					throws InvalidKeySpecException, NoSuchAlgorithmException, IOException, NoSuchProviderException {
-				final ChannelPipeline pipeline = MockOslpServer.this.createPipeLine();
-				LOGGER.info("Created new server pipeline");
-				return pipeline;
-			}
-		});
-
-		bootstrap.setOption("child.tcpNoDelay", true);
-		bootstrap.setOption("child.keepAlive", false);
-
-		return bootstrap;
-	}
-
-	private ClientBootstrap clientBootstrap() {
-		final ChannelFactory factory = new NioClientSocketChannelFactory(Executors.newCachedThreadPool(),
-				Executors.newCachedThreadPool());
-
-		final ChannelPipelineFactory pipelineFactory = new ChannelPipelineFactory() {
-			@Override
-			public ChannelPipeline getPipeline()
-					throws InvalidKeySpecException, NoSuchAlgorithmException, IOException, NoSuchProviderException {
-				final ChannelPipeline pipeline = MockOslpServer.this.createPipeLine();
-				LOGGER.info("Created new client pipeline");
-				return pipeline;
-			}
-		};
-
-		final ClientBootstrap bootstrap = new ClientBootstrap(factory);
-
-		bootstrap.setOption("tcpNoDelay", true);
-		bootstrap.setOption("keepAlive", false);
-		bootstrap.setOption("connectTimeoutMillis", this.connectionTimeout);
-
-		bootstrap.setPipelineFactory(pipelineFactory);
-
-		return bootstrap;
-	}
-
-	private ChannelPipeline createPipeLine()
-			throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException, IOException {
-		final ChannelPipeline pipeline = Channels.pipeline();
-
-		pipeline.addLast("oslpEncoder", new OslpEncoder());
-		pipeline.addLast("oslpDecoder", new OslpDecoder(this.oslpSignature, this.oslpSignatureProvider));
-		pipeline.addLast("oslpSecurity", new OslpSecurityHandler(this.publicKey()));
-		pipeline.addLast("oslpChannelHandler", this.channelHandler);
-		return pipeline;
-	}
-
-	private PublicKey publicKey()
-			throws NoSuchAlgorithmException, IOException, InvalidKeySpecException, NoSuchProviderException {
-		return CertificateHelper.createPublicKey(this.verifyKeyPath, this.keytype, this.oslpSignatureProvider);
-	}
-
-	private PrivateKey privateKey()
-			throws IOException, InvalidKeySpecException, NoSuchAlgorithmException, NoSuchProviderException {
-		return CertificateHelper.createPrivateKey(this.signKeyPath, this.keytype, this.oslpSignatureProvider);
-	}
-
-	public void mockFirmwareResponse(final String fwVersion) {
-		this.mockResponses.put(DeviceRequestMessageType.GET_FIRMWARE_VERSION, Oslp.Message.newBuilder()
-				.setGetFirmwareVersionResponse(GetFirmwareVersionResponse.newBuilder().setFirmwareVersion(fwVersion))
-				.build());
-	}
-
-	public void mockSetLightResponse(Oslp.Status status) {
-		this.mockResponses.put(DeviceRequestMessageType.SET_LIGHT,
-				Oslp.Message.newBuilder().setSetLightResponse(SetLightResponse.newBuilder().setStatus(status)).build());
-	}
-
-	public void mockSetEventNotificationResponse(Oslp.Status status) {
-		this.mockResponses.put(DeviceRequestMessageType.SET_EVENT_NOTIFICATIONS,
-				Oslp.Message.newBuilder()
-						.setSetEventNotificationsResponse(SetEventNotificationsResponse.newBuilder().setStatus(status))
-						.build());
-	}
-
-	public void mockStartDeviceResponse(Oslp.Status status) {
-		this.mockResponses.put(DeviceRequestMessageType.START_SELF_TEST, Oslp.Message.newBuilder()
-				.setStartSelfTestResponse(StartSelfTestResponse.newBuilder().setStatus(status)).build());
-	}
-
-	public void mockStopDeviceResponse(com.google.protobuf.ByteString value, Oslp.Status status) {
-		this.mockResponses.put(DeviceRequestMessageType.STOP_SELF_TEST, Oslp.Message.newBuilder()
-				.setStopSelfTestResponse(StopSelfTestResponse.newBuilder().setSelfTestResult(value).setStatus(status))
-				.build());
-	}
-
-	public void mockGetStatusResponse(final LinkType preferred, final LinkType actual, final LightType lightType,
-			final int eventNotificationMask, final Oslp.Status status, final List<LightValue> lightValues) {
-
-		Builder response = GetStatusResponse.newBuilder().setPreferredLinktype(preferred).setActualLinktype(actual)
-				.setLightType(lightType).setEventNotificationMask(eventNotificationMask).setStatus(status);
-
-		for (LightValue lightValue : lightValues) {
-			response.addValue(lightValue);
-		}
-
-		this.mockResponses.put(DeviceRequestMessageType.GET_STATUS,
-				Oslp.Message.newBuilder().setGetStatusResponse(response).build());
-	}
-
-	public void mockResumeScheduleResponse(Oslp.Status status) {
-		this.mockResponses.put(DeviceRequestMessageType.RESUME_SCHEDULE, Oslp.Message.newBuilder()
-				.setResumeScheduleResponse(ResumeScheduleResponse.newBuilder().setStatus(status)).build());
-	}
-
-	public void mockSetRebootResponse(Oslp.Status status) {
-		this.mockResponses.put(DeviceRequestMessageType.SET_REBOOT, Oslp.Message.newBuilder()
-				.setSetRebootResponse(SetRebootResponse.newBuilder().setStatus(status)).build());
-	}
-
-	public void mockSetTransitionResponse(Oslp.Status status) {
-		this.mockResponses.put(DeviceRequestMessageType.SET_TRANSITION, Oslp.Message.newBuilder()
-				.setSetTransitionResponse(SetTransitionResponse.newBuilder().setStatus(status)).build());
-	}
->>>>>>> e9ae808eaaf0b2e324bd083ec79f70f573c72434
+    public void mockUpdateKeyResponse(final Oslp.Status status) {
+        this.mockResponses.put(DeviceRequestMessageType.UPDATE_KEY, Oslp.Message.newBuilder()
+                .setSetDeviceVerificationKeyResponse(SetDeviceVerificationKeyResponse.newBuilder().setStatus(status))
+                .build());
+    }
 }
