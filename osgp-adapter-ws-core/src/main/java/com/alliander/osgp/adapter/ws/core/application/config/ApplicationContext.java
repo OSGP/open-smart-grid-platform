@@ -40,14 +40,13 @@ import com.alliander.osgp.shared.application.config.PagingSettings;
  */
 @Configuration
 @ComponentScan(basePackages = { "com.alliander.osgp.domain.core", "com.alliander.osgp.adapter.ws.core",
-"com.alliander.osgp.domain.logging" })
+        "com.alliander.osgp.domain.logging" })
 @ImportResource("classpath:applicationContext.xml")
-@Import({ PersistenceConfig.class, WritablePersistenceConfig.class, ReadOnlyLoggingConfig.class, WebServiceConfig.class })
-@PropertySources({
-	@PropertySource("classpath:osgp-adapter-ws-core.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "file:${osgp/AdapterWsCore/config}", ignoreResourceNotFound = true),
-})
+@Import({ PersistenceConfig.class, WritablePersistenceConfig.class, ReadOnlyLoggingConfig.class,
+        WebServiceConfig.class })
+@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-core.properties"),
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/AdapterWsCore/config}", ignoreResourceNotFound = true), })
 public class ApplicationContext extends AbstractConfig {
 
     private static final String PROPERTY_NAME_DEFAULT_PROTOCOL = "default.protocol";
@@ -58,6 +57,7 @@ public class ApplicationContext extends AbstractConfig {
     private static final String PROPERTY_NAME_FIRMWARE_DOMAIN = "firmware.domain";
     private static final String PROPERTY_NAME_FIRMWARE_PATH = "firmware.path";
     private static final String PROPERTY_NAME_FIRMWARE_DIRECTORY = "firmware.directory";
+    private static final String PROPERTY_NAME_FIRMWARE_FILESTORAGE = "firmware.filestorage";
     private static final String PROPERTY_NAME_PAGING_MAXIMUM_PAGE_SIZE = "paging.maximum.pagesize";
     private static final String PROPERTY_NAME_PAGING_DEFAULT_PAGE_SIZE = "paging.default.pagesize";
 
@@ -88,9 +88,9 @@ public class ApplicationContext extends AbstractConfig {
 
     @Bean
     public PagingSettings pagingSettings() {
-        return new PagingSettings(Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_PAGING_MAXIMUM_PAGE_SIZE)), Integer.parseInt(this.environment
-                        .getRequiredProperty(PROPERTY_NAME_PAGING_DEFAULT_PAGE_SIZE)));
+        return new PagingSettings(
+                Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_PAGING_MAXIMUM_PAGE_SIZE)),
+                Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_PAGING_DEFAULT_PAGE_SIZE)));
     }
 
     @Bean
@@ -102,6 +102,11 @@ public class ApplicationContext extends AbstractConfig {
     @Bean
     public String firmwareDirectory() {
         return this.environment.getRequiredProperty(PROPERTY_NAME_FIRMWARE_DIRECTORY);
+    }
+
+    @Bean
+    public boolean firmwareFileStorage() {
+        return Boolean.parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_FIRMWARE_FILESTORAGE));
     }
 
     @Bean
