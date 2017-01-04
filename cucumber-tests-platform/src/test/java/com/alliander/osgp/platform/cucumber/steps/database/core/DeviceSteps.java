@@ -127,11 +127,7 @@ public class DeviceSteps {
     }
 
     /**
-     * <<<<<<< HEAD Update a device entity given its deviceIdentification.
-     *
-     * ======= Update a device entity given its deviceidentification.
-     *
-     * >>>>>>> development
+     * Update a device entity given its deviceIdentification.
      *
      * @param deviceIdentification
      *            The deviceIdentification.
