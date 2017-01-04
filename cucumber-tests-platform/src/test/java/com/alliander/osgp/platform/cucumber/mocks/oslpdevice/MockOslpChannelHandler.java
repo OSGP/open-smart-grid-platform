@@ -393,12 +393,6 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         } else if (request.hasSetTransitionRequest()
                 && this.mockResponses.containsKey(DeviceRequestMessageType.SET_TRANSITION)) {
             response = this.processRequest(DeviceRequestMessageType.SET_TRANSITION, request);
-        } else if (request.hasRegisterDeviceRequest()
-                && this.mockResponses.containsKey(DeviceRequestMessageType.REGISTER_DEVICE)) {
-            response = this.processRequest(DeviceRequestMessageType.REGISTER_DEVICE, request);
-        } else if (request.hasEventNotificationRequest()
-                && this.mockResponses.containsKey(DeviceRequestMessageType.RECEIVE_EVENT_NOTIFICATIONS)) {
-            response = this.processRequest(DeviceRequestMessageType.RECEIVE_EVENT_NOTIFICATIONS, request);
         } else if (request.hasSetDeviceVerificationKeyRequest()
                 && this.mockResponses.containsKey(DeviceRequestMessageType.UPDATE_KEY)) {
             response = this.processRequest(DeviceRequestMessageType.UPDATE_KEY, request);
