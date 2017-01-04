@@ -30,6 +30,9 @@ import org.springframework.jms.listener.DefaultMessageListenerContainer;
  */
 public abstract class AbstractMessagingConfig extends AbstractConfig {
 
+    @Value("${jms.activemq.broker.url:tcp://localhost:61616}")
+    protected String aciveMqBroker;
+
     @Value("${jms.requests.explicit.qos.enabled:true}")
     protected boolean requestQosEnabled;
 
@@ -129,8 +132,6 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
     @Value("${jms.logging.use.exponential.back.off:true}")
     protected boolean loggingUseExpBackOff;
 
-    protected static final String PROPERTY_NAME_JMS_ACTIVEMQ_BROKER_URL = "jms.activemq.broker.url";
-
     @Bean(destroyMethod = "stop")
     protected PooledConnectionFactory pooledConnectionFactory() {
         final PooledConnectionFactory pooledConnectionFactory = new PooledConnectionFactory();
@@ -141,7 +142,7 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
     protected ActiveMQConnectionFactory connectionFactory() {
         final ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory();
         activeMQConnectionFactory.setRedeliveryPolicyMap(this.redeliveryPolicyMap());
-        activeMQConnectionFactory.setBrokerURL(this.getBrokerUrl());
+        activeMQConnectionFactory.setBrokerURL(this.aciveMqBroker);
         activeMQConnectionFactory.setNonBlockingRedelivery(true);
         return activeMQConnectionFactory;
     }
@@ -151,10 +152,6 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
     protected abstract String getResponsesQueueName();
 
     protected abstract String getLoggingQueueName();
-
-    protected String getBrokerUrl() {
-        return this.environment.getRequiredProperty(PROPERTY_NAME_JMS_ACTIVEMQ_BROKER_URL);
-    }
 
     protected RedeliveryPolicyMap redeliveryPolicyMap() {
         final RedeliveryPolicyMap redeliveryPolicyMap = new RedeliveryPolicyMap();
