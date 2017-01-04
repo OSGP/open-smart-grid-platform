@@ -36,6 +36,7 @@ public class RemoveOrganizationSteps {
 
     /**
      * Send a remove organization request to the Platform.
+     *
      * @param requestParameter
      *            An list with request parameters for the request.
      * @throws Throwable
@@ -56,6 +57,7 @@ public class RemoveOrganizationSteps {
 
     /**
      * Verify that the create organization response is successful.
+     *
      * @throws Throwable
      */
     @Then("^the remove organization response is successful$")
@@ -65,6 +67,7 @@ public class RemoveOrganizationSteps {
 
     /**
      * Verify the remove organization response
+     * 
      * @param arg1
      * @throws Throwable
      */

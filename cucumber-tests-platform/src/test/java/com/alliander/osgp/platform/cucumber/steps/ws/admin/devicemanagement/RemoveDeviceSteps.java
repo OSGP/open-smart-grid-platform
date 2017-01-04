@@ -32,6 +32,7 @@ public class RemoveDeviceSteps {
 
     /**
      * Send a remove device request to the Platform.
+     *
      * @param requestParameters
      *            An list with request parameters for the request.
      * @throws Throwable
@@ -51,13 +52,13 @@ public class RemoveDeviceSteps {
 
     /**
      * The check for the response from the Platform.
+     *
      * @param expectedResponseData
      *            The table with the expected fields in the response.
      * @throws Throwable
      */
     @Then("^the remove device response is successful$")
-    public void theRemoveDeviceResponseIsSuccessful() throws Throwable
-    {
-    	Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof RemoveDeviceResponse);
+    public void theRemoveDeviceResponseIsSuccessful() throws Throwable {
+        Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof RemoveDeviceResponse);
     }
 }

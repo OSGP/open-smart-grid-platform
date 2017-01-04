@@ -39,13 +39,13 @@ public class ChangeOrganizationSteps {
 
     /**
      * Send a update organization request to the Platform
-     *
+     * 
      * @param requestParameters
      *            An list with request parameters for the request.
      * @throws Throwable
      */
     @When("^receiving an update organization request$")
-    public void receivingAnUpdateOrganizationRequest(Map<String, String> requestSettings) throws Throwable {
+    public void receivingAnUpdateOrganizationRequest(final Map<String, String> requestSettings) throws Throwable {
         final ChangeOrganisationRequest request = new ChangeOrganisationRequest();
 
         request.setOrganisationIdentification(getString(requestSettings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
