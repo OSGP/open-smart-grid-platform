@@ -41,7 +41,7 @@ Feature: Adhoc Management
       | On                   | <On>                   |
       | DimValue             | <DimValue>             |
     Then the set light response contains soap fault
-      | Message | Validation error |
+      | MESSAGE | Validation error |
 
     Examples: 
       | DeviceIdentification | Index | On   | DimValue |
@@ -91,7 +91,7 @@ Feature: Adhoc Management
     When receiving a set light request with "<NofValidLightValues>" valid lightvalues and "<NofInvalidLightValues>" invalid lightvalues
       | DeviceIdentification | TEST1024000000001 |
     Then the set light response contains soap fault
-      | Message | <Message> |
+      | MESSAGE | <Message> |
 
     Examples: 
       | NofValidLightValues | NofInvalidLightValues | Message          |

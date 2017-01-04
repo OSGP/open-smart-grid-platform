@@ -22,7 +22,7 @@ import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRe
 @EnableJpaRepositories(entityManagerFactoryRef = "entityMgrFactOslp", 
 	transactionManagerRef = "txMgrOslp", 
 	basePackageClasses = { OslpDeviceRepository.class })
-public class AdapterProtocolOslpPersistenceConfig extends ApplicationConfiguration {
+public class AdapterProtocolOslpPersistenceConfig extends ApplicationPersistenceConfiguration {
 
     public AdapterProtocolOslpPersistenceConfig() {
     }

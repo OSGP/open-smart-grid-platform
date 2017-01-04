@@ -1,11 +1,9 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package com.alliander.osgp.platform.cucumber.steps.ws.admin.devicemanagement;
 
@@ -42,7 +40,7 @@ public class RemoveOrganizationSteps {
      * @throws Throwable
      */
     @When("^receiving a remove organization request$")
-    public void receiving_a_remove_organization_request(Map<String, String> requestSettings) throws Throwable {
+    public void receivingARemoveOrganizationRequest(Map<String, String> requestSettings) throws Throwable {
 
     	RemoveOrganisationRequest request = new RemoveOrganisationRequest();
         request.setOrganisationIdentification(getString(requestSettings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
@@ -58,8 +56,8 @@ public class RemoveOrganizationSteps {
      * Verify that the create organization response is successful.
      * @throws Throwable
      */
-    @Then("^the remove organization response is successfull$")
-    public void the_remove_organization_response_is_successfull() throws Throwable {
+    @Then("^the remove organization response is successful$")
+    public void theRemoveOrganizationResponseIsSuccessful() throws Throwable {
     	Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof RemoveOrganisationResponse);
     }
 
@@ -69,7 +67,7 @@ public class RemoveOrganizationSteps {
      * @throws Throwable
      */
     @Then("^the remove organization response contains$")
-    public void the_remove_organization_response_contains(final Map<String, String> expectedResult) throws Throwable {
-        GenericResponseSteps.VerifySoapFault(expectedResult);
+    public void theRemoveOrganizationResponseContains(final Map<String, String> expectedResult) throws Throwable {
+        GenericResponseSteps.verifySoapFault(expectedResult);
     }
 }

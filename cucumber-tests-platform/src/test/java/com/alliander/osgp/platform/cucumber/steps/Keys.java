@@ -33,8 +33,6 @@ public class Keys {
     public static final String KEY_DEVICE_MODEL = "DeviceModel";
     public static final String KEY_TECH_INSTALL_DATE = "TechnicalInstallationDate";
 
-    // TODO: It is called "Organisation" with an S in all webservices and
-    // sourcecode, this should be consistent.
     public static final String KEY_ORGANIZATION_IDENTIFICATION = "OrganizationIdentification";
     public static final String KEY_USER_NAME = "UserName";
     public static final String KEY_DEVICE_FUNCTION_GRP = "DeviceFunctionGroup";

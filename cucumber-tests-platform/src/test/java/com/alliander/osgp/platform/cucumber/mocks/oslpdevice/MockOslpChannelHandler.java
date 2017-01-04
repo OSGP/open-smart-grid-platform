@@ -23,7 +23,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import javax.persistence.Transient;
 
-import org.apache.commons.codec.binary.Base64;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -342,7 +341,6 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
 
         // Create response message
         Oslp.Message response = null;
-        final String deviceIdString = Base64.encodeBase64String(message.getDeviceId());
 
         // Calculate expected sequence number
         this.sequenceNumber = this.doGetNextSequence();
@@ -358,10 +356,9 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
 
         String keys = "";
 
-        for (final DeviceRequestMessageType k : this.mockResponses.keySet()) {
-            if (!keys.isEmpty()) {
+        for (DeviceRequestMessageType k : mockResponses.keySet()) {
+            if (!keys.isEmpty())
                 keys += " | ";
-            }
             keys += k.name();
         }
 
@@ -398,6 +395,7 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         } else if (request.hasEventNotificationRequest()
                 && this.mockResponses.containsKey(DeviceRequestMessageType.RECEIVE_EVENT_NOTIFICATIONS)) {
             response = this.processRequest(DeviceRequestMessageType.RECEIVE_EVENT_NOTIFICATIONS, request);
+
         }
         // TODO: Implement further requests.
         else {

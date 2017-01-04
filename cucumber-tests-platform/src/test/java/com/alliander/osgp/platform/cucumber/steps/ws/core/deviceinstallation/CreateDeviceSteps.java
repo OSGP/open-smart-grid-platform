@@ -173,4 +173,43 @@ public class CreateDeviceSteps {
 			throws Throwable {
 		GenericResponseSteps.VerifySoapFault(expectedResult);
 	}
+
+    @Then("^the update device response is successfull$")
+    public void the_update_device_response_is_successfull() throws Throwable {
+    	Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof UpdateDeviceResponse);
+    }
+    
+    /**
+     * Verify that the create organization response contains the fault with the given expectedResult parameters.
+     * @param expectedResult
+     * @throws Throwable
+     */
+    @Then("^the add device response contains$")
+    public void the_add_device_response_contains(final Map<String, String> expectedResult) throws Throwable {
+    	Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof AddDeviceResponse);
+    }
+    
+    @Then("^the add device response contains soap fault$")
+    public void the_add_device_response_contains_soap_fault(final Map<String, String> expectedResult) throws Throwable {
+        GenericResponseSteps.verifySoapFault(expectedResult);
+    }
+
+    /**
+     * @param expectedResult
+     * @throws Throwable
+     */
+    @Then("^the update device response contains$")
+    public void the_update_device_response_contains(Map<String, String> expectedResult) throws Throwable {
+    	Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof UpdateDeviceResponse);
+    }
+
+    /**
+     * Verify that the update device response contains the fault with the given expectedResult parameters.
+     * @param expectedResult
+     * @throws Throwable
+     */
+    @Then("^the update device response contains soap fault$")
+    public void the_update_device_response_contains_soap_fault(Map<String, String> expectedResult) throws Throwable {
+        GenericResponseSteps.verifySoapFault(expectedResult);
+    }
 }

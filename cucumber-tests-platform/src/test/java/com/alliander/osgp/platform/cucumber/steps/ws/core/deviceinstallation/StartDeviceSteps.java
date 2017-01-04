@@ -1,3 +1,10 @@
+/**
+ * Copyright 2017 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.platform.cucumber.steps.ws.core.deviceinstallation;
 
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
@@ -17,7 +24,7 @@ import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StartDeviceT
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StartDeviceTestAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StartDeviceTestRequest;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StartDeviceTestResponse;
-import com.alliander.osgp.platform.cucumber.config.CorePersistenceConfig;
+import com.alliander.osgp.platform.cucumber.config.CoreDeviceConfiguration;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
@@ -29,10 +36,8 @@ import cucumber.api.java.en.When;
 
 public class StartDeviceSteps {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(StartDeviceSteps.class);
-
     @Autowired
-    private CorePersistenceConfig configuration;
+    private CoreDeviceConfiguration configuration;
 
     @Autowired
     private CoreDeviceInstallationClient client;
@@ -43,7 +48,7 @@ public class StartDeviceSteps {
      * @throws Throwable
      */
     @When("receiving a start device test request")
-    public void receiving_a_start_device_test_request(final Map<String, String> requestParameters) throws Throwable {
+    public void receivingAStartDeviceTestRequest(final Map<String, String> requestParameters) throws Throwable {
         final StartDeviceTestRequest request = new StartDeviceTestRequest();
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
@@ -61,7 +66,7 @@ public class StartDeviceSteps {
      * @throws Throwable
      */
     @Then("the start device async response contains")
-    public void the_start_device_async_response_contains(final Map<String, String> expectedResponseData)
+    public void theStartDeviceAsyncResponseContains(final Map<String, String> expectedResponseData)
             throws Throwable {
         final StartDeviceTestAsyncResponse response = (StartDeviceTestAsyncResponse) ScenarioContext.Current()
                 .get(Keys.RESPONSE);
@@ -80,9 +85,9 @@ public class StartDeviceSteps {
     }
 
     @Then("^the start device response contains soap fault$")
-    public void the_start_device_response_contains_soap_fault(final Map<String, String> expectedResult)
+    public void theStartDeviceResponseContainsSoapFault(final Map<String, String> expectedResult)
             throws Throwable {
-        GenericResponseSteps.VerifySoapFault(expectedResult);
+        GenericResponseSteps.verifySoapFault(expectedResult);
     }
 
     /**
@@ -91,33 +96,34 @@ public class StartDeviceSteps {
      * @throws Throwable
      */
     @Then("the platform buffers a start device response message for device \"([^\"]*)\"")
-    public void the_platform_buffers_a_start_device_response_message_for_device(final String deviceIdentification,
-            final Map<String, String> expectedResult) throws Throwable {
-        final StartDeviceTestAsyncRequest request = new StartDeviceTestAsyncRequest();
-        final AsyncRequest asyncRequest = new AsyncRequest();
-        asyncRequest.setDeviceId(deviceIdentification);
-        asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
-        request.setAsyncRequest(asyncRequest);
+    public void thePlatformBuffersAStartDeviceResponseMessageForDevice(final String deviceIdentification, final Map<String, String> expectedResult) throws Throwable
+    {
+    	StartDeviceTestAsyncRequest request = new StartDeviceTestAsyncRequest();
+    	AsyncRequest asyncRequest = new AsyncRequest();
+    	asyncRequest.setDeviceId(deviceIdentification);
+    	asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
+    	request.setAsyncRequest(asyncRequest);
+    	
+    	boolean success = false;
+    	int count = 0;
+    	while (!success) {
+    		if (count > configuration.defaultTimeout) {
+    			Assert.fail("Timeout");
+    		}
+    		
+    		count++;
+            Thread.sleep(1000);
 
-        boolean success = false;
-        int count = 0;
-        while (!success) {
-            if (count > this.configuration.getDefaultTimeout()) {
-                Assert.fail("Timeout");
-            }
-
-            count++;
-
-            try {
-                final StartDeviceTestResponse response = this.client.getStartDeviceTestResponse(request);
-
-                Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.KEY_RESULT)),
-                        response.getResult());
-
-                success = true;
-            } catch (final Exception ex) {
-                // Do nothing
-            }
-        }
+    		try {
+    			StartDeviceTestResponse response = client.getStartDeviceTestResponse(request);
+    			
+    			Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.KEY_RESULT)), response.getResult());
+    			
+    			success = true; 
+    		}
+    		catch(Exception ex) {
+    			// Do nothing
+    		}
+    	}
     }
 }

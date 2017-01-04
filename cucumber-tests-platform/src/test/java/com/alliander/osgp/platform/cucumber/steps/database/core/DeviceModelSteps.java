@@ -46,6 +46,7 @@ public class DeviceModelSteps {
      */
     @Given("^a device model")
     public void aDeviceModel(final Map<String, String> settings) throws Throwable {
+<<<<<<< HEAD
 <<<<<<< .merge_file_rfM5Pr
 
     	// Get the given manufacturer (or the default).
@@ -65,6 +66,9 @@ public class DeviceModelSteps {
     	entity.setVersion(getLong(settings, "Version"));
 
 		this.repo.save(entity);
+=======
+        this.insertDeviceModel(settings);
+>>>>>>> e9ae808eaaf0b2e324bd083ec79f70f573c72434
 	}
 =======
         this.insertDeviceModel(settings);
@@ -91,6 +95,7 @@ public class DeviceModelSteps {
                 entity.getDescription());
         Assert.assertEquals(getBoolean(expectedEntity, "Metered", Defaults.DEFAULT_DEVICE_MODEL_METERED),
                 entity.isMetered());
+<<<<<<< HEAD
     }
 
     /**
@@ -114,6 +119,29 @@ public class DeviceModelSteps {
         entity.setVersion(getLong(settings, "Version"));
 
         return this.repo.save(entity);
+=======
+>>>>>>> e9ae808eaaf0b2e324bd083ec79f70f573c72434
     }
 
+    public DeviceModel insertDeviceModel(Map<String, String> settings) {
+        // Get the given manufacturer (or the default).
+        final Manufacturer manufacturer = this.manufacturerRepo.findByName(
+                getString(settings, "ManufacturerName", ManufacturerSteps.DEFAULT_NAME));
+
+        final String description = getString(settings, Keys.KEY_DESCRIPTION, Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION);
+        
+        // Create the new device model.
+        final DeviceModel entity = new DeviceModel(
+                manufacturer,
+                getString(settings, Keys.KEY_DEVICE_MODEL_MODELCODE, Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE),
+                description,
+                getBoolean(settings, Keys.KEY_DEVICE_MODEL_FILESTORAGE, this.DEFAULT_FILESTORAGE));
+
+        entity.updateData(description, getBoolean(settings, Keys.KEY_DEVICE_MODEL_METERED, this.DEFAULT_METERED));
+        entity.setVersion(getLong(settings, "Version"));
+
+        this.repo.save(entity);
+        
+        return entity;
+    }
 }

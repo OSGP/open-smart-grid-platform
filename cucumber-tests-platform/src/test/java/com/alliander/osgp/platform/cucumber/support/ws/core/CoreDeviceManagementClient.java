@@ -12,6 +12,8 @@ import java.io.IOException;
 import javax.xml.transform.TransformerException;
 
 import org.slf4j.LoggerFactory;
+import java.security.GeneralSecurityException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.WebServiceMessage;
@@ -36,24 +38,23 @@ public class CoreDeviceManagementClient extends BaseClient {
     @Autowired
     private WebServiceTemplateFactory coreDeviceManagementWstf;
 
-    public FindDevicesResponse findDevices(final FindDevicesRequest request) throws WebServiceSecurityException {
+    public FindDevicesResponse findDevices(final FindDevicesRequest request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (FindDevicesResponse) wst.marshalSendAndReceive(request);
     }
     
-	public SetEventNotificationsAsyncResponse setEventNotifications(SetEventNotificationsRequest request) throws WebServiceSecurityException {
+    public SetEventNotificationsAsyncResponse setEventNotifications(SetEventNotificationsRequest request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (SetEventNotificationsAsyncResponse) wst.marshalSendAndReceive(request);
-	}
+    }
 
-	public SetEventNotificationsResponse getSetEventNotificationsResponse(SetEventNotificationsAsyncRequest request) throws WebServiceSecurityException {
+    public SetEventNotificationsResponse getSetEventNotificationsResponse(SetEventNotificationsAsyncRequest request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (SetEventNotificationsResponse) wst.marshalSendAndReceive(request);
-	}
+    }
 	
-	public SetOwnerResponse setOwner(SetOwnerRequest request) throws WebServiceSecurityException {
+    public SetOwnerResponse setOwner(SetOwnerRequest request) throws WebServiceSecurityException {
         final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (SetOwnerResponse) wst.marshalSendAndReceive(request);
-	}
-	
+    }
 }

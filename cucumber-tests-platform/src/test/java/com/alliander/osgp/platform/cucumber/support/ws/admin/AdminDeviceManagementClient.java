@@ -7,6 +7,9 @@
  */
 package com.alliander.osgp.platform.cucumber.support.ws.admin;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;

@@ -7,6 +7,9 @@
  */
 package com.alliander.osgp.platform.cucumber.support.ws.core;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;
@@ -25,13 +28,13 @@ public class CoreAdHocManagementClient extends BaseClient {
     @Autowired
     private WebServiceTemplateFactory coreAdHocManagementWstf;
 
-	public SetRebootAsyncResponse setReboot(SetRebootRequest request) throws WebServiceSecurityException {
+	public SetRebootAsyncResponse setReboot(SetRebootRequest request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate webServiceTemplate = this.coreAdHocManagementWstf
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (SetRebootAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
 	}
 
-	public SetRebootResponse getSetRebootResponse(SetRebootAsyncRequest request) throws WebServiceSecurityException {
+	public SetRebootResponse getSetRebootResponse(SetRebootAsyncRequest request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
 	    final WebServiceTemplate webServiceTemplate = this.coreAdHocManagementWstf
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (SetRebootResponse) webServiceTemplate.marshalSendAndReceive(request);

@@ -7,6 +7,9 @@
  */
 package com.alliander.osgp.platform.cucumber.support.ws.core;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;
@@ -69,6 +72,7 @@ public class CoreDeviceInstallationClient extends BaseClient {
             throws WebServiceSecurityException {
         final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
+
         return (StartDeviceTestResponse) wst.marshalSendAndReceive(request);
     }
 

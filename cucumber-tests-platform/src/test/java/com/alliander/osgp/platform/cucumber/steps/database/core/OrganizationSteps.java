@@ -18,8 +18,6 @@ import java.util.Map;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 
-//import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformDomain;
-//import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.valueobjects.PlatformDomain;
@@ -70,9 +68,6 @@ public class OrganizationSteps {
 
         // TODO: Add all the optional stuff
         this.repo.save(entity);
-
-        // Save the created id for the organization in the scenario context.
-        final Organisation savedEntity = this.repo.findByName(getString(settings, "Name", this.DEFAULT_NAME));
     }
 
     /**
@@ -97,11 +92,10 @@ public class OrganizationSteps {
                     getEnum(expectedOrganization, Keys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class),
                     entity.getFunctionGroup());
         }
-        // TODO:
-        // if (expectedOrganization.containsKey(Keys.KEY_DOMAINS)) {
-        // Assert.assertEquals(getString(expectedOrganization,
-        // Keys.KEY_DOMAINS), entity.getDomains().);
-        // }
+
+        if (expectedOrganization.containsKey(Keys.KEY_DOMAINS)) {
+        	Assert.assertEquals(getString(expectedOrganization, Keys.KEY_DOMAINS), entity.getDomains().);
+        }
     }
 
     /**

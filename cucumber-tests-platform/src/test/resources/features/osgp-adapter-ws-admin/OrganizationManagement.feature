@@ -11,7 +11,7 @@ Feature: Organization management
       | FunctionGroup              | <FunctionGroup>              |
       | Enabled                    | <Enabled>                    |
       | Domains                    | <Domains>                    |
-    Then the create organization response is successfull
+    Then the create organization response is successful
     And the entity organization exists
       | OrganizationIdentification | <OrganizationIdentification> |
       | Name                       | <Name>                       |
@@ -22,7 +22,8 @@ Feature: Organization management
 
     Examples: 
       | OrganizationIdentification | Name                | Prefix | FunctionGroup | Enabled | Domains |
-      | ATestOrganization          | A Test Organization | MAA    | ADMIN         | true    | COMMON  |
+      | ATestOrganization          | A Test Organization | MAA    | ADMIN         | true    | COMMON |
+      | ATestOrganization          | A Test Organization | MAA    | ADMIN         | true    | COMMON;PUBLIC_LIGHTING;TARIFF_SWITCHING |
       | Heerlen                    | Gemeente Heerlen    |        | USER          |         |         |
 
   Scenario Outline: Create An Already Existing Organization
@@ -41,8 +42,9 @@ Feature: Organization management
       | Enabled                    | <Enabled>                    |
       | Domains                    | <Domains>                    |
     Then the create organization response contains
-      | Message | com.alliander.osgp.shared.exceptionhandling.TechnicalException |
-    And the organization with name "Different Organization" should not be created
+      | COMPONENT | WS_ADMIN                                                       |
+      | MESSAGE   | com.alliander.osgp.shared.exceptionhandling.TechnicalException |
+    And the organization with name "Different Organisation" should not be created
 
     Examples: 
       | OrganizationIdentification | Original Name       | Prefix | FunctionGroup | Enabled | Domains | Different Name         |
@@ -73,7 +75,7 @@ Feature: Organization management
       | Enabled                    | <Enabled>                             |
       | Domains                    | <Domains>                             |
     Then the create organization response contains
-      | Message | Validation error |
+      | MESSAGE | Validation error |
     And the organization with name "<Name>" should not be created
 
     # Note: The validation errors are ; separated if there are multiple.
@@ -94,7 +96,7 @@ Feature: Organization management
       | Name                          | <NewName>                    |
       | FunctionGroup                 | <FunctionGroup>              |
       | Domains                       | <Domains>                    |
-    Then the update organization response is successfull
+    Then the update organization response is successful
     And the organization exists
       | OrganizationIdentification | <OrganizationIdentification> |
       | Name                       | <NewName>                    |
@@ -126,7 +128,7 @@ Feature: Organization management
       | OrganizationIdentification | <OrganizationIdentification> |
       | Name                       | <Name>                       |
       | FunctionGroup              | <FunctionGroup>              |
-    Then the remove organization response is successfull
+    Then the remove organization response is successful
     And the organization with organization identification "<OrganizationIdentification>" should be disabled
 
     Examples: 

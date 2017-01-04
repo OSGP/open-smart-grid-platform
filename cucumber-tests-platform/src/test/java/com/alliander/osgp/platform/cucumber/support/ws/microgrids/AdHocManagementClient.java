@@ -7,6 +7,9 @@
  */
 package com.alliander.osgp.platform.cucumber.support.ws.microgrids;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -27,13 +30,21 @@ public class AdHocManagementClient extends BaseClient {
     @Autowired
     private WebServiceTemplateFactory webServiceTemplateFactoryMicrogridsAdHocManagement;
 
-    public GetDataAsyncResponse getDataAsync(final GetDataRequest request) throws WebServiceSecurityException {
+    @Autowired
+    private RtuResponseDataRepository rtuResponseDataRepository;
+
+    @Value("${iec61850.rtu.response.wait.check.interval:1000}")
+    private int waitCheckIntervalMillis;
+    @Value("${iec61850.rtu.response.wait.fail.duration:15000}")
+    private int waitFailMillis;
+
+    public GetDataAsyncResponse getDataAsync(final GetDataRequest request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate webServiceTemplate = this.webServiceTemplateFactoryMicrogridsAdHocManagement
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (GetDataAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
     }
 
-    public GetDataResponse getData(final GetDataAsyncRequest request) throws WebServiceSecurityException {
+    public GetDataResponse getData(final GetDataAsyncRequest request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
 
         final WebServiceTemplate webServiceTemplate = this.webServiceTemplateFactoryMicrogridsAdHocManagement
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
