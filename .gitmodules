@@ -5,7 +5,7 @@
 [submodule "Protocol-Adapter-OSLP"]
 	path = Protocol-Adapter-OSLP
 	url = https://github.com/OSGP/Protocol-Adapter-OSLP.git
-	branch = development
+	branch = FLEX-2603_Convert_fitnesse_tests_DeviceManagement
 [submodule "Platform"]
 	path = Platform
 	url = https://github.com/OSGP/Platform.git
