@@ -21,10 +21,10 @@ Feature: Organization management
       | Domains                    | <Domains>                    |
 
     Examples: 
-      | OrganizationIdentification | Name                | Prefix | FunctionGroup | Enabled | Domains |
-      | ATestOrganization          | A Test Organization | MAA    | ADMIN         | true    | COMMON |
+      | OrganizationIdentification | Name                | Prefix | FunctionGroup | Enabled | Domains                                 |
+      | ATestOrganization          | A Test Organization | MAA    | ADMIN         | true    | COMMON                                  |
       | ATestOrganization          | A Test Organization | MAA    | ADMIN         | true    | COMMON;PUBLIC_LIGHTING;TARIFF_SWITCHING |
-      | Heerlen                    | Gemeente Heerlen    |        | USER          |         |         |
+      | Heerlen                    | Gemeente Heerlen    |        | USER          |         |                                         |
 
   Scenario Outline: Create An Already Existing Organization
     Given an organization
@@ -115,7 +115,7 @@ Feature: Organization management
       | Message | UNKNOWN_ORGANISATION |
     And the organization with name "org-test-name" should not be changed
 
-	# Note: Does only work if all the words 'organisation' are changed to 'organization', or it has to remain the same as it is.	
+  # Note: Does only work if all the words 'organisation' are changed to 'organization', or it has to remain the same as it is.
   Scenario Outline: Remove An Existing Organization
     Given an organization
       | OrganizationIdentification | <OrganizationIdentification> |
@@ -135,7 +135,7 @@ Feature: Organization management
       | OrganizationIdentification | Name                | Prefix | FunctionGroup | Enabled | Domains |
       | ATestOrganization          | A Test Organization | MAA    | ADMIN         | true    | COMMON  |
 
-    Scenario Outline: Remove A Non Existing Organization
+  Scenario Outline: Remove A Non Existing Organization
     When receiving a remove organization request
       | OrganizationIdentification | <OrganizationIdentification> |
       | Name                       | <Name>                       |

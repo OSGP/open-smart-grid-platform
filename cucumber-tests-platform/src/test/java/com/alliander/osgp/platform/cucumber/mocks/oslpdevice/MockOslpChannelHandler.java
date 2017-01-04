@@ -57,6 +57,10 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
 
     // Device settings
     private Integer sequenceNumber = 0;
+    
+    public Integer getSequenceNumber() {
+        return this.sequenceNumber;
+    }
 
     private static class Callback {
 
@@ -335,7 +339,7 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         }
     }
 
-    private Oslp.Message handleRequest(final OslpEnvelope message, final int sequenceNumber)
+    public Oslp.Message handleRequest(final OslpEnvelope message, final int sequenceNumber)
             throws DeviceSimulatorException, IOException, ParseException {
         final Oslp.Message request = message.getPayloadMessage();
 

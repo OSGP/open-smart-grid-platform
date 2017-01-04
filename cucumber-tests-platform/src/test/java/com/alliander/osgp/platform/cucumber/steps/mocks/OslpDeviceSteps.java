@@ -12,6 +12,8 @@ import static com.alliander.osgp.platform.cucumber.core.Helpers.getEnum;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getInteger;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +25,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.EventNotificationType;
 import com.alliander.osgp.oslp.Oslp;
+import com.alliander.osgp.oslp.Oslp.Event;
+import com.alliander.osgp.oslp.Oslp.EventNotification;
+import com.alliander.osgp.oslp.Oslp.EventNotificationRequest;
+import com.alliander.osgp.oslp.Oslp.EventNotificationResponse;
 import com.alliander.osgp.oslp.Oslp.LightType;
 import com.alliander.osgp.oslp.Oslp.LightValue;
 import com.alliander.osgp.oslp.Oslp.LinkType;
@@ -32,6 +38,8 @@ import com.alliander.osgp.oslp.Oslp.SetTransitionRequest;
 import com.alliander.osgp.oslp.Oslp.Status;
 import com.alliander.osgp.oslp.Oslp.TransitionType;
 import com.alliander.osgp.oslp.OslpUtils;
+import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
+import com.alliander.osgp.platform.cucumber.mocks.oslpdevice.DeviceSimulatorException;
 import com.alliander.osgp.platform.cucumber.mocks.oslpdevice.MockOslpServer;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
@@ -39,6 +47,7 @@ import com.google.protobuf.ByteString;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
 
 /**
  * Class which holds all the OSLP device mock steps in order to let the device
@@ -466,5 +475,36 @@ public class OslpDeviceSteps {
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.UPDATE_KEY);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasSetDeviceVerificationKeyRequest());
+    }
+    
+    /**
+     * Simulates sending an OSLP EventNotification message to the OSLP Protocol adapter.
+     * @param settings
+     * @throws DeviceSimulatorException
+     * @throws IOException
+     * @throws ParseException
+     */
+    @When("^receiving an OSLP event notification message$")
+    public void receivingAnOSLPEventNotificationMessage(final Map<String, String> settings) throws DeviceSimulatorException, IOException, ParseException {
+        
+        EventNotification eventNotification = EventNotification.newBuilder()
+                .setDescription(getString(settings, Keys.KEY_DESCRIPTION, ""))
+                .setEvent(getEnum(settings, Keys.KEY_EVENT, Event.class)).build();
+        
+        Message message = Oslp.Message.newBuilder()
+        .setEventNotificationRequest(
+                EventNotificationRequest.newBuilder().addNotifications(eventNotification)).build();
+
+        // Save the OSLP response for later validation.
+        ScenarioContext.Current().put(Keys.RESPONSE, this.oslpMockServer.sendRequest(message));
+    }
+    
+    @Then("^the OSLP event notification response contains$")
+    public void theOSLPEventNotificationResponseContains(final Map<String, String> expectedResponse) {
+        Message responseMessage = (Message) ScenarioContext.Current().get(Keys.RESPONSE);
+        
+        EventNotificationResponse response = responseMessage.getEventNotificationResponse();
+        
+        Assert.assertEquals(getString(expectedResponse, Keys.KEY_STATUS), response.getStatus());
     }
 }

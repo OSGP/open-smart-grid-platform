@@ -7,6 +7,7 @@ import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
+import java.text.ParseException;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -15,7 +16,6 @@ import java.util.concurrent.Executors;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
@@ -30,6 +30,9 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.oslp.Oslp;
+import com.alliander.osgp.oslp.Oslp.Event;
+import com.alliander.osgp.oslp.Oslp.EventNotification;
+import com.alliander.osgp.oslp.Oslp.EventNotificationRequest;
 import com.alliander.osgp.oslp.Oslp.EventNotificationResponse;
 import com.alliander.osgp.oslp.Oslp.GetFirmwareVersionResponse;
 import com.alliander.osgp.oslp.Oslp.GetStatusResponse;
@@ -49,6 +52,7 @@ import com.alliander.osgp.oslp.Oslp.StartSelfTestResponse;
 import com.alliander.osgp.oslp.Oslp.StopSelfTestResponse;
 import com.alliander.osgp.oslp.OslpDecoder;
 import com.alliander.osgp.oslp.OslpEncoder;
+import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.platform.cucumber.config.CoreDeviceConfiguration;
 import com.alliander.osgp.shared.security.CertificateHelper;
 
@@ -96,7 +100,7 @@ public class MockOslpServer {
     private ServerBootstrap server;
 
     // TODO split channel handler in client/server
-    private ChannelHandler channelHandler;
+    private MockOslpChannelHandler channelHandler;
 
     private final ConcurrentMap<DeviceRequestMessageType, Message> mockResponses = new ConcurrentHashMap<>();
     private final ConcurrentMap<DeviceRequestMessageType, Message> receivedRequests = new ConcurrentHashMap<>();
@@ -142,6 +146,14 @@ public class MockOslpServer {
         }
 
         return this.receivedRequests.get(requestType);
+    }
+    
+    public Message sendRequest(Message message) throws DeviceSimulatorException, IOException, ParseException {
+        
+        OslpEnvelope envelope = new OslpEnvelope();
+        envelope.setPayloadMessage(message);
+        
+        return this.channelHandler.handleRequest(envelope, channelHandler.getSequenceNumber());
     }
 
     private ServerBootstrap serverBootstrap() {

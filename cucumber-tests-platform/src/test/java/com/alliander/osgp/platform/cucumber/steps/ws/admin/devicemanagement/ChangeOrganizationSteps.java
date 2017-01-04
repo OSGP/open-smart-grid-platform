@@ -78,8 +78,8 @@ public class ChangeOrganizationSteps {
         }
     }
 
-    @Then("^the update organization response is successfull$")
-    public void the_update_organization_response_is_successfull() throws Throwable {
+    @Then("^the update organization response is successful$")
+    public void theUpdateOrganizationResponseIsSuccessful() throws Throwable {
         Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof ChangeOrganisationResponse);
     }
 

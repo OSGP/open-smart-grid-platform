@@ -79,26 +79,10 @@ public class AdminDeviceManagementClient extends BaseClient {
     }
 
     public RemoveOrganisationResponse removeOrganization(final RemoveOrganisationRequest request)
-            throws WebServiceSecurityException {
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
         return (RemoveOrganisationResponse) wst.marshalSendAndReceive(request);
-    }
-
-    public ReceiveEventNotificationsAsyncResponse receiveEventNotifications(
-            final ReceiveEventNotificationsRequest request) throws WebServiceSecurityException {
-        final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
-                this.getUserName());
-        final Object obj = wst.marshalSendAndReceive(request);
-        System.out.println(obj);
-        return (ReceiveEventNotificationsAsyncResponse) wst.marshalSendAndReceive(request);
-    }
-
-    public ReceiveEventNotificationsResponse getReceiveEventNotificationsResponse(
-            final ReceiveEventNotificationsAsyncRequest request) throws WebServiceSecurityException {
-        final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
-                this.getUserName());
-        return (ReceiveEventNotificationsResponse) wst.marshalSendAndReceive(request);
     }
 
     public RevokeKeyResponse getRevokeKeyResponse(final RevokeKeyRequest request) throws WebServiceSecurityException, GeneralSecurityException, IOException {

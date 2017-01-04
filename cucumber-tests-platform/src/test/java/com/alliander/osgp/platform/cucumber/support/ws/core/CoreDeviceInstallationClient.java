@@ -18,10 +18,6 @@ import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.AddDeviceReq
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.AddDeviceResponse;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.FindRecentDevicesRequest;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.FindRecentDevicesResponse;
-import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.RegisterDeviceAsyncRequest;
-import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.RegisterDeviceAsyncResponse;
-import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.RegisterDeviceRequest;
-import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.RegisterDeviceResponse;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StartDeviceTestAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StartDeviceTestAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StartDeviceTestRequest;
@@ -88,19 +84,5 @@ public class CoreDeviceInstallationClient extends BaseClient {
         final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
         return (StopDeviceTestResponse) wst.marshalSendAndReceive(request);
-    }
-
-    public RegisterDeviceAsyncResponse getRegisterDeviceResponse(final RegisterDeviceRequest request)
-            throws WebServiceSecurityException {
-        final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(),
-                this.getUserName());
-        return (RegisterDeviceAsyncResponse) wst.marshalSendAndReceive(request);
-    }
-
-    public RegisterDeviceResponse getRegisterDeviceResponse(final RegisterDeviceAsyncRequest request)
-            throws WebServiceSecurityException {
-        final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(),
-                this.getUserName());
-        return (RegisterDeviceResponse) wst.marshalSendAndReceive(request);
     }
 }
