@@ -21,10 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.alliander.osgp.adapter.ws.schema.admin.common.AsyncRequest;
-import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ReceiveEventNotificationsAsyncRequest;
-import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ReceiveEventNotificationsAsyncResponse;
-import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ReceiveEventNotificationsRequest;
-import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ReceiveEventNotificationsResponse;
 import com.alliander.osgp.adapter.ws.schema.core.common.OsgpResultType;
 import com.alliander.osgp.platform.cucumber.config.CorePersistenceConfig;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
@@ -56,7 +52,7 @@ public class ReceiveEventNotificationsSteps {
      * @throws Throwable
      */
     @When("^receiving a receive event notification message request(?: on OSGP)?$")
-    public void receiving_a_receive_event_notification_message_request(final Map<String, String> requestParameters)
+    public void receivingAReceiveEventNotificationMessageRequest(final Map<String, String> requestParameters)
             throws Throwable {
         final ReceiveEventNotificationsRequest request = new ReceiveEventNotificationsRequest();
         request.setDeviceIdentification(

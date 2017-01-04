@@ -56,15 +56,6 @@ public class OrganizationSteps {
     @Given("^an organization$")
     public void anOrganization(final Map<String, String> settings) throws Throwable {
 
-        // final Organisation entity = new Organisation(
-        // getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-        // this.DEFAULT_ORGANIZATION),
-        // getString(settings, "Name", this.DEFAULT_NAME), getString(settings,
-        // "Prefix", this.DEFAULT_PREFIX),
-        // getEnum(settings, "PlatformFunctionGroup",
-        // PlatformFunctionGroup.class,
-        // this.DEFAULT_PLATFORM_FUNCTION_GROUP));
-
         final String organizationIdentification = getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
                 this.DEFAULT_ORGANIZATION);
         final Organisation entity = new Organisation(
@@ -106,8 +97,11 @@ public class OrganizationSteps {
                     entity.getFunctionGroup());
         }
 
-        if (expectedOrganization.containsKey(Keys.KEY_DOMAINS)) {
-        	Assert.assertEquals(getString(expectedOrganization, Keys.KEY_DOMAINS), entity.getDomains().);
+        if (expectedOrganization.containsKey(Keys.KEY_DOMAINS) && !expectedOrganization.get(Keys.KEY_DOMAINS).isEmpty()) {
+            for (String domain : expectedOrganization.get(Keys.KEY_DOMAINS).split(Keys.SEPARATOR_SEMICOLON))
+            {
+                Assert.assertTrue(entity.getDomains().contains(PlatformDomain.valueOf(domain)));
+            }
         }
     }
 

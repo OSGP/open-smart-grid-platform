@@ -29,12 +29,6 @@ public class RegisterDeviceSteps {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RegisterDeviceSteps.class);
 
-    // @Given("^a not registered device$")
-    // public void a_not_registered_device(final Map<String, String>
-    // requestParameters) {
-    //
-    // }
-
     @When("^receiving a register device request$")
     public void receiving_a_register_device_request(final Map<String, String> requestParameters) throws Throwable {
         final RegisterDeviceRequest request = new RegisterDeviceRequest();

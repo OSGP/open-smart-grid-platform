@@ -15,8 +15,8 @@ import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.RemoveOrganizationRequest;
-import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.RemoveOrganizationResponse;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.RemoveOrganisationRequest;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.RemoveOrganisationResponse;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
@@ -44,8 +44,8 @@ public class RemoveOrganizationSteps {
     @When("^receiving a remove organization request$")
     public void receivingARemoveOrganizationRequest(final Map<String, String> requestSettings) throws Throwable {
 
-        final RemoveOrganizationRequest request = new RemoveOrganizationRequest();
-        request.setOrganizationIdentification(getString(requestSettings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
+        final RemoveOrganisationRequest request = new RemoveOrganisationRequest();
+        request.setOrganisationIdentification(getString(requestSettings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
                 Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
         try {

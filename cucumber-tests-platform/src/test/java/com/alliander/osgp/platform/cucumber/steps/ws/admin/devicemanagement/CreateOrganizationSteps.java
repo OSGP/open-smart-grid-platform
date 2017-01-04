@@ -17,8 +17,8 @@ import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.CreateOrganizationRequest;
-import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.CreateOrganizationResponse;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.CreateOrganisationRequest;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.CreateOrganisationResponse;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.Organisation;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformDomain;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup;
@@ -53,7 +53,8 @@ public class CreateOrganizationSteps {
     	organization.setOrganisationIdentification(getString(requestSettings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
     	organization.setPrefix(getString(requestSettings, Keys.KEY_PREFIX, Defaults.DEFAULT_ORGANIZATION_PREFIX));
     	
-    	PlatformFunctionGroup platformFunctionGroup = getEnum(requestSettings, Keys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class, Defaults.DEFAULT_PLATFORM_FUNCTION_GROUP);
+    	PlatformFunctionGroup platformFunctionGroup = getEnum(requestSettings, 
+    	        Keys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class, Defaults.DEFAULT_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP);
     	organization.setFunctionGroup(platformFunctionGroup);
     	
     	for (String domain : getString(requestSettings, Keys.KEY_DOMAINS, Defaults.DEFAULT_DOMAINS).split(";")) {

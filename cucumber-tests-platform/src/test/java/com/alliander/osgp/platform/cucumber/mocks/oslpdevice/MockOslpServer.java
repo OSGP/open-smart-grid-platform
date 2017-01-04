@@ -22,13 +22,13 @@ import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.junit.Assert;
-import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.Oslp.EventNotificationResponse;
 import com.alliander.osgp.oslp.Oslp.GetFirmwareVersionResponse;
@@ -113,7 +113,6 @@ public class MockOslpServer {
         LOGGER.info("OSLP Mock server started.");
     }
 
-<<<<<<< HEAD
     public void stop() {
         if (this.server != null) {
             this.server.shutdown();
@@ -137,7 +136,7 @@ public class MockOslpServer {
                 Assert.fail("Polling for response interrupted");
             }
 
-            if (count > this.configuration.getDefaultTimeout()) {
+            if (count > this.configuration.defaultTimeout) {
                 Assert.fail("Polling for response failed, no reponse found");
             }
         }
