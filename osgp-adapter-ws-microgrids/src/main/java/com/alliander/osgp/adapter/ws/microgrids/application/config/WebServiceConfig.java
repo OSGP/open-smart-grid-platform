@@ -38,8 +38,8 @@ import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 @Configuration
 @PropertySources({ @PropertySource("classpath:osgp-adapter-ws-microgrids.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-    @PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true), })
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true), })
 public class WebServiceConfig extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceConfig.class);
@@ -186,7 +186,7 @@ public class WebServiceConfig extends AbstractConfig {
 
     @Bean
     String notificationUsername() {
-        return this.environment.getRequiredProperty(WEB_SERVICE_NOTIFICATION_URL_PROPERTY_NAME);
+        return this.environment.getRequiredProperty(WEB_SERVICE_NOTIFICATION_USERNAME_PROPERTY_NAME);
     }
 
     @Bean

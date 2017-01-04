@@ -42,6 +42,7 @@ public class CommunicatonRecoveryService extends BaseService {
     private static final String SYSTEM_TYPE = "RTU";
     private static final int MEASUREMENT_ID = 1;
     private static final String MEASUREMENT_NODE = "Alm1";
+    private static final double MEASUREMENT_VALUE_ALARM_ON = 1.0;
 
     @Autowired
     private CorrelationIdProviderService correlationIdProviderService;
@@ -62,7 +63,7 @@ public class CommunicatonRecoveryService extends BaseService {
 
         final GetDataResponseDto dataResponse = new GetDataResponseDto(Arrays.asList(new GetDataSystemIdentifierDto(
                 SYSTEM_ID, SYSTEM_TYPE, Arrays.asList(new MeasurementDto(MEASUREMENT_ID, MEASUREMENT_NODE, 0,
-                        new DateTime(DateTimeZone.UTC), 1.0)))));
+                        new DateTime(DateTimeZone.UTC), MEASUREMENT_VALUE_ALARM_ON)))));
 
         final String correlationUid = this.createCorrelationUid(rtu);
         final String organisationIdentification = rtu.getOwner().getOrganisationIdentification();
