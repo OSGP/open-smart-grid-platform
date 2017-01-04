@@ -30,9 +30,7 @@ public class FindRecentDeviceSteps {
     private CoreDeviceInstallationClient client;
 
     @When("receiving a find recent devices request")
-    // public void receiving_a_find_recent_devices_request(final Map<String,
-    // String> requestParameters) throws Throwable {
-    public void receiving_a_find_recent_devices_request() throws Throwable {
+    public void receivingAFindRecentDevicesRequest() throws Throwable {
         final FindRecentDevicesRequest request = new FindRecentDevicesRequest();
 
         try {
@@ -43,7 +41,7 @@ public class FindRecentDeviceSteps {
     }
 
     @Then("the find recent devices response contains \"([^\"]*)\" devices?")
-    public void the_find_recent_devices_response_contains(final Integer numberOfDevices) {
+    public void theFindRecentDevicesResponseContains(final Integer numberOfDevices) {
         final FindRecentDevicesResponse response = (FindRecentDevicesResponse) ScenarioContext.Current()
                 .get(Keys.RESPONSE);
 
@@ -52,7 +50,7 @@ public class FindRecentDeviceSteps {
     }
 
     @Then("the find recent devices response contains at index \"([^\"]*)\"")
-    public void the_find_recent_devices_response_contains_at_index(final Integer index,
+    public void theFindRecentDevicesResponseContainsAtIndex(final Integer index,
             final Map<String, String> expectedDevice) throws Throwable {
         final FindRecentDevicesResponse response = (FindRecentDevicesResponse) ScenarioContext.Current()
                 .get(Keys.RESPONSE);
