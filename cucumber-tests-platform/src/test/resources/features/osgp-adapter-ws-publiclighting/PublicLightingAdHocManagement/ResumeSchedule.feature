@@ -3,11 +3,11 @@ Feature: Adhoc Management
   As a platform 
   I want to asynchronously handle set light requests
 
-  @OslpMockServer @Skip
+  @OslpMockServer
   Scenario Outline: Resume Schedule
     Given an oslp device
       | DeviceIdentification | TEST1024000000001 |
-      | HasSchedule          | true              |
+      | HasSchedule          | true     |
     And the device returns a resume schedule response "<Result>" over OSLP
     When receiving a resume schedule request
       | DeviceIdentification | TEST1024000000001 |
