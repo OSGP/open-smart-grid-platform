@@ -39,14 +39,15 @@ public class CoreDeviceManagementClient extends BaseClient {
         return (FindDevicesResponse) wst.marshalSendAndReceive(request);
     }
 
-    public SetEventNotificationsAsyncResponse setEventNotifications(SetEventNotificationsRequest request)
+    public SetEventNotificationsAsyncResponse setEventNotifications(final SetEventNotificationsRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
         return (SetEventNotificationsAsyncResponse) wst.marshalSendAndReceive(request);
     }
 
-    public SetEventNotificationsResponse getSetEventNotificationsResponse(SetEventNotificationsAsyncRequest request)
+    public SetEventNotificationsResponse getSetEventNotificationsResponse(
+            final SetEventNotificationsAsyncRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());

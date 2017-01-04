@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
 import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRepository;
+import com.alliander.osgp.adapter.ws.microgrids.domain.repositories.RtuResponseDataRepository;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
@@ -29,6 +30,7 @@ import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.PlatformDomain;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
+import com.alliander.osgp.domain.microgrids.repositories.RtuDeviceRepository;
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 
@@ -60,7 +62,13 @@ public class DatabaseSteps {
     private OslpDeviceRepository oslpDeviceRepository;
 
     @Autowired
-    private SsldRepository ssldRepository;
+    private DeviceLogItemRepository deviceLogItemRepository;
+
+    @Autowired
+    private ScheduledTaskRepository scheduledTaskRepository;
+
+    @Autowired
+    private FirmwareRepository firmwareRepository;
 
     @Autowired
     private DeviceFirmwareRepository deviceFirmwareRepository;
@@ -69,13 +77,13 @@ public class DatabaseSteps {
     private EventRepository eventRepository;
 
     @Autowired
-    private DeviceLogItemRepository deviceLogItemRepository;
+    private SsldRepository ssldRepository;
 
     @Autowired
-    private ScheduledTaskRepository scheduledTaskRepository;
+    private RtuDeviceRepository rtuDeviceRepository;
 
     @Autowired
-    private FirmwareRepository firmwareRepository;
+    private RtuResponseDataRepository rtuResponseDataRepository;
 
     /**
      * This method is used to create default data not directly related to the
@@ -109,14 +117,16 @@ public class DatabaseSteps {
 
     @Transactional("txMgrCore")
     public void prepareDatabaseForScenario() {
-
     	// First remove stuff from osgp_protocol_adapter_oslp
     	this.oslpDeviceRepository.deleteAllInBatch();
         
     	// Then remove stuff from osgp_protocol_adapter_iec61850
     	this.iec61850DeviceRepository.deleteAllInBatch();
 
-    	// Then remove stuff from osgp_core
+        // Then remove stuff from osgp_protocol_adapter_iec61850
+        this.rtuResponseDataRepository.deleteAllInBatch();
+
+        // Then remove stuff from osgp_core
     	this.deviceAuthorizationRepository.deleteAllInBatch();
         this.deviceLogItemRepository.deleteAllInBatch();
         this.scheduledTaskRepository.deleteAllInBatch();
@@ -126,6 +136,10 @@ public class DatabaseSteps {
         this.eventRepository.deleteAllInBatch();
         this.smartMeterRepository.deleteAllInBatch();
         this.ssldRepository.deleteAllInBatch();
+        this.rtuDeviceRepository.deleteAllInBatch();
+        this.deviceRepository.deleteAllInBatch();
+        this.deviceModelRepository.deleteAllInBatch();
+
         this.deviceRepository.deleteAllInBatch();
         this.firmwareRepository.deleteAllInBatch();
         this.deviceModelRepository.deleteAllInBatch();

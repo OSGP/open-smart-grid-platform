@@ -70,21 +70,22 @@ public class CoreDeviceInstallationClient extends BaseClient {
         return (FindRecentDevicesResponse) wst.marshalSendAndReceive(request);
     }
 
-    public StartDeviceTestResponse getStartDeviceTestResponse(StartDeviceTestAsyncRequest request)
+    public StartDeviceTestResponse getStartDeviceTestResponse(final StartDeviceTestAsyncRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
+
         return (StartDeviceTestResponse) wst.marshalSendAndReceive(request);
     }
 
-    public StopDeviceTestAsyncResponse stopDeviceTest(StopDeviceTestRequest request)
+    public StopDeviceTestAsyncResponse stopDeviceTest(final StopDeviceTestRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
         return (StopDeviceTestAsyncResponse) wst.marshalSendAndReceive(request);
     }
 
-    public StopDeviceTestResponse getStopDeviceTestResponse(StopDeviceTestAsyncRequest request)
+    public StopDeviceTestResponse getStopDeviceTestResponse(final StopDeviceTestAsyncRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());

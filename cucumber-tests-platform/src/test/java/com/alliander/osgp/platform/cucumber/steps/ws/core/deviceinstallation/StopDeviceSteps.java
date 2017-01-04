@@ -36,10 +36,10 @@ import cucumber.api.java.en.When;
 
 public class StopDeviceSteps {
 
-	@Autowired
-	private CoreDeviceConfiguration configuration;
-	
-	@Autowired
+    @Autowired
+    private CoreDeviceConfiguration configuration;
+
+    @Autowired
     private CoreDeviceInstallationClient client;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StopDeviceSteps.class);
@@ -68,8 +68,7 @@ public class StopDeviceSteps {
      * @throws Throwable
      */
     @Then("the stop device async response contains")
-    public void theStopDeviceAsyncResponseContains(final Map<String, String> expectedResponseData)
-            throws Throwable {
+    public void theStopDeviceAsyncResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
         final StopDeviceTestAsyncResponse response = (StopDeviceTestAsyncResponse) ScenarioContext.Current()
                 .get(Keys.RESPONSE);
 
@@ -87,8 +86,7 @@ public class StopDeviceSteps {
     }
 
     @Then("^the stop device response contains soap fault$")
-    public void theStopDeviceResponseContainsSoapFault(final Map<String, String> expectedResult)
-            throws Throwable {
+    public void theStopDeviceResponseContainsSoapFault(final Map<String, String> expectedResult) throws Throwable {
         GenericResponseSteps.verifySoapFault(expectedResult);
     }
 
@@ -98,34 +96,34 @@ public class StopDeviceSteps {
      * @throws Throwable
      */
     @Then("the platform buffers a stop device response message for device \"([^\"]*)\"")
-    public void thePlatformBuffersAStopDeviceResponseMessageForDevice(final String deviceIdentification, final Map<String, String> expectedResult) throws Throwable
-    {
-    	StopDeviceTestAsyncRequest request = new StopDeviceTestAsyncRequest();
-    	AsyncRequest asyncRequest = new AsyncRequest();
-    	asyncRequest.setDeviceId(deviceIdentification);
-    	asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
-    	request.setAsyncRequest(asyncRequest);
-    	
-       	boolean success = false;
-    	int count = 0;
-    	while (!success) {
-    		if (count > configuration.defaultTimeout) {
-    			Assert.fail("Timeout");
-    		}
-    		
-    		count++;
+    public void thePlatformBuffersAStopDeviceResponseMessageForDevice(final String deviceIdentification,
+            final Map<String, String> expectedResult) throws Throwable {
+        StopDeviceTestAsyncRequest request = new StopDeviceTestAsyncRequest();
+        AsyncRequest asyncRequest = new AsyncRequest();
+        asyncRequest.setDeviceId(deviceIdentification);
+        asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
+        request.setAsyncRequest(asyncRequest);
+
+        boolean success = false;
+        int count = 0;
+        while (!success) {
+            if (count > configuration.defaultTimeout) {
+                Assert.fail("Timeout");
+            }
+
+            count++;
             Thread.sleep(1000);
 
-    		try {
-    		   	StopDeviceTestResponse response = client.getStopDeviceTestResponse(request);
-    		       			
-    			Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.KEY_RESULT)), response.getResult());
-    			
-    			success = true; 
-    		}
-    		catch(Exception ex) {
-    			// Do nothing
-    		}
-    	}
+            try {
+                StopDeviceTestResponse response = client.getStopDeviceTestResponse(request);
+
+                Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.KEY_RESULT)),
+                        response.getResult());
+
+                success = true;
+            } catch (Exception ex) {
+                // Do nothing
+            }
+        }
     }
 }

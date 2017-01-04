@@ -47,7 +47,7 @@ public class DeviceModelSteps {
     @Given("^a device model")
     public void aDeviceModel(final Map<String, String> settings) throws Throwable {
         this.insertDeviceModel(settings);
-	}
+    }
 
     /**
      * Generic method to check if the device model is created as expected in the
@@ -60,17 +60,23 @@ public class DeviceModelSteps {
     @Then("^the entity device model exists$")
     public void thenTheEntityDeviceModelExists(final Map<String, String> expectedEntity) throws Throwable {
 
-        final DeviceModel entity = this.repo.findByModelCode(getString(expectedEntity, "ModelCode",
-                Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
+        final DeviceModel entity = this.repo
+                .findByModelCode(getString(expectedEntity, "ModelCode", Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
 
-        Assert.assertEquals(getString(expectedEntity, "ManufacturerId", Defaults.DEFAULT_MANUFACTURER_ID), entity
-                .getManufacturerId().getManufacturerId());
+        Assert.assertEquals(getString(expectedEntity, "ManufacturerId", Defaults.DEFAULT_MANUFACTURER_ID),
+                entity.getManufacturerId().getManufacturerId());
         Assert.assertEquals(getString(expectedEntity, "Description", Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION),
                 entity.getDescription());
         Assert.assertEquals(getBoolean(expectedEntity, "Metered", Defaults.DEFAULT_DEVICE_MODEL_METERED),
                 entity.isMetered());
     }
 
+    /**
+     * This inserts a default DeviceModel
+     *
+     * @param settings
+     * @return
+     */
     public DeviceModel insertDeviceModel(Map<String, String> settings) {
         // Get the given manufacturer (or the default).
         final Manufacturer manufacturer = this.manufacturerRepo.findByName(

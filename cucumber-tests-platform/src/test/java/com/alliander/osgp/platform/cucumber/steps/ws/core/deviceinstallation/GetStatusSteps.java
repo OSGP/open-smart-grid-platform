@@ -40,8 +40,10 @@ public class GetStatusSteps {
     private CoreDeviceInstallationClient client;
 
     @When("receiving a device installation get status request")
-    public void receivingADeviceInstallationGetStatusRequest() throws Throwable {
+    public void receivingADeviceInstallationGetStatusRequest(final Map<String, String> settings) throws Throwable {
         final GetStatusRequest request = new GetStatusRequest();
+        
+        request.setDeviceIdentification(getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         try {
             ScenarioContext.Current().put(Keys.RESPONSE, this.client.getStatus(request));

@@ -37,10 +37,8 @@ Feature: Find Recent Devices
       | DeviceIdentification | OrganizationIdentification |
       | TEST1024000000001    | test-org                   |
 
-  Scenario Outline: Find recent devices without owner
+  Scenario: Find recent devices with empty owner organization
+
+  Scenario: Find recent devices with unknown owner organization
     When receiving a find recent devices request
     Then the find recent devices response contains "0" devices
-
-    Examples: 
-      | DeviceIdentification |
-      | TEST1024000000002    |
