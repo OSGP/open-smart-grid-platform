@@ -109,11 +109,10 @@ Feature: Organization management
 
   Scenario: Change Data Of Non Existing Organization
     When receiving an update organization request
-      | OrganizationIdentification | org-test      |
-      | Name                       | org-test-name |
+      | OrganizationIdentification | ATestOrganization |
+      | Name                       | SomeData          |
     Then the update organization response contains
       | Message | UNKNOWN_ORGANISATION |
-    And the organization with name "org-test-name" should not be changed
 
   # Note: Does only work if all the words 'organisation' are changed to 'organization', or it has to remain the same as it is.
   Scenario Outline: Remove An Existing Organization
