@@ -36,7 +36,7 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
     @Value("${jms.requests.delivery.persistent:true}")
     protected boolean requestDeliveryPersistent;
 
-    @Value("${jms.requests.time.to.live:-1}")
+    @Value("${jms.requests.time.to.live:3600000}")
     protected long requestTimeToLive;
 
     @Value("${jms.requests.concurrent.consumers:2}")
@@ -69,7 +69,7 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
     @Value("${jms.responses.delivery.persistent:true}")
     protected boolean responsesDeliveryPersistent;
 
-    @Value("${jms.responses.time.to.live:-1}")
+    @Value("${jms.responses.time.to.live:3600000}")
     protected long responsesTimeToLive;
 
     @Value("${jms.responses.concurrent.consumers:2}")
@@ -102,7 +102,7 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
     @Value("${jms.logging.delivery.persistent:true}")
     protected boolean loggingDeliveryPersistent;
 
-    @Value("${jms.logging.time.to.live:-1}")
+    @Value("${jms.logging.time.to.live:3600000}")
     protected long loggingTimeToLive;
 
     @Value("${jms.logging.concurrent.consumers:2}")
