@@ -91,6 +91,7 @@ public class OrganizationSteps {
         if (expectedOrganization.containsKey(Keys.KEY_NAME)) {
             Assert.assertEquals(getString(expectedOrganization, Keys.KEY_NAME), entity.getName());
         }
+        
         if (expectedOrganization.containsKey(Keys.KEY_PLATFORM_FUNCTION_GROUP)) {
             Assert.assertEquals(
                     getEnum(expectedOrganization, Keys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class),

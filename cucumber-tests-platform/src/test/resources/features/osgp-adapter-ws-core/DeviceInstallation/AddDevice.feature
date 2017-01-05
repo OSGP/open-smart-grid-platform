@@ -40,7 +40,7 @@ Feature: Add Device
       | containerMunicipality      | <ContainerMunicipality> |
       | gpsLatitude                | <GpsLatitude>           |
       | gpsLongitude               | <GpsLongitude>          |
-      #| Activated                  | <Activated>             |
+      | Activated                  | <Activated>             |
       | HasSchedule                | <HasSchedule>           |
       | PublicKeyPresent           | <PublicKeyPresent>      |
       | DeviceModel                | <ModelCode>             |
