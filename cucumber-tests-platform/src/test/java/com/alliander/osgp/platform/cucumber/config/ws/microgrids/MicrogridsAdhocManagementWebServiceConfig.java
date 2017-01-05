@@ -1,7 +1,7 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -25,6 +25,9 @@ public class MicrogridsAdhocManagementWebServiceConfig extends BaseWebServiceCon
     @Value("${jaxb2.marshaller.context.path.microgrids.adhocmanagement}")
     private String contextPathMicrogridsAdHocManagement;
 
+    @Value("${jaxb2.marshaller.context.path.smartmetering.installationmanagement}")
+    private String contextPathSmartmeteringInstallationManagement;
+
     @Bean
     public WebServiceTemplateFactory webServiceTemplateFactoryMicrogridsAdHocManagement() {
         return new WebServiceTemplateFactory.Builder().setMarshaller(this.microgridsAdHocManagementMarshaller())
@@ -46,6 +49,20 @@ public class MicrogridsAdhocManagementWebServiceConfig extends BaseWebServiceCon
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
         marshaller.setContextPath(this.contextPathMicrogridsAdHocManagement);
+
+        return marshaller;
+    }
+
+    /**
+     * Method for creating the Marshaller for Microgrids AdHocManagement.
+     *
+     * @return Jaxb2Marshaller
+     */
+    @Bean
+    public Jaxb2Marshaller smartmeteringInstallationManagementMarshaller() {
+        final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+
+        marshaller.setContextPath(this.contextPathSmartmeteringInstallationManagement);
 
         return marshaller;
     }

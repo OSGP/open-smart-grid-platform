@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;
@@ -32,6 +33,7 @@ import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory
 public class AdHocManagementClient extends BaseClient {
 
     @Autowired
+    @Qualifier("webServiceTemplateFactoryMicrogridsAdHocManagement")
     private WebServiceTemplateFactory webServiceTemplateFactoryMicrogridsAdHocManagement;
 
     @Autowired

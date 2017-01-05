@@ -62,7 +62,7 @@ public class SetLightSteps {
 	 * @throws Throwable
 	 */
 	@When("^receiving a set light request$")
-	public void givenReceivingASetLightRequest(final Map<String, String> requestParameters) throws Throwable {
+	public void receivingASetLightRequest(final Map<String, String> requestParameters) throws Throwable {
 
 		SetLightRequest request = new SetLightRequest();
 		request.setDeviceIdentification(
@@ -115,7 +115,7 @@ public class SetLightSteps {
 	}
 
 	@When("^receiving a set light request with \"([^\"]*)\" light values$")
-	public void givenReceivingASetLightRequestWithLightValues(final Integer nofLightValues,
+	public void receivingASetLightRequestWithLightValues(final Integer nofLightValues,
 			final Map<String, String> requestParameters) throws Throwable {
 		SetLightRequest request = new SetLightRequest();
 		request.setDeviceIdentification(
@@ -146,7 +146,7 @@ public class SetLightSteps {
 	 * @throws Throwable
 	 */
 	@Then("^the set light async response contains$")
-	public void thenTheSetLightResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
+	public void theSetLightResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
 
 		SetLightAsyncResponse response = (SetLightAsyncResponse) ScenarioContext.Current().get(Keys.RESPONSE);
 
@@ -164,12 +164,12 @@ public class SetLightSteps {
 	}
 
 	@Then("^the set light response contains soap fault$")
-	public void thenTheSetLightResponseContainsSoapFault(final Map<String, String> expectedResult) {
+	public void theSetLightResponseContainsSoapFault(final Map<String, String> expectedResult) {
 		GenericResponseSteps.verifySoapFault(expectedResult);
 	}
 
 	@Then("^the platform buffers a set light response message for device \"([^\"]*)\"$")
-	public void thenThePlatformBuffersASetLightResponseMessage(final String deviceIdentification,
+	public void thePlatformBuffersASetLightResponseMessage(final String deviceIdentification,
 			final Map<String, String> expectedResult) throws Throwable {
 		SetLightAsyncRequest request = new SetLightAsyncRequest();
 		AsyncRequest asyncRequest = new AsyncRequest();

@@ -35,12 +35,12 @@ import cucumber.api.java.en.When;
  * Class with all the create organization requests steps
  */
 public class CreateOrganizationSteps {
-    
+
     @Autowired
-	private AdminDeviceManagementClient client;
+    private AdminDeviceManagementClient client;
 
     /**
-     * 
+     *
      * @throws Throwable
      */
     @When("^receiving a create organization request$")
@@ -48,18 +48,26 @@ public class CreateOrganizationSteps {
 
     	CreateOrganisationRequest request = new CreateOrganisationRequest();
     	Organisation organization = new Organisation();
-    	organization.setEnabled(getBoolean(requestSettings, Keys.KEY_ENABLED, Defaults.DEFAULT_ORGANIZATION_ENABLED));
-    	organization.setName(getString(requestSettings, Keys.KEY_NAME, Defaults.DEFAULT_ORGANIZATION_NAME));
+    	
+    	// Required fields
+        organization.setName(getString(requestSettings, Keys.KEY_NAME, Defaults.DEFAULT_ORGANIZATION_NAME));
     	organization.setOrganisationIdentification(getString(requestSettings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
     	organization.setPrefix(getString(requestSettings, Keys.KEY_PREFIX, Defaults.DEFAULT_ORGANIZATION_PREFIX));
     	
-    	PlatformFunctionGroup platformFunctionGroup = getEnum(requestSettings, Keys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class, Defaults.DEFAULT_PLATFORM_FUNCTION_GROUP);
+    	PlatformFunctionGroup platformFunctionGroup = getEnum(requestSettings, 
+    	        Keys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class, Defaults.DEFAULT_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP);
     	organization.setFunctionGroup(platformFunctionGroup);
+
+	    for (String domain : getString(requestSettings, Keys.KEY_DOMAINS, Defaults.DEFAULT_DOMAINS).split(";")) {
+            organization.getDomains().add(Enum.valueOf(PlatformDomain.class, domain));
+        }
     	
-    	for (String domain : getString(requestSettings, Keys.KEY_DOMAINS, Defaults.DEFAULT_DOMAINS).split(";")) {
-        	organization.getDomains().add(Enum.valueOf(PlatformDomain.class, domain));
-    	}
-    	request.setOrganisation(organization);
+	    // Optional fields
+	    if (requestSettings.containsKey(Keys.KEY_ENABLED) && !requestSettings.get(Keys.KEY_ENABLED).isEmpty()) {
+	        organization.setEnabled(getBoolean(requestSettings, Keys.KEY_ENABLED));
+	    }
+	    
+	    request.setOrganisation(organization);
         
     	try {
     		ScenarioContext.Current().put(Keys.RESPONSE, client.createOrganization(request));
@@ -67,31 +75,34 @@ public class CreateOrganizationSteps {
     		ScenarioContext.Current().put(Keys.RESPONSE, e);
     	}
     }
-    
+
     /**
-     * 
+     *
      * @throws Throwable
      */
     @When("^receiving a create organization request as an unauthorized organization$")
-    public void receivingACreateOrganizationRequestAsAnUnauthorizedOrganization(final Map<String, String> requestSettings) throws Throwable {
+    public void receivingACreateOrganizationRequestAsAnUnauthorizedOrganization(
+            final Map<String, String> requestSettings) throws Throwable {
 
-    	// Force WSTF to use a different organization to send the requests with. (Cerificate is used from the certificates directory).
-    	ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
-    	
-    	this.receivingACreateOrganizationRequest(requestSettings);
+        // Force WSTF to use a different organization to send the requests with.
+        // (Cerificate is used from the certificates directory).
+        ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
+
+        this.receivingACreateOrganizationRequest(requestSettings);
     }
-    
+
     /**
      * Verify that the create organization response is successful.
      * @throws Throwable
      */
     @Then("^the create organization response is successful$")
     public void theCreateOrganizationResponseIsSuccessful() throws Throwable {
-    	Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof CreateOrganisationResponse);
+        Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof CreateOrganisationResponse);
     }
-    
+
     /**
-     * Verify that the create organization response contains the fault with the given expectedResult parameters.
+     * Verify that the create organization response contains the fault with the
+     * given expectedResult parameters.
      * @param expectedResult
      * @throws Throwable
      */

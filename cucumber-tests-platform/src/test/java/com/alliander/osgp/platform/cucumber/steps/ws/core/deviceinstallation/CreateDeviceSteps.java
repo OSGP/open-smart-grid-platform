@@ -40,125 +40,137 @@ import cucumber.api.java.en.When;
  */
 public class CreateDeviceSteps {
 
-    @Autowired
-    private CoreDeviceInstallationClient client;
+	@Autowired
+	private CoreDeviceInstallationClient client;
 
-    /**
-     *
-     * @throws Throwable
-     */
-    @When("^receiving an add device request$")
-    public void receiving_an_add_device_request(final Map<String, String> settings) throws Throwable {
+	/**
+	 *
+	 * @throws Throwable
+	 */
+	@When("^receiving an add device request$")
+	public void receivingAnAddDeviceRequest(final Map<String, String> settings) throws Throwable {
 
-    	AddDeviceRequest request = new AddDeviceRequest();
-    	Device device = createDevice(settings);
-    	request.setDevice(device);
-    	
-    	try {
-    		ScenarioContext.Current().put(Keys.RESPONSE, client.addDevice(request));
-    	} catch(SoapFaultClientException ex) {
-    		ScenarioContext.Current().put(Keys.RESPONSE, ex);
-    	}
-    }
-    
-    /**
-     * Verify the response of a add device request.
-     * 
-     * @param settings
-     * @throws Throwable
-     */
-    @Then("^the add device response is successfull$")
-    public void the_add_device_response_is_successfull() throws Throwable {
-    	Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof AddDeviceResponse);
-    }
+		final AddDeviceRequest request = new AddDeviceRequest();
+		final Device device = this.createDevice(settings);
+		request.setDevice(device);
 
-    /**
-     *
-     * @throws Throwable
-     */
-    @When("^receiving an update device request")
-    public void receiving_an_update_device_request(final Map<String, String> settings) throws Throwable {
-    	UpdateDeviceRequest request = new UpdateDeviceRequest();
-    	
-    	request.setDeviceIdentification(getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-    	Device device = createDevice(settings);
-    	request.setUpdatedDevice(device);
-    	
-    	try {
-    		ScenarioContext.Current().put(Keys.RESPONSE, client.updateDevice(request));
-    	} catch(SoapFaultClientException ex) {
-    		ScenarioContext.Current().put(Keys.RESPONSE, ex);
-    	}        
-    }
-
-    private Device createDevice(Map<String, String> settings) {
-		Device device = new Device();
-    	device.setActivated(getBoolean(settings, Keys.KEY_ACTIVATED, Defaults.DEFAULT_ACTIVATED));
-    	device.setAlias(getString(settings, Keys.KEY_ALIAS, Defaults.DEFAULT_ALIAS));
-    	device.setContainerCity(getString(settings, Keys.KEY_CITY, Defaults.DEFAULT_CONTAINER_CITY));
-    	device.setContainerMunicipality(getString(settings, Keys.KEY_MUNICIPALITY, Defaults.DEFAULT_CONTAINER_MUNICIPALITY));
-    	device.setContainerNumber(getString(settings, Keys.KEY_NUMBER, Defaults.DEFAULT_CONTAINER_NUMBER));
-    	device.setContainerPostalCode(getString(settings, Keys.KEY_POSTCODE, Defaults.DEFAULT_CONTAINER_POSTALCODE));
-    	device.setContainerStreet(getString(settings, Keys.KEY_STREET, Defaults.DEFAULT_CONTAINER_STREET));
-    	device.setDeviceIdentification(getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-    	DeviceModel deviceModel = new DeviceModel();
-    	deviceModel.setDescription(getString(settings, Keys.KEY_DEVICE_MODEL_DESCRIPTION, Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION));
-    	deviceModel.setManufacturer(getString(settings, Keys.KEY_DEVICE_MODEL_MANUFACTURER, Defaults.DEFAULT_DEVICE_MODEL_MANUFACTURER));
-    	deviceModel.setMetered(getBoolean(settings, Keys.KEY_DEVICE_MODEL_METERED, Defaults.DEFAULT_DEVICE_MODEL_METERED));
-    	deviceModel.setModelCode(getString(settings, Keys.KEY_DEVICE_MODEL_MODELCODE, Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
-    	device.setDeviceModel(deviceModel);
-    	device.setDeviceUid(getString(settings, Keys.KEY_DEVICE_UID, OslpDeviceSteps.DEFAULT_DEVICE_UID));
-    	device.setGpsLatitude(getFloat(settings, Keys.KEY_LATITUDE, Defaults.DEFAULT_LATITUDE));
-    	device.setGpsLongitude(getFloat(settings, Keys.KEY_LONGITUDE, Defaults.DEFAULT_LONGITUDE));
-    	device.setHasSchedule(getBoolean(settings, Keys.KEY_HAS_SCHEDULE, Defaults.DEFAULT_HASSCHEDULE));
-    	device.setOwner(getString(settings, Keys.KEY_OWNER, Defaults.DEFAULT_OWNER));
-    	device.setPublicKeyPresent(getBoolean(settings, Keys.KEY_PUBLICKEYPRESENT, Defaults.DEFAULT_PUBLICKEYPRESENT));
-    	
-    	return device;
+		try {
+			ScenarioContext.Current().put(Keys.RESPONSE, this.client.addDevice(request));
+		} catch (final SoapFaultClientException ex) {
+			ScenarioContext.Current().put(Keys.RESPONSE, ex);
+		}
 	}
 
 	/**
-     * Verify the response of a update device request.
-     * 
-     * @param settings
-     * @throws Throwable
-     */
-    @Then("^the update device response is successfull$")
-    public void the_update_device_response_is_successfull() throws Throwable {
-    	Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof UpdateDeviceResponse);
-    }
-    
-    /**
-     * Verify that the create organization response contains the fault with the given expectedResult parameters.
-     * @param expectedResult
-     * @throws Throwable
-     */
-    @Then("^the add device response contains$")
-    public void the_add_device_response_contains(final Map<String, String> expectedResult) throws Throwable {
-    	Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof AddDeviceResponse);
-    }
-    
-    @Then("^the add device response contains soap fault$")
-    public void the_add_device_response_contains_soap_fault(final Map<String, String> expectedResult) throws Throwable {
-        GenericResponseSteps.verifySoapFault(expectedResult);
-    }
+	 * Verify the response of a add device request.
+	 * 
+	 * @param settings
+	 * @throws Throwable
+	 */
+	@Then("^the add device response is successfull$")
+	public void theAddDeviceResponseIsSuccessfull() throws Throwable {
+		Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof AddDeviceResponse);
+	}
 
-    /**
-     * @param expectedResult
-     * @throws Throwable
-     */
-    @Then("^the update device response contains$")
-    public void the_update_device_response_contains(Map<String, String> expectedResult) throws Throwable {
-    	Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof UpdateDeviceResponse);
-    }
+	/**
+	 *
+	 * @throws Throwable
+	 */
+	@When("^receiving an update device request")
+	public void receivingAnUpdateDeviceRequest(final Map<String, String> settings) throws Throwable {
+		final UpdateDeviceRequest request = new UpdateDeviceRequest();
 
-    /**
-     * Verify that the update device response contains the fault with the given expectedResult parameters.
-     * @param expectedResult
-     * @throws Throwable
-     */
-    @Then("^the update device response contains soap fault$")
-    public void the_update_device_response_contains_soap_fault(Map<String, String> expectedResult) throws Throwable {
-        GenericResponseSteps.verifySoapFault(expectedResult);
-    }
+		request.setDeviceIdentification(
+				getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+		final Device device = this.createDevice(settings);
+		request.setUpdatedDevice(device);
+
+		try {
+			ScenarioContext.Current().put(Keys.RESPONSE, this.client.updateDevice(request));
+		} catch (final SoapFaultClientException ex) {
+			ScenarioContext.Current().put(Keys.RESPONSE, ex);
+		}
+	}
+
+	private Device createDevice(final Map<String, String> settings) {
+		final Device device = new Device();
+		device.setActivated(getBoolean(settings, Keys.KEY_ACTIVATED, Defaults.DEFAULT_ACTIVATED));
+		device.setAlias(getString(settings, Keys.KEY_ALIAS, Defaults.DEFAULT_ALIAS));
+		device.setContainerCity(getString(settings, Keys.KEY_CITY, Defaults.DEFAULT_CONTAINER_CITY));
+		device.setContainerMunicipality(
+				getString(settings, Keys.KEY_MUNICIPALITY, Defaults.DEFAULT_CONTAINER_MUNICIPALITY));
+		device.setContainerNumber(getString(settings, Keys.KEY_NUMBER, Defaults.DEFAULT_CONTAINER_NUMBER));
+		device.setContainerPostalCode(getString(settings, Keys.KEY_POSTCODE, Defaults.DEFAULT_CONTAINER_POSTALCODE));
+		device.setContainerStreet(getString(settings, Keys.KEY_STREET, Defaults.DEFAULT_CONTAINER_STREET));
+		device.setDeviceIdentification(
+				getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+		final DeviceModel deviceModel = new DeviceModel();
+		deviceModel.setDescription(
+				getString(settings, Keys.KEY_DEVICE_MODEL_DESCRIPTION, Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION));
+		deviceModel.setManufacturer(
+				getString(settings, Keys.KEY_DEVICE_MODEL_MANUFACTURER, Defaults.DEFAULT_DEVICE_MODEL_MANUFACTURER));
+		deviceModel
+				.setMetered(getBoolean(settings, Keys.KEY_DEVICE_MODEL_METERED, Defaults.DEFAULT_DEVICE_MODEL_METERED));
+		deviceModel.setModelCode(
+				getString(settings, Keys.KEY_DEVICE_MODEL_MODELCODE, Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
+		device.setDeviceModel(deviceModel);
+		device.setDeviceUid(getString(settings, Keys.KEY_DEVICE_UID, OslpDeviceSteps.DEFAULT_DEVICE_UID));
+		device.setGpsLatitude(getFloat(settings, Keys.KEY_LATITUDE, Defaults.DEFAULT_LATITUDE));
+		device.setGpsLongitude(getFloat(settings, Keys.KEY_LONGITUDE, Defaults.DEFAULT_LONGITUDE));
+		device.setHasSchedule(getBoolean(settings, Keys.KEY_HAS_SCHEDULE, Defaults.DEFAULT_HASSCHEDULE));
+		device.setOwner(getString(settings, Keys.KEY_OWNER, Defaults.DEFAULT_OWNER));
+		device.setPublicKeyPresent(getBoolean(settings, Keys.KEY_PUBLICKEYPRESENT, Defaults.DEFAULT_PUBLICKEYPRESENT));
+
+		return device;
+	}
+
+	/**
+	 * Verify the response of a update device request.
+	 * 
+	 * @param settings
+	 * @throws Throwable
+	 */
+	@Then("^the update device response is successfull$")
+	public void theUpdateDeviceResponseIsSuccessfull() throws Throwable {
+		Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof UpdateDeviceResponse);
+	}
+
+	/**
+	 * Verify that the create organization response contains the fault with the
+	 * given expectedResult parameters.
+	 * 
+	 * @param expectedResult
+	 * @throws Throwable
+	 */
+	@Then("^the add device response contains$")
+	public void theAddDeviceResponseContains(final Map<String, String> expectedResult) throws Throwable {
+		Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof AddDeviceResponse);
+	}
+
+	@Then("^the add device response contains soap fault$")
+	public void theAddDeviceResponseContainsSoapFault(final Map<String, String> expectedResult) throws Throwable {
+		GenericResponseSteps.verifySoapFault(expectedResult);
+	}
+
+	/**
+	 * @param expectedResult
+	 * @throws Throwable
+	 */
+	@Then("^the update device response contains$")
+	public void theUpdateDeviceResponseContains(final Map<String, String> expectedResult) throws Throwable {
+		Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof UpdateDeviceResponse);
+	}
+
+	/**
+	 * Verify that the update device response contains the fault with the given
+	 * expectedResult parameters.
+	 * 
+	 * @param expectedResult
+	 * @throws Throwable
+	 */
+	@Then("^the update device response contains soap fault$")
+	public void theUpdateDeviceResponseContainsSoapFault(final Map<String, String> expectedResult)
+			throws Throwable {
+		GenericResponseSteps.verifySoapFault(expectedResult);
+	}
 }
