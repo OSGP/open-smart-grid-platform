@@ -68,6 +68,24 @@ public class DlmsDeviceSteps {
     @Given("^a dlms device$")
     public void aDlmsDevice(final Map<String, String> inputSettings) throws Throwable {
 
+        final Device device = this.createDeviceInCoreDatabase(inputSettings);
+        this.setScenarioContextForDevice(inputSettings, device);
+
+        this.createDeviceAuthorisationInCoreDatabase(device);
+
+        this.createDlmsDeviceInProtocolAdapterDatabase(inputSettings);
+    }
+
+    private void setScenarioContextForDevice(final Map<String, String> inputSettings, final Device device) {
+        final String deviceType = inputSettings.get(Keys.DEVICE_TYPE);
+        if (this.isGasSmartMeter(deviceType)) {
+            ScenarioContext.Current().put(Keys.GAS_DEVICE_IDENTIFICATION, device.getDeviceIdentification());
+        } else {
+            ScenarioContext.Current().put(Keys.DEVICE_IDENTIFICATION, device.getDeviceIdentification());
+        }
+    }
+
+    private Device createDeviceInCoreDatabase(final Map<String, String> inputSettings) {
         Device device;
         if (this.isSmartMeter(inputSettings)) {
             final SmartMeter smartMeter = new SmartMeterBuilder().withSettings(inputSettings)
@@ -80,23 +98,26 @@ public class DlmsDeviceSteps {
             this.deviceRepository.save(device);
         }
 
-        ScenarioContext.Current().put(Keys.DEVICE_IDENTIFICATION, device.getDeviceIdentification());
-
         if (inputSettings.containsKey(Keys.GATEWAY_DEVICE_IDENTIFICATION)) {
             final Device gatewayDevice = this.deviceRepository.findByDeviceIdentification(inputSettings
                     .get(Keys.GATEWAY_DEVICE_IDENTIFICATION));
             device.updateGatewayDevice(gatewayDevice);
             device = this.deviceRepository.save(device);
         }
+        return device;
+    }
 
-        // Authorization
+    private void createDeviceAuthorisationInCoreDatabase(final Device device) {
         final Organisation organisation = this.organisationRepo
                 .findByOrganisationIdentification(Defaults.ORGANISATION_IDENTIFICATION);
         final DeviceAuthorization deviceAuthorization = device
                 .addAuthorization(organisation, DeviceFunctionGroup.OWNER);
-        this.deviceAuthorizationRepository.save(deviceAuthorization);
 
-        // Protocol adapter
+        this.deviceAuthorizationRepository.save(deviceAuthorization);
+        this.deviceRepository.save(device);
+    }
+
+    private void createDlmsDeviceInProtocolAdapterDatabase(final Map<String, String> inputSettings) {
         final DlmsDeviceBuilder dlmsDeviceBuilder = new DlmsDeviceBuilder().withSettings(inputSettings);
         if (inputSettings.containsKey(Keys.GATEWAY_DEVICE_IDENTIFICATION)) {
             // MBUS devices dont need these keys.
@@ -114,7 +135,15 @@ public class DlmsDeviceSteps {
 
     private boolean isSmartMeter(final Map<String, String> settings) {
         final String deviceType = settings.get(Keys.DEVICE_TYPE);
-        return SMART_METER_E.equals(deviceType) || SMART_METER_G.equals(deviceType);
+        return this.isGasSmartMeter(deviceType) || this.isESmartMeter(deviceType);
+    }
+
+    private boolean isGasSmartMeter(final String deviceType) {
+        return SMART_METER_G.equals(deviceType);
+    }
+
+    private boolean isESmartMeter(final String deviceType) {
+        return SMART_METER_E.equals(deviceType);
     }
 
     /**

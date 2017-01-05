@@ -11,7 +11,7 @@ You will need a dlms device simulator to run these tests.
 
 ##### Running Cucumber integration tests
 
-You can run the automatic tests by running 
+You can run the automatic tests by running: 
 `mvn test`
 from the commandline.
 
