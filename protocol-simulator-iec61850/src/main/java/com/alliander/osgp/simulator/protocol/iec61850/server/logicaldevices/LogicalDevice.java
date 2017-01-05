@@ -8,12 +8,8 @@
 package com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices;
 
 import java.nio.ByteBuffer;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.openmuc.openiec61850.BasicDataAttribute;
@@ -28,13 +24,9 @@ import org.openmuc.openiec61850.Fc;
 import org.openmuc.openiec61850.ServerModel;
 import org.springframework.util.StringUtils;
 
-public abstract class LogicalDevice {
+import com.alliander.osgp.simulator.protocol.iec61850.server.BasicDataAttributesHelper;
 
-    private static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd'T'HH:mm:ss";
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT_PATTERN);
-    static {
-        DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
-    }
+public abstract class LogicalDevice {
 
     private String physicalDeviceName;
     private String logicalDeviceName;
@@ -44,6 +36,10 @@ public abstract class LogicalDevice {
             final ServerModel serverModel) {
         this.physicalDeviceName = physicalDeviceName;
         this.logicalDeviceName = logicalDeviceName;
+        this.serverModel = serverModel;
+    }
+
+    public void refreshServerModel(final ServerModel serverModel) {
         this.serverModel = serverModel;
     }
 
@@ -155,14 +151,7 @@ public abstract class LogicalDevice {
         if (StringUtils.isEmpty(date)) {
             return null;
         }
-        synchronized (DATE_FORMAT) {
-            try {
-                return DATE_FORMAT.parse(date);
-            } catch (final ParseException e) {
-                throw new AssertionError(
-                        "Input \"" + date + "\" cannot be parsed with pattern \"" + DATE_FORMAT_PATTERN + "\"", e);
-            }
-        }
+        return BasicDataAttributesHelper.parseDate(date);
     }
 
     protected IllegalArgumentException illegalNodeException(final String node) {

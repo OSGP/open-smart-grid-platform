@@ -8,9 +8,14 @@
 package com.alliander.osgp.simulator.protocol.iec61850.server;
 
 import java.nio.charset.StandardCharsets;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.openmuc.openiec61850.BasicDataAttribute;
 import org.openmuc.openiec61850.BdaBoolean;
@@ -38,8 +43,15 @@ import org.openmuc.openiec61850.BdaType;
 import org.openmuc.openiec61850.BdaUnicodeString;
 import org.openmuc.openiec61850.BdaVisibleString;
 import org.openmuc.openiec61850.HexConverter;
+import org.springframework.util.StringUtils;
 
 public class BasicDataAttributesHelper {
+
+    private static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd'T'HH:mm:ss";
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT_PATTERN);
+    static {
+        DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
+    }
 
     private static interface ValueSetter {
         void setValue(BasicDataAttribute bda, String value);
@@ -343,7 +355,7 @@ public class BasicDataAttributesHelper {
     private static class BdaTimestampValueSetter implements ValueSetter {
         @Override
         public void setValue(final BasicDataAttribute bda, final String value) {
-            ((BdaTimestamp) bda).setValue(BasicDataAttributesHelper.toByteArray(value));
+            ((BdaTimestamp) bda).setDate(BasicDataAttributesHelper.parseDate(value));
         }
     }
 
@@ -418,6 +430,20 @@ public class BasicDataAttributesHelper {
 
     private BasicDataAttributesHelper() {
         // Private constructor for utility class.
+    }
+
+    public static Date parseDate(final String date) {
+        if (StringUtils.isEmpty(date)) {
+            return null;
+        }
+        synchronized (DATE_FORMAT) {
+            try {
+                return DATE_FORMAT.parse(date);
+            } catch (final ParseException e) {
+                throw new AssertionError(
+                        "Input \"" + date + "\" cannot be parsed with pattern \"" + DATE_FORMAT_PATTERN + "\"", e);
+            }
+        }
     }
 
     private static byte[] toByteArray(final String hexString) {

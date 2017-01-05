@@ -215,6 +215,8 @@ public class RtuSimulator implements ServerEventListener {
 
     public void assertValue(final String logicalDeviceName, final String node, final String value) {
         final LogicalDevice logicalDevice = this.getLogicalDevice(logicalDeviceName);
+        // Get a new model copy to see values that have been set on the server.
+        logicalDevice.refreshServerModel(this.server.getModelCopy());
         final ModelNode actual = logicalDevice.getBasicDataAttribute(node);
         if (actual == null) {
             throw new AssertionError("RTU Simulator does not have expected node \"" + node + "\" on logical device \""
