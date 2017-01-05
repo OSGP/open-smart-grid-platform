@@ -7,7 +7,7 @@ Feature: Re-establish connection
     Given an rtu device
       | DeviceIdentification | RTU10001 |
     When the OSGP connection is lost with the RTU device
-    Then I receive a notification
+    Then I should receive a notification
     And the get data response should be returned
       | DeviceIdentification     | RTU10001    |
       | Result                   | OK          |
@@ -19,7 +19,7 @@ Feature: Re-establish connection
       | MeasurementNode_1_1      | Alm1        |
       | MeasurementValue_1_1     |           1 |
       | MeasurementQualifier_1_1 |           0 |
-    And I receive a notification
+    And I should receive a notification
     And the get data response should be returned
       | DeviceIdentification     | RTU10001    |
       | Result                   | OK          |

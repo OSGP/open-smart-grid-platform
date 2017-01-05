@@ -36,7 +36,7 @@ public class NotificationSteps {
 
     }
 
-    @Then("^I receive a notification$")
+    @Then("^I should receive a notification$")
     public void iReceiveANotification() throws Throwable {
         int waited = 0;
 
