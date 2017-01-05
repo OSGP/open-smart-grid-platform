@@ -32,12 +32,14 @@ import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
 import com.alliander.osgp.domain.core.entities.Organisation;
+import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
+import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.RelayType;
@@ -73,6 +75,9 @@ public class DeviceSteps {
     private DeviceRepository deviceRepository;
 
     @Autowired
+    private SmartMeterRepository smartMeterRepository;
+
+    @Autowired
     private OrganisationRepository organizationRepository;
 
     @Autowired
@@ -104,8 +109,8 @@ public class DeviceSteps {
         if (settings.containsKey(Keys.KEY_INTERNALID) || settings.containsKey(Keys.KEY_EXTERNALID)
                 || settings.containsKey(Keys.KEY_RELAY_TYPE)) {
             final List<DeviceOutputSetting> dosList = new ArrayList<>();
-            final int internalId = getInteger(settings, Keys.KEY_INTERNALID, Defaults.DEFAULT_INTERNALID),
-                    externalId = getInteger(settings, Keys.KEY_EXTERNALID, Defaults.DEFAULT_EXTERNALID);
+            final int internalId = getInteger(settings, Keys.KEY_INTERNALID, Defaults.DEFAULT_INTERNALID), externalId = getInteger(
+                    settings, Keys.KEY_EXTERNALID, Defaults.DEFAULT_EXTERNALID);
             final RelayType relayType = getEnum(settings, Keys.KEY_RELAY_TYPE, RelayType.class, RelayType.LIGHT);
 
             if (relayType != null) {
@@ -147,8 +152,8 @@ public class DeviceSteps {
             device.setTechnicalInstallationDate(getDate(settings, Keys.KEY_TECH_INSTALL_DATE).toDate());
         }
 
-        final DeviceModel deviceModel = this.deviceModelRepository
-                .findByModelCode(getString(settings, "DeviceModel", Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
+        final DeviceModel deviceModel = this.deviceModelRepository.findByModelCode(getString(settings, "DeviceModel",
+                Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
         device.setDeviceModel(deviceModel);
 
         device.updateProtocol(this.protocolInfoRepository.findByProtocolAndProtocolVersion(
@@ -167,8 +172,8 @@ public class DeviceSteps {
         device.setActive(getBoolean(settings, Keys.KEY_ACTIVE, Defaults.DEFAULT_ACTIVE));
         if (getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION)
                 .toLowerCase() != "null") {
-            device.addOrganisation(
-                    getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+            device.addOrganisation(getString(settings, "OrganizationIdentification",
+                    Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
         }
         device.updateMetaData(getString(settings, "Alias", Defaults.DEFAULT_ALIAS),
                 getString(settings, "containerCity", Defaults.DEFAULT_CONTAINER_CITY),
@@ -289,8 +294,8 @@ public class DeviceSteps {
             Assert.assertEquals(settings.get("Alias"), device.getAlias());
         }
         if (settings.containsKey("OrganizationIdentification")) {
-            Assert.assertEquals(settings.get("OrganizationIdentification"),
-                    device.getOwner().getOrganisationIdentification());
+            Assert.assertEquals(settings.get("OrganizationIdentification"), device.getOwner()
+                    .getOrganisationIdentification());
         }
         if (settings.containsKey("ContainerPostalCode")) {
             Assert.assertEquals(settings.get("ContainerPostalCode"), device.getContainerPostalCode());
@@ -333,7 +338,7 @@ public class DeviceSteps {
 
     /**
      * Checks whether the device exists in the database..
-     * 
+     *
      * @param deviceIdentification
      * @return
      */
@@ -348,7 +353,7 @@ public class DeviceSteps {
 
     /**
      * Checks whether the device does not exist in the database.
-     * 
+     *
      * @param deviceIdentification
      * @throws Throwable
      */
@@ -360,4 +365,50 @@ public class DeviceSteps {
         Assert.assertNotNull(device);
         Assert.assertTrue(devAuths.size() == 0);
     }
+
+    @Then("^the mbus device \"([^\"]*)\" is coupled to device \"([^\"]*)\" on MBUS channel (\\d+)$")
+    public void theMbusDeviceIsCoupledToDeviceOnMBUSChannel(final String gmeter, final String emeter,
+            final Short channel) {
+
+        final SmartMeter gSmartmeter = this.smartMeterRepository.findByDeviceIdentification(gmeter);
+        final Device eDevice = this.deviceRepository.findByDeviceIdentification(emeter);
+
+        Assert.assertNotNull(eDevice);
+        Assert.assertNotNull(gSmartmeter);
+
+        Assert.assertEquals(gSmartmeter.getGatewayDevice(), eDevice);
+        Assert.assertEquals(gSmartmeter.getChannel(), channel);
+    }
+
+    @Then("^the mbus device \"([^\"]*)\" is not coupled to the device \"([^\"]*)\"$")
+    public void theMbusDeviceIsNotCoupledToTheDevice(final String gmeter, final String emeter) {
+        final SmartMeter gSmartmeter = this.smartMeterRepository.findByDeviceIdentification(gmeter);
+        final Device eDevice = this.deviceRepository.findByDeviceIdentification(emeter);
+
+        Assert.assertNotNull(eDevice);
+        Assert.assertNotNull(gSmartmeter);
+
+        Assert.assertNotEquals(gSmartmeter.getGatewayDevice(), eDevice);
+    }
+
+    @Then("^the G-meter \"([^\"]*)\" is DeCoupled from device \"([^\"]*)\"$")
+    public void theGMeterIsDecoupledFromDevice(final String gmeter, final String emeter) {
+        final SmartMeter gSmartmeter = this.smartMeterRepository.findByDeviceIdentification(gmeter);
+        final Device eDevice = this.deviceRepository.findByDeviceIdentification(emeter);
+
+        Assert.assertNotNull(eDevice);
+        Assert.assertNotNull(gSmartmeter);
+
+        Assert.assertNull(gSmartmeter.getGatewayDevice());
+    }
+
+    @Then("^the channel of device \"([^\"]*)\" is cleared$")
+    public void theChannelOfDeviceIsCleared(final String gmeter) {
+        final SmartMeter gSmartmeter = this.smartMeterRepository.findByDeviceIdentification(gmeter);
+
+        Assert.assertNotNull(gSmartmeter);
+
+        Assert.assertNull(gSmartmeter.getChannel());
+    }
+
 }

@@ -1,0 +1,1496 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project id="b2dd6656-06e0-4fc7-9c4e-7802f5b237dc" activeEnvironment="Default" name="PublicLighting" resourceRoot="" soapui-version="5.2.1" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" id="f798dac9-2daf-4593-8350-2fc3a22bd8ff" wsaVersion="NONE" name="DeviceMonitoringPortSoap11" type="wsdl" bindingName="{http://www.alliander.com/definitions/osgp/publiclighting/devicemonitoring-v1.0}DeviceMonitoringPortSoap11" soapVersion="1_1" anonymous="optional" definition="https://localhost/osgp-adapter-ws-publiclighting/wsdl/publiclighting/schemas/DeviceMonitoring.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="https://localhost/osgp-adapter-ws-publiclighting/wsdl/publiclighting/schemas/DeviceMonitoring.wsdl"><con:part><con:url>https://localhost/osgp-adapter-ws-publiclighting/wsdl/publiclighting/schemas/DeviceMonitoring.wsdl</con:url><con:content><![CDATA[<!--Platform version: 4.1.0-SNAPSHOT -->
+<wsdl:definitions targetNamespace="http://www.alliander.com/definitions/osgp/publiclighting/devicemonitoring-v1.0" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:dmon="http://www.alliander.com/schemas/osgp/publiclighting/devicemonitoring/2014/10" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.alliander.com/definitions/osgp/publiclighting/devicemonitoring-v1.0">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://www.alliander.com/definitions/osgp/publiclighting/devicemonitoring/imports" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:import namespace="http://www.alliander.com/schemas/osgp/publiclighting/devicemonitoring/2014/10" schemaLocation="schemas/devicemonitoring.xsd"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="GetActualPowerUsageHeader">
+    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification"/>
+    <wsdl:part element="common:UserName" name="UserName"/>
+    <wsdl:part element="common:ApplicationName" name="ApplicationName"/>
+  </wsdl:message>
+  <wsdl:message name="GetActualPowerUsageRequest">
+    <wsdl:part element="dmon:GetActualPowerUsageRequest" name="GetActualPowerUsageRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetActualPowerUsageAsyncResponse">
+    <wsdl:part element="dmon:GetActualPowerUsageAsyncResponse" name="GetActualPowerUsageAsyncResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetActualPowerUsageAsyncHeader">
+    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification"/>
+    <wsdl:part element="common:UserName" name="UserName"/>
+    <wsdl:part element="common:ApplicationName" name="ApplicationName"/>
+  </wsdl:message>
+  <wsdl:message name="GetActualPowerUsageAsyncRequest">
+    <wsdl:part element="dmon:GetActualPowerUsageAsyncRequest" name="GetActualPowerUsageAsyncRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetActualPowerUsageResponse">
+    <wsdl:part element="dmon:GetActualPowerUsageResponse" name="GetActualPowerUsageResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetPowerUsageHistoryHeader">
+    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification"/>
+    <wsdl:part element="common:UserName" name="UserName"/>
+    <wsdl:part element="common:ApplicationName" name="ApplicationName"/>
+  </wsdl:message>
+  <wsdl:message name="GetPowerUsageHistoryRequest">
+    <wsdl:part element="dmon:GetPowerUsageHistoryRequest" name="GetPowerUsageHistoryRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetPowerUsageHistoryAsyncResponse">
+    <wsdl:part element="dmon:GetPowerUsageHistoryAsyncResponse" name="GetPowerUsageHistoryAsyncResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetPowerUsageHistoryAsyncHeader">
+    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification"/>
+    <wsdl:part element="common:UserName" name="UserName"/>
+    <wsdl:part element="common:ApplicationName" name="ApplicationName"/>
+  </wsdl:message>
+  <wsdl:message name="GetPowerUsageHistoryAsyncRequest">
+    <wsdl:part element="dmon:GetPowerUsageHistoryAsyncRequest" name="GetPowerUsageHistoryAsyncRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetPowerUsageHistoryResponse">
+    <wsdl:part element="dmon:GetPowerUsageHistoryResponse" name="GetPowerUsageHistoryResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="DeviceMonitoringPort">
+    <wsdl:operation name="GetActualPowerUsage">
+      <wsdl:input message="tns:GetActualPowerUsageRequest" name="GetActualPowerUsageRequest"></wsdl:input>
+      <wsdl:output message="tns:GetActualPowerUsageAsyncResponse" name="GetActualPowerUsageAsyncResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetActualPowerUsageResponse">
+      <wsdl:input message="tns:GetActualPowerUsageAsyncRequest" name="GetActualPowerUsageAsyncRequest"></wsdl:input>
+      <wsdl:output message="tns:GetActualPowerUsageResponse" name="GetActualPowerUsageResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPowerUsageHistory">
+      <wsdl:input message="tns:GetPowerUsageHistoryRequest" name="GetPowerUsageHistoryRequest"></wsdl:input>
+      <wsdl:output message="tns:GetPowerUsageHistoryAsyncResponse" name="GetPowerUsageHistoryAsyncResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPowerUsageHistoryResponse">
+      <wsdl:input message="tns:GetPowerUsageHistoryAsyncRequest" name="GetPowerUsageHistoryAsyncRequest"></wsdl:input>
+      <wsdl:output message="tns:GetPowerUsageHistoryResponse" name="GetPowerUsageHistoryResponse"></wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="DeviceMonitoringPortSoap11" type="tns:DeviceMonitoringPort">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="GetActualPowerUsage">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="GetActualPowerUsageRequest">
+        <soap:header message="tns:GetActualPowerUsageHeader" part="OrganisationIdentification" use="literal"/>
+        <soap:header message="tns:GetActualPowerUsageHeader" part="UserName" use="literal"/>
+        <soap:header message="tns:GetActualPowerUsageHeader" part="ApplicationName" use="literal"/>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="GetActualPowerUsageAsyncResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetActualPowerUsageResponse">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="GetActualPowerUsageAsyncRequest">
+        <soap:header message="tns:GetActualPowerUsageAsyncHeader" part="OrganisationIdentification" use="literal"/>
+        <soap:header message="tns:GetActualPowerUsageAsyncHeader" part="UserName" use="literal"/>
+        <soap:header message="tns:GetActualPowerUsageAsyncHeader" part="ApplicationName" use="literal"/>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="GetActualPowerUsageResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPowerUsageHistory">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="GetPowerUsageHistoryRequest">
+        <soap:header message="tns:GetPowerUsageHistoryHeader" part="OrganisationIdentification" use="literal"/>
+        <soap:header message="tns:GetPowerUsageHistoryHeader" part="UserName" use="literal"/>
+        <soap:header message="tns:GetPowerUsageHistoryHeader" part="ApplicationName" use="literal"/>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="GetPowerUsageHistoryAsyncResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPowerUsageHistoryResponse">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="GetPowerUsageHistoryAsyncRequest">
+        <soap:header message="tns:GetPowerUsageHistoryAsyncHeader" part="OrganisationIdentification" use="literal"/>
+        <soap:header message="tns:GetPowerUsageHistoryAsyncHeader" part="UserName" use="literal"/>
+        <soap:header message="tns:GetPowerUsageHistoryAsyncHeader" part="ApplicationName" use="literal"/>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="GetPowerUsageHistoryResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="DeviceMonitoringPortService">
+    <wsdl:port binding="tns:DeviceMonitoringPortSoap11" name="DeviceMonitoringPortSoap11">
+      <soap:address location="https://localhost:443/osgp-adapter-ws-publiclighting/publiclighting/deviceMonitoringService/"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part><con:part><con:url>https://localhost/osgp-adapter-ws-publiclighting/wsdl/publiclighting/schemas/schemas/devicemonitoring.xsd</con:url><con:content><![CDATA[<xsd:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.alliander.com/schemas/osgp/publiclighting/devicemonitoring/2014/10" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:tns="http://www.alliander.com/schemas/osgp/publiclighting/devicemonitoring/2014/10">
+  <xsd:import namespace="http://www.alliander.com/schemas/osgp/common/2014/10" schemaLocation="common.xsd"/>
+  <xsd:element name="GetPowerUsageHistoryRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element maxOccurs="1" minOccurs="1" name="DeviceIdentification" type="common:Identification"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="TimePeriod" type="tns:TimePeriod"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="HistoryTermType" type="tns:HistoryTermType"/>
+        <xsd:element maxOccurs="1" minOccurs="0" name="scheduled_time" type="xsd:dateTime"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetPowerUsageHistoryAsyncResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="AsyncResponse" type="common:AsyncResponse"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetPowerUsageHistoryAsyncRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="AsyncRequest" type="common:AsyncRequest"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetPowerUsageHistoryResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element minOccurs="1" name="Result" type="common:OsgpResultType"/>
+        <xsd:element name="Description" type="xsd:string"/>
+        <xsd:element maxOccurs="400" minOccurs="1" name="PowerUsageData" type="tns:PowerUsageData"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetActualPowerUsageRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element maxOccurs="1" minOccurs="1" name="DeviceIdentification" type="common:Identification"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetActualPowerUsageAsyncResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="AsyncResponse" type="common:AsyncResponse"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetActualPowerUsageAsyncRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="AsyncRequest" type="common:AsyncRequest"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetActualPowerUsageResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element minOccurs="1" name="Result" type="common:OsgpResultType"/>
+        <xsd:element name="Description" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="PowerUsageData" type="tns:PowerUsageData"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:complexType name="TimePeriod">
+    <xsd:sequence>
+      <xsd:element maxOccurs="1" minOccurs="1" name="StartTime" type="xsd:dateTime"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="EndTime" type="xsd:dateTime"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:simpleType name="HistoryTermType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="SHORT"/>
+      <xsd:enumeration value="LONG"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="MeterType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="P1"/>
+      <xsd:enumeration value="PULSE"/>
+      <xsd:enumeration value="AUX"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:complexType name="PowerUsageData">
+    <xsd:sequence>
+      <xsd:element maxOccurs="1" minOccurs="1" name="RecordTime" type="xsd:dateTime"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="MeterType" type="tns:MeterType"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="TotalConsumedEnergy" type="xsd:long"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="ActualConsumedPower" type="xsd:int"/>
+      <xsd:element maxOccurs="1" minOccurs="0" name="PsldData" type="tns:PsldData"/>
+      <xsd:element maxOccurs="1" minOccurs="0" name="SsldData" type="tns:SsldData"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="PsldData">
+    <xsd:sequence>
+      <xsd:element maxOccurs="1" minOccurs="1" name="TotalLightingHours" type="xsd:int"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="SsldData">
+    <xsd:sequence>
+      <xsd:element maxOccurs="1" minOccurs="1" name="actualCurrent1" type="xsd:int"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="actualCurrent2" type="xsd:int"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="actualCurrent3" type="xsd:int"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="actualPower1" type="xsd:int"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="actualPower2" type="xsd:int"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="actualPower3" type="xsd:int"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="averagePowerFactor1" type="xsd:int"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="averagePowerFactor2" type="xsd:int"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="averagePowerFactor3" type="xsd:int"/>
+      <xsd:element maxOccurs="unbounded" minOccurs="0" name="relayData" type="tns:RelayData"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="RelayData">
+    <xsd:sequence>
+      <xsd:element maxOccurs="1" minOccurs="1" name="index" type="xsd:int"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="totalLightingMinutes" type="xsd:int"/>
+    </xsd:sequence>
+  </xsd:complexType>
+</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>https://localhost/osgp-adapter-ws-publiclighting/wsdl/publiclighting/schemas/schemas/common.xsd</con:url><con:content><![CDATA[<xsd:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.alliander.com/schemas/osgp/common/2014/10">
+  <xsd:element name="OrganisationIdentification" type="tns:Identification"/>
+  <xsd:element name="UserName" type="tns:Identification"/>
+  <xsd:element name="ApplicationName" type="tns:Identification"/>
+  <xsd:simpleType name="Identification">
+    <xsd:restriction base="xsd:normalizedString">
+      <xsd:minLength value="1"/>
+      <xsd:maxLength value="40"/>
+      <xsd:pattern value="[^ ]{0,40}"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:complexType name="Page">
+    <xsd:sequence>
+      <xsd:element maxOccurs="1" minOccurs="1" name="TotalPages" type="xsd:int"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="PageSize" type="xsd:int"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="CurrentPage" type="xsd:int"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:simpleType name="CorrelationUid">
+    <xsd:restriction base="xsd:normalizedString">
+      <xsd:minLength value="20"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:complexType name="AsyncRequest">
+    <xsd:sequence>
+      <xsd:element minOccurs="1" name="CorrelationUid" type="tns:CorrelationUid"/>
+      <xsd:element minOccurs="1" name="DeviceId" type="tns:Identification"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="AsyncResponse">
+    <xsd:sequence>
+      <xsd:element minOccurs="1" name="CorrelationUid" type="tns:CorrelationUid"/>
+      <xsd:element minOccurs="1" name="DeviceId" type="tns:Identification"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:simpleType name="OsgpResultType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="OK"/>
+      <xsd:enumeration value="NOT FOUND"/>
+      <xsd:enumeration value="NOT OK"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:element name="FunctionalFault">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element maxOccurs="1" minOccurs="1" name="Code" type="xsd:int"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="Message" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="Component" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="InnerException" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="InnerMessage" type="xsd:string"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="TechnicalFault">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element maxOccurs="1" minOccurs="1" name="Message" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="Component" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="InnerException" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="InnerMessage" type="xsd:string"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>https://localhost:443/osgp-adapter-ws-publiclighting/publiclighting/deviceMonitoringService/</con:endpoint></con:endpoints><con:operation id="dfcb7060-cb53-42eb-9bbc-a27ec621580c" isOneWay="false" action="" name="GetActualPowerUsage" bindingOperationName="GetActualPowerUsage" type="Request-Response" outputName="GetActualPowerUsageAsyncResponse" inputName="GetActualPowerUsageRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="36f28a02-006c-43c9-a143-5ea5b39be355" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:443/osgp-adapter-ws-publiclighting/publiclighting/deviceMonitoringService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/publiclighting/devicemonitoring/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>?</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:GetActualPowerUsageRequest>
+         <ns1:DeviceIdentification>?</ns1:DeviceIdentification>
+      </ns1:GetActualPowerUsageRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/publiclighting/devicemonitoring-v1.0/DeviceMonitoringPort/GetActualPowerUsageRequest"/></con:call></con:operation><con:operation id="fb3ee366-a764-4ea2-8258-3dde5ab88269" isOneWay="false" action="" name="GetActualPowerUsageResponse" bindingOperationName="GetActualPowerUsageResponse" type="Request-Response" outputName="GetActualPowerUsageResponse" inputName="GetActualPowerUsageAsyncRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="85945e20-8a44-4553-a5e7-4c8c34a19c9b" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:443/osgp-adapter-ws-publiclighting/publiclighting/deviceMonitoringService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/publiclighting/devicemonitoring/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>?</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:GetActualPowerUsageAsyncRequest>
+         <ns1:AsyncRequest>
+            <ns:CorrelationUid>?</ns:CorrelationUid>
+            <ns:DeviceId>?</ns:DeviceId>
+         </ns1:AsyncRequest>
+      </ns1:GetActualPowerUsageAsyncRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/publiclighting/devicemonitoring-v1.0/DeviceMonitoringPort/GetActualPowerUsageAsyncRequest"/></con:call></con:operation><con:operation id="0e7070e4-f766-447a-b779-f7a7b02d08ec" isOneWay="false" action="" name="GetPowerUsageHistory" bindingOperationName="GetPowerUsageHistory" type="Request-Response" outputName="GetPowerUsageHistoryAsyncResponse" inputName="GetPowerUsageHistoryRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="2934174a-1771-4a81-b57c-ae1edba24b9f" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:443/osgp-adapter-ws-publiclighting/publiclighting/deviceMonitoringService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/publiclighting/devicemonitoring/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>?</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:GetPowerUsageHistoryRequest>
+         <ns1:DeviceIdentification>?</ns1:DeviceIdentification>
+         <ns1:TimePeriod>
+            <ns1:StartTime>?</ns1:StartTime>
+            <ns1:EndTime>?</ns1:EndTime>
+         </ns1:TimePeriod>
+         <ns1:HistoryTermType>?</ns1:HistoryTermType>
+         <!--Optional:-->
+         <ns1:scheduled_time>?</ns1:scheduled_time>
+      </ns1:GetPowerUsageHistoryRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/publiclighting/devicemonitoring-v1.0/DeviceMonitoringPort/GetPowerUsageHistoryRequest"/></con:call></con:operation><con:operation id="c98b3b98-0d0b-4fe3-a6c9-9472276c87ab" isOneWay="false" action="" name="GetPowerUsageHistoryResponse" bindingOperationName="GetPowerUsageHistoryResponse" type="Request-Response" outputName="GetPowerUsageHistoryResponse" inputName="GetPowerUsageHistoryAsyncRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="ca3b85cf-5857-47fd-bb5b-a0b914728bd4" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:443/osgp-adapter-ws-publiclighting/publiclighting/deviceMonitoringService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/publiclighting/devicemonitoring/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>?</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:GetPowerUsageHistoryAsyncRequest>
+         <ns1:AsyncRequest>
+            <ns:CorrelationUid>?</ns:CorrelationUid>
+            <ns:DeviceId>?</ns:DeviceId>
+         </ns1:AsyncRequest>
+      </ns1:GetPowerUsageHistoryAsyncRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/publiclighting/devicemonitoring-v1.0/DeviceMonitoringPort/GetPowerUsageHistoryAsyncRequest"/></con:call></con:operation></con:interface><con:interface xsi:type="con:WsdlInterface" id="ea37d60e-8dba-42f7-8007-c03abd0d90b7" wsaVersion="NONE" name="PublicLightingAdHocManagementPortSoap11" type="wsdl" bindingName="{http://www.alliander.com/definitions/osgp/publiclighting/adhocmanagement-v1.0}PublicLightingAdHocManagementPortSoap11" soapVersion="1_1" anonymous="optional" definition="https://localhost/osgp-adapter-ws-publiclighting/wsdl/publiclighting/schemas/PublicLightingAdHocManagement.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="https://localhost/osgp-adapter-ws-publiclighting/wsdl/publiclighting/schemas/PublicLightingAdHocManagement.wsdl"><con:part><con:url>https://localhost/osgp-adapter-ws-publiclighting/wsdl/publiclighting/schemas/PublicLightingAdHocManagement.wsdl</con:url><con:content><![CDATA[<!--Platform version: 4.1.0-SNAPSHOT -->
+<wsdl:definitions targetNamespace="http://www.alliander.com/definitions/osgp/publiclighting/adhocmanagement-v1.0" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ahman="http://www.alliander.com/schemas/osgp/publiclighting/adhocmanagement/2014/10" xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.alliander.com/definitions/osgp/publiclighting/adhocmanagement-v1.0">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://www.alliander.com/definitions/osgp/publiclighting/adhocmanagement/imports" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:import namespace="http://www.alliander.com/schemas/osgp/publiclighting/adhocmanagement/2014/10" schemaLocation="schemas/pl-adhocmanagement.xsd"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="FindAllDevicesHeader">
+    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification"/>
+    <wsdl:part element="common:UserName" name="UserName"/>
+    <wsdl:part element="common:ApplicationName" name="ApplicationName"/>
+  </wsdl:message>
+  <wsdl:message name="FindAllDevicesRequest">
+    <wsdl:part element="ahman:FindAllDevicesRequest" name="FindAllDevicesRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="FindAllDevicesResponse">
+    <wsdl:part element="ahman:FindAllDevicesResponse" name="FindAllDevicesResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetLightHeader">
+    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification"/>
+    <wsdl:part element="common:UserName" name="UserName"/>
+    <wsdl:part element="common:ApplicationName" name="ApplicationName"/>
+  </wsdl:message>
+  <wsdl:message name="SetLightRequest">
+    <wsdl:part element="ahman:SetLightRequest" name="SetLightRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetLightAsyncResponse">
+    <wsdl:part element="ahman:SetLightAsyncResponse" name="SetLightAsyncResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetLightAsyncHeader">
+    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification"/>
+    <wsdl:part element="common:UserName" name="UserName"/>
+    <wsdl:part element="common:ApplicationName" name="ApplicationName"/>
+  </wsdl:message>
+  <wsdl:message name="SetLightAsyncRequest">
+    <wsdl:part element="ahman:SetLightAsyncRequest" name="SetLightAsyncRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetLightResponse">
+    <wsdl:part element="ahman:SetLightResponse" name="SetLightResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetStatusHeader">
+    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification"/>
+    <wsdl:part element="common:UserName" name="UserName"/>
+    <wsdl:part element="common:ApplicationName" name="ApplicationName"/>
+  </wsdl:message>
+  <wsdl:message name="GetStatusRequest">
+    <wsdl:part element="ahman:GetStatusRequest" name="GetStatusRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetStatusAsyncResponse">
+    <wsdl:part element="ahman:GetStatusAsyncResponse" name="GetStatusAsyncResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetStatusAsyncHeader">
+    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification"/>
+    <wsdl:part element="common:UserName" name="UserName"/>
+    <wsdl:part element="common:ApplicationName" name="ApplicationName"/>
+  </wsdl:message>
+  <wsdl:message name="GetStatusAsyncRequest">
+    <wsdl:part element="ahman:GetStatusAsyncRequest" name="GetStatusAsyncRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetStatusResponse">
+    <wsdl:part element="ahman:GetStatusResponse" name="GetStatusResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ResumeScheduleHeader">
+    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification"/>
+    <wsdl:part element="common:UserName" name="UserName"/>
+    <wsdl:part element="common:ApplicationName" name="ApplicationName"/>
+  </wsdl:message>
+  <wsdl:message name="ResumeScheduleRequest">
+    <wsdl:part element="ahman:ResumeScheduleRequest" name="ResumeScheduleRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ResumeScheduleAsyncResponse">
+    <wsdl:part element="ahman:ResumeScheduleAsyncResponse" name="ResumeScheduleAsyncResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ResumeScheduleAsyncHeader">
+    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification"/>
+    <wsdl:part element="common:UserName" name="UserName"/>
+    <wsdl:part element="common:ApplicationName" name="ApplicationName"/>
+  </wsdl:message>
+  <wsdl:message name="ResumeScheduleAsyncRequest">
+    <wsdl:part element="ahman:ResumeScheduleAsyncRequest" name="ResumeScheduleAsyncRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ResumeScheduleResponse">
+    <wsdl:part element="ahman:ResumeScheduleResponse" name="ResumeScheduleResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetTransitionHeader">
+    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification"/>
+    <wsdl:part element="common:UserName" name="UserName"/>
+    <wsdl:part element="common:ApplicationName" name="ApplicationName"/>
+  </wsdl:message>
+  <wsdl:message name="SetTransitionRequest">
+    <wsdl:part element="ahman:SetTransitionRequest" name="SetTransitionRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetTransitionAsyncResponse">
+    <wsdl:part element="ahman:SetTransitionAsyncResponse" name="SetTransitionAsyncResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetTransitionAsyncHeader">
+    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification"/>
+    <wsdl:part element="common:UserName" name="UserName"/>
+    <wsdl:part element="common:ApplicationName" name="ApplicationName"/>
+  </wsdl:message>
+  <wsdl:message name="SetTransitionAsyncRequest">
+    <wsdl:part element="ahman:SetTransitionAsyncRequest" name="SetTransitionAsyncRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetTransitionResponse">
+    <wsdl:part element="ahman:SetTransitionResponse" name="SetTransitionResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="PublicLightingAdHocManagementPort">
+    <wsdl:operation name="FindAllDevices">
+      <wsdl:input message="tns:FindAllDevicesRequest" name="FindAllDevicesRequest"></wsdl:input>
+      <wsdl:output message="tns:FindAllDevicesResponse" name="FindAllDevicesResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SetLight">
+      <wsdl:input message="tns:SetLightRequest" name="SetLightRequest"></wsdl:input>
+      <wsdl:output message="tns:SetLightAsyncResponse" name="SetLightAsyncResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSetLightResponse">
+      <wsdl:input message="tns:SetLightAsyncRequest" name="SetLightAsyncRequest"></wsdl:input>
+      <wsdl:output message="tns:SetLightResponse" name="SetLightResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetStatus">
+      <wsdl:input message="tns:GetStatusRequest" name="GetStatusRequest"></wsdl:input>
+      <wsdl:output message="tns:GetStatusAsyncResponse" name="GetStatusAsyncResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetGetStatusResponse">
+      <wsdl:input message="tns:GetStatusAsyncRequest" name="GetStatusAsyncRequest"></wsdl:input>
+      <wsdl:output message="tns:GetStatusResponse" name="GetStatusResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ResumeSchedule">
+      <wsdl:input message="tns:ResumeScheduleRequest" name="ResumeScheduleRequest"></wsdl:input>
+      <wsdl:output message="tns:ResumeScheduleAsyncResponse" name="ResumeScheduleAsyncResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetResumeScheduleResponse">
+      <wsdl:input message="tns:ResumeScheduleAsyncRequest" name="ResumeScheduleAsyncRequest"></wsdl:input>
+      <wsdl:output message="tns:ResumeScheduleResponse" name="ResumeScheduleResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SetTransition">
+      <wsdl:input message="tns:SetTransitionRequest" name="SetTransitionRequest"></wsdl:input>
+      <wsdl:output message="tns:SetTransitionAsyncResponse" name="SetTransitionAsyncResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSetTransitionResponse">
+      <wsdl:input message="tns:SetTransitionAsyncRequest" name="SetTransitionAsyncRequest"></wsdl:input>
+      <wsdl:output message="tns:SetTransitionResponse" name="SetTransitionResponse"></wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="PublicLightingAdHocManagementPortSoap11" type="tns:PublicLightingAdHocManagementPort">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="FindAllDevices">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="FindAllDevicesRequest">
+        <soap:header message="tns:FindAllDevicesHeader" part="OrganisationIdentification" use="literal"/>
+        <soap:header message="tns:FindAllDevicesHeader" part="UserName" use="literal"/>
+        <soap:header message="tns:FindAllDevicesHeader" part="ApplicationName" use="literal"/>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="FindAllDevicesResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SetLight">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="SetLightRequest">
+        <soap:header message="tns:SetLightHeader" part="OrganisationIdentification" use="literal"/>
+        <soap:header message="tns:SetLightHeader" part="UserName" use="literal"/>
+        <soap:header message="tns:SetLightHeader" part="ApplicationName" use="literal"/>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="SetLightAsyncResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSetLightResponse">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="SetLightAsyncRequest">
+        <soap:header message="tns:SetLightAsyncHeader" part="OrganisationIdentification" use="literal"/>
+        <soap:header message="tns:SetLightAsyncHeader" part="UserName" use="literal"/>
+        <soap:header message="tns:SetLightAsyncHeader" part="ApplicationName" use="literal"/>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="SetLightResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetStatus">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="GetStatusRequest">
+        <soap:header message="tns:GetStatusHeader" part="OrganisationIdentification" use="literal"/>
+        <soap:header message="tns:GetStatusHeader" part="UserName" use="literal"/>
+        <soap:header message="tns:GetStatusHeader" part="ApplicationName" use="literal"/>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="GetStatusAsyncResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetGetStatusResponse">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="GetStatusAsyncRequest">
+        <soap:header message="tns:GetStatusAsyncHeader" part="OrganisationIdentification" use="literal"/>
+        <soap:header message="tns:GetStatusAsyncHeader" part="UserName" use="literal"/>
+        <soap:header message="tns:GetStatusAsyncHeader" part="ApplicationName" use="literal"/>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="GetStatusResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ResumeSchedule">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="ResumeScheduleRequest">
+        <soap:header message="tns:ResumeScheduleHeader" part="OrganisationIdentification" use="literal"/>
+        <soap:header message="tns:ResumeScheduleHeader" part="UserName" use="literal"/>
+        <soap:header message="tns:ResumeScheduleHeader" part="ApplicationName" use="literal"/>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="ResumeScheduleAsyncResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetResumeScheduleResponse">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="ResumeScheduleAsyncRequest">
+        <soap:header message="tns:ResumeScheduleAsyncHeader" part="OrganisationIdentification" use="literal"/>
+        <soap:header message="tns:ResumeScheduleAsyncHeader" part="UserName" use="literal"/>
+        <soap:header message="tns:ResumeScheduleAsyncHeader" part="ApplicationName" use="literal"/>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="ResumeScheduleResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SetTransition">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="SetTransitionRequest">
+        <soap:header message="tns:SetTransitionHeader" part="OrganisationIdentification" use="literal"/>
+        <soap:header message="tns:SetTransitionHeader" part="UserName" use="literal"/>
+        <soap:header message="tns:SetTransitionHeader" part="ApplicationName" use="literal"/>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="SetTransitionAsyncResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSetTransitionResponse">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="SetTransitionAsyncRequest">
+        <soap:header message="tns:SetTransitionAsyncHeader" part="OrganisationIdentification" use="literal"/>
+        <soap:header message="tns:SetTransitionAsyncHeader" part="UserName" use="literal"/>
+        <soap:header message="tns:SetTransitionAsyncHeader" part="ApplicationName" use="literal"/>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="SetTransitionResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="PublicLightingAdHocManagementPortService">
+    <wsdl:port binding="tns:PublicLightingAdHocManagementPortSoap11" name="PublicLightingAdHocManagementPortSoap11">
+      <soap:address location="https://localhost:443/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part><con:part><con:url>https://localhost/osgp-adapter-ws-publiclighting/wsdl/publiclighting/schemas/schemas/pl-adhocmanagement.xsd</con:url><con:content><![CDATA[<xsd:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.alliander.com/schemas/osgp/publiclighting/adhocmanagement/2014/10" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:tns="http://www.alliander.com/schemas/osgp/publiclighting/adhocmanagement/2014/10">
+  <xsd:import namespace="http://www.alliander.com/schemas/osgp/common/2014/10" schemaLocation="common.xsd"/>
+  <xsd:element name="FindAllDevicesRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Page" type="xsd:int"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="FindAllDevicesResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DevicePage" type="tns:DevicePage"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetLightRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element minOccurs="1" name="DeviceIdentification" type="common:Identification"/>
+        <xsd:element maxOccurs="6" name="LightValue" type="tns:LightValue"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetLightAsyncResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="AsyncResponse" type="common:AsyncResponse"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetLightAsyncRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="AsyncRequest" type="common:AsyncRequest"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetLightResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element minOccurs="1" name="Result" type="common:OsgpResultType"/>
+        <xsd:element name="Description" type="xsd:string"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetStatusRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element minOccurs="1" name="DeviceIdentification" type="common:Identification"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetStatusAsyncResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="AsyncResponse" type="common:AsyncResponse"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetStatusAsyncRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="AsyncRequest" type="common:AsyncRequest"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetStatusResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element minOccurs="1" name="Result" type="common:OsgpResultType"/>
+        <xsd:element name="Description" type="xsd:string"/>
+        <xsd:element name="DeviceStatus" type="tns:DeviceStatus"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="ResumeScheduleRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element minOccurs="1" name="DeviceIdentification" type="common:Identification"/>
+        <xsd:element minOccurs="0" name="Index">
+          <xsd:simpleType>
+            <xsd:restriction base="xsd:int">
+              <xsd:minInclusive value="0"/>
+              <xsd:maxInclusive value="6"/>
+            </xsd:restriction>
+          </xsd:simpleType>
+        </xsd:element>
+        <xsd:element name="IsImmediate" type="xsd:boolean"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="ResumeScheduleAsyncResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="AsyncResponse" type="common:AsyncResponse"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="ResumeScheduleAsyncRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="AsyncRequest" type="common:AsyncRequest"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="ResumeScheduleResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element minOccurs="1" name="Result" type="common:OsgpResultType"/>
+        <xsd:element name="Description" type="xsd:string"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetTransitionRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element minOccurs="1" name="DeviceIdentification" type="common:Identification"/>
+        <xsd:element minOccurs="1" name="TransitionType" type="tns:TransitionType"/>
+        <xsd:element minOccurs="0" name="Time" type="xsd:time"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetTransitionAsyncResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="AsyncResponse" type="common:AsyncResponse"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetTransitionAsyncRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="AsyncRequest" type="common:AsyncRequest"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetTransitionResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element minOccurs="1" name="Result" type="common:OsgpResultType"/>
+        <xsd:element name="Description" type="xsd:string"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:complexType name="DeviceStatus">
+    <xsd:sequence>
+      <xsd:element maxOccurs="unbounded" name="LightValues" type="tns:LightValue"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="PreferredLinkType" type="tns:LinkType"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="ActualLinkType" type="tns:LinkType"/>
+      <xsd:element maxOccurs="1" minOccurs="0" name="LightType" type="tns:LightType"/>
+      <xsd:element maxOccurs="8" minOccurs="0" name="EventNotifications" type="tns:EventNotificationType"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="Device">
+    <xsd:sequence>
+      <xsd:element name="DeviceUid" type="xsd:string"/>
+      <xsd:element name="DeviceIdentification" type="common:Identification"/>
+      <xsd:element minOccurs="0" name="ContainerPostalCode" type="xsd:string"/>
+      <xsd:element minOccurs="0" name="ContainerCity" type="xsd:string"/>
+      <xsd:element minOccurs="0" name="ContainerStreet" type="xsd:string"/>
+      <xsd:element minOccurs="0" name="ContainerNumber" type="xsd:string"/>
+      <xsd:element minOccurs="0" name="GpsLatitude" type="xsd:float"/>
+      <xsd:element minOccurs="0" name="GpsLongitude" type="xsd:float"/>
+      <xsd:element name="DeviceType" type="xsd:string"/>
+      <xsd:element name="Activated" type="xsd:boolean"/>
+      <xsd:element name="HasSchedule" type="xsd:boolean"/>
+      <xsd:element name="PublicKeyPresent" type="xsd:boolean"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="DevicePage">
+    <xsd:sequence>
+      <xsd:element name="TotalPages" type="xsd:int"/>
+      <xsd:element maxOccurs="unbounded" name="Devices" type="tns:Device"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="LightValue">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="Index">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:int">
+            <xsd:minInclusive value="0"/>
+            <xsd:maxInclusive value="6"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="On" type="xsd:boolean"/>
+      <xsd:element minOccurs="0" name="DimValue">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:int">
+            <xsd:minInclusive value="1"/>
+            <xsd:maxInclusive value="100"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:simpleType name="LightType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="LT_NOT_SET"/>
+      <xsd:enumeration value="RELAY"/>
+      <xsd:enumeration value="ONE_TO_TEN_VOLT"/>
+      <xsd:enumeration value="ONE_TO_TEN_VOLT_REVERSE"/>
+      <xsd:enumeration value="DALI"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="LinkType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="LINK_NOT_SET"/>
+      <xsd:enumeration value="GPRS"/>
+      <xsd:enumeration value="CDMA"/>
+      <xsd:enumeration value="ETHERNET"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="EventNotificationType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="DIAG_EVENTS"/>
+      <xsd:enumeration value="HARDWARE_FAILURE"/>
+      <xsd:enumeration value="LIGHT_EVENTS"/>
+      <xsd:enumeration value="TARIFF_EVENTS"/>
+      <xsd:enumeration value="MONITOR_EVENTS"/>
+      <xsd:enumeration value="FIRMWARE_EVENTS"/>
+      <xsd:enumeration value="COMM_EVENTS"/>
+      <xsd:enumeration value="SECURITY_EVENTS"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="TransitionType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="NIGHT_DAY"/>
+      <xsd:enumeration value="DAY_NIGHT"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>https://localhost/osgp-adapter-ws-publiclighting/wsdl/publiclighting/schemas/schemas/common.xsd</con:url><con:content><![CDATA[<xsd:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.alliander.com/schemas/osgp/common/2014/10">
+  <xsd:element name="OrganisationIdentification" type="tns:Identification"/>
+  <xsd:element name="UserName" type="tns:Identification"/>
+  <xsd:element name="ApplicationName" type="tns:Identification"/>
+  <xsd:simpleType name="Identification">
+    <xsd:restriction base="xsd:normalizedString">
+      <xsd:minLength value="1"/>
+      <xsd:maxLength value="40"/>
+      <xsd:pattern value="[^ ]{0,40}"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:complexType name="Page">
+    <xsd:sequence>
+      <xsd:element maxOccurs="1" minOccurs="1" name="TotalPages" type="xsd:int"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="PageSize" type="xsd:int"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="CurrentPage" type="xsd:int"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:simpleType name="CorrelationUid">
+    <xsd:restriction base="xsd:normalizedString">
+      <xsd:minLength value="20"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:complexType name="AsyncRequest">
+    <xsd:sequence>
+      <xsd:element minOccurs="1" name="CorrelationUid" type="tns:CorrelationUid"/>
+      <xsd:element minOccurs="1" name="DeviceId" type="tns:Identification"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="AsyncResponse">
+    <xsd:sequence>
+      <xsd:element minOccurs="1" name="CorrelationUid" type="tns:CorrelationUid"/>
+      <xsd:element minOccurs="1" name="DeviceId" type="tns:Identification"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:simpleType name="OsgpResultType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="OK"/>
+      <xsd:enumeration value="NOT FOUND"/>
+      <xsd:enumeration value="NOT OK"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:element name="FunctionalFault">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element maxOccurs="1" minOccurs="1" name="Code" type="xsd:int"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="Message" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="Component" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="InnerException" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="InnerMessage" type="xsd:string"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="TechnicalFault">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element maxOccurs="1" minOccurs="1" name="Message" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="Component" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="InnerException" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="InnerMessage" type="xsd:string"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>https://${#TestCase#ServiceEndpoint}/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/</con:endpoint><con:endpoint>https://localhost:443/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/</con:endpoint></con:endpoints><con:operation id="9a033a4c-9b5a-4d95-89e3-ab46344e255e" isOneWay="false" action="" name="FindAllDevices" bindingOperationName="FindAllDevices" type="Request-Response" outputName="FindAllDevicesResponse" inputName="FindAllDevicesRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="12e1d511-aa21-479d-9801-3d5dab190bd8" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:443/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/publiclighting/adhocmanagement/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>?</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:FindAllDevicesRequest>
+         <ns1:Page>?</ns1:Page>
+      </ns1:FindAllDevicesRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/publiclighting/adhocmanagement-v1.0/PublicLightingAdHocManagementPort/FindAllDevicesRequest"/></con:call></con:operation><con:operation id="38fc080a-88ab-4630-9589-a5d08292ca36" isOneWay="false" action="" name="GetGetStatusResponse" bindingOperationName="GetGetStatusResponse" type="Request-Response" outputName="GetStatusResponse" inputName="GetStatusAsyncRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="8f5596e6-9116-4f2f-ba4a-14ec582cb294" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:443/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/publiclighting/adhocmanagement/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>?</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:GetStatusAsyncRequest>
+         <ns1:AsyncRequest>
+            <ns:CorrelationUid>?</ns:CorrelationUid>
+            <ns:DeviceId>?</ns:DeviceId>
+         </ns1:AsyncRequest>
+      </ns1:GetStatusAsyncRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/publiclighting/adhocmanagement-v1.0/PublicLightingAdHocManagementPort/GetStatusAsyncRequest"/></con:call></con:operation><con:operation id="31cb99e4-71ab-4653-a37a-b2ebb2cb51ef" isOneWay="false" action="" name="GetResumeScheduleResponse" bindingOperationName="GetResumeScheduleResponse" type="Request-Response" outputName="ResumeScheduleResponse" inputName="ResumeScheduleAsyncRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="39198eed-ef3b-4180-b7bb-0b6e0d16bcf8" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:443/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/publiclighting/adhocmanagement/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>?</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:ResumeScheduleAsyncRequest>
+         <ns1:AsyncRequest>
+            <ns:CorrelationUid>?</ns:CorrelationUid>
+            <ns:DeviceId>?</ns:DeviceId>
+         </ns1:AsyncRequest>
+      </ns1:ResumeScheduleAsyncRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/publiclighting/adhocmanagement-v1.0/PublicLightingAdHocManagementPort/ResumeScheduleAsyncRequest"/></con:call></con:operation><con:operation id="67994947-5f4f-40b4-acb0-c36cd1ef7953" isOneWay="false" action="" name="GetSetLightResponse" bindingOperationName="GetSetLightResponse" type="Request-Response" outputName="SetLightResponse" inputName="SetLightAsyncRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="48685d65-796e-4d3c-92fb-e69afe850f93" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:443/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/publiclighting/adhocmanagement/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>?</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:SetLightAsyncRequest>
+         <ns1:AsyncRequest>
+            <ns:CorrelationUid>?</ns:CorrelationUid>
+            <ns:DeviceId>?</ns:DeviceId>
+         </ns1:AsyncRequest>
+      </ns1:SetLightAsyncRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/publiclighting/adhocmanagement-v1.0/PublicLightingAdHocManagementPort/SetLightAsyncRequest"/></con:call></con:operation><con:operation id="fe65ebf3-d37c-4f29-8e9a-e50f4825a83d" isOneWay="false" action="" name="GetSetTransitionResponse" bindingOperationName="GetSetTransitionResponse" type="Request-Response" outputName="SetTransitionResponse" inputName="SetTransitionAsyncRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="fdd10c78-f3e8-4c3c-a0f5-c09eb3149518" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:443/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/publiclighting/adhocmanagement/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>?</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:SetTransitionAsyncRequest>
+         <ns1:AsyncRequest>
+            <ns:CorrelationUid>?</ns:CorrelationUid>
+            <ns:DeviceId>?</ns:DeviceId>
+         </ns1:AsyncRequest>
+      </ns1:SetTransitionAsyncRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/publiclighting/adhocmanagement-v1.0/PublicLightingAdHocManagementPort/SetTransitionAsyncRequest"/></con:call></con:operation><con:operation id="3e8e70f7-0b96-4f83-a3d1-7d51ecafa533" isOneWay="false" action="" name="GetStatus" bindingOperationName="GetStatus" type="Request-Response" outputName="GetStatusAsyncResponse" inputName="GetStatusRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="ddbde050-3ee6-4f69-ad34-7fc18fc29002" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:443/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/publiclighting/adhocmanagement/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>?</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:GetStatusRequest>
+         <ns1:DeviceIdentification>?</ns1:DeviceIdentification>
+      </ns1:GetStatusRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/publiclighting/adhocmanagement-v1.0/PublicLightingAdHocManagementPort/GetStatusRequest"/></con:call></con:operation><con:operation id="9cd8e620-d8da-41f9-a713-f2e0d226c1cd" isOneWay="false" action="" name="ResumeSchedule" bindingOperationName="ResumeSchedule" type="Request-Response" outputName="ResumeScheduleAsyncResponse" inputName="ResumeScheduleRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="8613fbcc-4ded-4ee7-8577-2c9b07814695" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:443/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/publiclighting/adhocmanagement/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>?</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:ResumeScheduleRequest>
+         <ns1:DeviceIdentification>?</ns1:DeviceIdentification>
+         <!--Optional:-->
+         <ns1:Index>?</ns1:Index>
+         <ns1:IsImmediate>?</ns1:IsImmediate>
+      </ns1:ResumeScheduleRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/publiclighting/adhocmanagement-v1.0/PublicLightingAdHocManagementPort/ResumeScheduleRequest"/></con:call></con:operation><con:operation id="7ce216b0-3adb-4c88-955f-a34484610c3e" isOneWay="false" action="" name="SetLight" bindingOperationName="SetLight" type="Request-Response" outputName="SetLightAsyncResponse" inputName="SetLightRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="7701dd9f-6f68-418f-a7ac-574c0efc8265" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:443/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/publiclighting/adhocmanagement/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>?</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:SetLightRequest>
+         <ns1:DeviceIdentification>?</ns1:DeviceIdentification>
+         <!--1 to 6 repetitions:-->
+         <ns1:LightValue>
+            <!--Optional:-->
+            <ns1:Index>?</ns1:Index>
+            <ns1:On>?</ns1:On>
+            <!--Optional:-->
+            <ns1:DimValue>?</ns1:DimValue>
+         </ns1:LightValue>
+      </ns1:SetLightRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/publiclighting/adhocmanagement-v1.0/PublicLightingAdHocManagementPort/SetLightRequest"/></con:call></con:operation><con:operation id="f08e2c9b-9d79-4144-9fb0-f5644ecb19ad" isOneWay="false" action="" name="SetTransition" bindingOperationName="SetTransition" type="Request-Response" outputName="SetTransitionAsyncResponse" inputName="SetTransitionRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="dffa4eea-92c6-42f5-a6ab-ef6c85a8cca2" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:443/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/publiclighting/adhocmanagement/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>?</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:SetTransitionRequest>
+         <ns1:DeviceIdentification>?</ns1:DeviceIdentification>
+         <ns1:TransitionType>?</ns1:TransitionType>
+         <!--Optional:-->
+         <ns1:Time>?</ns1:Time>
+      </ns1:SetTransitionRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/publiclighting/adhocmanagement-v1.0/PublicLightingAdHocManagementPort/SetTransitionRequest"/></con:call></con:operation></con:interface><con:interface xsi:type="con:WsdlInterface" id="67a2b95f-3735-40ce-a510-8eb708c97f82" wsaVersion="NONE" name="PublicLightingScheduleManagementPortSoap11" type="wsdl" bindingName="{http://www.alliander.com/definitions/osgp/publiclighting/schedulemanagement-v1.0}PublicLightingScheduleManagementPortSoap11" soapVersion="1_1" anonymous="optional" definition="https://localhost/osgp-adapter-ws-publiclighting/wsdl/publiclighting/schemas/PublicLightingScheduleManagement.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="https://localhost/osgp-adapter-ws-publiclighting/wsdl/publiclighting/schemas/PublicLightingScheduleManagement.wsdl"><con:part><con:url>https://localhost/osgp-adapter-ws-publiclighting/wsdl/publiclighting/schemas/PublicLightingScheduleManagement.wsdl</con:url><con:content><![CDATA[<!--Platform version: 4.1.0-SNAPSHOT -->
+<wsdl:definitions targetNamespace="http://www.alliander.com/definitions/osgp/publiclighting/schedulemanagement-v1.0" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:sman="http://www.alliander.com/schemas/osgp/publiclighting/schedulemanagement/2014/10" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.alliander.com/definitions/osgp/publiclighting/schedulemanagement-v1.0">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://www.alliander.com/definitions/osgp/publiclighting/schedulemanagement/imports" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:import namespace="http://www.alliander.com/schemas/osgp/publiclighting/schedulemanagement/2014/10" schemaLocation="schemas/pl-schedulemanagement.xsd"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="SetScheduleHeader">
+    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification"/>
+    <wsdl:part element="common:UserName" name="UserName"/>
+    <wsdl:part element="common:ApplicationName" name="ApplicationName"/>
+  </wsdl:message>
+  <wsdl:message name="SetScheduleRequest">
+    <wsdl:part element="sman:SetScheduleRequest" name="SetScheduleRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetScheduleAsyncResponse">
+    <wsdl:part element="sman:SetScheduleAsyncResponse" name="SetScheduleAsyncResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetScheduleAsyncHeader">
+    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification"/>
+    <wsdl:part element="common:UserName" name="UserName"/>
+    <wsdl:part element="common:ApplicationName" name="ApplicationName"/>
+  </wsdl:message>
+  <wsdl:message name="SetScheduleAsyncRequest">
+    <wsdl:part element="sman:SetScheduleAsyncRequest" name="SetScheduleAsyncRequest"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetScheduleResponse">
+    <wsdl:part element="sman:SetScheduleResponse" name="SetScheduleResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="PublicLightingScheduleManagementPort">
+    <wsdl:operation name="SetSchedule">
+      <wsdl:input message="tns:SetScheduleRequest" name="SetScheduleRequest"></wsdl:input>
+      <wsdl:output message="tns:SetScheduleAsyncResponse" name="SetScheduleAsyncResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSetScheduleResponse">
+      <wsdl:input message="tns:SetScheduleAsyncRequest" name="SetScheduleAsyncRequest"></wsdl:input>
+      <wsdl:output message="tns:SetScheduleResponse" name="SetScheduleResponse"></wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="PublicLightingScheduleManagementPortSoap11" type="tns:PublicLightingScheduleManagementPort">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="SetSchedule">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="SetScheduleRequest">
+        <soap:header message="tns:SetScheduleHeader" part="OrganisationIdentification" use="literal"/>
+        <soap:header message="tns:SetScheduleHeader" part="UserName" use="literal"/>
+        <soap:header message="tns:SetScheduleHeader" part="ApplicationName" use="literal"/>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="SetScheduleAsyncResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSetScheduleResponse">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="SetScheduleAsyncRequest">
+        <soap:header message="tns:SetScheduleAsyncHeader" part="OrganisationIdentification" use="literal"/>
+        <soap:header message="tns:SetScheduleAsyncHeader" part="UserName" use="literal"/>
+        <soap:header message="tns:SetScheduleAsyncHeader" part="ApplicationName" use="literal"/>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="SetScheduleResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="PublicLightingScheduleManagementPortService">
+    <wsdl:port binding="tns:PublicLightingScheduleManagementPortSoap11" name="PublicLightingScheduleManagementPortSoap11">
+      <soap:address location="https://localhost:443/osgp-adapter-ws-publiclighting/publiclighting/scheduleManagementService/"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part><con:part><con:url>https://localhost/osgp-adapter-ws-publiclighting/wsdl/publiclighting/schemas/schemas/pl-schedulemanagement.xsd</con:url><con:content><![CDATA[<xsd:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.alliander.com/schemas/osgp/publiclighting/schedulemanagement/2014/10" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:tns="http://www.alliander.com/schemas/osgp/publiclighting/schedulemanagement/2014/10">
+  <xsd:import namespace="http://www.alliander.com/schemas/osgp/common/2014/10" schemaLocation="common.xsd"/>
+  <xsd:element name="SetScheduleRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:Identification"/>
+        <xsd:element maxOccurs="50" name="Schedules" type="tns:Schedule"/>
+        <xsd:element maxOccurs="1" minOccurs="0" name="scheduled_time" type="xsd:dateTime"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetScheduleAsyncResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element minOccurs="1" name="AsyncResponse" type="common:AsyncResponse"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetScheduleAsyncRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element minOccurs="1" name="AsyncRequest" type="common:AsyncRequest"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetScheduleResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element minOccurs="1" name="Result" type="common:OsgpResultType"/>
+        <xsd:element name="Description" type="xsd:string"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:complexType name="Schedule">
+    <xsd:sequence>
+      <xsd:element name="WeekDay" type="tns:WeekDayType"/>
+      <xsd:element minOccurs="0" name="startDay" type="xsd:date"/>
+      <xsd:element minOccurs="0" name="endDay" type="xsd:date"/>
+      <xsd:element name="ActionTime" type="tns:ActionTimeType"/>
+      <xsd:element minOccurs="0" name="Time" type="xsd:string"/>
+      <xsd:element minOccurs="0" name="TriggerWindow" type="tns:WindowType"/>
+      <xsd:element maxOccurs="6" name="LightValue" type="tns:LightValue"/>
+      <xsd:element minOccurs="0" name="TriggerType" type="tns:TriggerType"/>
+      <xsd:element minOccurs="0" name="Index" type="xsd:int"/>
+      <xsd:element minOccurs="0" name="IsEnabled" type="xsd:boolean"/>
+      <xsd:element minOccurs="0" name="minimumLightsOn" type="xsd:int"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:simpleType name="WeekDayType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="MONDAY"/>
+      <xsd:enumeration value="TUESDAY"/>
+      <xsd:enumeration value="WEDNESDAY"/>
+      <xsd:enumeration value="THURSDAY"/>
+      <xsd:enumeration value="FRIDAY"/>
+      <xsd:enumeration value="SATURDAY"/>
+      <xsd:enumeration value="SUNDAY"/>
+      <xsd:enumeration value="WEEKDAY"/>
+      <xsd:enumeration value="WEEKEND"/>
+      <xsd:enumeration value="ABSOLUTEDAY"/>
+      <xsd:enumeration value="ALL"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="ActionTimeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="ABSOLUTETIME"/>
+      <xsd:enumeration value="SUNRISE"/>
+      <xsd:enumeration value="SUNSET"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:complexType name="WindowType">
+    <xsd:sequence>
+      <xsd:element name="minutesBefore" type="xsd:long"/>
+      <xsd:element name="minutesAfter" type="xsd:long"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="LightValue">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="Index">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:int">
+            <xsd:minInclusive value="0"/>
+            <xsd:maxInclusive value="6"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="On" type="xsd:boolean"/>
+      <xsd:element minOccurs="0" name="DimValue">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:int">
+            <xsd:minInclusive value="1"/>
+            <xsd:maxInclusive value="100"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:simpleType name="TriggerType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="LIGHT_TRIGGER"/>
+      <xsd:enumeration value="ASTRONOMICAL"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>https://localhost/osgp-adapter-ws-publiclighting/wsdl/publiclighting/schemas/schemas/common.xsd</con:url><con:content><![CDATA[<xsd:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.alliander.com/schemas/osgp/common/2014/10">
+  <xsd:element name="OrganisationIdentification" type="tns:Identification"/>
+  <xsd:element name="UserName" type="tns:Identification"/>
+  <xsd:element name="ApplicationName" type="tns:Identification"/>
+  <xsd:simpleType name="Identification">
+    <xsd:restriction base="xsd:normalizedString">
+      <xsd:minLength value="1"/>
+      <xsd:maxLength value="40"/>
+      <xsd:pattern value="[^ ]{0,40}"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:complexType name="Page">
+    <xsd:sequence>
+      <xsd:element maxOccurs="1" minOccurs="1" name="TotalPages" type="xsd:int"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="PageSize" type="xsd:int"/>
+      <xsd:element maxOccurs="1" minOccurs="1" name="CurrentPage" type="xsd:int"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:simpleType name="CorrelationUid">
+    <xsd:restriction base="xsd:normalizedString">
+      <xsd:minLength value="20"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:complexType name="AsyncRequest">
+    <xsd:sequence>
+      <xsd:element minOccurs="1" name="CorrelationUid" type="tns:CorrelationUid"/>
+      <xsd:element minOccurs="1" name="DeviceId" type="tns:Identification"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="AsyncResponse">
+    <xsd:sequence>
+      <xsd:element minOccurs="1" name="CorrelationUid" type="tns:CorrelationUid"/>
+      <xsd:element minOccurs="1" name="DeviceId" type="tns:Identification"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:simpleType name="OsgpResultType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="OK"/>
+      <xsd:enumeration value="NOT FOUND"/>
+      <xsd:enumeration value="NOT OK"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:element name="FunctionalFault">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element maxOccurs="1" minOccurs="1" name="Code" type="xsd:int"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="Message" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="Component" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="InnerException" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="InnerMessage" type="xsd:string"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="TechnicalFault">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element maxOccurs="1" minOccurs="1" name="Message" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="Component" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="InnerException" type="xsd:string"/>
+        <xsd:element maxOccurs="1" minOccurs="1" name="InnerMessage" type="xsd:string"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>https://localhost:443/osgp-adapter-ws-publiclighting/publiclighting/scheduleManagementService/</con:endpoint></con:endpoints><con:operation id="f66a979f-16f0-474b-84cb-69663a6f9123" isOneWay="false" action="" name="GetSetScheduleResponse" bindingOperationName="GetSetScheduleResponse" type="Request-Response" outputName="SetScheduleResponse" inputName="SetScheduleAsyncRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="eb59e688-962a-4433-9dd8-5c1531f60272" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:443/osgp-adapter-ws-publiclighting/publiclighting/scheduleManagementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/publiclighting/schedulemanagement/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>?</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:SetScheduleAsyncRequest>
+         <ns1:AsyncRequest>
+            <ns:CorrelationUid>?</ns:CorrelationUid>
+            <ns:DeviceId>?</ns:DeviceId>
+         </ns1:AsyncRequest>
+      </ns1:SetScheduleAsyncRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/publiclighting/schedulemanagement-v1.0/PublicLightingScheduleManagementPort/SetScheduleAsyncRequest"/></con:call></con:operation><con:operation id="8bbe3f8c-c4dd-4ac6-90b8-fe9d44994544" isOneWay="false" action="" name="SetSchedule" bindingOperationName="SetSchedule" type="Request-Response" outputName="SetScheduleAsyncResponse" inputName="SetScheduleRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="d9f916aa-e983-4b70-b8d0-68e6ddbf3c97" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:443/osgp-adapter-ws-publiclighting/publiclighting/scheduleManagementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/publiclighting/schedulemanagement/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>?</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:SetScheduleRequest>
+         <ns1:DeviceIdentification>?</ns1:DeviceIdentification>
+         <!--1 to 50 repetitions:-->
+         <ns1:Schedules>
+            <ns1:WeekDay>?</ns1:WeekDay>
+            <!--Optional:-->
+            <ns1:startDay>?</ns1:startDay>
+            <!--Optional:-->
+            <ns1:endDay>?</ns1:endDay>
+            <ns1:ActionTime>?</ns1:ActionTime>
+            <!--Optional:-->
+            <ns1:Time>?</ns1:Time>
+            <!--Optional:-->
+            <ns1:TriggerWindow>
+               <ns1:minutesBefore>?</ns1:minutesBefore>
+               <ns1:minutesAfter>?</ns1:minutesAfter>
+            </ns1:TriggerWindow>
+            <!--1 to 6 repetitions:-->
+            <ns1:LightValue>
+               <!--Optional:-->
+               <ns1:Index>?</ns1:Index>
+               <ns1:On>?</ns1:On>
+               <!--Optional:-->
+               <ns1:DimValue>?</ns1:DimValue>
+            </ns1:LightValue>
+            <!--Optional:-->
+            <ns1:TriggerType>?</ns1:TriggerType>
+            <!--Optional:-->
+            <ns1:Index>?</ns1:Index>
+            <!--Optional:-->
+            <ns1:IsEnabled>?</ns1:IsEnabled>
+            <!--Optional:-->
+            <ns1:minimumLightsOn>?</ns1:minimumLightsOn>
+         </ns1:Schedules>
+         <!--Optional:-->
+         <ns1:scheduled_time>?</ns1:scheduled_time>
+      </ns1:SetScheduleRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.alliander.com/definitions/osgp/publiclighting/schedulemanagement-v1.0/PublicLightingScheduleManagementPort/SetScheduleRequest"/></con:call></con:operation></con:interface><con:testSuite id="c01678fd-cbe6-4342-a386-9a512aba73b3" name="PublicLightingAdHocManagement"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase id="1b6fbefb-ac46-42e1-b372-504ca7a2d838" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="FindAllDevices TestCase" searchProperties="true"><con:settings/><con:testStep type="request" id="df4c9697-c2cf-420b-9387-815a47e32fea" name="FindAllDevices"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PublicLightingAdHocManagementPortSoap11</con:interface><con:operation>FindAllDevices</con:operation><con:request name="FindAllDevices" id="fb1eb914-8663-4c50-a206-1d298f76dc34"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:443/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/publiclighting/adhocmanagement/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>?</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:FindAllDevicesRequest>
+         <ns1:Page>?</ns1:Page>
+      </ns1:FindAllDevicesRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig action="http://www.alliander.com/definitions/osgp/publiclighting/adhocmanagement-v1.0/PublicLightingAdHocManagementPort/FindAllDevicesRequest" mustUnderstand="NONE" version="200508"/></con:request></con:config></con:testStep><con:properties/></con:testCase><con:testCase id="ad8a039c-4270-41af-a50b-f512e98ed494" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="GetGetStatusResponse TestCase" searchProperties="true"><con:settings/><con:testStep type="request" id="72188383-5081-47f1-b791-0a534a467905" name="GetGetStatusResponse"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PublicLightingAdHocManagementPortSoap11</con:interface><con:operation>GetGetStatusResponse</con:operation><con:request name="GetGetStatusResponse" id="b5fe5604-b0a3-492a-b27d-a89552d17fa9"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:443/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/publiclighting/adhocmanagement/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>?</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:GetStatusAsyncRequest>
+         <ns1:AsyncRequest>
+            <ns:CorrelationUid>?</ns:CorrelationUid>
+            <ns:DeviceId>?</ns:DeviceId>
+         </ns1:AsyncRequest>
+      </ns1:GetStatusAsyncRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig action="http://www.alliander.com/definitions/osgp/publiclighting/adhocmanagement-v1.0/PublicLightingAdHocManagementPort/GetStatusAsyncRequest" mustUnderstand="NONE" version="200508"/></con:request></con:config></con:testStep><con:properties/></con:testCase><con:testCase id="099677fc-b87d-4897-a662-dff3832fc29e" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="GetResumeScheduleResponse TestCase" searchProperties="true"><con:settings/><con:testStep type="request" id="bfe41f48-2be0-40e2-b1e5-e49fdda7ebe0" name="GetResumeScheduleResponse"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PublicLightingAdHocManagementPortSoap11</con:interface><con:operation>GetResumeScheduleResponse</con:operation><con:request name="GetResumeScheduleResponse" id="dadaad08-4977-43bf-8dc3-37694efe12de"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:443/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/publiclighting/adhocmanagement/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>?</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:ResumeScheduleAsyncRequest>
+         <ns1:AsyncRequest>
+            <ns:CorrelationUid>?</ns:CorrelationUid>
+            <ns:DeviceId>?</ns:DeviceId>
+         </ns1:AsyncRequest>
+      </ns1:ResumeScheduleAsyncRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig action="http://www.alliander.com/definitions/osgp/publiclighting/adhocmanagement-v1.0/PublicLightingAdHocManagementPort/ResumeScheduleAsyncRequest" mustUnderstand="NONE" version="200508"/></con:request></con:config></con:testStep><con:properties/></con:testCase><con:testCase id="a48ed453-cd86-46a6-bea6-910f5372b228" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="GetSetLightResponse TestCase" searchProperties="true"><con:settings/><con:testStep type="request" id="dc5bb14f-2f5d-47c4-8a19-e6177861f1e9" name="GetSetLightResponse"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PublicLightingAdHocManagementPortSoap11</con:interface><con:operation>GetSetLightResponse</con:operation><con:request name="GetSetLightResponse" id="28618444-6f2c-4b85-b591-177eb0e867cc"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:443/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/publiclighting/adhocmanagement/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>?</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:SetLightAsyncRequest>
+         <ns1:AsyncRequest>
+            <ns:CorrelationUid>?</ns:CorrelationUid>
+            <ns:DeviceId>?</ns:DeviceId>
+         </ns1:AsyncRequest>
+      </ns1:SetLightAsyncRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig action="http://www.alliander.com/definitions/osgp/publiclighting/adhocmanagement-v1.0/PublicLightingAdHocManagementPort/SetLightAsyncRequest" mustUnderstand="NONE" version="200508"/></con:request></con:config></con:testStep><con:properties/></con:testCase><con:testCase id="495343a5-de30-46ee-a87b-2350797ab779" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="GetSetTransitionResponse TestCase" searchProperties="true"><con:settings/><con:testStep type="request" id="39aad2a8-da5a-418c-a1c4-9fe1b1047651" name="GetSetTransitionResponse"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PublicLightingAdHocManagementPortSoap11</con:interface><con:operation>GetSetTransitionResponse</con:operation><con:request name="GetSetTransitionResponse" id="ff211e93-45e9-4efb-aa51-e75412b92ff7"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:443/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/publiclighting/adhocmanagement/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>?</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:SetTransitionAsyncRequest>
+         <ns1:AsyncRequest>
+            <ns:CorrelationUid>?</ns:CorrelationUid>
+            <ns:DeviceId>?</ns:DeviceId>
+         </ns1:AsyncRequest>
+      </ns1:SetTransitionAsyncRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig action="http://www.alliander.com/definitions/osgp/publiclighting/adhocmanagement-v1.0/PublicLightingAdHocManagementPort/SetTransitionAsyncRequest" mustUnderstand="NONE" version="200508"/></con:request></con:config></con:testStep><con:properties/></con:testCase><con:testCase id="b040b718-d419-49cb-88f0-2bdcff940f44" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="GetStatus TestCase" searchProperties="true"><con:settings/><con:testStep type="request" id="9357ff59-a197-4488-bcce-46248c6a1153" name="GetStatus"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PublicLightingAdHocManagementPortSoap11</con:interface><con:operation>GetStatus</con:operation><con:request name="GetStatus" id="9f41e090-b55d-4899-8df0-8fcc669f9705"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:443/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/publiclighting/adhocmanagement/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>?</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:GetStatusRequest>
+         <ns1:DeviceIdentification>?</ns1:DeviceIdentification>
+      </ns1:GetStatusRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig action="http://www.alliander.com/definitions/osgp/publiclighting/adhocmanagement-v1.0/PublicLightingAdHocManagementPort/GetStatusRequest" mustUnderstand="NONE" version="200508"/></con:request></con:config></con:testStep><con:properties/></con:testCase><con:testCase id="31629497-3b7a-4cb3-88d2-2f661418a39c" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="ResumeSchedule TestCase" searchProperties="true"><con:settings/><con:testStep type="request" id="720781f9-2cfa-4544-8ac6-090a2b66c5f7" name="ResumeSchedule"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PublicLightingAdHocManagementPortSoap11</con:interface><con:operation>ResumeSchedule</con:operation><con:request name="ResumeSchedule" id="3a070980-96ec-4a01-8d22-51db392f8dde"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:443/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/publiclighting/adhocmanagement/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>?</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:ResumeScheduleRequest>
+         <ns1:DeviceIdentification>?</ns1:DeviceIdentification>
+         <!--Optional:-->
+         <ns1:Index>?</ns1:Index>
+         <ns1:IsImmediate>?</ns1:IsImmediate>
+      </ns1:ResumeScheduleRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig action="http://www.alliander.com/definitions/osgp/publiclighting/adhocmanagement-v1.0/PublicLightingAdHocManagementPort/ResumeScheduleRequest" mustUnderstand="NONE" version="200508"/></con:request></con:config></con:testStep><con:properties/></con:testCase><con:testCase id="1504ad53-02f1-4017-a405-0797a219ddc1" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="SetLight TestCase" searchProperties="true"><con:settings/><con:testStep type="request" id="ba2136ef-e2dc-48a8-a2ec-180cda351c14" name="SetLight"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PublicLightingAdHocManagementPortSoap11</con:interface><con:operation>SetLight</con:operation><con:request name="SetLight" id="61e2a9f4-1063-4c42-9d51-0ae1274eea1d"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://localhost:443/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/publiclighting/adhocmanagement/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>?</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:SetLightRequest>
+         <ns1:DeviceIdentification>?</ns1:DeviceIdentification>
+         <!--1 to 6 repetitions:-->
+         <ns1:LightValue>
+            <!--Optional:-->
+            <ns1:Index>?</ns1:Index>
+            <ns1:On>?</ns1:On>
+            <!--Optional:-->
+            <ns1:DimValue>?</ns1:DimValue>
+         </ns1:LightValue>
+      </ns1:SetLightRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:wsaConfig action="http://www.alliander.com/definitions/osgp/publiclighting/adhocmanagement-v1.0/PublicLightingAdHocManagementPort/SetLightRequest" mustUnderstand="NONE" version="200508"/></con:request></con:config></con:testStep><con:properties/></con:testCase><con:testCase id="9a5d008b-7f44-4242-8595-6b32d4770ed1" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="SetTransition TestCase" searchProperties="true"><con:settings/><con:testStep type="request" id="e976cdcb-f417-4d0c-902f-b6d6af1ef95e" name="SetTransition"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PublicLightingAdHocManagementPortSoap11</con:interface><con:operation>SetTransition</con:operation><con:request name="SetTransition" id="e86bf2e4-a601-4030-94ad-9b83ee1f73b4"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://${#TestCase#ServiceEndpoint}/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/publiclighting/adhocmanagement/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>?</ns:ApplicationName>
+      <ns:UserName>?</ns:UserName>
+      <ns:OrganisationIdentification>?</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:SetTransitionRequest>
+         <ns1:DeviceIdentification>?</ns1:DeviceIdentification>
+         <ns1:TransitionType>?</ns1:TransitionType>
+         <!--Optional:-->
+         <ns1:Time>?</ns1:Time>
+      </ns1:SetTransitionRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://www.alliander.com/definitions/osgp/publiclighting/adhocmanagement-v1.0/PublicLightingAdHocManagementPort/SetTransitionRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/></con:testCase><con:testCase id="2fe85d7c-05f7-4ca4-b12b-5a705caf444d" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="AT Send SetLight Async" searchProperties="true"><con:settings/><con:testStep type="request" name="SetLight - Request 1" id="880a0d8a-d62b-4699-9c17-10ee0b71da4b"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PublicLightingAdHocManagementPortSoap11</con:interface><con:operation>SetLight</con:operation><con:request name="SetLight - Request 1" id="f7eebdca-5b0a-4649-b4e4-34daad719826" sslKeystore="test-org.pfx"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://${#TestCase#ServiceEndpoint}/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/publiclighting/adhocmanagement/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>SoapUI</ns:ApplicationName>
+      <ns:UserName>TestUser</ns:UserName>
+      <ns:OrganisationIdentification>test-org</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:SetLightRequest>
+         <ns1:DeviceIdentification>${#TestCase#DeviceIdentification}</ns1:DeviceIdentification>
+         <!--1 to 6 repetitions:-->
+         <ns1:LightValue>
+            <ns1:On>${#TestCase#On}</ns1:On>
+         </ns1:LightValue>
+      </ns1:SetLightRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response" id="33045a18-8e93-49d2-a8da-dc04b45015ef"/><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/></con:testCase><con:testCase id="47f787a8-381c-431e-9aed-d64835f837e8" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="AT Retrieve SetLight Result" searchProperties="true"><con:settings/><con:testStep type="request" name="GetSetLightResponse - Request 1" id="cfe71324-40e0-4e28-bcb5-d625d4eabe61"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>PublicLightingAdHocManagementPortSoap11</con:interface><con:operation>GetSetLightResponse</con:operation><con:request name="GetSetLightResponse - Request 1" id="cf4d0f8c-4e54-4bb0-8e0a-d21663770f7a" sslKeystore="test-org.pfx"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://${#TestCase#ServiceEndpoint}/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/publiclighting/adhocmanagement/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>SoapUI</ns:ApplicationName>
+      <ns:UserName>TestUser</ns:UserName>
+      <ns:OrganisationIdentification>test-org</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:SetLightAsyncRequest>
+         <ns1:AsyncRequest>
+            <ns:CorrelationUid>${=testCase.getPropertyValue( "__CORRELATION_UID__" )}</ns:CorrelationUid>
+            <ns:DeviceId>${=testCase.getPropertyValue( "__DEVICE_IDENTIFICATION__" )}</ns:DeviceId>
+         </ns1:AsyncRequest>
+      </ns1:SetLightAsyncRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response" id="0670e4d0-5513-4164-a070-73d8e7438dd1"/><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/></con:testCase><con:properties/></con:testSuite><con:properties><con:property><con:name>CertBasePath</con:name><con:value>/home/dev/Sources/OSGP/Integration-Tests/platform-tests/certificates</con:value></con:property></con:properties><con:wssContainer><con:crypto><con:source>/home/dev/Sources/OSGP/Integration-Tests/cucumber-tests-platform/certificates/unknown-organization.pfx</con:source><con:password>1234</con:password><con:type>KEYSTORE</con:type></con:crypto><con:crypto><con:source>${#Project#CertBasePath}/test-org.pfx</con:source><con:password>1234</con:password><con:type>KEYSTORE</con:type></con:crypto></con:wssContainer><con:oAuth2ProfileContainer/><con:sensitiveInformation/></con:soapui-project>
