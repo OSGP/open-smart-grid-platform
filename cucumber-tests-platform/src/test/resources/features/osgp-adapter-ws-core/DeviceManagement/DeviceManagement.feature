@@ -35,3 +35,5 @@ Feature: Core Device management
     Examples: 
       | DeviceIdentification | PageSize | Page | Number |
       | TEST1024000000001    |       25 |    0 |      1 |
+
+  

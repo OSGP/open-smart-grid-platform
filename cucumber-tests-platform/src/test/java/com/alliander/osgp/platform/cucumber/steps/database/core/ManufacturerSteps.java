@@ -57,7 +57,7 @@ public class ManufacturerSteps {
      * @throws Throwable
      */
     @Then("^the entity manufacturer exists$")
-    public void the_entity_manufacturer_exists(final Map<String, String> expectedEntity) throws Throwable {
+    public void theEntityManufacturerExists(final Map<String, String> expectedEntity) throws Throwable {
         // TODO: Wait until the stuff is created.
         Manufacturer entity = repo.findByName(getString(expectedEntity, "Name", Defaults.DEFAULT_MANUFACTURER_NAME));
 

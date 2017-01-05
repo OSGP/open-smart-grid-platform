@@ -20,9 +20,6 @@ import java.util.Map;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.junit.Assert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataAsyncRequest;
@@ -32,12 +29,10 @@ import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataRe
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataSystemIdentifier;
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.Measurement;
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.Profile;
-import com.alliander.osgp.platform.cucumber.config.CoreDeviceConfiguration;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.helpers.SettingsHelper;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.steps.ws.core.firmwaremanagement.GetFirmwareVersionSteps;
 import com.alliander.osgp.platform.cucumber.support.ws.microgrids.AdHocManagementClient;
 import com.alliander.osgp.platform.cucumber.support.ws.microgrids.GetDataRequestBuilder;
 
@@ -46,11 +41,6 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 public class GetDataSteps {
-
-    @Autowired
-    private CoreDeviceConfiguration configuration;
-    
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetFirmwareVersionSteps.class);
 
     /**
      * Delta value for which two measurement values are considered equal if
@@ -86,28 +76,9 @@ public class GetDataSteps {
                 Keys.KEY_CORRELATION_UID, correlationUid);
 
         final GetDataAsyncRequest getDataAsyncRequest = GetDataRequestBuilder.fromParameterMapAsync(extendedParameters);
-        GetDataResponse response = null;
         
-        boolean success = false;
-        int count = 0;
-        while (!success) {
-            if (count > configuration.defaultTimeout) {
-                Assert.fail("Timeout");
-            }
-            
-            count++;
-            Thread.sleep(1000);
-
-            try {
-                response = this.client.getData(getDataAsyncRequest);
-                                            
-                success = true; 
-            }
-            catch(Exception ex) {
-                LOGGER.debug(ex.getMessage());
-            }
-        }
-
+        // Wait for the response...
+        final GetDataResponse response = this.client.getData(getDataAsyncRequest);
         final String expectedResult = responseParameters.get(Keys.KEY_RESULT);
         assertNotNull("Result", response.getResult());
         assertEquals("Result", expectedResult, response.getResult().name());

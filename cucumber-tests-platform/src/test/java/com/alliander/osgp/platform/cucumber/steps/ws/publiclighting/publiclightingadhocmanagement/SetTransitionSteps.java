@@ -60,7 +60,7 @@ public class SetTransitionSteps {
      * @throws Throwable
      */
     @When("^receiving a set transition request$")
-    public void whenReceivingASetTransitionRequest(final Map<String, String> requestParameters) throws Throwable {
+    public void receivingASetTransitionRequest(final Map<String, String> requestParameters) throws Throwable {
 
     	SetTransitionRequest request = new SetTransitionRequest();
     	request.setDeviceIdentification(getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
@@ -90,7 +90,7 @@ public class SetTransitionSteps {
         // Force the request being send to the platform as a given organization.
     	ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
     	
-    	whenReceivingASetTransitionRequest(requestParameters);
+    	receivingASetTransitionRequest(requestParameters);
     }
     
     /**
@@ -100,7 +100,7 @@ public class SetTransitionSteps {
      * @throws Throwable
      */
     @Then("^the set transition async response contains$")
-    public void thenTheSetTransitionAsyncResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
+    public void theSetTransitionAsyncResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
     	SetTransitionAsyncResponse response = (SetTransitionAsyncResponse)ScenarioContext.Current().get(Keys.RESPONSE);
     	
     	Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
@@ -114,7 +114,7 @@ public class SetTransitionSteps {
     }
 
     @Then("^the platform buffers a set transition response message for device \"([^\"]*)\"$")
-    public void thenThePlatformBuffersASetTransitionResponseMessage(final String deviceIdentification, final Map<String, String> expectedResult) throws Throwable {
+    public void thePlatformBuffersASetTransitionResponseMessage(final String deviceIdentification, final Map<String, String> expectedResult) throws Throwable {
     	SetTransitionAsyncRequest request = new SetTransitionAsyncRequest();
     	AsyncRequest asyncRequest = new AsyncRequest();
     	asyncRequest.setDeviceId(deviceIdentification);

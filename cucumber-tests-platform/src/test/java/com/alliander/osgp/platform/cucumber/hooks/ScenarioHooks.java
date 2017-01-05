@@ -36,7 +36,7 @@ public class ScenarioHooks {
     public void beforeScenario() {
         this.databaseSteps.prepareDatabaseForScenario();
 
-    	// Make sure that the scenario context is clean before each test.
+        // Make sure that the scenario context is clean before each test.
         ScenarioContext.context = null;
     }
 

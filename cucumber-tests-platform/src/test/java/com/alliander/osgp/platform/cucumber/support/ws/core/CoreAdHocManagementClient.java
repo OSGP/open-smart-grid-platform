@@ -24,19 +24,21 @@ import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory
 
 @Component
 public class CoreAdHocManagementClient extends BaseClient {
-	
+
     @Autowired
     private WebServiceTemplateFactory coreAdHocManagementWstf;
 
-	public SetRebootAsyncResponse setReboot(SetRebootRequest request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
+    public SetRebootAsyncResponse setReboot(SetRebootRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate webServiceTemplate = this.coreAdHocManagementWstf
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (SetRebootAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
-	}
+    }
 
-	public SetRebootResponse getSetRebootResponse(SetRebootAsyncRequest request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
-	    final WebServiceTemplate webServiceTemplate = this.coreAdHocManagementWstf
+    public SetRebootResponse getSetRebootResponse(SetRebootAsyncRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final WebServiceTemplate webServiceTemplate = this.coreAdHocManagementWstf
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (SetRebootResponse) webServiceTemplate.marshalSendAndReceive(request);
-	}
+    }
 }

@@ -34,7 +34,7 @@ public class AdHocManagementClient extends BaseClient {
 
     @Autowired
     private RtuResponseDataRepository rtuResponseDataRepository;
-
+    
     @Value("${iec61850.rtu.response.wait.check.interval:1000}")
     private int waitCheckIntervalMillis;
     @Value("${iec61850.rtu.response.wait.fail.duration:15000}")
@@ -57,7 +57,7 @@ public class AdHocManagementClient extends BaseClient {
                 this.getOrganizationIdentification(), this.getUserName());
         return (GetDataResponse) webServiceTemplate.marshalSendAndReceive(request);
     }
-
+    
     private void waitForRtuResponseData(final String correlationUid) {
         try {
             for (int timeSpentWaiting = 0; timeSpentWaiting < this.waitFailMillis; timeSpentWaiting += this.waitCheckIntervalMillis) {

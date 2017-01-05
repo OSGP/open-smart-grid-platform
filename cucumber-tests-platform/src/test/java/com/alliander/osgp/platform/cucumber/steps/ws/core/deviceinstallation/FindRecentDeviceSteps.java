@@ -1,5 +1,5 @@
 /**
- * Copyright 2012-2017 Smart Society Services B.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -7,12 +7,14 @@
  */
 package com.alliander.osgp.platform.cucumber.steps.ws.core.deviceinstallation;
 
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
+import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.FindRecentDevicesRequest;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.FindRecentDevicesResponse;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
@@ -27,31 +29,32 @@ public class FindRecentDeviceSteps {
     @Autowired
     private CoreDeviceInstallationClient client;
 
-	@When("receiving a find recent devices request")
-    public void receiving_a_find_recent_devices_request(final Map<String, String> requestParameters) throws Throwable
-    {
-		FindRecentDevicesRequest request = new FindRecentDevicesRequest();
-		
-		try {
-            ScenarioContext.Current().put(Keys.RESPONSE, client.findRecentDevices(request));
-        } catch(SoapFaultClientException ex) {
+    @When("receiving a find recent devices request")
+    public void receivingAFindRecentDevicesRequest() throws Throwable {
+        final FindRecentDevicesRequest request = new FindRecentDevicesRequest();
+
+        try {
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.findRecentDevices(request));
+        } catch (final SoapFaultClientException ex) {
             ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
     }
-    
-    @Then("the find recent devices response contains \"([^\"]*)\" devices")
-    public void the_find_recent_devices_response_contains(final Integer numberOfDevices)
-    {
-    	FindRecentDevicesResponse response = (FindRecentDevicesResponse)ScenarioContext.Current().get(Keys.RESPONSE);
-    	
-    	Assert.assertEquals((int)numberOfDevices, response.getDevices().size());
-    }
-    
-	@Then("the find recent devices response contains at index \"([^\"]*)\"")
-    public void the_find_recent_devices_response_contains_at_index(final Integer index, final Map<String, String> expectedDevice) throws Throwable
-    {
-    	FindRecentDevicesResponse response = (FindRecentDevicesResponse)ScenarioContext.Current().get(Keys.RESPONSE);
 
-    	DeviceSteps.checkDevice(expectedDevice, response.getDevices().get(index - 1));
+    @Then("the find recent devices response contains \"([^\"]*)\" devices?")
+    public void theFindRecentDevicesResponseContains(final Integer numberOfDevices) {
+        final FindRecentDevicesResponse response = (FindRecentDevicesResponse) ScenarioContext.Current()
+                .get(Keys.RESPONSE);
+
+        final List<Device> devices = response.getDevices();
+        Assert.assertEquals((int) numberOfDevices, (devices != null) ? devices.size() : 0);
+    }
+
+    @Then("the find recent devices response contains at index \"([^\"]*)\"")
+    public void theFindRecentDevicesResponseContainsAtIndex(final Integer index,
+            final Map<String, String> expectedDevice) throws Throwable {
+        final FindRecentDevicesResponse response = (FindRecentDevicesResponse) ScenarioContext.Current()
+                .get(Keys.RESPONSE);
+
+        DeviceSteps.checkDevice(expectedDevice, response.getDevices().get(index - 1));
     }
 }

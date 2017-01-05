@@ -127,8 +127,8 @@ public class DeviceSteps {
     }
 
     /**
-     * Update a device entity given its deviceIdentification.
-     *
+     * Update a device entity given its device identification.
+     * 
      * @param deviceIdentification
      *            The deviceIdentification.
      * @param settings
@@ -141,15 +141,16 @@ public class DeviceSteps {
 
     /**
      * Update an existing device with the given settings.
-     *
+     * 
      * @param device
      * @param settings
      */
     private void updateDevice(Device device, final Map<String, String> settings) {
 
         // Now set the optional stuff
-        device.setActivated(getBoolean(settings, "IsActivated", Defaults.DEFAULT_IS_ACTIVATED));
-        device.setTechnicalInstallationDate(getDate(settings, "TechnicalInstallationDate").toDate());
+        if (settings.containsKey(Keys.KEY_TECH_INSTALL_DATE) && !settings.get(Keys.KEY_TECH_INSTALL_DATE).isEmpty()) {
+            device.setTechnicalInstallationDate(getDate(settings, Keys.KEY_TECH_INSTALL_DATE).toDate());
+        }
 
         final DeviceModel deviceModel = this.deviceModelRepository.findByModelCode(getString(settings, "DeviceModel",
                 Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
@@ -168,7 +169,7 @@ public class DeviceSteps {
         device.updateRegistrationData(inetAddress, getString(settings, "DeviceType", DeviceSteps.DEFAULT_DEVICE_TYPE));
 
         device.setVersion(getLong(settings, "Version"));
-        device.setActive(getBoolean(settings, "Active", Defaults.DEFAULT_ACTIVE));
+        device.setActive(getBoolean(settings, Keys.KEY_ACTIVE, Defaults.DEFAULT_ACTIVE));
         if (getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION)
                 .toLowerCase() != "null") {
             device.addOrganisation(getString(settings, "OrganizationIdentification",
@@ -183,13 +184,13 @@ public class DeviceSteps {
                 getFloat(settings, "gpsLatitude", Defaults.DEFAULT_LATITUDE),
                 getFloat(settings, "gpsLongitude", Defaults.DEFAULT_LONGITUDE));
 
+        device.setActivated(getBoolean(settings, Keys.KEY_IS_ACTIVATED, Defaults.DEFAULT_IS_ACTIVATED));
         device = this.deviceRepository.save(device);
-
-        final Organisation organization = this.organizationRepository.findByOrganisationIdentification(getString(
-                settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
         if (getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION)
                 .toLowerCase() != "null") {
+            final Organisation organization = this.organizationRepository.findByOrganisationIdentification(
+                    getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
             final DeviceFunctionGroup functionGroup = getEnum(settings, "DeviceFunctionGroup",
                     DeviceFunctionGroup.class, DeviceFunctionGroup.OWNER);
             final DeviceAuthorization authorization = device.addAuthorization(organization, functionGroup);
@@ -272,17 +273,20 @@ public class DeviceSteps {
 
             count++;
             Thread.sleep(1000);
+            LoggerFactory.getLogger(DeviceSteps.class).info("Sleeping ls " + count);
 
             try {
                 // Wait for next try to retrieve a response
+
                 device = this.deviceRepository.findByDeviceIdentification(settings.get(Keys.KEY_DEVICE_IDENTIFICATION));
                 if (device == null) {
                     continue;
                 }
+                ;
 
                 success = true;
             } catch (final Exception e) {
-                LOGGER.info("Waiting for device entity. [{}]", e.getMessage());
+                LOGGER.info(e.getMessage());
             }
         }
 
@@ -341,9 +345,9 @@ public class DeviceSteps {
     @Then("^the device with id \"([^\"]*)\" exists$")
     public void theDeviceWithIdExists(final String deviceIdentification) throws Throwable {
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-        Assert.assertNotNull(device);
-
         final List<DeviceAuthorization> devAuths = this.deviceAuthorizationRepository.findByDevice(device);
+
+        Assert.assertNotNull(device);
         Assert.assertTrue(devAuths.size() > 0);
     }
 
@@ -356,9 +360,9 @@ public class DeviceSteps {
     @Then("^the device with id \"([^\"]*)\" does not exists$")
     public void theDeviceShouldBeRemoved(final String deviceIdentification) throws Throwable {
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-        Assert.assertNotNull(device);
-
         final List<DeviceAuthorization> devAuths = this.deviceAuthorizationRepository.findByDevice(device);
+
+        Assert.assertNotNull(device);
         Assert.assertTrue(devAuths.size() == 0);
     }
 
