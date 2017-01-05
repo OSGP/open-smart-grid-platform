@@ -60,7 +60,7 @@ public class GetStatusSteps {
      * @throws Throwable
      */
     @When("^receiving a get status request$")
-    public void whenReceivingAGetStatusRequest(final Map<String, String> requestParameters) throws Throwable {
+    public void receivingAGetStatusRequest(final Map<String, String> requestParameters) throws Throwable {
 
     	GetStatusRequest request = new GetStatusRequest();
     	request.setDeviceIdentification(getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
@@ -77,7 +77,7 @@ public class GetStatusSteps {
         // Force the request being send to the platform as a given organization.
     	ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
     	
-    	whenReceivingAGetStatusRequest(requestParameters);
+    	receivingAGetStatusRequest(requestParameters);
     }
     
     /**
@@ -87,7 +87,7 @@ public class GetStatusSteps {
      * @throws Throwable
      */
     @Then("^the get status async response contains$")
-    public void thenTheGetStatusAsyncResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
+    public void theGetStatusAsyncResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
         
     	GetStatusAsyncResponse response = (GetStatusAsyncResponse)ScenarioContext.Current().get(Keys.RESPONSE);
     	
@@ -102,14 +102,14 @@ public class GetStatusSteps {
     }
 
     @Then("^the get status response contains soap fault$")
-    public void thenTheGetStatusResponseContainsSoapFault(final Map<String, String> expectedResponseData) {
+    public void theGetStatusResponseContainsSoapFault(final Map<String, String> expectedResponseData) {
     	SoapFaultClientException response = (SoapFaultClientException)ScenarioContext.Current().get(Keys.RESPONSE);
     	
     	Assert.assertEquals(expectedResponseData.get(Keys.KEY_MESSAGE), response.getMessage());
     }
 
     @Then("^the platform buffers a get status response message for device \"([^\"]*)\"$")
-    public void thenThePlatformBuffersAGetStatusResponseMessageForDevice(final String deviceIdentification, final Map<String, String> expectedResult) throws Throwable {
+    public void thePlatformBuffersAGetStatusResponseMessageForDevice(final String deviceIdentification, final Map<String, String> expectedResult) throws Throwable {
     	GetStatusAsyncRequest request = new GetStatusAsyncRequest();
     	AsyncRequest asyncRequest = new AsyncRequest();
     	asyncRequest.setDeviceId(deviceIdentification);

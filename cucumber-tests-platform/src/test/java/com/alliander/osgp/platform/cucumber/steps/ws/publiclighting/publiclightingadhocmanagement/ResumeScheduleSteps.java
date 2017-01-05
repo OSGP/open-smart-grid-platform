@@ -56,7 +56,7 @@ public class ResumeScheduleSteps {
      * @throws Throwable
      */
     @When("^receiving a resume schedule request$")
-    public void whenReceivingAResumeScheduleRequest(final Map<String, String> requestParameters) throws Throwable {
+    public void receivingAResumeScheduleRequest(final Map<String, String> requestParameters) throws Throwable {
 
     	ResumeScheduleRequest request = new ResumeScheduleRequest();
     	
@@ -67,10 +67,6 @@ public class ResumeScheduleSteps {
     	
     	request.setIndex(getInteger(requestParameters, Keys.KEY_INDEX, Defaults.DEFAULT_INDEX));
     	request.setIsImmediate(getBoolean(requestParameters, Keys.KEY_ISIMMEDIATE, Defaults.DEFAULT_ISIMMEDIATE));
-    	
-//    	request.setDeviceIdentification(getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-//    	request.setIndex(getInteger(requestParameters, Keys.KEY_INDEX, Defaults.DEFAULT_INDEX));
-//    	request.setIsImmediate(getBoolean(requestParameters, Keys.KEY_ISIMMEDIATE, Defaults.DEFAULT_ISIMMEDIATE));
     	
     	try {
     		ScenarioContext.Current().put(Keys.RESPONSE, client.resumeScheduleStatus(request));
@@ -84,7 +80,7 @@ public class ResumeScheduleSteps {
         // Force the request being send to the platform as a given organization.
     	ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
 
-    	whenReceivingAResumeScheduleRequest(requestParameters);
+    	receivingAResumeScheduleRequest(requestParameters);
     }
     
     /**
@@ -94,7 +90,7 @@ public class ResumeScheduleSteps {
      * @throws Throwable
      */
     @Then("^the resume schedule async response contains$")
-    public void thenTheResumeScheduleAsyncResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
+    public void theResumeScheduleAsyncResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
     	ResumeScheduleAsyncResponse response = (ResumeScheduleAsyncResponse)ScenarioContext.Current().get(Keys.RESPONSE);
     	
     	Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
@@ -108,7 +104,7 @@ public class ResumeScheduleSteps {
     }
 
     @Then("^the platform buffers a resume schedule response message for device \"([^\"]*)\"$")
-    public void thenThePlatformBuffersAResumeScheduleResponseMessage(final String deviceIdentification, final Map<String, String> expectedResult) throws Throwable {
+    public void thePlatformBuffersAResumeScheduleResponseMessage(final String deviceIdentification, final Map<String, String> expectedResult) throws Throwable {
     	ResumeScheduleAsyncRequest request = new ResumeScheduleAsyncRequest();
     	AsyncRequest asyncRequest = new AsyncRequest();
     	asyncRequest.setDeviceId(deviceIdentification);
