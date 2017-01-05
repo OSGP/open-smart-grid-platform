@@ -10,6 +10,7 @@ package com.alliander.osgp.platform.dlms.cucumber.builders.entities;
 import java.util.Date;
 import java.util.Map;
 
+import org.joda.time.DateTime;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
@@ -24,7 +25,7 @@ public class SecurityKeyBuilder implements CucumberBuilder<SecurityKey> {
     private boolean builderEnabled = true;
 
     private SecurityKeyType securityKeyType = null;
-    private Date validFrom = UtcDateHelper.getUtcDate();
+    private Date validFrom = new DateTime(UtcDateHelper.getUtcDate()).minusDays(1).toDate();
     private Date validTo = Defaults.VALID_TO;
     private Long version = Defaults.VERSION;
     private String key = Defaults.SECURITY_KEY_A;
