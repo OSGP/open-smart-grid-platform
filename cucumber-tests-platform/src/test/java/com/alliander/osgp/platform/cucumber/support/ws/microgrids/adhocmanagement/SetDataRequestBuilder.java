@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.platform.cucumber.support.ws.microgrids.adhocmanagement;
 
+import java.util.List;
 import java.util.Map;
 
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataAsyncRequest;
@@ -26,11 +27,10 @@ public class SetDataRequestBuilder {
         final SetDataRequest setDataRequest = new SetDataRequest();
         setDataRequest.setDeviceIdentification(requestParameters.get(Keys.KEY_DEVICE_IDENTIFICATION));
 
-        SetDataSystemIdentifier system = new SystemBuilder().withSettings(requestParameters).build();
-        system.getSetPoint().addAll(new SetPointBuilder().withSettings(requestParameters).buildList());
-        system.getProfile().addAll(new ProfileBuilder().withSettings(requestParameters).buildList());
+        final List<SetDataSystemIdentifier> systems = new SetDataSystemIdentifierBuilder()
+                .withSettings(requestParameters).buildList();
+        setDataRequest.getSystem().addAll(systems);
 
-        setDataRequest.getSystem().add(system);
         return setDataRequest;
     }
 

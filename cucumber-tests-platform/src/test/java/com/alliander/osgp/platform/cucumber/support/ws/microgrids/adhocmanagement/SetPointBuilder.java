@@ -14,18 +14,19 @@ import java.util.Map;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetPoint;
-import com.alliander.osgp.platform.cucumber.inputparsers.XmlGregorianCalendarInputParser;
+import com.alliander.osgp.platform.cucumber.helpers.SettingsHelper;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
 
 
-public class SetPointBuilder {// implements CucumberBuilder<SetPoint>{
-    protected double value;
-    protected XMLGregorianCalendar startTime;
-    protected XMLGregorianCalendar endTime;
-    protected Integer id;
-    protected String node;
+public class SetPointBuilder {
 
-    protected List<SetPoint> setPoints = new ArrayList<>();
+    private List<SetPoint> setPoints = new ArrayList<>();
+
+    private double value;
+    private XMLGregorianCalendar startTime;
+    private XMLGregorianCalendar endTime;
+    private Integer id;
+    private String node;
 
     public SetPointBuilder() {
     }
@@ -55,7 +56,6 @@ public class SetPointBuilder {// implements CucumberBuilder<SetPoint>{
         return this;
     }
 
-    // @Override
     public SetPoint build() {
         final SetPoint setPoint = new SetPoint();
         setPoint.setStartTime(this.startTime);
@@ -70,57 +70,31 @@ public class SetPointBuilder {// implements CucumberBuilder<SetPoint>{
         return this.setPoints;
     }
 
-    // @Override
-    public SetPointBuilder withSettings(final Map<String, String> settings) {
-        for (int i = 1; i <= this.count(settings, Keys.KEY_SETPOINT_ID); i++) {
-            this.setPoints.add(this.withSettings(settings, i).build());
+    public SetPointBuilder withSettings(final Map<String, String> settings, final int systemIndex) {
+        if (!SettingsHelper.hasKey(settings, Keys.KEY_NUMBER_OF_SET_POINTS, systemIndex)) {
+            throw new AssertionError("The Step DataTable must contain the number of set points for key \""
+                    + SettingsHelper.makeKey(Keys.KEY_NUMBER_OF_SET_POINTS, systemIndex)
+                    + "\" when creating a set data request.");
+        }
+        final int numberOfSetPoints = SettingsHelper.getIntegerValue(settings, Keys.KEY_NUMBER_OF_SET_POINTS,
+                systemIndex);
+        for (int i = 1; i <= numberOfSetPoints; i++) {
+            this.setPoints.add(this.withSettings(settings, systemIndex, i).build());
         }
 
         return this;
     }
 
-    private SetPointBuilder withSettings(final Map<String, String> settings, final int index) {
-        if (this.hasKey(settings, Keys.KEY_SETPOINT_START_TIME, index)) {
-            this.withStartTime(XmlGregorianCalendarInputParser
-                    .parse(this.getStringValue(settings, Keys.KEY_SETPOINT_START_TIME, index)));
-        }
-        if (this.hasKey(settings, Keys.KEY_SETPOINT_END_TIME, index)) {
-            this.withEndTime(XmlGregorianCalendarInputParser
-                    .parse(this.getStringValue(settings, Keys.KEY_SETPOINT_END_TIME, index)));
-        }
-        if (this.hasKey(settings, Keys.KEY_SETPOINT_ID, index)) {
-            this.withId(Integer.parseInt(this.getStringValue(settings, Keys.KEY_SETPOINT_ID, index)));
-        }
-        if (this.hasKey(settings, Keys.KEY_SETPOINT_NODE, index)) {
-            this.withNode(this.getStringValue(settings, Keys.KEY_SETPOINT_NODE, index));
-        }
-        if (this.hasKey(settings, Keys.KEY_SETPOINT_VALUE, index)) {
-            this.withValue(Double.parseDouble(this.getStringValue(settings, Keys.KEY_SETPOINT_VALUE, index)));
-        }
+    private SetPointBuilder withSettings(final Map<String, String> settings, final int systemIndex, final int index) {
+        final int[] indexes = { systemIndex, index };
+        this.withStartTime(
+                SettingsHelper.getXmlGregorianCalendarValue(settings, Keys.KEY_SETPOINT_START_TIME, indexes));
+        this.withEndTime(
+                SettingsHelper.getXmlGregorianCalendarValue(settings, Keys.KEY_SETPOINT_END_TIME, indexes));
+        this.withId(SettingsHelper.getIntegerValue(settings, Keys.KEY_SETPOINT_ID, indexes));
+        this.withNode(SettingsHelper.getStringValue(settings, Keys.KEY_SETPOINT_NODE, indexes));
+        this.withValue(SettingsHelper.getDoubleValue(settings, Keys.KEY_SETPOINT_VALUE, indexes));
 
         return this;
     }
-
-    private int count(final Map<String, String> settings, final String keyPrefix) {
-        for (int i = 10; i > 0; i--) {
-            if (this.hasKey(settings, keyPrefix, i)) {
-                return i;
-            }
-        }
-        return 0;
-    }
-
-    private boolean hasKey(final Map<String, String> settings, final String keyPrefix, final int index) {
-        return settings.containsKey(this.makeKey(keyPrefix, index));
-    }
-
-    private String makeKey(final String keyPrefix, final int index) {
-        return keyPrefix + "_" + index;
-    }
-
-    private String getStringValue(final Map<String, String> settings, final String keyPrefix, final int index) {
-        final String key = this.makeKey(keyPrefix, index);
-        return settings.get(key);
-    }
-
 }
