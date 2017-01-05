@@ -15,24 +15,34 @@ import org.slf4j.LoggerFactory;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.alliander.osgp.platform.cucumber.support.ws.WebServiceSecurityException;
+import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
 
-public abstract class OsgpResponsePoller<T> {
+public class OsgpResponsePoller<AsyncRequest, Response> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OsgpResponsePoller.class);
 
+    private final WebServiceTemplateFactory webserviceTemplateFactory;
+    private final String organizationIdentification;
+    private final String username;
     private final int maxWaitTimeForResponse;
     private final int sleepTime;
 
-    public OsgpResponsePoller(final int maxWaitTimeForResponse, final int sleepTime) {
+    public OsgpResponsePoller(final WebServiceTemplateFactory webserviceTemplateFactory,
+            final String organizationIdentification, final String username, final int maxWaitTimeForResponse,
+            final int sleepTime) {
+        this.webserviceTemplateFactory = webserviceTemplateFactory;
+        this.organizationIdentification = organizationIdentification;
+        this.username = username;
+
         this.maxWaitTimeForResponse = maxWaitTimeForResponse;
         this.sleepTime = sleepTime;
     }
 
-    abstract protected T pollWsResponse() throws WebServiceSecurityException, GeneralSecurityException, IOException;
-
     /**
      * Polls OSGP for response availability for a max time.
      *
+     * @param AsyncRequest
+     *            request to poll with
      * @return the actual ws response object
      * @throws InterruptedException
      *             if interrupted during sleep
@@ -41,13 +51,14 @@ public abstract class OsgpResponsePoller<T> {
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public T start() throws InterruptedException, WebServiceSecurityException, GeneralSecurityException, IOException {
+    public Response start(final AsyncRequest request) throws InterruptedException, WebServiceSecurityException,
+            GeneralSecurityException, IOException {
 
         int timeSlept = 0;
 
         while (timeSlept < this.maxWaitTimeForResponse) {
             try {
-                final T responseObject = this.pollWsResponse();
+                final Response responseObject = this.pollWsResponse(request);
                 return responseObject;
             } catch (final SoapFaultClientException e) {
                 if ("CorrelationUid is unknown.".equals(e.getMessage())) {
@@ -63,5 +74,14 @@ public abstract class OsgpResponsePoller<T> {
 
         }
         throw new AssertionError("Correlation Uid is not available in time. Time slept is " + timeSlept);
+    }
+
+    private Response pollWsResponse(final AsyncRequest request) throws WebServiceSecurityException,
+            GeneralSecurityException, IOException {
+        @SuppressWarnings("unchecked")
+        final Response response = (Response) this.webserviceTemplateFactory.getTemplate(
+                this.organizationIdentification, this.username).marshalSendAndReceive(request);
+
+        return response;
     }
 }

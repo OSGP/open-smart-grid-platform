@@ -189,8 +189,7 @@ public class DeviceSteps {
                 settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
         if (getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION)
-
-        .toLowerCase() != "null") {
+                .toLowerCase() != "null") {
             final DeviceFunctionGroup functionGroup = getEnum(settings, "DeviceFunctionGroup",
                     DeviceFunctionGroup.class, DeviceFunctionGroup.OWNER);
             final DeviceAuthorization authorization = device.addAuthorization(organization, functionGroup);
@@ -388,8 +387,8 @@ public class DeviceSteps {
         Assert.assertNotEquals(gSmartmeter.getGatewayDevice(), eDevice);
     }
 
-    @Then("^the G-meter \"([^\"]*)\" is DeCoupled to the device \"([^\"]*)\"$")
-    public void theGMeterIsDecoupledToTheDevice(final String gmeter, final String emeter) {
+    @Then("^the G-meter \"([^\"]*)\" is DeCoupled from device \"([^\"]*)\"$")
+    public void theGMeterIsDecoupledFromDevice(final String gmeter, final String emeter) {
         final SmartMeter gSmartmeter = this.smartMeterRepository.findByDeviceIdentification(gmeter);
         final Device eDevice = this.deviceRepository.findByDeviceIdentification(emeter);
 
