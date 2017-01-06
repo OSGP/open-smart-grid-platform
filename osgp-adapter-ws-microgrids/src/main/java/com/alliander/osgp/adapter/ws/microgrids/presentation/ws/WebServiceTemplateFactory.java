@@ -17,16 +17,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.client.core.WebServiceTemplate;
+import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 
 import com.alliander.osgp.adapter.ws.microgrids.application.exceptions.WebServiceSecurityException;
+import com.alliander.osgp.shared.infra.ws.OrganisationIdentificationClientInterceptor;
 
 public class WebServiceTemplateFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceTemplateFactory.class);
 
     private final Map<String, WebServiceTemplate> webServiceTemplates;
     private final Lock lock = new ReentrantLock();
+
+    private static final String ORGANISATION_IDENTIFICATION_HEADER = "OrganisationIdentification";
+    private static final String USER_NAME_HEADER = "UserName";
+    private static final String APPLICATION_NAME_HEADER = "ApplicationName";
+
+    private static final String NAMESPACE = "http://www.alliander.com/schemas/osp/common";
 
     private final String applicationName;
 
@@ -62,7 +70,8 @@ public class WebServiceTemplateFactory {
             // organisation
             final String key = organisationIdentification.concat("-").concat(userName).concat(this.applicationName);
             if (!this.webServiceTemplates.containsKey(key)) {
-                this.webServiceTemplates.put(key, this.createTemplate(notificationURL));
+                this.webServiceTemplates.put(key,
+                        this.createTemplate(organisationIdentification, userName, notificationURL));
             }
 
             webServiceTemplate = this.webServiceTemplates.get(key);
@@ -74,12 +83,18 @@ public class WebServiceTemplateFactory {
         return webServiceTemplate;
     }
 
-    private WebServiceTemplate createTemplate(final String notificationUrl) {
+    private WebServiceTemplate createTemplate(final String organisationIdentification, final String userName,
+            final String notificationUrl) {
         final WebServiceTemplate webServiceTemplate = new WebServiceTemplate(this.messageFactory);
 
         webServiceTemplate.setDefaultUri(notificationUrl);
         webServiceTemplate.setMarshaller(this.marshaller);
         webServiceTemplate.setUnmarshaller(this.marshaller);
+
+        webServiceTemplate.setInterceptors(new ClientInterceptor[] { new OrganisationIdentificationClientInterceptor(
+                organisationIdentification, userName, this.applicationName, NAMESPACE,
+                ORGANISATION_IDENTIFICATION_HEADER, USER_NAME_HEADER, APPLICATION_NAME_HEADER) });
+
         webServiceTemplate.setMessageSender(this.webServiceMessageSender());
 
         return webServiceTemplate;

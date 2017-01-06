@@ -34,14 +34,14 @@ public class SendNotificationServiceClient {
      * @throws IOException
      */
     public void sendNotification(final String organisationIdentification, final Notification notification,
-            final String notificationURL) throws WebServiceSecurityException {
+            final String notificationURL, final String notificationUsername) throws WebServiceSecurityException {
 
         final SendNotificationRequest sendNotificationRequest = new SendNotificationRequest();
 
         sendNotificationRequest.setNotification(notification);
 
-        this.webServiceTemplateFactory.getTemplate(organisationIdentification, "LianderNetManagement", notificationURL)
-                .marshalSendAndReceive(sendNotificationRequest);
+        this.webServiceTemplateFactory.getTemplate(organisationIdentification, notificationUsername, notificationURL)
+        .marshalSendAndReceive(sendNotificationRequest);
 
     }
 }

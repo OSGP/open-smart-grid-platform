@@ -8,11 +8,15 @@
 package com.alliander.osgp.adapter.domain.microgrids.application.services;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,9 +24,13 @@ import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.microgrids.entities.RtuDevice;
 import com.alliander.osgp.dto.valueobjects.microgrids.GetDataRequestDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.GetDataResponseDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.GetDataSystemIdentifierDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementFilterDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.SystemFilterDto;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
+import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 @Service(value = "domainMicrogridsCommunicationRecoveryService")
 @Transactional(value = "transactionManager")
@@ -33,10 +41,38 @@ public class CommunicatonRecoveryService extends BaseService {
     private static final int SYSTEM_ID = 1;
     private static final String SYSTEM_TYPE = "RTU";
     private static final int MEASUREMENT_ID = 1;
-    private static final String MEASUREMENT_NODE = "Health";
+    private static final String MEASUREMENT_NODE = "Alm1";
+    private static final double MEASUREMENT_VALUE_ALARM_ON = 1.0;
 
     @Autowired
     private CorrelationIdProviderService correlationIdProviderService;
+    @Autowired
+    @Qualifier("domainMicrogridsAdHocManagementService")
+    private AdHocManagementService adHocManagementService;
+
+    /**
+     * Send a signal that the connection with the device has been lost. This is
+     * done by putting a GetDataResponse on the queue with an alarm value. When
+     * this response is received by the webservice adapter, it can send a
+     * notification to the client.
+     *
+     * @param rtu
+     */
+    public void signalConnectionLost(final RtuDevice rtu) {
+        LOGGER.info("Sending connection lost signal for device {}.", rtu.getDeviceIdentification());
+
+        final GetDataResponseDto dataResponse = new GetDataResponseDto(Arrays.asList(new GetDataSystemIdentifierDto(
+                SYSTEM_ID, SYSTEM_TYPE, Arrays.asList(new MeasurementDto(MEASUREMENT_ID, MEASUREMENT_NODE, 0,
+                        new DateTime(DateTimeZone.UTC), MEASUREMENT_VALUE_ALARM_ON)))));
+
+        final String correlationUid = this.createCorrelationUid(rtu);
+        final String organisationIdentification = rtu.getOwner().getOrganisationIdentification();
+        final String deviceIdentification = rtu.getDeviceIdentification();
+
+        this.adHocManagementService.handleGetDataResponse(dataResponse, deviceIdentification,
+                organisationIdentification, correlationUid, DeviceFunction.GET_DATA.toString(),
+                ResponseMessageResultType.OK, null);
+    }
 
     public void restoreCommunication(final RtuDevice rtu) {
         LOGGER.info("Restoring communication for device {}.", rtu.getDeviceIdentification());
@@ -62,11 +98,11 @@ public class CommunicatonRecoveryService extends BaseService {
     }
 
     private String createCorrelationUid(final RtuDevice rtu) {
-        LOGGER.debug("Creating correlation uid for device {}, with owner {}", rtu.getDeviceIdentification(),
-                rtu.getOwner().getOrganisationIdentification());
+        LOGGER.debug("Creating correlation uid for device {}, with owner {}", rtu.getDeviceIdentification(), rtu
+                .getOwner().getOrganisationIdentification());
 
-        final String correlationUid = this.correlationIdProviderService
-                .getCorrelationId(rtu.getOwner().getOrganisationIdentification(), rtu.getDeviceIdentification());
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(rtu.getOwner()
+                .getOrganisationIdentification(), rtu.getDeviceIdentification());
 
         LOGGER.debug("Correlation uid {} created.", correlationUid);
 
