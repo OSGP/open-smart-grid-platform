@@ -37,7 +37,7 @@ public class NotificationSteps {
     }
 
     @Then("^I should receive a notification$")
-    public void iReceiveANotification() throws Throwable {
+    public void iShouldReceiveANotification() throws Throwable {
         int waited = 0;
 
         while (!this.mockNotificationService.receivedNotification() && waited < this.MAX_WAIT_FOR_NOTIFICATION) {
