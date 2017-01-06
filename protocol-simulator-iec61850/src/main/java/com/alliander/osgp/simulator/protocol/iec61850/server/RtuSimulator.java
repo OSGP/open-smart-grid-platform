@@ -213,6 +213,32 @@ public class RtuSimulator implements ServerEventListener {
         LOGGER.error("The SAP stopped listening");
     }
 
+    public void assertValue(final String logicalDeviceName, final String node, final String value) {
+        final LogicalDevice logicalDevice = this.getLogicalDevice(logicalDeviceName);
+        // Get a new model copy to see values that have been set on the server.
+        logicalDevice.refreshServerModel(this.server.getModelCopy());
+        final ModelNode actual = logicalDevice.getBasicDataAttribute(node);
+        if (actual == null) {
+            throw new AssertionError("RTU Simulator does not have expected node \"" + node + "\" on logical device \""
+                    + logicalDeviceName + "\".");
+        }
+        if (!(actual instanceof BasicDataAttribute)) {
+            throw new AssertionError("RTU Simulator value has node \"" + node + "\" on logical device \""
+                    + logicalDeviceName + "\", but it is not a BasicDataAttribute: " + actual.getClass().getName());
+        }
+        final BasicDataAttribute expected = this.getCopyWithNewValue((BasicDataAttribute) actual, value);
+        if (!BasicDataAttributesHelper.equals(expected, (BasicDataAttribute) actual)) {
+            throw new AssertionError("RTU Simulator attribute for node \"" + node + "\" on logical device \""
+                    + logicalDeviceName + "\" - expected: [" + expected + "], actual: [" + actual + "]");
+        }
+    }
+
+    private BasicDataAttribute getCopyWithNewValue(final BasicDataAttribute original, final String value) {
+        final BasicDataAttribute copy = (BasicDataAttribute) original.copy();
+        BasicDataAttributesHelper.setValue(copy, value);
+        return copy;
+    }
+
     public void mockValue(final String logicalDeviceName, final String node, final String value) {
         if (!this.stopGeneratingValues.get()) {
             /*
@@ -223,7 +249,7 @@ public class RtuSimulator implements ServerEventListener {
             this.ensurePeriodicDataGenerationIsStopped();
         }
         final LogicalDevice logicalDevice = this.getLogicalDevice(logicalDeviceName);
-        final BasicDataAttribute basicDataAttribute = logicalDevice.getValue(node, value);
+        final BasicDataAttribute basicDataAttribute = logicalDevice.getAttributeAndSetValue(node, value);
         this.server.setValues(Arrays.asList(basicDataAttribute));
     }
 
@@ -258,7 +284,7 @@ public class RtuSimulator implements ServerEventListener {
                 final List<BasicDataAttribute> values = new ArrayList<>();
 
                 for (final LogicalDevice ld : this.logicalDevices) {
-                    values.addAll(ld.getValues(timestamp));
+                    values.addAll(ld.getAttributesAndSetValues(timestamp));
                 }
 
                 this.server.setValues(values);

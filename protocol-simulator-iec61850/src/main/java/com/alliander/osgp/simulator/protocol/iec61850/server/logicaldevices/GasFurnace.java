@@ -187,7 +187,7 @@ public class GasFurnace extends LogicalDevice {
     }
 
     @Override
-    public List<BasicDataAttribute> getValues(final Date timestamp) {
+    public List<BasicDataAttribute> getAttributesAndSetValues(final Date timestamp) {
 
         final List<BasicDataAttribute> values = new ArrayList<>();
 
@@ -261,8 +261,8 @@ public class GasFurnace extends LogicalDevice {
     }
 
     @Override
-    public BasicDataAttribute getValue(final String node, final String value) {
-        final Fc fc = FC_BY_NODE.get(node);
+    public BasicDataAttribute getAttributeAndSetValue(final String node, final String value) {
+        final Fc fc = this.getFunctionalConstraint(node);
         if (fc == null) {
             throw this.illegalNodeException(node);
         }
@@ -288,9 +288,14 @@ public class GasFurnace extends LogicalDevice {
         }
 
         if (TIMESTAMP_NODES.contains(node)) {
-            return this.setTime(node, fc, new Date()); // TODO parse value
+            return this.setTime(node, fc, this.parseDate(value));
         }
 
         throw this.nodeTypeNotConfiguredException(node);
+    }
+
+    @Override
+    public Fc getFunctionalConstraint(final String node) {
+        return FC_BY_NODE.get(node);
     }
 }
