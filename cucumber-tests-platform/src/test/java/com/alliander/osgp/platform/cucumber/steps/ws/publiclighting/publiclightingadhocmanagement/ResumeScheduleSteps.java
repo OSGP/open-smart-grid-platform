@@ -59,26 +59,14 @@ public class ResumeScheduleSteps {
      * @throws Throwable
      */
     @When("^receiving a resume schedule request$")
-    public void whenReceivingAResumeScheduleRequest(final Map<String, String> requestParameters) throws Throwable {
+    public void receivingAResumeScheduleRequest(final Map<String, String> requestParameters) throws Throwable {
 
         final ResumeScheduleRequest request = new ResumeScheduleRequest();
 
-        // if (requestParameters.containsKey(Keys.KEY_DEVICE_IDENTIFICATION))
-        // {
         request.setDeviceIdentification(getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION));
-        // }
-
         request.setIndex(getInteger(requestParameters, Keys.KEY_INDEX, Defaults.DEFAULT_INDEX));
         request.setIsImmediate(getBoolean(requestParameters, Keys.KEY_ISIMMEDIATE, Defaults.DEFAULT_ISIMMEDIATE));
-
-        // request.setDeviceIdentification(getString(requestParameters,
-        // Keys.KEY_DEVICE_IDENTIFICATION,
-        // Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-        // request.setIndex(getInteger(requestParameters, Keys.KEY_INDEX,
-        // Defaults.DEFAULT_INDEX));
-        // request.setIsImmediate(getBoolean(requestParameters,
-        // Keys.KEY_ISIMMEDIATE, Defaults.DEFAULT_ISIMMEDIATE));
-
+      
         try {
             ScenarioContext.Current().put(Keys.RESPONSE, this.client.resumeScheduleStatus(request));
         } catch (final SoapFaultClientException ex) {
@@ -105,7 +93,7 @@ public class ResumeScheduleSteps {
      * @throws Throwable
      */
     @Then("^the resume schedule async response contains$")
-    public void thenTheResumeScheduleAsyncResponseContains(final Map<String, String> expectedResponseData)
+    public void theResumeScheduleAsyncResponseContains(final Map<String, String> expectedResponseData)
             throws Throwable {
         final ResumeScheduleAsyncResponse response = (ResumeScheduleAsyncResponse) ScenarioContext.Current()
                 .get(Keys.RESPONSE);
