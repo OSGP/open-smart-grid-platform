@@ -3,12 +3,21 @@ package com.alliander.osgp.platform.cucumber.helpers;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+
+import com.alliander.osgp.platform.cucumber.inputparsers.XmlGregorianCalendarInputParser;
+
 import cucumber.api.DataTable;
 
 /**
- * Helper class, to provide easy options to extend settings in the form of
- * key-value pairs obtained from two column Cucumber {@link DataTable data
- * tables} that are transformed into a map.
+ * Helper class to deal with settings from Cucumber scenarios.
+ * <p>
+ * Provides easy options to extend settings in the form of key-value pairs
+ * obtained from two column Cucumber {@link DataTable data tables} that are
+ * transformed into a map.
+ * <p>
+ * Has helper methods to get specific types of values for potentially indexed
+ * keys from a String based map.
  */
 public class SettingsHelper {
 
@@ -77,5 +86,53 @@ public class SettingsHelper {
         }
 
         return result;
+    }
+
+    public static String makeKey(final String keyPrefix, final int... indexes) {
+        if (indexes == null || indexes.length == 0) {
+            return keyPrefix;
+        }
+        final StringBuilder sb = new StringBuilder(keyPrefix);
+        for (final int index : indexes) {
+            sb.append('_').append(index);
+        }
+        return sb.toString();
+    }
+
+    public static boolean hasKey(final Map<String, String> settings, final String keyPrefix, final int... indexes) {
+        return settings.containsKey(makeKey(keyPrefix, indexes));
+    }
+
+    public static String getStringValue(final Map<String, String> settings, final String keyPrefix,
+            final int... indexes) {
+        final String key = makeKey(keyPrefix, indexes);
+        return settings.get(key);
+    }
+
+    public static Integer getIntegerValue(final Map<String, String> settings, final String keyPrefix,
+            final int... indexes) {
+        final String stringValue = getStringValue(settings, keyPrefix, indexes);
+        if (stringValue == null) {
+            return null;
+        }
+        return Integer.valueOf(stringValue);
+    }
+
+    public static Double getDoubleValue(final Map<String, String> settings, final String keyPrefix,
+            final int... indexes) {
+        final String stringValue = getStringValue(settings, keyPrefix, indexes);
+        if (stringValue == null) {
+            return null;
+        }
+        return Double.valueOf(stringValue);
+    }
+
+    public static XMLGregorianCalendar getXmlGregorianCalendarValue(final Map<String, String> settings,
+            final String keyPrefix, final int... indexes) {
+        final String stringValue = getStringValue(settings, keyPrefix, indexes);
+        if (stringValue == null) {
+            return null;
+        }
+        return XmlGregorianCalendarInputParser.parse(stringValue);
     }
 }

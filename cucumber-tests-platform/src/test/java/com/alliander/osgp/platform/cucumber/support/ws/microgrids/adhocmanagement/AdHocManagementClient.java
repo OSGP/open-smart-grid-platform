@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.support.ws.microgrids;
+package com.alliander.osgp.platform.cucumber.support.ws.microgrids.adhocmanagement;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -21,6 +21,10 @@ import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataAs
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataRequest;
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataResponse;
+import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataRequest;
+import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataResponse;
 import com.alliander.osgp.platform.cucumber.support.ws.BaseClient;
 import com.alliander.osgp.platform.cucumber.support.ws.WebServiceSecurityException;
 import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
@@ -30,34 +34,50 @@ public class AdHocManagementClient extends BaseClient {
 
     @Autowired
     @Qualifier("webServiceTemplateFactoryMicrogridsAdHocManagement")
-    private WebServiceTemplateFactory webServiceTemplateFactory;
+    private WebServiceTemplateFactory webServiceTemplateFactoryMicrogridsAdHocManagement;
 
     @Autowired
     private RtuResponseDataRepository rtuResponseDataRepository;
-    
+
     @Value("${iec61850.rtu.response.wait.check.interval:1000}")
     private int waitCheckIntervalMillis;
     @Value("${iec61850.rtu.response.wait.fail.duration:15000}")
     private int waitFailMillis;
 
-    public GetDataAsyncResponse getDataAsync(final GetDataRequest request) throws WebServiceSecurityException,
-    GeneralSecurityException, IOException {
-        final WebServiceTemplate webServiceTemplate = this.webServiceTemplateFactory.getTemplate(
-                this.getOrganizationIdentification(), this.getUserName());
+    public GetDataAsyncResponse getDataAsync(final GetDataRequest request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final WebServiceTemplate webServiceTemplate = this.webServiceTemplateFactoryMicrogridsAdHocManagement
+                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (GetDataAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
     }
 
-    public GetDataResponse getData(final GetDataAsyncRequest request) throws WebServiceSecurityException,
-    GeneralSecurityException, IOException {
+    public SetDataAsyncResponse setDataAsync(final SetDataRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final WebServiceTemplate webServiceTemplate = this.webServiceTemplateFactoryMicrogridsAdHocManagement
+                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
+        return (SetDataAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
+    }
+
+    public GetDataResponse getData(final GetDataAsyncRequest request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
 
         final String correlationUid = request.getAsyncRequest().getCorrelationUid();
         this.waitForRtuResponseData(correlationUid);
 
-        final WebServiceTemplate webServiceTemplate = this.webServiceTemplateFactory.getTemplate(
-                this.getOrganizationIdentification(), this.getUserName());
+        final WebServiceTemplate webServiceTemplate = this.webServiceTemplateFactoryMicrogridsAdHocManagement
+                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (GetDataResponse) webServiceTemplate.marshalSendAndReceive(request);
     }
-    
+
+    public SetDataResponse setData(final SetDataAsyncRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+
+        final String correlationUid = request.getAsyncRequest().getCorrelationUid();
+        this.waitForRtuResponseData(correlationUid);
+
+        final WebServiceTemplate webServiceTemplate = this.webServiceTemplateFactoryMicrogridsAdHocManagement
+                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
+        return (SetDataResponse) webServiceTemplate.marshalSendAndReceive(request);
+    }
+
     private void waitForRtuResponseData(final String correlationUid) {
         try {
             for (int timeSpentWaiting = 0; timeSpentWaiting < this.waitFailMillis; timeSpentWaiting += this.waitCheckIntervalMillis) {
@@ -71,5 +91,4 @@ public class AdHocManagementClient extends BaseClient {
             throw new AssertionError("Waiting for RtuResponseData was interrupted.", e);
         }
     }
-
 }

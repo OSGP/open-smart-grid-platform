@@ -72,12 +72,25 @@ public class Keys {
     public static final String KEY_NUMBER_OF_SYSTEMS = "NumberOfSystems";
     public static final String KEY_NUMBER_OF_MEASUREMENTS = "NumberOfMeasurements";
     public static final String KEY_NUMBER_OF_PROFILES = "NumberOfProfiles";
+    public static final String KEY_NUMBER_OF_PROFILE_ENTRIES = "NumberOfProfileEntries";
+    public static final String KEY_NUMBER_OF_SET_POINTS = "NumberOfSetPoints";
     public static final String KEY_MEASUREMENT_ID = "MeasurementId";
     public static final String KEY_MEASUREMENT_NODE = "MeasurementNode";
     public static final String KEY_MEASUREMENT_QUALIFIER = "MeasurementQualifier";
     public static final String KEY_MEASUREMENT_VALUE = "MeasurementValue";
 
     public static final String KEY_RESULT = "Result";
+
+    public static final String KEY_SETPOINT_NODE = "SetPointNode";
+    public static final String KEY_SETPOINT_VALUE = "SetPointValue";
+    public static final String KEY_SETPOINT_ID = "SetPointId";
+    public static final String KEY_SETPOINT_START_TIME = "SetPointStartTime";
+    public static final String KEY_SETPOINT_END_TIME = "SetPointEndTime";
+    public static final String KEY_PROFILE_ID = "ProfileId";
+    public static final String KEY_PROFILE_NODE = "ProfileNode";
+    public static final String KEY_PROFILE_ENTRY_ID = "ProfileEntryId";
+    public static final String KEY_PROFILE_ENTRY_TIME = "ProfileEntryTime";
+    public static final String KEY_PROFILE_ENTRY_VALUE = "ProfileEntryValue";
 
     public static final String KEY_MANUFACTURER = "Manufacturer";
     public static final String KEY_DEVICE_EXTERNAL_MANAGED = "DeviceExternalManaged";
