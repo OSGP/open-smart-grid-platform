@@ -7,8 +7,10 @@
  */
 package com.alliander.osgp.platform.cucumber.support.ws;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.transform.Source;
@@ -34,11 +36,9 @@ public class SoapFaultHelper {
         // Utility class.
     }
 
-    public static Map<FaultDetailElement, String> getFaultDetailValuesByElement(
-            final SoapFaultClientException soapFaultClientException) {
+    public static Object getFaultDetailValuesByElement(final SoapFaultClientException soapFaultClientException) {
 
-        if (soapFaultClientException == null || soapFaultClientException.getSoapFault() == null
-                || soapFaultClientException.getSoapFault() == null) {
+        if (soapFaultClientException == null || soapFaultClientException.getSoapFault() == null) {
             return Collections.emptyMap();
         }
 
@@ -52,7 +52,11 @@ public class SoapFaultHelper {
         LOGGER.debug("Checking child nodes of SOAP fault detail entry: {{}}{}",
                 nodeForFirstFaultDetailEntry.getNamespaceURI(), nodeForFirstFaultDetailEntry.getLocalName());
 
-        return getFaultDetailValuesByElement(nodeForFirstFaultDetailEntry.getChildNodes());
+        if (nodeForFirstFaultDetailEntry.getLocalName().equals("ValidationError")) {
+            return getFaultDetailValuesByElement(nodeForFirstFaultDetailEntry);
+        } else {
+            return getFaultDetailValuesByElement(nodeForFirstFaultDetailEntry.getChildNodes());
+        }
     }
 
     private static Node getNodeForFirstFaultDetailEntry(final SoapFaultDetail faultDetail) {
@@ -107,5 +111,35 @@ public class SoapFaultHelper {
             return null;
         }
         return node.getTextContent().trim();
+    }
+
+    private static List<String> getFaultDetailValuesByElement(Node node) {
+
+        final List<String> validationErrors = new ArrayList<>();
+
+        while (node != null) {
+            addFaultDetailElement(validationErrors, node);
+            node = node.getNextSibling();
+        }
+
+        return validationErrors;
+    }
+
+    private static void addFaultDetailElement(final List<String> validationErrors, final Node node) {
+
+        final FaultDetailElement faultDetailElement = FaultDetailElement.forLocalName(node.getLocalName());
+
+        if (checkIfFaultDetailElementWithLocalNameOfNodeIsNotNull(faultDetailElement, node)) {
+            validationErrors.add(getNodeValueAsText(node));
+        }
+    }
+
+    private static boolean checkIfFaultDetailElementWithLocalNameOfNodeIsNotNull(
+            final FaultDetailElement faultDetailElement, final Node node) {
+        if (faultDetailElement == null) {
+            LOGGER.info("Ignoring unexpected child node: {{}}{}", node.getNamespaceURI(), node.getLocalName());
+            return false;
+        }
+        return true;
     }
 }

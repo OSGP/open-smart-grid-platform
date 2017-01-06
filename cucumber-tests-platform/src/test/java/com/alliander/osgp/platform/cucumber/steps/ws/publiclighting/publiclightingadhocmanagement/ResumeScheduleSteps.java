@@ -126,15 +126,41 @@ public class ResumeScheduleSteps {
     @Then("^the platform buffers a resume schedule response message for device \"([^\"]*)\"$")
     public void thenThePlatformBuffersAResumeScheduleResponseMessage(final String deviceIdentification,
             final Map<String, String> expectedResult) throws Throwable {
+        final ResumeScheduleResponse response = this.getResponseWithCorrelationUID(deviceIdentification,
+                (String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
+        Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.KEY_RESULT)),
+                response.getResult());
+    }
+
+    @Then("^the resume schedule async response contains soap fault$")
+    public void theResumeScheduleAsyncResponseContainsSoapFault(final Map<String, String> expectedResult) {
+        GenericResponseSteps.verifySoapFault(expectedResult);
+    }
+
+    @Then("^the platform buffers a get resume schedule response message for device \"([^\"]*)\"$")
+    public void thePlatformBuffersAGetResumeScheduleResponseMessageForDevice(final String deviceIdentification,
+            final Map<String, String> expectedResult) throws InterruptedException {
+        final ResumeScheduleAsyncResponse asyncResponse = (ResumeScheduleAsyncResponse) ScenarioContext.Current()
+                .get(Keys.RESPONSE);
+
+        try {
+            this.getResponseWithCorrelationUID(deviceIdentification,
+                    asyncResponse.getAsyncResponse().getCorrelationUid());
+        } catch (final SoapFaultClientException ex) {
+            Assert.assertEquals(getString(expectedResult, Keys.KEY_FAULTSTRING), ex.getFaultStringOrReason());
+        }
+    }
+
+    private ResumeScheduleResponse getResponseWithCorrelationUID(final String deviceIdentification,
+            final String correlationUID) throws InterruptedException, SoapFaultClientException {
         final ResumeScheduleAsyncRequest request = new ResumeScheduleAsyncRequest();
         final AsyncRequest asyncRequest = new AsyncRequest();
         asyncRequest.setDeviceId(deviceIdentification);
-        asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
+        asyncRequest.setCorrelationUid(correlationUID);
         request.setAsyncRequest(asyncRequest);
 
-        boolean success = false;
         int count = 0;
-        while (!success) {
+        while (true) {
             if (count > this.configuration.defaultTimeout) {
                 Assert.fail("Timeout");
             }
@@ -143,20 +169,12 @@ public class ResumeScheduleSteps {
             Thread.sleep(1000);
 
             try {
-                final ResumeScheduleResponse response = this.client.getResumeScheduleResponse(request);
-
-                Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.KEY_RESULT)),
-                        response.getResult());
-
-                success = true;
+                return this.client.getResumeScheduleResponse(request);
+            } catch (final SoapFaultClientException ex) {
+                throw ex;
             } catch (final Exception ex) {
                 // Do nothing
             }
         }
-    }
-
-    @Then("^the resume schedule async response contains soap fault$")
-    public void theResumeScheduleAsyncResponseContainsSoapFault(final Map<String, String> expectedResult) {
-        GenericResponseSteps.verifySoapFault(expectedResult);
     }
 }
