@@ -13692,5 +13692,5 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
   <con:property><con:name>ServiceEndpoint</con:name><con:value>localhost:443</con:value></con:property>
 </con:properties></con:testCase><con:properties/></con:testSuite>
 <con:properties>
-  <con:property><con:name>CertBasePath</con:name><con:value>/home/dev/Sources/OSGP/Integration-Tests/cucumber-tests-platform/certificates</con:value></con:property>
+  <con:property><con:name>CertBasePath</con:name><con:value>/home/dev/Sources/OSGP/Integration-Tests/certificates</con:value></con:property>
 </con:properties><con:wssContainer><con:crypto><con:source>${#Project#CertBasePath}/test-org.pfx</con:source><con:password>1234</con:password><con:type>KEYSTORE</con:type></con:crypto></con:wssContainer><con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/><con:sensitiveInformation><ProjectSpecificExposureList>null###null</ProjectSpecificExposureList></con:sensitiveInformation></con:soapui-project>

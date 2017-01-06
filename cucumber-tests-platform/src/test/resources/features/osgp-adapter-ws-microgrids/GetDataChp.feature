@@ -17,7 +17,7 @@ Feature: Get CHP Data
       | NumberOfMeasurements_1    |           1 |
       | MeasurementFilterNode_1_1 | TmpSv       |
       | MeasurementFilterId_1_1   |           1 |
-    Then the get data response should be returned
+    Then the get data response should be returned 
       | DeviceIdentification     | RTU10001    |
       | Result                   | OK          |
       | NumberOfSystems          |           1 |

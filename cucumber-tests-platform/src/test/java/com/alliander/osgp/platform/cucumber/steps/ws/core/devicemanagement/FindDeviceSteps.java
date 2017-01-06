@@ -37,7 +37,7 @@ public class FindDeviceSteps {
     private CoreDeviceManagementClient client;
 
     @When("receiving a find devices request")
-    public void receiving_a_find_devices_request(final Map<String, String> requestParameters) throws Throwable
+    public void receivingAFindDevicesRequest(final Map<String, String> requestParameters) throws Throwable
     {
     	FindDevicesRequest request = new FindDevicesRequest();
     	
@@ -167,7 +167,7 @@ public class FindDeviceSteps {
     }
     
     @Then("the find devices response contains \"([^\"]*)\" devices")
-    public void the_find_devices_response_contains_devices(final Integer numberOfDevices) throws Throwable
+    public void theFindDevicesResponseContainsDevices(final Integer numberOfDevices) throws Throwable
     {
     	FindDevicesResponse response = (FindDevicesResponse) ScenarioContext.Current().get(Keys.RESPONSE);
     	
@@ -175,7 +175,7 @@ public class FindDeviceSteps {
     }
 
     @Then("the find devices response contains at index \"([^\"]*)\"")
-    public void the_find_devices_response_contains_at_index(final Integer index, final Map<String, String> expectedDevice) throws Throwable
+    public void theFindDevicesResponseContainsAtIndex(final Integer index, final Map<String, String> expectedDevice) throws Throwable
     {
     	FindDevicesResponse response = (FindDevicesResponse) ScenarioContext.Current().get(Keys.RESPONSE);
     	

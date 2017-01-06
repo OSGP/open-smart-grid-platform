@@ -23,6 +23,7 @@ import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformFunct
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
+import com.alliander.osgp.platform.cucumber.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.platform.cucumber.support.ws.admin.AdminDeviceManagementClient;
 
 import cucumber.api.java.en.Then;
@@ -33,43 +34,60 @@ import cucumber.api.java.en.When;
  */
 public class ChangeOrganizationSteps {
 
-	@Autowired
-	private AdminDeviceManagementClient client;
+    @Autowired
+    private AdminDeviceManagementClient client;
 
-	/**
-	 * Send a update organization request to the Platform
-	 * 
-	 * @param requestParameters
-	 *            An list with request parameters for the request.
-	 * @throws Throwable
-	 */
-	@When("^receiving an update organization request$")
-	public void receivingAnUpdateOrganizationRequest(Map<String, String> requestSettings) throws Throwable {
-		ChangeOrganisationRequest request = new ChangeOrganisationRequest();
-		request.setOrganisationIdentification(getString(requestSettings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-				Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
-		request.setNewOrganisationName(
-				getString(requestSettings, Keys.KEY_NAME, Defaults.DEFAULT_NEW_ORGANIZATION_NAME));
-		request.setNewOrganisationIdentification(getString(requestSettings, Keys.KEY_NEW_ORGANIZATION_IDENTIFICATION,
-				Defaults.DEFAULT_NEW_ORGANIZATION_IDENTIFICATION));
-		request.setNewOrganisationPlatformFunctionGroup(
-				getEnum(requestSettings, Keys.KEY_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP, PlatformFunctionGroup.class,
-						Defaults.DEFAULT_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP));
-		
-		request.getNewOrganisationPlatformDomains().clear();
-		for (String platformDomain : getString(requestSettings, Keys.KEY_DOMAINS, Defaults.DEFAULT_DOMAINS).split(";")) {
-			request.getNewOrganisationPlatformDomains().add(Enum.valueOf(PlatformDomain.class, platformDomain));
-		}
+    /**
+     * Send a update organization request to the Platform
+     * 
+     * @param requestParameters
+     *            An list with request parameters for the request.
+     * @throws Throwable
+     */
+    @When("^receiving an update organization request$")
+    public void receivingAnUpdateOrganizationRequest(final Map<String, String> requestSettings) throws Throwable {
+        final ChangeOrganisationRequest request = new ChangeOrganisationRequest();
 
-		try {
-			ScenarioContext.Current().put(Keys.RESPONSE, client.changeOrganization(request));
-		} catch (SoapFaultClientException ex) {
-			ScenarioContext.Current().put(Keys.RESPONSE, ex);
-		}
-	}
+        request.setOrganisationIdentification(getString(requestSettings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
+                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
-	@Then("^the update organization response is successful$")
-	public void theUpdateOrganizationResponseIsSuccessful() throws Throwable {
-		Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof ChangeOrganisationResponse);
-	}
+        request.setNewOrganisationName(
+                getString(requestSettings, Keys.KEY_NAME, Defaults.DEFAULT_NEW_ORGANIZATION_NAME));
+
+        request.setNewOrganisationIdentification(getString(requestSettings, Keys.KEY_NEW_ORGANIZATION_IDENTIFICATION,
+                Defaults.DEFAULT_NEW_ORGANIZATION_IDENTIFICATION));
+
+        request.setNewOrganisationPlatformFunctionGroup(
+                getEnum(requestSettings, Keys.KEY_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP, PlatformFunctionGroup.class,
+                        Defaults.DEFAULT_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP));
+
+        request.getNewOrganisationPlatformDomains().clear();
+        for (final String platformDomain : getString(requestSettings, Keys.KEY_DOMAINS, Defaults.DEFAULT_DOMAINS)
+                .split(";")) {
+            request.getNewOrganisationPlatformDomains().add(Enum.valueOf(PlatformDomain.class, platformDomain));
+        }
+
+        try {
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.changeOrganization(request));
+        } catch (final SoapFaultClientException ex) {
+            ScenarioContext.Current().put(Keys.RESPONSE, ex);
+        }
+    }
+
+    @Then("^the update organization response is successful$")
+    public void theUpdateOrganizationResponseIsSuccessful() throws Throwable {
+        Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof ChangeOrganisationResponse);
+    }
+
+    /**
+     * Verify that the create organization response contains the fault with the
+     * given expectedResult parameters.
+     *
+     * @param expectedResult
+     * @throws Throwable
+     */
+    @Then("^the update organization response contains$")
+    public void theUpdateOrganizationResponseContains(final Map<String, String> expectedResult) throws Throwable {
+        GenericResponseSteps.verifySoapFault(expectedResult);
+    }
 }

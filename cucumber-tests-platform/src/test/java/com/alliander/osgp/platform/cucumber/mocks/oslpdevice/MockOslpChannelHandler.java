@@ -31,10 +31,10 @@ import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
 import org.joda.time.DateTime;
-import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.Oslp.Message;
 import com.alliander.osgp.oslp.OslpEnvelope;
@@ -57,6 +57,10 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
 
     // Device settings
     private Integer sequenceNumber = 0;
+    
+    public Integer getSequenceNumber() {
+        return this.sequenceNumber;
+    }
 
     private static class Callback {
 
@@ -335,7 +339,7 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         }
     }
 
-    private Oslp.Message handleRequest(final OslpEnvelope message, final int sequenceNumber)
+    public Oslp.Message handleRequest(final OslpEnvelope message, final int sequenceNumber)
             throws DeviceSimulatorException, IOException, ParseException {
         final Oslp.Message request = message.getPayloadMessage();
 
@@ -365,30 +369,33 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         // Handle requests
         if (request.hasGetFirmwareVersionRequest()
                 && this.mockResponses.containsKey(DeviceRequestMessageType.GET_FIRMWARE_VERSION)) {
-            response = processRequest(DeviceRequestMessageType.GET_FIRMWARE_VERSION, request);
+            response = this.processRequest(DeviceRequestMessageType.GET_FIRMWARE_VERSION, request);
         } else if (request.hasSetLightRequest() && this.mockResponses.containsKey(DeviceRequestMessageType.SET_LIGHT)) {
-            response = processRequest(DeviceRequestMessageType.SET_LIGHT, request);
+            response = this.processRequest(DeviceRequestMessageType.SET_LIGHT, request);
         } else if (request.hasSetEventNotificationsRequest()
                 && this.mockResponses.containsKey(DeviceRequestMessageType.SET_EVENT_NOTIFICATIONS)) {
-            response = processRequest(DeviceRequestMessageType.SET_EVENT_NOTIFICATIONS, request);
+            response = this.processRequest(DeviceRequestMessageType.SET_EVENT_NOTIFICATIONS, request);
         } else if (request.hasStartSelfTestRequest()
                 && this.mockResponses.containsKey(DeviceRequestMessageType.START_SELF_TEST)) {
-            response = processRequest(DeviceRequestMessageType.START_SELF_TEST, request);
+            response = this.processRequest(DeviceRequestMessageType.START_SELF_TEST, request);
         } else if (request.hasStopSelfTestRequest()
                 && this.mockResponses.containsKey(DeviceRequestMessageType.STOP_SELF_TEST)) {
-            response = processRequest(DeviceRequestMessageType.STOP_SELF_TEST, request);
+            response = this.processRequest(DeviceRequestMessageType.STOP_SELF_TEST, request);
         } else if (request.hasGetStatusRequest()
                 && this.mockResponses.containsKey(DeviceRequestMessageType.GET_STATUS)) {
-            response = processRequest(DeviceRequestMessageType.GET_STATUS, request);
+            response = this.processRequest(DeviceRequestMessageType.GET_STATUS, request);
         } else if (request.hasResumeScheduleRequest()
                 && this.mockResponses.containsKey(DeviceRequestMessageType.RESUME_SCHEDULE)) {
-            response = processRequest(DeviceRequestMessageType.RESUME_SCHEDULE, request);
+            response = this.processRequest(DeviceRequestMessageType.RESUME_SCHEDULE, request);
         } else if (request.hasSetRebootRequest()
                 && this.mockResponses.containsKey(DeviceRequestMessageType.SET_REBOOT)) {
-            response = processRequest(DeviceRequestMessageType.SET_REBOOT, request);
+            response = this.processRequest(DeviceRequestMessageType.SET_REBOOT, request);
         } else if (request.hasSetTransitionRequest()
                 && this.mockResponses.containsKey(DeviceRequestMessageType.SET_TRANSITION)) {
-            response = processRequest(DeviceRequestMessageType.SET_TRANSITION, request);
+            response = this.processRequest(DeviceRequestMessageType.SET_TRANSITION, request);
+        } else if (request.hasSetDeviceVerificationKeyRequest()
+                && this.mockResponses.containsKey(DeviceRequestMessageType.UPDATE_KEY)) {
+            response = this.processRequest(DeviceRequestMessageType.UPDATE_KEY, request);
         }
         // TODO: Implement further requests.
         else {

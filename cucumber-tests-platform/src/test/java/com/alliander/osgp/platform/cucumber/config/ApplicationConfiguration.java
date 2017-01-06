@@ -18,11 +18,9 @@ import com.alliander.osgp.shared.application.config.AbstractConfig;
  * Base class for the application configuration.
  */
 @Configuration
-@PropertySources({
-    @PropertySource("classpath:cucumber-platform.properties"),
-    @PropertySource(value = "file:/etc/osp/test/global-cucumber.properties", ignoreResourceNotFound = true),
-    @PropertySource(value = "file:/etc/osp/test/cucumber-platform.properties", ignoreResourceNotFound = true),
-})
+@PropertySources({ @PropertySource("classpath:cucumber-platform.properties"),
+        @PropertySource(value = "file:/etc/osp/test/global-cucumber.properties", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:/etc/osp/test/cucumber-platform.properties", ignoreResourceNotFound = true), })
 public abstract class ApplicationConfiguration extends AbstractConfig {
 
     @Value("${defaultTimeout}")

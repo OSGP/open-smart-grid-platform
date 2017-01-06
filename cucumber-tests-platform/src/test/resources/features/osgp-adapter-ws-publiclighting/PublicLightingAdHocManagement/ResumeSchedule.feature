@@ -3,11 +3,11 @@ Feature: Adhoc Management
   As a platform 
   I want to asynchronously handle set light requests
 
-  @OslpMockServer
+  @OslpMockServer @Skip
   Scenario Outline: Resume Schedule
     Given an oslp device
       | DeviceIdentification | TEST1024000000001 |
-      | HasSchedule          | <HasSchedule>     |
+      | HasSchedule          | true              |
     And the device returns a resume schedule response "<Result>" over OSLP
     When receiving a resume schedule request
       | DeviceIdentification | TEST1024000000001 |
@@ -19,14 +19,14 @@ Feature: Adhoc Management
       | Index       | <Index>       |
       | IsImmediate | <IsImmediate> |
     And the platform buffers a resume schedule response message for device "TEST1024000000001"
-      | Result | <Result> |
+      | Result | OK |
 
     Examples: 
-      | HasSchedule | Index | IsImmediate | Result |
-      | true        |     0 | true        | OK     |
-      | true        |     0 | false       | OK     |
-      | true        |     1 | true        | OK     |
-      | true        |     6 | true        | OK     |
+      | Index | IsImmediate |
+      |     0 | true        |
+      |     0 | false       |
+      |     1 | true        |
+      |     6 | true        |
 
   @OslpMockServer @Skip
   Scenario Outline: Resume Schedule for a device with no has schedule

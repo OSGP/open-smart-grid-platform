@@ -76,8 +76,9 @@ public class GetDataSteps {
                 Keys.KEY_CORRELATION_UID, correlationUid);
 
         final GetDataAsyncRequest getDataAsyncRequest = GetDataRequestBuilder.fromParameterMapAsync(extendedParameters);
+        
+        // Wait for the response...
         final GetDataResponse response = this.client.getData(getDataAsyncRequest);
-
         final String expectedResult = responseParameters.get(Keys.KEY_RESULT);
         assertNotNull("Result", response.getResult());
         assertEquals("Result", expectedResult, response.getResult().name());

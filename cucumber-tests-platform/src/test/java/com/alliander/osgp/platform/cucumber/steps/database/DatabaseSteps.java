@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
 import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRepository;
+import com.alliander.osgp.adapter.ws.microgrids.domain.repositories.RtuResponseDataRepository;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
@@ -29,6 +30,7 @@ import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.PlatformDomain;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
+import com.alliander.osgp.domain.microgrids.repositories.RtuDeviceRepository;
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 
@@ -60,15 +62,6 @@ public class DatabaseSteps {
     private OslpDeviceRepository oslpDeviceRepository;
 
     @Autowired
-    private SsldRepository ssldRepository;
-
-    @Autowired
-    private DeviceFirmwareRepository deviceFirmwareRepository;
-
-    @Autowired
-    private EventRepository eventRepository;
-
-    @Autowired
     private DeviceLogItemRepository deviceLogItemRepository;
 
     @Autowired
@@ -77,6 +70,21 @@ public class DatabaseSteps {
     @Autowired
     private FirmwareRepository firmwareRepository;
 
+    @Autowired
+    private DeviceFirmwareRepository deviceFirmwareRepository;
+
+    @Autowired
+    private EventRepository eventRepository;
+
+    @Autowired
+    private SsldRepository ssldRepository;
+
+    @Autowired
+    private RtuDeviceRepository rtuDeviceRepository;
+
+    @Autowired
+    private RtuResponseDataRepository rtuResponseDataRepository;
+
     /**
      * This method is used to create default data not directly related to the
      * specific tests. For example: The test-org organization which is used to
@@ -84,7 +92,8 @@ public class DatabaseSteps {
      */
     @Transactional
     private void insertDefaultData() {
-        if (this.organisationRepository.findByOrganisationIdentification(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION) == null) {
+        if (this.organisationRepository
+                .findByOrganisationIdentification(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION) == null) {
             // Create test organization used within the tests.
             final Organisation testOrg = new Organisation(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION,
                     Defaults.DEFAULT_ORGANIZATION_DESCRIPTION, Defaults.DEFAULT_PREFIX, PlatformFunctionGroup.ADMIN);
@@ -109,15 +118,17 @@ public class DatabaseSteps {
 
     @Transactional("txMgrCore")
     public void prepareDatabaseForScenario() {
+        // First remove stuff from osgp_adapter_protocol_oslp
+        this.oslpDeviceRepository.deleteAllInBatch();
 
-    	// First remove stuff from osgp_protocol_adapter_oslp
-    	this.oslpDeviceRepository.deleteAllInBatch();
-        
-    	// Then remove stuff from osgp_protocol_adapter_iec61850
-    	this.iec61850DeviceRepository.deleteAllInBatch();
+        // Then remove stuff from osgp_adapter_protocol_iec61850
+        this.iec61850DeviceRepository.deleteAllInBatch();
 
-    	// Then remove stuff from osgp_core
-    	this.deviceAuthorizationRepository.deleteAllInBatch();
+        // Then remove stuf from the osgp_adapter_ws_microgrids
+        this.rtuResponseDataRepository.deleteAllInBatch();
+
+        // Then remove stuff from osgp_core
+        this.deviceAuthorizationRepository.deleteAllInBatch();
         this.deviceLogItemRepository.deleteAllInBatch();
         this.scheduledTaskRepository.deleteAllInBatch();
         this.deviceRepository.deleteAllEans();
@@ -126,6 +137,7 @@ public class DatabaseSteps {
         this.eventRepository.deleteAllInBatch();
         this.smartMeterRepository.deleteAllInBatch();
         this.ssldRepository.deleteAllInBatch();
+        this.rtuDeviceRepository.deleteAllInBatch();
         this.deviceRepository.deleteAllInBatch();
         this.firmwareRepository.deleteAllInBatch();
         this.deviceModelRepository.deleteAllInBatch();

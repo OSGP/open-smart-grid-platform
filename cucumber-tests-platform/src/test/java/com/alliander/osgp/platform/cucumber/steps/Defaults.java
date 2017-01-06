@@ -7,7 +7,6 @@
  */
 package com.alliander.osgp.platform.cucumber.steps;
 
-import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.TransitionType;
 import com.alliander.osgp.oslp.Oslp.LightType;
 import com.alliander.osgp.oslp.Oslp.LinkType;
@@ -42,6 +41,7 @@ public class Defaults {
     public static final String DEFAULT_DEVICE_TYPE = "OSLP";
     public static final String DEFAULT_PROTOCOL = "OSLP";
     public static final String DEFAULT_PROTOCOL_VERSION = "1.0";
+    public static final Long DEFAULT_PROTOCOL_INFO_ID = new java.util.Random().nextLong();
     public static final Long DEFAULT_DEVICE_ID = new java.util.Random().nextLong();
     public static final Boolean DEFAULT_IS_ACTIVATED = true;
     public static final Boolean DEFAULT_ACTIVE = true;
@@ -62,6 +62,7 @@ public class Defaults {
     public static final Boolean DEFAULT_HASSCHEDULE = false;
 
     public static final Boolean DEFAULT_PUBLICKEYPRESENT = true;
+    public static final String DEFAULT_PUBLIC_KEY = "123456abcdef";
 
     public static final String DEFAULT_PERIOD_TYPE = "INTERVAL";
     public static final String DEFAULT_BEGIN_DATE = "";
@@ -72,31 +73,33 @@ public class Defaults {
     // Types
     public static final String SMART_METER_E = "SMART_METER_E";
     public static final String SMART_METER_G = "SMART_METER_G";
-	public static final int DEFAULT_PAGE_SIZE = 25;
-	public static final Boolean DEFAULT_USE_PAGES = true;
-	public static final Boolean DEFAULT_ORGANIZATION_ENABLED = true;
-	public static final String DEFAULT_ORGANIZATION_NAME = "Test organization";
-	public static final String DEFAULT_ORGANIZATION_PREFIX = "cgi";
-	public static final PlatformFunctionGroup DEFAULT_PLATFORM_FUNCTION_GROUP = PlatformFunctionGroup.ADMIN;
-	public static final String DEFAULT_DOMAINS = "COMMON;PUBLIC_LIGHTING;TARIFF_SWITCHING";
-	public static final String DEFAULT_NEW_ORGANIZATION_NAME = "New Organization";
-	public static final String DEFAULT_NEW_ORGANIZATION_IDENTIFICATION = "NewOrganization";
-	public static final PlatformFunctionGroup DEFAULT_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP = PlatformFunctionGroup.ADMIN;
-	public static final String DEFAULT_OWNER = "test-org";
-	public static final Boolean DEFAULT_ACTIVATED = true;
-	public static final String DEFAULT_DEVICE_MODEL_MANUFACTURER = "Kaif";
-	public static final Integer DEFAULT_INDEX = 1;
-	public static final Boolean DEFAULT_ISIMMEDIATE = true;
-	public static final Integer DEFAULT_DIMVALUE = 100;
-	public static final Boolean DEFAULT_ON = true;
-	public static final TransitionType DEFAULT_TRANSITION_TYPE = TransitionType.DAY_NIGHT;
-	public static final Integer DEFAULT_INTERNALID = 0;
-	public static final Integer DEFAULT_EXTERNALID = 0;
-	public static final String DEFAULT_EVENTNOTIFICATIONS = "";
-	public static final LinkType DEFAULT_PREFERRED_LINKTYPE = LinkType.LINK_NOT_SET;
-	public static final LinkType DEFAULT_ACTUAL_LINKTYPE = LinkType.LINK_NOT_SET;
-	public static final LightType DEFAULT_LIGHTTYPE = LightType.LT_NOT_SET;
-	public static final Status DEFAULT_STATUS = Status.OK;
-	public static final String DEFAULT_LIGHTVALUES = "";
-	public static final String DEFAULT_EVENTNOTIFICATIONTYPES = "";
+    public static final int DEFAULT_PAGE_SIZE = 25;
+    public static final Boolean DEFAULT_USE_PAGES = true;
+    public static final Boolean DEFAULT_ORGANIZATION_ENABLED = true;
+    public static final String DEFAULT_ORGANIZATION_NAME = "Test organization";
+    public static final String DEFAULT_ORGANIZATION_PREFIX = "cgi";
+
+    public static final com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup DEFAULT_PLATFORM_FUNCTION_GROUP = com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup.ADMIN;
+    public static final String DEFAULT_DOMAINS = "COMMON;PUBLIC_LIGHTING;TARIFF_SWITCHING";
+    public static final String DEFAULT_NEW_ORGANIZATION_NAME = "New Organization";
+    public static final String DEFAULT_NEW_ORGANIZATION_IDENTIFICATION = "NewOrganization";
+    public static final com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup DEFAULT_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP = com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup.ADMIN;
+
+    public static final String DEFAULT_OWNER = "test-org";
+    public static final Boolean DEFAULT_ACTIVATED = true;
+    public static final String DEFAULT_DEVICE_MODEL_MANUFACTURER = "Kaif";
+    public static final Integer DEFAULT_INDEX = 1;
+    public static final Boolean DEFAULT_ISIMMEDIATE = true;
+    public static final Integer DEFAULT_DIMVALUE = 100;
+    public static final Boolean DEFAULT_ON = true;
+    public static final TransitionType DEFAULT_TRANSITION_TYPE = TransitionType.DAY_NIGHT;
+    public static final Integer DEFAULT_INTERNALID = 0;
+    public static final Integer DEFAULT_EXTERNALID = 0;
+    public static final String DEFAULT_EVENTNOTIFICATIONS = "";
+    public static final LinkType DEFAULT_PREFERRED_LINKTYPE = LinkType.LINK_NOT_SET;
+    public static final LinkType DEFAULT_ACTUAL_LINKTYPE = LinkType.LINK_NOT_SET;
+    public static final LightType DEFAULT_LIGHTTYPE = LightType.LT_NOT_SET;
+    public static final Status DEFAULT_STATUS = Status.OK;
+    public static final String DEFAULT_LIGHTVALUES = "";
+    public static final String DEFAULT_EVENTNOTIFICATIONTYPES = "";
 }

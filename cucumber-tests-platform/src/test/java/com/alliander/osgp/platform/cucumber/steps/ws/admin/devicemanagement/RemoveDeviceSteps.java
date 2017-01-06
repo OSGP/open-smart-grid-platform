@@ -26,38 +26,39 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 public class RemoveDeviceSteps {
-    
-	@Autowired
-	private AdminDeviceManagementClient client;
 
-	/**
+    @Autowired
+    private AdminDeviceManagementClient client;
+
+    /**
      * Send a remove device request to the Platform.
+     *
      * @param requestParameters
-     * 				An list with request parameters for the request.
+     *            An list with request parameters for the request.
      * @throws Throwable
      */
     @When("^receiving a remove device request$")
-    public void receivingARemoveDeviceRequest(final Map<String, String> requestSettings) throws Throwable
-    {
-    	RemoveDeviceRequest request = new RemoveDeviceRequest();
-        request.setDeviceIdentification(getString(requestSettings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-    	
+    public void receivingARemoveDeviceRequest(final Map<String, String> requestSettings) throws Throwable {
+        final RemoveDeviceRequest request = new RemoveDeviceRequest();
+        request.setDeviceIdentification(
+                getString(requestSettings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+
         try {
-        	ScenarioContext.Current().put(Keys.RESPONSE, client.removeDevice(request));
-        } catch (SoapFaultClientException ex) {
-        	ScenarioContext.Current().put(Keys.RESPONSE, ex);
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.removeDevice(request));
+        } catch (final SoapFaultClientException ex) {
+            ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
     }
-    
+
     /**
      * The check for the response from the Platform.
+     *
      * @param expectedResponseData
-     * 					The table with the expected fields in the response.
+     *            The table with the expected fields in the response.
      * @throws Throwable
      */
     @Then("^the remove device response is successful$")
-    public void theRemoveDeviceResponseIsSuccessful() throws Throwable
-    {
-    	Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof RemoveDeviceResponse);
+    public void theRemoveDeviceResponseIsSuccessful() throws Throwable {
+        Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof RemoveDeviceResponse);
     }
 }
