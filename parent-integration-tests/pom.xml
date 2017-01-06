@@ -93,6 +93,7 @@
     <soapui.maven.plugin.version>5.2.1</soapui.maven.plugin.version>
     <jgoodies.version>1.0.5</jgoodies.version>
     <jacoco.version>0.7.8</jacoco.version>
+    <sun.httpserver.version>20070405</sun.httpserver.version>
 
     <!-- Default always skip integration tests, to ensure all developer data 
       is retained -->
@@ -721,6 +722,11 @@
         <groupId>jgoodies</groupId>
         <artifactId>forms</artifactId>
         <version>${jgoodies.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.sun.net.httpserver</groupId>
+        <artifactId>http</artifactId>
+        <version>${sun.httpserver.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

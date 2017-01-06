@@ -43,6 +43,7 @@
     <!-- Protocol-Adapter-IEC61850 -->
     <module>Protocol-Adapter-IEC61850/osgp-protocol-adapter-iec61850</module>
     <module>Protocol-Adapter-IEC61850/protocol-simulator-iec61850</module>
+    <module>Protocol-Adapter-IEC61850/osgp-core-db-api-iec61850</module>
 
     <!-- Protocol-Adapter-OSLP -->
     <module>Protocol-Adapter-OSLP/oslp</module>
