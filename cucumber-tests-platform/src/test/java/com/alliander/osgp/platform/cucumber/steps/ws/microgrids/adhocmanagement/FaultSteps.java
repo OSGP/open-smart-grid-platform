@@ -20,8 +20,8 @@ import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.helpers.SettingsHelper;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.cucumber.steps.ws.GenericResponseSteps;
-import com.alliander.osgp.platform.cucumber.support.ws.microgrids.AdHocManagementClient;
-import com.alliander.osgp.platform.cucumber.support.ws.microgrids.GetDataRequestBuilder;
+import com.alliander.osgp.platform.cucumber.support.ws.microgrids.adhocmanagement.AdHocManagementClient;
+import com.alliander.osgp.platform.cucumber.support.ws.microgrids.adhocmanagement.GetDataRequestBuilder;
 
 import cucumber.api.java.en.Then;
 

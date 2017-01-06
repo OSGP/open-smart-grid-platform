@@ -57,7 +57,7 @@ public class DeviceModelSteps {
      * @throws Throwable
      */
     @Then("^the entity device model exists$")
-    public void thenTheEntityDeviceModelExists(final Map<String, String> expectedEntity) throws Throwable {
+    public void theEntityDeviceModelExists(final Map<String, String> expectedEntity) throws Throwable {
 
         final DeviceModel entity = this.repo
                 .findByModelCode(getString(expectedEntity, "ModelCode", Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
