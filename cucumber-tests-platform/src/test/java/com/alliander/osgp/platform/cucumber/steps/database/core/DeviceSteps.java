@@ -100,7 +100,7 @@ public class DeviceSteps {
     public void aDevice(final Map<String, String> settings) throws Throwable {
 
         // Set the required stuff
-        final String deviceIdentification = settings.get("DeviceIdentification");
+        final String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION);
         final Ssld ssld = new Ssld(deviceIdentification);
 
         ssld.setPublicKeyPresent(getBoolean(settings, Keys.KEY_PUBLICKEYPRESENT, Defaults.DEFAULT_PUBLICKEYPRESENT));
@@ -296,6 +296,10 @@ public class DeviceSteps {
             Assert.assertEquals(settings.get("OrganizationIdentification"),
                     device.getOwner().getOrganisationIdentification());
         }
+        // if (settings.containsKey("Owner")) {
+        // Assert.assertEquals(settings.get("Owner"),
+        // device.getOwner().getOrganisationIdentification());
+        // }
         if (settings.containsKey("ContainerPostalCode")) {
             Assert.assertEquals(settings.get("ContainerPostalCode"), device.getContainerPostalCode());
         }

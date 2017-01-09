@@ -74,16 +74,14 @@ Feature: Add Device
       | DeviceModelDescription  | <Description>           |
       | DeviceModelMetered      | <Metered>               |
     Then the add device response contains soap fault
-      | MESSAGE          | Validation error    |
-      | FaultCode        | <FaultCode>         |
-      | FaultString      | <FaultString>       |
-      | FaultType        | <FaultType>         |
-      | ValidationErrors | <Validation Errors> |
+      | FaultCode        | SOAP-ENV:Client                                                                                                                                                                                                                                          |
+      | FaultString      | Validation error                                                                                                                                                                                                                                         |
+      | ValidationErrors | cvc-minLength-valid: Value '<DeviceIdentification>' with length = '0' is not facet-valid with respect to minLength '1' for type 'Identification'.;cvc-type.3.1.3: The value '<DeviceIdentification>' of element 'ns2:DeviceIdentification' is not valid. |
 
     # Note: The validation errors are ; separated if there are multiple.
     Examples: 
-      | DeviceUid  | DeviceIdentification | Alias       | Owner    | ContainerPostalCode | ContainerCity | ContainerStreet | ContainerNumber | ContainerMunicipality | GpsLatitude | GpsLongitude | Activated | HasSchedule | PublicKeyPresent | Manufacturer | ModelCode  | Description | Metered | FaultCode       | FaultString      | FaultType       | Validation Errors                                                                                                                                                                                            |
-      | 2345678901 |                      | Test device | test-org | 1234AA              | Maastricht    | Stationsstraat  |              12 |                       |           0 |            0 | true      | false       | false            | Test         | Test Model | Test        | true    | SOAP-ENV:Client | Validation error | ValidationError | cvc-minLength-valid: Value '' with length = '0' is not facet-valid with respect to minLength '1' for type 'Identification'.;cvc-type.3.1.3: The value '' of element 'ns1:DeviceIdentification' is not valid. |
+      | DeviceUid  | DeviceIdentification | Alias       | Owner    | ContainerPostalCode | ContainerCity | ContainerStreet | ContainerNumber | ContainerMunicipality | GpsLatitude | GpsLongitude | Activated | HasSchedule | PublicKeyPresent | Manufacturer | ModelCode  | Description | Metered |
+      | 2345678901 |                      | Test device | test-org | 1234AA              | Maastricht    | Stationsstraat  |              12 |                       |           0 |            0 | true      | false       | false            | Test         | Test Model | Test        | true    |
 
   Scenario Outline: Add a device with incorrect data
     Given a device model
@@ -109,7 +107,9 @@ Feature: Add Device
       | DeviceModelDescription  | <Description>           |
       | DeviceModelMetered      | <Metered>               |
     Then the add device response contains soap fault
-      | MESSAGE | Validation error |
+      | FaultCode         | SOAP-ENV:Client                                                                                                                                                                                                                             |
+      | FaultString       | Validation error                                                                                                                                                                                                                            |
+      | Validation Errors | cvc-pattern-valid: Value '<DeviceIdentification>' is not facet-valid with respect to pattern '[^ ]{0,40}' for type 'Identification'.;cvc-type.3.1.3: The value '<DeviceIdentification>' of element 'ns2:DeviceIdentification' is not valid. |
 
     Examples: 
       # TODO, deviceidentification with 40 characters.
