@@ -66,7 +66,7 @@ public class ResumeScheduleSteps {
         request.setDeviceIdentification(getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION));
         request.setIndex(getInteger(requestParameters, Keys.KEY_INDEX, Defaults.DEFAULT_INDEX));
         request.setIsImmediate(getBoolean(requestParameters, Keys.KEY_ISIMMEDIATE, Defaults.DEFAULT_ISIMMEDIATE));
-      
+
         try {
             ScenarioContext.Current().put(Keys.RESPONSE, this.client.resumeScheduleStatus(request));
         } catch (final SoapFaultClientException ex) {
@@ -80,7 +80,7 @@ public class ResumeScheduleSteps {
         // Force the request being send to the platform as a given organization.
         ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
 
-        this.whenReceivingAResumeScheduleRequest(requestParameters);
+        this.receivingAResumeScheduleRequest(requestParameters);
     }
 
     /**
