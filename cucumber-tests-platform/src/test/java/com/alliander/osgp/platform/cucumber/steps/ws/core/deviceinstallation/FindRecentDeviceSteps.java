@@ -56,7 +56,9 @@ public class FindRecentDeviceSteps {
         final FindRecentDevicesResponse response = (FindRecentDevicesResponse) ScenarioContext.Current()
                 .get(Keys.RESPONSE);
 
-        DeviceSteps.checkDevice(expectedDevice, response.getDevices().get(index - 1));
+        final Device device = response.getDevices().get(index - 1);
+        Assert.assertNotNull(device);
+        DeviceSteps.checkDevice(expectedDevice, device);
     }
 
     @Then("^the find recent devices response contains soap fault$")

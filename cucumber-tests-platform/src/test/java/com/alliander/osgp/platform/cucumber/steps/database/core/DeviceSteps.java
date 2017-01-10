@@ -296,10 +296,6 @@ public class DeviceSteps {
             Assert.assertEquals(settings.get("OrganizationIdentification"),
                     device.getOwner().getOrganisationIdentification());
         }
-        // if (settings.containsKey("Owner")) {
-        // Assert.assertEquals(settings.get("Owner"),
-        // device.getOwner().getOrganisationIdentification());
-        // }
         if (settings.containsKey("ContainerPostalCode")) {
             Assert.assertEquals(settings.get("ContainerPostalCode"), device.getContainerPostalCode());
         }

@@ -37,8 +37,6 @@ import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.soap.security.support.KeyStoreFactoryBean;
 import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 
-import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.OrganisationIdentificationClientInterceptor;
-
 public class WebServiceTemplateFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceTemplateFactory.class);
@@ -167,10 +165,9 @@ public class WebServiceTemplateFactory {
         webServiceTemplate.setMarshaller(this.marshaller);
         webServiceTemplate.setUnmarshaller(this.marshaller);
 
-        webServiceTemplate.setInterceptors(
-                new ClientInterceptor[] { new OrganisationIdentificationClientInterceptor(organisationIdentification,
-                        userName, this.applicationName, NAMESPACE, ORGANISATION_IDENTIFICATION_HEADER, USER_NAME_HEADER,
-                        APPLICATION_NAME_HEADER) });
+        webServiceTemplate.setInterceptors(new ClientInterceptor[] {
+                new WebServiceClientInterceptor(organisationIdentification, userName, this.applicationName, NAMESPACE,
+                        ORGANISATION_IDENTIFICATION_HEADER, USER_NAME_HEADER, APPLICATION_NAME_HEADER) });
 
         try {
             webServiceTemplate.setMessageSender(this.webServiceMessageSender(organisationIdentification));
@@ -197,27 +194,28 @@ public class WebServiceTemplateFactory {
         }
 
         final HttpComponentsMessageSender sender = new HttpComponentsMessageSender();
-        
-        //Use Builder
+
+        // Use Builder
         final HttpClientBuilder builder = HttpClients.custom();
-        
-        //Add custom interceptor to remove Content Length Header (See class ContentLengthHeaderRemoveInterceptor)
+
+        // Add custom interceptor to remove Content Length Header (See class
+        // ContentLengthHeaderRemoveInterceptor)
         builder.addInterceptorFirst(new ContentLengthHeaderRemoveInterceptor());
         try {
-            //Put keystores in SSLContext
+            // Put keystores in SSLContext
             final SSLContext sslContext = new SSLContextBuilder()
-                    .loadKeyMaterial(keyStore , this.keyStorePassword.toCharArray())
-                    .loadTrustMaterial(this.trustStoreFactory.getObject(), new TrustSelfSignedStrategy())
-                    .build();
-            
-            //Put SSLContext in SSLConnectionSocketFactory and add to the builder
+                    .loadKeyMaterial(keyStore, this.keyStorePassword.toCharArray())
+                    .loadTrustMaterial(this.trustStoreFactory.getObject(), new TrustSelfSignedStrategy()).build();
+
+            // Put SSLContext in SSLConnectionSocketFactory and add to the
+            // builder
             final SSLConnectionSocketFactory sslConnectionFactory = new SSLConnectionSocketFactory(sslContext);
-            
-            //Build HttpClient and add to the HttpComponentMessageSender
+
+            // Build HttpClient and add to the HttpComponentMessageSender
             builder.setSSLSocketFactory(sslConnectionFactory);
             sender.setHttpClient(builder.build());
         } catch (KeyManagementException | UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {
-            //Todo: Log Exceptions
+            // Todo: Log Exceptions
             e.printStackTrace();
         }
         return sender;

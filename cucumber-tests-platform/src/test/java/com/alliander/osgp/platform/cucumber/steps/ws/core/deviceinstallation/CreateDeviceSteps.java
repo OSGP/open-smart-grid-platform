@@ -62,6 +62,25 @@ public class CreateDeviceSteps {
     }
 
     /**
+     *
+     * @throws Throwable
+     */
+    @When("^receiving an add device request with an unknown organization$")
+    public void receivingAnAddDeviceRequestWithAnUknownOrganization(final Map<String, String> settings)
+            throws Throwable {
+
+        final AddDeviceRequest request = new AddDeviceRequest();
+        final Device device = this.createDevice(settings);
+        request.setDevice(device);
+
+        try {
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.addDevice(request, "unknown-organization"));
+        } catch (final SoapFaultClientException ex) {
+            ScenarioContext.Current().put(Keys.RESPONSE, ex);
+        }
+    }
+
+    /**
      * Verify the response of a add device request.
      *
      * @param settings
