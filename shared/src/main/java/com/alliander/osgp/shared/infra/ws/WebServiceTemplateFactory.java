@@ -165,20 +165,21 @@ public class WebServiceTemplateFactory {
             throw new KeyStoreException("Key store is empty");
         }
 
-        // Setup SSL context, load trust and keystore and build the message sender
-        SSLContext sslContext = SSLContexts.custom()
-                .loadKeyMaterial(keyStore , this.keyStorePassword.toCharArray())
-                .loadTrustMaterial(this.trustStoreFactory.getObject(), new TrustSelfSignedStrategy())
-                .build();
-        
-        HttpClientBuilder clientbuilder = HttpClientBuilder.create();
-        SSLConnectionSocketFactory connectionFactory = new SSLConnectionSocketFactory(sslContext, 
+        // Setup SSL context, load trust and keystore and build the message
+        // sender
+        final SSLContext sslContext = SSLContexts.custom()
+                .loadKeyMaterial(keyStore, this.keyStorePassword.toCharArray())
+                .loadTrustMaterial(this.trustStoreFactory.getObject(), new TrustSelfSignedStrategy()).build();
+
+        final HttpClientBuilder clientbuilder = HttpClientBuilder.create();
+        final SSLConnectionSocketFactory connectionFactory = new SSLConnectionSocketFactory(sslContext,
                 SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
         clientbuilder.setSSLSocketFactory(connectionFactory);
-        
+
         // Add intercepter to prevent issue with duplicate headers.
-        // See also: http://forum.spring.io/forum/spring-projects/web-services/118857-spring-ws-2-1-4-0-httpclient-proxy-content-length-header-already-present
-        clientbuilder.addInterceptorLast(new HttpComponentsMessageSender.RemoveSoapHeadersInterceptor());
+        // See also:
+        // http://forum.spring.io/forum/spring-projects/web-services/118857-spring-ws-2-1-4-0-httpclient-proxy-content-length-header-already-present
+        clientbuilder.addInterceptorFirst(new HttpComponentsMessageSender.RemoveSoapHeadersInterceptor());
 
         return new HttpComponentsMessageSender(clientbuilder.build());
     }
