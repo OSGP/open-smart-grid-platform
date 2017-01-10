@@ -41,6 +41,7 @@ Feature: Add Device
       | gpsLatitude                | <GpsLatitude>           |
       | gpsLongitude               | <GpsLongitude>          |
       | Activated                  | <Activated>             |
+      | Active                     | false                   |
       | HasSchedule                | <HasSchedule>           |
       | PublicKeyPresent           | <PublicKeyPresent>      |
       | DeviceModel                | <ModelCode>             |

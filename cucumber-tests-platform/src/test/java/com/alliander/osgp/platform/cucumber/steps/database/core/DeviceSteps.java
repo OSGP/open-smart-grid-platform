@@ -320,6 +320,9 @@ public class DeviceSteps {
         if (settings.containsKey("Activated")) {
             Assert.assertTrue(Boolean.parseBoolean(settings.get("Activated")) == device.isActivated());
         }
+        if (settings.containsKey("Active")) {
+            Assert.assertTrue(Boolean.parseBoolean(settings.get("Active")) == device.isActive());
+        }
         if (settings.containsKey("HasSchedule") || settings.containsKey("PublicKeyPresent")) {
             final Ssld ssld = this.ssldRepository.findByDeviceIdentification(settings.get("DeviceIdentification"));
 
