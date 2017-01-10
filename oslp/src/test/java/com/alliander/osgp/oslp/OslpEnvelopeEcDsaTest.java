@@ -21,8 +21,6 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.junit.Test;
 
-import com.alliander.osgp.oslp.Oslp;
-import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.oslp.Oslp.Message;
 import com.alliander.osgp.oslp.Oslp.RegisterDeviceResponse;
 import com.alliander.osgp.shared.security.CertificateHelper;
@@ -50,10 +48,7 @@ public class OslpEnvelopeEcDsaTest {
 
     private static final String KEY_TYPE = "EC";
     private static final String SIGNATURE = "SHA256withECDSA";
-    private static final String PROVIDER_ORACLE = "SunEC";
-    private static final String PROVIDER_OPENJDK = "SunPKCS11-NSS";
-
-    private static final String OPENJDK = "OPENJDK";
+    private static final String PROVIDER = "SunEC";
 
     private static final DateTimeFormatter FORMAT = DateTimeFormat.forPattern("yyyyMMddHHmmss");
 
@@ -216,10 +211,6 @@ public class OslpEnvelopeEcDsaTest {
     }
 
     private String provider() {
-        if (System.getProperty("java.runtime.name").toUpperCase().contains(OPENJDK)) {
-            return PROVIDER_OPENJDK;
-        } else {
-            return PROVIDER_ORACLE;
-        }
+        return PROVIDER;
     }
 }

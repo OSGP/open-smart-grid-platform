@@ -93,6 +93,7 @@
     <guava.version>18.0</guava.version>
     <license.maven.plugin>2.11</license.maven.plugin>
     <hikaricp.version>2.4.0</hikaricp.version>
+    <maven.javadoc.version>2.10.4</maven.javadoc.version>
   </properties>
 
   <repositories>
@@ -518,8 +519,16 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <fork>true</fork>
-          <source>1.7</source>
-          <target>1.7</target>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>${maven.javadoc.version}</version>
+        <configuration>
+          <additionalparam>-Xdoclint:none</additionalparam>
         </configuration>
       </plugin>
     </plugins>
