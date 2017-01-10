@@ -39,7 +39,7 @@ public class ChangeOrganizationSteps {
 
     /**
      * Send a update organization request to the Platform
-     * 
+     *
      * @param requestParameters
      *            An list with request parameters for the request.
      * @throws Throwable

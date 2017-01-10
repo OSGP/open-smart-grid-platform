@@ -88,8 +88,8 @@ public class Defaults {
     public static final String DEFAULT_OWNER = "test-org";
     public static final Boolean DEFAULT_ACTIVATED = true;
     public static final String DEFAULT_DEVICE_MODEL_MANUFACTURER = "Kaif";
-    public static final Integer DEFAULT_INDEX = 1;
-    public static final Boolean DEFAULT_ISIMMEDIATE = true;
+    public static final Integer DEFAULT_INDEX = 0;
+    public static final Boolean DEFAULT_ISIMMEDIATE = false;
     public static final Integer DEFAULT_DIMVALUE = 100;
     public static final Boolean DEFAULT_ON = true;
     public static final TransitionType DEFAULT_TRANSITION_TYPE = TransitionType.DAY_NIGHT;

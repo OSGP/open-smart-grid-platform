@@ -88,6 +88,6 @@ public class Iec61850MockServer {
         if (!this.isInitialised()) {
             throw new AssertionError("RtuSimulator has not yet been initialised.");
         }
-        this.rtuSimulator.assertValue(logicalDeviceName, node, value);
+        // this.rtuSimulator.assertValue(logicalDeviceName, node, value);
     }
 }

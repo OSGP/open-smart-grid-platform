@@ -13,7 +13,9 @@ public enum FaultDetailElement {
     MESSAGE("Message"),
     COMPONENT("Component"),
     INNER_EXCEPTION("InnerException"),
-    INNER_MESSAGE("InnerMessage");
+    INNER_MESSAGE("InnerMessage"),
+    VALIDATION_ERROR("ValidationError"),
+    VALIDATION_ERRORS("ValidationErrors");
 
     private final String localName;
 

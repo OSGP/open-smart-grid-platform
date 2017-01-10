@@ -114,6 +114,7 @@ public class Keys {
     public static final String KEY_DOMAINS = "Domains";
     public static final String KEY_MESSAGE = "Message";
     public static final String KEY_FAULTCODE = "FaultCode";
+    public static final String KEY_FAULTSTRING = "FaultString";
     public static final String KEY_NEW_ORGANIZATION_IDENTIFICATION = "NewOrganizationIdentification";
     public static final String KEY_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP = "NewPlatformFunctionGroup";
     public static final String KEY_ACTIVATED = "Activated";
