@@ -1,11 +1,11 @@
 [submodule "Shared"]
 	path = Shared
 	url = https://github.com/OSGP/Shared.git
-	branch = development
+	branch = OC-19
 [submodule "Protocol-Adapter-OSLP"]
 	path = Protocol-Adapter-OSLP
 	url = https://github.com/OSGP/Protocol-Adapter-OSLP.git
-	branch = development
+	branch = OC-19
 [submodule "Platform"]
 	path = Platform
 	url = https://github.com/OSGP/Platform.git
