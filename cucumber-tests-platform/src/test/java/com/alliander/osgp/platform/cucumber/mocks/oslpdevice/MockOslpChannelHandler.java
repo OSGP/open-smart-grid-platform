@@ -384,6 +384,9 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         } else if (request.hasGetStatusRequest()
                 && this.mockResponses.containsKey(DeviceRequestMessageType.GET_STATUS)) {
             response = this.processRequest(DeviceRequestMessageType.GET_STATUS, request);
+        } else if (request.hasGetStatusRequest()
+                && this.mockResponses.containsKey(DeviceRequestMessageType.GET_LIGHT_STATUS)) {
+            response = this.processRequest(DeviceRequestMessageType.GET_LIGHT_STATUS, request);
         } else if (request.hasResumeScheduleRequest()
                 && this.mockResponses.containsKey(DeviceRequestMessageType.RESUME_SCHEDULE)) {
             response = this.processRequest(DeviceRequestMessageType.RESUME_SCHEDULE, request);
@@ -411,6 +414,8 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
 
     private Oslp.Message processRequest(final DeviceRequestMessageType type, final Oslp.Message request) {
         Oslp.Message response = null;
+        
+        LOGGER.info("Processing [{}] ...", type.name());
 
         this.receivedRequests.put(type, request);
         response = this.mockResponses.get(type);

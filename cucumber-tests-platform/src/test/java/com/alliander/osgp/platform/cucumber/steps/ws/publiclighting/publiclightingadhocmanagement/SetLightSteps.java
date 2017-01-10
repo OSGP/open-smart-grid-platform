@@ -180,7 +180,7 @@ public class SetLightSteps {
 		boolean success = false;
 		int count = 0;
 		while (!success) {
-			if (count > configuration.defaultTimeout) {
+			if (count > configuration.getTimeout()) {
 				Assert.fail("Timeout");
 			}
 

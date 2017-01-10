@@ -1,4 +1,4 @@
-Feature: Adhoc Management
+Feature: Set reboot
   As OSGP
   I want to asynchronously handle set reboot requests
   In order to reboot devices As a platform

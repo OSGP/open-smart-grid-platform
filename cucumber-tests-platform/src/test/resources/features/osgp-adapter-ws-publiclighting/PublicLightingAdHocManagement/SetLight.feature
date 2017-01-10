@@ -1,4 +1,4 @@
-Feature: Adhoc Management
+Feature: Set light
   In order to ... 
   As a platform 
   I want to asynchronously handle set light requests

@@ -1,4 +1,4 @@
-Feature: Device installation
+Feature: Remove device
   As a grid operator
   I want to be able to perform DeviceInstallation operations on a device
   In order to ...
