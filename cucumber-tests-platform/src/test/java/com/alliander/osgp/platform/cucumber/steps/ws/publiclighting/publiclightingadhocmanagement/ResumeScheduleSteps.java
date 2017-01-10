@@ -42,100 +42,127 @@ import cucumber.api.java.en.When;
  * Class with all the set light requests steps
  */
 public class ResumeScheduleSteps {
-	@Autowired
-	private CoreDeviceConfiguration configuration;
-	
-	@Autowired
-	private PublicLightingAdHocManagementClient client;
+    @Autowired
+    private CoreDeviceConfiguration configuration;
+
+    @Autowired
+    private PublicLightingAdHocManagementClient client;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ResumeScheduleSteps.class);
-    
+
     /**
-     * Sends a Resume Schedule request to the platform for a given device identification.
-     * @param requestParameters The table with the request parameters.
+     * Sends a Resume Schedule request to the platform for a given device
+     * identification.
+     *
+     * @param requestParameters
+     *            The table with the request parameters.
      * @throws Throwable
      */
     @When("^receiving a resume schedule request$")
     public void receivingAResumeScheduleRequest(final Map<String, String> requestParameters) throws Throwable {
 
-    	ResumeScheduleRequest request = new ResumeScheduleRequest();
-    	
-    	if (requestParameters.containsKey(Keys.KEY_DEVICE_IDENTIFICATION))
-    	{
-    		request.setDeviceIdentification(getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION));
-    	}
-    	
-    	request.setIndex(getInteger(requestParameters, Keys.KEY_INDEX, Defaults.DEFAULT_INDEX));
-    	request.setIsImmediate(getBoolean(requestParameters, Keys.KEY_ISIMMEDIATE, Defaults.DEFAULT_ISIMMEDIATE));
-    	
-    	try {
-    		ScenarioContext.Current().put(Keys.RESPONSE, client.resumeScheduleStatus(request));
-    	} catch(SoapFaultClientException ex) {
-    		ScenarioContext.Current().put(Keys.RESPONSE, ex);
-    	}
-    }
-    
-    @When("^receiving a set resume schedule by an unknown organization$")
-    public void receivingASetResumeScheduleByAnUnknownOrganization(final Map<String, String> requestParameters) throws Throwable {
-        // Force the request being send to the platform as a given organization.
-    	ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
+        final ResumeScheduleRequest request = new ResumeScheduleRequest();
 
-    	receivingAResumeScheduleRequest(requestParameters);
+        request.setDeviceIdentification(getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION));
+        request.setIndex(getInteger(requestParameters, Keys.KEY_INDEX, Defaults.DEFAULT_INDEX));
+        request.setIsImmediate(getBoolean(requestParameters, Keys.KEY_ISIMMEDIATE, Defaults.DEFAULT_ISIMMEDIATE));
+
+        try {
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.resumeScheduleStatus(request));
+        } catch (final SoapFaultClientException ex) {
+            ScenarioContext.Current().put(Keys.RESPONSE, ex);
+        }
     }
-    
+
+    @When("^receiving a set resume schedule by an unknown organization$")
+    public void receivingASetResumeScheduleByAnUnknownOrganization(final Map<String, String> requestParameters)
+            throws Throwable {
+        // Force the request being send to the platform as a given organization.
+        ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
+
+        this.receivingAResumeScheduleRequest(requestParameters);
+    }
+
     /**
      * The check for the response from the Platform.
-     * @param expectedResponseData The table with the expected fields in the response.
-     * @note The response will contain the correlation uid, so store that in the current scenario context for later use.
+     *
+     * @param expectedResponseData
+     *            The table with the expected fields in the response.
+     * @note The response will contain the correlation uid, so store that in the
+     *       current scenario context for later use.
      * @throws Throwable
      */
     @Then("^the resume schedule async response contains$")
-    public void theResumeScheduleAsyncResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
-    	ResumeScheduleAsyncResponse response = (ResumeScheduleAsyncResponse)ScenarioContext.Current().get(Keys.RESPONSE);
-    	
-    	Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
-    	Assert.assertEquals(getString(expectedResponseData,  Keys.KEY_DEVICE_IDENTIFICATION), response.getAsyncResponse().getDeviceId());
+    public void theResumeScheduleAsyncResponseContains(final Map<String, String> expectedResponseData)
+            throws Throwable {
+        final ResumeScheduleAsyncResponse response = (ResumeScheduleAsyncResponse) ScenarioContext.Current()
+                .get(Keys.RESPONSE);
 
-        // Save the returned CorrelationUid in the Scenario related context for further use.
+        Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
+        Assert.assertEquals(getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION),
+                response.getAsyncResponse().getDeviceId());
+
+        // Save the returned CorrelationUid in the Scenario related context for
+        // further use.
         saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
-                getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+                getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
+                        Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
-     	LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
+        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
     }
 
     @Then("^the platform buffers a resume schedule response message for device \"([^\"]*)\"$")
-    public void thePlatformBuffersAResumeScheduleResponseMessage(final String deviceIdentification, final Map<String, String> expectedResult) throws Throwable {
-    	ResumeScheduleAsyncRequest request = new ResumeScheduleAsyncRequest();
-    	AsyncRequest asyncRequest = new AsyncRequest();
-    	asyncRequest.setDeviceId(deviceIdentification);
-    	asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
-    	request.setAsyncRequest(asyncRequest);
-    	
-    	boolean success = false;
-    	int count = 0;
-    	while (!success) {
-    		if (count > configuration.getTimeout()) {
-    			Assert.fail("Timeout");
-    		}
-    		
-    		count++;
-            Thread.sleep(1000);
-
-    		try {
-    			ResumeScheduleResponse response = client.getResumeScheduleResponse(request);
-    			
-    			Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.KEY_RESULT)), response.getResult());
-    			
-    			success = true; 
-    		}
-    		catch(Exception ex) {
-    			// Do nothing
-    		}
-    	}
+    public void thenThePlatformBuffersAResumeScheduleResponseMessage(final String deviceIdentification,
+            final Map<String, String> expectedResult) throws Throwable {
+        final ResumeScheduleResponse response = this.getResponseWithCorrelationUID(deviceIdentification,
+                (String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
+        Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.KEY_RESULT)),
+                response.getResult());
     }
-    
+
     @Then("^the resume schedule async response contains soap fault$")
     public void theResumeScheduleAsyncResponseContainsSoapFault(final Map<String, String> expectedResult) {
-    	GenericResponseSteps.verifySoapFault(expectedResult);
+        GenericResponseSteps.verifySoapFault(expectedResult);
+    }
+
+    @Then("^the platform buffers a get resume schedule response message for device \"([^\"]*)\"$")
+    public void thePlatformBuffersAGetResumeScheduleResponseMessageForDevice(final String deviceIdentification,
+            final Map<String, String> expectedResult) throws InterruptedException {
+        final ResumeScheduleAsyncResponse asyncResponse = (ResumeScheduleAsyncResponse) ScenarioContext.Current()
+                .get(Keys.RESPONSE);
+
+        try {
+            this.getResponseWithCorrelationUID(deviceIdentification,
+                    asyncResponse.getAsyncResponse().getCorrelationUid());
+        } catch (final SoapFaultClientException ex) {
+            Assert.assertEquals(getString(expectedResult, Keys.KEY_FAULTSTRING), ex.getFaultStringOrReason());
+        }
+    }
+
+    private ResumeScheduleResponse getResponseWithCorrelationUID(final String deviceIdentification,
+            final String correlationUID) throws InterruptedException, SoapFaultClientException {
+        final ResumeScheduleAsyncRequest request = new ResumeScheduleAsyncRequest();
+        final AsyncRequest asyncRequest = new AsyncRequest();
+        asyncRequest.setDeviceId(deviceIdentification);
+        asyncRequest.setCorrelationUid(correlationUID);
+        request.setAsyncRequest(asyncRequest);
+
+        int count = 0;
+        while (true) {
+            if (count > this.configuration.defaultTimeout) {
+                Assert.fail("Timeout");
+            }
+
+            count++;
+            Thread.sleep(1000);
+
+            try {
+                return this.client.getResumeScheduleResponse(request);
+            } catch (final SoapFaultClientException ex) {
+                throw ex;
+            } catch (final Exception ex) {
+                // Do nothing
+            }
+        }
     }
 }
