@@ -19,7 +19,7 @@ Feature: Add Device
       | containerMunicipality | <ContainerMunicipality> |
       | gpsLatitude           | <GpsLatitude>           |
       | gpsLongitude          | <GpsLongitude>          |
-      | Activated             | <Activated>             |
+      | IsActivated           | <Activated>             |
       | HasSchedule           | <HasSchedule>           |
       | PublicKeyPresent      | <PublicKeyPresent>      |
       | Manufacturer          | <Manufacturer>          |
