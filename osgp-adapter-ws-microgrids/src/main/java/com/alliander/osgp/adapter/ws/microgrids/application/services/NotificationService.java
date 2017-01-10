@@ -7,59 +7,13 @@
  */
 package com.alliander.osgp.adapter.ws.microgrids.application.services;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
-
-import com.alliander.osgp.adapter.ws.microgrids.application.exceptions.WebServiceSecurityException;
-import com.alliander.osgp.adapter.ws.microgrids.presentation.ws.SendNotificationServiceClient;
-import com.alliander.osgp.adapter.ws.schema.microgrids.notification.Notification;
 import com.alliander.osgp.adapter.ws.schema.microgrids.notification.NotificationType;
 import com.alliander.osgp.domain.core.validation.Identification;
 
-@Service(value = "wsMicrogridsNotificationService")
-@Transactional(value = "wsTransactionManager")
-@Validated
-public class NotificationService {
+public interface NotificationService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(NotificationService.class);
+    public abstract void sendNotification(@Identification String organisationIdentification,
+            String deviceIdentification, String result, String correlationUid, String message,
+            NotificationType notificationType);
 
-    @Autowired
-    private SendNotificationServiceClient sendNotificationServiceClient;
-
-    @Autowired
-    private String notificationURL;
-
-    @Autowired
-    private String notificationUsername;
-
-    public NotificationService() {
-        // Parameterless constructor required for transactions
-    }
-
-    public void sendNotification(@Identification final String organisationIdentification,
-            final String deviceIdentification, final String result, final String correlationUid, final String message,
-            final NotificationType notificationType) {
-
-        LOGGER.info("sendNotification called with organisation: {}, correlationUid: {}, type: {}",
-                organisationIdentification, correlationUid, notificationType);
-
-        final Notification notification = new Notification();
-        // Message is null, unless an error occurred.
-        notification.setMessage(message);
-        notification.setResult(result);
-        notification.setDeviceIdentification(deviceIdentification);
-        notification.setCorrelationUid(correlationUid);
-        notification.setNotificationType(notificationType);
-
-        try {
-            this.sendNotificationServiceClient.sendNotification(organisationIdentification, notification,
-                    this.notificationURL, this.notificationUsername);
-        } catch (final WebServiceSecurityException e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-    }
 }

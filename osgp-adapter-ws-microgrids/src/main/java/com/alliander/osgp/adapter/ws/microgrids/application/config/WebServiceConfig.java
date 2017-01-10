@@ -7,12 +7,15 @@
  */
 package com.alliander.osgp.adapter.ws.microgrids.application.config;
 
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -32,6 +35,9 @@ import com.alliander.osgp.adapter.ws.endpointinterceptors.WebServiceMonitorInter
 import com.alliander.osgp.adapter.ws.endpointinterceptors.X509CertificateRdnAttributeValueEndpointInterceptor;
 import com.alliander.osgp.adapter.ws.microgrids.application.exceptionhandling.DetailSoapFaultMappingExceptionResolver;
 import com.alliander.osgp.adapter.ws.microgrids.application.exceptionhandling.SoapFaultMapper;
+import com.alliander.osgp.adapter.ws.microgrids.application.services.NotificationService;
+import com.alliander.osgp.adapter.ws.microgrids.application.services.NotificationServiceBlackHole;
+import com.alliander.osgp.adapter.ws.microgrids.application.services.NotificationServiceWs;
 import com.alliander.osgp.adapter.ws.microgrids.presentation.ws.SendNotificationServiceClient;
 import com.alliander.osgp.adapter.ws.microgrids.presentation.ws.WebServiceTemplateFactory;
 import com.alliander.osgp.shared.application.config.AbstractConfig;
@@ -57,8 +63,14 @@ public class WebServiceConfig extends AbstractConfig {
     private static final String X509_RDN_ATTRIBUTE_ID = "cn";
     private static final String X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME = "CommonNameSet";
 
-    private static final String WEB_SERVICE_NOTIFICATION_URL_PROPERTY_NAME = "web.service.notification.url";
-    private static final String WEB_SERVICE_NOTIFICATION_USERNAME_PROPERTY_NAME = "web.service.notification.username";
+    @Value("${web.service.notification.enabled}")
+    private boolean webserviceNotificationEnabled;
+
+    @Value("${web.service.notification.url:#{null}}")
+    private String webserviceNotificationUrl;
+
+    @Value("${web.service.notification.username:#{null}}")
+    private String webserviceNotificationUsername;
 
     private static final String SERVER = "SERVER";
 
@@ -180,13 +192,23 @@ public class WebServiceConfig extends AbstractConfig {
     }
 
     @Bean
-    public String notificationURL() {
-        return this.environment.getRequiredProperty(WEB_SERVICE_NOTIFICATION_URL_PROPERTY_NAME);
+    public String notificationUrl() {
+        return this.webserviceNotificationUrl;
     }
 
     @Bean
-    String notificationUsername() {
-        return this.environment.getRequiredProperty(WEB_SERVICE_NOTIFICATION_USERNAME_PROPERTY_NAME);
+    public String notificationUsername() {
+        return this.webserviceNotificationUsername;
+    }
+
+    @Bean
+    public NotificationService wsSmartMeteringNotificationService() throws GeneralSecurityException {
+        if (this.webserviceNotificationEnabled && !StringUtils.isEmpty(this.notificationUrl())) {
+            return new NotificationServiceWs(this.sendNotificationServiceClient(), this.notificationUrl(),
+                    this.notificationUsername());
+        } else {
+            return new NotificationServiceBlackHole();
+        }
     }
 
     @Bean
