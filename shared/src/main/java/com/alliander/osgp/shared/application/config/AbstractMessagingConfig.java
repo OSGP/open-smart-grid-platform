@@ -7,18 +7,18 @@
  */
 package com.alliander.osgp.shared.application.config;
 
-import javax.jms.MessageListener;
+import java.util.Properties;
 
-import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.broker.region.policy.RedeliveryPolicyMap;
-import org.apache.activemq.command.ActiveMQDestination;
-import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.apache.activemq.spring.ActiveMQConnectionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.listener.DefaultMessageListenerContainer;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
 
 /**
  * This abstract class can be used by modules to configure to Jms configuration
@@ -132,6 +132,26 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
     @Value("${jms.logging.use.exponential.back.off:true}")
     protected boolean loggingUseExpBackOff;
 
+    protected Environment environment;
+
+    @Override
+    @Autowired
+    public void setConfigurableEnvironment(final ConfigurableEnvironment configurableEnvironment) {
+        this.environment = configurableEnvironment;
+    }
+
+    @Bean
+    protected PropertiesFactoryBean propertiesFactoryBean() {
+        return new PropertiesFactoryBean();
+    }
+
+    @Bean
+    protected JmsConfigurationFactory JmsConfigurationFactory(
+            @Qualifier("propertiesFactoryBean") final Properties properties,
+            final PooledConnectionFactory pooledConnectionFactory, final RedeliveryPolicyMap redeliveryPolicyMap) {
+        return new JmsConfigurationFactory(this.environment, pooledConnectionFactory, redeliveryPolicyMap);
+    }
+
     @Bean(destroyMethod = "stop")
     protected PooledConnectionFactory pooledConnectionFactory() {
         final PooledConnectionFactory pooledConnectionFactory = new PooledConnectionFactory();
@@ -147,121 +167,16 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
         return activeMQConnectionFactory;
     }
 
-    protected abstract String getRequestQueueName();
-
-    protected abstract String getResponsesQueueName();
-
-    protected abstract String getLoggingQueueName();
-
+    @Bean
     protected RedeliveryPolicyMap redeliveryPolicyMap() {
         final RedeliveryPolicyMap redeliveryPolicyMap = new RedeliveryPolicyMap();
-        redeliveryPolicyMap.put(this.requestsQueue(), this.requestsRedeliveryPolicy(this.requestsQueue()));
-        redeliveryPolicyMap.put(this.responsesQueue(), this.responsesRedeliveryPolicy(this.responsesQueue()));
-        redeliveryPolicyMap.put(this.loggingQueue(), this.loggingRedeliveryPolicy(this.loggingQueue()));
+        // redeliveryPolicyMap.put(this.requestsQueue(),
+        // this.requestsRedeliveryPolicy(this.requestsQueue()));
+        // redeliveryPolicyMap.put(this.responsesQueue(),
+        // this.responsesRedeliveryPolicy(this.responsesQueue()));
+        // redeliveryPolicyMap.put(this.loggingQueue(),
+        // this.loggingRedeliveryPolicy(this.loggingQueue()));
         return redeliveryPolicyMap;
-    }
-
-    protected ActiveMQDestination requestsQueue() {
-        return new ActiveMQQueue(this.getRequestQueueName());
-    }
-
-    protected ActiveMQDestination responsesQueue() {
-        return new ActiveMQQueue(this.getResponsesQueueName());
-    }
-
-    protected ActiveMQDestination loggingQueue() {
-        return new ActiveMQQueue(this.getLoggingQueueName());
-    }
-
-    protected RedeliveryPolicy requestsRedeliveryPolicy(final ActiveMQDestination queue) {
-        return this.redeliveryPolicy(queue, this.requestInitialRedeliveryDelay, this.requestRedeliveryDelay,
-                this.requestMaxRedeliveryDelay, this.requestRedeliveryDelay, this.requestBackOffMultiplier,
-                this.requestUseExpBackOff);
-    }
-
-    private RedeliveryPolicy responsesRedeliveryPolicy(final ActiveMQDestination queue) {
-        return this.redeliveryPolicy(queue, this.responsesInitialRedeliveryDelay, this.responsesRedeliveryDelay,
-                this.responsesMaxRedeliveryDelay, this.responsesRedeliveryDelay, this.responsesBackOffMultiplier,
-                this.responsesUseExpBackOff);
-    }
-
-    private RedeliveryPolicy loggingRedeliveryPolicy(final ActiveMQDestination queue) {
-        return this.redeliveryPolicy(queue, this.loggingInitialRedeliveryDelay, this.loggingRedeliveryDelay,
-                this.loggingMaxRedeliveryDelay, this.loggingRedeliveryDelay, this.loggingBackOffMultiplier,
-                this.loggingUseExpBackOff);
-    }
-
-    protected RedeliveryPolicy redeliveryPolicy(final ActiveMQDestination queue, final long initialRedeliveryDelay,
-            final int maxRedeliveries, final long maxRedeliveryDelay, final long redeliveryDelay,
-            final long backOffMultiplier, final boolean useExpBackOff) {
-
-        final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
-        redeliveryPolicy.setDestination(queue);
-        redeliveryPolicy.setInitialRedeliveryDelay(initialRedeliveryDelay);
-        redeliveryPolicy.setMaximumRedeliveries(maxRedeliveries);
-        redeliveryPolicy.setMaximumRedeliveryDelay(maxRedeliveryDelay);
-        redeliveryPolicy.setRedeliveryDelay(redeliveryDelay);
-        redeliveryPolicy.setBackOffMultiplier(backOffMultiplier);
-        redeliveryPolicy.setUseExponentialBackOff(useExpBackOff);
-        return redeliveryPolicy;
-    }
-
-    protected JmsTemplate jmsRequestTemplate() {
-        return this.jmsTemplate(this.requestsQueue(), this.requestQosEnabled, this.requestTimeToLive,
-                this.requestDeliveryPersistent);
-    }
-
-    protected JmsTemplate jmsResponsesTemplate() {
-        return this.jmsTemplate(this.responsesQueue(), this.responsesQosEnabled, this.responsesTimeToLive,
-                this.responsesDeliveryPersistent);
-    }
-
-    protected JmsTemplate jmsLoggingTemplate() {
-        return this.jmsTemplate(this.loggingQueue(), this.loggingQosEnabled, this.loggingTimeToLive,
-                this.loggingDeliveryPersistent);
-    }
-
-    private JmsTemplate jmsTemplate(final ActiveMQDestination destinationQueue, final boolean qosEnabled,
-            final long timeToLive, final boolean deliveryPersistent) {
-
-        final JmsTemplate jmsTemplate = new JmsTemplate();
-        jmsTemplate.setDefaultDestination(destinationQueue);
-        jmsTemplate.setExplicitQosEnabled(qosEnabled);
-        jmsTemplate.setTimeToLive(timeToLive);
-        jmsTemplate.setDeliveryPersistent(deliveryPersistent);
-        jmsTemplate.setConnectionFactory(this.pooledConnectionFactory());
-        return jmsTemplate;
-    }
-
-    protected DefaultMessageListenerContainer defaultRequestMessageListenerContainer(
-            final MessageListener messageListener) {
-        return this.defaultMessageListenerContainer(this.requestsQueue(), messageListener,
-                this.requestConcurrentConsumers, this.requestMaxConcurrentConsumers);
-    }
-
-    protected DefaultMessageListenerContainer defaultResponsesMessageListenerContainer(
-            final MessageListener messageListener) {
-        return this.defaultMessageListenerContainer(this.responsesQueue(), messageListener,
-                this.responsesConcurrentConsumers, this.responsesConcurrentConsumers);
-    }
-
-    protected DefaultMessageListenerContainer defaultLoggingMessageListenerContainer(
-            final MessageListener messageListener) {
-        return this.defaultMessageListenerContainer(this.loggingQueue(), messageListener,
-                this.loggingConcurrentConsumers, this.loggingMaxConcurrentConsumers);
-    }
-
-    private DefaultMessageListenerContainer defaultMessageListenerContainer(final ActiveMQDestination destination,
-            final MessageListener messageListener, final int concConsumers, final int maxConcConsumers) {
-
-        final DefaultMessageListenerContainer defaultMessageListenerContainer = new DefaultMessageListenerContainer();
-        defaultMessageListenerContainer.setConnectionFactory(this.pooledConnectionFactory());
-        defaultMessageListenerContainer.setDestination(destination);
-        defaultMessageListenerContainer.setMessageListener(messageListener);
-        defaultMessageListenerContainer.setConcurrentConsumers(concConsumers);
-        defaultMessageListenerContainer.setMaxConcurrentConsumers(maxConcConsumers);
-        defaultMessageListenerContainer.setSessionTransacted(true);
-        return defaultMessageListenerContainer;
     }
 
 }
