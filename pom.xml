@@ -85,5 +85,6 @@
         <module>parent-shared</module>
         <module>shared</module>
         <module>osgp-dto</module>
+        <module>osgp-ws-smartmetering-interface</module>
     </modules>
 </project>

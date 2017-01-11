@@ -1,0 +1,400 @@
+<!-- Copyright 2015 Smart Society Services B.V. -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10"
+  xmlns:smman="http://www.alliander.com/schemas/osgp/smartmetering/sm-management/2014/10"
+  xmlns:smconf="http://www.alliander.com/schemas/osgp/smartmetering/sm-configuration/2014/10"
+  xmlns:smmon="http://www.alliander.com/schemas/osgp/smartmetering/sm-monitoring/2014/10"
+  xmlns:adhoc="http://www.alliander.com/schemas/osgp/smartmetering/sm-adhoc/2014/10"
+  xmlns:tns="http://www.alliander.com/schemas/osgp/smartmetering/sm-bundle/2014/10"
+  attributeFormDefault="unqualified" elementFormDefault="qualified"
+  targetNamespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-bundle/2014/10">
+
+  <xsd:import namespace="http://www.alliander.com/schemas/osgp/common/2014/10"
+    schemaLocation="common.xsd" />
+  <xsd:import
+    namespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-management/2014/10"
+    schemaLocation="sm-management.xsd" />
+  <xsd:import
+    namespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-configuration/2014/10"
+    schemaLocation="sm-configuration.xsd" />
+  <xsd:import
+    namespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-monitoring/2014/10"
+    schemaLocation="sm-monitoring.xsd" />
+  <xsd:import
+    namespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-adhoc/2014/10"
+    schemaLocation="sm-adhoc.xsd" />
+
+  <!-- Requests and Responses -->
+  <xsd:element name="FindEventsRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smman:FindEventsRequestData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetSpecialDaysRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:SpecialDaysRequestData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="ReadAlarmRegisterRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smmon:ReadAlarmRegisterData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetActualMeterReadsRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smmon:ActualMeterReadsData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetActualMeterReadsGasRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smmon:ActualMeterReadsGasData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetAdministrativeStatusRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:GetAdministrativeStatusData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetPeriodicMeterReadsRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smmon:PeriodicMeterReadsRequestData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetPeriodicMeterReadsGasRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smmon:PeriodicMeterReadsGasRequestData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetAdministrativeStatusRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:AdministrativeStatusTypeData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetActivityCalendarRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:SetActivityCalendarRequestData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetEncryptionKeyExchangeOnGMeterRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smconf:SetEncryptionKeyExchangeOnGMeterRequestData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetAlarmNotificationsRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:SetAlarmNotificationsRequestData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetConfigurationObjectRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:SetConfigurationObjectRequestData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetPushSetupAlarmRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:SetPushSetupAlarmRequestData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetPushSetupSmsRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:SetPushSetupSmsRequestData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SynchronizeTimeRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="adhoc:SynchronizeTimeRequestData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetConfigurationRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="adhoc:GetConfigurationRequestData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetFirmwareVersionRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:GetFirmwareVersionRequestData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="UpdateFirmwareRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:UpdateFirmwareRequestData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetSpecificAttributeValueRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="adhoc:SpecificAttributeValueRequestData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetKeysRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:SetKeysRequestData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetAssociationLnObjectsRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="adhoc:GetAssociationLnObjectsRequestData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="Actions">
+    <xsd:sequence>
+      <xsd:choice maxOccurs="unbounded">
+        <xsd:element ref="tns:FindEventsRequest" />
+        <xsd:element ref="tns:SetSpecialDaysRequest" />
+        <xsd:element ref="tns:ReadAlarmRegisterRequest" />
+        <xsd:element ref="tns:GetActualMeterReadsRequest" />
+        <xsd:element ref="tns:GetActualMeterReadsGasRequest" />
+        <xsd:element ref="tns:GetAdministrativeStatusRequest" />
+        <xsd:element ref="tns:GetPeriodicMeterReadsRequest" />
+        <xsd:element ref="tns:GetPeriodicMeterReadsGasRequest" />
+        <xsd:element ref="tns:SetAdministrativeStatusRequest" />
+        <xsd:element ref="tns:SetActivityCalendarRequest" />
+        <xsd:element ref="tns:SetEncryptionKeyExchangeOnGMeterRequest" />
+        <xsd:element ref="tns:SetAlarmNotificationsRequest" />
+        <xsd:element ref="tns:SetConfigurationObjectRequest" />
+        <xsd:element ref="tns:SetPushSetupAlarmRequest" />
+        <xsd:element ref="tns:SetPushSetupSmsRequest" />
+        <xsd:element ref="tns:SynchronizeTimeRequest" />
+        <xsd:element ref="tns:GetConfigurationRequest" />
+        <xsd:element ref="tns:GetFirmwareVersionRequest" />
+        <xsd:element ref="tns:UpdateFirmwareRequest" />
+        <xsd:element ref="tns:GetSpecificAttributeValueRequest" />
+        <xsd:element ref="tns:SetKeysRequest" />
+        <xsd:element ref="tns:GetAssociationLnObjectsRequest" />
+      </xsd:choice>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:element name="BundleRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"
+          minOccurs="1" maxOccurs="1" />
+        <xsd:element name="Actions" type="tns:Actions"
+          minOccurs="1" maxOccurs="1" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="BundleAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="BundleAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="FindEventsResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smman:FindEventsResponseData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="ActionResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:ActionResponseData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="FaultResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:FaultResponseData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="ReadAlarmRegisterResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smmon:ReadAlarmRegisterResponseData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="ActualMeterReadsResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smmon:ActualMeterReadsResponseData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="ActualMeterReadsGasResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smmon:ActualMeterReadsGasResponseData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="AdministrativeStatusResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:AdministrativeStatusResponseData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="PeriodicMeterReadsResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smmon:PeriodicMeterReadsResponseData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="PeriodicMeterReadsGasResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smmon:PeriodicMeterReadsGasResponseData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetConfigurationResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="adhoc:GetConfigurationResponseData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetFirmwareVersionResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:GetFirmwareVersionResponseData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="UpdateFirmwareResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:UpdateFirmwareResponseData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="AssociationLnObjectsResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="adhoc:AssociationLnObjectsResponseData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="AllResponses">
+    <xsd:sequence>
+      <xsd:choice maxOccurs="unbounded">
+        <xsd:element ref="tns:FindEventsResponse" />
+        <xsd:element ref="tns:ActionResponse" />
+        <xsd:element ref="tns:FaultResponse" />
+        <xsd:element ref="tns:ReadAlarmRegisterResponse" />
+        <xsd:element ref="tns:ActualMeterReadsResponse" />
+        <xsd:element ref="tns:ActualMeterReadsGasResponse" />
+        <xsd:element ref="tns:AdministrativeStatusResponse" />
+        <xsd:element ref="tns:PeriodicMeterReadsResponse" />
+        <xsd:element ref="tns:PeriodicMeterReadsGasResponse" />
+        <xsd:element ref="tns:GetConfigurationResponse" />
+        <xsd:element ref="tns:GetFirmwareVersionResponse" />
+        <xsd:element ref="tns:UpdateFirmwareResponse" />
+        <xsd:element ref="tns:AssociationLnObjectsResponse" />
+      </xsd:choice>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:element name="BundleResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="AllResponses" type="tns:AllResponses"
+          minOccurs="1" maxOccurs="1" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- Requests and Responses -->
+
+  <xsd:element name="GetDevicesRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Page" type="xsd:int" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="GetDevicesResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DevicePage" type="tns:DevicePage" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- Data Types -->
+
+  <xsd:complexType name="Device">
+    <xsd:sequence>
+      <xsd:element name="DeviceUid" type="xsd:string" />
+      <xsd:element name="DeviceIdentification" type="common:Identification" />
+      <xsd:element name="DeviceType" type="xsd:string" />
+      <xsd:element name="Activated" type="xsd:boolean" />
+      <xsd:element name="HasSchedule" type="xsd:boolean" />
+      <xsd:element name="PublicKeyPresent" type="xsd:boolean" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="DevicePage">
+    <xsd:sequence>
+      <xsd:element name="TotalPages" type="xsd:int" />
+      <xsd:element maxOccurs="unbounded" name="Devices"
+        type="tns:Device" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+</xsd:schema>
