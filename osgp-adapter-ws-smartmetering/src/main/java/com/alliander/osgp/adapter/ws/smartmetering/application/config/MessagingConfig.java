@@ -19,48 +19,51 @@ import com.alliander.osgp.adapter.ws.infra.jms.LoggingMessageSender;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringResponseMessageListener;
 import com.alliander.osgp.shared.application.config.AbstractMessagingConfig;
+import com.alliander.osgp.shared.application.config.JmsConfigurationFactory;
 
 @Configuration
 @PropertySources({ @PropertySource(value = "classpath:osgp-adapter-ws-smartmetering.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-    @PropertySource(value = "file:${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true), })
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true), })
 public class MessagingConfig extends AbstractMessagingConfig {
-
-    private static final String PROPERTY_NAME_JMS_SMART_METERING_REQUEST_QUEUE = "jms.smartmetering.requests.queue";
-    private static final String PROPERTY_NAME_JMS_SMART_METERING_RESPONSES_QUEUE = "jms.smartmetering.responses.queue";
-    private static final String PROPERTY_NAME_JMS_SMART_METERING_LOGING_QUEUE = "jms.smartmetering.logging.queue";
 
     @Autowired
     public SmartMeteringResponseMessageListener smartMeteringResponseMessageListener;
 
-    @Override
-    protected String getRequestQueueName() {
-        return this.environment.getRequiredProperty(PROPERTY_NAME_JMS_SMART_METERING_REQUEST_QUEUE);
-    }
-
-    @Override
-    protected String getResponsesQueueName() {
-        return this.environment.getRequiredProperty(PROPERTY_NAME_JMS_SMART_METERING_RESPONSES_QUEUE);
-    }
-
-    @Override
-    protected String getLoggingQueueName() {
-        return this.environment.getRequiredProperty(PROPERTY_NAME_JMS_SMART_METERING_LOGING_QUEUE);
+    @Bean
+    protected JmsConfigurationFactory.JmsRequestConfiguration requestJmsConfiguration(
+            final JmsConfigurationFactory jmsConfigurationFactory) {
+        return jmsConfigurationFactory.getInstance("jms.smartmetering.requests");
     }
 
     @Bean
-    public JmsTemplate loggingJmsTemplate() {
-        return super.jmsLoggingTemplate();
+    protected JmsConfigurationFactory.JmsResponseConfiguration responseJmsConfiguration(
+            final JmsConfigurationFactory jmsConfigurationFactory,
+            final SmartMeteringResponseMessageListener smartMeteringResponseMessageListener) {
+        return jmsConfigurationFactory.getInstance("jms.smartmetering.responses", smartMeteringResponseMessageListener);
+    }
+
+    @Bean
+    protected JmsConfigurationFactory.JmsRequestConfiguration loggingJmsConfiguration(
+            final JmsConfigurationFactory jmsConfigurationFactory) {
+        return jmsConfigurationFactory.getInstance("jms.smartmetering.logging");
+    }
+
+    @Bean
+    public JmsTemplate loggingJmsTemplate(final JmsConfigurationFactory.JmsRequestConfiguration loggingJmsConfiguration) {
+        return loggingJmsConfiguration.getJmsTemplate();
     }
 
     @Bean(name = "wsSmartMeteringOutgoingRequestsJmsTemplate")
-    public JmsTemplate smartMeteringRequestsJmsTemplate() {
-        return super.jmsRequestTemplate();
+    public JmsTemplate smartMeteringRequestsJmsTemplate(
+            final JmsConfigurationFactory.JmsRequestConfiguration requestJmsConfiguration) {
+        return requestJmsConfiguration.getJmsTemplate();
     }
 
     @Bean(name = "wsSmartMeteringResponsesMessageListenerContainer")
-    public DefaultMessageListenerContainer smartMeteringResponseMessageListenerContainer() {
-        return super.defaultResponsesMessageListenerContainer(this.smartMeteringResponseMessageListener);
+    public DefaultMessageListenerContainer smartMeteringResponseMessageListenerContainer(
+            final JmsConfigurationFactory.JmsResponseConfiguration responseJmsConfiguration) {
+        return responseJmsConfiguration.getMessageListenerContainer();
     }
 
     /**
