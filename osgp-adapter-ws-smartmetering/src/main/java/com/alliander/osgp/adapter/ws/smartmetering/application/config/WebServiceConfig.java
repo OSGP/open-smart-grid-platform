@@ -33,9 +33,11 @@ import com.alliander.osgp.adapter.ws.endpointinterceptors.AnnotationMethodArgume
 import com.alliander.osgp.adapter.ws.endpointinterceptors.CertificateAndSoapHeaderAuthorizationEndpointInterceptor;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
+import com.alliander.osgp.adapter.ws.endpointinterceptors.ResponseUrl;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.ScheduleTime;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderEndpointInterceptor;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderMessagePriorityEndpointInterceptor;
+import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderResponseUrlEndpointInterceptor;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderScheduleTimeEndpointInterceptor;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.X509CertificateRdnAttributeValueEndpointInterceptor;
 import com.alliander.osgp.adapter.ws.smartmetering.application.exceptionhandling.DetailSoapFaultMappingExceptionResolver;
@@ -102,6 +104,7 @@ public class WebServiceConfig extends AbstractConfig {
     private static final String MESSAGE_PRIORITY_HEADER = "MessagePriority";
     private static final String MESSAGE_PRIORITY_CONTEXT = MESSAGE_PRIORITY_HEADER;
     private static final String MESSAGE_SCHEDULETIME_HEADER = "ScheduleTime";
+    private static final String MESSAGE_RESPONSE_URL_HEADER = "ResponseUrl";
 
     private static final String X509_RDN_ATTRIBUTE_ID = "cn";
     private static final String X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME = "CommonNameSet";
@@ -348,6 +351,8 @@ public class WebServiceConfig extends AbstractConfig {
                 MessagePriority.class));
         methodArgumentResolvers.add(new AnnotationMethodArgumentResolver(MESSAGE_SCHEDULETIME_HEADER,
                 ScheduleTime.class));
+        methodArgumentResolvers
+        .add(new AnnotationMethodArgumentResolver(MESSAGE_RESPONSE_URL_HEADER, ResponseUrl.class));
         defaultMethodEndpointAdapter.setMethodArgumentResolvers(methodArgumentResolvers);
 
         final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<MethodReturnValueHandler>();
@@ -403,6 +408,11 @@ public class WebServiceConfig extends AbstractConfig {
     @Bean
     public SoapHeaderScheduleTimeEndpointInterceptor scheduleTimeInterceptor() {
         return new SoapHeaderScheduleTimeEndpointInterceptor(MESSAGE_SCHEDULETIME_HEADER);
+    }
+
+    @Bean
+    public SoapHeaderResponseUrlEndpointInterceptor responseUrlInterceptor() {
+        return new SoapHeaderResponseUrlEndpointInterceptor(MESSAGE_RESPONSE_URL_HEADER);
     }
 
     /**
