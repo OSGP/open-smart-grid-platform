@@ -9,12 +9,12 @@
 [submodule "Platform"]
 	path = Platform
 	url = https://github.com/OSGP/Platform.git
-	branch = development
+	branch = java-8
 [submodule "Protocol-Adapter-DLMS"]
 	path = Protocol-Adapter-DLMS
 	url = https://github.com/OSGP/Protocol-Adapter-DLMS.git
-	branch = development
+	branch = java-8
 [submodule "Protocol-Adapter-IEC61850"]
 	path = Protocol-Adapter-IEC61850
 	url = https://github.com/OSGP/Protocol-Adapter-IEC61850.git
-	branch = development
+	branch = java-8
