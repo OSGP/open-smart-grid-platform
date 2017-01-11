@@ -8,6 +8,7 @@ IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema=curren
 	    id bigint NOT NULL,
 	    creation_time timestamp without time zone NOT NULL,
     	modification_time timestamp without time zone NOT NULL,
+  	    version bigint,
 	    correlation_uid character varying(255),
 	    response_url character varying(255)
 	);

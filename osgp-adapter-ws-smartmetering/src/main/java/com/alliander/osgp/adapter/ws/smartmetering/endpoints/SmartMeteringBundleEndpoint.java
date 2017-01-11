@@ -87,9 +87,7 @@ public class SmartMeteringBundleEndpoint extends SmartMeteringEndpoint {
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
 
-            if (responseUrl != null) {
-                this.responseUrlService.saveResponseUrl(correlationUid, responseUrl);
-            }
+            this.responseUrlService.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
             this.handleException(e);
         }

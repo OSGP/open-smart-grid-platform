@@ -18,6 +18,13 @@ public class ResponseUrlServiceImpl implements ResponseUrlService {
     }
 
     @Override
+    public void saveResponseUrlIfNeeded(final String correlId, final String responseUrl) {
+        if (correlId != null && !correlId.isEmpty() && responseUrl != null && !responseUrl.isEmpty()) {
+            this.saveResponseUrl(correlId, responseUrl);
+        }
+    }
+
+    @Override
     public boolean hasResponseUrl(final String correlId) {
         return this.responseUrlDataRepository.findSingleResultByCorrelationUid(correlId) != null;
     }

@@ -9,8 +9,10 @@ package com.alliander.osgp.adapter.ws.smartmetering.application.services;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.ws.client.WebServiceTransportException;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.Notification;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
@@ -23,13 +25,17 @@ public class NotificationServiceWs implements NotificationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NotificationServiceWs.class);
 
-    private SendNotificationServiceClient sendNotificationServiceClient;
+    private final SendNotificationServiceClient sendNotificationServiceClient;
 
-    private String notificationUrl;
-    
-    private String notificationUsername;
+    private final String notificationUrl;
 
-    public NotificationServiceWs(final SendNotificationServiceClient client, final String notificationUrl, final String notificationUsername) {
+    private final String notificationUsername;
+
+    @Autowired
+    private ResponseUrlService responseUrlService;
+
+    public NotificationServiceWs(final SendNotificationServiceClient client, final String notificationUrl,
+            final String notificationUsername) {
         this.sendNotificationServiceClient = client;
         this.notificationUrl = notificationUrl;
         this.notificationUsername = notificationUsername;
@@ -37,7 +43,7 @@ public class NotificationServiceWs implements NotificationService {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.alliander.osgp.adapter.ws.smartmetering.application.services.
      * INotificationService#sendNotification(java.lang.String, java.lang.String,
      * java.lang.String, java.lang.String, java.lang.String,
@@ -60,11 +66,23 @@ public class NotificationServiceWs implements NotificationService {
         notification.setCorrelationUid(correlationUid);
         notification.setNotificationType(notificationType);
 
+        final String url = this.notificationUrl(correlationUid);
         try {
-            this.sendNotificationServiceClient.sendNotification(organisationIdentification, notification,
-                    this.notificationUrl, this.notificationUsername);
-        } catch (final WebServiceSecurityException e) {
-            LOGGER.error(e.getMessage(), e);
+            this.sendNotificationServiceClient.sendNotification(organisationIdentification, notification, url,
+                    this.notificationUsername);
+        } catch (final WebServiceSecurityException | WebServiceTransportException ex) {
+            LOGGER.error("Error while sending Soap message, url:{}, organization:{}, msg:{} ", url,
+                    organisationIdentification, ex.getMessage());
+        }
+    }
+
+    private String notificationUrl(final String correlationUid) {
+        final String responseUrl = this.responseUrlService.findResponseUrl(correlationUid);
+        if (responseUrl == null) {
+            return this.notificationUrl;
+        } else {
+            this.responseUrlService.deleteResponseUrl(correlationUid);
+            return responseUrl;
         }
     }
 }
