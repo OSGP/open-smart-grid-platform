@@ -42,17 +42,7 @@
     <bean id="sm-configuration" class="org.springframework.xml.xsd.SimpleXsdSchema">
         <property name="xsd" value="/WEB-INF/wsdl/smartmetering/schemas/sm-configuration.xsd" />
     </bean>
-
-	<bean id="payloadValidatingInterceptor" class="org.springframework.ws.soap.server.endpoint.interceptor.PayloadValidatingInterceptor">
-		<property name="schemas">
-			<list>
-				<value>/WEB-INF/wsdl/smartmetering/schemas/*.xsd</value>
-			</list>			
-		</property>
-		<property name="validateRequest" value="true" />
-		<property name="validateResponse" value="false" />	
-	</bean>
-
+    
     <sws:interceptors>
         <ref bean="x509CertificateSubjectCnEndpointInterceptor"/>
         <ref bean="organisationIdentificationInterceptor"/>

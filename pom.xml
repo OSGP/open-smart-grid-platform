@@ -79,8 +79,9 @@
     <modules>  
         <!-- Shared Libs -->
         <module>parent-platform</module>
-        <module>Shared/shared</module>
-        <module>Shared/osgp-dto</module>
+<!--         <module>Shared/shared</module> -->
+<!--         <module>Shared/osgp-dto</module> -->
+<!--         <module>Shared/osgp-adapter-ws-smartmetering-interface</module> -->
 
         <!-- Domain -->
         <module>osgp-domain-core</module>

@@ -1,12 +1,6 @@
-<!--
-
-    Copyright 2015 Smart Society Services B.V.
-
-    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
-
-        http://www.apache.org/licenses/LICENSE-2.0
-
--->
+<!-- Copyright 2015 Smart Society Services B.V. Licensed under the Apache 
+  License, Version 2.0 (the "License"); you may not use this file except in 
+  compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
@@ -14,7 +8,8 @@
   <artifactId>osgp-adapter-ws-smartmetering</artifactId>
   <name>osgp-adapter-ws-smartmetering</name>
   <packaging>war</packaging>
-  <!-- Description element is needed for the maven-jxr-plugin to generate a maven site -->
+  <!-- Description element is needed for the maven-jxr-plugin to generate 
+    a maven site -->
   <description>Web service module for smart metering.</description>
 
   <parent>
@@ -34,134 +29,6 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>jaxb2-maven-plugin</artifactId>
         <version>1.5</version>
-        <executions>
-          <execution>
-            <id>smart-metering-bundle</id>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-            <configuration>
-              <bindingDirectory>src/main/webapp/WEB-INF/wsdl/smartmetering/schemas</bindingDirectory>
-              <bindingFiles>sm-bundle.xjb</bindingFiles>
-              <schemaDirectory>src/main/webapp/WEB-INF/wsdl/smartmetering</schemaDirectory>
-              <schemaFiles>SmartMeteringBundle.wsdl</schemaFiles>
-              <wsdl>true</wsdl>
-              <xmlschema>false</xmlschema>
-              <staleFile>${project.build.directory}/jaxb2/.schema-smart-metering-bundle-stale-flag</staleFile>
-              <!-- USE THIS ONLY FOR THE FIRST EXECUTION -->
-              <clearOutputDir>false</clearOutputDir>
-            </configuration>
-          </execution>
-
-          <execution>
-            <id>smart-metering-management</id>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-            <configuration>
-              <bindingDirectory>src/main/webapp/WEB-INF/wsdl/smartmetering/schemas</bindingDirectory>
-              <bindingFiles>sm-management.xjb</bindingFiles>
-              <schemaDirectory>src/main/webapp/WEB-INF/wsdl/smartmetering</schemaDirectory>
-              <schemaFiles>SmartMeteringManagement.wsdl</schemaFiles>
-              <wsdl>true</wsdl>
-              <xmlschema>false</xmlschema>
-              <staleFile>${project.build.directory}/jaxb2/.schema-smart-metering-management-stale-flag</staleFile>
-              <!-- USE THIS ONLY FOR THE FIRST EXECUTION -->
-              <clearOutputDir>false</clearOutputDir>
-             </configuration>
-          </execution>
-
-          <execution>
-            <id>smart-metering-installation</id>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-            <configuration>
-              <bindingDirectory>src/main/webapp/WEB-INF/wsdl/smartmetering/schemas</bindingDirectory>
-              <bindingFiles>sm-installation.xjb</bindingFiles>
-              <schemaDirectory>src/main/webapp/WEB-INF/wsdl/smartmetering</schemaDirectory>
-              <schemaFiles>SmartMeteringInstallation.wsdl</schemaFiles>
-              <wsdl>true</wsdl>
-              <xmlschema>false</xmlschema>
-              <staleFile>${project.build.directory}/jaxb2/.schema-smart-metering-installation-stale-flag</staleFile>
-              <!-- USE THIS ONLY FOR THE FIRST EXECUTION -->
-              <clearOutputDir>false</clearOutputDir>
-            </configuration>
-          </execution>
-
-          <execution>
-            <id>smart-metering-notification</id>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-            <configuration>
-              <bindingDirectory>src/main/webapp/WEB-INF/wsdl/smartmetering/schemas</bindingDirectory>
-              <bindingFiles>sm-notification.xjb</bindingFiles>
-              <schemaDirectory>src/main/webapp/WEB-INF/wsdl/smartmetering</schemaDirectory>
-              <schemaFiles>SmartMeteringNotification.wsdl</schemaFiles>
-              <wsdl>true</wsdl>
-              <xmlschema>false</xmlschema>
-              <staleFile>${project.build.directory}/jaxb2/.schema-smart-metering-notification-stale-flag</staleFile>
-              <!-- USE THIS ONLY FOR THE FIRST EXECUTION -->
-              <clearOutputDir>false</clearOutputDir>
-            </configuration>
-          </execution>
-
-          <execution>
-            <id>smart-metering-monitoring</id>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-            <configuration>
-              <bindingDirectory>src/main/webapp/WEB-INF/wsdl/smartmetering/schemas</bindingDirectory>
-              <bindingFiles>sm-monitoring.xjb</bindingFiles>
-              <schemaDirectory>src/main/webapp/WEB-INF/wsdl/smartmetering</schemaDirectory>
-              <schemaFiles>SmartMeteringMonitoring.wsdl</schemaFiles>
-              <wsdl>true</wsdl>
-              <xmlschema>false</xmlschema>
-              <staleFile>${project.build.directory}/jaxb2/.schema-smart-metering-moitoring-stale-flag</staleFile>
-              <!-- USE THIS ONLY FOR THE FIRST EXECUTION -->
-              <clearOutputDir>false</clearOutputDir>
-            </configuration>
-          </execution>
-
-          <execution>
-            <id>smart-metering-adhoc</id>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-            <configuration>
-              <bindingDirectory>src/main/webapp/WEB-INF/wsdl/smartmetering/schemas</bindingDirectory>
-              <bindingFiles>sm-adhoc.xjb</bindingFiles>
-              <schemaDirectory>src/main/webapp/WEB-INF/wsdl/smartmetering</schemaDirectory>
-              <schemaFiles>SmartMeteringAdhoc.wsdl</schemaFiles>
-              <wsdl>true</wsdl>
-              <xmlschema>false</xmlschema>
-              <staleFile>${project.build.directory}/jaxb2/.schema-smart-metering-adhoc-stale-flag</staleFile>
-              <!-- USE THIS ONLY FOR THE FIRST EXECUTION -->
-              <clearOutputDir>false</clearOutputDir>
-            </configuration>
-          </execution>
-
-          <execution>
-            <id>smart-metering-configuration</id>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-            <configuration>
-              <bindingDirectory>src/main/webapp/WEB-INF/wsdl/smartmetering/schemas</bindingDirectory>
-              <bindingFiles>sm-configuration.xjb</bindingFiles>
-              <schemaDirectory>src/main/webapp/WEB-INF/wsdl/smartmetering</schemaDirectory>
-              <schemaFiles>SmartMeteringConfiguration.wsdl</schemaFiles>
-              <wsdl>true</wsdl>
-              <xmlschema>false</xmlschema>
-              <staleFile>${project.build.directory}/jaxb2/.schema-smart-metering-configuration-stale-flag</staleFile>
-              <!-- USE THIS ONLY FOR THE FIRST EXECUTION -->
-              <clearOutputDir>false</clearOutputDir>
-            </configuration>
-          </execution>
-
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -189,10 +56,15 @@
   </build>
 
   <dependencies>
-        <!-- Alliander -->
+    <!-- Alliander -->
     <dependency>
       <groupId>com.alliander.osgp</groupId>
       <artifactId>shared</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.alliander.osgp</groupId>
+      <artifactId>osgp-ws-smartmetering-interface</artifactId>
+<!--       <version>4.6.0-SNAPSHOT</version> -->
     </dependency>
     <dependency>
       <groupId>com.alliander.osgp</groupId>
@@ -203,7 +75,7 @@
       <artifactId>osgp-domain-logging</artifactId>
     </dependency>
 
-        <!-- Spring Framework -->
+    <!-- Spring Framework -->
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-beans</artifactId>
@@ -237,13 +109,13 @@
       <artifactId>spring-ws-security</artifactId>
     </dependency>
 
-        <!-- Spring Data -->
+    <!-- Spring Data -->
     <dependency>
       <groupId>org.springframework.data</groupId>
       <artifactId>spring-data-jpa</artifactId>
     </dependency>
 
-        <!-- Spring WS -->
+    <!-- Spring WS -->
     <dependency>
       <groupId>org.springframework.ws</groupId>
       <artifactId>spring-ws-core</artifactId>
@@ -257,19 +129,19 @@
       <artifactId>spring-ws-support</artifactId>
     </dependency>
 
-        <!-- Joda Time (Date/Time util) -->
+    <!-- Joda Time (Date/Time util) -->
     <dependency>
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
     </dependency>
 
-        <!-- Hikari connection pooling -->
+    <!-- Hikari connection pooling -->
     <dependency>
       <groupId>com.zaxxer</groupId>
       <artifactId>HikariCP</artifactId>
     </dependency>
 
-        <!-- Hibernate -->
+    <!-- Hibernate -->
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
@@ -279,19 +151,19 @@
       <artifactId>hibernate-entitymanager</artifactId>
     </dependency>
 
-        <!-- Hibernate validator -->
+    <!-- Hibernate validator -->
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-validator</artifactId>
     </dependency>
 
-        <!-- Flyway (DB Migration) -->
+    <!-- Flyway (DB Migration) -->
     <dependency>
       <groupId>com.googlecode.flyway</groupId>
       <artifactId>flyway-core</artifactId>
     </dependency>
 
-        <!-- Logging -->
+    <!-- Logging -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
@@ -305,20 +177,20 @@
       <artifactId>logback-ext-spring</artifactId>
     </dependency>
 
-        <!-- Servlet API 3.0 -->
+    <!-- Servlet API 3.0 -->
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
 
-        <!-- Jakarta commons codec -->
+    <!-- Jakarta commons codec -->
     <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
     </dependency>
 
-        <!-- Apache commons -->
+    <!-- Apache commons -->
     <dependency>
       <groupId>org.apache.ws.xmlschema</groupId>
       <artifactId>xmlschema-core</artifactId>
@@ -330,13 +202,13 @@
       <artifactId>commons-lang3</artifactId>
     </dependency>
 
-        <!-- Orika (mapping framework) -->
+    <!-- Orika (mapping framework) -->
     <dependency>
       <groupId>ma.glasnost.orika</groupId>
       <artifactId>orika-core</artifactId>
     </dependency>
 
-        <!-- Apache ActiveMQ -->
+    <!-- Apache ActiveMQ -->
     <dependency>
       <groupId>org.apache.activemq</groupId>
       <artifactId>activemq-client</artifactId>
@@ -346,7 +218,7 @@
       <artifactId>activemq-spring</artifactId>
     </dependency>
 
-        <!-- Testing dependencies -->
+    <!-- Testing dependencies -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

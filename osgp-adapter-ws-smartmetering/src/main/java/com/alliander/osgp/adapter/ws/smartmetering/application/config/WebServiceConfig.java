@@ -46,6 +46,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.application.services.Notifica
 import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.SendNotificationServiceClient;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.WebServiceTemplateFactory;
 import com.alliander.osgp.shared.application.config.AbstractConfig;
+import com.alliander.osgp.ws.smartmetering.application.config.SmartmeteringWebServiceConfig;
 
 @Configuration
 @PropertySources({ @PropertySource("classpath:osgp-adapter-ws-smartmetering.properties"),
@@ -106,7 +107,7 @@ public class WebServiceConfig extends AbstractConfig {
     private static final String X509_RDN_ATTRIBUTE_ID = "cn";
     private static final String X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME = "CommonNameSet";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SmartmeteringWebServiceConfig.class);
 
     // WS Notification communication
 
