@@ -15,12 +15,12 @@ Feature: Get Status
       | LightType          | <LightType>              |
       | EventNotifications | <EventNotificationTypes> |
       | LightValues        | <LightValues>            |
-    When receiving a get status request
+    When receiving a device installation get status request
       | DeviceIdentification | TEST1024000000001 |
-    Then the get status async response contains
+    Then the device installation get status async response contains
       | DeviceIdentification | TEST1024000000001 |
     And a get status OSLP message is sent to device "TEST1024000000001"
-    And the platform buffers a get status response message for device "TEST1024000000001"
+    And the platform buffers a device installation get status response message for device "TEST1024000000001"
       | Result            | <Result>                    |
       | PreferredLinkType | <ExpectedPreferredLinkType> |
       | ActualLinkType    | <ExpectedActualLinkType>    |

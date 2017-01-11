@@ -173,4 +173,5 @@ public class Keys {
     public static final String DEVICEMODEL_FILESTORAGE = "DeviceModelFileStorage";
     public static final String DEVICEMODEL_METERED = "DeviceModelMetered";
     public static final String TIMEOUT = "Timeout";
+    public static final String DEVICE_OUTPUT_SETTINGS = "DeviceOutputSettings";
 }

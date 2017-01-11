@@ -407,7 +407,7 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         }
 
         // Write log entry for response
-        LOGGER.debug("Responding: " + response);
+        LOGGER.info("Responding: " + response);
 
         return response;
     }
@@ -416,6 +416,7 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         Oslp.Message response = null;
         
         LOGGER.info("Processing [{}] ...", type.name());
+        LOGGER.info("Received [{}] ...", request);
 
         this.receivedRequests.put(type, request);
         response = this.mockResponses.get(type);

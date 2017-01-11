@@ -23,7 +23,7 @@ import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
-import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.EventNotificationType;
+import com.alliander.osgp.dto.valueobjects.EventNotificationTypeDto;
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.Oslp.Event;
 import com.alliander.osgp.oslp.Oslp.EventNotification;
@@ -164,14 +164,13 @@ public class OslpDeviceSteps {
 	public void theDeviceReturnsAGetStatusResponseOverOSLP(final Map<String, String> result) throws Throwable {
 	
 		int eventNotificationTypes = 0;
-		if (getString(result, Keys.KEY_EVENTNOTIFICATIONTYPES, Defaults.DEFAULT_EVENTNOTIFICATIONTYPES).trim().split(",").length > 0) {
-			for (String eventNotificationType : getString(result, Keys.KEY_EVENTNOTIFICATIONTYPES, Defaults.DEFAULT_EVENTNOTIFICATIONTYPES).trim().split(",")) {
-				if (!eventNotificationType.isEmpty()) {
-					eventNotificationTypes = eventNotificationTypes + Enum.valueOf(EventNotificationType.class, eventNotificationType.trim()).ordinal();
-				}
-			}	
-		}
-		
+		final String eventNotificationTypesString = getString(result, Keys.KEY_EVENTNOTIFICATIONTYPES, Defaults.DEFAULT_EVENTNOTIFICATIONTYPES);
+		for (String eventNotificationType : eventNotificationTypesString.split(Keys.SEPARATOR)) {
+			if (!eventNotificationType.isEmpty()) {
+				eventNotificationTypes = eventNotificationTypes + Enum.valueOf(EventNotificationTypeDto.class, eventNotificationType.trim()).getValue();
+			}
+		}	
+				
 		List<LightValue> lightValues = new ArrayList<LightValue>();
 		if (!getString(result, Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES).isEmpty() && 
 				getString(result, Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES).split(Keys.SEPARATOR).length > 0) {
@@ -197,44 +196,6 @@ public class OslpDeviceSteps {
 			getEnum(result, Keys.KEY_STATUS, Oslp.Status.class, Defaults.DEFAULT_STATUS),
 			lightValues);
 	}
-	
-	@Given("^the device returns a get light status response over OSLP$")
-    public void theDeviceReturnsAGetLightStatusResponseOverOSLP(final Map<String, String> result) throws Throwable {
-    
-        int eventNotificationTypes = 0;
-        if (getString(result, Keys.KEY_EVENTNOTIFICATIONTYPES, Defaults.DEFAULT_EVENTNOTIFICATIONTYPES).trim().split(",").length > 0) {
-            for (String eventNotificationType : getString(result, Keys.KEY_EVENTNOTIFICATIONTYPES, Defaults.DEFAULT_EVENTNOTIFICATIONTYPES).trim().split(",")) {
-                if (!eventNotificationType.isEmpty()) {
-                    eventNotificationTypes = eventNotificationTypes + Enum.valueOf(EventNotificationType.class, eventNotificationType.trim()).ordinal();
-                }
-            }   
-        }
-        
-        List<LightValue> lightValues = new ArrayList<LightValue>();
-        if (!getString(result, Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES).isEmpty() && 
-                getString(result, Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES).split(Keys.SEPARATOR).length > 0) {
-            
-            for (String lightValueString : getString(result, Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES).split(Keys.SEPARATOR)) {
-                String[] parts = lightValueString.split(Keys.SEPARATOR_SEMICOLON);
-    
-                LightValue lightValue = LightValue.newBuilder()
-                        .setIndex(OslpUtils.integerToByteString(Integer.parseInt(parts[0])))
-                        .setOn(parts[1].toLowerCase().equals("true"))
-                        .setDimValue(OslpUtils.integerToByteString(Integer.parseInt(parts[2])))
-                        .build();
-                        
-                lightValues.add(lightValue);
-            }
-        }
-
-        this.oslpMockServer.mockGetLightStatusResponse(
-            getEnum(result, Keys.KEY_PREFERRED_LINKTYPE, LinkType.class, Defaults.DEFAULT_PREFERRED_LINKTYPE),
-            getEnum(result, Keys.KEY_ACTUAL_LINKTYPE, LinkType.class, Defaults.DEFAULT_ACTUAL_LINKTYPE),
-            getEnum(result, Keys.KEY_LIGHTTYPE, LightType.class, Defaults.DEFAULT_LIGHTTYPE),
-            eventNotificationTypes,
-            getEnum(result, Keys.KEY_STATUS, Oslp.Status.class, Defaults.DEFAULT_STATUS),
-            lightValues);
-    }
 	
 	/**
 	 * Setup method to resume a schedule which should be returned by the mock.

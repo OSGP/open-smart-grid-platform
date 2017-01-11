@@ -259,13 +259,15 @@ public class MockOslpServer {
             final int eventNotificationMask, final Oslp.Status status, final List<LightValue> lightValues) {
 
         final Builder response = GetStatusResponse.newBuilder().setPreferredLinktype(preferred)
-                .setActualLinktype(actual).setLightType(lightType).setEventNotificationMask(eventNotificationMask)
+                .setActualLinktype(actual)
+                .setLightType(lightType)
+                .setEventNotificationMask(eventNotificationMask)
                 .setStatus(status);
 
         for (final LightValue lightValue : lightValues) {
             response.addValue(lightValue);
         }
-
+        
         this.mockResponses.put(DeviceRequestMessageType.GET_STATUS,
                 Oslp.Message.newBuilder().setGetStatusResponse(response).build());
     }
