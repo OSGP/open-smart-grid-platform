@@ -57,7 +57,7 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
 
     // Device settings
     private Integer sequenceNumber = 0;
-    
+
     public Integer getSequenceNumber() {
         return this.sequenceNumber;
     }
@@ -360,9 +360,10 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
 
         String keys = "";
 
-        for (DeviceRequestMessageType k : mockResponses.keySet()) {
-            if (!keys.isEmpty())
+        for (final DeviceRequestMessageType k : this.mockResponses.keySet()) {
+            if (!keys.isEmpty()) {
                 keys += " | ";
+            }
             keys += k.name();
         }
 
@@ -396,6 +397,9 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         } else if (request.hasSetDeviceVerificationKeyRequest()
                 && this.mockResponses.containsKey(DeviceRequestMessageType.UPDATE_KEY)) {
             response = this.processRequest(DeviceRequestMessageType.UPDATE_KEY, request);
+        } else if (request.hasSetScheduleRequest()
+                && this.mockResponses.containsKey(DeviceRequestMessageType.SET_LIGHT_SCHEDULE)) {
+            response = this.processRequest(DeviceRequestMessageType.SET_LIGHT_SCHEDULE, request);
         }
         // TODO: Implement further requests.
         else {

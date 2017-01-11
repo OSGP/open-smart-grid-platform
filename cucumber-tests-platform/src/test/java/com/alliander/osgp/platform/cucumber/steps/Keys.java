@@ -172,4 +172,13 @@ public class Keys {
     public static final String DEVICEMODEL_DESCRIPTION = "DeviceModelDescription";
     public static final String DEVICEMODEL_FILESTORAGE = "DeviceModelFileStorage";
     public static final String DEVICEMODEL_METERED = "DeviceModelMetered";
+
+    public static final String SCHEDULE_WEEKDAY = "WeekDay";
+    public static final String SCHEDULE_STARTDAY = "StartDay";
+    public static final String SCHEDULE_ENDDAY = "EndDay";
+    public static final String SCHEDULE_ACTIONTIME = "ActionTime";
+    public static final String SCHEDULE_TIME = "Time";
+    public static final String SCHEDULE_TRIGGERWINDOW = "TriggerWindow";
+    public static final String SCHEDULE_LIGHTVALUES = "LightValues";
+    public static final String SCHEDULE_TRIGGERTYPE = "TriggerType";
 }
