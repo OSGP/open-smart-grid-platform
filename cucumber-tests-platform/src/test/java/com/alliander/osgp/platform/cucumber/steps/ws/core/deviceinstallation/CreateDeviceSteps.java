@@ -43,10 +43,6 @@ public class CreateDeviceSteps {
     @Autowired
     private CoreDeviceInstallationClient client;
 
-    /**
-     *
-     * @throws Throwable
-     */
     @When("^receiving an add device request$")
     public void receivingAnAddDeviceRequest(final Map<String, String> settings) throws Throwable {
 
@@ -61,12 +57,8 @@ public class CreateDeviceSteps {
         }
     }
 
-    /**
-     *
-     * @throws Throwable
-     */
     @When("^receiving an add device request with an unknown organization$")
-    public void receivingAnAddDeviceRequestWithAnUknownOrganization(final Map<String, String> settings)
+    public void receivingAnAddDeviceRequestWithAnUnknownOrganization(final Map<String, String> settings)
             throws Throwable {
 
         final AddDeviceRequest request = new AddDeviceRequest();
@@ -86,24 +78,20 @@ public class CreateDeviceSteps {
      * @param settings
      * @throws Throwable
      */
-    @Then("^the add device response is successfull$")
-    public void theAddDeviceResponseIsSuccessfull() throws Throwable {
-        final Object obj = ScenarioContext.Current().get(Keys.RESPONSE);
-        Assert.assertTrue(obj instanceof AddDeviceResponse);
-        // Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE)
-        // instanceof AddDeviceResponse);
+    @Then("^the add device response is successful$")
+    public void theAddDeviceResponseIsSuccessful() throws Throwable {
+        Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof AddDeviceResponse);
     }
 
-    /**
-     *
-     * @throws Throwable
-     */
     @When("^receiving an update device request")
     public void receivingAnUpdateDeviceRequest(final Map<String, String> settings) throws Throwable {
         final UpdateDeviceRequest request = new UpdateDeviceRequest();
 
         String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION,
                 Defaults.DEFAULT_DEVICE_IDENTIFICATION);
+        // Note: The regular expression below matches at spaces between two
+        // quotation marks("), this check is used for a test with a
+        // DeviceIdentification with only spaces
         if (deviceIdentification.matches("(?!\")\\s*(?=\")")) {
             deviceIdentification = deviceIdentification.replaceAll("\"", " ");
         }
@@ -152,7 +140,7 @@ public class CreateDeviceSteps {
     }
 
     /**
-     * Verify the response of a update device request.
+     * Verify the response of an update device request.
      *
      * @param settings
      * @throws Throwable

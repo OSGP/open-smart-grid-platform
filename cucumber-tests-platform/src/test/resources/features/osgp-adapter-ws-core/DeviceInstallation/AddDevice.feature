@@ -26,7 +26,7 @@ Feature: Add Device
       | ModelCode             | <ModelCode>             |
       | Description           | <Description>           |
       | Metered               | <Metered>               |
-    Then the add device response is successfull
+    Then the add device response is successful
     # 'Activated' is altijd 'false' wanneer een nieuwe device wordt aangemaakt.
     # Om deze stap volledig succesvol te laten verlopen moet de value van 'Activated' 'false' zijn.
     And the device exists
@@ -153,8 +153,8 @@ Feature: Add Device
 
   Scenario: Add New Device With Unknown Owner Organization
     Given a device model
-      | ModelCode | <ModelCode> |
-      | Metered   | <Metered>   |
+      | ModelCode | Test Model |
+      | Metered   | true       |
     When receiving an add device request with an unknown organization
       | DeviceIdentification | TEST1024000000001 |
       | Owner                | org-test          |

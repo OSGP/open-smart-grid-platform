@@ -216,7 +216,8 @@ public class WebServiceTemplateFactory {
             sender.setHttpClient(builder.build());
         } catch (KeyManagementException | UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {
             // Todo: Log Exceptions
-            e.printStackTrace();
+            LoggerFactory.getLogger(WebServiceTemplateFactory.class).error(e.getMessage());
+            throw e;
         }
         return sender;
     }
