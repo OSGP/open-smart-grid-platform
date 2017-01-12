@@ -14,7 +14,7 @@
 
   <artifactId>parent-platform</artifactId>
   <groupId>com.alliander.osgp</groupId>
-  <version>4.5.0-SNAPSHOT</version>
+  <version>4.6.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>parent-platform</name>
     <!-- Description, Organization, Licences, URL and Distribution Management 
@@ -58,7 +58,7 @@
   <properties>
     <module.baseUri>${project.baseUri}/../</module.baseUri>
     <osgp.version>${project.version}</osgp.version>
-    <shared.version>4.5.0-SNAPSHOT</shared.version>
+    <shared.version>4.6.0-SNAPSHOT</shared.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <spring.version>4.3.3.RELEASE</spring.version>
@@ -90,6 +90,7 @@
     <maven.compiler.plugin.version>3.6.0</maven.compiler.plugin.version>
     <license.maven.plugin>2.11</license.maven.plugin>
     <hikaricp.version>2.4.0</hikaricp.version>
+    <maven.javadoc.version>2.10.4</maven.javadoc.version>
   </properties>
 
   <repositories>
@@ -590,8 +591,16 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <fork>true</fork>
-          <source>1.7</source>
-          <target>1.7</target>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>${maven.javadoc.version}</version>
+        <configuration>
+          <additionalparam>-Xdoclint:none</additionalparam>
         </configuration>
       </plugin>
     </plugins>

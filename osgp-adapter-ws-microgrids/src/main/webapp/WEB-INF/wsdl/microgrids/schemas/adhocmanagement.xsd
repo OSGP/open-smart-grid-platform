@@ -35,6 +35,7 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="Result" type="common:OsgpResultType" minOccurs="1" />
+        <xsd:element name="Report" type="tns:Report" minOccurs="0" maxOccurs="1" />
         <xsd:element name="System" type="tns:GetDataSystemIdentifier" minOccurs="0" maxOccurs="unbounded" />
       </xsd:sequence>
     </xsd:complexType>
@@ -72,6 +73,10 @@
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
+  
+  <xsd:complexType name="ReportIdentifier">
+    <xsd:attribute name="id" type="xsd:string" use="required" />
+  </xsd:complexType>
 
   <xsd:complexType name="SystemIdentifier">
     <xsd:attribute name="id" type="xsd:int" use="required" />
@@ -95,6 +100,17 @@
   <xsd:complexType name="SetPointIdentifier">
     <xsd:attribute name="id" type="xsd:int" use="optional" />
     <xsd:attribute name="node" type="xsd:string" use="required" />
+  </xsd:complexType>
+
+  <xsd:complexType name="Report">
+    <xsd:complexContent>
+      <xsd:extension base="tns:ReportIdentifier">
+        <xsd:sequence>
+            <xsd:element name="SequenceNumber" type="xsd:int" minOccurs="1" maxOccurs="1" />
+            <xsd:element name="TimeOfEntry" type="xsd:dateTime" minOccurs="1" maxOccurs="1" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
   </xsd:complexType>
 
   <xsd:complexType name="GetDataSystemIdentifier">
