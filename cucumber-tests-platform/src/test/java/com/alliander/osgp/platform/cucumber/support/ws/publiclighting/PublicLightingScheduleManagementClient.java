@@ -32,6 +32,7 @@ public class PublicLightingScheduleManagementClient extends BaseClient {
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate webServiceTemplate = this.publicLightingScheduleManagementWstf
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
+
         return (SetScheduleAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
     }
 
@@ -39,6 +40,7 @@ public class PublicLightingScheduleManagementClient extends BaseClient {
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate webServiceTemplate = this.publicLightingScheduleManagementWstf
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
+
         return (SetScheduleResponse) webServiceTemplate.marshalSendAndReceive(request);
     }
 }

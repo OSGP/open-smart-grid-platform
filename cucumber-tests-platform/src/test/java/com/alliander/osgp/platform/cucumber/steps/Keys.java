@@ -181,4 +181,5 @@ public class Keys {
     public static final String SCHEDULE_TRIGGERWINDOW = "TriggerWindow";
     public static final String SCHEDULE_LIGHTVALUES = "LightValues";
     public static final String SCHEDULE_TRIGGERTYPE = "TriggerType";
+    public static final String SCHEDULE_SCHEDULEDTIME = "ScheduledTime";
 }

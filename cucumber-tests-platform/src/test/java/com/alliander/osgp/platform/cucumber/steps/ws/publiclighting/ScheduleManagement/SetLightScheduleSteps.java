@@ -17,8 +17,11 @@ import static com.alliander.osgp.platform.cucumber.core.Helpers.saveCorrelationU
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
+import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +44,7 @@ import com.alliander.osgp.platform.cucumber.config.CoreDeviceConfiguration;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
+import com.alliander.osgp.platform.cucumber.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.platform.cucumber.support.ws.publiclighting.PublicLightingScheduleManagementClient;
 
 import cucumber.api.java.en.Then;
@@ -70,27 +74,74 @@ public class SetLightScheduleSteps {
     @When("^receiving a set light schedule request$")
     public void receivingASetLightScheduleRequest(final Map<String, String> requestParameters) throws Throwable {
 
+        this.callAddSchedule(requestParameters, 1);
+    }
+
+    /**
+     * Sends a Set Schedule request to the platform for a given device
+     * identification.
+     *
+     * @param requestParameters
+     *            The table with the request parameters.
+     * @throws Throwable
+     */
+    @When("^receiving a set light schedule request for (\\d+) schedules?$")
+    public void receivingASetLightScheduleRequestForSchedules(final Integer countSchedules,
+            final Map<String, String> requestParameters) throws Throwable {
+
+        this.callAddSchedule(requestParameters, countSchedules);
+    }
+
+    private void callAddSchedule(final Map<String, String> requestParameters, final Integer countSchedules)
+            throws Throwable {
+
         final SetScheduleRequest request = new SetScheduleRequest();
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+        if (requestParameters.containsKey(Keys.SCHEDULE_SCHEDULEDTIME)) {
+            request.setScheduledTime(DatatypeFactory.newInstance()
+                    .newXMLGregorianCalendar(((requestParameters.get(Keys.SCHEDULE_SCHEDULEDTIME).isEmpty())
+                            ? DateTime.now() : getDate(requestParameters, Keys.SCHEDULE_SCHEDULEDTIME))
+                                    .toDateTime(DateTimeZone.UTC).toGregorianCalendar()));
+        }
+
+        for (int i = 0; i < countSchedules; i++) {
+            this.addScheduleForRequest(request, getEnum(requestParameters, Keys.SCHEDULE_WEEKDAY, WeekDayType.class),
+                    getString(requestParameters, Keys.SCHEDULE_STARTDAY),
+                    getString(requestParameters, Keys.SCHEDULE_ENDDAY),
+                    getEnum(requestParameters, Keys.SCHEDULE_ACTIONTIME, ActionTimeType.class),
+                    getString(requestParameters, Keys.SCHEDULE_TIME),
+                    getString(requestParameters, Keys.SCHEDULE_LIGHTVALUES),
+                    getString(requestParameters, Keys.SCHEDULE_TRIGGERTYPE),
+                    getString(requestParameters, Keys.SCHEDULE_TRIGGERWINDOW));
+        }
+
+        try {
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.setSchedule(request));
+        } catch (final SoapFaultClientException ex) {
+            ScenarioContext.Current().put(Keys.RESPONSE, ex);
+        }
+    }
+
+    private void addScheduleForRequest(final SetScheduleRequest request, final WeekDayType weekDay,
+            final String startDay, final String endDay, final ActionTimeType actionTime, final String time,
+            final String scheduleLightValue, final String triggerType, final String triggerWindow)
+            throws DatatypeConfigurationException {
         final Schedule schedule = new Schedule();
-
-        schedule.setWeekDay(getEnum(requestParameters, Keys.SCHEDULE_WEEKDAY, WeekDayType.class));
-        if (!requestParameters.get(Keys.SCHEDULE_STARTDAY).isEmpty()) {
+        schedule.setWeekDay(weekDay);
+        if (!startDay.isEmpty()) {
             schedule.setStartDay(DatatypeFactory.newInstance()
-                    .newXMLGregorianCalendar(getDate(requestParameters, Keys.SCHEDULE_STARTDAY).toGregorianCalendar()));
+                    .newXMLGregorianCalendar(DateTime.parse(startDay).toGregorianCalendar()));
         }
-        if (!requestParameters.get(Keys.SCHEDULE_ENDDAY).isEmpty()) {
+        if (!endDay.isEmpty()) {
             schedule.setEndDay(DatatypeFactory.newInstance()
-                    .newXMLGregorianCalendar(getDate(requestParameters, Keys.SCHEDULE_ENDDAY).toGregorianCalendar()));
+                    .newXMLGregorianCalendar(DateTime.parse(endDay).toGregorianCalendar()));
         }
-        schedule.setActionTime(getEnum(requestParameters, Keys.SCHEDULE_ACTIONTIME, ActionTimeType.class));
-        schedule.setTime(getString(requestParameters, Keys.SCHEDULE_TIME));
+        schedule.setActionTime(actionTime);
+        schedule.setTime(time);
 
-        final String scheduleLightValue = getString(requestParameters, Keys.SCHEDULE_LIGHTVALUES);
-        LightValue lv = null;
         for (final String lightValue : scheduleLightValue.split(";")) {
-            lv = new LightValue();
+            final LightValue lv = new LightValue();
             final String[] lightValues = lightValue.split(",");
             lv.setIndex(Integer.parseInt(lightValues[0]));
             lv.setOn(Boolean.parseBoolean(lightValues[1]));
@@ -101,11 +152,11 @@ public class SetLightScheduleSteps {
             schedule.getLightValue().add(lv);
         }
 
-        if (!requestParameters.get(Keys.SCHEDULE_TRIGGERTYPE).isEmpty()) {
-            schedule.setTriggerType(getEnum(requestParameters, Keys.SCHEDULE_TRIGGERTYPE, TriggerType.class));
+        if (!triggerType.isEmpty()) {
+            schedule.setTriggerType(TriggerType.valueOf(triggerType));
         }
 
-        final String[] windowTypeValues = getString(requestParameters, Keys.SCHEDULE_TRIGGERWINDOW).split(",");
+        final String[] windowTypeValues = triggerWindow.split(",");
         if (windowTypeValues.length == 2) {
             final WindowType windowType = new WindowType();
             windowType.setMinutesBefore(Integer.parseInt(windowTypeValues[0]));
@@ -115,12 +166,6 @@ public class SetLightScheduleSteps {
         }
 
         request.getSchedules().add(schedule);
-
-        try {
-            ScenarioContext.Current().put(Keys.RESPONSE, this.client.setSchedule(request));
-        } catch (final SoapFaultClientException ex) {
-            ScenarioContext.Current().put(Keys.RESPONSE, ex);
-        }
     }
 
     @When("^receiving a set schedule request by an unknown organization$")
@@ -162,10 +207,7 @@ public class SetLightScheduleSteps {
 
     @Then("^the set light schedule response contains soap fault$")
     public void theSetLightScheduleResponseContainsSoapFault(final Map<String, String> expectedResponseData) {
-        final SoapFaultClientException response = (SoapFaultClientException) ScenarioContext.Current()
-                .get(Keys.RESPONSE);
-
-        Assert.assertEquals(expectedResponseData.get(Keys.KEY_MESSAGE), response.getMessage());
+        GenericResponseSteps.verifySoapFault(expectedResponseData);
     }
 
     @Then("^the platform buffers a set light schedule response message for device \"([^\"]*)\"$")
