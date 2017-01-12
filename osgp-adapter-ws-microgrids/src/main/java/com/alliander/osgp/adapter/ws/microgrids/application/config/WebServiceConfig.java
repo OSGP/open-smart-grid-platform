@@ -192,20 +192,10 @@ public class WebServiceConfig extends AbstractConfig {
     }
 
     @Bean
-    public String notificationUrl() {
-        return this.webserviceNotificationUrl;
-    }
-
-    @Bean
-    public String notificationUsername() {
-        return this.webserviceNotificationUsername;
-    }
-
-    @Bean
     public NotificationService wsSmartMeteringNotificationService() throws GeneralSecurityException {
-        if (this.webserviceNotificationEnabled && !StringUtils.isEmpty(this.notificationUrl())) {
-            return new NotificationServiceWs(this.sendNotificationServiceClient(), this.notificationUrl(),
-                    this.notificationUsername());
+        if (this.webserviceNotificationEnabled && !StringUtils.isEmpty(this.webserviceNotificationUrl)) {
+            return new NotificationServiceWs(this.sendNotificationServiceClient(), this.webserviceNotificationUrl,
+                    this.webserviceNotificationUsername);
         } else {
             return new NotificationServiceBlackHole();
         }
