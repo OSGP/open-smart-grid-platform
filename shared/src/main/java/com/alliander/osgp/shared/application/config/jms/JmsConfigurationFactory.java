@@ -1,3 +1,10 @@
+/**
+ * Copyright 2017 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.shared.application.config.jms;
 
 import javax.jms.MessageListener;
@@ -58,7 +65,7 @@ public class JmsConfigurationFactory {
      * @return JmsConfiguration containing created objects.
      */
     public JmsConfiguration initializeConfiguration(final String propertyPrefix) {
-        return new InstanceCreator(propertyPrefix).create();
+        return new JmsConfigurationCreator(propertyPrefix).create();
     }
 
     /**
@@ -72,33 +79,22 @@ public class JmsConfigurationFactory {
      */
     public JmsConfiguration initializeConfiguration(final String propertyPrefix,
             final MessageListener messageListener) {
-        return new InstanceCreator(propertyPrefix, messageListener).create();
+        return new JmsConfigurationCreator(propertyPrefix, messageListener).create();
     }
 
-    private class InstanceCreator {
+    private class JmsConfigurationCreator {
 
         private static final String PROPERTY_MAX_CONCURRENT_CONSUMERS = "max.concurrent.consumers";
-
         private static final String PROPERTY_CONCURRENT_CONSUMERS = "concurrent.consumers";
-
         private static final String PROPERTY_USE_EXPONENTIAL_BACK_OFF = "use.exponential.back.off";
-
         private static final String PROPERTY_BACK_OFF_MULTIPLIER = "back.off.multiplier";
-
         private static final String PROPERTY_MAXIMUM_REDELIVERY_DELAY = "maximum.redelivery.delay";
-
         private static final String PROPERTY_INITIAL_REDELIVERY_DELAY = "initial.redelivery.delay";
-
         private static final String PROPERTY_MAXIMUM_REDELIVERIES = "maximum.redeliveries";
-
         private static final String PROPERTY_REDELIVERY_DELAY = "redelivery.delay";
-
         private static final String PROPERTY_DELIVERY_PERSISTENT = "delivery.persistent";
-
         private static final String PROPERTY_TIME_TO_LIVE = "time.to.live";
-
         private static final String PROPERTY_EXPLICIT_QOS_ENABLED = "explicit.qos.enabled";
-
         private static final String PROPERTY_QUEUE = "queue";
 
         private static final String JMS_DEFAULT = "jms.default";
@@ -109,13 +105,13 @@ public class JmsConfigurationFactory {
 
         private final MessageListener messageListener;
 
-        public InstanceCreator(final String propertyPrefix, final MessageListener messageListener) {
+        public JmsConfigurationCreator(final String propertyPrefix, final MessageListener messageListener) {
             this.propertyPrefix = propertyPrefix;
             this.destinationQueue = new ActiveMQQueue(this.property(PROPERTY_QUEUE, String.class));
             this.messageListener = messageListener;
         }
 
-        public InstanceCreator(final String propertyPrefix) {
+        public JmsConfigurationCreator(final String propertyPrefix) {
             this(propertyPrefix, null);
         }
 
@@ -133,24 +129,25 @@ public class JmsConfigurationFactory {
             try {
                 T property = JmsConfigurationFactory.this.environment
                         .getProperty(this.propertyPrefix + "." + propertyName, targetType);
+
                 if (property == null) {
                     LOGGER.debug("Property {}.{} not found, trying default property.", this.propertyPrefix,
                             propertyName);
                     property = this.fallbackProperty(propertyName, targetType);
                 }
+
                 return property;
-            } catch (Throwable e) {
+            } catch (NoSuchFieldError e) {
                 final T property = this.fallbackProperty(propertyName, targetType);
                 return property;
             }
-
         }
 
         private <T> T fallbackProperty(final String propertyName, final Class<T> targetType) {
             try {
-                return JmsConfigurationFactory.this.environment.getProperty(JMS_DEFAULT + "." + propertyName,
+                return JmsConfigurationFactory.this.environment.getRequiredProperty(JMS_DEFAULT + "." + propertyName,
                         targetType);
-            } catch (Throwable e) {
+            } catch (NoSuchFieldError | IllegalStateException e) {
                 LOGGER.error("Property {}.{} not found, cannot instantiate JMS configuration.", JMS_DEFAULT,
                         propertyName);
                 throw e;
