@@ -23,7 +23,7 @@ import cucumber.api.java.Before;
 public class ScenarioHooks {
 
     @Autowired
-    private DlmsDatabaseSteps databaseSteps;
+    private DlmsDatabaseSteps dlmsDatabaseSteps;
 
     @Autowired
     private ServiceEndpoint serviceEndpoint;
@@ -46,7 +46,7 @@ public class ScenarioHooks {
      */
     @Before
     public void beforeScenario() {
-        this.databaseSteps.prepareDatabaseForScenario();
+        this.dlmsDatabaseSteps.prepareDatabaseForScenario();
         this.prepareServiceEndpoint();
     }
 

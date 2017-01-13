@@ -21,7 +21,7 @@ import cucumber.api.java.Before;
 public class ScenarioHooks {
 
     @Autowired
-    private DatabaseSteps databaseStepsx;
+    private DatabaseSteps databaseSteps;
 
     /**
      * Executed before each scenario.
@@ -34,7 +34,7 @@ public class ScenarioHooks {
      */
     @Before(order = 0)
     public void beforeScenario() {
-        this.databaseStepsx.prepareDatabaseForScenario();
+        this.databaseSteps.prepareDatabaseForScenario();
 
         // Make sure that the scenario context is clean before each test.
         ScenarioContext.context = null;
