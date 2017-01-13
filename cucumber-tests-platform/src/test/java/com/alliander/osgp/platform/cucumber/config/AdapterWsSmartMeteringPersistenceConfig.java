@@ -16,9 +16,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
 
+@Component
 @EnableJpaRepositories(entityManagerFactoryRef = "entityMgrRespData", 
     transactionManagerRef = "txMgrRespData",
     basePackageClasses = { MeterResponseDataRepository.class })

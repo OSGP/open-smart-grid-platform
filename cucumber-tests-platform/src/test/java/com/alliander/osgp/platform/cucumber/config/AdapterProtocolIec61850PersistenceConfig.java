@@ -16,9 +16,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
 
+@Component
 @EnableJpaRepositories(entityManagerFactoryRef = "entityMgrFactIec61850", transactionManagerRef = "txMgrIec61850", basePackageClasses = {
         Iec61850DeviceRepository.class })
 public class AdapterProtocolIec61850PersistenceConfig extends ApplicationPersistenceConfiguration {

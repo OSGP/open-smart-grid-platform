@@ -17,9 +17,11 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 
+@Component
 @EnableJpaRepositories(entityManagerFactoryRef = "entityMgrLogging", transactionManagerRef = "txMgrLogging", basePackageClasses = { DeviceLogItemRepository.class })
 public class LoggingPersistenceConfig extends ApplicationPersistenceConfiguration {
 
