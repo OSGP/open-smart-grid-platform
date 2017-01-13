@@ -28,7 +28,9 @@ public class Defaults {
     public static final String DEFAULT_DEVICE_MODEL_MODEL_CODE = "TestModel";
     public static final String DEFAULT_DEVICE_MODEL_DESCRIPTION = "Test Model";
     public static final String DEFAULT_DEVICE_IDENTIFICATION = "TD01";
-
+    public static final String DEFAULT_SMART_METER_DEVICE_IDENTIFICATION = "TEST1024000000001";
+    public static final String DEFAULT_SMART_METER_GAS_DEVICE_IDENTIFICATION = "TESTG102400000001";
+    
     public static final Boolean DEFAULT_DEVICE_MODEL_METERED = true;
 
     public static final String DLMS_DEFAULT_COMMUNICATION_METHOD = "GPRS";
