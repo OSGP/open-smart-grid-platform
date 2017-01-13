@@ -19,7 +19,8 @@ import com.alliander.osgp.adapter.ws.infra.jms.LoggingMessageSender;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringResponseMessageListener;
 import com.alliander.osgp.shared.application.config.AbstractMessagingConfig;
-import com.alliander.osgp.shared.application.config.JmsConfigurationFactory;
+import com.alliander.osgp.shared.application.config.jms.JmsConfiguration;
+import com.alliander.osgp.shared.application.config.jms.JmsConfigurationFactory;
 
 @Configuration
 @PropertySources({ @PropertySource(value = "classpath:osgp-adapter-ws-smartmetering.properties"),
@@ -31,44 +32,38 @@ public class MessagingConfig extends AbstractMessagingConfig {
     public SmartMeteringResponseMessageListener smartMeteringResponseMessageListener;
 
     @Bean
-    protected JmsConfigurationFactory.JmsRequestConfiguration requestJmsConfiguration(
-            final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.getInstance("jms.smartmetering.requests");
+    public JmsConfiguration requestJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
+        return jmsConfigurationFactory.initializeConfiguration("jms.smartmetering.requests");
     }
 
     @Bean
-    protected JmsConfigurationFactory.JmsResponseConfiguration responseJmsConfiguration(
-            final JmsConfigurationFactory jmsConfigurationFactory,
+    public JmsConfiguration responseJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory,
             final SmartMeteringResponseMessageListener smartMeteringResponseMessageListener) {
-        return jmsConfigurationFactory.getInstance("jms.smartmetering.responses", smartMeteringResponseMessageListener);
+        return jmsConfigurationFactory.initializeConfiguration("jms.smartmetering.responses",
+                smartMeteringResponseMessageListener);
     }
 
     @Bean
-    protected JmsConfigurationFactory.JmsRequestConfiguration loggingJmsConfiguration(
-            final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.getInstance("jms.smartmetering.logging");
+    public JmsConfiguration loggingJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
+        return jmsConfigurationFactory.initializeConfiguration("jms.smartmetering.logging");
     }
 
     @Bean
-    public JmsTemplate loggingJmsTemplate(final JmsConfigurationFactory.JmsRequestConfiguration loggingJmsConfiguration) {
+    public JmsTemplate loggingJmsTemplate(final JmsConfiguration loggingJmsConfiguration) {
         return loggingJmsConfiguration.getJmsTemplate();
     }
 
     @Bean(name = "wsSmartMeteringOutgoingRequestsJmsTemplate")
-    public JmsTemplate smartMeteringRequestsJmsTemplate(
-            final JmsConfigurationFactory.JmsRequestConfiguration requestJmsConfiguration) {
+    public JmsTemplate smartMeteringRequestsJmsTemplate(final JmsConfiguration requestJmsConfiguration) {
         return requestJmsConfiguration.getJmsTemplate();
     }
 
     @Bean(name = "wsSmartMeteringResponsesMessageListenerContainer")
     public DefaultMessageListenerContainer smartMeteringResponseMessageListenerContainer(
-            final JmsConfigurationFactory.JmsResponseConfiguration responseJmsConfiguration) {
+            final JmsConfiguration responseJmsConfiguration) {
         return responseJmsConfiguration.getMessageListenerContainer();
     }
 
-    /**
-     * @return
-     */
     @Bean
     public SmartMeteringRequestMessageSender smartMeteringRequestMessageSender() {
         return new SmartMeteringRequestMessageSender();
