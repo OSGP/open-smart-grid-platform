@@ -17,13 +17,11 @@ Feature: Start Device
     And the platform buffers a start device response message for device "TEST1024000000001"
       | Result | OK |
 
-  @OslpMockServer
   Scenario Outline: Start device with incorrect parameters
     Given an oslp device
       | DeviceIdentification       | TEST1024000000001            |
       | OrganizationIdentification | <OrganizationIdentification> |
       | Status                     | unknown                      |
-    And the device returns a start device response "OK" over OSLP
     When receiving a start device test request
       | DeviceIdentification | TEST1024000000001 |
     Then the start device response contains soap fault
