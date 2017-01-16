@@ -19,7 +19,6 @@ Feature: Add Device
       | containerMunicipality | <ContainerMunicipality> |
       | gpsLatitude           | <GpsLatitude>           |
       | gpsLongitude          | <GpsLongitude>          |
-      | IsActivated           | <Activated>             |
       | HasSchedule           | <HasSchedule>           |
       | PublicKeyPresent      | <PublicKeyPresent>      |
       | Manufacturer          | <Manufacturer>          |
@@ -40,16 +39,16 @@ Feature: Add Device
       | containerMunicipality      | <ContainerMunicipality> |
       | gpsLatitude                | <GpsLatitude>           |
       | gpsLongitude               | <GpsLongitude>          |
-      | Activated                  | <Activated>             |
+      | Activated                  | false                   |
       | Active                     | false                   |
       | HasSchedule                | <HasSchedule>           |
       | PublicKeyPresent           | <PublicKeyPresent>      |
       | DeviceModel                | <ModelCode>             |
 
     Examples: 
-      | DeviceUid  | DeviceIdentification                     | Alias | Owner    | ContainerPostalCode | ContainerCity | ContainerStreet | ContainerNumber | ContainerMunicipality | GpsLatitude | GpsLongitude | Activated | HasSchedule | PublicKeyPresent | Manufacturer | ModelCode  | Description | Metered |
-      | 1234567890 | TEST1024000000001                        |       | test-org | 1234AA              | Maastricht    | Stationsstraat  |              12 |                       |           0 |            0 | true      | false       | false            | Test         | Test Model | Test        | true    |
-      | 3456789012 | 0123456789012345678901234567890123456789 |       | test-org | 1234AA              | Maastricht    | Stationsstraat  |              12 |                       |           0 |            0 | true      | false       | false            | Test         | Test Model | Test        | true    |
+      | DeviceUid  | DeviceIdentification                     | Alias | Owner    | ContainerPostalCode | ContainerCity | ContainerStreet | ContainerNumber | ContainerMunicipality | GpsLatitude | GpsLongitude | HasSchedule | PublicKeyPresent | Manufacturer | ModelCode  | Description | Metered |
+      | 1234567890 | TEST1024000000001                        |       | test-org | 1234AA              | Maastricht    | Stationsstraat  |              12 |                       |           0 |            0 | false       | false            | Test         | Test Model | Test        | true    |
+      | 3456789012 | 0123456789012345678901234567890123456789 |       | test-org | 1234AA              | Maastricht    | Stationsstraat  |              12 |                       |           0 |            0 | false       | false            | Test         | Test Model | Test        | true    |
 
   Scenario Outline: Add a device with an incorrect device identification
     Given a device model

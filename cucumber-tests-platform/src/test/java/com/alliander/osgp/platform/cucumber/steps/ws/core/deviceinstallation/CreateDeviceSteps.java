@@ -109,7 +109,6 @@ public class CreateDeviceSteps {
     private Device createDevice(final Map<String, String> settings) {
 
         final Device device = new Device();
-        device.setActivated(getBoolean(settings, Keys.KEY_ACTIVATED, Defaults.DEFAULT_ACTIVATED));
         device.setAlias(getString(settings, Keys.KEY_ALIAS, Defaults.DEFAULT_ALIAS));
         device.setContainerCity(getString(settings, Keys.KEY_CITY, Defaults.DEFAULT_CONTAINER_CITY));
         device.setContainerMunicipality(
