@@ -121,6 +121,8 @@ public class SetLightScheduleSteps {
         } catch (final SoapFaultClientException ex) {
             ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
+        final Object obj = ScenarioContext.Current().get(Keys.RESPONSE);
+        System.out.println(obj);
     }
 
     private void addScheduleForRequest(final SetScheduleRequest request, final WeekDayType weekDay,

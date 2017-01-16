@@ -296,12 +296,8 @@ public class OslpDeviceSteps {
         // TODO: Implement other possible status
         }
 
-        this.mockServer.getClass();
         this.oslpMockServer.mockSetLightScheduleResponse(oslpStatus);
     }
-
-    @Autowired
-    private MockOslpServer mockServer;
 
     /**
      * Verify that a get firmware version OSLP message is sent to the device.
