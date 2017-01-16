@@ -124,7 +124,7 @@ public class DatabaseSteps {
         // Then remove stuff from osgp_adapter_protocol_iec61850
         this.iec61850DeviceRepository.deleteAllInBatch();
 
-        // Then remove stuf from the osgp_adapter_ws_microgrids
+        // Then remove stuff from the osgp_adapter_ws_microgrids
         this.rtuResponseDataRepository.deleteAllInBatch();
 
         // Then remove stuff from osgp_core

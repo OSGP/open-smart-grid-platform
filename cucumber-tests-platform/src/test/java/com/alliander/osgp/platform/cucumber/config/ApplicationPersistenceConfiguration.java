@@ -19,13 +19,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
-import com.alliander.osgp.shared.application.config.AbstractConfig;
-
 /**
  * Base class for the application persistence configuration.
  */
 @Configuration
-public abstract class ApplicationPersistenceConfiguration extends AbstractConfig {
+public abstract class ApplicationPersistenceConfiguration extends ApplicationContext {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationPersistenceConfiguration.class);
 
