@@ -87,10 +87,8 @@ public class WebServiceTemplateFactory implements IWebserviceTemplateFactory {
 
             // Create new webservice template, if not yet available for
             // organisation, username and notificationUrl
-            final String key = organisationIdentification.concat("-")
-            		.concat(userName).concat("-")
-            		.concat(this.applicationName).concat("-")
-            		.concat(notificationURL);
+            final String key = organisationIdentification.concat("-").concat(userName).concat("-")
+                    .concat(this.applicationName).concat("-").concat(notificationURL);
 
             if (!this.webServiceTemplates.containsKey(key)) {
                 this.webServiceTemplates.put(key,

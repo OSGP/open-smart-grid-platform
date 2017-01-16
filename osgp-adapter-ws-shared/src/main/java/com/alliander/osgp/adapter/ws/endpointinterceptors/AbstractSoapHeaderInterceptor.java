@@ -7,6 +7,14 @@
  */
 package com.alliander.osgp.adapter.ws.endpointinterceptors;
 
+/**
+ * Copyright 2017 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
+
 import org.springframework.util.Assert;
 import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.server.EndpointInterceptor;
@@ -35,8 +43,7 @@ public abstract class AbstractSoapHeaderInterceptor implements EndpointIntercept
         final SoapHeader soapHeader = request.getSoapHeader();
 
         // Try to get the value from the Soap Header.
-        final String messagePriority = SoapHeaderEndpointInterceptorHelper.getHeaderValue(soapHeader,
-                this.headerName);
+        final String messagePriority = SoapHeaderEndpointInterceptorHelper.getHeaderValue(soapHeader, this.headerName);
 
         // Finally, set the message priority into the message
         // context, so it can be used in the end point later.

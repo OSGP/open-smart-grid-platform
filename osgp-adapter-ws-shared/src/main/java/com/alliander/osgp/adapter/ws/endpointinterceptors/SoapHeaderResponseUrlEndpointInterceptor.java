@@ -7,7 +7,6 @@
  */
 package com.alliander.osgp.adapter.ws.endpointinterceptors;
 
-
 /**
  * Intercept a SOAP Header and put the message schedule time contents in the
  * MessageContext.
@@ -15,7 +14,7 @@ package com.alliander.osgp.adapter.ws.endpointinterceptors;
 public class SoapHeaderResponseUrlEndpointInterceptor extends AbstractSoapHeaderInterceptor {
 
     public SoapHeaderResponseUrlEndpointInterceptor(final String responseUrl) {
-    	super(responseUrl, responseUrl);
+        super(responseUrl, responseUrl);
     }
 
 }

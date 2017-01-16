@@ -24,16 +24,16 @@ import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.WebServiceTemplateFa
 @Validated
 public class NotificationServiceWs extends AbstractNotificationServiceWs implements NotificationService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(NotificationServiceWs.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(NotificationServiceWs.class);
 
     @Autowired
     private ResponseUrlService responseUrlService;
 
     private final WebServiceTemplateFactory webServiceTemplateFactory;
 
-
     @Autowired
-    public NotificationServiceWs(final WebServiceTemplateFactory webServiceTemplateFactory, final String notificationUrl, final String notificationUsername) {
+    public NotificationServiceWs(final WebServiceTemplateFactory webServiceTemplateFactory,
+            final String notificationUrl, final String notificationUsername) {
         super(notificationUrl, notificationUsername);
         this.webServiceTemplateFactory = webServiceTemplateFactory;
     }
@@ -45,8 +45,8 @@ public class NotificationServiceWs extends AbstractNotificationServiceWs impleme
         final String notifyUrl = this.notificationUrl(correlationUid);
         final SendNotificationRequest notificationRequest = this.notificationRequest(organisationIdentification,
                 deviceIdentification, result, correlationUid, message, notificationType);
-        this.doSendNotification(this.webServiceTemplateFactory,
-        		organisationIdentification, this.notificationUsername,  notifyUrl, notificationRequest);
+        this.doSendNotification(this.webServiceTemplateFactory, organisationIdentification, this.notificationUsername,
+                notifyUrl, notificationRequest);
     }
 
     private String notificationUrl(final String correlationUid) {
@@ -63,10 +63,10 @@ public class NotificationServiceWs extends AbstractNotificationServiceWs impleme
             final String deviceIdentification, final String result, final String correlationUid, final String message,
             final Object notificationType) {
 
-    	LOGGER.debug("creating SendNotificationRequestwith {},{},{},{},{},{},{} ",
-    			organisationIdentification, deviceIdentification, correlationUid, notificationType, notificationType, message, result );
+        LOGGER.debug("creating SendNotificationRequestwith {},{},{},{},{},{},{} ", organisationIdentification,
+                deviceIdentification, correlationUid, notificationType, notificationType, message, result);
 
-    	final SendNotificationRequest sendNotificationRequest = new SendNotificationRequest();
+        final SendNotificationRequest sendNotificationRequest = new SendNotificationRequest();
         final Notification notification = new Notification();
         // message is null, unless an error occurred
         notification.setMessage(message);
