@@ -34,13 +34,13 @@ Feature: SetSchedule
       | Result | OK |
 
     Examples: 
-      | WeekDay     | StartDay   | EndDay     | ActionTime   | Time         | TriggerWindow | LightValues       | TriggerType   |
-      | MONDAY      |            |            | ABSOLUTETIME | 18:00:00.000 |               | 0,true,           |               |
+      | WeekDay     | StartDay   | EndDay     | ActionTime   | Time         | TriggerWindow | LightValues | TriggerType |
+      #| MONDAY      |            |            | ABSOLUTETIME | 18:00:00.000 |               | 0,true,           |               |
       #| MONDAY      |            |            | ABSOLUTETIME | 18:00:00.000 |               | 1,true,;2,true,50 |               |
       #| ABSOLUTEDAY | 2013-03-01 |            | ABSOLUTETIME | 18:00:00.000 |               | 0,true,           |               |
       #| MONDAY      |            |            | SUNSET       |              |         30,30 | 0,true,           | LIGHT_TRIGGER |
-      #| ABSOLUTEDAY | 2016-01-01 | 2016-12-31 | ABSOLUTETIME | 18:00:00.000 |               | 0,true,           |               |
-  
+      | ABSOLUTEDAY | 2016-01-01 | 2016-12-31 | ABSOLUTETIME | 18:00:00.000 |               | 0,true,     |             |
+  #
   #@OslpMockServer @Skip
   #Scenario: Failed set light schedule
   #Given an oslp device
