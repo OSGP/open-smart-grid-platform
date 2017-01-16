@@ -116,7 +116,7 @@
       </dependency>
       <dependency>
         <groupId>com.alliander.osgp</groupId>
-        <artifactId>osgp-ws-smartmetering-interface</artifactId>
+        <artifactId>osgp-ws-smartmetering</artifactId>
         <version>${shared.version}</version>
       </dependency>
 

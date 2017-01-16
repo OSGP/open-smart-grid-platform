@@ -63,8 +63,7 @@
     </dependency>
     <dependency>
       <groupId>com.alliander.osgp</groupId>
-      <artifactId>osgp-ws-smartmetering-interface</artifactId>
-<!--       <version>4.6.0-SNAPSHOT</version> -->
+      <artifactId>osgp-ws-smartmetering</artifactId>
     </dependency>
     <dependency>
       <groupId>com.alliander.osgp</groupId>
