@@ -52,7 +52,6 @@ public class WebServiceConfig extends AbstractConfig {
     private static final String ORGANISATION_IDENTIFICATION_CONTEXT = ORGANISATION_IDENTIFICATION_HEADER;
 
     private static final String MESSAGE_PRIORITY_HEADER = "MessagePriority";
-    private static final String MESSAGE_PRIORITY_CONTEXT = MESSAGE_PRIORITY_HEADER;
 
     private static final String USER_NAME_HEADER = "UserName";
 
@@ -290,7 +289,7 @@ public class WebServiceConfig extends AbstractConfig {
     public SoapHeaderMessagePriorityEndpointInterceptor messagePriorityInterceptor() {
         LOGGER.debug("Creating Message Priority Interceptor Bean");
 
-        return new SoapHeaderMessagePriorityEndpointInterceptor(MESSAGE_PRIORITY_HEADER, MESSAGE_PRIORITY_CONTEXT);
+        return new SoapHeaderMessagePriorityEndpointInterceptor(MESSAGE_PRIORITY_HEADER);
     }
 
     /**

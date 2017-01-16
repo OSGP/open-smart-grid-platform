@@ -12,68 +12,41 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.ws.client.WebServiceTransportException;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.Notification;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
-import com.alliander.osgp.adapter.ws.smartmetering.exceptions.WebServiceSecurityException;
-import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.SendNotificationServiceClient;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.SendNotificationRequest;
+import com.alliander.osgp.adapter.ws.shared.services.AbstractNotificationServiceWs;
+import com.alliander.osgp.adapter.ws.shared.services.NotificationService;
+import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.WebServiceTemplateFactory;
 
 @Transactional(value = "transactionManager")
 @Validated
-public class NotificationServiceWs implements NotificationService {
+public class NotificationServiceWs extends AbstractNotificationServiceWs implements NotificationService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(NotificationServiceWs.class);
-
-    private final SendNotificationServiceClient sendNotificationServiceClient;
-
-    private final String notificationUrl;
-
-    private final String notificationUsername;
+	private static final Logger LOGGER = LoggerFactory.getLogger(NotificationServiceWs.class);
 
     @Autowired
     private ResponseUrlService responseUrlService;
 
-    public NotificationServiceWs(final SendNotificationServiceClient client, final String notificationUrl,
-            final String notificationUsername) {
-        this.sendNotificationServiceClient = client;
-        this.notificationUrl = notificationUrl;
-        this.notificationUsername = notificationUsername;
+    private final WebServiceTemplateFactory webServiceTemplateFactory;
+
+
+    @Autowired
+    public NotificationServiceWs(final WebServiceTemplateFactory webServiceTemplateFactory, final String notificationUrl, final String notificationUsername) {
+        super(notificationUrl, notificationUsername);
+        this.webServiceTemplateFactory = webServiceTemplateFactory;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.alliander.osgp.adapter.ws.smartmetering.application.services.
-     * INotificationService#sendNotification(java.lang.String, java.lang.String,
-     * java.lang.String, java.lang.String, java.lang.String,
-     * com.alliander.osgp.adapter
-     * .ws.schema.smartmetering.notification.NotificationType)
-     */
     @Override
     public void sendNotification(final String organisationIdentification, final String deviceIdentification,
-            final String result, final String correlationUid, final String message,
-            final NotificationType notificationType) {
+            final String result, final String correlationUid, final String message, final Object notificationType) {
 
-        LOGGER.info("sendNotification called with organisation: {}, correlationUid: {}, type: {}",
-                organisationIdentification, correlationUid, notificationType);
-
-        final Notification notification = new Notification();
-        // message is null, unless an error occurred
-        notification.setMessage(message);
-        notification.setResult(result);
-        notification.setDeviceIdentification(deviceIdentification);
-        notification.setCorrelationUid(correlationUid);
-        notification.setNotificationType(notificationType);
-
-        final String url = this.notificationUrl(correlationUid);
-        try {
-            this.sendNotificationServiceClient.sendNotification(organisationIdentification, notification, url,
-                    this.notificationUsername);
-        } catch (final WebServiceSecurityException | WebServiceTransportException ex) {
-            LOGGER.error("Error while sending Soap message, url:{}, organization:{}, msg:{} ", url,
-                    organisationIdentification, ex.getMessage());
-        }
+        final String notifyUrl = this.notificationUrl(correlationUid);
+        final SendNotificationRequest notificationRequest = this.notificationRequest(organisationIdentification,
+                deviceIdentification, result, correlationUid, message, notificationType);
+        this.doSendNotification(this.webServiceTemplateFactory,
+        		organisationIdentification, this.notificationUsername,  notifyUrl, notificationRequest);
     }
 
     private String notificationUrl(final String correlationUid) {
@@ -84,5 +57,24 @@ public class NotificationServiceWs implements NotificationService {
             this.responseUrlService.deleteResponseUrl(correlationUid);
             return responseUrl;
         }
+    }
+
+    private SendNotificationRequest notificationRequest(final String organisationIdentification,
+            final String deviceIdentification, final String result, final String correlationUid, final String message,
+            final Object notificationType) {
+
+    	LOGGER.debug("creating SendNotificationRequestwith {},{},{},{},{},{},{} ",
+    			organisationIdentification, deviceIdentification, correlationUid, notificationType, notificationType, message, result );
+
+    	final SendNotificationRequest sendNotificationRequest = new SendNotificationRequest();
+        final Notification notification = new Notification();
+        // message is null, unless an error occurred
+        notification.setMessage(message);
+        notification.setResult(result);
+        notification.setDeviceIdentification(deviceIdentification);
+        notification.setCorrelationUid(correlationUid);
+        notification.setNotificationType((NotificationType) notificationType);
+        sendNotificationRequest.setNotification(notification);
+        return sendNotificationRequest;
     }
 }

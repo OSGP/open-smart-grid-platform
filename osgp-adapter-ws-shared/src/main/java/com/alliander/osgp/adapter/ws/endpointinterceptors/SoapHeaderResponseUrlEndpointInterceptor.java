@@ -7,55 +7,15 @@
  */
 package com.alliander.osgp.adapter.ws.endpointinterceptors;
 
-import org.springframework.util.Assert;
-import org.springframework.ws.context.MessageContext;
-import org.springframework.ws.server.EndpointInterceptor;
-import org.springframework.ws.soap.SoapHeader;
-import org.springframework.ws.soap.SoapMessage;
 
 /**
  * Intercept a SOAP Header and put the message schedule time contents in the
  * MessageContext.
  */
-public class SoapHeaderResponseUrlEndpointInterceptor implements EndpointInterceptor {
-
-    private final String responseUrl;
+public class SoapHeaderResponseUrlEndpointInterceptor extends AbstractSoapHeaderInterceptor {
 
     public SoapHeaderResponseUrlEndpointInterceptor(final String responseUrl) {
-        this.responseUrl = responseUrl;
+    	super(responseUrl, responseUrl);
     }
 
-    @Override
-    public boolean handleRequest(final MessageContext messageContext, final Object endpoint) throws Exception {
-
-        Assert.isInstanceOf(SoapMessage.class, messageContext.getRequest());
-        final SoapMessage request = (SoapMessage) messageContext.getRequest();
-        final SoapHeader soapHeader = request.getSoapHeader();
-
-        // Try to get the value from the Soap Header.
-        final String headerResponseUrl = SoapHeaderEndpointInterceptorHelper.getHeaderValue(soapHeader, this.responseUrl);
-
-        // Finally, set the message schedule time into the message
-        // context, so it can be used in the end point later.
-        messageContext.setProperty(this.responseUrl, headerResponseUrl);
-
-        // Return true so the interceptor chain will continue.
-        return true;
-    }
-
-    @Override
-    public boolean handleResponse(final MessageContext messageContext, final Object endpoint) throws Exception {
-        return true;
-    }
-
-    @Override
-    public boolean handleFault(final MessageContext messageContext, final Object endpoint) throws Exception {
-        return true;
-    }
-
-    @Override
-    public void afterCompletion(final MessageContext messageContext, final Object endpoint, final Exception ex)
-            throws Exception {
-        // Empty Method
-    }
 }
