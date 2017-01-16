@@ -19,14 +19,13 @@ Feature: Add Device
       | containerMunicipality | <ContainerMunicipality> |
       | gpsLatitude           | <GpsLatitude>           |
       | gpsLongitude          | <GpsLongitude>          |
-      | IsActivated           | <Activated>             |
       | HasSchedule           | <HasSchedule>           |
       | PublicKeyPresent      | <PublicKeyPresent>      |
       | Manufacturer          | <Manufacturer>          |
       | ModelCode             | <ModelCode>             |
       | Description           | <Description>           |
       | Metered               | <Metered>               |
-    Then the add device response is successfull
+    Then the add device response is successful
     # 'Activated' is altijd 'false' wanneer een nieuwe device wordt aangemaakt.
     # Om deze stap volledig succesvol te laten verlopen moet de value van 'Activated' 'false' zijn.
     And the device exists
@@ -40,15 +39,16 @@ Feature: Add Device
       | containerMunicipality      | <ContainerMunicipality> |
       | gpsLatitude                | <GpsLatitude>           |
       | gpsLongitude               | <GpsLongitude>          |
-      | IsActivated                | <Activated>             |
+      | Activated                  | false                   |
+      | Active                     | false                   |
       | HasSchedule                | <HasSchedule>           |
       | PublicKeyPresent           | <PublicKeyPresent>      |
       | DeviceModel                | <ModelCode>             |
 
     Examples: 
-      | DeviceUid  | DeviceIdentification                     | Alias | Owner    | ContainerPostalCode | ContainerCity | ContainerStreet | ContainerNumber | ContainerMunicipality | GpsLatitude | GpsLongitude | Activated | HasSchedule | PublicKeyPresent | Manufacturer | ModelCode  | Description | Metered |
-      | 1234567890 | TEST1024000000001                        |       | test-org | 1234AA              | Maastricht    | Stationsstraat  |              12 |                       |           0 |            0 | false     | false       | false            | Test         | Test Model | Test        | true    |
-      | 3456789012 | 0123456789012345678901234567890123456789 |       | test-org | 1234AA              | Maastricht    | Stationsstraat  |              12 |                       |           0 |            0 | true      | false       | false            | Test         | Test Model | Test        | true    |
+      | DeviceUid  | DeviceIdentification                     | Alias | Owner    | ContainerPostalCode | ContainerCity | ContainerStreet | ContainerNumber | ContainerMunicipality | GpsLatitude | GpsLongitude | HasSchedule | PublicKeyPresent | Manufacturer | ModelCode  | Description | Metered |
+      | 1234567890 | TEST1024000000001                        |       | test-org | 1234AA              | Maastricht    | Stationsstraat  |              12 |                       |           0 |            0 | false       | false            | Test         | Test Model | Test        | true    |
+      | 3456789012 | 0123456789012345678901234567890123456789 |       | test-org | 1234AA              | Maastricht    | Stationsstraat  |              12 |                       |           0 |            0 | false       | false            | Test         | Test Model | Test        | true    |
 
   Scenario Outline: Add a device with an incorrect device identification
     Given a device model
@@ -150,51 +150,18 @@ Feature: Add Device
       | DeviceUid  | DeviceIdentification   | Alias | Owner    | ContainerPostalCode | ContainerCity | ContainerStreet | ContainerNumber | ContainerMunicipality | GpsLatitude | GpsLongitude | Activated | HasSchedule | PublicKeyPresent | Manufacturer | ModelCode  | Description | Metered |
       | 1234567890 | "                    " |       | test-org | 1234AA              | Maastricht    | Stationsstraat  |              12 |                       |           0 |            0 | false     | false       | false            | Test         | Test Model | Test        | true    |
 
-  #Scenario Outline: Add New Device With Empty Owner Organization
-    #Given a device model
-      #| ModelCode | <ModelCode> |
-      #| Metered   | <Metered>   |
-    #When receiving an add device request
-      #| DeviceUid             | <DeviceUid>             |
-      #| DeviceIdentification  | <DeviceIdentification>  |
-      #| alias                 | <Alias>                 |
-      #| Owner                 | <Owner>                 |
-      #| containerPostalCode   | <ContainerPostalCode>   |
-      #| containerCity         | <ContainerCity>         |
-      #| containerStreet       | <ContainerStreet>       |
-      #| containerNumber       | <ContainerNumber>       |
-      #| containerMunicipality | <ContainerMunicipality> |
-      #| gpsLatitude           | <GpsLatitude>           |
-      #| gpsLongitude          | <GpsLongitude>          |
-      #| IsActivated           | <Activated>             |
-      #| HasSchedule           | <HasSchedule>           |
-      #| PublicKeyPresent      | <PublicKeyPresent>      |
-      #| Manufacturer          | <Manufacturer>          |
-      #| ModelCode             | <ModelCode>             |
-      #| Description           | <Description>           |
-      #| Metered               | <Metered>               |
-    #Then the add device response is successfull
-    # 'Activated' is altijd 'false' wanneer een nieuwe device wordt aangemaakt.
-    # Om deze stap volledig succesvol te laten verlopen moet de value van 'Activated' 'false' zijn.
-    #And the device exists
-      #| DeviceIdentification       | <DeviceIdentification>  |
-      #| alias                      | <Alias>                 |
-      #| OrganizationIdentification | <Owner>                 |
-      #| containerPostalCode        | <ContainerPostalCode>   |
-      #| containerCity              | <ContainerCity>         |
-      #| containerStreet            | <ContainerStreet>       |
-      #| containerNumber            | <ContainerNumber>       |
-      #| containerMunicipality      | <ContainerMunicipality> |
-      #| gpsLatitude                | <GpsLatitude>           |
-      #| gpsLongitude               | <GpsLongitude>          |
-      #| IsActivated                | <Activated>             |
-      #| HasSchedule                | <HasSchedule>           |
-      #| PublicKeyPresent           | <PublicKeyPresent>      |
-      #| DeviceModel                | <ModelCode>             |
-#
-    #Examples: 
-      #| DeviceUid  | DeviceIdentification | Alias | Owner | ContainerPostalCode | ContainerCity | ContainerStreet | ContainerNumber | ContainerMunicipality | GpsLatitude | GpsLongitude | Activated | HasSchedule | PublicKeyPresent | Manufacturer | ModelCode  | Description | Metered |
-      #| 1234567890 | TEST1024000000001    |       |       | 1234AA              | Maastricht    | Stationsstraat  |              12 |                       |           0 |            0 | false     | false       | false            | Test         | Test Model | Test        | true    |
+  Scenario: Add New Device With Unknown Owner Organization
+    Given a device model
+      | ModelCode | Test Model |
+      | Metered   | true       |
+    When receiving an add device request with an unknown organization
+      | DeviceIdentification | TEST1024000000001 |
+      | Owner                | org-test          |
+    Then the add device response contains soap fault
+      | FaultCode      | SOAP-ENV:Server                                                  |
+      | FaultString    | UNKNOWN_ORGANISATION                                             |
+      | InnerException | com.alliander.osgp.domain.core.exceptions.UnknownEntityException |
+      | InnerMessage   | Organisation with id "unknown-organization" could not be found.  |
 
   Scenario: Adding a device which already exists
     Given a device
