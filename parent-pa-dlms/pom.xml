@@ -84,7 +84,6 @@
     <openmuc.jdlms.version>1.2.3</openmuc.jdlms.version>
     <javax.inject.version>1</javax.inject.version>
     <license.maven.plugin>2.11</license.maven.plugin>
-    <maven.javadoc.version>2.10.4</maven.javadoc.version>
   </properties>
 
   <repositories>
@@ -481,14 +480,6 @@
           <fork>true</fork>
           <source>1.8</source>
           <target>1.8</target>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>${maven.javadoc.version}</version>
-        <configuration>
-          <additionalparam>-Xdoclint:none</additionalparam>
         </configuration>
       </plugin>
     </plugins>
