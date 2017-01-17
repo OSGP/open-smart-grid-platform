@@ -49,6 +49,13 @@ public class CoreDeviceInstallationClient extends BaseClient {
         return (AddDeviceResponse) wst.marshalSendAndReceive(request);
     }
 
+    public AddDeviceResponse addDevice(final AddDeviceRequest request, final String organizationIdentification)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(organizationIdentification,
+                this.getUserName());
+        return (AddDeviceResponse) wst.marshalSendAndReceive(request);
+    }
+
     public UpdateDeviceResponse updateDevice(final UpdateDeviceRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(),
@@ -92,14 +99,14 @@ public class CoreDeviceInstallationClient extends BaseClient {
         return (StopDeviceTestResponse) wst.marshalSendAndReceive(request);
     }
 
-    public GetStatusAsyncResponse getStatus(GetStatusRequest request)
+    public GetStatusAsyncResponse getStatus(final GetStatusRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
         return (GetStatusAsyncResponse) wst.marshalSendAndReceive(request);
     }
 
-    public GetStatusResponse getStatusResponse(GetStatusAsyncRequest request)
+    public GetStatusResponse getStatusResponse(final GetStatusAsyncRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());

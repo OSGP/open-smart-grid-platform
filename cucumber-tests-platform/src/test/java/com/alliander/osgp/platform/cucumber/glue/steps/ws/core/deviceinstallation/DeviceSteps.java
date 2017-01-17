@@ -20,19 +20,19 @@ import com.alliander.osgp.platform.cucumber.Keys;
 
 public class DeviceSteps {
 
-    private static Map<String, String> tempExpectedDevice;
+    private static Map<String, String> localExpectedDevice;
 
     private static void checkAndAssert(final String key, final Object actualValue) {
-        if (tempExpectedDevice.containsKey(key)) {
+        if (localExpectedDevice.containsKey(key)) {
 
             Object expectedObj = null;
 
             if (actualValue instanceof String) {
-                expectedObj = getString(tempExpectedDevice, key);
+                expectedObj = getString(localExpectedDevice, key);
             } else if (actualValue instanceof Integer) {
-                expectedObj = getInteger(tempExpectedDevice, key);
+                expectedObj = getInteger(localExpectedDevice, key);
             } else if (actualValue instanceof Boolean) {
-                expectedObj = getBoolean(tempExpectedDevice, key);
+                expectedObj = getBoolean(localExpectedDevice, key);
             }
 
             if (expectedObj != null) {
@@ -42,7 +42,7 @@ public class DeviceSteps {
     }
 
     public static void checkDevice(final Map<String, String> expectedDevice, final Device actualDevice) {
-        tempExpectedDevice = expectedDevice;
+        localExpectedDevice = expectedDevice;
 
         checkAndAssert(Keys.KEY_DEVICE_IDENTIFICATION, actualDevice.getDeviceIdentification());
         checkAndAssert(Keys.KEY_ALIAS, actualDevice.getAlias());
