@@ -15,9 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
-//import com.alliander.osgp.platform.cucumber.support.ws.WebServiceSecurityException;
 import com.alliander.osgp.shared.infra.ws.WebServiceTemplateFactory;
-//import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
 
 public class OsgpResponsePoller<AsyncRequest, Response> {
 

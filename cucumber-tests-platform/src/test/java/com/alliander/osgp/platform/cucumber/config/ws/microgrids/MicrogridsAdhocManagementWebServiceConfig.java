@@ -15,7 +15,6 @@ import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadM
 
 import com.alliander.osgp.platform.cucumber.config.ws.BaseWebServiceConfig;
 import com.alliander.osgp.shared.infra.ws.WebServiceTemplateFactory;
-//import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
 
 @Configuration
 public class MicrogridsAdhocManagementWebServiceConfig extends BaseWebServiceConfig {
@@ -31,13 +30,6 @@ public class MicrogridsAdhocManagementWebServiceConfig extends BaseWebServiceCon
 
     @Bean
     public WebServiceTemplateFactory webServiceTemplateFactoryMicrogridsAdHocManagement() {
-        //        return new WebServiceTemplateFactory.Builder().setMarshaller(this.microgridsAdHocManagementMarshaller())
-        //                .setMessageFactory(this.messageFactory())
-        //                .setDefaultUri(this.baseUri.concat(this.webserviceTemplateDefaultUriMicrogridsAdHocManagement))
-        //                .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
-        //                .setKeyStorePassword(this.webserviceKeystorePassword)
-        //                .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)
-        //                .build();
         return new WebServiceTemplateFactory(this.microgridsAdHocManagementMarshaller(), this.messageFactory(),
                 this.baseUri.concat(this.webserviceTemplateDefaultUriMicrogridsAdHocManagement), this.webserviceKeystoreType,
                 this.webserviceKeystoreLocation, this.webserviceKeystorePassword, this.webServiceTrustStoreFactory(), this.applicationName);

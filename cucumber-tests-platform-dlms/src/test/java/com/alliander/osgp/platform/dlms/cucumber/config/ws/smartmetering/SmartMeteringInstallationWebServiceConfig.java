@@ -14,7 +14,6 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadMethodProcessor;
 
 import com.alliander.osgp.platform.cucumber.config.ws.BaseWebServiceConfig;
-//import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
 import com.alliander.osgp.platform.dlms.cucumber.config.ApplicationConfiguration;
 import com.alliander.osgp.shared.infra.ws.WebServiceTemplateFactory;
 
@@ -26,13 +25,6 @@ public class SmartMeteringInstallationWebServiceConfig extends BaseWebServiceCon
 
     @Bean
     public WebServiceTemplateFactory smartMeteringInstallationManagementWstf() {
-        //        return new WebServiceTemplateFactory.Builder().setMarshaller(this.smartMeteringInstallationManagementMarshaller())
-        //                .setMessageFactory(this.messageFactory())
-        //                .setDefaultUri(this.baseUri.concat(this.configuration.webserviceTemplateDefaultUriSmartMeteringInstallationManagement))
-        //                .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
-        //                .setKeyStorePassword(this.webserviceKeystorePassword)
-        //                .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)
-        //                .build();
         return new WebServiceTemplateFactory(this.smartMeteringInstallationManagementMarshaller(), this.messageFactory(),
                 this.baseUri.concat(this.configuration.webserviceTemplateDefaultUriSmartMeteringInstallationManagement), this.webserviceKeystoreType,
                 this.webserviceKeystoreLocation, this.webserviceKeystorePassword, this.webServiceTrustStoreFactory(), this.applicationName);

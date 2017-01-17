@@ -34,8 +34,6 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.ObjectFac
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.cucumber.steps.ws.OsgpResponsePoller;
-//import com.alliander.osgp.platform.cucumber.support.ws.WebServiceSecurityException;
-//import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
 import com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.AbstractSmartMeteringSteps;
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 import com.alliander.osgp.shared.infra.ws.WebServiceTemplateFactory;

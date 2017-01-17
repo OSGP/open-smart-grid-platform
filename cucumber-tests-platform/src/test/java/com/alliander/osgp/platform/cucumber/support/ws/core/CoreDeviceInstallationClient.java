@@ -35,8 +35,6 @@ import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.UpdateDevice
 import com.alliander.osgp.platform.cucumber.support.ws.BaseClient;
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 import com.alliander.osgp.shared.infra.ws.WebServiceTemplateFactory;
-//import com.alliander.osgp.platform.cucumber.support.ws.WebServiceSecurityException;
-//import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
 
 @Component
 public class CoreDeviceInstallationClient extends BaseClient {
