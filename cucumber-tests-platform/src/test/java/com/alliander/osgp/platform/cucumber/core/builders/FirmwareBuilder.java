@@ -11,7 +11,7 @@ import java.util.Map;
 
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Firmware;
-import com.alliander.osgp.platform.cucumber.steps.Keys;
+import com.alliander.osgp.platform.cucumber.Keys;
 
 public class FirmwareBuilder implements CucumberBuilder<Firmware> {
 

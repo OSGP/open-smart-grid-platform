@@ -10,7 +10,7 @@ package com.alliander.osgp.platform.dlms.cucumber.builders.logging;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.logging.domain.entities.DeviceLogItem;
-import com.alliander.osgp.platform.cucumber.steps.Defaults;
+import com.alliander.osgp.platform.cucumber.Defaults;
 
 @Component
 public class DeviceLogItemBuilder {

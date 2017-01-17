@@ -11,8 +11,8 @@ import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 
 import java.util.Map;
 
+import com.alliander.osgp.platform.cucumber.Defaults;
 import com.alliander.osgp.platform.cucumber.core.Helpers;
-import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.dlms.cucumber.SoapUiRunner;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 

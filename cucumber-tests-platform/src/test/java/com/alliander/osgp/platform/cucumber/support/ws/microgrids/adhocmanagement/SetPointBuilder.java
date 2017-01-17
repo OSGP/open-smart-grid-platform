@@ -14,8 +14,8 @@ import java.util.Map;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetPoint;
+import com.alliander.osgp.platform.cucumber.Keys;
 import com.alliander.osgp.platform.cucumber.helpers.SettingsHelper;
-import com.alliander.osgp.platform.cucumber.steps.Keys;
 
 
 public class SetPointBuilder {

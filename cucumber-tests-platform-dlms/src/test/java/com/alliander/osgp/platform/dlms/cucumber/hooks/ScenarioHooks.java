@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.support.ServiceEndpoint;
-import com.alliander.osgp.platform.dlms.cucumber.steps.database.DlmsDatabaseSteps;
+import com.alliander.osgp.platform.dlms.cucumber.hooks.database.DlmsDatabaseSteps;
 
 import cucumber.api.java.After;
 import cucumber.api.java.Before;

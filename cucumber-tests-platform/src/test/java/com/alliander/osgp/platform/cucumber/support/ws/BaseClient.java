@@ -7,9 +7,9 @@
  */
 package com.alliander.osgp.platform.cucumber.support.ws;
 
+import com.alliander.osgp.platform.cucumber.Defaults;
+import com.alliander.osgp.platform.cucumber.Keys;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
-import com.alliander.osgp.platform.cucumber.steps.Defaults;
-import com.alliander.osgp.platform.cucumber.steps.Keys;
 
 /**
  * Base client.

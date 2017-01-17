@@ -24,9 +24,9 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.EventType;
+import com.alliander.osgp.platform.cucumber.Defaults;
+import com.alliander.osgp.platform.cucumber.Keys;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
-import com.alliander.osgp.platform.cucumber.steps.Defaults;
-import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.SmartMeteringStepsBase;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 

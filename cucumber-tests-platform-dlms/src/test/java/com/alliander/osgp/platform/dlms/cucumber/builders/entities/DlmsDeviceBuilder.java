@@ -14,8 +14,8 @@ import java.util.Map;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 
-import com.alliander.osgp.platform.dlms.cucumber.steps.Defaults;
-import com.alliander.osgp.platform.dlms.cucumber.steps.Keys;
+import com.alliander.osgp.platform.dlms.cucumber.Defaults;
+import com.alliander.osgp.platform.dlms.cucumber.Keys;
 
 public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
 

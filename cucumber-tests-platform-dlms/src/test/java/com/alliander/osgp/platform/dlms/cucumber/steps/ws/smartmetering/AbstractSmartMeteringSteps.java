@@ -9,8 +9,8 @@ package com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering;
 
 import java.util.List;
 
+import com.alliander.osgp.platform.cucumber.Keys;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
-import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.cucumber.support.ws.BaseClient;
 
 /**

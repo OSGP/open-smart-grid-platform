@@ -7,8 +7,8 @@
  */
 package com.alliander.osgp.platform.dlms.cucumber.steps.database.device;
 
-import static com.alliander.osgp.platform.cucumber.steps.Defaults.SMART_METER_E;
-import static com.alliander.osgp.platform.cucumber.steps.Defaults.SMART_METER_G;
+import static com.alliander.osgp.platform.cucumber.Defaults.SMART_METER_E;
+import static com.alliander.osgp.platform.cucumber.Defaults.SMART_METER_G;
 
 import java.util.Map;
 
@@ -29,11 +29,11 @@ import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
+import com.alliander.osgp.platform.dlms.cucumber.Defaults;
+import com.alliander.osgp.platform.dlms.cucumber.Keys;
 import com.alliander.osgp.platform.dlms.cucumber.builders.entities.DeviceBuilder;
 import com.alliander.osgp.platform.dlms.cucumber.builders.entities.DlmsDeviceBuilder;
 import com.alliander.osgp.platform.dlms.cucumber.builders.entities.SmartMeterBuilder;
-import com.alliander.osgp.platform.dlms.cucumber.steps.Defaults;
-import com.alliander.osgp.platform.dlms.cucumber.steps.Keys;
 
 import cucumber.api.java.en.Given;
 

@@ -21,11 +21,11 @@ import com.alliander.osgp.domain.core.entities.Firmware;
 import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.FirmwareRepository;
+import com.alliander.osgp.platform.cucumber.Defaults;
+import com.alliander.osgp.platform.cucumber.Keys;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.core.builders.FirmwareBuilder;
-import com.alliander.osgp.platform.cucumber.steps.Defaults;
-import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.steps.database.core.DeviceModelSteps;
+import com.alliander.osgp.platform.cucumber.glue.steps.database.core.DeviceModelSteps;
 import com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.SmartMeteringStepsBase;
 import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 

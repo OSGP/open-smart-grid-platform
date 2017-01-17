@@ -10,7 +10,7 @@ package com.alliander.osgp.platform.cucumber.core.builders;
 import java.util.Map;
 
 import com.alliander.osgp.domain.core.entities.Manufacturer;
-import com.alliander.osgp.platform.cucumber.steps.Keys;
+import com.alliander.osgp.platform.cucumber.Keys;
 
 public class ManufacturerBuilder implements CucumberBuilder<Manufacturer> {
 

@@ -19,8 +19,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.util.Assert;
 
-import com.alliander.osgp.platform.cucumber.steps.Defaults;
-import com.alliander.osgp.platform.cucumber.steps.Keys;
+import com.alliander.osgp.platform.cucumber.Defaults;
+import com.alliander.osgp.platform.cucumber.Keys;
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
 public class Helpers {

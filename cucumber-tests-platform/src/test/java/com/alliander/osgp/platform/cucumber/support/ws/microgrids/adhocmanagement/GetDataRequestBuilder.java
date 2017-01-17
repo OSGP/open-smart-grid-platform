@@ -15,8 +15,8 @@ import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataRe
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.MeasurementFilter;
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SystemFilter;
 import com.alliander.osgp.adapter.ws.schema.microgrids.common.AsyncRequest;
+import com.alliander.osgp.platform.cucumber.Keys;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
-import com.alliander.osgp.platform.cucumber.steps.Keys;
 
 public class GetDataRequestBuilder {
 

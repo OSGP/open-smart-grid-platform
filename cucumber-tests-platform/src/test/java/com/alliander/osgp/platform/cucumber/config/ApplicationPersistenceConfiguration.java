@@ -18,12 +18,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * Base class for the application persistence configuration.
  */
 @Configuration
-public abstract class ApplicationPersistenceConfiguration extends ApplicationContext {
+@EnableTransactionManagement
+public abstract class ApplicationPersistenceConfiguration extends BaseApplicationConfiguration {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationPersistenceConfiguration.class);
 

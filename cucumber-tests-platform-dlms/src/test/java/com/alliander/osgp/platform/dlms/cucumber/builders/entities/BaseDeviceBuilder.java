@@ -15,8 +15,8 @@ import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
 import com.alliander.osgp.platform.cucumber.inputparsers.DateInputParser;
-import com.alliander.osgp.platform.dlms.cucumber.steps.Defaults;
-import com.alliander.osgp.platform.dlms.cucumber.steps.Keys;
+import com.alliander.osgp.platform.dlms.cucumber.Defaults;
+import com.alliander.osgp.platform.dlms.cucumber.Keys;
 
 @SuppressWarnings("unchecked")
 public abstract class BaseDeviceBuilder<T extends BaseDeviceBuilder<T>> {

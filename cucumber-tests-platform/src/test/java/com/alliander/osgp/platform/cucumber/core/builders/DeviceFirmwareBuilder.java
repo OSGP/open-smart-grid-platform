@@ -13,9 +13,9 @@ import java.util.Map;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceFirmware;
 import com.alliander.osgp.domain.core.entities.Firmware;
+import com.alliander.osgp.platform.cucumber.Keys;
 import com.alliander.osgp.platform.cucumber.helpers.UtcDateHelper;
 import com.alliander.osgp.platform.cucumber.inputparsers.DateInputParser;
-import com.alliander.osgp.platform.cucumber.steps.Keys;
 
 public class DeviceFirmwareBuilder implements CucumberBuilder<DeviceFirmware> {
 

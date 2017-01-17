@@ -17,8 +17,8 @@ import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 
 import com.alliander.osgp.platform.cucumber.helpers.UtcDateHelper;
 import com.alliander.osgp.platform.cucumber.inputparsers.DateInputParser;
-import com.alliander.osgp.platform.dlms.cucumber.steps.Defaults;
-import com.alliander.osgp.platform.dlms.cucumber.steps.Keys;
+import com.alliander.osgp.platform.dlms.cucumber.Defaults;
+import com.alliander.osgp.platform.dlms.cucumber.Keys;
 
 public class SecurityKeyBuilder implements CucumberBuilder<SecurityKey> {
 

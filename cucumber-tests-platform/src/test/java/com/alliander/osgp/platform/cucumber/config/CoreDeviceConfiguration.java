@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
  * Base core device configuration.
  */
 @Configuration
-public class CoreDeviceConfiguration extends ApplicationConfiguration {
+public class CoreDeviceConfiguration extends BaseApplicationConfiguration {
 
 	@Value("${device.networkaddress}")
 	private String deviceNetworkaddress;

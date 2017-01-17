@@ -14,8 +14,8 @@ import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataAs
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataRequest;
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataSystemIdentifier;
 import com.alliander.osgp.adapter.ws.schema.microgrids.common.AsyncRequest;
+import com.alliander.osgp.platform.cucumber.Keys;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
-import com.alliander.osgp.platform.cucumber.steps.Keys;
 
 public class SetDataRequestBuilder {
 

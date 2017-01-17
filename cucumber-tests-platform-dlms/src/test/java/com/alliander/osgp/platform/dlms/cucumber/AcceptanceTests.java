@@ -19,7 +19,7 @@ import cucumber.api.junit.Cucumber;
         features = "src/test/resources/features", 
         tags = { "~@Skip" }, 
         glue = {
-                "com.alliander.osgp.platform.cucumber", 
+                "com.alliander.osgp.platform.cucumber.glue",
                 "com.alliander.osgp.platform.dlms.cucumber" }, 
         plugin = { "pretty",
                 "html:target/output/Cucumber-report", 

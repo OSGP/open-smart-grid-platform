@@ -13,8 +13,8 @@ import java.util.Map;
 
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.Profile;
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.ProfileEntry;
+import com.alliander.osgp.platform.cucumber.Keys;
 import com.alliander.osgp.platform.cucumber.helpers.SettingsHelper;
-import com.alliander.osgp.platform.cucumber.steps.Keys;
 
 public class ProfileBuilder {
 
