@@ -22,22 +22,21 @@ Feature: Find Recent Devices
       | TEST1024000000001    | test-org                   | false       |
 
   # Recent means today, yesterday and the day before yesterday (full days).
-  # TODO Check response correctly.
-  Scenario Outline: Find recent devices
+  Scenario: Find recent devices
     Given a device
-      | DeviceIdentification       | <DeviceIdentification>       |
-      | OrganizationIdentification | <OrganizationIdentification> |
+      | DeviceIdentification       | TEST1024000000001 |
+      | OrganizationIdentification | test-org          |
     When receiving a find recent devices request
     Then the find recent devices response contains "1" device
     And the find recent devices response contains at index "1"
-      | DeviceIdentification       | <DeviceIdentification>       |
-      | OrganizationIdentification | <OrganizationIdentification> |
-
-    Examples: 
-      | DeviceIdentification | OrganizationIdentification |
-      | TEST1024000000001    | test-org                   |
-
+      | DeviceIdentification | TEST1024000000001 |
+      
   Scenario: Find recent devices with empty owner organization
+    Given a device
+      | DeviceIdentification       | TEST1024000000001 |
+      | OrganizationIdentification |  |
+    When receiving a find recent devices request
+    Then the find recent devices response contains "0" devices
 
   Scenario: Find recent devices with unknown owner organization
     When receiving a find recent devices request

@@ -10,6 +10,7 @@ package com.alliander.osgp.platform.cucumber.support.ws;
 //import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.OrganisationIdentificationClientInterceptor;
 
 
+
 public class WebServiceTemplateFactory {
 
     //    private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceTemplateFactory.class);

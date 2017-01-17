@@ -51,6 +51,13 @@ public class CoreDeviceInstallationClient extends BaseClient {
         return (AddDeviceResponse) wst.marshalSendAndReceive(request);
     }
 
+    public AddDeviceResponse addDevice(final AddDeviceRequest request, final String organizationIdentification)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(organizationIdentification,
+                this.getUserName());
+        return (AddDeviceResponse) wst.marshalSendAndReceive(request);
+    }
+
     public UpdateDeviceResponse updateDevice(final UpdateDeviceRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(),
