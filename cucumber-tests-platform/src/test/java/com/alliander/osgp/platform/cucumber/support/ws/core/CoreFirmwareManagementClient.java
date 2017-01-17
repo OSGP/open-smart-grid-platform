@@ -19,22 +19,24 @@ import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareV
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionResponse;
 import com.alliander.osgp.platform.cucumber.support.ws.BaseClient;
-import com.alliander.osgp.platform.cucumber.support.ws.WebServiceSecurityException;
-import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
+import com.alliander.osgp.shared.infra.ws.WebServiceTemplateFactory;
+//import com.alliander.osgp.platform.cucumber.support.ws.WebServiceSecurityException;
+//import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
 
 @Component
 public class CoreFirmwareManagementClient extends BaseClient {
-	
+
     @Autowired
     private WebServiceTemplateFactory coreFirmwareManagementWstf;
 
-	public GetFirmwareVersionAsyncResponse getFirmwareVersion(GetFirmwareVersionRequest request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
+    public GetFirmwareVersionAsyncResponse getFirmwareVersion(final GetFirmwareVersionRequest request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.coreFirmwareManagementWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (GetFirmwareVersionAsyncResponse) wst.marshalSendAndReceive(request);
-	}
+    }
 
-	public GetFirmwareVersionResponse getGetFirmwareVersion(GetFirmwareVersionAsyncRequest request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
+    public GetFirmwareVersionResponse getGetFirmwareVersion(final GetFirmwareVersionAsyncRequest request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.coreFirmwareManagementWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (GetFirmwareVersionResponse) wst.marshalSendAndReceive(request);
-	} 
+    }
 }

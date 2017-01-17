@@ -1,7 +1,7 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -16,7 +16,8 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadMethodProcessor;
 
 import com.alliander.osgp.platform.cucumber.config.ws.BaseWebServiceConfig;
-import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.infra.ws.WebServiceTemplateFactory;
+//import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
 
 @Configuration
 public class AdminDeviceManagementWebServiceConfig extends BaseWebServiceConfig {
@@ -29,27 +30,31 @@ public class AdminDeviceManagementWebServiceConfig extends BaseWebServiceConfig 
 
     @Bean
     public WebServiceTemplateFactory adminDeviceManagementWstf() {
-        return new WebServiceTemplateFactory.Builder().setMarshaller(this.adminDeviceManagementMarshaller())
-                .setMessageFactory(this.messageFactory())
-                .setDefaultUri(this.baseUri.concat(this.webserviceTemplateDefaultUriAdminDeviceManagement))
-                .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
-                .setKeyStorePassword(this.webserviceKeystorePassword)
-                .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)
-                .build();
+        //        return new WebServiceTemplateFactory.Builder().setMarshaller(this.adminDeviceManagementMarshaller())
+        //                .setMessageFactory(this.messageFactory())
+        //                .setDefaultUri(this.baseUri.concat(this.webserviceTemplateDefaultUriAdminDeviceManagement))
+        //                .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
+        //                .setKeyStorePassword(this.webserviceKeystorePassword)
+        //                .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)
+        //                .build();
+        return new WebServiceTemplateFactory(this.adminDeviceManagementMarshaller(), this.messageFactory(),
+                this.baseUri.concat(this.webserviceTemplateDefaultUriAdminDeviceManagement), this.webserviceKeystoreType,
+                this.webserviceKeystoreLocation, this.webserviceKeystorePassword, this.webServiceTrustStoreFactory(), this.applicationName);
+
     }
 
     /**
      * Method for creating the Marshaller for Admin DeviceManagement.
      *
      * @return Jaxb2Marshaller
-     * @throws PropertyException 
+     * @throws PropertyException
      */
     @Bean
     public Jaxb2Marshaller adminDeviceManagementMarshaller() {
-    	final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+        final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
         marshaller.setContextPath(this.contextPathAdminDeviceManagement);
-        
+
         return marshaller;
     }
 

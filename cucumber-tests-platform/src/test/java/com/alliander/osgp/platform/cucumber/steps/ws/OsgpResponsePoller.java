@@ -14,8 +14,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import com.alliander.osgp.platform.cucumber.support.ws.WebServiceSecurityException;
-import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
+//import com.alliander.osgp.platform.cucumber.support.ws.WebServiceSecurityException;
+import com.alliander.osgp.shared.infra.ws.WebServiceTemplateFactory;
+//import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
 
 public class OsgpResponsePoller<AsyncRequest, Response> {
 
@@ -52,7 +54,7 @@ public class OsgpResponsePoller<AsyncRequest, Response> {
      * @throws GeneralSecurityException
      */
     public Response start(final AsyncRequest request) throws InterruptedException, WebServiceSecurityException,
-            GeneralSecurityException, IOException {
+    GeneralSecurityException, IOException {
 
         int timeSlept = 0;
 
@@ -77,7 +79,7 @@ public class OsgpResponsePoller<AsyncRequest, Response> {
     }
 
     private Response pollWsResponse(final AsyncRequest request) throws WebServiceSecurityException,
-            GeneralSecurityException, IOException {
+    GeneralSecurityException, IOException {
         @SuppressWarnings("unchecked")
         final Response response = (Response) this.webserviceTemplateFactory.getTemplate(
                 this.organizationIdentification, this.username).marshalSendAndReceive(request);

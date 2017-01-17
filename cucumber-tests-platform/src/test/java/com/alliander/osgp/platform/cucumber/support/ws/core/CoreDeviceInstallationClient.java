@@ -33,8 +33,10 @@ import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StopDeviceTe
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.UpdateDeviceRequest;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.UpdateDeviceResponse;
 import com.alliander.osgp.platform.cucumber.support.ws.BaseClient;
-import com.alliander.osgp.platform.cucumber.support.ws.WebServiceSecurityException;
-import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
+import com.alliander.osgp.shared.infra.ws.WebServiceTemplateFactory;
+//import com.alliander.osgp.platform.cucumber.support.ws.WebServiceSecurityException;
+//import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
 
 @Component
 public class CoreDeviceInstallationClient extends BaseClient {
@@ -92,14 +94,14 @@ public class CoreDeviceInstallationClient extends BaseClient {
         return (StopDeviceTestResponse) wst.marshalSendAndReceive(request);
     }
 
-    public GetStatusAsyncResponse getStatus(GetStatusRequest request)
+    public GetStatusAsyncResponse getStatus(final GetStatusRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
         return (GetStatusAsyncResponse) wst.marshalSendAndReceive(request);
     }
 
-    public GetStatusResponse getStatusResponse(GetStatusAsyncRequest request)
+    public GetStatusResponse getStatusResponse(final GetStatusAsyncRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());

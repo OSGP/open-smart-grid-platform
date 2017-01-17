@@ -34,9 +34,11 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.ObjectFac
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.cucumber.steps.ws.OsgpResponsePoller;
-import com.alliander.osgp.platform.cucumber.support.ws.WebServiceSecurityException;
-import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
+//import com.alliander.osgp.platform.cucumber.support.ws.WebServiceSecurityException;
+//import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
 import com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.AbstractSmartMeteringSteps;
+import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
+import com.alliander.osgp.shared.infra.ws.WebServiceTemplateFactory;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -107,7 +109,7 @@ public class CoupleAndDeCoupleDevice extends AbstractSmartMeteringSteps {
     @When("^the DeCouple G-meter \"([^\"]*)\" from E-meter \"([^\"]*)\" request is send a SoapException with message \"([^\"]*)\" is received$")
     public void theDeCoupleGMeterToEMeterRequestThrowsAnSoapException(final String gasMeter, final String eMeter,
             final String soapExceptionMessage) throws WebServiceSecurityException, GeneralSecurityException,
-            IOException {
+    IOException {
         final DeCoupleMbusDeviceRequest request = new ObjectFactory().createDeCoupleMbusDeviceRequest();
         request.setDeviceIdentification(eMeter);
         request.setMbusDeviceIdentification(gasMeter);
@@ -125,7 +127,7 @@ public class CoupleAndDeCoupleDevice extends AbstractSmartMeteringSteps {
     @When("^the Couple G-meter \"([^\"]*)\" request on channel (\\d+) is send a SoapException with message \"([^\"]*)\" is received$")
     public void theCoupleGMeterRequestOnChannelIsThrowsAnSoapExceptionWithMessage(final String gasMeter,
             final Short channel, final String soapExceptionMessage) throws WebServiceSecurityException,
-            GeneralSecurityException, IOException {
+    GeneralSecurityException, IOException {
         final CoupleMbusDeviceRequest request = new ObjectFactory().createCoupleMbusDeviceRequest();
         request.setDeviceIdentification((String) ScenarioContext.Current().get(Keys.KEY_DEVICE_IDENTIFICATION));
         request.setMbusDeviceIdentification(gasMeter);
@@ -143,7 +145,7 @@ public class CoupleAndDeCoupleDevice extends AbstractSmartMeteringSteps {
 
     @When("^the DeCouple G-meter \"([^\"]*)\" request is received$")
     public void theDeCoupleGMeterRequestIsReceived(final String gasMeter) throws WebServiceSecurityException,
-            GeneralSecurityException, IOException {
+    GeneralSecurityException, IOException {
 
         final DeCoupleMbusDeviceRequest request = new ObjectFactory().createDeCoupleMbusDeviceRequest();
         request.setDeviceIdentification((String) ScenarioContext.Current().get(Keys.KEY_DEVICE_IDENTIFICATION));
@@ -169,7 +171,7 @@ public class CoupleAndDeCoupleDevice extends AbstractSmartMeteringSteps {
 
     @Then("^the Couple response is \"([^\"]*)\"$")
     public void theCoupleResponseIs(final String status) throws WebServiceSecurityException, InterruptedException,
-            GeneralSecurityException, IOException {
+    GeneralSecurityException, IOException {
 
         final CoupleMbusDeviceAsyncRequest request = new ObjectFactory().createCoupleMbusDeviceAsyncRequest();
         request.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
@@ -226,7 +228,7 @@ public class CoupleAndDeCoupleDevice extends AbstractSmartMeteringSteps {
 
     @Then("^the DeCouple response is \"([^\"]*)\"$")
     public void theDeCoupleResponseIsAndContains(final String status) throws WebServiceSecurityException,
-            InterruptedException, GeneralSecurityException, IOException {
+    InterruptedException, GeneralSecurityException, IOException {
 
         final DeCoupleMbusDeviceAsyncRequest request = new ObjectFactory().createDeCoupleMbusDeviceAsyncRequest();
         request.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));

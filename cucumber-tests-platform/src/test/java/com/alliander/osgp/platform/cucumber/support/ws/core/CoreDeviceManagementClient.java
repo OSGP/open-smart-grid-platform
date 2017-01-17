@@ -23,8 +23,10 @@ import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotifi
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotificationsRequest;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotificationsResponse;
 import com.alliander.osgp.platform.cucumber.support.ws.BaseClient;
-import com.alliander.osgp.platform.cucumber.support.ws.WebServiceSecurityException;
-import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
+import com.alliander.osgp.shared.infra.ws.WebServiceTemplateFactory;
+//import com.alliander.osgp.platform.cucumber.support.ws.WebServiceSecurityException;
+//import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
 
 @Component
 public class CoreDeviceManagementClient extends BaseClient {
@@ -48,13 +50,13 @@ public class CoreDeviceManagementClient extends BaseClient {
 
     public SetEventNotificationsResponse getSetEventNotificationsResponse(
             final SetEventNotificationsAsyncRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+                    throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
         return (SetEventNotificationsResponse) wst.marshalSendAndReceive(request);
     }
 
-    public SetOwnerResponse setOwner(SetOwnerRequest request)
+    public SetOwnerResponse setOwner(final SetOwnerRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());

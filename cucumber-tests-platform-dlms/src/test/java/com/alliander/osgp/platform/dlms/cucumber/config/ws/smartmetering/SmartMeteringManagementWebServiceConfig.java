@@ -1,7 +1,7 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -14,24 +14,29 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadMethodProcessor;
 
 import com.alliander.osgp.platform.cucumber.config.ws.BaseWebServiceConfig;
-import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
+//import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
 import com.alliander.osgp.platform.dlms.cucumber.config.ApplicationConfiguration;
+import com.alliander.osgp.shared.infra.ws.WebServiceTemplateFactory;
 
 @Configuration
 public class SmartMeteringManagementWebServiceConfig extends BaseWebServiceConfig {
 
     @Autowired
     private ApplicationConfiguration configuration;
-    
+
     @Bean
     public WebServiceTemplateFactory smartMeteringManagementWstf() {
-        return new WebServiceTemplateFactory.Builder().setMarshaller(this.smartMeteringManagementMarshaller())
-                .setMessageFactory(this.messageFactory())
-                .setDefaultUri(this.baseUri.concat(this.configuration.webserviceTemplateDefaultUriSmartMeteringManagement))
-                .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
-                .setKeyStorePassword(this.webserviceKeystorePassword)
-                .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)
-                .build();
+        //        return new WebServiceTemplateFactory.Builder().setMarshaller(this.smartMeteringManagementMarshaller())
+        //                .setMessageFactory(this.messageFactory())
+        //                .setDefaultUri(this.baseUri.concat(this.configuration.webserviceTemplateDefaultUriSmartMeteringManagement))
+        //                .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
+        //                .setKeyStorePassword(this.webserviceKeystorePassword)
+        //                .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)
+        //                .build();
+        return new WebServiceTemplateFactory(this.smartMeteringManagementMarshaller(), this.messageFactory(),
+                this.baseUri.concat(this.configuration.webserviceTemplateDefaultUriSmartMeteringManagement), this.webserviceKeystoreType,
+                this.webserviceKeystoreLocation, this.webserviceKeystorePassword, this.webServiceTrustStoreFactory(), this.applicationName);
+
     }
 
     /**
