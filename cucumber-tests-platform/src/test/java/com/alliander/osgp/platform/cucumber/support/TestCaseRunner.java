@@ -69,16 +69,16 @@ public class TestCaseRunner {
     }
 
     private String getCorrelId(final Map<String, String> propertiesMap) {
-        if (propertiesMap.containsKey(Keys.KEY_CORRELATION_UID)) {
-            return propertiesMap.get(Keys.KEY_CORRELATION_UID);
+        if (propertiesMap.containsKey(Keys.CORRELATION_UID)) {
+            return propertiesMap.get(Keys.CORRELATION_UID);
         } else {
             return null;
         }
     }
 
     private boolean resetCorrelId(final Map<String, String> propertiesMap) {
-        if (propertiesMap.containsKey(Keys.KEY_CORRELATION_UID)) {
-            propertiesMap.put(Keys.KEY_CORRELATION_UID, null);
+        if (propertiesMap.containsKey(Keys.CORRELATION_UID)) {
+            propertiesMap.put(Keys.CORRELATION_UID, null);
             return true;
         } else {
             return false;

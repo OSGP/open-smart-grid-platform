@@ -37,7 +37,7 @@ public class DeactivateDeviceSteps {
 
         DeactivateDeviceRequest request = new DeactivateDeviceRequest();
         request.setDeviceIdentification(
-                getString(requestSettings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+                getString(requestSettings, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
 
         try {
             ScenarioContext.Current().put(Keys.RESPONSE, client.deactivateDevice(request));
@@ -55,6 +55,6 @@ public class DeactivateDeviceSteps {
     public void theDeactivateDeviceResponseContains(final Map<String, String> expectedResponse) throws Throwable {
         DeactivateDeviceResponse response = (DeactivateDeviceResponse) ScenarioContext.Current().get(Keys.RESPONSE);
 
-        Assert.assertEquals(getEnum(expectedResponse, Keys.KEY_RESULT, OsgpResultType.class), response.getResult());
+        Assert.assertEquals(getEnum(expectedResponse, Keys.RESULT, OsgpResultType.class), response.getResult());
     }
 }

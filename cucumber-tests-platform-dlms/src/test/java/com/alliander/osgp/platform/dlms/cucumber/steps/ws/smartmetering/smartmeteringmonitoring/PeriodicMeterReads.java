@@ -40,19 +40,19 @@ public class PeriodicMeterReads extends SmartMeteringStepsBase {
 
     @When("^the get periodic meter reads request is received$")
     public void theGetPeriodicMeterReadsRequestIsReceived(final Map<String, String> settings) throws Throwable {
-        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-        PROPERTIES_MAP.put(Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+        PROPERTIES_MAP.put(Keys.DEVICE_IDENTIFICATION,
+                getString(settings, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+        PROPERTIES_MAP.put(Keys.ORGANIZATION_IDENTIFICATION,
+                getString(settings, "OrganizationIdentification", Defaults.ORGANIZATION_IDENTIFICATION));
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }
 
     @Then("^the periodic meter reads result should be returned$")
     public void thePeriodicMeterReadsResultShouldBeReturned(final Map<String, String> settings) throws Throwable {
-        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+        PROPERTIES_MAP.put(Keys.DEVICE_IDENTIFICATION,
+                getString(settings, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
         PROPERTIES_MAP
-                .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
+                .put(Keys.CORRELATION_UID, ScenarioContext.Current().get(Keys.CORRELATION_UID).toString());
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_GETRESPONSE_REQUEST, TEST_CASE_XML,
                 TEST_SUITE_XML);

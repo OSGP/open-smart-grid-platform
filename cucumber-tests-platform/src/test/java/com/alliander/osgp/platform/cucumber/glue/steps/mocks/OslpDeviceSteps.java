@@ -164,7 +164,7 @@ public class OslpDeviceSteps {
 	public void theDeviceReturnsAGetStatusResponseOverOSLP(final Map<String, String> result) throws Throwable {
 	
 		int eventNotificationTypes = 0;
-		final String eventNotificationTypesString = getString(result, Keys.KEY_EVENTNOTIFICATIONTYPES, Defaults.DEFAULT_EVENTNOTIFICATIONTYPES);
+		final String eventNotificationTypesString = getString(result, Keys.EVENTNOTIFICATIONTYPES, Defaults.EVENTNOTIFICATIONTYPES);
 		for (String eventNotificationType : eventNotificationTypesString.split(Keys.SEPARATOR)) {
 			if (!eventNotificationType.isEmpty()) {
 				eventNotificationTypes = eventNotificationTypes + Enum.valueOf(EventNotificationTypeDto.class, eventNotificationType.trim()).getValue();
@@ -172,10 +172,10 @@ public class OslpDeviceSteps {
 		}	
 				
 		List<LightValue> lightValues = new ArrayList<LightValue>();
-		if (!getString(result, Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES).isEmpty() && 
-				getString(result, Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES).split(Keys.SEPARATOR).length > 0) {
+		if (!getString(result, Keys.LIGHTVALUES, Defaults.LIGHTVALUES).isEmpty() && 
+				getString(result, Keys.LIGHTVALUES, Defaults.LIGHTVALUES).split(Keys.SEPARATOR).length > 0) {
 			
-			for (String lightValueString : getString(result, Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES).split(Keys.SEPARATOR)) {
+			for (String lightValueString : getString(result, Keys.LIGHTVALUES, Defaults.LIGHTVALUES).split(Keys.SEPARATOR)) {
 				String[] parts = lightValueString.split(Keys.SEPARATOR_SEMICOLON);
 	
 				LightValue lightValue = LightValue.newBuilder()
@@ -189,11 +189,11 @@ public class OslpDeviceSteps {
 		}
 
 		this.oslpMockServer.mockGetStatusResponse(
-			getEnum(result, Keys.KEY_PREFERRED_LINKTYPE, LinkType.class, Defaults.DEFAULT_PREFERRED_LINKTYPE),
-			getEnum(result, Keys.KEY_ACTUAL_LINKTYPE, LinkType.class, Defaults.DEFAULT_ACTUAL_LINKTYPE),
-			getEnum(result, Keys.KEY_LIGHTTYPE, LightType.class, Defaults.DEFAULT_LIGHTTYPE),
+			getEnum(result, Keys.PREFERRED_LINKTYPE, LinkType.class, Defaults.PREFERRED_LINKTYPE),
+			getEnum(result, Keys.ACTUAL_LINKTYPE, LinkType.class, Defaults.ACTUAL_LINKTYPE),
+			getEnum(result, Keys.LIGHTTYPE, LightType.class, Defaults.LIGHTTYPE),
 			eventNotificationTypes,
-			getEnum(result, Keys.KEY_STATUS, Oslp.Status.class, Defaults.DEFAULT_STATUS),
+			getEnum(result, Keys.STATUS, Oslp.Status.class, Defaults.STATUS),
 			lightValues);
 	}
 	
@@ -289,14 +289,14 @@ public class OslpDeviceSteps {
 		LightValue lightValue = message.getSetLightRequest().getValues(0);
 		
 		Assert.assertEquals(
-				getInteger(expectedParameters, Keys.KEY_INDEX, Defaults.DEFAULT_INDEX),
+				getInteger(expectedParameters, Keys.INDEX, Defaults.INDEX),
 				OslpUtils.byteStringToInteger(lightValue.getIndex()));
-		if (expectedParameters.containsKey(Keys.KEY_DIMVALUE)
-				&& !StringUtils.isEmpty(expectedParameters.get(Keys.KEY_DIMVALUE))) {
-			Assert.assertEquals(getInteger(expectedParameters, Keys.KEY_DIMVALUE, Defaults.DEFAULT_DIMVALUE),
+		if (expectedParameters.containsKey(Keys.DIMVALUE)
+				&& !StringUtils.isEmpty(expectedParameters.get(Keys.DIMVALUE))) {
+			Assert.assertEquals(getInteger(expectedParameters, Keys.DIMVALUE, Defaults.DIMVALUE),
 					OslpUtils.byteStringToInteger(lightValue.getDimValue()));
 		}
-		Assert.assertEquals(getBoolean(expectedParameters, Keys.KEY_ON, Defaults.DEFAULT_ON), lightValue.getOn());
+		Assert.assertEquals(getBoolean(expectedParameters, Keys.ON, Defaults.ON), lightValue.getOn());
 	}
 	
 	@Then("^a set light OSLP message with \"([^\"]*)\" lightvalues is sent to the device$")
@@ -387,8 +387,8 @@ public class OslpDeviceSteps {
 		
 		ResumeScheduleRequest request = message.getResumeScheduleRequest();
 		
-		Assert.assertEquals(getBoolean(expectedRequest, Keys.KEY_ISIMMEDIATE), request.getImmediate());
-		Assert.assertEquals(getInteger(expectedRequest, Keys.KEY_INDEX), OslpUtils.byteStringToInteger(request.getIndex()));
+		Assert.assertEquals(getBoolean(expectedRequest, Keys.ISIMMEDIATE), request.getImmediate());
+		Assert.assertEquals(getInteger(expectedRequest, Keys.INDEX), OslpUtils.byteStringToInteger(request.getIndex()));
 	}
 
 	/**
@@ -423,8 +423,8 @@ public class OslpDeviceSteps {
 		
 		SetTransitionRequest request = message.getSetTransitionRequest();
 		
-		Assert.assertEquals(getEnum(expectedResult, Keys.KEY_TRANSITION_TYPE, TransitionType.class), request.getTransitionType());
-		if (expectedResult.containsKey(Keys.KEY_TIME)) {
+		Assert.assertEquals(getEnum(expectedResult, Keys.TRANSITION_TYPE, TransitionType.class), request.getTransitionType());
+		if (expectedResult.containsKey(Keys.TIME)) {
 			// TODO: How to check the time?
 	 		//Assert.assertEquals(expectedResult.get(Keys.KEY_TIME), request.getTime());
 		}
@@ -448,8 +448,8 @@ public class OslpDeviceSteps {
     public void receivingAnOSLPEventNotificationMessage(final Map<String, String> settings) throws DeviceSimulatorException, IOException, ParseException {
         
         EventNotification eventNotification = EventNotification.newBuilder()
-                .setDescription(getString(settings, Keys.KEY_DESCRIPTION, ""))
-                .setEvent(getEnum(settings, Keys.KEY_EVENT, Event.class)).build();
+                .setDescription(getString(settings, Keys.DESCRIPTION, ""))
+                .setEvent(getEnum(settings, Keys.EVENT, Event.class)).build();
         
         Message message = Oslp.Message.newBuilder()
         .setEventNotificationRequest(
@@ -465,6 +465,6 @@ public class OslpDeviceSteps {
         
         EventNotificationResponse response = responseMessage.getEventNotificationResponse();
         
-        Assert.assertEquals(getString(expectedResponse, Keys.KEY_STATUS), response.getStatus());
+        Assert.assertEquals(getString(expectedResponse, Keys.STATUS), response.getStatus());
     }
 }

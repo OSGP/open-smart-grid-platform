@@ -54,7 +54,7 @@ public class GetFirmwareVersionSteps {
     public void receivingAGetFirmwareVersionRequest(final Map<String, String> requestParameters) throws Throwable {
 
     	GetFirmwareVersionRequest request = new GetFirmwareVersionRequest();
-    	request.setDeviceIdentification(getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+    	request.setDeviceIdentification(getString(requestParameters, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
     	
     	try {
     		ScenarioContext.Current().put(Keys.RESPONSE, client.getFirmwareVersion(request));
@@ -75,13 +75,13 @@ public class GetFirmwareVersionSteps {
     	GetFirmwareVersionAsyncResponse response = (GetFirmwareVersionAsyncResponse)ScenarioContext.Current().get(Keys.RESPONSE);
     	
     	Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
-    	Assert.assertEquals(getString(expectedResponseData,  Keys.KEY_DEVICE_IDENTIFICATION), response.getAsyncResponse().getDeviceId());
+    	Assert.assertEquals(getString(expectedResponseData,  Keys.DEVICE_IDENTIFICATION), response.getAsyncResponse().getDeviceId());
 
         // Save the returned CorrelationUid in the Scenario related context for further use.
         saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
-                getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+                getString(expectedResponseData, Keys.ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION));
 
-        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
+        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.CORRELATION_UID) + "]");
     }
 
     @Then("^the platform buffers a get firmware version response message for device \"([^\"]*)\"$")
@@ -90,7 +90,7 @@ public class GetFirmwareVersionSteps {
     	GetFirmwareVersionAsyncRequest request = new GetFirmwareVersionAsyncRequest();
     	AsyncRequest asyncRequest = new AsyncRequest();
     	asyncRequest.setDeviceId(deviceIdentification);
-    	asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
+    	asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.CORRELATION_UID));
     	request.setAsyncRequest(asyncRequest);
     	
        	boolean success = false;
@@ -106,7 +106,7 @@ public class GetFirmwareVersionSteps {
     		try {
     		   	GetFirmwareVersionResponse response = client.getGetFirmwareVersion(request);
     		       			    			
-    	    	Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResponseData.get(Keys.KEY_RESULT)), response.getResult());
+    	    	Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResponseData.get(Keys.RESULT)), response.getResult());
     			
     			success = true; 
     		}

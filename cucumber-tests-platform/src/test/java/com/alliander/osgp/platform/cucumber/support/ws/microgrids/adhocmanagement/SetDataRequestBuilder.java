@@ -25,7 +25,7 @@ public class SetDataRequestBuilder {
 
     public static SetDataRequest fromParameterMap(final Map<String, String> requestParameters) {
         final SetDataRequest setDataRequest = new SetDataRequest();
-        setDataRequest.setDeviceIdentification(requestParameters.get(Keys.KEY_DEVICE_IDENTIFICATION));
+        setDataRequest.setDeviceIdentification(requestParameters.get(Keys.DEVICE_IDENTIFICATION));
 
         final List<SetDataSystemIdentifier> systems = new SetDataSystemIdentifierBuilder()
                 .withSettings(requestParameters).buildList();
@@ -35,15 +35,15 @@ public class SetDataRequestBuilder {
     }
 
     public static SetDataAsyncRequest fromParameterMapAsync(final Map<String, String> requestParameters) {
-        final String correlationUid = (String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID);
+        final String correlationUid = (String) ScenarioContext.Current().get(Keys.CORRELATION_UID);
         if (correlationUid == null) {
             throw new AssertionError("ScenarioContext must contain the correlation UID for key \""
-                    + Keys.KEY_CORRELATION_UID + "\" before creating an async request.");
+                    + Keys.CORRELATION_UID + "\" before creating an async request.");
         }
-        final String deviceIdentification = requestParameters.get(Keys.KEY_DEVICE_IDENTIFICATION);
+        final String deviceIdentification = requestParameters.get(Keys.DEVICE_IDENTIFICATION);
         if (deviceIdentification == null) {
             throw new AssertionError("The Step DataTable must contain the device identification for key \""
-                    + Keys.KEY_DEVICE_IDENTIFICATION + "\" when creating an async request.");
+                    + Keys.DEVICE_IDENTIFICATION + "\" when creating an async request.");
         }
         final SetDataAsyncRequest setDataAsyncRequest = new SetDataAsyncRequest();
         final AsyncRequest asyncRequest = new AsyncRequest();

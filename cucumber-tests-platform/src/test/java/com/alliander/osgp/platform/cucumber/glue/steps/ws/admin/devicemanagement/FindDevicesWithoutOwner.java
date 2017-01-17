@@ -81,7 +81,7 @@ public class FindDevicesWithoutOwner {
                 .Current().get(Keys.RESPONSE);
 
         for (final Device device : response.getDevices()) {
-            Assert.assertEquals(getString(expectedResult, Keys.KEY_DEVICE_IDENTIFICATION),
+            Assert.assertEquals(getString(expectedResult, Keys.DEVICE_IDENTIFICATION),
                     device.getDeviceIdentification());
             Assert.assertTrue(device.getOrganisations().isEmpty());
             Assert.assertNull(device.getOwner());

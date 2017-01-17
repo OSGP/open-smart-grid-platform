@@ -48,21 +48,21 @@ public class ChangeOrganizationSteps {
     public void receivingAnUpdateOrganizationRequest(final Map<String, String> requestSettings) throws Throwable {
         final ChangeOrganisationRequest request = new ChangeOrganisationRequest();
 
-        request.setOrganisationIdentification(getString(requestSettings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+        request.setOrganisationIdentification(getString(requestSettings, Keys.ORGANIZATION_IDENTIFICATION,
+                Defaults.ORGANIZATION_IDENTIFICATION));
 
         request.setNewOrganisationName(
-                getString(requestSettings, Keys.KEY_NAME, Defaults.DEFAULT_NEW_ORGANIZATION_NAME));
+                getString(requestSettings, Keys.NAME, Defaults.NEW_ORGANIZATION_NAME));
 
-        request.setNewOrganisationIdentification(getString(requestSettings, Keys.KEY_NEW_ORGANIZATION_IDENTIFICATION,
-                Defaults.DEFAULT_NEW_ORGANIZATION_IDENTIFICATION));
+        request.setNewOrganisationIdentification(getString(requestSettings, Keys.NEW_ORGANIZATION_IDENTIFICATION,
+                Defaults.NEW_ORGANIZATION_IDENTIFICATION));
 
         request.setNewOrganisationPlatformFunctionGroup(
-                getEnum(requestSettings, Keys.KEY_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP, PlatformFunctionGroup.class,
-                        Defaults.DEFAULT_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP));
+                getEnum(requestSettings, Keys.NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP, PlatformFunctionGroup.class,
+                        Defaults.NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP));
 
         request.getNewOrganisationPlatformDomains().clear();
-        for (final String platformDomain : getString(requestSettings, Keys.KEY_DOMAINS, Defaults.DEFAULT_DOMAINS)
+        for (final String platformDomain : getString(requestSettings, Keys.DOMAINS, Defaults.DOMAINS)
                 .split(";")) {
             request.getNewOrganisationPlatformDomains().add(Enum.valueOf(PlatformDomain.class, platformDomain));
         }

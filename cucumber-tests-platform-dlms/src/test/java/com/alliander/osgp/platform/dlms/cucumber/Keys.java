@@ -7,6 +7,10 @@
  */
 package com.alliander.osgp.platform.dlms.cucumber;
 
+/**
+ * Keys specific for the dlms related data. Note: Keep in mind that generic
+ * keys should be specified in the cucumber-tests-platform project.
+ */
 public class Keys {
 
     // Default keys for dlms_device
@@ -43,6 +47,8 @@ public class Keys {
     public static final String SECURITY_KEY_E = "SecurityKeyEncryption";
 
     // other
+    // TODO: Many of these are already defined in cucumber-tests-platforms
+    // Keys.java. Try to use them instead of these.
     public static final String DEVICE_TYPE = "DeviceType";
     public static final String IS_ACTIVATED = "Activated";
     public static final String CONTAINER_CITY = "ContainerCity";

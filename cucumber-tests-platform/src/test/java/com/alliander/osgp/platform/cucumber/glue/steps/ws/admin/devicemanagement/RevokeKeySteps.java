@@ -48,7 +48,7 @@ public class RevokeKeySteps {
         // TODO: Change to Revoke Key
         final RevokeKeyRequest request = new RevokeKeyRequest();
         request.setDeviceIdentification(
-                getString(requestSettings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+                getString(requestSettings, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
 
         try {
             ScenarioContext.Current().put(Keys.RESPONSE, this.client.getRevokeKeyResponse(request));
@@ -83,6 +83,6 @@ public class RevokeKeySteps {
         Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof SoapFaultClientException);
         final SoapFaultClientException response = (SoapFaultClientException) ScenarioContext.Current()
                 .get(Keys.RESPONSE);
-        Assert.assertEquals(getString(expectedResult, Keys.KEY_MESSAGE), response.getMessage());
+        Assert.assertEquals(getString(expectedResult, Keys.MESSAGE), response.getMessage());
     }
 }

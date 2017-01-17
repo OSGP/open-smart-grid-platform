@@ -63,7 +63,7 @@ public class GetStatusSteps {
     public void receivingAGetStatusRequest(final Map<String, String> requestParameters) throws Throwable {
 
     	GetStatusRequest request = new GetStatusRequest();
-    	request.setDeviceIdentification(getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+    	request.setDeviceIdentification(getString(requestParameters, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
     	
     	try {
     		ScenarioContext.Current().put(Keys.RESPONSE, client.getStatus(request));
@@ -75,7 +75,7 @@ public class GetStatusSteps {
     @When("^receiving a get status request by an unknown organization$")
     public void receivingAGetStatusRequestByAnUnknownOrganization(final Map<String, String> requestParameters) throws Throwable {
         // Force the request being send to the platform as a given organization.
-    	ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
+    	ScenarioContext.Current().put(Keys.ORGANIZATION_IDENTIFICATION, "unknown-organization");
     	
     	receivingAGetStatusRequest(requestParameters);
     }
@@ -92,20 +92,20 @@ public class GetStatusSteps {
     	GetStatusAsyncResponse response = (GetStatusAsyncResponse)ScenarioContext.Current().get(Keys.RESPONSE);
     	
     	Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
-    	Assert.assertEquals(getString(expectedResponseData,  Keys.KEY_DEVICE_IDENTIFICATION), response.getAsyncResponse().getDeviceId());
+    	Assert.assertEquals(getString(expectedResponseData,  Keys.DEVICE_IDENTIFICATION), response.getAsyncResponse().getDeviceId());
 
         // Save the returned CorrelationUid in the Scenario related context for further use.
         saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
-                getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+                getString(expectedResponseData, Keys.ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION));
 
-        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
+        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.CORRELATION_UID) + "]");
     }
 
     @Then("^the get status response contains soap fault$")
     public void theGetStatusResponseContainsSoapFault(final Map<String, String> expectedResponseData) {
     	SoapFaultClientException response = (SoapFaultClientException)ScenarioContext.Current().get(Keys.RESPONSE);
     	
-    	Assert.assertEquals(expectedResponseData.get(Keys.KEY_MESSAGE), response.getMessage());
+    	Assert.assertEquals(expectedResponseData.get(Keys.MESSAGE), response.getMessage());
     }
 
     @Then("^the platform buffers a get status response message for device \"([^\"]*)\"$")
@@ -113,7 +113,7 @@ public class GetStatusSteps {
     	GetStatusAsyncRequest request = new GetStatusAsyncRequest();
     	AsyncRequest asyncRequest = new AsyncRequest();
     	asyncRequest.setDeviceId(deviceIdentification);
-    	asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
+    	asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.CORRELATION_UID));
     	request.setAsyncRequest(asyncRequest);
     	
     	boolean success = false;
@@ -129,24 +129,24 @@ public class GetStatusSteps {
     		try {
     			GetStatusResponse response = client.getGetStatusResponse(request);
     			
-    			Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.KEY_RESULT)), response.getResult());
+    			Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.RESULT)), response.getResult());
     			
     			DeviceStatus deviceStatus = response.getDeviceStatus();
     			
-    			Assert.assertEquals(getEnum(expectedResult, Keys.KEY_PREFERRED_LINKTYPE, LinkType.class), deviceStatus.getPreferredLinkType());
-    			Assert.assertEquals(getEnum(expectedResult, Keys.KEY_ACTUAL_LINKTYPE, LinkType.class), deviceStatus.getActualLinkType());
-       			Assert.assertEquals(getEnum(expectedResult, Keys.KEY_LIGHTTYPE, LightType.class), deviceStatus.getLightType());
+    			Assert.assertEquals(getEnum(expectedResult, Keys.PREFERRED_LINKTYPE, LinkType.class), deviceStatus.getPreferredLinkType());
+    			Assert.assertEquals(getEnum(expectedResult, Keys.ACTUAL_LINKTYPE, LinkType.class), deviceStatus.getActualLinkType());
+       			Assert.assertEquals(getEnum(expectedResult, Keys.LIGHTTYPE, LightType.class), deviceStatus.getLightType());
        			
-       			if (expectedResult.containsKey(Keys.KEY_EVENTNOTIFICATIONTYPES) && !expectedResult.get(Keys.KEY_EVENTNOTIFICATIONTYPES).isEmpty()) {
-           			Assert.assertEquals(getString(expectedResult,  Keys.KEY_EVENTNOTIFICATIONS, Defaults.DEFAULT_EVENTNOTIFICATIONS).split(Keys.SEPARATOR).length, deviceStatus.getEventNotifications().size());
-           			for (String eventNotification : getString(expectedResult,  Keys.KEY_EVENTNOTIFICATIONS, Defaults.DEFAULT_EVENTNOTIFICATIONS).split(Keys.SEPARATOR)) {
+       			if (expectedResult.containsKey(Keys.EVENTNOTIFICATIONTYPES) && !expectedResult.get(Keys.EVENTNOTIFICATIONTYPES).isEmpty()) {
+           			Assert.assertEquals(getString(expectedResult,  Keys.EVENTNOTIFICATIONS, Defaults.EVENTNOTIFICATIONS).split(Keys.SEPARATOR).length, deviceStatus.getEventNotifications().size());
+           			for (String eventNotification : getString(expectedResult,  Keys.EVENTNOTIFICATIONS, Defaults.EVENTNOTIFICATIONS).split(Keys.SEPARATOR)) {
                			Assert.assertTrue(deviceStatus.getEventNotifications().contains(Enum.valueOf(EventNotificationType.class, eventNotification)));
            			}
        			}
        			
-       			if (expectedResult.containsKey(Keys.KEY_LIGHTVALUES) && !expectedResult.get(Keys.KEY_LIGHTVALUES).isEmpty()) {
-               		Assert.assertEquals(getString(expectedResult,  Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES).split(Keys.SEPARATOR).length, deviceStatus.getLightValues().size());
-	           		for (String lightValues : getString(expectedResult, Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES).split(Keys.SEPARATOR)) {
+       			if (expectedResult.containsKey(Keys.LIGHTVALUES) && !expectedResult.get(Keys.LIGHTVALUES).isEmpty()) {
+               		Assert.assertEquals(getString(expectedResult,  Keys.LIGHTVALUES, Defaults.LIGHTVALUES).split(Keys.SEPARATOR).length, deviceStatus.getLightValues().size());
+	           		for (String lightValues : getString(expectedResult, Keys.LIGHTVALUES, Defaults.LIGHTVALUES).split(Keys.SEPARATOR)) {
 	           			
 	       				String[] parts = lightValues.split(Keys.SEPARATOR_SEMICOLON);
 	       				Integer index = Integer.parseInt(parts[0]);

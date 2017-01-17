@@ -258,12 +258,12 @@ public class Helpers {
     public static void saveCorrelationUidInScenarioContext(final String correlationUid,
             String organizationIdentification) throws Throwable {
         if (organizationIdentification == null || organizationIdentification.isEmpty()) {
-            organizationIdentification = Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION;
+            organizationIdentification = Defaults.ORGANIZATION_IDENTIFICATION;
         }
 
         // Validate the correlation-id starts with correct organization
         Assert.isTrue(correlationUid.startsWith(organizationIdentification));
-        ScenarioContext.Current().put(Keys.KEY_CORRELATION_UID, correlationUid);
+        ScenarioContext.Current().put(Keys.CORRELATION_UID, correlationUid);
     }
 
     /**

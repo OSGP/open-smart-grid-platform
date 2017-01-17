@@ -105,7 +105,7 @@ public class DlmsDeviceSteps {
 
     private void createDeviceAuthorisationInCoreDatabase(final Device device) {
         final Organisation organisation = this.organisationRepo
-                .findByOrganisationIdentification(Defaults.ORGANISATION_IDENTIFICATION);
+                .findByOrganisationIdentification(com.alliander.osgp.platform.cucumber.Defaults.ORGANIZATION_IDENTIFICATION);
         final DeviceAuthorization deviceAuthorization = device
                 .addAuthorization(organisation, DeviceFunctionGroup.OWNER);
 

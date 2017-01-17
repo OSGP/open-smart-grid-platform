@@ -43,18 +43,18 @@ public abstract class AbstractFindEventsReads extends SmartMeteringStepsBase {
     protected abstract String getEventLogCategory();
 
     public void receivingAFindStandardEventsRequest(final Map<String, String> requestData) throws Throwable {
-        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
-                getString(requestData, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+        PROPERTIES_MAP.put(Keys.DEVICE_IDENTIFICATION,
+                getString(requestData, Keys.DEVICE_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION));
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST + this.getEventLogCategory(),
                 TEST_CASE_XML, TEST_SUITE_XML);
     }
 
     public void eventsShouldBeReturned(final Map<String, String> settings) throws Throwable {
-        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+        PROPERTIES_MAP.put(Keys.DEVICE_IDENTIFICATION,
+                getString(settings, Keys.DEVICE_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION));
         PROPERTIES_MAP
-                .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
+                .put(Keys.CORRELATION_UID, ScenarioContext.Current().get(Keys.CORRELATION_UID).toString());
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE + this.getEventLogCategory(),
                 TEST_CASE_XML, TEST_SUITE_XML);
@@ -82,7 +82,7 @@ public abstract class AbstractFindEventsReads extends SmartMeteringStepsBase {
             throws XPathExpressionException, ParserConfigurationException, SAXException, IOException {
 
         final NodeList nodeList = this.runXpathResult.getNodeList(this.response, PATH_RESULT_EVENTS);
-        final boolean nodeListExpected = getBoolean(settings, Keys.KEY_EVENTS_NODELIST_EXPECTED,
+        final boolean nodeListExpected = getBoolean(settings, Keys.EVENTS_NODELIST_EXPECTED,
                 Defaults.EVENTS_NODELIST_EXPECTED);
         if (nodeListExpected) {
             Assert.assertEquals("Size of response nodelist should be equals to the allowed size", allowed.size(),

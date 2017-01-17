@@ -59,11 +59,11 @@ public class ManufacturerSteps {
     @Then("^the entity manufacturer exists$")
     public void theEntityManufacturerExists(final Map<String, String> expectedEntity) throws Throwable {
         // TODO: Wait until the stuff is created.
-        Manufacturer entity = repo.findByName(getString(expectedEntity, "Name", Defaults.DEFAULT_MANUFACTURER_NAME));
+        Manufacturer entity = repo.findByName(getString(expectedEntity, "Name", Defaults.MANUFACTURER_NAME));
 
-        Assert.assertEquals(getString(expectedEntity, "ManufacturerId", Defaults.DEFAULT_MANUFACTURER_ID),
+        Assert.assertEquals(getString(expectedEntity, "ManufacturerId", Defaults.MANUFACTURER_ID),
                 entity.getManufacturerId());
-        Assert.assertEquals(getBoolean(expectedEntity, "UsesPrefix", Defaults.DEFAULT_MANUFACTURER_USE_PREFIX),
+        Assert.assertEquals(getBoolean(expectedEntity, "UsesPrefix", Defaults.MANUFACTURER_USE_PREFIX),
                 entity.isUsePrefix());
     }
 }

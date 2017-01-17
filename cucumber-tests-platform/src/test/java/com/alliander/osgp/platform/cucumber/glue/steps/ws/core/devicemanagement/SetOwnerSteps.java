@@ -44,9 +44,9 @@ public class SetOwnerSteps {
         final SetOwnerRequest request = new SetOwnerRequest();
 
         request.setDeviceIdentification(
-                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-        request.setOrganisationIdentification(getString(requestParameters, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+                getString(requestParameters, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+        request.setOrganisationIdentification(getString(requestParameters, Keys.ORGANIZATION_IDENTIFICATION,
+                Defaults.ORGANIZATION_IDENTIFICATION));
 
         ScenarioContext.Current().put(Keys.RESPONSE, this.client.setOwner(request));
     }
@@ -66,8 +66,8 @@ public class SetOwnerSteps {
                 .findByDevice(this.deviceRepository.findByDeviceIdentification(deviceIdentification));
 
         Assert.assertEquals(
-                getString(expectedOrganization, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                        Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION),
+                getString(expectedOrganization, Keys.ORGANIZATION_IDENTIFICATION,
+                        Defaults.ORGANIZATION_IDENTIFICATION),
                 deviceAuthorization.get(0).getOrganisation().getOrganisationIdentification());
 
     }

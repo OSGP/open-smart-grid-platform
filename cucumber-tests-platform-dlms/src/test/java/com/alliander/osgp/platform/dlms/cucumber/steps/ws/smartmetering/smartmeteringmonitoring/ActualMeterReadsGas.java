@@ -36,10 +36,10 @@ public class ActualMeterReadsGas extends SmartMeteringStepsBase {
 
     @When("^the get actual meter reads gas request is received$")
     public void theGetActualMeterReadsRequestIsReceived(final Map<String, String> settings) throws Throwable {
-        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-        PROPERTIES_MAP.put(Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION)
+        PROPERTIES_MAP.put(Keys.DEVICE_IDENTIFICATION,
+                getString(settings, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+        PROPERTIES_MAP.put(Keys.ORGANIZATION_IDENTIFICATION,
+                getString(settings, Keys.ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION)
                         .toString());
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
@@ -47,10 +47,10 @@ public class ActualMeterReadsGas extends SmartMeteringStepsBase {
 
     @Then("^the actual meter reads gas result should be returned$")
     public void theActualMeterReadsResultShouldBeReturned(final Map<String, String> settings) throws Throwable {
-        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+        PROPERTIES_MAP.put(Keys.DEVICE_IDENTIFICATION,
+                getString(settings, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
         PROPERTIES_MAP
-                .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
+                .put(Keys.CORRELATION_UID, ScenarioContext.Current().get(Keys.CORRELATION_UID).toString());
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_GETRESPONSE_REQUEST, TEST_CASE_XML,
                 TEST_SUITE_XML);

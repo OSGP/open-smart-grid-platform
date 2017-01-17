@@ -19,56 +19,56 @@ import com.alliander.osgp.platform.cucumber.Keys;
 public class DeviceSteps {
 
 	public static void checkDevice(final Map<String, String> expectedDevice, final Device actualDevice) {
-    	if (expectedDevice.containsKey(Keys.KEY_DEVICE_IDENTIFICATION)) {
-        	Assert.assertEquals(getString(expectedDevice, Keys.KEY_DEVICE_IDENTIFICATION), actualDevice.getDeviceIdentification());
+    	if (expectedDevice.containsKey(Keys.DEVICE_IDENTIFICATION)) {
+        	Assert.assertEquals(getString(expectedDevice, Keys.DEVICE_IDENTIFICATION), actualDevice.getDeviceIdentification());
     	}
 
-    	if (expectedDevice.containsKey(Keys.KEY_ALIAS)) {
-        	Assert.assertEquals(getString(expectedDevice, Keys.KEY_ALIAS), actualDevice.getAlias());
+    	if (expectedDevice.containsKey(Keys.ALIAS)) {
+        	Assert.assertEquals(getString(expectedDevice, Keys.ALIAS), actualDevice.getAlias());
     	}
 
-    	if (expectedDevice.containsKey(Keys.KEY_CITY)) {
-        	Assert.assertEquals(getString(expectedDevice, Keys.KEY_CITY), actualDevice.getContainerCity());
+    	if (expectedDevice.containsKey(Keys.CITY)) {
+        	Assert.assertEquals(getString(expectedDevice, Keys.CITY), actualDevice.getContainerCity());
     	}
 
-    	if (expectedDevice.containsKey(Keys.KEY_MUNICIPALITY)) {
-        	Assert.assertEquals(getString(expectedDevice, Keys.KEY_MUNICIPALITY), actualDevice.getContainerMunicipality());
+    	if (expectedDevice.containsKey(Keys.MUNICIPALITY)) {
+        	Assert.assertEquals(getString(expectedDevice, Keys.MUNICIPALITY), actualDevice.getContainerMunicipality());
     	}
 
-    	if (expectedDevice.containsKey(Keys.KEY_NUMBER)) {
-        	Assert.assertEquals(getString(expectedDevice, Keys.KEY_NUMBER), actualDevice.getContainerNumber());
+    	if (expectedDevice.containsKey(Keys.NUMBER)) {
+        	Assert.assertEquals(getString(expectedDevice, Keys.NUMBER), actualDevice.getContainerNumber());
     	}
 
-    	if (expectedDevice.containsKey(Keys.KEY_POSTCODE)) {
-        	Assert.assertEquals(getString(expectedDevice, Keys.KEY_POSTCODE), actualDevice.getContainerPostalCode());
+    	if (expectedDevice.containsKey(Keys.POSTCODE)) {
+        	Assert.assertEquals(getString(expectedDevice, Keys.POSTCODE), actualDevice.getContainerPostalCode());
     	}
 
-    	if (expectedDevice.containsKey(Keys.KEY_STREET)) {
-        	Assert.assertEquals(getString(expectedDevice, Keys.KEY_STREET), actualDevice.getContainerStreet());
+    	if (expectedDevice.containsKey(Keys.STREET)) {
+        	Assert.assertEquals(getString(expectedDevice, Keys.STREET), actualDevice.getContainerStreet());
     	}
 
-    	if (expectedDevice.containsKey(Keys.KEY_DEVICE_TYPE)) {
-        	Assert.assertEquals(getString(expectedDevice, Keys.KEY_DEVICE_TYPE), actualDevice.getDeviceType());
+    	if (expectedDevice.containsKey(Keys.DEVICE_TYPE)) {
+        	Assert.assertEquals(getString(expectedDevice, Keys.DEVICE_TYPE), actualDevice.getDeviceType());
     	}
 
-    	if (expectedDevice.containsKey(Keys.KEY_DEVICE_UID)) {
-        	Assert.assertEquals(getString(expectedDevice, Keys.KEY_DEVICE_UID), actualDevice.getDeviceUid());
+    	if (expectedDevice.containsKey(Keys.DEVICE_UID)) {
+        	Assert.assertEquals(getString(expectedDevice, Keys.DEVICE_UID), actualDevice.getDeviceUid());
     	}
     	
-    	if (expectedDevice.containsKey(Keys.KEY_LATITUDE)) {
-        	Assert.assertEquals(getString(expectedDevice, Keys.KEY_LATITUDE), actualDevice.getGpsLatitude());
+    	if (expectedDevice.containsKey(Keys.LATITUDE)) {
+        	Assert.assertEquals(getString(expectedDevice, Keys.LATITUDE), actualDevice.getGpsLatitude());
     	}
 
-    	if (expectedDevice.containsKey(Keys.KEY_LONGITUDE)) {
-        	Assert.assertEquals(getString(expectedDevice, Keys.KEY_LONGITUDE), actualDevice.getGpsLongitude());
+    	if (expectedDevice.containsKey(Keys.LONGITUDE)) {
+        	Assert.assertEquals(getString(expectedDevice, Keys.LONGITUDE), actualDevice.getGpsLongitude());
     	}
 
-    	if (expectedDevice.containsKey(Keys.KEY_NETWORKADDRESS)) {
-        	Assert.assertEquals(getString(expectedDevice, Keys.KEY_NETWORKADDRESS), actualDevice.getNetworkAddress());
+    	if (expectedDevice.containsKey(Keys.NETWORKADDRESS)) {
+        	Assert.assertEquals(getString(expectedDevice, Keys.NETWORKADDRESS), actualDevice.getNetworkAddress());
     	}
 
-    	if (expectedDevice.containsKey(Keys.KEY_OWNER)) {
-        	Assert.assertEquals(getString(expectedDevice, Keys.KEY_OWNER), actualDevice.getOwner());
+    	if (expectedDevice.containsKey(Keys.OWNER)) {
+        	Assert.assertEquals(getString(expectedDevice, Keys.OWNER), actualDevice.getOwner());
     	}
 	}
 }

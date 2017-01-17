@@ -43,10 +43,10 @@ public class OslpDeviceSteps {
         this.deviceSteps.aDevice(settings);
         
         // Now create the OSLP device in the OSLP database
-        final String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION,
-                Defaults.DEFAULT_DEVICE_IDENTIFICATION);
-        final OslpDevice device = new OslpDevice(getString(settings, Keys.KEY_DEVICE_UID, DEFAULT_DEVICE_UID),
-                deviceIdentification, getString(settings, Keys.KEY_DEVICE_TYPE, Defaults.DEFAULT_DEVICE_TYPE));
+        final String deviceIdentification = getString(settings, Keys.DEVICE_IDENTIFICATION,
+                Defaults.DEVICE_IDENTIFICATION);
+        final OslpDevice device = new OslpDevice(getString(settings, Keys.DEVICE_UID, DEFAULT_DEVICE_UID),
+                deviceIdentification, getString(settings, Keys.DEVICE_TYPE, Defaults.DEVICE_TYPE));
         device.setSequenceNumber(0);
         device.setRandomDevice(0);
         device.setRandomPlatform(0);

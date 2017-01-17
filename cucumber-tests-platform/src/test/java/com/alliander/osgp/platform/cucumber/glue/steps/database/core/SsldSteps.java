@@ -43,7 +43,7 @@ public class SsldSteps {
         final String deviceIdentification = settings.get("DeviceIdentification");
         final Ssld ssld = new Ssld(deviceIdentification);
         
-        ssld.setPublicKeyPresent(getBoolean(settings, "PublicKeyPresent", Defaults.DEFAULT_PUBLICKEYPRESENT));
+        ssld.setPublicKeyPresent(getBoolean(settings, "PublicKeyPresent", Defaults.PUBLICKEYPRESENT));
         
         this.ssldRepository.save(ssld);
         

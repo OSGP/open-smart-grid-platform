@@ -54,7 +54,7 @@ public class FindMbusEventsReads extends AbstractFindEventsReads {
     @Then("^mbus events should be returned$")
     @Override
     public void eventsShouldBeReturned(final Map<String, String> settings) throws Throwable {
-        super.eventsShouldBeReturned(Helpers.addSetting(settings, Keys.KEY_EVENTS_NODELIST_EXPECTED, "true"));
+        super.eventsShouldBeReturned(Helpers.addSetting(settings, Keys.EVENTS_NODELIST_EXPECTED, "true"));
     }
 
     @Override

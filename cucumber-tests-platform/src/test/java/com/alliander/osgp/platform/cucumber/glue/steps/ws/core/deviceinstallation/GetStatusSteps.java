@@ -43,7 +43,7 @@ public class GetStatusSteps {
     public void receivingADeviceInstallationGetStatusRequest(final Map<String, String> settings) throws Throwable {
         final GetStatusRequest request = new GetStatusRequest();
         
-        request.setDeviceIdentification(getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+        request.setDeviceIdentification(getString(settings, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
 
         try {
             ScenarioContext.Current().put(Keys.RESPONSE, this.client.getStatus(request));
@@ -63,14 +63,14 @@ public class GetStatusSteps {
                .get(Keys.RESPONSE);
 
        Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
-       Assert.assertEquals(getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION),
+       Assert.assertEquals(getString(expectedResponseData, Keys.DEVICE_IDENTIFICATION),
                response.getAsyncResponse().getDeviceId());
 
        // Save the returned CorrelationUid in the Scenario related context for
        // further use.
        saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
-               getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                       Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+               getString(expectedResponseData, Keys.ORGANIZATION_IDENTIFICATION,
+                       Defaults.ORGANIZATION_IDENTIFICATION));
    }
 
    /**
@@ -84,7 +84,7 @@ public class GetStatusSteps {
        GetStatusAsyncRequest request = new GetStatusAsyncRequest();
        AsyncRequest asyncRequest = new AsyncRequest();
        asyncRequest.setDeviceId(deviceIdentification);
-       asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
+       asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.CORRELATION_UID));
        request.setAsyncRequest(asyncRequest);
        
        boolean success = false;
@@ -100,7 +100,7 @@ public class GetStatusSteps {
            try {
                GetStatusResponse response = client.getStatusResponse(request);
                
-               Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.KEY_RESULT)), response.getResult());
+               Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.RESULT)), response.getResult());
                
                success = true; 
            }

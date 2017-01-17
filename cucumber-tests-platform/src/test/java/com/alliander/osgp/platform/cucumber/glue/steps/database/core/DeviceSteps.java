@@ -100,18 +100,18 @@ public class DeviceSteps {
     public void aDevice(final Map<String, String> settings) throws Throwable {
 
         // Set the required stuff
-        final String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION);
+        final String deviceIdentification = getString(settings, Keys.DEVICE_IDENTIFICATION);
         final Ssld ssld = new Ssld(deviceIdentification);
 
-        ssld.setPublicKeyPresent(getBoolean(settings, Keys.KEY_PUBLICKEYPRESENT, Defaults.DEFAULT_PUBLICKEYPRESENT));
-        ssld.setHasSchedule(getBoolean(settings, Keys.KEY_HAS_SCHEDULE, Defaults.DEFAULT_HASSCHEDULE));
+        ssld.setPublicKeyPresent(getBoolean(settings, Keys.PUBLICKEYPRESENT, Defaults.PUBLICKEYPRESENT));
+        ssld.setHasSchedule(getBoolean(settings, Keys.HAS_SCHEDULE, Defaults.HASSCHEDULE));
 
-        if (settings.containsKey(Keys.KEY_INTERNALID) || settings.containsKey(Keys.KEY_EXTERNALID)
-                || settings.containsKey(Keys.KEY_RELAY_TYPE)) {
+        if (settings.containsKey(Keys.INTERNALID) || settings.containsKey(Keys.EXTERNALID)
+                || settings.containsKey(Keys.RELAY_TYPE)) {
             final List<DeviceOutputSetting> dosList = new ArrayList<>();
-            final int internalId = getInteger(settings, Keys.KEY_INTERNALID, Defaults.DEFAULT_INTERNALID),
-                    externalId = getInteger(settings, Keys.KEY_EXTERNALID, Defaults.DEFAULT_EXTERNALID);
-            final RelayType relayType = getEnum(settings, Keys.KEY_RELAY_TYPE, RelayType.class, RelayType.LIGHT);
+            final int internalId = getInteger(settings, Keys.INTERNALID, Defaults.INTERNALID),
+                    externalId = getInteger(settings, Keys.EXTERNALID, Defaults.EXTERNALID);
+            final RelayType relayType = getEnum(settings, Keys.RELAY_TYPE, RelayType.class, RelayType.LIGHT);
 
             if (relayType != null) {
                 dosList.add(new DeviceOutputSetting(internalId, externalId, relayType));
@@ -148,17 +148,17 @@ public class DeviceSteps {
     private void updateDevice(Device device, final Map<String, String> settings) {
 
         // Now set the optional stuff
-        if (settings.containsKey(Keys.KEY_TECH_INSTALL_DATE) && !settings.get(Keys.KEY_TECH_INSTALL_DATE).isEmpty()) {
-            device.setTechnicalInstallationDate(getDate(settings, Keys.KEY_TECH_INSTALL_DATE).toDate());
+        if (settings.containsKey(Keys.TECH_INSTALL_DATE) && !settings.get(Keys.TECH_INSTALL_DATE).isEmpty()) {
+            device.setTechnicalInstallationDate(getDate(settings, Keys.TECH_INSTALL_DATE).toDate());
         }
 
         final DeviceModel deviceModel = this.deviceModelRepository
-                .findByModelCode(getString(settings, "DeviceModel", Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
+                .findByModelCode(getString(settings, "DeviceModel", Defaults.DEVICE_MODEL_MODEL_CODE));
         device.setDeviceModel(deviceModel);
 
         device.updateProtocol(this.protocolInfoRepository.findByProtocolAndProtocolVersion(
-                getString(settings, Keys.KEY_PROTOCOL, DeviceSteps.DEFAULT_PROTOCOL),
-                getString(settings, Keys.KEY_PROTOCOL_VERSION, DeviceSteps.DEFAULT_PROTOCOL_VERSION)));
+                getString(settings, Keys.PROTOCOL, DeviceSteps.DEFAULT_PROTOCOL),
+                getString(settings, Keys.PROTOCOL_VERSION, DeviceSteps.DEFAULT_PROTOCOL_VERSION)));
 
         InetAddress inetAddress;
         try {
@@ -169,28 +169,28 @@ public class DeviceSteps {
         device.updateRegistrationData(inetAddress, getString(settings, "DeviceType", DeviceSteps.DEFAULT_DEVICE_TYPE));
 
         device.setVersion(getLong(settings, "Version"));
-        device.setActive(getBoolean(settings, Keys.KEY_ACTIVE, Defaults.DEFAULT_ACTIVE));
-        if (getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION)
+        device.setActive(getBoolean(settings, Keys.ACTIVE, Defaults.ACTIVE));
+        if (getString(settings, "OrganizationIdentification", Defaults.ORGANIZATION_IDENTIFICATION)
                 .toLowerCase() != "null") {
             device.addOrganisation(
-                    getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+                    getString(settings, "OrganizationIdentification", Defaults.ORGANIZATION_IDENTIFICATION));
         }
-        device.updateMetaData(getString(settings, "Alias", Defaults.DEFAULT_ALIAS),
-                getString(settings, "containerCity", Defaults.DEFAULT_CONTAINER_CITY),
-                getString(settings, "containerPostalCode", Defaults.DEFAULT_CONTAINER_POSTALCODE),
-                getString(settings, "containerStreet", Defaults.DEFAULT_CONTAINER_STREET),
-                getString(settings, "containerNumber", Defaults.DEFAULT_CONTAINER_NUMBER),
-                getString(settings, "containerMunicipality", Defaults.DEFAULT_CONTAINER_MUNICIPALITY),
-                getFloat(settings, "gpsLatitude", Defaults.DEFAULT_LATITUDE),
-                getFloat(settings, "gpsLongitude", Defaults.DEFAULT_LONGITUDE));
+        device.updateMetaData(getString(settings, "Alias", Defaults.ALIAS),
+                getString(settings, "containerCity", Defaults.CONTAINER_CITY),
+                getString(settings, "containerPostalCode", Defaults.CONTAINER_POSTALCODE),
+                getString(settings, "containerStreet", Defaults.CONTAINER_STREET),
+                getString(settings, "containerNumber", Defaults.CONTAINER_NUMBER),
+                getString(settings, "containerMunicipality", Defaults.CONTAINER_MUNICIPALITY),
+                getFloat(settings, "gpsLatitude", Defaults.LATITUDE),
+                getFloat(settings, "gpsLongitude", Defaults.LONGITUDE));
 
-        device.setActivated(getBoolean(settings, Keys.KEY_IS_ACTIVATED, Defaults.DEFAULT_IS_ACTIVATED));
+        device.setActivated(getBoolean(settings, Keys.IS_ACTIVATED, Defaults.IS_ACTIVATED));
         device = this.deviceRepository.save(device);
 
-        if (getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION)
+        if (getString(settings, "OrganizationIdentification", Defaults.ORGANIZATION_IDENTIFICATION)
                 .toLowerCase() != "null") {
             final Organisation organization = this.organizationRepository.findByOrganisationIdentification(
-                    getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+                    getString(settings, "OrganizationIdentification", Defaults.ORGANIZATION_IDENTIFICATION));
             final DeviceFunctionGroup functionGroup = getEnum(settings, "DeviceFunctionGroup",
                     DeviceFunctionGroup.class, DeviceFunctionGroup.OWNER);
             final DeviceAuthorization authorization = device.addAuthorization(organization, functionGroup);
@@ -278,7 +278,7 @@ public class DeviceSteps {
             try {
                 // Wait for next try to retrieve a response
 
-                device = this.deviceRepository.findByDeviceIdentification(settings.get(Keys.KEY_DEVICE_IDENTIFICATION));
+                device = this.deviceRepository.findByDeviceIdentification(settings.get(Keys.DEVICE_IDENTIFICATION));
                 if (device == null) {
                     continue;
                 }

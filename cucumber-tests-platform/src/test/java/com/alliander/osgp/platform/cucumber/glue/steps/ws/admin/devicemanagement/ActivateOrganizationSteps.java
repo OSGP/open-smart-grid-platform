@@ -38,7 +38,7 @@ public class ActivateOrganizationSteps {
 
         ActivateOrganisationRequest request = new ActivateOrganisationRequest();
         request.setOrganisationIdentification(
-                getString(requestSettings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+                getString(requestSettings, Keys.ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION));
 
         try {
             ScenarioContext.Current().put(Keys.RESPONSE, client.activateOrganization(request));

@@ -23,7 +23,7 @@ public abstract class AbstractSmartMeteringSteps extends BaseClient {
         if (correlationUid == null) {
             throw new AssertionError("Correlation Uid should be given");
         }
-        ScenarioContext.Current().put(Keys.KEY_CORRELATION_UID, correlationUid);
+        ScenarioContext.Current().put(Keys.CORRELATION_UID, correlationUid);
     }
 
     protected boolean checkDescription(final String description, final List<String> resultList) {

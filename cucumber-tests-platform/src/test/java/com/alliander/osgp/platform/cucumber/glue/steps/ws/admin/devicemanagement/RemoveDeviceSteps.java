@@ -41,7 +41,7 @@ public class RemoveDeviceSteps {
     public void receivingARemoveDeviceRequest(final Map<String, String> requestSettings) throws Throwable {
         final RemoveDeviceRequest request = new RemoveDeviceRequest();
         request.setDeviceIdentification(
-                getString(requestSettings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+                getString(requestSettings, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
 
         try {
             ScenarioContext.Current().put(Keys.RESPONSE, this.client.removeDevice(request));

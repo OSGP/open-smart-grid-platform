@@ -49,7 +49,7 @@ public class DeviceFirmwareSteps {
 
         // Get the device
         final Device device = this.deviceRepository.findByDeviceIdentification(
-                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+                getString(settings, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
 
         // TODO for now take the last
         final List<Firmware> fws = this.firmwareRepository.findAll();

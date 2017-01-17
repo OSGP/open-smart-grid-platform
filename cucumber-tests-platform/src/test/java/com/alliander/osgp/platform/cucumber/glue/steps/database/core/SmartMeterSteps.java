@@ -47,24 +47,24 @@ public class SmartMeterSteps {
     @Given("^a smart meter$")
     public void aSmartMeter(final Map<String, String> settings) {
         
-        final String deviceIdentification =getString(settings, "DeviceIdentification", Defaults.DEFAULT_DEVICE_IDENTIFICATION); 
+        final String deviceIdentification =getString(settings, "DeviceIdentification", Defaults.DEVICE_IDENTIFICATION); 
     	SmartMeter smartMeter = new SmartMeter(
     	        deviceIdentification,
-        		getString(settings, "Alias", Defaults.DEFAULT_ALIAS),
-        		getString(settings, "ContainerCity", Defaults.DEFAULT_CONTAINER_CITY),
-        		getString(settings, "ContainerPostalCode", Defaults.DEFAULT_CONTAINER_POSTALCODE),
-        		getString(settings, "ContainerStreet", Defaults.DEFAULT_CONTAINER_STREET),
-        		getString(settings, "ContainerNumber", Defaults.DEFAULT_CONTAINER_NUMBER),
-        		getString(settings, "ContainerMunicipality", Defaults.DEFAULT_CONTAINER_MUNICIPALITY),
-        		getFloat(settings, "GPSLatitude", Defaults.DEFAULT_LATITUDE),
-        		getFloat(settings, "GPSLongitude", Defaults.DEFAULT_LONGITUDE)
+        		getString(settings, "Alias", Defaults.ALIAS),
+        		getString(settings, "ContainerCity", Defaults.CONTAINER_CITY),
+        		getString(settings, "ContainerPostalCode", Defaults.CONTAINER_POSTALCODE),
+        		getString(settings, "ContainerStreet", Defaults.CONTAINER_STREET),
+        		getString(settings, "ContainerNumber", Defaults.CONTAINER_NUMBER),
+        		getString(settings, "ContainerMunicipality", Defaults.CONTAINER_MUNICIPALITY),
+        		getFloat(settings, "GPSLatitude", Defaults.LATITUDE),
+        		getFloat(settings, "GPSLongitude", Defaults.LONGITUDE)
         		);
     	
     	smartMeter.setSupplier(getString(settings, "Supplier", DEFAULT_SUPPLIER));
     	
-        if (settings.containsKey(Keys.KEY_GATEWAY_DEVICE_ID)) {
-            smartMeter.setChannel(getShort(settings, Keys.KEY_CHANNEL, Defaults.DEFAULT_CHANNEL));
-            final Device smartEMeter = this.deviceRepository.findByDeviceIdentification(settings.get(Keys.KEY_GATEWAY_DEVICE_ID));
+        if (settings.containsKey(Keys.GATEWAY_DEVICE_ID)) {
+            smartMeter.setChannel(getShort(settings, Keys.CHANNEL, Defaults.CHANNEL));
+            final Device smartEMeter = this.deviceRepository.findByDeviceIdentification(settings.get(Keys.GATEWAY_DEVICE_ID));
             smartMeter.updateGatewayDevice(smartEMeter);
         }
     	

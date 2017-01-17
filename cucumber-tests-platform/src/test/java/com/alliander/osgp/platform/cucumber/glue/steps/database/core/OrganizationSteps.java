@@ -56,10 +56,10 @@ public class OrganizationSteps {
     @Given("^an organization$")
     public void anOrganization(final Map<String, String> settings) throws Throwable {
 
-        final String organizationIdentification = getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
+        final String organizationIdentification = getString(settings, Keys.ORGANIZATION_IDENTIFICATION,
                 this.DEFAULT_ORGANIZATION);
         final Organisation entity = new Organisation(
-                (organizationIdentification.isEmpty()) ? Defaults.DEFAULT_NEW_ORGANIZATION_IDENTIFICATION
+                (organizationIdentification.isEmpty()) ? Defaults.NEW_ORGANIZATION_IDENTIFICATION
                         : organizationIdentification,
                 getString(settings, "Name", this.DEFAULT_NAME), getString(settings, "Prefix", this.DEFAULT_PREFIX),
                 getEnum(settings, "PlatformFunctionGroup", PlatformFunctionGroup.class,
@@ -68,7 +68,7 @@ public class OrganizationSteps {
         // Add all the mandatory stuff.
         entity.addDomain(getEnum(settings, "PlatformDomain", PlatformDomain.class, this.DEFAULT_PLATFORM_DOMAIN));
 
-        entity.setIsEnabled(getBoolean(settings, Keys.KEY_ENABLED, this.DEFAULT_ENABLED));
+        entity.setIsEnabled(getBoolean(settings, Keys.ENABLED, this.DEFAULT_ENABLED));
 
         // TODO: Add all the optional stuff
         this.repo.save(entity);
@@ -84,22 +84,22 @@ public class OrganizationSteps {
     @Given("^the organization exists$")
     public void theOrganizationExists(final Map<String, String> expectedOrganization) throws Throwable {
         final Organisation entity = this.repo
-                .findByOrganisationIdentification(expectedOrganization.get(Keys.KEY_ORGANIZATION_IDENTIFICATION));
+                .findByOrganisationIdentification(expectedOrganization.get(Keys.ORGANIZATION_IDENTIFICATION));
 
         Assert.assertNotNull(entity);
 
-        if (expectedOrganization.containsKey(Keys.KEY_NAME)) {
-            Assert.assertEquals(getString(expectedOrganization, Keys.KEY_NAME), entity.getName());
+        if (expectedOrganization.containsKey(Keys.NAME)) {
+            Assert.assertEquals(getString(expectedOrganization, Keys.NAME), entity.getName());
         }
         
-        if (expectedOrganization.containsKey(Keys.KEY_PLATFORM_FUNCTION_GROUP)) {
+        if (expectedOrganization.containsKey(Keys.PLATFORM_FUNCTION_GROUP)) {
             Assert.assertEquals(
-                    getEnum(expectedOrganization, Keys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class),
+                    getEnum(expectedOrganization, Keys.PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class),
                     entity.getFunctionGroup());
         }
 
-        if (expectedOrganization.containsKey(Keys.KEY_DOMAINS) && !expectedOrganization.get(Keys.KEY_DOMAINS).isEmpty()) {
-            for (String domain : expectedOrganization.get(Keys.KEY_DOMAINS).split(Keys.SEPARATOR_SEMICOLON))
+        if (expectedOrganization.containsKey(Keys.DOMAINS) && !expectedOrganization.get(Keys.DOMAINS).isEmpty()) {
+            for (String domain : expectedOrganization.get(Keys.DOMAINS).split(Keys.SEPARATOR_SEMICOLON))
             {
                 Assert.assertTrue(entity.getDomains().contains(PlatformDomain.valueOf(domain)));
             }
@@ -118,22 +118,22 @@ public class OrganizationSteps {
     public void thenTheEntityOrganizationExists(final Map<String, String> expectedEntity) throws Throwable {
 
         final Organisation entity = this.repo
-                .findByOrganisationIdentification(expectedEntity.get(Keys.KEY_ORGANIZATION_IDENTIFICATION));
+                .findByOrganisationIdentification(expectedEntity.get(Keys.ORGANIZATION_IDENTIFICATION));
 
-        Assert.assertEquals(getString(expectedEntity, Keys.KEY_NAME, Defaults.DEFAULT_NEW_ORGANIZATION_NAME),
+        Assert.assertEquals(getString(expectedEntity, Keys.NAME, Defaults.NEW_ORGANIZATION_NAME),
                 entity.getName());
-        final String prefix = getString(expectedEntity, Keys.KEY_PREFIX, Defaults.DEFAULT_ORGANIZATION_PREFIX);
-        Assert.assertEquals((prefix.isEmpty()) ? Defaults.DEFAULT_ORGANIZATION_PREFIX : prefix, entity.getPrefix());
+        final String prefix = getString(expectedEntity, Keys.PREFIX, Defaults.ORGANIZATION_PREFIX);
+        Assert.assertEquals((prefix.isEmpty()) ? Defaults.ORGANIZATION_PREFIX : prefix, entity.getPrefix());
 
-        Assert.assertEquals(getEnum(expectedEntity, Keys.KEY_PLATFORM_FUNCTION_GROUP,
+        Assert.assertEquals(getEnum(expectedEntity, Keys.PLATFORM_FUNCTION_GROUP,
                 com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup.class,
-                Defaults.DEFAULT_PLATFORM_FUNCTION_GROUP), entity.getFunctionGroup());
-        Assert.assertEquals(getBoolean(expectedEntity, Keys.KEY_ENABLED, Defaults.DEFAULT_ORGANIZATION_ENABLED),
+                Defaults.PLATFORM_FUNCTION_GROUP), entity.getFunctionGroup());
+        Assert.assertEquals(getBoolean(expectedEntity, Keys.ENABLED, Defaults.ORGANIZATION_ENABLED),
                 entity.isEnabled());
 
-        String domains = getString(expectedEntity, Keys.KEY_DOMAINS, Defaults.DEFAULT_DOMAINS);
+        String domains = getString(expectedEntity, Keys.DOMAINS, Defaults.DOMAINS);
         if (domains.isEmpty()) {
-            domains = Defaults.DEFAULT_DOMAINS;
+            domains = Defaults.DOMAINS;
         }
         final List<String> expectedDomains = Arrays.asList(domains.split(";"));
         Assert.assertEquals(expectedDomains.size(), entity.getDomains().size());

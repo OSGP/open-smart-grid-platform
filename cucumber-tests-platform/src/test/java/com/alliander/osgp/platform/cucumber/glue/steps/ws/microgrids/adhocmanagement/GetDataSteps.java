@@ -57,37 +57,37 @@ public class GetDataSteps {
     public void aGetDataRequestIsReceived(final Map<String, String> requestParameters) throws Throwable {
 
         final String organizationIdentification = (String) ScenarioContext.Current().get(
-                Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
-        ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, organizationIdentification);
-        final String userName = (String) ScenarioContext.Current().get(Keys.KEY_USER_NAME, Defaults.DEFAULT_USER_NAME);
-        ScenarioContext.Current().put(Keys.KEY_USER_NAME, userName);
+                Keys.ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION);
+        ScenarioContext.Current().put(Keys.ORGANIZATION_IDENTIFICATION, organizationIdentification);
+        final String userName = (String) ScenarioContext.Current().get(Keys.USER_NAME, Defaults.USER_NAME);
+        ScenarioContext.Current().put(Keys.USER_NAME, userName);
 
         final GetDataRequest getDataRequest = GetDataRequestBuilder.fromParameterMap(requestParameters);
         final GetDataAsyncResponse response = this.client.getDataAsync(getDataRequest);
 
-        ScenarioContext.Current().put(Keys.KEY_CORRELATION_UID, response.getAsyncResponse().getCorrelationUid());
+        ScenarioContext.Current().put(Keys.CORRELATION_UID, response.getAsyncResponse().getCorrelationUid());
     }
 
     @Then("^the get data response should be returned$")
     public void theGetDataResponseShouldBeReturned(final Map<String, String> responseParameters) throws Throwable {
 
-        final String correlationUid = (String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID);
+        final String correlationUid = (String) ScenarioContext.Current().get(Keys.CORRELATION_UID);
         final Map<String, String> extendedParameters = SettingsHelper.addDefault(responseParameters,
-                Keys.KEY_CORRELATION_UID, correlationUid);
+                Keys.CORRELATION_UID, correlationUid);
 
         final GetDataAsyncRequest getDataAsyncRequest = GetDataRequestBuilder.fromParameterMapAsync(extendedParameters);
         
         // Wait for the response...
         final GetDataResponse response = this.client.getData(getDataAsyncRequest);
-        final String expectedResult = responseParameters.get(Keys.KEY_RESULT);
+        final String expectedResult = responseParameters.get(Keys.RESULT);
         assertNotNull("Result", response.getResult());
         assertEquals("Result", expectedResult, response.getResult().name());
 
-        if (!responseParameters.containsKey(Keys.KEY_NUMBER_OF_SYSTEMS)) {
+        if (!responseParameters.containsKey(Keys.NUMBER_OF_SYSTEMS)) {
             throw new AssertionError("The Step DataTable must contain the expected number of systems with key \""
-                    + Keys.KEY_NUMBER_OF_SYSTEMS + "\" when confirming a returned get data response.");
+                    + Keys.NUMBER_OF_SYSTEMS + "\" when confirming a returned get data response.");
         }
-        final int expectedNumberOfSystems = Integer.parseInt(responseParameters.get(Keys.KEY_NUMBER_OF_SYSTEMS));
+        final int expectedNumberOfSystems = Integer.parseInt(responseParameters.get(Keys.NUMBER_OF_SYSTEMS));
 
         final List<GetDataSystemIdentifier> systemIdentifiers = response.getSystem();
         assertEquals("Number of Systems", expectedNumberOfSystems, systemIdentifiers.size());
@@ -106,17 +106,17 @@ public class GetDataSteps {
 
         final GetDataSystemIdentifier systemIdentifier = systemIdentifiers.get(systemIndex);
 
-        if (responseParameters.containsKey(Keys.KEY_SYSTEM_TYPE.concat(indexPostfix))) {
-            final String expectedType = responseParameters.get(Keys.KEY_SYSTEM_TYPE.concat(indexPostfix));
+        if (responseParameters.containsKey(Keys.SYSTEM_TYPE.concat(indexPostfix))) {
+            final String expectedType = responseParameters.get(Keys.SYSTEM_TYPE.concat(indexPostfix));
             assertEquals(systemDescription + " type", expectedType, systemIdentifier.getType());
         }
 
-        if (responseParameters.containsKey(Keys.KEY_NUMBER_OF_MEASUREMENTS.concat(indexPostfix))) {
+        if (responseParameters.containsKey(Keys.NUMBER_OF_MEASUREMENTS.concat(indexPostfix))) {
             this.assertMeasurements(responseParameters, systemIdentifier.getMeasurement(), numberOfSystems,
                     systemIndex, systemDescription, indexPostfix);
         }
 
-        if (responseParameters.containsKey(Keys.KEY_NUMBER_OF_PROFILES.concat(indexPostfix))) {
+        if (responseParameters.containsKey(Keys.NUMBER_OF_PROFILES.concat(indexPostfix))) {
             this.assertProfiles(responseParameters, systemIdentifier.getProfile(), numberOfSystems, systemIndex,
                     systemDescription, indexPostfix);
         }
@@ -126,7 +126,7 @@ public class GetDataSteps {
             final int numberOfSystems, final int systemIndex, final String systemDescription, final String indexPostfix) {
 
         final int expectedNumberOfMeasurements = Integer.parseInt(responseParameters
-                .get(Keys.KEY_NUMBER_OF_MEASUREMENTS.concat(indexPostfix)));
+                .get(Keys.NUMBER_OF_MEASUREMENTS.concat(indexPostfix)));
         assertEquals(systemDescription + " number of Measurements", expectedNumberOfMeasurements, measurements.size());
         for (int i = 0; i < expectedNumberOfMeasurements; i++) {
             this.assertMeasurementResponse(responseParameters, numberOfSystems, systemIndex, systemDescription,
@@ -146,20 +146,20 @@ public class GetDataSteps {
         final Measurement measurement = measurements.get(measurementIndex);
 
         final Integer expectedId = Integer
-                .valueOf(responseParameters.get(Keys.KEY_MEASUREMENT_ID.concat(indexPostfix)));
+                .valueOf(responseParameters.get(Keys.MEASUREMENT_ID.concat(indexPostfix)));
         assertEquals(measurementDescription + " id", expectedId, measurement.getId());
 
-        final String expectedNode = responseParameters.get(Keys.KEY_MEASUREMENT_NODE.concat(indexPostfix));
+        final String expectedNode = responseParameters.get(Keys.MEASUREMENT_NODE.concat(indexPostfix));
         assertEquals(measurementDescription + " node", expectedNode, measurement.getNode());
 
-        final int expectedQualifier = Integer.parseInt(responseParameters.get(Keys.KEY_MEASUREMENT_QUALIFIER
+        final int expectedQualifier = Integer.parseInt(responseParameters.get(Keys.MEASUREMENT_QUALIFIER
                 .concat(indexPostfix)));
         assertEquals(measurementDescription + " Qualifier", expectedQualifier, measurement.getQualifier());
 
         assertNotNull(measurementDescription + " Time", measurement.getTime());
         assertTimeFormat(measurement.getTime());
 
-        final double expectedValue = Double.parseDouble(responseParameters.get(Keys.KEY_MEASUREMENT_VALUE
+        final double expectedValue = Double.parseDouble(responseParameters.get(Keys.MEASUREMENT_VALUE
                 .concat(indexPostfix)));
         assertEquals(measurementDescription + " Value", expectedValue, measurement.getValue(),
                 DELTA_FOR_MEASUREMENT_VALUE);
@@ -168,7 +168,7 @@ public class GetDataSteps {
     private void assertProfiles(final Map<String, String> responseParameters, final List<Profile> profiles,
             final int numberOfSystems, final int systemIndex, final String systemDescription, final String indexPostfix) {
 
-        final int expectedNumberOfProfiles = Integer.parseInt(responseParameters.get(Keys.KEY_NUMBER_OF_PROFILES
+        final int expectedNumberOfProfiles = Integer.parseInt(responseParameters.get(Keys.NUMBER_OF_PROFILES
                 .concat(indexPostfix)));
         assertEquals(systemDescription + " number of Profiles", expectedNumberOfProfiles, profiles.size());
         for (int i = 0; i < expectedNumberOfProfiles; i++) {

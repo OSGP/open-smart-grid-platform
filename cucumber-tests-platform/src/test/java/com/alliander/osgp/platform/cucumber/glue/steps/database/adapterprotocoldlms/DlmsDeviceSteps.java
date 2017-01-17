@@ -55,7 +55,7 @@ public class DlmsDeviceSteps {
         final DlmsDevice dlmsDevice = this.insertCommonDlms(settings);
 
         // Now create the DLMS device in the DLMS database
-        if (Defaults.SMART_METER_G.equals(getString(settings, Keys.KEY_DEVICE_TYPE, Defaults.DLMS_DEFAULT_DEVICE_TYPE))) {
+        if (Defaults.SMART_METER_G.equals(getString(settings, Keys.DEVICE_TYPE, Defaults.DLMS_DEFAULT_DEVICE_TYPE))) {
             this.insertDlmsGasMeter(dlmsDevice, settings);
         } else {
             this.insertDlmsEMeter(dlmsDevice, settings);
@@ -63,14 +63,14 @@ public class DlmsDeviceSteps {
     }
 
     private DlmsDevice insertCommonDlms(final Map<String, String> settings) {
-        final String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION,
-                Defaults.DEFAULT_DEVICE_IDENTIFICATION);
+        final String deviceIdentification = getString(settings, Keys.DEVICE_IDENTIFICATION,
+                Defaults.DEVICE_IDENTIFICATION);
         final DlmsDevice dlmsDevice = new DlmsDevice(deviceIdentification);
-        dlmsDevice.setInDebugMode(getBoolean(settings, Keys.KEY_INDEBUGMODE, Defaults.DEFAULT_INDEBUGMODE));
+        dlmsDevice.setInDebugMode(getBoolean(settings, Keys.INDEBUGMODE, Defaults.INDEBUGMODE));
         dlmsDevice.setCommunicationMethod(
-                getString(settings, Keys.KEY_COMM_METHOD, Defaults.DLMS_DEFAULT_COMMUNICATION_METHOD));
+                getString(settings, Keys.COMM_METHOD, Defaults.DLMS_DEFAULT_COMMUNICATION_METHOD));
         dlmsDevice.setIpAddressIsStatic(
-                getBoolean(settings, Keys.KEY_IP_ADDR_IS_STATIC, Defaults.DLMS_DEFAULT_IP_ADDRESS_IS_STATIC));
+                getBoolean(settings, Keys.IP_ADDR_IS_STATIC, Defaults.DLMS_DEFAULT_IP_ADDRESS_IS_STATIC));
 
         return dlmsDevice;
     }

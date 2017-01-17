@@ -49,10 +49,10 @@ public class UpdateKeySteps {
         // TODO: Change to Update Key
         final UpdateKeyRequest request = new UpdateKeyRequest();
         request.setDeviceIdentification(
-                getString(requestSettings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-        request.setPublicKey(getString(requestSettings, Keys.KEY_PUBLIC_KEY, Defaults.DEFAULT_PUBLIC_KEY));
+                getString(requestSettings, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+        request.setPublicKey(getString(requestSettings, Keys.PUBLIC_KEY, Defaults.PUBLIC_KEY));
         request.setProtocolInfoId(
-                getLong(requestSettings, Keys.KEY_PROTOCOL_INFO_ID, Defaults.DEFAULT_PROTOCOL_INFO_ID));
+                getLong(requestSettings, Keys.PROTOCOL_INFO_ID, Defaults.PROTOCOL_INFO_ID));
 
         try {
             ScenarioContext.Current().put(Keys.RESPONSE, this.client.getUpdateKeyResponse(request));
@@ -83,6 +83,6 @@ public class UpdateKeySteps {
         Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof SoapFaultClientException);
         final SoapFaultClientException response = (SoapFaultClientException) ScenarioContext.Current()
                 .get(Keys.RESPONSE);
-        Assert.assertEquals(getString(expectedResult, Keys.KEY_MESSAGE), response.getMessage());
+        Assert.assertEquals(getString(expectedResult, Keys.MESSAGE), response.getMessage());
     }
 }

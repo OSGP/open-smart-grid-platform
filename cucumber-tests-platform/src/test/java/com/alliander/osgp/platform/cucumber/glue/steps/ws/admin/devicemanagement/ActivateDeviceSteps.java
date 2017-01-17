@@ -40,7 +40,7 @@ public class ActivateDeviceSteps {
 
         ActivateDeviceRequest request = new ActivateDeviceRequest();
         request.setDeviceIdentification(
-                getString(requestSettings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+                getString(requestSettings, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
 
         try {
             ScenarioContext.Current().put(Keys.RESPONSE, client.activateDevice(request));
@@ -59,6 +59,6 @@ public class ActivateDeviceSteps {
         ActivateDeviceResponse response = (ActivateDeviceResponse) ScenarioContext.Current().get(Keys.RESPONSE);
 
         Assert.assertEquals(response.getResult(),
-                getEnum(expectedResponse, Keys.KEY_RESULT, OsgpResultType.class, OsgpResultType.OK));
+                getEnum(expectedResponse, Keys.RESULT, OsgpResultType.class, OsgpResultType.OK));
     }
 }

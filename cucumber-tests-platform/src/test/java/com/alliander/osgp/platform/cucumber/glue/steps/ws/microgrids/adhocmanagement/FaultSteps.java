@@ -33,9 +33,9 @@ public class FaultSteps {
     @Then("^a SOAP fault should be returned$")
     public void aSoapFaultShouldBeReturned(final Map<String, String> responseParameters) throws Throwable {
 
-        final String correlationUid = (String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID);
+        final String correlationUid = (String) ScenarioContext.Current().get(Keys.CORRELATION_UID);
         final Map<String, String> extendedParameters = SettingsHelper.addDefault(responseParameters,
-                Keys.KEY_CORRELATION_UID, correlationUid);
+                Keys.CORRELATION_UID, correlationUid);
 
         final GetDataAsyncRequest getDataAsyncRequest = GetDataRequestBuilder.fromParameterMapAsync(extendedParameters);
 

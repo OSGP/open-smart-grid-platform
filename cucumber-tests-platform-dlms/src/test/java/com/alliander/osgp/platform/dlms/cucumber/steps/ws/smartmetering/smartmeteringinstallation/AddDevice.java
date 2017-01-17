@@ -33,19 +33,19 @@ public class AddDevice extends SmartMeteringStepsBase {
 
     @When("^receiving an smartmetering add device request$")
     public void receiving_an_smartmetering_add_device_request(final Map<String, String> setings) throws Throwable {
-        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
-                getString(setings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+        PROPERTIES_MAP.put(Keys.DEVICE_IDENTIFICATION,
+                getString(setings, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
         PROPERTIES_MAP
-                .put(Keys.KEY_DEVICE_TYPE, getString(setings, Keys.KEY_DEVICE_TYPE, Defaults.DEFAULT_DEVICE_TYPE));
-        PROPERTIES_MAP.put(Keys.KEY_DEVICE_COMMUNICATIONMETHOD, setings.get(Keys.KEY_DEVICE_COMMUNICATIONMETHOD));
-        PROPERTIES_MAP.put(Keys.KEY_DEVICE_COMMUNICATIONPROVIDER, setings.get(Keys.KEY_DEVICE_COMMUNICATIONPROVIDER));
-        PROPERTIES_MAP.put(Keys.KEY_DEVICE_ICCID, setings.get(Keys.KEY_DEVICE_ICCID));
-        PROPERTIES_MAP.put(Keys.KEY_DEVICE_DSMRVERSION, setings.get(Keys.KEY_DEVICE_DSMRVERSION));
-        PROPERTIES_MAP.put(Keys.KEY_DEVICE_SUPPLIER, setings.get(Keys.KEY_DEVICE_SUPPLIER));
-        PROPERTIES_MAP.put(Keys.KEY_DEVICE_HLS3ACTIVE, setings.get(Keys.KEY_DEVICE_HLS3ACTIVE));
-        PROPERTIES_MAP.put(Keys.KEY_DEVICE_HLS4ACTIVE, setings.get(Keys.KEY_DEVICE_HLS4ACTIVE));
-        PROPERTIES_MAP.put(Keys.KEY_DEVICE_HLS5ACTIVE, setings.get(Keys.KEY_DEVICE_HLS5ACTIVE));
-        PROPERTIES_MAP.put(Keys.KEY_DEVICE_MASTERKEY, setings.get(Keys.KEY_DEVICE_MASTERKEY));
+                .put(Keys.DEVICE_TYPE, getString(setings, Keys.DEVICE_TYPE, Defaults.DEVICE_TYPE));
+        PROPERTIES_MAP.put(Keys.DEVICE_COMMUNICATIONMETHOD, setings.get(Keys.DEVICE_COMMUNICATIONMETHOD));
+        PROPERTIES_MAP.put(Keys.DEVICE_COMMUNICATIONPROVIDER, setings.get(Keys.DEVICE_COMMUNICATIONPROVIDER));
+        PROPERTIES_MAP.put(Keys.DEVICE_ICCID, setings.get(Keys.DEVICE_ICCID));
+        PROPERTIES_MAP.put(Keys.DEVICE_DSMRVERSION, setings.get(Keys.DEVICE_DSMRVERSION));
+        PROPERTIES_MAP.put(Keys.DEVICE_SUPPLIER, setings.get(Keys.DEVICE_SUPPLIER));
+        PROPERTIES_MAP.put(Keys.DEVICE_HLS3ACTIVE, setings.get(Keys.DEVICE_HLS3ACTIVE));
+        PROPERTIES_MAP.put(Keys.DEVICE_HLS4ACTIVE, setings.get(Keys.DEVICE_HLS4ACTIVE));
+        PROPERTIES_MAP.put(Keys.DEVICE_HLS5ACTIVE, setings.get(Keys.DEVICE_HLS5ACTIVE));
+        PROPERTIES_MAP.put(Keys.DEVICE_MASTERKEY, setings.get(Keys.DEVICE_MASTERKEY));
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }
@@ -56,20 +56,20 @@ public class AddDevice extends SmartMeteringStepsBase {
                 .assertXpath(
                         this.response,
                         PATH_DEVICE_IDENTIFICATION,
-                        getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+                        getString(settings, Keys.ORGANIZATION_IDENTIFICATION,
+                                Defaults.ORGANIZATION_IDENTIFICATION));
         this.runXpathResult.assertNotNull(this.response, PATH_CORRELATION_UID);
 
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.
         saveCorrelationUidInScenarioContext(this.runXpathResult.getValue(this.response, PATH_CORRELATION_UID),
-                getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+                getString(settings, "OrganizationIdentification", Defaults.ORGANIZATION_IDENTIFICATION));
     }
 
     @Then("^receiving an get add device response request$")
     public void receiving_an_get_add_device_response_request(final Map<String, String> settings) throws Throwable {
         PROPERTIES_MAP
-                .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
+                .put(Keys.CORRELATION_UID, ScenarioContext.Current().get(Keys.CORRELATION_UID).toString());
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_GETRESPONSE_REQUEST, TEST_CASE_XML,
                 TEST_SUITE_XML);

@@ -58,8 +58,8 @@ public class SetEventNotificationsSteps {
     public void receivingASetEventNotificationMessageRequest(final Map<String, String> requestParameters) throws Throwable
     {
     	SetEventNotificationsRequest request = new SetEventNotificationsRequest();
-    	request.setDeviceIdentification(getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-    	for (String event : getString(requestParameters, Keys.KEY_EVENT).split(",")){
+    	request.setDeviceIdentification(getString(requestParameters, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+    	for (String event : getString(requestParameters, Keys.EVENT).split(",")){
         	request.getEventNotifications().add(Enum.valueOf(EventNotificationType.class, event.trim()));
     	}
     	
@@ -82,13 +82,13 @@ public class SetEventNotificationsSteps {
     	SetEventNotificationsAsyncResponse response = (SetEventNotificationsAsyncResponse)ScenarioContext.Current().get(Keys.RESPONSE);
     	
     	Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
-    	Assert.assertEquals(getString(expectedResponseData,  Keys.KEY_DEVICE_IDENTIFICATION), response.getAsyncResponse().getDeviceId());
+    	Assert.assertEquals(getString(expectedResponseData,  Keys.DEVICE_IDENTIFICATION), response.getAsyncResponse().getDeviceId());
 
         // Save the returned CorrelationUid in the Scenario related context for further use.
         saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
-                getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+                getString(expectedResponseData, Keys.ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION));
 
-        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
+        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.CORRELATION_UID) + "]");
     }
     
     @Then("^the platform buffers a set event notification response message for device \"([^\"]*)\"")
@@ -97,7 +97,7 @@ public class SetEventNotificationsSteps {
     	SetEventNotificationsAsyncRequest request = new SetEventNotificationsAsyncRequest();
     	AsyncRequest asyncRequest = new AsyncRequest();
     	asyncRequest.setDeviceId(deviceIdentification);
-    	asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
+    	asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.CORRELATION_UID));
     	request.setAsyncRequest(asyncRequest);
     	
     	boolean success = false;
@@ -113,7 +113,7 @@ public class SetEventNotificationsSteps {
     		try {
     			SetEventNotificationsResponse response = client.getSetEventNotificationsResponse(request);
     			    			
-    			Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.KEY_RESULT)), response.getResult());
+    			Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.RESULT)), response.getResult());
     			
     			success = true; 
     		}

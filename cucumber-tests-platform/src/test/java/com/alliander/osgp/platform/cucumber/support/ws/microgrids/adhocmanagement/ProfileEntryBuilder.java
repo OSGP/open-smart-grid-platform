@@ -58,12 +58,12 @@ public class ProfileEntryBuilder {
     public ProfileEntryBuilder withSettings(final Map<String, String> settings, final int systemIndex,
             final int profileIndex) {
         final int[] indexes = { systemIndex, profileIndex };
-        if (!SettingsHelper.hasKey(settings, Keys.KEY_NUMBER_OF_PROFILE_ENTRIES, indexes)) {
+        if (!SettingsHelper.hasKey(settings, Keys.NUMBER_OF_PROFILE_ENTRIES, indexes)) {
             throw new AssertionError("The Step DataTable must contain the number of profile entries for key \""
-                    + SettingsHelper.makeKey(Keys.KEY_NUMBER_OF_PROFILE_ENTRIES, indexes)
+                    + SettingsHelper.makeKey(Keys.NUMBER_OF_PROFILE_ENTRIES, indexes)
                     + "\" when creating a set data request.");
         }
-        final int numberOfProfileEntries = SettingsHelper.getIntegerValue(settings, Keys.KEY_NUMBER_OF_PROFILE_ENTRIES,
+        final int numberOfProfileEntries = SettingsHelper.getIntegerValue(settings, Keys.NUMBER_OF_PROFILE_ENTRIES,
                 indexes);
         for (int i = 1; i <= numberOfProfileEntries; i++) {
             this.profileEntries.add(this.withSettings(settings, systemIndex, profileIndex, i).build());
@@ -75,9 +75,9 @@ public class ProfileEntryBuilder {
     private ProfileEntryBuilder withSettings(final Map<String, String> settings, final int systemIndex,
             final int profileIndex, final int index) {
         final int[] indexes = { systemIndex, profileIndex, index };
-        this.withId(SettingsHelper.getIntegerValue(settings, Keys.KEY_PROFILE_ENTRY_ID, indexes));
-        this.withTime(SettingsHelper.getXmlGregorianCalendarValue(settings, Keys.KEY_PROFILE_ENTRY_TIME, indexes));
-        this.withValue(SettingsHelper.getDoubleValue(settings, Keys.KEY_PROFILE_ENTRY_VALUE, indexes));
+        this.withId(SettingsHelper.getIntegerValue(settings, Keys.PROFILE_ENTRY_ID, indexes));
+        this.withTime(SettingsHelper.getXmlGregorianCalendarValue(settings, Keys.PROFILE_ENTRY_TIME, indexes));
+        this.withValue(SettingsHelper.getDoubleValue(settings, Keys.PROFILE_ENTRY_VALUE, indexes));
 
         return this;
     }

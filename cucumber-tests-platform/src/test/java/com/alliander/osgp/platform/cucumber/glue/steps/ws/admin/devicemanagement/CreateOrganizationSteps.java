@@ -50,21 +50,21 @@ public class CreateOrganizationSteps {
     	Organisation organization = new Organisation();
     	
     	// Required fields
-        organization.setName(getString(requestSettings, Keys.KEY_NAME, Defaults.DEFAULT_ORGANIZATION_NAME));
-    	organization.setOrganisationIdentification(getString(requestSettings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
-    	organization.setPrefix(getString(requestSettings, Keys.KEY_PREFIX, Defaults.DEFAULT_ORGANIZATION_PREFIX));
+        organization.setName(getString(requestSettings, Keys.NAME, Defaults.ORGANIZATION_NAME));
+    	organization.setOrganisationIdentification(getString(requestSettings, Keys.ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION));
+    	organization.setPrefix(getString(requestSettings, Keys.PREFIX, Defaults.ORGANIZATION_PREFIX));
     	
     	PlatformFunctionGroup platformFunctionGroup = getEnum(requestSettings, 
-    	        Keys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class, Defaults.DEFAULT_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP);
+    	        Keys.PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class, Defaults.NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP);
     	organization.setFunctionGroup(platformFunctionGroup);
 
-	    for (String domain : getString(requestSettings, Keys.KEY_DOMAINS, Defaults.DEFAULT_DOMAINS).split(";")) {
+	    for (String domain : getString(requestSettings, Keys.DOMAINS, Defaults.DOMAINS).split(";")) {
             organization.getDomains().add(Enum.valueOf(PlatformDomain.class, domain));
         }
     	
 	    // Optional fields
-	    if (requestSettings.containsKey(Keys.KEY_ENABLED) && !requestSettings.get(Keys.KEY_ENABLED).isEmpty()) {
-	        organization.setEnabled(getBoolean(requestSettings, Keys.KEY_ENABLED));
+	    if (requestSettings.containsKey(Keys.ENABLED) && !requestSettings.get(Keys.ENABLED).isEmpty()) {
+	        organization.setEnabled(getBoolean(requestSettings, Keys.ENABLED));
 	    }
 	    
 	    request.setOrganisation(organization);
@@ -86,7 +86,7 @@ public class CreateOrganizationSteps {
 
         // Force WSTF to use a different organization to send the requests with.
         // (Cerificate is used from the certificates directory).
-        ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
+        ScenarioContext.Current().put(Keys.ORGANIZATION_IDENTIFICATION, "unknown-organization");
 
         this.receivingACreateOrganizationRequest(requestSettings);
     }

@@ -38,28 +38,28 @@ public class SetDataSteps {
     @When("^a set data request is received$")
     public void aSetDataRequestIsReceived(final Map<String, String> requestParameters) throws Throwable {
         final String organizationIdentification = (String) ScenarioContext.Current()
-                .get(Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
-        ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, organizationIdentification);
-        final String userName = (String) ScenarioContext.Current().get(Keys.KEY_USER_NAME, Defaults.DEFAULT_USER_NAME);
-        ScenarioContext.Current().put(Keys.KEY_USER_NAME, userName);
+                .get(Keys.ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION);
+        ScenarioContext.Current().put(Keys.ORGANIZATION_IDENTIFICATION, organizationIdentification);
+        final String userName = (String) ScenarioContext.Current().get(Keys.USER_NAME, Defaults.USER_NAME);
+        ScenarioContext.Current().put(Keys.USER_NAME, userName);
 
         final SetDataRequest setDataRequest = SetDataRequestBuilder.fromParameterMap(requestParameters);
         final SetDataAsyncResponse response = this.client.setDataAsync(setDataRequest);
 
-        ScenarioContext.Current().put(Keys.KEY_CORRELATION_UID, response.getAsyncResponse().getCorrelationUid());
+        ScenarioContext.Current().put(Keys.CORRELATION_UID, response.getAsyncResponse().getCorrelationUid());
     }
 
     @Then("^the set data response should be returned$")
     public void theSetDataResponseShouldBeReturned(final Map<String, String> responseParameters) throws Throwable {
 
-        final String correlationUid = (String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID);
+        final String correlationUid = (String) ScenarioContext.Current().get(Keys.CORRELATION_UID);
         final Map<String, String> extendedParameters = SettingsHelper.addDefault(responseParameters,
-                Keys.KEY_CORRELATION_UID, correlationUid);
+                Keys.CORRELATION_UID, correlationUid);
 
         final SetDataAsyncRequest setDataAsyncRequest = SetDataRequestBuilder.fromParameterMapAsync(extendedParameters);
         final SetDataResponse response = this.client.setData(setDataAsyncRequest);
 
-        final String expectedResult = responseParameters.get(Keys.KEY_RESULT);
+        final String expectedResult = responseParameters.get(Keys.RESULT);
         assertNotNull("Result", response.getResult());
         assertEquals("Result", expectedResult, response.getResult().name());
     }

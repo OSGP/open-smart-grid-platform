@@ -45,8 +45,8 @@ public class RemoveOrganizationSteps {
     public void receivingARemoveOrganizationRequest(final Map<String, String> requestSettings) throws Throwable {
 
         final RemoveOrganisationRequest request = new RemoveOrganisationRequest();
-        request.setOrganisationIdentification(getString(requestSettings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+        request.setOrganisationIdentification(getString(requestSettings, Keys.ORGANIZATION_IDENTIFICATION,
+                Defaults.ORGANIZATION_IDENTIFICATION));
 
         try {
             ScenarioContext.Current().put(Keys.RESPONSE, this.client.removeOrganization(request));

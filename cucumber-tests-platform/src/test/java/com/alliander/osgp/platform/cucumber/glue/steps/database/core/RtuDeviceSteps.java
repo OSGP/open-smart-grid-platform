@@ -41,10 +41,10 @@ public class RtuDeviceSteps {
             .unmodifiableMap(new HashMap<String, String>() {
                 private static final long serialVersionUID = 1L;
                 {
-                    this.put(Keys.KEY_DEVICE_IDENTIFICATION, DEFAULT_DEVICE_IDENTIFICATION);
-                    this.put(Keys.KEY_DEVICE_TYPE, DEFAULT_DEVICE_TYPE);
-                    this.put(Keys.KEY_PROTOCOL, DEFAULT_PROTOCOL);
-                    this.put(Keys.KEY_PROTOCOL_VERSION, DEFAULT_PROTOCOL_VERSION);
+                    this.put(Keys.DEVICE_IDENTIFICATION, DEFAULT_DEVICE_IDENTIFICATION);
+                    this.put(Keys.DEVICE_TYPE, DEFAULT_DEVICE_TYPE);
+                    this.put(Keys.PROTOCOL, DEFAULT_PROTOCOL);
+                    this.put(Keys.PROTOCOL_VERSION, DEFAULT_PROTOCOL_VERSION);
                 }
             });
 
@@ -64,7 +64,7 @@ public class RtuDeviceSteps {
     public void anRtuDevice(final Map<String, String> settings) throws Throwable {
 
         final Map<String, String> rtuSettings = SettingsHelper.addAsDefaults(settings, RTU_DEFAULT_SETTINGS);
-        final String deviceIdentification = rtuSettings.get(Keys.KEY_DEVICE_IDENTIFICATION);
+        final String deviceIdentification = rtuSettings.get(Keys.DEVICE_IDENTIFICATION);
 
         RtuDevice rtuDevice = new RtuDevice(deviceIdentification);
         rtuDevice = this.rtuDeviceRespository.save(rtuDevice);
@@ -79,7 +79,7 @@ public class RtuDeviceSteps {
         try {
             final InetAddress inetAddress = InetAddress
                     .getByName(this.iec61850MockServerConfig.iec61850MockNetworkAddress());
-            rtuDevice.updateRegistrationData(inetAddress, rtuSettings.get(Keys.KEY_DEVICE_TYPE));
+            rtuDevice.updateRegistrationData(inetAddress, rtuSettings.get(Keys.DEVICE_TYPE));
             rtuDevice = this.rtuDeviceRespository.save(rtuDevice);
         } catch (final UnknownHostException e) {
             throw new AssertionError("Unable to determine IP address for mock server: "

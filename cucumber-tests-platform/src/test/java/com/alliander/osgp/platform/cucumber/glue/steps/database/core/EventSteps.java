@@ -37,15 +37,15 @@ public class EventSteps {
     public void theEventIsStored(final Map<String, String> expectedEntity) throws Throwable {
 
         final Device device = this.deviceRepository
-                .findByDeviceIdentification(getString(expectedEntity, Keys.KEY_DEVICE_IDENTIFICATION));
+                .findByDeviceIdentification(getString(expectedEntity, Keys.DEVICE_IDENTIFICATION));
 
         final List<Event> events = this.eventRepository.findByDevice(device);
 
         
         boolean found = false;
         for (Event event : events) {
-            if (event.getDescription() == getString(expectedEntity, Keys.KEY_DESCRIPTION)
-                    && event.getEventType() == getEnum(expectedEntity, Keys.KEY_EVENT, EventType.class)) {
+            if (event.getDescription() == getString(expectedEntity, Keys.DESCRIPTION)
+                    && event.getEventType() == getEnum(expectedEntity, Keys.EVENT, EventType.class)) {
                 found = true;
             }
         }

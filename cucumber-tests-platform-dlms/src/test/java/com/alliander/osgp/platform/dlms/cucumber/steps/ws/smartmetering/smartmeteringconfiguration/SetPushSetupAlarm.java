@@ -57,8 +57,8 @@ public class SetPushSetupAlarm extends SmartMeteringStepsBase {
     @When("^an alarm notification is received from a known device$")
     public void anAlarmNotificationIsReceivedFromAKnownDevice(final Map<String, String> settings) throws Throwable {
         try {
-            final String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION,
-                    Defaults.DEFAULT_DEVICE_IDENTIFICATION);
+            final String deviceIdentification = getString(settings, Keys.DEVICE_IDENTIFICATION,
+                    Defaults.DEVICE_IDENTIFICATION);
             SimulatePushedAlarmsHooks.simulateAlarm(deviceIdentification, new byte[] { 0x2C, 0x00, 0x00, 0x01, 0x02 },
                     this.serviceEndpoint.getAlarmNotificationsHost(), this.serviceEndpoint.getAlarmNotificationsPort());
             SimulatePushedAlarmsHooks.simulateAlarm(deviceIdentification, new byte[] { 0x2C, 0x04, 0x20, 0x00, 0x00 },
@@ -67,22 +67,22 @@ public class SetPushSetupAlarm extends SmartMeteringStepsBase {
             LOGGER.error("Error occured simulateAlarm: ", e);
         }
 
-        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+        PROPERTIES_MAP.put(Keys.DEVICE_IDENTIFICATION,
+                getString(settings, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
         PROPERTIES_MAP
-                .put(Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                        getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+                .put(Keys.ORGANIZATION_IDENTIFICATION,
+                        getString(settings, Keys.ORGANIZATION_IDENTIFICATION,
+                                Defaults.ORGANIZATION_IDENTIFICATION));
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }
 
     @Then("^the alarm should be pushed to OSGP$")
     public void theAlarmShouldBePushedToOSGP(final Map<String, String> settings) throws Throwable {
-        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+        PROPERTIES_MAP.put(Keys.DEVICE_IDENTIFICATION,
+                getString(settings, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
         PROPERTIES_MAP
-                .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
+                .put(Keys.CORRELATION_UID, ScenarioContext.Current().get(Keys.CORRELATION_UID).toString());
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_GETRESPONSE_REQUEST, TEST_CASE_XML,
                 TEST_SUITE_XML);
@@ -95,8 +95,8 @@ public class SetPushSetupAlarm extends SmartMeteringStepsBase {
             throws Throwable {
         final Pattern responsePattern = Pattern.compile(XPATH_MATCHER_PUSH_NOTIFICATION);
 
-        final String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION,
-                Defaults.DEFAULT_DEVICE_IDENTIFICATION);
+        final String deviceIdentification = getString(settings, Keys.DEVICE_IDENTIFICATION,
+                Defaults.DEVICE_IDENTIFICATION);
 
         final List<DeviceLogItem> deviceLogItems = this.findDeviceLogItems(deviceIdentification, 2);
         if (null == deviceLogItems) {
@@ -141,8 +141,8 @@ public class SetPushSetupAlarm extends SmartMeteringStepsBase {
     @When("^an alarm notification is received from an unknown device$")
     public void anAlarmNotificationIsReceivedFromAnUnknownDevice(final Map<String, String> settings) throws Throwable {
         try {
-            final String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION,
-                    Defaults.DEFAULT_DEVICE_IDENTIFICATION);
+            final String deviceIdentification = getString(settings, Keys.DEVICE_IDENTIFICATION,
+                    Defaults.DEVICE_IDENTIFICATION);
             SimulatePushedAlarmsHooks.simulateAlarm(deviceIdentification, new byte[] { 0x2C, 0x00, 0x00, 0x01, 0x02 },
                     this.serviceEndpoint.getAlarmNotificationsHost(), this.serviceEndpoint.getAlarmNotificationsPort());
             SimulatePushedAlarmsHooks.simulateAlarm(deviceIdentification, new byte[] { 0x2C, 0x04, 0x20, 0x00, 0x00 },
@@ -151,12 +151,12 @@ public class SetPushSetupAlarm extends SmartMeteringStepsBase {
             LOGGER.error("Error occured simulateAlarm: ", e);
         }
 
-        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+        PROPERTIES_MAP.put(Keys.DEVICE_IDENTIFICATION,
+                getString(settings, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
         PROPERTIES_MAP
-                .put(Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                        getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+                .put(Keys.ORGANIZATION_IDENTIFICATION,
+                        getString(settings, Keys.ORGANIZATION_IDENTIFICATION,
+                                Defaults.ORGANIZATION_IDENTIFICATION));
 
         this.requestRunner(TestStepStatus.FAILED, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }

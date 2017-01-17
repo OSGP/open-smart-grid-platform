@@ -14,9 +14,11 @@ import java.util.Date;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 
+/**
+ * Defaults specific for the dlms related data. Note: Keep in mind that generic
+ * defaults should be specified in the cucumber-tests-platform project.
+ */
 public class Defaults {
-
-    public static final String ORGANISATION_IDENTIFICATION = "test-org";
 
     public static final String DEVICE_IDENTIFICATION = null;
     public static final Long VERSION = 0L;
