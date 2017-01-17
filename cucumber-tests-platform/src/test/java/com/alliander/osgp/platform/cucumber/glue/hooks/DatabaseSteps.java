@@ -5,10 +5,9 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.hooks.database;
+package com.alliander.osgp.platform.cucumber.glue.hooks;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
@@ -34,7 +33,6 @@ import com.alliander.osgp.domain.microgrids.repositories.RtuDeviceRepository;
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import com.alliander.osgp.platform.cucumber.Defaults;
 
-@Component
 public class DatabaseSteps {
 
     @Autowired

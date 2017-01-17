@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
-import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 
 /**
  * DLMS related database steps.

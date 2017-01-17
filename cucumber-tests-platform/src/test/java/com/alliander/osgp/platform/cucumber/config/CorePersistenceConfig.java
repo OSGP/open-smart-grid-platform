@@ -75,16 +75,18 @@ public class CorePersistenceConfig extends ApplicationPersistenceConfiguration {
     /**
      * Method for creating the Transaction Manager.
      *
+     * @param EntityManagerFactory
+     *            entityManagerFactory The entity manager factory to create.
      * @return JpaTransactionManager
      * @throws ClassNotFoundException
      *             when class not found
      */
     @Primary
     @Bean(name = "txMgrCore")
-    public JpaTransactionManager txMgrCore(
-            @Qualifier("entityMgrCore") final EntityManagerFactory entityMgrCore) throws ClassNotFoundException {
+    public JpaTransactionManager txMgrCore(@Qualifier("entityMgrCore") final EntityManagerFactory entityManagerFactory)
+            throws ClassNotFoundException {
 
-        return new JpaTransactionManager(entityMgrCore);
+        return new JpaTransactionManager(entityManagerFactory);
     }
 
 }

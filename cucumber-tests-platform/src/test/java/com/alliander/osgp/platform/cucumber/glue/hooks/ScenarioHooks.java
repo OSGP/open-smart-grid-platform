@@ -8,9 +8,9 @@
 package com.alliander.osgp.platform.cucumber.glue.hooks;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
-import com.alliander.osgp.platform.cucumber.hooks.database.DatabaseSteps;
 
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
