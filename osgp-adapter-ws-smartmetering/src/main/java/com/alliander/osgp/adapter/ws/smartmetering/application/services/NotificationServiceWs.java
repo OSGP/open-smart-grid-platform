@@ -14,8 +14,8 @@ import org.springframework.validation.annotation.Validated;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.Notification;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
-import com.alliander.osgp.adapter.ws.smartmetering.exceptions.WebServiceSecurityException;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.SendNotificationServiceClient;
+import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 
 @Transactional(value = "transactionManager")
 @Validated
@@ -26,10 +26,11 @@ public class NotificationServiceWs implements NotificationService {
     private SendNotificationServiceClient sendNotificationServiceClient;
 
     private String notificationUrl;
-    
+
     private String notificationUsername;
 
-    public NotificationServiceWs(final SendNotificationServiceClient client, final String notificationUrl, final String notificationUsername) {
+    public NotificationServiceWs(final SendNotificationServiceClient client, final String notificationUrl,
+            final String notificationUsername) {
         this.sendNotificationServiceClient = client;
         this.notificationUrl = notificationUrl;
         this.notificationUsername = notificationUsername;

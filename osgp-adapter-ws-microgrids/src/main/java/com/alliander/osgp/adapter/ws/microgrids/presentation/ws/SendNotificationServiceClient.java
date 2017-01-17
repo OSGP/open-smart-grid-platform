@@ -12,9 +12,10 @@ import java.security.GeneralSecurityException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alliander.osgp.adapter.ws.microgrids.application.exceptions.WebServiceSecurityException;
 import com.alliander.osgp.adapter.ws.schema.microgrids.notification.Notification;
 import com.alliander.osgp.adapter.ws.schema.microgrids.notification.SendNotificationRequest;
+import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
+import com.alliander.osgp.shared.infra.ws.WebServiceTemplateFactory;
 
 public class SendNotificationServiceClient {
 
@@ -30,6 +31,7 @@ public class SendNotificationServiceClient {
      *
      * @param model
      *            The device to add.
+     * @throws WebServiceSecurityException
      * @throws GeneralSecurityException
      * @throws IOException
      */
