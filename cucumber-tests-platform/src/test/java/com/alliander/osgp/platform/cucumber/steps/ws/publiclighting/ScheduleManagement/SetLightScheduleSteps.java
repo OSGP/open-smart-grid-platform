@@ -115,14 +115,11 @@ public class SetLightScheduleSteps {
                     getString(requestParameters, Keys.SCHEDULE_TRIGGERTYPE),
                     getString(requestParameters, Keys.SCHEDULE_TRIGGERWINDOW));
         }
-
         try {
             ScenarioContext.Current().put(Keys.RESPONSE, this.client.setSchedule(request));
         } catch (final SoapFaultClientException ex) {
             ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
-        final Object obj = ScenarioContext.Current().get(Keys.RESPONSE);
-        System.out.println(obj);
     }
 
     private void addScheduleForRequest(final SetScheduleRequest request, final WeekDayType weekDay,
@@ -237,13 +234,22 @@ public class SetLightScheduleSteps {
                 continue;
             }
 
-            if (expectedResult.containsKey(Keys.KEY_DESCRIPTION)) {
-                if (getString(expectedResult, Keys.KEY_DESCRIPTION) != response.getDescription()) {
-                    continue;
-                }
+            if (expectedResult.containsKey(Keys.KEY_DESCRIPTION)
+                    && !getString(expectedResult, Keys.KEY_DESCRIPTION).equals(response.getDescription())) {
+                continue;
             }
 
             success = true;
+        }
+    }
+
+    @Then("^the platform buffers a set light schedule response message for device \"([^\"]*)\" contains soap fault$")
+    public void thePlatformBuffersASetLightScheduleResponseMessageForDeviceContainsSoapFault(
+            final String deviceIdentification, final Map<String, String> expectedResult) throws Throwable {
+        try {
+            this.thePlatformBuffersASetLightScheduleResponseMessageForDevice(deviceIdentification, expectedResult);
+        } catch (final SoapFaultClientException ex) {
+            Assert.assertEquals(getString(expectedResult, Keys.KEY_MESSAGE), ex.getMessage());
         }
     }
 }

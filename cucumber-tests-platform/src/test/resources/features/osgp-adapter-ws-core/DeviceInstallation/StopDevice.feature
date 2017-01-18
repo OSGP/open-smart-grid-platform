@@ -16,13 +16,11 @@ Feature: Stop Device
     And the platform buffers a stop device response message for device "TEST1024000000001"
       | Result | OK |
 
-  @OslpMockServer
   Scenario Outline: Stop device with incorrect parameters
     Given an oslp device
       | DeviceIdentification       | TEST1024000000001            |
       | OrganizationIdentification | <OrganizationIdentification> |
       | Status                     | unknown                      |
-    And the device returns a stop device response "OK" over OSLP
     When receiving a stop device test request
       | DeviceIdentification | TEST1024000000001 |
     Then the stop device response contains soap fault

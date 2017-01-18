@@ -22,7 +22,6 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
@@ -532,18 +531,17 @@ public class OslpDeviceSteps {
 
         final SetScheduleRequest request = message.getSetScheduleRequest();
 
-        LoggerFactory.getLogger(OslpDeviceSteps.class).info("Request: " + request);
         for (final Schedule schedule : request.getSchedulesList()) {
             Assert.assertEquals(getEnum(expectedRequest, Keys.SCHEDULE_WEEKDAY, Weekday.class), schedule.getWeekday());
             if (!expectedRequest.get(Keys.SCHEDULE_STARTDAY).isEmpty()) {
                 final String startDay = getDate(expectedRequest, Keys.SCHEDULE_STARTDAY).toDateTime(DateTimeZone.UTC)
-                        .toString("yyyyMMdd");
+                        .plusDays(1).toString("yyyyMMdd");
 
                 Assert.assertEquals(startDay, schedule.getStartDay());
             }
             if (!expectedRequest.get(Keys.SCHEDULE_ENDDAY).isEmpty()) {
                 final String endDay = getDate(expectedRequest, Keys.SCHEDULE_ENDDAY).toDateTime(DateTimeZone.UTC)
-                        .toString("yyyyMMdd");
+                        .plusDays(1).toString("yyyyMMdd");
                 Assert.assertEquals(endDay, schedule.getEndDay());
             }
 

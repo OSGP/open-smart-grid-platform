@@ -188,7 +188,8 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
                 }
 
                 callback.handle(message);
-            } else {
+                // } else {
+            } else if (!this.mockResponses.isEmpty()) {
                 LOGGER.info("Received OSLP Request: {}", message.getPayloadMessage().toString().split(" ")[0]);
 
                 // Sequence number logic
@@ -358,15 +359,6 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
             this.sleep(this.responseDelayTime + randomDelay);
         }
 
-        String keys = "";
-
-        for (final DeviceRequestMessageType k : this.mockResponses.keySet()) {
-            if (!keys.isEmpty()) {
-                keys += " | ";
-            }
-            keys += k.name();
-        }
-
         // Handle requests
         if (request.hasGetFirmwareVersionRequest()
                 && this.mockResponses.containsKey(DeviceRequestMessageType.GET_FIRMWARE_VERSION)) {
@@ -409,6 +401,9 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
 
         // Write log entry for response
         LOGGER.debug("Responding: " + response);
+
+        LOGGER.info("Mock Request: " + request);
+        LOGGER.info("Mock Response: " + response);
 
         return response;
     }
