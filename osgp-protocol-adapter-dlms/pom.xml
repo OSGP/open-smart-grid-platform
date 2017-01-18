@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    Copyright 2015 Smart Society Services B.V.
-
-    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
-
-        http://www.apache.org/licenses/LICENSE-2.0
-
--->
+<!-- Copyright 2015 Smart Society Services B.V. Licensed under the Apache License, Version 2.0 (the "License"); you may not 
+  use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
@@ -15,8 +8,7 @@
   <artifactId>osgp-protocol-adapter-dlms</artifactId>
   <name>osgp-protocol-adapter-dlms</name>
   <packaging>war</packaging>
-    <!-- Description element is needed for the maven-jxr-plugin to generate 
-        a maven site -->
+  <!-- Description element is needed for the maven-jxr-plugin to generate a maven site -->
   <description>Protocol Adapter for Device Message Language Specification.</description>
 
   <parent>
@@ -79,13 +71,13 @@
   </build>
 
   <dependencies>
-        <!-- OpenMUC Dependencies -->
+    <!-- OpenMUC Dependencies -->
     <dependency>
       <groupId>org.openmuc</groupId>
       <artifactId>jdlms</artifactId>
     </dependency>
 
-        <!-- Alliander -->
+    <!-- Alliander -->
     <dependency>
       <groupId>com.alliander.osgp</groupId>
       <artifactId>osgp-dto</artifactId>
@@ -94,7 +86,7 @@
       <groupId>com.alliander.osgp</groupId>
       <artifactId>shared</artifactId>
     </dependency>
-    
+
     <dependency>
       <groupId>org.osgp</groupId>
       <artifactId>jasper-interface</artifactId>
@@ -105,7 +97,7 @@
       <artifactId>osgp-dlms</artifactId>
     </dependency>
 
-        <!-- Spring Framework -->
+    <!-- Spring Framework -->
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-beans</artifactId>
@@ -135,13 +127,13 @@
       <artifactId>spring-tx</artifactId>
     </dependency>
 
-        <!-- Spring Data -->
+    <!-- Spring Data -->
     <dependency>
       <groupId>org.springframework.data</groupId>
       <artifactId>spring-data-jpa</artifactId>
     </dependency>
 
-        <!-- Spring WS -->
+    <!-- Spring WS -->
     <dependency>
       <groupId>org.springframework.ws</groupId>
       <artifactId>spring-ws-core</artifactId>
@@ -160,7 +152,7 @@
       <classifier>all</classifier>
     </dependency>
 
-        <!-- Spring Test -->
+    <!-- Spring Test -->
     <dependency>
       <groupId>xmlunit</groupId>
       <artifactId>xmlunit</artifactId>
@@ -169,26 +161,26 @@
       <groupId>org.mockito</groupId>
       <artifactId>mockito-all</artifactId>
     </dependency>
-        
-        <!-- javax inject -->
+
+    <!-- javax inject -->
     <dependency>
       <groupId>javax.inject</groupId>
       <artifactId>javax.inject</artifactId>
     </dependency>
 
-        <!-- Apache ws support -->
+    <!-- Apache ws support -->
     <dependency>
       <groupId>org.apache.ws.security</groupId>
       <artifactId>wss4j</artifactId>
     </dependency>
 
-        <!-- Joda Time (Date/Time util) -->
+    <!-- Joda Time (Date/Time util) -->
     <dependency>
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
     </dependency>
 
-        <!-- Hibernate -->
+    <!-- Hibernate -->
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
@@ -198,13 +190,13 @@
       <artifactId>hibernate-entitymanager</artifactId>
     </dependency>
 
-        <!-- Flyway (DB Migration) -->
+    <!-- Flyway (DB Migration) -->
     <dependency>
       <groupId>com.googlecode.flyway</groupId>
       <artifactId>flyway-core</artifactId>
     </dependency>
 
-        <!-- Logging -->
+    <!-- Logging -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
@@ -218,32 +210,32 @@
       <artifactId>logback-ext-spring</artifactId>
     </dependency>
 
-        <!-- Netty -->
+    <!-- Netty -->
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty</artifactId>
     </dependency>
 
-        <!-- Servlet API 3.0 -->
+    <!-- Servlet API 3.0 -->
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
 
-        <!-- Apache commons -->
+    <!-- Apache commons -->
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
     </dependency>
 
-        <!-- Orika (mapping framework) -->
+    <!-- Orika (mapping framework) -->
     <dependency>
       <groupId>ma.glasnost.orika</groupId>
       <artifactId>orika-core</artifactId>
     </dependency>
 
-        <!-- Apache ActiveMQ -->
+    <!-- Apache ActiveMQ -->
     <dependency>
       <groupId>org.apache.activemq</groupId>
       <artifactId>activemq-client</artifactId>
@@ -253,13 +245,13 @@
       <artifactId>activemq-spring</artifactId>
     </dependency>
 
-        <!-- Spring JMS -->
+    <!-- Spring JMS -->
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-jms</artifactId>
     </dependency>
 
-        <!-- Testing dependencies -->
+    <!-- Testing dependencies -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
