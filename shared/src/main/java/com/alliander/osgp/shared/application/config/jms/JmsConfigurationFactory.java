@@ -35,11 +35,11 @@ public class JmsConfigurationFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JmsConfigurationFactory.class);
 
-    private Environment environment;
+    private final Environment environment;
 
-    private PooledConnectionFactory pooledConnectionFactory;
+    private final PooledConnectionFactory pooledConnectionFactory;
 
-    private RedeliveryPolicyMap redeliveryPolicyMap;
+    private final RedeliveryPolicyMap redeliveryPolicyMap;
 
     /**
      * 
@@ -120,7 +120,7 @@ public class JmsConfigurationFactory {
             configuration.setJmsTemplate(this.jmsTemplate());
             configuration.setRedeliveryPolicy(this.redeliveryPolicy());
             if (this.messageListener != null) {
-                configuration.setMessageListenerContainer(this.messageListenerContainer(this.messageListener));
+                configuration.setMessageListenerContainer(this.messageListenerContainer());
             }
             return configuration;
         }
@@ -137,9 +137,9 @@ public class JmsConfigurationFactory {
                 }
 
                 return property;
-            } catch (NoSuchFieldError e) {
-                final T property = this.fallbackProperty(propertyName, targetType);
-                return property;
+            } catch (final NoSuchFieldError e) {
+                LOGGER.warn("Exception while retrieving field " + propertyName, e);
+                return this.fallbackProperty(propertyName, targetType);
             }
         }
 
@@ -193,7 +193,7 @@ public class JmsConfigurationFactory {
             return redeliveryPolicy;
         }
 
-        private DefaultMessageListenerContainer messageListenerContainer(final MessageListener messageListener) {
+        private DefaultMessageListenerContainer messageListenerContainer() {
             return this.defaultMessageListenerContainer(this.destinationQueue, this.messageListener,
                     this.property(PROPERTY_CONCURRENT_CONSUMERS, int.class),
                     this.property(PROPERTY_MAX_CONCURRENT_CONSUMERS, int.class));

@@ -38,7 +38,7 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
     }
 
     @Bean
-    protected JmsConfigurationFactory JmsConfigurationFactory(
+    protected JmsConfigurationFactory jmsConfigurationFactory(
             @Qualifier("propertiesFactoryBean") final Properties properties,
             final PooledConnectionFactory pooledConnectionFactory, final RedeliveryPolicyMap redeliveryPolicyMap) {
         return new JmsConfigurationFactory(this.environment, pooledConnectionFactory, redeliveryPolicyMap);
@@ -61,8 +61,7 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
 
     @Bean
     protected RedeliveryPolicyMap redeliveryPolicyMap() {
-        final RedeliveryPolicyMap redeliveryPolicyMap = new RedeliveryPolicyMap();
-        return redeliveryPolicyMap;
+        return new RedeliveryPolicyMap();
     }
 
 }
