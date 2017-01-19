@@ -6,21 +6,23 @@ Feature: Core Device management
   @OslpMockServer
   Scenario Outline: Set Event Notifications
     Given an oslp device
-      | DeviceIdentification | <DeviceIdentification> |
+      | DeviceIdentification | TEST1024000000001 |
     And the device returns a set event notification "<Result>" over OSLP
     When receiving a set event notification message request on OSGP
-      | Event                | <Event>                |
-      | DeviceIdentification | <DeviceIdentification> |
+      | DeviceIdentification | TEST1024000000001 |
+      | Event                | <Event>           |
     Then the set event notification async response contains
-      | DeviceIdentification | <DeviceIdentification> |
+      | DeviceIdentification | TEST1024000000001 |
     And a set event notification OSLP message is sent to device "<DeviceIdentification>"
     And the platform buffers a set event notification response message for device "<DeviceIdentification>"
-      | Result | <Result> |
+      | Result | OK |
 
     Examples: 
-      | DeviceIdentification | Result | Event                         |
-      | TEST1024000000001    | OK     | LIGHT_EVENTS, SECURITY_EVENTS |
-      | TEST1024000000001    | OK     | SECURITY_EVENTS               |
+      | Event                       |
+      | LIGHT_EVENTS                |
+      | TARIFF_EVENTS               |
+      | COMM_EVENTS                 |
+      | LIGHT_EVENTS, TARIFF_EVENTS |
 
   Scenario Outline: Find devices parameterized
     Given a device
@@ -35,5 +37,3 @@ Feature: Core Device management
     Examples: 
       | DeviceIdentification | PageSize | Page | Number |
       | TEST1024000000001    |       25 |    0 |      1 |
-
-  

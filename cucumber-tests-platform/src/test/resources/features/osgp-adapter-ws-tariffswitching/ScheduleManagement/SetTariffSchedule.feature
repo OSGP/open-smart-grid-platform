@@ -33,8 +33,8 @@ Feature: SetSchedule
       | MONDAY      |            |        | 08:00:00.000 | 1,true       |
       | WEEKDAY     |            |        | 21:00:00.000 | 1,false      |
       | MONDAY      |            |        | 18:00:00.000 | 1,true       |
-      | MONDAY      |            |        |              | 1,true       |
       | ABSOLUTEDAY | 2013-03-01 |        | 18:00:00.000 | 1,true       |
+      | MONDAY      |            |        |              | 1,true       |
 
   @OslpMockServer
   Scenario: Failed set tariff schedule
