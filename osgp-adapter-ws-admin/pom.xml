@@ -1,8 +1,6 @@
-<!-- 
-    Copyright 2015 Smart Society Services B.V. Licensed under the Apache 
-    License, Version 2.0 (the "License"); you may not use this file except in 
-    compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
--->
+<!-- Copyright 2015 Smart Society Services B.V. Licensed under the Apache 
+  License, Version 2.0 (the "License"); you may not use this file except in 
+  compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
@@ -10,7 +8,8 @@
   <artifactId>osgp-adapter-ws-admin</artifactId>
   <name>osgp-adapter-ws-admin</name>
   <packaging>war</packaging>
-  <!-- Description element is needed for the maven-jxr-plugin to generate a maven site -->
+  <!-- Description element is needed for the maven-jxr-plugin to generate 
+    a maven site -->
   <description>Web service module for management.</description>
 
   <parent>
@@ -30,31 +29,6 @@
 
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>jaxb2-maven-plugin</artifactId>
-        <version>1.5</version>
-        <executions>
-          <execution>
-            <id>device-management</id>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-            <configuration>
-              <bindingDirectory>src/main/webapp/WEB-INF/wsdl/admin/schemas</bindingDirectory>
-              <bindingFiles>devicemanagement.xjb</bindingFiles>
-              <schemaDirectory>src/main/webapp/WEB-INF/wsdl/admin</schemaDirectory>
-              <schemaFiles>DeviceManagement.wsdl</schemaFiles>
-              <!-- <packageName>com.alliander.osgp.adapter.ws.schema.admin.devicemanagement</packageName> -->
-              <wsdl>true</wsdl>
-              <xmlschema>false</xmlschema>
-              <staleFile>${project.build.directory}/jaxb2/.schema-device-management-stale-flag</staleFile>
-              <!-- USE THIS ONLU FOR THE FIRST EXECUTION -->
-              <clearOutputDir>true</clearOutputDir>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
@@ -98,6 +72,10 @@
     <dependency>
       <groupId>com.alliander.osgp</groupId>
       <artifactId>osgp-adapter-ws-shared</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.alliander.osgp</groupId>
+      <artifactId>osgp-ws-admin</artifactId>
     </dependency>
 
     <!-- Spring Framework -->
