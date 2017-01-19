@@ -166,10 +166,6 @@ public class CreateDeviceSteps {
         GenericResponseSteps.verifySoapFault(expectedResult);
     }
 
-    /**
-     * @param expectedResult
-     * @throws Throwable
-     */
     @Then("^the update device response contains$")
     public void theUpdateDeviceResponseContains(final Map<String, String> expectedResult) throws Throwable {
         Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof UpdateDeviceResponse);
