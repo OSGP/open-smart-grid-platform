@@ -1,4 +1,5 @@
 package com.alliander.osgp.ws.core.config;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
@@ -41,12 +42,12 @@ public class CoreWebServiceConfig {
 
     @Bean(name = "AdHocManagement")
     public WsdlDefinition AdHocManagementWsdl() {
-        return new SimpleWsdl11Definition(new ClassPathResource("AdhocManagement.wsdl"));
+        return new SimpleWsdl11Definition(new ClassPathResource("AdHocManagement.wsdl"));
     }
 
     @Bean(name = "adhocmanagement")
     public SimpleXsdSchema adhocManagementXsd() {
-        return new SimpleXsdSchema(new ClassPathResource("schemas/adhocmanagement"));
+        return new SimpleXsdSchema(new ClassPathResource("schemas/adhocmanagement.xsd"));
     }
 
     @Bean(name = "ConfigurationManagement")
@@ -56,7 +57,7 @@ public class CoreWebServiceConfig {
 
     @Bean(name = "configurationmanagement")
     public SimpleXsdSchema configurationManagementXsd() {
-        return new SimpleXsdSchema(new ClassPathResource("schemas/configurationmanagement"));
+        return new SimpleXsdSchema(new ClassPathResource("schemas/configurationmanagement.xsd"));
     }
 
     @Bean(name = "DeviceInstallation")
@@ -66,7 +67,7 @@ public class CoreWebServiceConfig {
 
     @Bean(name = "deviceinstallation")
     public SimpleXsdSchema deviceInstallationXsd() {
-        return new SimpleXsdSchema(new ClassPathResource("schemas/deviceinstallation"));
+        return new SimpleXsdSchema(new ClassPathResource("schemas/deviceinstallation.xsd"));
     }
 
     @Bean(name = "DeviceManagement")
@@ -76,7 +77,7 @@ public class CoreWebServiceConfig {
 
     @Bean(name = "devicemanagement")
     public SimpleXsdSchema deviceManagementXsd() {
-        return new SimpleXsdSchema(new ClassPathResource("schemas/devicemanagement"));
+        return new SimpleXsdSchema(new ClassPathResource("schemas/devicemanagement.xsd"));
     }
 
     @Bean(name = "FirmwareManagement")
@@ -86,6 +87,6 @@ public class CoreWebServiceConfig {
 
     @Bean(name = "firmwaremanagement")
     public SimpleXsdSchema firmwareManagementXsd() {
-        return new SimpleXsdSchema(new ClassPathResource("schemas/firmwaremanagement"));
+        return new SimpleXsdSchema(new ClassPathResource("schemas/firmwaremanagement.xsd"));
     }
 }
