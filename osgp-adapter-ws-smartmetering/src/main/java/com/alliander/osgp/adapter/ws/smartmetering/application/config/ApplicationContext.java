@@ -27,14 +27,14 @@ import com.alliander.osgp.adapter.ws.infra.specifications.JpaEventSpecifications
 import com.alliander.osgp.domain.core.specifications.EventSpecifications;
 import com.alliander.osgp.shared.application.config.AbstractConfig;
 import com.alliander.osgp.shared.application.config.PagingSettings;
-import com.alliander.osgp.ws.smartmetering.application.config.SmartmeteringWebServiceConfig;
+import com.alliander.osgp.ws.smartmetering.config.SmartmeteringWebServiceConfig;
 
 /**
  * An application context Java configuration class.
  */
 @Configuration
 @ComponentScan(basePackages = { "com.alliander.osgp.domain.core", "com.alliander.osgp.adapter.ws.smartmetering",
-        "com.alliander.osgp.logging.domain", "com.alliander.osgp.adapter.ws.smartmetering.application.config2" })
+        "com.alliander.osgp.logging.domain" })
 @EnableTransactionManagement()
 @ImportResource("classpath:applicationContext.xml")
 @Import({ PersistenceConfig.class, CorePersistenceConfig.class, MessagingConfig.class, WebServiceConfig.class,
