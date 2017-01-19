@@ -118,6 +118,11 @@
         <artifactId>osgp-ws-smartmetering</artifactId>
         <version>${shared.version}</version>
       </dependency>
+      <dependency>
+        <groupId>com.alliander.osgp</groupId>
+        <artifactId>osgp-ws-core</artifactId>
+        <version>${shared.version}</version>
+      </dependency>
 
       <dependency>
         <groupId>com.alliander.osgp</groupId>
