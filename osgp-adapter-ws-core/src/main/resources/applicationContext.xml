@@ -13,46 +13,6 @@
 
     <sws:annotation-driven/>
 
- 	<sws:static-wsdl id="AdHocManagement" location="/WEB-INF/wsdl/common/AdHocManagement.wsdl"/>
- 	<sws:static-wsdl id="DeviceInstallation" location="/WEB-INF/wsdl/common/DeviceInstallation.wsdl"/>
- 	<sws:static-wsdl id="DeviceManagement" location="/WEB-INF/wsdl/common/DeviceManagement.wsdl"/>
- 	<sws:static-wsdl id="FirmwareManagement" location="/WEB-INF/wsdl/common/FirmwareManagement.wsdl"/>
- 	<sws:static-wsdl id="ConfigurationManagement" location="/WEB-INF/wsdl/common/ConfigurationManagement.wsdl"/>
-
-    <bean id="common" class="org.springframework.xml.xsd.SimpleXsdSchema">
-        <property name="xsd" value="/WEB-INF/wsdl/common/schemas/common.xsd" />
-    </bean>
-
-    <bean id="adhocmanagement" class="org.springframework.xml.xsd.SimpleXsdSchema">
-        <property name="xsd" value="/WEB-INF/wsdl/common/schemas/adhocmanagement.xsd" />
-    </bean>
-
-    <bean id="configurationmanagement" class="org.springframework.xml.xsd.SimpleXsdSchema">
-        <property name="xsd" value="/WEB-INF/wsdl/common/schemas/configurationmanagement.xsd" />
-    </bean>
-
-    <bean id="deviceinstallation" class="org.springframework.xml.xsd.SimpleXsdSchema">
-        <property name="xsd" value="/WEB-INF/wsdl/common/schemas/deviceinstallation.xsd" />
-    </bean>
-    
-    <bean id="devicemanagement" class="org.springframework.xml.xsd.SimpleXsdSchema">
-        <property name="xsd" value="/WEB-INF/wsdl/common/schemas/devicemanagement.xsd" />
-    </bean>
-    
-    <bean id="firmwaremanagement" class="org.springframework.xml.xsd.SimpleXsdSchema">
-        <property name="xsd" value="/WEB-INF/wsdl/common/schemas/firmwaremanagement.xsd" />
-    </bean>    
-
-	<bean id="payloadValidatingInterceptor" class="org.springframework.ws.soap.server.endpoint.interceptor.PayloadValidatingInterceptor">
-		<property name="schemas">
-			<list>
-				<value>/WEB-INF/wsdl/common/schemas/*.xsd</value>
-			</list>			
-		</property>
-		<property name="validateRequest" value="true" />
-		<property name="validateResponse" value="false" />	
-	</bean>
-
     <sws:interceptors>
         <ref bean="x509CertificateSubjectCnEndpointInterceptor"/>
         <ref bean="organisationIdentificationInterceptor"/>
