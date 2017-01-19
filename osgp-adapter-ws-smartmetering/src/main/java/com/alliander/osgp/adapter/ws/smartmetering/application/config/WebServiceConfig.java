@@ -46,12 +46,11 @@ import com.alliander.osgp.adapter.ws.smartmetering.application.services.Notifica
 import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.SendNotificationServiceClient;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.WebServiceTemplateFactory;
 import com.alliander.osgp.shared.application.config.AbstractConfig;
-import com.alliander.osgp.ws.smartmetering.application.config.SmartmeteringWebServiceConfig;
 
 @Configuration
 @PropertySources({ @PropertySource("classpath:osgp-adapter-ws-smartmetering.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-    @PropertySource(value = "file:${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true), })
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true), })
 public class WebServiceConfig extends AbstractConfig {
 
     @Value("${jaxb2.marshaller.context.path.smartmetering.adhoc}")
@@ -107,7 +106,7 @@ public class WebServiceConfig extends AbstractConfig {
     private static final String X509_RDN_ATTRIBUTE_ID = "cn";
     private static final String X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME = "CommonNameSet";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SmartmeteringWebServiceConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceConfig.class);
 
     // WS Notification communication
 
@@ -135,8 +134,8 @@ public class WebServiceConfig extends AbstractConfig {
 
     @Bean
     public SendNotificationServiceClient sendNotificationServiceClient() throws java.security.GeneralSecurityException {
-        return new SendNotificationServiceClient(this.createWebServiceTemplateFactory(this
-                .notificationSenderMarshaller()));
+        return new SendNotificationServiceClient(
+                this.createWebServiceTemplateFactory(this.notificationSenderMarshaller()));
     }
 
     private WebServiceTemplateFactory createWebServiceTemplateFactory(final Jaxb2Marshaller marshaller) {
@@ -345,10 +344,10 @@ public class WebServiceConfig extends AbstractConfig {
 
         methodArgumentResolvers.add(new AnnotationMethodArgumentResolver(ORGANISATION_IDENTIFICATION_CONTEXT,
                 OrganisationIdentification.class));
-        methodArgumentResolvers.add(new AnnotationMethodArgumentResolver(MESSAGE_PRIORITY_CONTEXT,
-                MessagePriority.class));
-        methodArgumentResolvers.add(new AnnotationMethodArgumentResolver(MESSAGE_SCHEDULETIME_HEADER,
-                ScheduleTime.class));
+        methodArgumentResolvers
+                .add(new AnnotationMethodArgumentResolver(MESSAGE_PRIORITY_CONTEXT, MessagePriority.class));
+        methodArgumentResolvers
+                .add(new AnnotationMethodArgumentResolver(MESSAGE_SCHEDULETIME_HEADER, ScheduleTime.class));
         defaultMethodEndpointAdapter.setMethodArgumentResolvers(methodArgumentResolvers);
 
         final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<MethodReturnValueHandler>();
