@@ -80,6 +80,11 @@
         <artifactId>osgp-ws-core</artifactId>
         <version>${osgp.shared.version}</version>
       </dependency>
+      <dependency>
+        <groupId>com.alliander.osgp</groupId>
+        <artifactId>osgp-ws-admin</artifactId>
+        <version>${osgp.shared.version}</version>
+      </dependency>
 
       <!-- Spring Framework -->
       <dependency>
