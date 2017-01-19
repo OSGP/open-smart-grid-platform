@@ -278,9 +278,28 @@ public class OslpDeviceSteps {
     public void theDeviceReturnsASetLightScheduleResponseOverOSLP(final Map<String, String> requestParameters)
             throws Throwable {
 
-        Oslp.Status oslpStatus = Status.OK;
+        this.callMockSetScheduleResponse(requestParameters, DeviceRequestMessageType.SET_LIGHT_SCHEDULE);
+    }
+
+    /**
+     * Setup method to get a status which should be returned by the mock.
+     *
+     * @param result
+     *            The get status to respond.
+     * @throws Throwable
+     */
+    @Given("^the device returns a set tariff schedule response over OSLP$")
+    public void theDeviceReturnsASetTariffScheduleResponseOverOSLP(final Map<String, String> requestParameters)
+            throws Throwable {
+
+        this.callMockSetScheduleResponse(requestParameters, DeviceRequestMessageType.SET_TARIFF_SCHEDULE);
+    }
+
+    private void callMockSetScheduleResponse(final Map<String, String> requestParameters,
+            final DeviceRequestMessageType type) {
 
         final String result = getString(requestParameters, Keys.KEY_STATUS, Defaults.DEFAULT_STATUS.toString());
+        Oslp.Status oslpStatus = Status.OK;
 
         switch (result) {
         case "OK":
@@ -295,7 +314,7 @@ public class OslpDeviceSteps {
         // TODO: Implement other possible status
         }
 
-        this.oslpMockServer.mockSetLightScheduleResponse(oslpStatus);
+        this.oslpMockServer.mockSetScheduleResponse(type, oslpStatus);
     }
 
     /**
@@ -441,7 +460,6 @@ public class OslpDeviceSteps {
      */
     @Then("^a set reboot OSLP message is sent to device \"([^\"]*)\"$")
     public void aSetRebootOSLPMessageIsSentToDevice(final String deviceIdentification) throws Throwable {
-        // TODO: Sent an OSLP start device message to device
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.SET_REBOOT);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasSetRebootRequest());
@@ -525,14 +543,36 @@ public class OslpDeviceSteps {
     @Then("^a set light schedule OSLP message is sent to device \"([^\"]*)\"$")
     public void aSetLightScheduleOSLPMessageIsSentToDevice(final String deviceIdentification,
             final Map<String, String> expectedRequest) throws Throwable {
-        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.SET_LIGHT_SCHEDULE);
+        this.checkAndValidateRequest(DeviceRequestMessageType.SET_LIGHT_SCHEDULE, expectedRequest);
+    }
+
+    /**
+     * Verify that a set tariff schedule OSLP message is sent to the device.
+     *
+     * @param deviceIdentification
+     *            The device identification expected in the message to the
+     *            device.
+     * @throws Throwable
+     */
+    @Then("^a set tariff schedule OSLP message is sent to device \"([^\"]*)\"$")
+    public void aSetTariffScheduleOSLPMessageIsSentToDevice(final String deviceIdentification,
+            final Map<String, String> expectedRequest) throws Throwable {
+        this.checkAndValidateRequest(DeviceRequestMessageType.SET_TARIFF_SCHEDULE, expectedRequest);
+    }
+
+    private void checkAndValidateRequest(final DeviceRequestMessageType type,
+            final Map<String, String> expectedRequest) {
+        final Message message = this.oslpMockServer.waitForRequest(type);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasSetScheduleRequest());
 
         final SetScheduleRequest request = message.getSetScheduleRequest();
 
         for (final Schedule schedule : request.getSchedulesList()) {
-            Assert.assertEquals(getEnum(expectedRequest, Keys.SCHEDULE_WEEKDAY, Weekday.class), schedule.getWeekday());
+            if (type == DeviceRequestMessageType.SET_LIGHT_SCHEDULE) {
+                Assert.assertEquals(getEnum(expectedRequest, Keys.SCHEDULE_WEEKDAY, Weekday.class),
+                        schedule.getWeekday());
+            }
             if (!expectedRequest.get(Keys.SCHEDULE_STARTDAY).isEmpty()) {
                 final String startDay = getDate(expectedRequest, Keys.SCHEDULE_STARTDAY).toDateTime(DateTimeZone.UTC)
                         .plusDays(1).toString("yyyyMMdd");
@@ -545,38 +585,42 @@ public class OslpDeviceSteps {
                 Assert.assertEquals(endDay, schedule.getEndDay());
             }
 
-            Assert.assertEquals(getEnum(expectedRequest, Keys.SCHEDULE_ACTIONTIME, ActionTime.class),
-                    schedule.getActionTime());
+            if (type == DeviceRequestMessageType.SET_LIGHT_SCHEDULE) {
+                Assert.assertEquals(getEnum(expectedRequest, Keys.SCHEDULE_ACTIONTIME, ActionTime.class),
+                        schedule.getActionTime());
+            }
             String expectedTime = getString(expectedRequest, Keys.SCHEDULE_TIME).replace(":", "");
             if (expectedTime.contains(".")) {
                 expectedTime = expectedTime.substring(0, expectedTime.indexOf("."));
             }
             Assert.assertEquals(expectedTime, schedule.getTime());
-            final String scheduleLightValue = getString(expectedRequest, Keys.SCHEDULE_LIGHTVALUES);
-            // if (scheduleLightValue.contains(";")) {
+            final String scheduleLightValue = getString(expectedRequest,
+                    (type == DeviceRequestMessageType.SET_LIGHT_SCHEDULE) ? Keys.SCHEDULE_LIGHTVALUES
+                            : Keys.SCHEDULE_TARIFFVALUES);
             final String[] scheduleLightValues = scheduleLightValue.split(";");
             Assert.assertEquals(scheduleLightValues.length, schedule.getValueCount());
             for (int i = 0; i < scheduleLightValues.length; i++) {
-                // this.assertScheduleLightValues(scheduleLightValues[i],
-                // schedule.getValue(i));
                 final Integer index = OslpUtils.byteStringToInteger(schedule.getValue(i).getIndex()),
                         dimValue = OslpUtils.byteStringToInteger(schedule.getValue(i).getDimValue());
-                Assert.assertEquals(scheduleLightValues[i], String.format("%s,%s,%s", (index != null) ? index : "",
-                        schedule.getValue(i).getOn(), (dimValue != null) ? dimValue : ""));
+                if (type == DeviceRequestMessageType.SET_LIGHT_SCHEDULE) {
+                    Assert.assertEquals(scheduleLightValues[i], String.format("%s,%s,%s", (index != null) ? index : "",
+                            schedule.getValue(i).getOn(), (dimValue != null) ? dimValue : ""));
+                } else if (type == DeviceRequestMessageType.SET_TARIFF_SCHEDULE) {
+                    Assert.assertEquals(scheduleLightValues[i],
+                            String.format("%s,%s", (index != null) ? index : "", !schedule.getValue(i).getOn()));
+                }
             }
-            // } else {
-            // this.assertScheduleLightValues(scheduleLightValue,
-            // schedule.getValue(0));
-            // }
 
-            Assert.assertEquals((!getString(expectedRequest, Keys.SCHEDULE_TRIGGERTYPE).isEmpty())
-                    ? getEnum(expectedRequest, Keys.SCHEDULE_TRIGGERTYPE, TriggerType.class) : TriggerType.TT_NOT_SET,
-                    schedule.getTriggerType());
+            if (type == DeviceRequestMessageType.SET_LIGHT_SCHEDULE) {
+                Assert.assertEquals((!getString(expectedRequest, Keys.SCHEDULE_TRIGGERTYPE).isEmpty())
+                        ? getEnum(expectedRequest, Keys.SCHEDULE_TRIGGERTYPE, TriggerType.class)
+                        : TriggerType.TT_NOT_SET, schedule.getTriggerType());
 
-            final String[] windowTypeValues = getString(expectedRequest, Keys.SCHEDULE_TRIGGERWINDOW).split(",");
-            if (windowTypeValues.length == 2) {
-                Assert.assertEquals(Integer.parseInt(windowTypeValues[0]), schedule.getWindow().getMinutesBefore());
-                Assert.assertEquals(Integer.parseInt(windowTypeValues[1]), schedule.getWindow().getMinutesAfter());
+                final String[] windowTypeValues = getString(expectedRequest, Keys.SCHEDULE_TRIGGERWINDOW).split(",");
+                if (windowTypeValues.length == 2) {
+                    Assert.assertEquals(Integer.parseInt(windowTypeValues[0]), schedule.getWindow().getMinutesBefore());
+                    Assert.assertEquals(Integer.parseInt(windowTypeValues[1]), schedule.getWindow().getMinutesAfter());
+                }
             }
         }
     }

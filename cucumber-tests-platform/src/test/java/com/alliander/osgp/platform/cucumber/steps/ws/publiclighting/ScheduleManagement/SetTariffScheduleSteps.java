@@ -11,6 +11,7 @@ package com.alliander.osgp.platform.cucumber.steps.ws.publiclighting.ScheduleMan
 
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getDate;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getEnum;
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getInteger;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.saveCorrelationUidInScenarioContext;
 
@@ -28,40 +29,38 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import com.alliander.osgp.adapter.ws.schema.publiclighting.common.AsyncRequest;
-import com.alliander.osgp.adapter.ws.schema.publiclighting.common.OsgpResultType;
-import com.alliander.osgp.adapter.ws.schema.publiclighting.schedulemanagement.ActionTimeType;
-import com.alliander.osgp.adapter.ws.schema.publiclighting.schedulemanagement.LightValue;
-import com.alliander.osgp.adapter.ws.schema.publiclighting.schedulemanagement.Schedule;
-import com.alliander.osgp.adapter.ws.schema.publiclighting.schedulemanagement.SetScheduleAsyncRequest;
-import com.alliander.osgp.adapter.ws.schema.publiclighting.schedulemanagement.SetScheduleAsyncResponse;
-import com.alliander.osgp.adapter.ws.schema.publiclighting.schedulemanagement.SetScheduleRequest;
-import com.alliander.osgp.adapter.ws.schema.publiclighting.schedulemanagement.SetScheduleResponse;
-import com.alliander.osgp.adapter.ws.schema.publiclighting.schedulemanagement.TriggerType;
-import com.alliander.osgp.adapter.ws.schema.publiclighting.schedulemanagement.WeekDayType;
-import com.alliander.osgp.adapter.ws.schema.publiclighting.schedulemanagement.WindowType;
+import com.alliander.osgp.adapter.ws.schema.tariffswitching.common.AsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.tariffswitching.common.OsgpResultType;
+import com.alliander.osgp.adapter.ws.schema.tariffswitching.common.Page;
+import com.alliander.osgp.adapter.ws.schema.tariffswitching.schedulemanagement.SetScheduleAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.tariffswitching.schedulemanagement.SetScheduleAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.tariffswitching.schedulemanagement.SetScheduleRequest;
+import com.alliander.osgp.adapter.ws.schema.tariffswitching.schedulemanagement.SetScheduleResponse;
+import com.alliander.osgp.adapter.ws.schema.tariffswitching.schedulemanagement.TariffSchedule;
+import com.alliander.osgp.adapter.ws.schema.tariffswitching.schedulemanagement.TariffValue;
+import com.alliander.osgp.adapter.ws.schema.tariffswitching.schedulemanagement.WeekDayType;
 import com.alliander.osgp.platform.cucumber.config.CoreDeviceConfiguration;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.cucumber.steps.ws.GenericResponseSteps;
-import com.alliander.osgp.platform.cucumber.support.ws.publiclighting.PublicLightingScheduleManagementClient;
+import com.alliander.osgp.platform.cucumber.support.ws.tariffswitching.TariffSwitchingScheduleManagementClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 /**
- * Class with all the set light requests steps
+ * Class with all the set requests steps
  */
-public class SetLightScheduleSteps {
+public class SetTariffScheduleSteps {
 
     @Autowired
     private CoreDeviceConfiguration configuration;
 
     @Autowired
-    private PublicLightingScheduleManagementClient client;
+    private TariffSwitchingScheduleManagementClient client;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SetLightScheduleSteps.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SetTariffScheduleSteps.class);
 
     /**
      * Sends a Set Schedule request to the platform for a given device
@@ -71,8 +70,8 @@ public class SetLightScheduleSteps {
      *            The table with the request parameters.
      * @throws Throwable
      */
-    @When("^receiving a set light schedule request$")
-    public void receivingASetLightScheduleRequest(final Map<String, String> requestParameters) throws Throwable {
+    @When("^receiving a set tariff schedule request$")
+    public void receivingASetTariffScheduleRequest(final Map<String, String> requestParameters) throws Throwable {
 
         this.callAddSchedule(requestParameters, 1);
     }
@@ -85,8 +84,8 @@ public class SetLightScheduleSteps {
      *            The table with the request parameters.
      * @throws Throwable
      */
-    @When("^receiving a set light schedule request for (\\d+) schedules?$")
-    public void receivingASetLightScheduleRequestForSchedules(final Integer countSchedules,
+    @When("^receiving a set tariff schedule request for (\\d+) schedules?$")
+    public void receivingASetTariffScheduleRequestForSchedules(final Integer countSchedules,
             final Map<String, String> requestParameters) throws Throwable {
 
         this.callAddSchedule(requestParameters, countSchedules);
@@ -109,12 +108,20 @@ public class SetLightScheduleSteps {
             this.addScheduleForRequest(request, getEnum(requestParameters, Keys.SCHEDULE_WEEKDAY, WeekDayType.class),
                     getString(requestParameters, Keys.SCHEDULE_STARTDAY),
                     getString(requestParameters, Keys.SCHEDULE_ENDDAY),
-                    getEnum(requestParameters, Keys.SCHEDULE_ACTIONTIME, ActionTimeType.class),
                     getString(requestParameters, Keys.SCHEDULE_TIME),
-                    getString(requestParameters, Keys.SCHEDULE_LIGHTVALUES),
-                    getString(requestParameters, Keys.SCHEDULE_TRIGGERTYPE),
-                    getString(requestParameters, Keys.SCHEDULE_TRIGGERWINDOW));
+                    getString(requestParameters, Keys.SCHEDULE_TARIFFVALUES));
         }
+
+        if (requestParameters.containsKey(Keys.SCHEDULE_CURRENTPAGE)
+                && requestParameters.containsKey(Keys.SCHEDULE_PAGESIZE)
+                && requestParameters.containsKey(Keys.SCHEDULE_TOTALPAGES)) {
+            final Page page = new Page();
+            page.setCurrentPage(getInteger(requestParameters, Keys.SCHEDULE_CURRENTPAGE));
+            page.setPageSize(getInteger(requestParameters, Keys.SCHEDULE_PAGESIZE));
+            page.setTotalPages(getInteger(requestParameters, Keys.SCHEDULE_TOTALPAGES));
+            request.setPage(page);
+        }
+
         try {
             ScenarioContext.Current().put(Keys.RESPONSE, this.client.setSchedule(request));
         } catch (final SoapFaultClientException ex) {
@@ -123,10 +130,9 @@ public class SetLightScheduleSteps {
     }
 
     private void addScheduleForRequest(final SetScheduleRequest request, final WeekDayType weekDay,
-            final String startDay, final String endDay, final ActionTimeType actionTime, final String time,
-            final String scheduleLightValue, final String triggerType, final String triggerWindow)
+            final String startDay, final String endDay, final String time, final String scheduleTariffValue)
             throws DatatypeConfigurationException {
-        final Schedule schedule = new Schedule();
+        final TariffSchedule schedule = new TariffSchedule();
         schedule.setWeekDay(weekDay);
         if (!startDay.isEmpty()) {
             schedule.setStartDay(DatatypeFactory.newInstance()
@@ -136,44 +142,27 @@ public class SetLightScheduleSteps {
             schedule.setEndDay(DatatypeFactory.newInstance()
                     .newXMLGregorianCalendar(DateTime.parse(endDay).toGregorianCalendar()));
         }
-        schedule.setActionTime(actionTime);
         schedule.setTime(time);
 
-        for (final String lightValue : scheduleLightValue.split(";")) {
-            final LightValue lv = new LightValue();
-            final String[] lightValues = lightValue.split(",");
-            lv.setIndex(Integer.parseInt(lightValues[0]));
-            lv.setOn(Boolean.parseBoolean(lightValues[1]));
-            if (lightValues.length > 2) {
-                lv.setDimValue(Integer.parseInt(lightValues[2]));
-            }
+        for (final String tariffValue : scheduleTariffValue.split(";")) {
+            final TariffValue lv = new TariffValue();
+            final String[] tariffValues = tariffValue.split(",");
+            lv.setIndex(Integer.parseInt(tariffValues[0]));
+            lv.setHigh(Boolean.parseBoolean(tariffValues[1]));
 
-            schedule.getLightValue().add(lv);
-        }
-
-        if (!triggerType.isEmpty()) {
-            schedule.setTriggerType(TriggerType.valueOf(triggerType));
-        }
-
-        final String[] windowTypeValues = triggerWindow.split(",");
-        if (windowTypeValues.length == 2) {
-            final WindowType windowType = new WindowType();
-            windowType.setMinutesBefore(Integer.parseInt(windowTypeValues[0]));
-            windowType.setMinutesAfter(Integer.parseInt(windowTypeValues[1]));
-
-            schedule.setTriggerWindow(windowType);
+            schedule.getTariffValue().add(lv);
         }
 
         request.getSchedules().add(schedule);
     }
 
-    @When("^receiving a set light schedule request by an unknown organization$")
-    public void receivingASetLightScheduleRequestByAnUnknownOrganization(final Map<String, String> requestParameters)
+    @When("^receiving a set taiff schedule request by an unknown organization$")
+    public void receivingASetTariffScheduleRequestByAnUnknownOrganization(final Map<String, String> requestParameters)
             throws Throwable {
         // Force the request being send to the platform as a given organization.
         ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
 
-        this.receivingASetLightScheduleRequest(requestParameters);
+        this.receivingASetTariffScheduleRequest(requestParameters);
     }
 
     /**
@@ -185,10 +174,9 @@ public class SetLightScheduleSteps {
      *       current scenario context for later use.
      * @throws Throwable
      */
-    @Then("^the set light schedule async response contains$")
-    public void theSetLightScheduleAsyncResponseContains(final Map<String, String> expectedResponseData)
+    @Then("^the set tariff schedule async response contains$")
+    public void theSetTariffScheduleAsyncResponseContains(final Map<String, String> expectedResponseData)
             throws Throwable {
-
         final SetScheduleAsyncResponse response = (SetScheduleAsyncResponse) ScenarioContext.Current()
                 .get(Keys.RESPONSE);
 
@@ -205,13 +193,13 @@ public class SetLightScheduleSteps {
         LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
     }
 
-    @Then("^the set light schedule response contains soap fault$")
-    public void theSetLightScheduleResponseContainsSoapFault(final Map<String, String> expectedResponseData) {
+    @Then("^the set tariff schedule response contains soap fault$")
+    public void theSetTariffScheduleResponseContainsSoapFault(final Map<String, String> expectedResponseData) {
         GenericResponseSteps.verifySoapFault(expectedResponseData);
     }
 
-    @Then("^the platform buffers a set light schedule response message for device \"([^\"]*)\"$")
-    public void thePlatformBuffersASetLightScheduleResponseMessageForDevice(final String deviceIdentification,
+    @Then("^the platform buffers a set tariff schedule response message for device \"([^\"]*)\"$")
+    public void thePlatformBuffersASetTariffScheduleResponseMessageForDevice(final String deviceIdentification,
             final Map<String, String> expectedResult) throws Throwable {
         final SetScheduleAsyncRequest request = new SetScheduleAsyncRequest();
         final AsyncRequest asyncRequest = new AsyncRequest();
@@ -244,11 +232,11 @@ public class SetLightScheduleSteps {
         }
     }
 
-    @Then("^the platform buffers a set light schedule response message for device \"([^\"]*)\" contains soap fault$")
+    @Then("^the platform buffers a set tariff schedule response message for device \"([^\"]*)\" contains soap fault$")
     public void thePlatformBuffersASetLightScheduleResponseMessageForDeviceContainsSoapFault(
             final String deviceIdentification, final Map<String, String> expectedResult) throws Throwable {
         try {
-            this.thePlatformBuffersASetLightScheduleResponseMessageForDevice(deviceIdentification, expectedResult);
+            this.thePlatformBuffersASetTariffScheduleResponseMessageForDevice(deviceIdentification, expectedResult);
         } catch (final SoapFaultClientException ex) {
             Assert.assertEquals(getString(expectedResult, Keys.KEY_MESSAGE), ex.getMessage());
         }

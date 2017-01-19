@@ -5,7 +5,7 @@
  * use this file except in compliance with the License.
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.config.ws.publiclighting;
+package com.alliander.osgp.platform.cucumber.config.ws.tariffswitching;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -17,19 +17,19 @@ import com.alliander.osgp.platform.cucumber.config.ws.BaseWebServiceConfig;
 import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
 
 @Configuration
-public class PublicLightingScheduleManagementWebServiceConfig extends BaseWebServiceConfig {
+public class TariffSwitchingScheduleManagementWebServiceConfig extends BaseWebServiceConfig {
 
-    @Value("${web.service.template.default.uri.publiclighting.schedulemanagement}")
-    private String webserviceTemplateDefaultUriPublicLightingScheduleManagement;
+    @Value("${web.service.template.default.uri.tariffswitching.schedulemanagement}")
+    private String webserviceTemplateDefaultUriTariffSwitchingScheduleManagement;
 
-    @Value("${jaxb2.marshaller.context.path.publiclighting.schedulemanagement}")
-    private String contextPathPublicLightingScheduleManagement;
+    @Value("${jaxb2.marshaller.context.path.tariffswitching.schedulemanagement}")
+    private String contextPathTariffSwitchingScheduleManagement;
 
     @Bean
-    public WebServiceTemplateFactory publicLightingScheduleManagementWstf() {
-        return new WebServiceTemplateFactory.Builder().setMarshaller(this.publiclightingScheduleManagementMarshaller())
+    public WebServiceTemplateFactory tariffSwitchingScheduleManagementWstf() {
+        return new WebServiceTemplateFactory.Builder().setMarshaller(this.tariffSwitchingScheduleManagementMarshaller())
                 .setMessageFactory(this.messageFactory())
-                .setDefaultUri(this.baseUri.concat(this.webserviceTemplateDefaultUriPublicLightingScheduleManagement))
+                .setDefaultUri(this.baseUri.concat(this.webserviceTemplateDefaultUriTariffSwitchingScheduleManagement))
                 .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
                 .setKeyStorePassword(this.webserviceKeystorePassword)
                 .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)
@@ -37,29 +37,30 @@ public class PublicLightingScheduleManagementWebServiceConfig extends BaseWebSer
     }
 
     /**
-     * Method for creating the Marshaller for PublicLighting ScheduleManagement.
+     * Method for creating the Marshaller for TariffSwitching
+     * ScheduleManagement.
      *
      * @return Jaxb2Marshaller
      */
     @Bean
-    public Jaxb2Marshaller publiclightingScheduleManagementMarshaller() {
+    public Jaxb2Marshaller tariffSwitchingScheduleManagementMarshaller() {
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
-        marshaller.setContextPath(this.contextPathPublicLightingScheduleManagement);
+        marshaller.setContextPath(this.contextPathTariffSwitchingScheduleManagement);
 
         return marshaller;
     }
 
     /**
      * Method for creating the Marshalling Payload Method Processor for
-     * PublicLighting ScheduleManagement.
+     * TariffSwitching ScheduleManagement.
      *
      * @return MarshallingPayloadMethodProcessor
      */
     @Bean
-    public MarshallingPayloadMethodProcessor publicLightingAdHocManagementMarshallingPayloadMethodProcessor() {
-        return new MarshallingPayloadMethodProcessor(this.publiclightingScheduleManagementMarshaller(),
-                this.publiclightingScheduleManagementMarshaller());
+    public MarshallingPayloadMethodProcessor tariffSwitchingAdHocManagementMarshallingPayloadMethodProcessor() {
+        return new MarshallingPayloadMethodProcessor(this.tariffSwitchingScheduleManagementMarshaller(),
+                this.tariffSwitchingScheduleManagementMarshaller());
     }
 
 }

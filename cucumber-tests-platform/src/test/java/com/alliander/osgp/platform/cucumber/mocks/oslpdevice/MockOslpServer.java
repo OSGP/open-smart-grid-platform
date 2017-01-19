@@ -292,9 +292,8 @@ public class MockOslpServer {
                 .build());
     }
 
-    public void mockSetLightScheduleResponse(final Oslp.Status status) {
-        this.mockResponses.put(DeviceRequestMessageType.SET_LIGHT_SCHEDULE, Oslp.Message.newBuilder()
+    public void mockSetScheduleResponse(final DeviceRequestMessageType type, final Oslp.Status status) {
+        this.mockResponses.put(type, Oslp.Message.newBuilder()
                 .setSetScheduleResponse(SetScheduleResponse.newBuilder().setStatus(status)).build());
     }
-
 }

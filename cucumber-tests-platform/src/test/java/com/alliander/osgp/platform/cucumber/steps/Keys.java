@@ -182,4 +182,9 @@ public class Keys {
     public static final String SCHEDULE_LIGHTVALUES = "LightValues";
     public static final String SCHEDULE_TRIGGERTYPE = "TriggerType";
     public static final String SCHEDULE_SCHEDULEDTIME = "ScheduledTime";
+
+    public static final String SCHEDULE_TARIFFVALUES = "TariffValues";
+    public static final String SCHEDULE_CURRENTPAGE = "CurrentPages";
+    public static final String SCHEDULE_PAGESIZE = "PageSize";
+    public static final String SCHEDULE_TOTALPAGES = "TotalPages";
 }
