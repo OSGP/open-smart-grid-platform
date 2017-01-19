@@ -48,6 +48,7 @@ public class MessagingConfig extends AbstractConfig {
 
     // JMS Settings
     private static final String PROPERTY_NAME_JMS_ACTIVEMQ_BROKER_URL = "jms.activemq.broker.url";
+    private static final String PROPERTY_NAME_JMS_ACTIVEMQ_CONNECTION_POOL_SIZE = "jms.activemq.connection.pool.size";
 
     private static final String PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY = "jms.default.initial.redelivery.delay";
     private static final String PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES = "jms.default.maximum.redeliveries";
@@ -139,6 +140,8 @@ public class MessagingConfig extends AbstractConfig {
     public PooledConnectionFactory pooledConnectionFactory() {
         final PooledConnectionFactory pooledConnectionFactory = new PooledConnectionFactory();
         pooledConnectionFactory.setConnectionFactory(this.connectionFactory());
+        pooledConnectionFactory.setMaxConnections(Integer.parseInt(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_ACTIVEMQ_CONNECTION_POOL_SIZE)));
         return pooledConnectionFactory;
     }
 
