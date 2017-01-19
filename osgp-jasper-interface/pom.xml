@@ -137,8 +137,7 @@
     </dependency>
     <dependency>
       <groupId>org.springframework.ws</groupId>
-      <artifactId>spring-ws</artifactId>
-      <classifier>all</classifier>
+      <artifactId>spring-ws-test</artifactId>
     </dependency>
 
     <!-- Apache ws support -->

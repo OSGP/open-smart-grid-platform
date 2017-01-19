@@ -58,7 +58,7 @@
     <spring.wscore.version>2.4.0.RELEASE</spring.wscore.version>
     <spring.wssecurity.version>2.4.0.RELEASE</spring.wssecurity.version>
     <spring.wssupport.version>2.4.0.RELEASE</spring.wssupport.version>
-    <spring.ws.version>2.1.3.RELEASE</spring.ws.version>
+    <spring.ws.version>2.4.0.RELEASE</spring.ws.version>
     <xmlunit.version>1.6</xmlunit.version>
     <mockito.version>1.10.19</mockito.version>
     <apache.wss4j.version>1.6.19</apache.wss4j.version>
@@ -209,9 +209,8 @@
       </dependency>
       <dependency>
         <groupId>org.springframework.ws</groupId>
-        <artifactId>spring-ws</artifactId>
+        <artifactId>spring-ws-test</artifactId>
         <version>${spring.ws.version}</version>
-        <classifier>all</classifier>
       </dependency>
 
       <!-- javax inject -->
