@@ -1,12 +1,6 @@
-<!--
-
-    Copyright 2016 Smart Society Services B.V.
-
-    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
-
-        http://www.apache.org/licenses/LICENSE-2.0
-
--->
+<!-- Copyright 2016 Smart Society Services B.V. Licensed under the Apache 
+  License, Version 2.0 (the "License"); you may not use this file except in 
+  compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
@@ -22,7 +16,8 @@
 
   <packaging>war</packaging>
   <name>osgp-adapter-ws-microgrids</name>
-  <!-- Description element is needed for the maven-jxr-plugin to generate a maven site -->
+  <!-- Description element is needed for the maven-jxr-plugin to generate 
+    a maven site -->
   <description>Web service module for microgrids domain.</description>
 
   <properties>
@@ -54,6 +49,10 @@
     <dependency>
       <groupId>com.alliander.osgp</groupId>
       <artifactId>osgp-adapter-ws-shared-db</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.alliander.osgp</groupId>
+      <artifactId>osgp-ws-microgrids</artifactId>
     </dependency>
 
     <!-- Spring Framework -->
@@ -204,45 +203,6 @@
 
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>jaxb2-maven-plugin</artifactId>
-        <version>1.5</version>
-        <executions>
-          <execution>
-            <id>ad-hoc-management</id>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-            <configuration>
-              <bindingDirectory>src/main/webapp/WEB-INF/wsdl/microgrids/schemas</bindingDirectory>
-              <bindingFiles>adhocmanagement.xjb</bindingFiles>
-              <schemaDirectory>src/main/webapp/WEB-INF/wsdl/microgrids</schemaDirectory>
-              <schemaFiles>AdHocManagement.wsdl</schemaFiles>
-              <wsdl>true</wsdl>
-              <xmlschema>false</xmlschema>
-              <staleFile>${project.build.directory}/jaxb2/.schema-ad-hoc-management-stale-flag</staleFile>
-              <clearOutputDir>true</clearOutputDir>
-            </configuration>
-          </execution>
-          <execution>
-            <id>notification</id>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-            <configuration>
-              <bindingDirectory>src/main/webapp/WEB-INF/wsdl/microgrids/schemas</bindingDirectory>
-              <bindingFiles>notification.xjb</bindingFiles>
-              <schemaDirectory>src/main/webapp/WEB-INF/wsdl/microgrids</schemaDirectory>
-              <schemaFiles>Notification.wsdl</schemaFiles>
-              <wsdl>true</wsdl>
-              <xmlschema>false</xmlschema>
-              <staleFile>${project.build.directory}/jaxb2/.schema-notification-stale-flag</staleFile>
-              <clearOutputDir>false</clearOutputDir>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>

@@ -10,6 +10,7 @@ package com.alliander.osgp.adapter.ws.microgrids.application.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
@@ -17,6 +18,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
 import com.alliander.osgp.shared.application.config.AbstractConfig;
+import com.alliander.osgp.ws.microgrids.config.MicroGridsWebServiceConfig;
 
 /**
  * An application context Java configuration class. The usage of Java
@@ -26,6 +28,7 @@ import com.alliander.osgp.shared.application.config.AbstractConfig;
 @ComponentScan(basePackages = { "com.alliander.osgp.domain.microgrids", "com.alliander.osgp.adapter.ws.microgrids",
         "com.alliander.osgp.domain.logging", "com.alliander.osgp.domain.core.services" })
 @ImportResource("classpath:applicationContext.xml")
+@Import({ MicroGridsWebServiceConfig.class })
 @PropertySources({ @PropertySource("classpath:osgp-adapter-ws-microgrids.properties"),
         @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
         @PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true), })
