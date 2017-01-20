@@ -42,6 +42,13 @@ public class DlmsDevice extends AbstractEntity {
     @Column
     private String iccId;
 
+    // TODO store encrypted password in DB
+    @Transient
+    private String password = "11111111";
+    // TODO store boolean in DB
+    @Transient
+    private boolean lls1Active = true;
+
     @Column
     private boolean hls3Active;
 
@@ -108,8 +115,8 @@ public class DlmsDevice extends AbstractEntity {
     public String toString() {
         return String.format(
                 "DlmsDevice[deviceId=%s, hls3=%b, hls4=%b, hls5=%b, ipAddress=%s, port=%s, logicalId=%s, clientId=%s]",
-                this.deviceIdentification, this.hls3Active, this.hls4Active, this.hls5Active, this.ipAddress,
-                this.port, this.logicalId, this.clientId);
+                this.deviceIdentification, this.hls3Active, this.hls4Active, this.hls5Active, this.ipAddress, this.port,
+                this.logicalId, this.clientId);
     }
 
     @Override
@@ -166,6 +173,14 @@ public class DlmsDevice extends AbstractEntity {
 
     public String getIccId() {
         return this.iccId;
+    }
+
+    public String getPassword() {
+        return this.password;
+    }
+
+    public boolean isLls1Active() {
+        return this.lls1Active;
     }
 
     public boolean isHls3Active() {
