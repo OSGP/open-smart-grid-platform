@@ -127,7 +127,7 @@ public class OslpDeviceSteps {
      * @throws Throwable
      */
     @Given("^the device returns a start device response \"([^\"]*)\" over OSLP$")
-    public void theDeviceReturns_AStartDeviceResponseOverOSLP(final String result) throws Throwable {
+    public void theDeviceReturnsAStartDeviceResponseOverOSLP(final String result) throws Throwable {
         Oslp.Status oslpStatus = Status.OK;
 
         switch (result) {
@@ -281,6 +281,18 @@ public class OslpDeviceSteps {
         this.callMockSetScheduleResponse(result, DeviceRequestMessageType.SET_LIGHT_SCHEDULE);
     }
 
+    @Given("^the device returns a set tariff schedule response \"([^\"]*)\" over OSLP$")
+    public void theDeviceReturnsASetTariffScheduleResponseOverOSLP(final String result) throws Throwable {
+
+        this.callMockSetScheduleResponse(result, DeviceRequestMessageType.SET_TARIFF_SCHEDULE);
+    }
+
+    @Given("^the device returns a set reverse tariff schedule response \"([^\"]*)\" over OSLP$")
+    public void theDeviceReturnsASetReverseTariffScheduleResponseOverOSLP(final String result) throws Throwable {
+
+        this.theDeviceReturnsASetTariffScheduleResponseOverOSLP(result);
+    }
+
     /**
      * Setup method to get a status which should be returned by the mock.
      *
@@ -288,12 +300,6 @@ public class OslpDeviceSteps {
      *            The get status to respond.
      * @throws Throwable
      */
-    @Given("^the device returns a set tariff schedule response \"([^\"]*)\" over OSLP$")
-    public void theDeviceReturnsASetTariffScheduleResponseOverOSLP(final String result) throws Throwable {
-
-        this.callMockSetScheduleResponse(result, DeviceRequestMessageType.SET_TARIFF_SCHEDULE);
-    }
-
     private void callMockSetScheduleResponse(final String result, final DeviceRequestMessageType type) {
         Oslp.Status oslpStatus = Status.OK;
 
@@ -550,10 +556,25 @@ public class OslpDeviceSteps {
      *            device.
      * @throws Throwable
      */
-    @Then("^a set tariff schedule OSLP message is sent to device \"([^\"]*)\"$")
+    @Then("^a set tariff schedule OSLP message is sent to device \"(?:([^\"]*))\"$")
     public void aSetTariffScheduleOSLPMessageIsSentToDevice(final String deviceIdentification,
             final Map<String, String> expectedRequest) throws Throwable {
         this.checkAndValidateRequest(DeviceRequestMessageType.SET_TARIFF_SCHEDULE, expectedRequest);
+    }
+
+    /**
+     * Verify that a set reverse tariff schedule OSLP message is sent to the
+     * device.
+     *
+     * @param deviceIdentification
+     *            The device identification expected in the message to the
+     *            device.
+     * @throws Throwable
+     */
+    @Then("^a set reverse tariff schedule OSLP message is sent to device \"(?:([^\"]*))\"$")
+    public void aSetReverseTariffScheduleOSLPMessageIsSentToDevice(final String deviceIdentification,
+            final Map<String, String> expectedRequest) throws Throwable {
+        this.aSetTariffScheduleOSLPMessageIsSentToDevice(deviceIdentification, expectedRequest);
     }
 
     private void checkAndValidateRequest(final DeviceRequestMessageType type,
