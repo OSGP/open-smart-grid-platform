@@ -29,12 +29,13 @@ Feature: SetSchedule
       | Result | OK |
 
     Examples: 
-      | WeekDay     | StartDay   | EndDay | Time         | TariffValues |
-      | MONDAY      |            |        | 08:00:00.000 | 1,true       |
-      | WEEKDAY     |            |        | 21:00:00.000 | 1,false      |
-      | MONDAY      |            |        | 18:00:00.000 | 1,true       |
-      | ABSOLUTEDAY | 2013-03-01 |        | 18:00:00.000 | 1,true       |
-      | MONDAY      |            |        |              | 1,true       |
+      | WeekDay     | StartDay   | EndDay     | Time         | TariffValues |
+      | MONDAY      |            |            | 08:00:00.000 | 1,true       |
+      | WEEKDAY     |            |            | 21:00:00.000 | 1,false      |
+      | MONDAY      |            |            | 18:00:00.000 | 1,true       |
+      | ABSOLUTEDAY | 2013-03-01 |            | 18:00:00.000 | 1,true       |
+      | MONDAY      |            |            |              | 1,true       |
+      | ABSOLUTEDAY | 2016-01-01 | 2016-12-31 | 18:00:00.000 | 0,true       |
 
   @OslpMockServer
   Scenario: Failed set tariff schedule
@@ -88,7 +89,7 @@ Feature: SetSchedule
     And the platform buffers a set tariff schedule response message for device "TEST1024000000001" contains soap fault
       | Message | Device reports rejected |
 
-    Scenario: Set tariff schedule with invalid schedule
+  Scenario: Set tariff schedule with invalid schedule
     Given an oslp device
       | DeviceIdentification | TEST1024000000001 |
       | RelayType            | TARIFF            |
