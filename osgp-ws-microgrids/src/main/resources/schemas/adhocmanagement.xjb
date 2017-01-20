@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<jxb:bindings version="2.0"
+xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+<jxb:bindings schemaLocation="common.xsd" >
+	<jxb:schemaBindings>
+		<jxb:package name="com.alliander.osgp.adapter.ws.schema.microgrids.common"></jxb:package>
+	</jxb:schemaBindings>
+ </jxb:bindings>
+ 
+<jxb:bindings schemaLocation="adhocmanagement.xsd" >
+	<jxb:schemaBindings>
+		<jxb:package name="com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement"></jxb:package>
+	</jxb:schemaBindings>
+ </jxb:bindings>
+
+</jxb:bindings>
