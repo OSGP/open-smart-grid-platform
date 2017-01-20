@@ -12,6 +12,9 @@ import org.springframework.context.annotation.FilterType;
 
 import com.alliander.osgp.automatictests.platform.config.ws.microgrids.MicrogridsNotificationWebServiceConfig;
 
+/**
+ * Scan all automatictests namespaces.
+ */
 @ComponentScan(basePackages={
         "com.alliander.osgp.automatictests"
     },

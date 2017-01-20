@@ -32,7 +32,7 @@ public class Keys {
     public static final String LONGITUDE = "gpsLongitude";
     public static final String IS_ACTIVATED = "IsActivated";
     public static final String DEVICE_MODEL = "DeviceModel";
-    public static final String TECH_INSTALL_DATE = "TechnicalInstallationDate";
+    public static final String TECHNICAL_INSTALLATION_DATE = "TechnicalInstallationDate";
 
     public static final String ORGANIZATION_IDENTIFICATION = "OrganizationIdentification";
     public static final String ORGANIZATION_DESCRIPTION = "A test organization";

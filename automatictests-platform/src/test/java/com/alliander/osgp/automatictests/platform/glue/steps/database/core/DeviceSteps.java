@@ -142,8 +142,8 @@ public class DeviceSteps {
     private Device updateDevice(Device device, final Map<String, String> settings) {
 
         // Now set the optional stuff
-        if (settings.containsKey(Keys.TECH_INSTALL_DATE) && !settings.get(Keys.TECH_INSTALL_DATE).isEmpty()) {
-            device.setTechnicalInstallationDate(getDate(settings, Keys.TECH_INSTALL_DATE).toDate());
+        if (settings.containsKey(Keys.TECHNICAL_INSTALLATION_DATE) && !settings.get(Keys.TECHNICAL_INSTALLATION_DATE).isEmpty()) {
+            device.setTechnicalInstallationDate(getDate(settings, Keys.TECHNICAL_INSTALLATION_DATE).toDate());
         }
 
         final DeviceModel deviceModel = this.deviceModelRepository
