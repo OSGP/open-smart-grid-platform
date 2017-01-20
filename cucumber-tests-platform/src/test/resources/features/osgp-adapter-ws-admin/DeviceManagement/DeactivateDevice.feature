@@ -1,18 +1,14 @@
-Feature: Device management
-  As a grid operator
+Feature: AdminDeviceManagement Device Deactivation
+  As a ...
   I want to be able to perform DeviceManagement operations on a device
   In order to ...
 
-  Scenario Outline: Deactivate a device
+  Scenario: Deactivate a device
     Given a device
-      | DeviceIdentification | <DeviceIdentification> |
-      | Active               | <Active>               |
+      | DeviceIdentification | TEST1024000000001 |
+      | Active               | true              |
     When receiving a deactivate device request
-      | DeviceIdentification | <DeviceIdentification> |
+      | DeviceIdentification | TEST1024000000001 |
     Then the deactivate device response contains
-      | Result | <Result> |
+      | Result | OK |
     And the device with device identification "<DeviceIdentification>" should be inactive
-
-    Examples: 
-      | DeviceIdentification | Active | Result |
-      | TEST1024000000001    | true   | OK     |

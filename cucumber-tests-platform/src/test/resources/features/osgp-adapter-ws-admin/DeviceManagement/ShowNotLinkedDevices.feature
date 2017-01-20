@@ -1,6 +1,6 @@
-Feature: Device management
-  As a grid operator
-  I want to be able to perform DeviceManagement operations on a device
+Feature: AdminDeviceManagement Show Not Linked Devices
+  As a ...
+  I want to ...
   In order to ...
 
   Scenario: Show Devices Which Are Not Linked To An Organization

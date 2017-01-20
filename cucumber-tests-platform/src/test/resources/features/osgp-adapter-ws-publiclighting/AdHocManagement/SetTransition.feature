@@ -1,4 +1,4 @@
-Feature: Adhoc Management
+Feature: PublicLightingAdhocManagement Set Transition
   As OSGP 
   I want clients to be able to send night-day and day-night transition notifications to a device
   In order to ...
@@ -7,26 +7,26 @@ Feature: Adhoc Management
   @OslpMockServer
   Scenario Outline: Set Transition
     Given an oslp device
-      | DeviceIdentification | <DeviceIdentification> |
-    And the device returns a set transition response "<Result>" over OSLP
+      | DeviceIdentification | TEST1024000000001 |
+    And the device returns a set transition response "OK" over OSLP
     When receiving a set transition request
-      | DeviceIdentification | <DeviceIdentification> |
-      | TransitionType       | <TransitionType>       |
-      | Time                 | <Time>                 |
+      | DeviceIdentification | TEST1024000000001 |
+      | TransitionType       | <TransitionType>  |
+      | Time                 | <Time>            |
     Then the set transition async response contains
-      | DeviceIdentification | <DeviceIdentification> |
-    And a set transition OSLP message is sent to device "<DeviceIdentification>"
+      | DeviceIdentification | TEST1024000000001 |
+    And a set transition OSLP message is sent to device "TEST1024000000001"
       | TransitionType | <TransitionType> |
       | Time           | <Time>           |
-    And the platform buffers a set transition response message for device "<DeviceIdentification>"
-      | Result | <Result> |
+    And the platform buffers a set transition response message for device "TEST1024000000001"
+      | Result | OK |
 
     Examples: 
-      | DeviceIdentification | TransitionType | Time   | Result |
-      | TEST1024000000001    | DAY_NIGHT      |        | OK     |
-      | TEST1024000000001    | DAY_NIGHT      | 200000 | OK     |
-      | TEST1024000000001    | NIGHT_DAY      |        | OK     |
-      | TEST1024000000001    | NIGHT_DAY      | 080000 | OK     |
+      | TransitionType | Time   |
+      | DAY_NIGHT      |        |
+      | DAY_NIGHT      | 200000 |
+      | NIGHT_DAY      |        |
+      | NIGHT_DAY      | 080000 |
 
   Scenario: Set transition as an unknown organization
     When receiving a set transition request by an unknown organization
@@ -47,13 +47,13 @@ Feature: Adhoc Management
       | DeviceIdentification | TEST1024000000001 |
     When receiving a set transition request
       | DeviceIdentification | TEST1024000000001 |
-      | TransitionType       | <TransitionType>  |
+      | TransitionType       |                   |
       | Time                 | <Time>            |
     Then the set transition async response contains a soap fault
-      | Result  | <Result>  |
-      | Message | <Message> |
+      | Result  | NOT_OK           |
+      | Message | Validation error |
 
     Examples: 
-      | TransitionType | Time   | Result | Message          |
-      |                |        | NOT_OK | Validation error |
-      |                | 200000 | NOT_OK | Validation error |
+      | Time   |
+      |        |
+      | 200000 |

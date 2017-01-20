@@ -1,4 +1,4 @@
-Feature: Re-establish connection
+Feature: MicroGrids Re-establish Connection
   As MSP 
   I want to know when a connection between OSGP and RTU is lost or re-established.
 
