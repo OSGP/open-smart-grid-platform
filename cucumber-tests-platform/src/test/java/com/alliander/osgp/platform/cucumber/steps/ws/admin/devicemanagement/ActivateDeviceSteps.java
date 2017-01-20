@@ -19,9 +19,12 @@ import org.springframework.ws.soap.client.SoapFaultClientException;
 import com.alliander.osgp.adapter.ws.schema.admin.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ActivateDeviceRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ActivateDeviceResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
+import com.alliander.osgp.platform.cucumber.steps.common.ResponseSteps;
+import com.alliander.osgp.platform.cucumber.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.platform.cucumber.support.ws.admin.AdminDeviceManagementClient;
 
 import cucumber.api.java.en.Then;
@@ -60,5 +63,10 @@ public class ActivateDeviceSteps {
 
         Assert.assertEquals(response.getResult(),
                 getEnum(expectedResponse, Keys.KEY_RESULT, OsgpResultType.class, OsgpResultType.OK));
+    }
+    
+    @Then("^the activate device response return a soap fault$")
+    public void theActivateDeviceResponseReturnsASoapFault(final Map<String, String> expectedResult) throws Throwable {
+        GenericResponseSteps.verifySoapFault(expectedResult);
     }
 }
