@@ -86,5 +86,9 @@
         <module>shared</module>
         <module>osgp-dto</module>
         <module>osgp-ws-smartmetering</module>
+        <module>osgp-ws-core</module>
+        <module>osgp-ws-admin</module>
+        <module>osgp-ws-tariffswitching</module>
+        <module>osgp-ws-publiclighting</module>
     </modules>
 </project>
