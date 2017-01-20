@@ -168,13 +168,14 @@ public class OslpDeviceSteps {
      *            The get status to respond.
      * @throws Throwable
      */
-    @Given("^the device returns a get status response over OSLP$")
-    public void theDeviceReturnsAGetStatusResponseOverOSLP(final Map<String, String> result) throws Throwable {
+    @Given("^the device returns a get status response \"([^\"]*)\" over OSLP$")
+    public void theDeviceReturnsAGetStatusResponseOverOSLP(final String result,
+            final Map<String, String> requestParameters) throws Throwable {
 
         int eventNotificationTypes = 0;
-        if (getString(result, Keys.KEY_EVENTNOTIFICATIONTYPES, Defaults.DEFAULT_EVENTNOTIFICATIONTYPES).trim()
-                .split(",").length > 0) {
-            for (final String eventNotificationType : getString(result, Keys.KEY_EVENTNOTIFICATIONTYPES,
+        if (getString(requestParameters, Keys.KEY_EVENTNOTIFICATIONTYPES, Defaults.DEFAULT_EVENTNOTIFICATIONTYPES)
+                .trim().split(",").length > 0) {
+            for (final String eventNotificationType : getString(requestParameters, Keys.KEY_EVENTNOTIFICATIONTYPES,
                     Defaults.DEFAULT_EVENTNOTIFICATIONTYPES).trim().split(",")) {
                 if (!eventNotificationType.isEmpty()) {
                     eventNotificationTypes = eventNotificationTypes
@@ -184,12 +185,12 @@ public class OslpDeviceSteps {
         }
 
         final List<LightValue> lightValues = new ArrayList<>();
-        if (!getString(result, Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES).isEmpty()
-                && getString(result, Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES)
+        if (!getString(requestParameters, Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES).isEmpty()
+                && getString(requestParameters, Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES)
                         .split(Keys.SEPARATOR).length > 0) {
 
-            for (final String lightValueString : getString(result, Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES)
-                    .split(Keys.SEPARATOR)) {
+            for (final String lightValueString : getString(requestParameters, Keys.KEY_LIGHTVALUES,
+                    Defaults.DEFAULT_LIGHTVALUES).split(Keys.SEPARATOR)) {
                 final String[] parts = lightValueString.split(Keys.SEPARATOR_SEMICOLON);
 
                 final LightValue lightValue = LightValue.newBuilder()
@@ -202,11 +203,11 @@ public class OslpDeviceSteps {
         }
 
         this.oslpMockServer.mockGetStatusResponse(
-                getEnum(result, Keys.KEY_PREFERRED_LINKTYPE, LinkType.class, Defaults.DEFAULT_PREFERRED_LINKTYPE),
-                getEnum(result, Keys.KEY_ACTUAL_LINKTYPE, LinkType.class, Defaults.DEFAULT_ACTUAL_LINKTYPE),
-                getEnum(result, Keys.KEY_LIGHTTYPE, LightType.class, Defaults.DEFAULT_LIGHTTYPE),
-                eventNotificationTypes, getEnum(result, Keys.KEY_STATUS, Oslp.Status.class, Defaults.DEFAULT_STATUS),
-                lightValues);
+                getEnum(requestParameters, Keys.KEY_PREFERRED_LINKTYPE, LinkType.class,
+                        Defaults.DEFAULT_PREFERRED_LINKTYPE),
+                getEnum(requestParameters, Keys.KEY_ACTUAL_LINKTYPE, LinkType.class, Defaults.DEFAULT_ACTUAL_LINKTYPE),
+                getEnum(requestParameters, Keys.KEY_LIGHTTYPE, LightType.class, Defaults.DEFAULT_LIGHTTYPE),
+                eventNotificationTypes, Oslp.Status.valueOf(result), lightValues);
     }
 
     /**
@@ -276,11 +277,10 @@ public class OslpDeviceSteps {
      *            The get status to respond.
      * @throws Throwable
      */
-    @Given("^the device returns a set light schedule response over OSLP$")
-    public void theDeviceReturnsASetLightScheduleResponseOverOSLP(final Map<String, String> requestParameters)
-            throws Throwable {
+    @Given("^the device returns a set light schedule response \"([^\"]*)\" over OSLP$")
+    public void theDeviceReturnsASetLightScheduleResponseOverOSLP(final String result) throws Throwable {
 
-        this.callMockSetScheduleResponse(requestParameters, DeviceRequestMessageType.SET_LIGHT_SCHEDULE);
+        this.callMockSetScheduleResponse(result, DeviceRequestMessageType.SET_LIGHT_SCHEDULE);
     }
 
     /**
@@ -290,17 +290,13 @@ public class OslpDeviceSteps {
      *            The get status to respond.
      * @throws Throwable
      */
-    @Given("^the device returns a set tariff schedule response over OSLP$")
-    public void theDeviceReturnsASetTariffScheduleResponseOverOSLP(final Map<String, String> requestParameters)
-            throws Throwable {
+    @Given("^the device returns a set tariff schedule response \"([^\"]*)\" over OSLP$")
+    public void theDeviceReturnsASetTariffScheduleResponseOverOSLP(final String result) throws Throwable {
 
-        this.callMockSetScheduleResponse(requestParameters, DeviceRequestMessageType.SET_TARIFF_SCHEDULE);
+        this.callMockSetScheduleResponse(result, DeviceRequestMessageType.SET_TARIFF_SCHEDULE);
     }
 
-    private void callMockSetScheduleResponse(final Map<String, String> requestParameters,
-            final DeviceRequestMessageType type) {
-
-        final String result = getString(requestParameters, Keys.KEY_STATUS, Defaults.DEFAULT_STATUS.toString());
+    private void callMockSetScheduleResponse(final String result, final DeviceRequestMessageType type) {
         Oslp.Status oslpStatus = Status.OK;
 
         switch (result) {
@@ -581,7 +577,7 @@ public class OslpDeviceSteps {
                 LoggerFactory.getLogger(OslpDeviceSteps.class)
                         .info("Oslp Schedule StartDay: " + startDate + " | Actual StartDay: " + schedule.getStartDay());
                 final String startDay = getDate(expectedRequest, Keys.SCHEDULE_STARTDAY).toDateTime(DateTimeZone.UTC)
-                        .plusDays(1).toString("yyyyMMdd");
+                        .toString("yyyyMMdd");
 
                 Assert.assertEquals(startDay, schedule.getStartDay());
             }
@@ -590,7 +586,7 @@ public class OslpDeviceSteps {
                 LoggerFactory.getLogger(OslpDeviceSteps.class)
                         .info("Oslp Schedule EndDay: " + endDate + " | Actual EndDay: " + schedule.getEndDay());
                 final String endDay = getDate(expectedRequest, Keys.SCHEDULE_ENDDAY).toDateTime(DateTimeZone.UTC)
-                        .plusDays(1).toString("yyyyMMdd");
+                        .toString("yyyyMMdd");
 
                 Assert.assertEquals(endDay, schedule.getEndDay());
             }

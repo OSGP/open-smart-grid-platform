@@ -7,7 +7,7 @@ Feature: Get Status
   Scenario: Get status of a device
     Given a device
       | DeviceIdentification | TEST1024000000001 |
-    And the device returns a get status response "<Result>" over OSLP
+    And the device returns a get status response "OK" over OSLP
     When receiving a device installation get status request
       | DeviceIdentification | TEST1024000000001 |
     Then the device installation get status async response contains

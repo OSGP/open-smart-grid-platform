@@ -8,8 +8,7 @@ Feature: SetSchedule
     Given an oslp device
       | DeviceIdentification | TEST1024000000001 |
       | RelayType            | TARIFF            |
-    And the device returns a set tariff schedule response over OSLP
-      | Status | OK |
+    And the device returns a set tariff schedule response "OK" over OSLP
     When receiving a set tariff schedule request
       | DeviceIdentification | TEST1024000000001 |
       | WeekDay              | <WeekDay>         |
@@ -42,8 +41,7 @@ Feature: SetSchedule
     Given an oslp device
       | DeviceIdentification | TEST1024000000001 |
       | RelayType            | TARIFF            |
-    And the device returns a set tariff schedule response over OSLP
-      | Status | FAILURE |
+    And the device returns a set tariff schedule response "FAILURE" over OSLP
     When receiving a set tariff schedule request
       | DeviceIdentification | TEST1024000000001 |
       | WeekDay              | MONDAY            |
@@ -68,8 +66,7 @@ Feature: SetSchedule
     Given an oslp device
       | DeviceIdentification | TEST1024000000001 |
       | RelayType            | TARIFF            |
-    And the device returns a set tariff schedule response over OSLP
-      | Status | REJECTED |
+    And the device returns a set tariff schedule response "REJECTED" over OSLP
     When receiving a set tariff schedule request
       | DeviceIdentification | TEST1024000000001 |
       | WeekDay              | MONDAY            |
@@ -112,8 +109,7 @@ Feature: SetSchedule
     Given an oslp device
       | DeviceIdentification | TEST1024000000001 |
       | RelayType            | TARIFF            |
-    And the device returns a set tariff schedule response over OSLP
-      | Status | OK |
+    And the device returns a set tariff schedule response "OK" over OSLP
     When receiving a set tariff schedule request for 50 schedules
       | DeviceIdentification | TEST1024000000001 |
       | WeekDay              | <WeekDay>         |

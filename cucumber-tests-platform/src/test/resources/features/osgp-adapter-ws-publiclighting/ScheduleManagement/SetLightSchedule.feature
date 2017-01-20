@@ -7,8 +7,7 @@ Feature: SetSchedule
   Scenario Outline: Set light schedule
     Given an oslp device
       | DeviceIdentification | TEST1024000000001 |
-    And the device returns a set light schedule response over OSLP
-      | Status | OK |
+    And the device returns a set light schedule response "OK" over OSLP
     When receiving a set light schedule request
       | DeviceIdentification | TEST1024000000001 |
       | WeekDay              | <WeekDay>         |
@@ -45,8 +44,7 @@ Feature: SetSchedule
   Scenario: Failed set light schedule
     Given an oslp device
       | DeviceIdentification | TEST1024000000001 |
-    And the device returns a set light schedule response over OSLP
-      | Status | FAILURE |
+    And the device returns a set light schedule response "FAILURE" over OSLP
     When receiving a set light schedule request
       | DeviceIdentification | TEST1024000000001 |
       | WeekDay              | MONDAY            |
@@ -76,8 +74,7 @@ Feature: SetSchedule
   Scenario: Rejected set light schedule
     Given an oslp device
       | DeviceIdentification | TEST1024000000001 |
-    And the device returns a set light schedule response over OSLP
-      | Status | REJECTED |
+    And the device returns a set light schedule response "REJECTED" over OSLP
     When receiving a set light schedule request
       | DeviceIdentification | TEST1024000000001 |
       | WeekDay              | MONDAY            |
@@ -133,8 +130,7 @@ Feature: SetSchedule
   Scenario Outline: Set light schedule with 50 schedules # Success
     Given an oslp device
       | DeviceIdentification | TEST1024000000001 |
-    And the device returns a set light schedule response over OSLP
-      | Status | OK |
+    And the device returns a set light schedule response "OK" over OSLP
     When receiving a set light schedule request for 50 schedules
       | DeviceIdentification | TEST1024000000001 |
       | WeekDay              | <WeekDay>         |
