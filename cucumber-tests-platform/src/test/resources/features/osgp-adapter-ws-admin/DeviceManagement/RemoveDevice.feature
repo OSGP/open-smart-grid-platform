@@ -1,6 +1,6 @@
-Feature: Device installation
-  As a grid operator
-  I want to be able to perform DeviceInstallation operations on a device
+Feature: AdminDeviceManagement Device Removal
+  As a ...
+  I want to be able to perform DeviceManagement operations on a device
   In order to ...
 
   #  This test doesn't work because the backend doesn't remove the device.

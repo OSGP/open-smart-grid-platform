@@ -1,6 +1,6 @@
-Feature: Start Device
-  As a grid operator
-  I want to ...
+Feature: CoreDeviceInstallation Device Starting
+  As a ...
+  I want to be able to perform DeviceInstallation operations on a device
   In order to ...
 
   @OslpMockServer
@@ -25,11 +25,11 @@ Feature: Start Device
     When receiving a start device test request
       | DeviceIdentification | TEST1024000000001 |
     Then the start device response contains soap fault
-      | Message | <Message> |
+      | Message | UNAUTHORIZED |
 
     Examples: 
-      | OrganizationIdentification | Message      |
-      | ORGANIZATION-01            | UNAUTHORIZED |
-      | ORGANIZATION_ID_UNKNOWN    | UNAUTHORIZED |
-      | ORGANIZATION_ID_EMPTY      | UNAUTHORIZED |
-      | ORGANIZATION_ID_SPACES     | UNAUTHORIZED |
+      | OrganizationIdentification |
+      | ORGANIZATION-01            |
+      | ORGANIZATION_ID_UNKNOWN    |
+      | ORGANIZATION_ID_EMPTY      |
+      | ORGANIZATION_ID_SPACES     |

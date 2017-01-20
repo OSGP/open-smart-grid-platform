@@ -1,4 +1,4 @@
-Feature: Get CHP Data
+Feature: Microgrids Get CHP Data
   As an OSGP client
   I want to get CHP data from an RTU
   So this data can be used by other processes

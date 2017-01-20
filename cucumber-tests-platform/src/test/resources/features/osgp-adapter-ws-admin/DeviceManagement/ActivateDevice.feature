@@ -1,19 +1,14 @@
-Feature: Device management 
-  As a grid operator
+Feature: AdminDeviceManagement Device Activation
+  As a ...
   I want to be able to perform DeviceManagement operations on a device
   In order to ...
-    
-	Scenario Outline: Activate a device
-  	Given a device 
-        | DeviceIdentification | <DeviceIdentification> |
-        | Active               | <Active>               | 
-     When receiving an activate device request
-        | DeviceIdentification | <DeviceIdentification> |
-	   Then the activate device response contains
-	      | Result | <Result> |
-	    And the device with device identification "<DeviceIdentification>" should be active
 
-			Examples:
-				| DeviceIdentification | Active | Result |
-				| TEST1024000000001    | false  | OK     |
-				
+  Scenario: Activate a device
+    Given a device
+      | DeviceIdentification | TEST1024000000001 |
+      | Active               | false             |
+    When receiving an activate device request
+      | DeviceIdentification | TEST1024000000001 |
+    Then the activate device response contains
+      | Result | OK |
+    And the device with device identification "TEST1024000000001" should be active

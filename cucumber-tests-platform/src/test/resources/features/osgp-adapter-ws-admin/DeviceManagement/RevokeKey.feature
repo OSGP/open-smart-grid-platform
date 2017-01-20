@@ -1,5 +1,5 @@
-Feature: Device management
-  As a grid operator
+Feature: AdminDeviceManagement Revoke Key
+  As a ...
   I want to be able to perform DeviceManagement operations on a device
   In order to ...
 

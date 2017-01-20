@@ -1,4 +1,4 @@
-Feature: Firmware management
+Feature: FirmwareManagement GetFirmware
   As OSGP 
   I want to manage the firmware of a device
   In order to ...
@@ -24,4 +24,4 @@ Feature: Firmware management
 
     Examples: 
       | DeviceIdentification | Status | Organization      | IsActivated | Firmware Version | Firmware Module Type |
-      | D01                  | active | Test Organization | true        |             0123 | FUNCTIONAL           |
+      | TEST1024000000001    | active | Test Organization | true        |             0123 | FUNCTIONAL           |

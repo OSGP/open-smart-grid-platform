@@ -1,5 +1,5 @@
 @Iec61850MockServer
-Feature: Set Data Service
+Feature: MicroGrids Set Data Service
   As scrum team I want to have cucumber tests for Set Data Services
   so that I am able to guarantee the quality of Microgrid Platform.
 
