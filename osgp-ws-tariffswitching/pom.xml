@@ -30,7 +30,6 @@
               <bindingFiles>ts-adhocmanagement.xjb</bindingFiles>
               <schemaDirectory>src/main/resources</schemaDirectory>
               <schemaFiles>TariffSwitchingAdHocManagement.wsdl</schemaFiles>
-              <!-- <packageName>com.alliander.osgp.adapter.ws.schema.tariffswitching.adhocmanagement</packageName> -->
               <wsdl>true</wsdl>
               <xmlschema>false</xmlschema>
               <staleFile>${project.build.directory}/jaxb2/.schema-tarrif-switching-ad-hoc-management-stale-flag</staleFile>
@@ -49,7 +48,6 @@
               <bindingFiles>ts-schedulemanagement.xjb</bindingFiles>
               <schemaDirectory>src/main/resources</schemaDirectory>
               <schemaFiles>TariffSwitchingScheduleManagement.wsdl</schemaFiles>
-              <!-- <packageName>com.alliander.osgp.adapter.ws.schema.tariffswitching.schedulemanagement</packageName> -->
               <wsdl>true</wsdl>
               <xmlschema>false</xmlschema>
               <staleFile>${project.build.directory}/jaxb2/.schema-tarrif-switching-schedule-management-stale-flag</staleFile>

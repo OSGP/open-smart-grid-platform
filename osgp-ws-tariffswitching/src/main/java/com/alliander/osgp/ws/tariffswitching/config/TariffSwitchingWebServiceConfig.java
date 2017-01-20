@@ -23,7 +23,7 @@ public class TariffSwitchingWebServiceConfig {
     public PayloadValidatingInterceptor payloadValidatingInterceptor() {
         final PayloadValidatingInterceptor payloadValidatingInterceptor = new PayloadValidatingInterceptor();
         final Resource[] resources = new Resource[] { new ClassPathResource("schemas/common.xsd"),
-                new ClassPathResource("schemas/ts-adhocmanagment.xsd"),
+                new ClassPathResource("schemas/ts-adhocmanagement.xsd"),
                 new ClassPathResource("schemas/ts-schedulemanagement.xsd") };
         payloadValidatingInterceptor.setSchemas(resources);
         return payloadValidatingInterceptor;
@@ -34,9 +34,9 @@ public class TariffSwitchingWebServiceConfig {
         return new SimpleXsdSchema(new ClassPathResource("schemas/common.xsd"));
     }
 
-    @Bean(name = "TariffSwitchingAdHocManagment")
-    public WsdlDefinition tariffSwitchingAdHocManagmentWsdl() {
-        return new SimpleWsdl11Definition(new ClassPathResource("TariffSwitchingAdHocManagment.wsdl"));
+    @Bean(name = "TariffSwitchingAdHocManagement")
+    public WsdlDefinition tariffSwitchingAdHocManagementWsdl() {
+        return new SimpleWsdl11Definition(new ClassPathResource("TariffSwitchingAdHocManagement.wsdl"));
     }
 
     @Bean(name = "ts-adhocmanagement")
@@ -44,9 +44,9 @@ public class TariffSwitchingWebServiceConfig {
         return new SimpleXsdSchema(new ClassPathResource("schemas/ts-adhocmanagement.xsd"));
     }
 
-    @Bean(name = "TariffSwitchingScheduleManagment")
-    public WsdlDefinition tariffSwitchingScheduleManagmentWsdl() {
-        return new SimpleWsdl11Definition(new ClassPathResource("TariffSwitchingScheduleManagment.wsdl"));
+    @Bean(name = "TariffSwitchingScheduleManagement")
+    public WsdlDefinition tariffSwitchingScheduleManagementWsdl() {
+        return new SimpleWsdl11Definition(new ClassPathResource("TariffSwitchingScheduleManagement.wsdl"));
     }
 
     @Bean(name = "ts-schedulemanagement")
