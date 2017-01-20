@@ -18,7 +18,6 @@ local.properties
 .settings/
 .loadpath
 
-
 # External tool builders
 .externalToolBuilders/
 
@@ -33,3 +32,6 @@ local.properties
 
 #Spring MVC webapp
 .springBeans
+
+# Eclipse Checkstyle plugin
+.checkstyle
