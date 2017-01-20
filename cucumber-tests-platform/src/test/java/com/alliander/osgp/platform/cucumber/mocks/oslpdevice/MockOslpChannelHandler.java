@@ -403,8 +403,6 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         }
 
         // Write log entry for response
-        LOGGER.debug("Responding: " + response);
-
         LOGGER.info("Mock Request: " + request);
         LOGGER.info("Mock Response: " + response);
 

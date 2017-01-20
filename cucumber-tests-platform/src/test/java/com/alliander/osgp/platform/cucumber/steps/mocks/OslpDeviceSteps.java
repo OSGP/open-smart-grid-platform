@@ -20,10 +20,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
@@ -572,19 +570,12 @@ public class OslpDeviceSteps {
                         schedule.getWeekday());
             }
             if (!expectedRequest.get(Keys.SCHEDULE_STARTDAY).isEmpty()) {
-                final DateTime startDate = getDate(expectedRequest, Keys.SCHEDULE_STARTDAY)
-                        .toDateTime(DateTimeZone.UTC);
-                LoggerFactory.getLogger(OslpDeviceSteps.class)
-                        .info("Oslp Schedule StartDay: " + startDate + " | Actual StartDay: " + schedule.getStartDay());
                 final String startDay = getDate(expectedRequest, Keys.SCHEDULE_STARTDAY).toDateTime(DateTimeZone.UTC)
                         .toString("yyyyMMdd");
 
                 Assert.assertEquals(startDay, schedule.getStartDay());
             }
             if (!expectedRequest.get(Keys.SCHEDULE_ENDDAY).isEmpty()) {
-                final DateTime endDate = getDate(expectedRequest, Keys.SCHEDULE_ENDDAY).toDateTime(DateTimeZone.UTC);
-                LoggerFactory.getLogger(OslpDeviceSteps.class)
-                        .info("Oslp Schedule EndDay: " + endDate + " | Actual EndDay: " + schedule.getEndDay());
                 final String endDay = getDate(expectedRequest, Keys.SCHEDULE_ENDDAY).toDateTime(DateTimeZone.UTC)
                         .toString("yyyyMMdd");
 
