@@ -157,6 +157,11 @@
     </dependency>
     <dependency>
       <groupId>com.alliander.osgp</groupId>
+      <artifactId>osgp-adapter-ws-tariffswitching</artifactId>
+      <classifier>classes</classifier>
+    </dependency>
+    <dependency>
+      <groupId>com.alliander.osgp</groupId>
       <artifactId>osgp-adapter-ws-smartmetering</artifactId>
       <classifier>classes</classifier>
     </dependency>

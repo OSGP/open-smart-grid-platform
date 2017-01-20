@@ -57,7 +57,7 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
 
     // Device settings
     private Integer sequenceNumber = 0;
-    
+
     public Integer getSequenceNumber() {
         return this.sequenceNumber;
     }
@@ -188,7 +188,8 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
                 }
 
                 callback.handle(message);
-            } else {
+                // } else {
+            } else if (!this.mockResponses.isEmpty()) {
                 LOGGER.info("Received OSLP Request: {}", message.getPayloadMessage().toString().split(" ")[0]);
 
                 // Sequence number logic
@@ -358,14 +359,6 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
             this.sleep(this.responseDelayTime + randomDelay);
         }
 
-        String keys = "";
-
-        for (DeviceRequestMessageType k : mockResponses.keySet()) {
-            if (!keys.isEmpty())
-                keys += " | ";
-            keys += k.name();
-        }
-
         // Handle requests
         if (request.hasGetFirmwareVersionRequest()
                 && this.mockResponses.containsKey(DeviceRequestMessageType.GET_FIRMWARE_VERSION)) {
@@ -396,6 +389,12 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         } else if (request.hasSetDeviceVerificationKeyRequest()
                 && this.mockResponses.containsKey(DeviceRequestMessageType.UPDATE_KEY)) {
             response = this.processRequest(DeviceRequestMessageType.UPDATE_KEY, request);
+        } else if (request.hasSetScheduleRequest()) {
+            if (this.mockResponses.containsKey(DeviceRequestMessageType.SET_LIGHT_SCHEDULE)) {
+                response = this.processRequest(DeviceRequestMessageType.SET_LIGHT_SCHEDULE, request);
+            } else if (this.mockResponses.containsKey(DeviceRequestMessageType.SET_TARIFF_SCHEDULE)) {
+                response = this.processRequest(DeviceRequestMessageType.SET_TARIFF_SCHEDULE, request);
+            }
         }
         // TODO: Implement further requests.
         else {
@@ -404,7 +403,8 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         }
 
         // Write log entry for response
-        LOGGER.debug("Responding: " + response);
+        LOGGER.info("Mock Request: " + request);
+        LOGGER.info("Mock Response: " + response);
 
         return response;
     }
