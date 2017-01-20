@@ -1,7 +1,7 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -17,19 +17,19 @@ import com.alliander.osgp.platform.cucumber.config.ws.BaseWebServiceConfig;
 import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
 
 @Configuration
-public class PublicLightingAdhocManagementWebServiceConfig extends BaseWebServiceConfig {
+public class PublicLightingScheduleManagementWebServiceConfig extends BaseWebServiceConfig {
 
-    @Value("${web.service.template.default.uri.publiclighting.adhocmanagement}")
-    private String webserviceTemplateDefaultUriPublicLightingAdHocManagement;
+    @Value("${web.service.template.default.uri.publiclighting.schedulemanagement}")
+    private String webserviceTemplateDefaultUriPublicLightingScheduleManagement;
 
-    @Value("${jaxb2.marshaller.context.path.publiclighting.adhocmanagement}")
-    private String contextPathPublicLightingAdHocManagement;
+    @Value("${jaxb2.marshaller.context.path.publiclighting.schedulemanagement}")
+    private String contextPathPublicLightingScheduleManagement;
 
     @Bean
-    public WebServiceTemplateFactory publicLightingAdHocManagementWstf() {
-        return new WebServiceTemplateFactory.Builder().setMarshaller(this.publiclightingAdHocManagementMarshaller())
+    public WebServiceTemplateFactory publicLightingScheduleManagementWstf() {
+        return new WebServiceTemplateFactory.Builder().setMarshaller(this.publiclightingScheduleManagementMarshaller())
                 .setMessageFactory(this.messageFactory())
-                .setDefaultUri(this.baseUri.concat(this.webserviceTemplateDefaultUriPublicLightingAdHocManagement))
+                .setDefaultUri(this.baseUri.concat(this.webserviceTemplateDefaultUriPublicLightingScheduleManagement))
                 .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
                 .setKeyStorePassword(this.webserviceKeystorePassword)
                 .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)
@@ -37,29 +37,29 @@ public class PublicLightingAdhocManagementWebServiceConfig extends BaseWebServic
     }
 
     /**
-     * Method for creating the Marshaller for PublicLighting AdHocManagement.
+     * Method for creating the Marshaller for PublicLighting ScheduleManagement.
      *
      * @return Jaxb2Marshaller
      */
     @Bean
-    public Jaxb2Marshaller publiclightingAdHocManagementMarshaller() {
+    public Jaxb2Marshaller publiclightingScheduleManagementMarshaller() {
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
-        marshaller.setContextPath(this.contextPathPublicLightingAdHocManagement);
+        marshaller.setContextPath(this.contextPathPublicLightingScheduleManagement);
 
         return marshaller;
     }
 
     /**
      * Method for creating the Marshalling Payload Method Processor for
-     * PublicLighting AdHocManagement.
+     * PublicLighting ScheduleManagement.
      *
      * @return MarshallingPayloadMethodProcessor
      */
     @Bean
     public MarshallingPayloadMethodProcessor publicLightingAdHocManagementMarshallingPayloadMethodProcessor() {
-        return new MarshallingPayloadMethodProcessor(this.publiclightingAdHocManagementMarshaller(),
-                this.publiclightingAdHocManagementMarshaller());
+        return new MarshallingPayloadMethodProcessor(this.publiclightingScheduleManagementMarshaller(),
+                this.publiclightingScheduleManagementMarshaller());
     }
 
 }

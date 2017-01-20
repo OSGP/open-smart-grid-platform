@@ -7,7 +7,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.steps.ws.publiclighting.publiclightingadhocmanagement;
+package com.alliander.osgp.platform.cucumber.steps.ws.publiclighting.adhocmanagement;
 
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getEnum;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
