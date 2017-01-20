@@ -133,6 +133,11 @@
         <artifactId>osgp-ws-tariffswitching</artifactId>
         <version>${shared.version}</version>
       </dependency>
+      <dependency>
+        <groupId>com.alliander.osgp</groupId>
+        <artifactId>osgp-ws-publiclighting</artifactId>
+        <version>${shared.version}</version>
+      </dependency>
 
       <dependency>
         <groupId>com.alliander.osgp</groupId>
