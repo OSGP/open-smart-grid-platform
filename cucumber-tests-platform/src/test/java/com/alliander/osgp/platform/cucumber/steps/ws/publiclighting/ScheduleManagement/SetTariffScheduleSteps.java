@@ -135,12 +135,12 @@ public class SetTariffScheduleSteps {
         final TariffSchedule schedule = new TariffSchedule();
         schedule.setWeekDay(weekDay);
         if (!startDay.isEmpty()) {
-            schedule.setStartDay(DatatypeFactory.newInstance()
-                    .newXMLGregorianCalendar(DateTime.parse(startDay).toGregorianCalendar()));
+            schedule.setStartDay(DatatypeFactory.newInstance().newXMLGregorianCalendar(
+                    DateTime.parse(startDay).toDateTime(DateTimeZone.UTC).toGregorianCalendar()));
         }
         if (!endDay.isEmpty()) {
-            schedule.setEndDay(DatatypeFactory.newInstance()
-                    .newXMLGregorianCalendar(DateTime.parse(endDay).toGregorianCalendar()));
+            schedule.setEndDay(DatatypeFactory.newInstance().newXMLGregorianCalendar(
+                    DateTime.parse(endDay).toDateTime(DateTimeZone.UTC).toGregorianCalendar()));
         }
         schedule.setTime(time);
 
