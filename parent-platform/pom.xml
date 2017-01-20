@@ -128,7 +128,12 @@
         <artifactId>osgp-ws-admin</artifactId>
         <version>${shared.version}</version>
       </dependency>
-      
+      <dependency>
+        <groupId>com.alliander.osgp</groupId>
+        <artifactId>osgp-ws-tariffswitching</artifactId>
+        <version>${shared.version}</version>
+      </dependency>
+
       <dependency>
         <groupId>com.alliander.osgp</groupId>
         <artifactId>osgp-adapter-ws-shared</artifactId>
