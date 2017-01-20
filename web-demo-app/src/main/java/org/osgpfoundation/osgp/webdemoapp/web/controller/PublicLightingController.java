@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement.DeviceStatus;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.DeviceStatus;
 
 /**
  * Handles requests for the public lighting domain
@@ -99,7 +99,8 @@ public class PublicLightingController {
     public ModelAndView addDevice(@ModelAttribute("SpringWeb") final DeviceLightStatus deviceStatus) {
         final ModelAndView modelView = new ModelAndView("switch-result");
         try {
-            if (deviceStatus.isLightOn() && (deviceStatus.getLightValue() > 0 && deviceStatus.getLightValue() <= 100)) {
+            if (deviceStatus.isLightOn()
+                    && ((deviceStatus.getLightValue() > 0) && (deviceStatus.getLightValue() <= 100))) {
                 this.osgpPublicLightingClientSoapService.setLightRequest(deviceStatus.getDeviceId(),
                         deviceStatus.getLightValue(), deviceStatus.isLightOn());
             } else if (!deviceStatus.isLightOn()) {
@@ -143,6 +144,7 @@ public class PublicLightingController {
 
     /**
      * Displays an error message.
+     * 
      * @param error
      * @return ModelAndView
      */

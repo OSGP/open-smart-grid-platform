@@ -13,16 +13,16 @@ import org.osgpfoundation.osgp.webdemoapp.infra.platform.SoapRequestHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
-import com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement.AsyncRequest;
-import com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement.FindAllDevicesRequest;
-import com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement.FindAllDevicesResponse;
-import com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement.GetStatusAsyncRequest;
-import com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement.GetStatusAsyncResponse;
-import com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement.GetStatusRequest;
-import com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement.GetStatusResponse;
-import com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement.LightValue;
-import com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement.SetLightAsyncResponse;
-import com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement.SetLightRequest;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.FindAllDevicesRequest;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.FindAllDevicesResponse;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusRequest;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusResponse;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.LightValue;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.SetLightAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.SetLightRequest;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.common.AsyncRequest;
 
 import ma.glasnost.orika.MapperFacade;
 
@@ -35,7 +35,7 @@ public class OsgpPublicLightingClientSoapService {
     @Autowired
     private SoapRequestHelper soapRequestHelper;
 
-    private MapperFacade publicLightingAdHocMapperFacade;
+    private final MapperFacade publicLightingAdHocMapperFacade;
 
     public OsgpPublicLightingClientSoapService(final MapperFacade mapper) {
         this.publicLightingAdHocMapperFacade = mapper;

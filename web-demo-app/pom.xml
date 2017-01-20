@@ -34,6 +34,10 @@
       <groupId>com.alliander.osgp</groupId>
       <artifactId>osgp-ws-admin</artifactId>
     </dependency>
+        <dependency>
+      <groupId>com.alliander.osgp</groupId>
+      <artifactId>osgp-ws-publiclighting</artifactId>
+    </dependency>
     
     <!-- Spring Framework -->
     <dependency>
@@ -100,13 +104,7 @@
       <groupId>ma.glasnost.orika</groupId>
       <artifactId>orika-core</artifactId>
     </dependency>
-
-    <!-- OSGP -->
-
-    <dependency>
-      <groupId>org.osgpfoundation.osgp</groupId>
-      <artifactId>generated-ws</artifactId>
-    </dependency>
+    
   </dependencies>
   <build>
     <plugins>

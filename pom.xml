@@ -1,35 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright 2016 Smart Society Services B.V. Licensed under the Apache 
-	License, Version 2.0 (the "License"); you may not use this file except in 
-	compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 -->
+  License, Version 2.0 (the "License"); you may not use this file except in 
+  compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
-	<artifactId>os-webapps</artifactId>
-	<groupId>org.osggfoundation.osgp</groupId>
-	<version>4.0.0-SNAPSHOT</version>
-	<packaging>pom</packaging>
-	<!-- Description, Organization, Licenses, URL and Distribution Management 
-		elements are needed for the maven-jxr-plugin to generate a maven site -->
-	<description>Open Source Webapps for the OSGP Platform.</description>
-	<organization>
-		<name>OSGP</name>
-		<url>www.opensmartgridplatform.org</url>
-	</organization>
-	<licenses>
-		<license>
-			<name>APACHE 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
-		</license>
-	</licenses>
-	<!-- URL is passed in as a maven argument: -Dmaven.site.url=http://my/url/for/the/site -->
-	<url>${maven.site.url}</url>
+  <artifactId>os-webapps</artifactId>
+  <groupId>org.osggfoundation.osgp</groupId>
+  <version>4.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <!-- Description, Organization, Licenses, URL and Distribution Management 
+    elements are needed for the maven-jxr-plugin to generate a maven site -->
+  <description>Open Source Webapps for the OSGP Platform.</description>
+  <organization>
+    <name>OSGP</name>
+    <url>www.opensmartgridplatform.org</url>
+  </organization>
+  <licenses>
+    <license>
+      <name>APACHE 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+    </license>
+  </licenses>
+  <!-- URL is passed in as a maven argument: -Dmaven.site.url=http://my/url/for/the/site -->
+  <url>${maven.site.url}</url>
 
-	<modules>
-		<module>parent-os-webapps</module>
-		<module>generated-ws</module>
-		<module>web-demo-app</module>
-
-	</modules>
+  <modules>
+    <module>parent-os-webapps</module>
+    <module>web-demo-app</module>
+  </modules>
 </project>

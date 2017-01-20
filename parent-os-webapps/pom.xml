@@ -69,12 +69,6 @@
   <dependencyManagement>
     <dependencies>
       <!-- Alliander -->
-
-      <dependency>
-        <groupId>org.osgpfoundation.osgp</groupId>
-        <artifactId>generated-ws</artifactId>
-        <version>${osgp.version}</version>
-      </dependency>
       <dependency>
         <groupId>com.alliander.osgp</groupId>
         <artifactId>osgp-ws-core</artifactId>
@@ -83,6 +77,11 @@
       <dependency>
         <groupId>com.alliander.osgp</groupId>
         <artifactId>osgp-ws-admin</artifactId>
+        <version>${osgp.shared.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.alliander.osgp</groupId>
+        <artifactId>osgp-ws-publiclighting</artifactId>
         <version>${osgp.shared.version}</version>
       </dependency>
 
