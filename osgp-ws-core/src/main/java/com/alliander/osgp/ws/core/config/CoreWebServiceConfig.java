@@ -41,7 +41,7 @@ public class CoreWebServiceConfig {
     }
 
     @Bean(name = "AdHocManagement")
-    public WsdlDefinition AdHocManagementWsdl() {
+    public WsdlDefinition adHocManagementWsdl() {
         return new SimpleWsdl11Definition(new ClassPathResource("AdHocManagement.wsdl"));
     }
 
