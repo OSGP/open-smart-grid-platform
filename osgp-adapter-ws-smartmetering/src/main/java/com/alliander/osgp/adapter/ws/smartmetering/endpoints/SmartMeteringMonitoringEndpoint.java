@@ -17,6 +17,7 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
+import com.alliander.osgp.adapter.ws.endpointinterceptors.ResponseUrl;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.ScheduleTime;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
@@ -95,7 +96,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
     private AsyncResponse getPeriodicAsyncResponseForEandG(final String organisationIdentification,
             final PeriodicReadsRequest request, final int messagePriority, final String scheduleTime)
-            throws OsgpException {
+                    throws OsgpException {
         AsyncResponse response = null;
 
         try {
@@ -108,7 +109,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
                     this.monitoringMapper.map(scheduleTime, Long.class));
 
             response = request instanceof PeriodicMeterReadsRequest ? new PeriodicMeterReadsAsyncResponse()
-            : new PeriodicMeterReadsGasAsyncResponse();
+                    : new PeriodicMeterReadsGasAsyncResponse();
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
         } catch (final Exception e) {
@@ -208,7 +209,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
     private AsyncResponse getActualAsyncResponseForEandG(final String organisationIdentification,
             final String deviceIdentification, final boolean gas, final int messagePriority, final String scheduleTime)
-            throws OsgpException {
+                    throws OsgpException {
         AsyncResponse asyncResponse = null;
 
         try {
@@ -220,9 +221,9 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
                     this.monitoringMapper.map(scheduleTime, Long.class));
 
             asyncResponse = gas ? new com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFactory()
-            .createActualMeterReadsGasAsyncResponse()
-            : new com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFactory()
-            .createActualMeterReadsAsyncResponse();
+                    .createActualMeterReadsGasAsyncResponse()
+                    : new com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFactory()
+                            .createActualMeterReadsAsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
             asyncResponse.setDeviceIdentification(deviceIdentification);
 
@@ -284,7 +285,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
     public ReadAlarmRegisterAsyncResponse readAlarmRegister(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final ReadAlarmRegisterRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime) throws OsgpException {
+            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
 
         LOGGER.info("Incoming ReadAlarmRegisterRequest for meter: {}", request.getDeviceIdentification());
 
@@ -304,7 +305,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             asyncResponse.setCorrelationUid(correlationUid);
             asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
             response.setAsyncResponse(asyncResponse);
-
+            this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
             LOGGER.error("Exception: {} while requesting read alarm register for device: {} for organisation {}.",
                     new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);

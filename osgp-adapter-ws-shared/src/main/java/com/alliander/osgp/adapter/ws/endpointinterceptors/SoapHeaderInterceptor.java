@@ -7,14 +7,6 @@
  */
 package com.alliander.osgp.adapter.ws.endpointinterceptors;
 
-/**
- * Copyright 2017 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- */
-
 import org.springframework.util.Assert;
 import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.server.EndpointInterceptor;
@@ -25,12 +17,12 @@ import org.springframework.ws.soap.SoapMessage;
  * Intercept a SOAP Header and put the message priority contents in the
  * MessageContext.
  */
-public abstract class AbstractSoapHeaderInterceptor implements EndpointInterceptor {
+public class SoapHeaderInterceptor implements EndpointInterceptor {
 
     private final String headerName;
     private final String contextPropertyName;
 
-    public AbstractSoapHeaderInterceptor(final String headerName, final String contextPropertyName) {
+    public SoapHeaderInterceptor(final String headerName, final String contextPropertyName) {
         this.headerName = headerName;
         this.contextPropertyName = contextPropertyName;
     }

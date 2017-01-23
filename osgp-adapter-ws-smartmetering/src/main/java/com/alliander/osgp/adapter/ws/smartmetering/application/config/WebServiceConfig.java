@@ -35,9 +35,7 @@ import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentifica
 import com.alliander.osgp.adapter.ws.endpointinterceptors.ResponseUrl;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.ScheduleTime;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderEndpointInterceptor;
-import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderMessagePriorityEndpointInterceptor;
-import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderResponseUrlEndpointInterceptor;
-import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderScheduleTimeEndpointInterceptor;
+import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderInterceptor;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.X509CertificateRdnAttributeValueEndpointInterceptor;
 import com.alliander.osgp.adapter.ws.shared.services.NotificationService;
 import com.alliander.osgp.adapter.ws.shared.services.NotificationServiceBlackHole;
@@ -49,8 +47,8 @@ import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 @Configuration
 @PropertySources({ @PropertySource("classpath:osgp-adapter-ws-smartmetering.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-    @PropertySource(value = "file:${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true), })
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true), })
 public class WebServiceConfig extends AbstractConfig {
 
     @Value("${jaxb2.marshaller.context.path.smartmetering.adhoc}")
@@ -100,7 +98,7 @@ public class WebServiceConfig extends AbstractConfig {
     private static final String ORGANISATION_IDENTIFICATION_CONTEXT = ORGANISATION_IDENTIFICATION_HEADER;
 
     private static final String MESSAGE_PRIORITY_HEADER = "MessagePriority";
-        private static final String MESSAGE_SCHEDULETIME_HEADER = "ScheduleTime";
+    private static final String MESSAGE_SCHEDULETIME_HEADER = "ScheduleTime";
     private static final String MESSAGE_RESPONSE_URL_HEADER = "ResponseUrl";
 
     private static final String X509_RDN_ATTRIBUTE_ID = "cn";
@@ -132,12 +130,6 @@ public class WebServiceConfig extends AbstractConfig {
         return marshaller;
     }
 
-//    @Bean
-//    public SendNotificationServiceClient sendNotificationServiceClient() throws java.security.GeneralSecurityException {
-//        return new SendNotificationServiceClient(this.createWebServiceTemplateFactory(this
-//                .notificationSenderMarshaller()));
-//    }
-
     private WebServiceTemplateFactory createWebServiceTemplateFactory(final Jaxb2Marshaller marshaller) {
         return new WebServiceTemplateFactory(marshaller, this.messageFactory(), this.webserviceKeystoreType,
                 this.webserviceKeystoreLocation, this.webserviceKeystorePassword, this.webServiceTrustStoreFactory(),
@@ -158,7 +150,7 @@ public class WebServiceConfig extends AbstractConfig {
     public NotificationService wsSmartMeteringNotificationService() throws GeneralSecurityException {
         if (this.webserviceNotificationEnabled) {
             return new NotificationServiceWs(this.createWebServiceTemplateFactory(this.notificationSenderMarshaller()),
-                     this.notificationUrl(), this.notificationUsername());
+                    this.notificationUrl(), this.notificationUsername());
         } else {
             return new NotificationServiceBlackHole();
         }
@@ -344,12 +336,12 @@ public class WebServiceConfig extends AbstractConfig {
 
         methodArgumentResolvers.add(new AnnotationMethodArgumentResolver(ORGANISATION_IDENTIFICATION_CONTEXT,
                 OrganisationIdentification.class));
-        methodArgumentResolvers.add(new AnnotationMethodArgumentResolver(MESSAGE_PRIORITY_HEADER,
-                MessagePriority.class));
+        methodArgumentResolvers
+                .add(new AnnotationMethodArgumentResolver(MESSAGE_PRIORITY_HEADER, MessagePriority.class));
         methodArgumentResolvers.add(new AnnotationMethodArgumentResolver(MESSAGE_SCHEDULETIME_HEADER,
                 ScheduleTime.class));
         methodArgumentResolvers
-        .add(new AnnotationMethodArgumentResolver(MESSAGE_RESPONSE_URL_HEADER, ResponseUrl.class));
+                .add(new AnnotationMethodArgumentResolver(MESSAGE_RESPONSE_URL_HEADER, ResponseUrl.class));
         defaultMethodEndpointAdapter.setMethodArgumentResolvers(methodArgumentResolvers);
 
         final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<MethodReturnValueHandler>();
@@ -398,18 +390,20 @@ public class WebServiceConfig extends AbstractConfig {
     }
 
     @Bean
-    public SoapHeaderMessagePriorityEndpointInterceptor messagePriorityInterceptor() {
-        return new SoapHeaderMessagePriorityEndpointInterceptor(MESSAGE_PRIORITY_HEADER);
+    public SoapHeaderInterceptor messagePriorityInterceptor() {
+        LOGGER.debug("Creating Message Priority Interceptor Bean");
+
+        return new SoapHeaderInterceptor(MESSAGE_PRIORITY_HEADER, MESSAGE_PRIORITY_HEADER);
     }
 
     @Bean
-    public SoapHeaderScheduleTimeEndpointInterceptor scheduleTimeInterceptor() {
-        return new SoapHeaderScheduleTimeEndpointInterceptor(MESSAGE_SCHEDULETIME_HEADER);
+    public SoapHeaderInterceptor scheduleTimeInterceptor() {
+        return new SoapHeaderInterceptor(MESSAGE_SCHEDULETIME_HEADER, MESSAGE_SCHEDULETIME_HEADER);
     }
 
     @Bean
-    public SoapHeaderResponseUrlEndpointInterceptor responseUrlInterceptor() {
-        return new SoapHeaderResponseUrlEndpointInterceptor(MESSAGE_RESPONSE_URL_HEADER);
+    public SoapHeaderInterceptor responseUrlInterceptor() {
+        return new SoapHeaderInterceptor(MESSAGE_RESPONSE_URL_HEADER, MESSAGE_RESPONSE_URL_HEADER);
     }
 
     /**

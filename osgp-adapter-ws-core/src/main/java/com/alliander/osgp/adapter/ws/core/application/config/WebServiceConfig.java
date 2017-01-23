@@ -29,7 +29,7 @@ import com.alliander.osgp.adapter.ws.endpointinterceptors.AnnotationMethodArgume
 import com.alliander.osgp.adapter.ws.endpointinterceptors.CertificateAndSoapHeaderAuthorizationEndpointInterceptor;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderEndpointInterceptor;
-import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderMessagePriorityEndpointInterceptor;
+import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderInterceptor;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.WebServiceMonitorInterceptor;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.X509CertificateRdnAttributeValueEndpointInterceptor;
 import com.alliander.osgp.shared.application.config.AbstractConfig;
@@ -283,11 +283,11 @@ public class WebServiceConfig extends AbstractConfig {
                 ORGANISATION_IDENTIFICATION_CONTEXT);
     }
 
-    @Bean
-    public SoapHeaderMessagePriorityEndpointInterceptor messagePriorityInterceptor() {
+    @Bean(name = "SoapHeaderMessagePriorityEndpointInterceptor")
+    public SoapHeaderInterceptor messagePriorityInterceptor() {
         LOGGER.debug("Creating Message Priority Interceptor Bean");
 
-        return new SoapHeaderMessagePriorityEndpointInterceptor(MESSAGE_PRIORITY_HEADER);
+        return new SoapHeaderInterceptor(MESSAGE_PRIORITY_HEADER, MESSAGE_PRIORITY_HEADER);
     }
 
     /**

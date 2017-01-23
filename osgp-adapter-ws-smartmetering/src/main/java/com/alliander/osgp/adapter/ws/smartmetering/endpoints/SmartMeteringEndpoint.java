@@ -2,8 +2,10 @@ package com.alliander.osgp.adapter.ws.smartmetering.endpoints;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
+import com.alliander.osgp.adapter.ws.shared.services.ResponseUrlService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -13,6 +15,9 @@ import com.alliander.osgp.shared.exceptionhandling.UnknownCorrelationUidExceptio
 abstract class SmartMeteringEndpoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SmartMeteringEndpoint.class);
+
+    @Autowired
+    protected ResponseUrlService responseUrlService;
 
     /**
      * Rethrow exception if it already is a functional or technical exception,
@@ -47,6 +52,10 @@ abstract class SmartMeteringEndpoint {
                         "An exception occurred %s.", exceptionContext), null);
             }
         }
+    }
+
+    protected void saveResponseUrlIfNeeded(final String correlationUid, final String responseUrl) {
+        this.responseUrlService.saveResponseUrlIfNeeded(correlationUid, responseUrl);
     }
 
 }

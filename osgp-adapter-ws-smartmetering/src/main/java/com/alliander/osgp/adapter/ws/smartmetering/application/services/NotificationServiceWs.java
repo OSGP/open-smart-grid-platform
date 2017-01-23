@@ -18,6 +18,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.Notificat
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.SendNotificationRequest;
 import com.alliander.osgp.adapter.ws.shared.services.AbstractNotificationServiceWs;
 import com.alliander.osgp.adapter.ws.shared.services.NotificationService;
+import com.alliander.osgp.adapter.ws.shared.services.ResponseUrlService;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.WebServiceTemplateFactory;
 
 @Transactional(value = "transactionManager")
@@ -50,13 +51,8 @@ public class NotificationServiceWs extends AbstractNotificationServiceWs impleme
     }
 
     private String notificationUrl(final String correlationUid) {
-        final String responseUrl = this.responseUrlService.findResponseUrl(correlationUid);
-        if (responseUrl == null) {
-            return this.notificationUrl;
-        } else {
-            this.responseUrlService.deleteResponseUrl(correlationUid);
-            return responseUrl;
-        }
+        final String responseUrl = this.responseUrlService.popResponseUrl(correlationUid);
+        return (responseUrl == null) ? this.notificationUrl : responseUrl;
     }
 
     private SendNotificationRequest notificationRequest(final String organisationIdentification,

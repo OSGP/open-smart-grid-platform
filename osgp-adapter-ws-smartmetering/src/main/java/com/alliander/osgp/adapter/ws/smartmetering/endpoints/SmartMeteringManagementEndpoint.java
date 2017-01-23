@@ -22,6 +22,7 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
+import com.alliander.osgp.adapter.ws.endpointinterceptors.ResponseUrl;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.ScheduleTime;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.DevicePage;
@@ -87,7 +88,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
     public FindEventsAsyncResponse findEventsRequest(
             @OrganisationIdentification final String organisationIdentification,
             @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
-            @RequestPayload final FindEventsRequest request) throws OsgpException {
+            @ResponseUrl final String responseUrl, @RequestPayload final FindEventsRequest request)
+                    throws OsgpException {
 
         LOGGER.info("Find events request for organisation: {} and device: {}.", organisationIdentification,
                 request.getDeviceIdentification());
@@ -109,7 +111,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
-
+            this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
             this.handleException(e);
         }
@@ -332,7 +334,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
     public FindMessageLogsAsyncResponse findMessageLogsRequest(
             @OrganisationIdentification final String organisationIdentification,
             @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
-            @RequestPayload final FindMessageLogsRequest request) throws OsgpException {
+            @ResponseUrl final String responseUrl, @RequestPayload final FindMessageLogsRequest request)
+            throws OsgpException {
 
         LOGGER.info("Find message logs request for organisation: {} and device: {}.", organisationIdentification,
                 request.getDeviceIdentification());
@@ -348,7 +351,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
-
+            this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
             this.handleException(e);
         }
@@ -362,7 +365,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
      *
      * @TODO remove this method once it is implemented in a asynchronous manner
      *       in the ws-admin project.
-     * 
+     *
      * @param organisationIdentification
      * @param request
      * @return FindMessageLogsResponse

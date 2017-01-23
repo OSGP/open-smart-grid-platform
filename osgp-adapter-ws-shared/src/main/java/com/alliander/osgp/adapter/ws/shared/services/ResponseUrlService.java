@@ -1,4 +1,4 @@
-package com.alliander.osgp.adapter.ws.smartmetering.application.services;
+package com.alliander.osgp.adapter.ws.shared.services;
 
 import javax.validation.constraints.NotNull;
 
@@ -29,7 +29,7 @@ public interface ResponseUrlService {
      * this returns true if the table contains a record with the given correlid
      *
      * @param correlId
-     * @return
+     * @return true, if the table contains a record with the given correlId
      */
     boolean hasResponseUrl(@NotNull @NotEmpty final String correlId);
 
@@ -38,7 +38,8 @@ public interface ResponseUrlService {
      * return a null value!
      *
      * @param correlId
-     * @return
+     * @return the repsponseUrl that belongs to the given correlId. If no
+     *         records exists it returns: null
      */
     String findResponseUrl(@NotNull @NotEmpty final String correlId);
 
@@ -46,7 +47,17 @@ public interface ResponseUrlService {
      * Delete the record with the correlId / responseUrl from the database.
      *
      * @param correlId
-     * @return
      */
     void deleteResponseUrl(@NotNull @NotEmpty final String correlId);
+
+    /**
+     * This combines the @see findResponseUrl and @see deleteResponseUrl.
+     *
+     * @param correlId
+     * @return the repsponseUrl that belongs to the given correlId As a
+     *         side-effect, the record is also deleted from the dbs. If no
+     *         records exists it returns: null
+     */
+    String popResponseUrl(@NotNull @NotEmpty final String correlId);
+
 }

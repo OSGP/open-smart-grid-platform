@@ -3,6 +3,7 @@ package com.alliander.osgp.adapter.ws.smartmetering.application.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.ws.shared.services.ResponseUrlService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.ResponseUrlData;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.ResponseUrlDataRepository;
 
@@ -43,7 +44,18 @@ public class ResponseUrlServiceImpl implements ResponseUrlService {
         if (responseDataUrl != null) {
             this.responseUrlDataRepository.delete(responseDataUrl);
         }
+    }
 
+    @Override
+    public String popResponseUrl(String correlId) {
+        final ResponseUrlData responseDataUrl = this.responseUrlDataRepository
+                .findSingleResultByCorrelationUid(correlId);
+        if (responseDataUrl != null) {
+            this.responseUrlDataRepository.delete(responseDataUrl);
+            return responseDataUrl.getResponseUrl();
+        } else {
+            return null;
+        }
     }
 
 }

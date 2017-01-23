@@ -30,7 +30,6 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Action;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.ActionMapperResponseService;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.ActionMapperService;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.BundleService;
-import com.alliander.osgp.adapter.ws.smartmetering.application.services.ResponseUrlService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionRequest;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -45,9 +44,6 @@ public class SmartMeteringBundleEndpoint extends SmartMeteringEndpoint {
     private final BundleService bundleService;
     private final ActionMapperService actionMapperService;
     private final ActionMapperResponseService actionMapperResponseService;
-
-    @Autowired
-    private ResponseUrlService responseUrlService;
 
     @Autowired
     public SmartMeteringBundleEndpoint(
@@ -87,7 +83,7 @@ public class SmartMeteringBundleEndpoint extends SmartMeteringEndpoint {
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
 
-            this.responseUrlService.saveResponseUrlIfNeeded(correlationUid, responseUrl);
+            this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
             this.handleException(e);
         }

@@ -17,6 +17,7 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
+import com.alliander.osgp.adapter.ws.endpointinterceptors.ResponseUrl;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.ScheduleTime;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetAssociationLnObjectsAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetAssociationLnObjectsAsyncResponse;
@@ -59,7 +60,7 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
     public SynchronizeTimeAsyncResponse synchronizeTime(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SynchronizeTimeRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime) throws OsgpException {
+            @ResponseUrl final String responseUrl, @ScheduleTime final String scheduleTime) throws OsgpException {
 
         final SynchronizeTimeAsyncResponse response = new SynchronizeTimeAsyncResponse();
 
@@ -74,6 +75,8 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
 
         response.setCorrelationUid(correlationUid);
         response.setDeviceIdentification(request.getDeviceIdentification());
+
+        this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
 
         return response;
     }
@@ -105,8 +108,8 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
     public RetrieveAllAttributeValuesAsyncResponse retrieveAllAttributeValues(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final RetrieveAllAttributeValuesRequest request,
-            @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime)
-                    throws OsgpException {
+            @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
+            @ResponseUrl final String responseUrl) throws OsgpException {
 
         final RetrieveAllAttributeValuesAsyncResponse response = new RetrieveAllAttributeValuesAsyncResponse();
 
@@ -120,6 +123,8 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
 
         response.setCorrelationUid(correlationUid);
         response.setDeviceIdentification(request.getDeviceIdentification());
+
+        this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
 
         return response;
     }
@@ -147,6 +152,7 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
         } catch (final Exception e) {
             this.handleException(e);
         }
+
         return response;
     }
 
@@ -155,7 +161,7 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
     public SpecificAttributeValueAsyncResponse getSpecificAttributeValue(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SpecificAttributeValueRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime) throws OsgpException {
+            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
 
         final SpecificAttributeValueAsyncResponse response = new SpecificAttributeValueAsyncResponse();
 
@@ -170,6 +176,8 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
 
         response.setCorrelationUid(correlationUid);
         response.setDeviceIdentification(request.getDeviceIdentification());
+
+        this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
 
         return response;
     }
@@ -200,8 +208,8 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
     public GetAssociationLnObjectsAsyncResponse getAssociationLnObjects(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final GetAssociationLnObjectsRequest request,
-            @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime)
-                    throws OsgpException {
+            @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
+            @ResponseUrl final String responseUrl) throws OsgpException {
 
         final GetAssociationLnObjectsAsyncResponse response = new GetAssociationLnObjectsAsyncResponse();
 
@@ -215,6 +223,8 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
 
         response.setCorrelationUid(correlationUid);
         response.setDeviceIdentification(request.getDeviceIdentification());
+
+        this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
 
         return response;
     }
