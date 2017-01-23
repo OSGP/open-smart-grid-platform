@@ -1,9 +1,19 @@
+/**
+ * Copyright 2017 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.adapter.ws.smartmetering.endpoints;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.adapter.ws.endpoint.WebserviceEndpoint;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.shared.services.ResponseUrlService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
@@ -12,7 +22,7 @@ import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.exceptionhandling.UnknownCorrelationUidException;
 
-abstract class SmartMeteringEndpoint {
+abstract class SmartMeteringEndpoint implements WebserviceEndpoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SmartMeteringEndpoint.class);
 
@@ -27,7 +37,8 @@ abstract class SmartMeteringEndpoint {
      *            cause
      * @throws OsgpException
      */
-    protected void handleException(final Exception e) throws OsgpException {
+    @Override
+    public void handleException(final Exception e) throws OsgpException {
         if (e instanceof OsgpException) {
             if (e instanceof UnknownCorrelationUidException) {
                 LOGGER.warn(e.getMessage());
@@ -54,7 +65,8 @@ abstract class SmartMeteringEndpoint {
         }
     }
 
-    protected void saveResponseUrlIfNeeded(final String correlationUid, final String responseUrl) {
+    @Override
+    public void saveResponseUrlIfNeeded(final String correlationUid, final String responseUrl) {
         this.responseUrlService.saveResponseUrlIfNeeded(correlationUid, responseUrl);
     }
 
