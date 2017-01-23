@@ -8,6 +8,7 @@
 package com.alliander.osgp.platform.cucumber.steps;
 
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.TransitionType;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.HistoryTermType;
 import com.alliander.osgp.oslp.Oslp.LightType;
 import com.alliander.osgp.oslp.Oslp.LinkType;
 import com.alliander.osgp.oslp.Oslp.Status;
@@ -104,4 +105,5 @@ public class Defaults {
     public static final Status DEFAULT_STATUS = Status.OK;
     public static final String DEFAULT_LIGHTVALUES = "";
     public static final String DEFAULT_EVENTNOTIFICATIONTYPES = "";
+    public static final HistoryTermType HISTORY_TERM_TYPE = HistoryTermType.SHORT;
 }
