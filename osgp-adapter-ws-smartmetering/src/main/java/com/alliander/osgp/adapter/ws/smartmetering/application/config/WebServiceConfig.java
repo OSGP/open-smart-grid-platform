@@ -70,8 +70,10 @@ public class WebServiceConfig extends AbstractConfig {
 
     @Value("${web.service.truststore.location}")
     private String webserviceTruststoreLocation;
+
     @Value("${web.service.truststore.password}")
     private String webserviceTruststorePassword;
+
     @Value("${web.service.truststore.type}")
     private String webserviceTruststoreType;
 
@@ -139,9 +141,10 @@ public class WebServiceConfig extends AbstractConfig {
     }
 
     private WebServiceTemplateFactory createWebServiceTemplateFactory(final Jaxb2Marshaller marshaller) {
-        return new WebServiceTemplateFactory(marshaller, this.messageFactory(), this.webserviceKeystoreType,
-                this.webserviceKeystoreLocation, this.webserviceKeystorePassword, this.webServiceTrustStoreFactory(),
-                this.applicationName);
+
+        return new WebServiceTemplateFactory(marshaller, this.messageFactory(), this.webserviceNotificationUrl,
+                this.webserviceKeystoreType, this.webserviceKeystoreLocation, this.webserviceKeystorePassword,
+                this.webServiceTrustStoreFactory(), this.applicationName);
     }
 
     @Bean

@@ -8,8 +8,12 @@
 package com.alliander.osgp.adapter.ws.smartmetering.infra.ws;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.security.GeneralSecurityException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.Notification;
@@ -18,6 +22,8 @@ import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 import com.alliander.osgp.shared.infra.ws.WebServiceTemplateFactory;
 
 public class SendNotificationServiceClient {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SendNotificationServiceClient.class);
 
     private final WebServiceTemplateFactory webServiceTemplateFactory;
 
@@ -42,7 +48,12 @@ public class SendNotificationServiceClient {
 
         sendNotificationRequest.setNotification(notification);
 
-        this.webServiceTemplateFactory.getTemplate(organisationIdentification, notificationUsername, notificationURL)
-                .marshalSendAndReceive(sendNotificationRequest);
+        try {
+            this.webServiceTemplateFactory
+                    .getTemplate(organisationIdentification, notificationUsername, new URL(notificationURL))
+                    .marshalSendAndReceive(sendNotificationRequest);
+        } catch (final MalformedURLException e) {
+            LOGGER.error("Unexpected exception by creating notification URL", e);
+        }
     }
 }
