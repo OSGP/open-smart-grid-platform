@@ -14,8 +14,8 @@ import org.springframework.ws.soap.SoapHeader;
 import org.springframework.ws.soap.SoapMessage;
 
 /**
- * Intercept a SOAP Header and put the message priority contents in the
- * MessageContext.
+ * Intercept a SOAP Header and puts the given headerName and contextPropertyName
+ * in the MessageContext.
  */
 public class SoapHeaderInterceptor implements EndpointInterceptor {
 

@@ -192,7 +192,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
     public EnableDebuggingAsyncResponse enableDebuggingRequest(
             @OrganisationIdentification final String organisationIdentification,
             @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
-            @RequestPayload final EnableDebuggingRequest request) throws OsgpException {
+            @ResponseUrl final String responseUrl, @RequestPayload final EnableDebuggingRequest request)
+                    throws OsgpException {
 
         LOGGER.info("Enable debugging request for organisation: {} and device: {}.", organisationIdentification,
                 request.getDeviceIdentification());
@@ -211,7 +212,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
-
+            this.responseUrlService.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
             this.handleException(e);
         }
@@ -253,7 +254,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
     public DisableDebuggingAsyncResponse disableDebuggingRequest(
             @OrganisationIdentification final String organisationIdentification,
             @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
-            @RequestPayload final DisableDebuggingRequest request) throws OsgpException {
+            @ResponseUrl final String responseUrl, @RequestPayload final DisableDebuggingRequest request)
+                    throws OsgpException {
 
         LOGGER.info("Disable debugging request for organisation: {} and device: {}.", organisationIdentification,
                 request.getDeviceIdentification());
@@ -272,7 +274,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
-
+            this.responseUrlService.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
             this.handleException(e);
         }

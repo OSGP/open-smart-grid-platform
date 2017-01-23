@@ -73,12 +73,12 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
     public PeriodicMeterReadsAsyncResponse getPeriodicMeterReads(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final PeriodicMeterReadsRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime) throws OsgpException {
+            @ResponseUrl final String responseUrl, @ScheduleTime final String scheduleTime) throws OsgpException {
 
         LOGGER.debug("Incoming PeriodicMeterReadsRequest for meter: {}.", request.getDeviceIdentification());
 
         return (PeriodicMeterReadsAsyncResponse) this.getPeriodicAsyncResponseForEandG(organisationIdentification,
-                request, MessagePriorityEnum.getMessagePriority(messagePriority), scheduleTime);
+                request, MessagePriorityEnum.getMessagePriority(messagePriority), scheduleTime, responseUrl);
     }
 
     @PayloadRoot(localPart = "PeriodicMeterReadsGasRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)
@@ -86,17 +86,17 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
     public PeriodicMeterReadsGasAsyncResponse getPeriodicMeterReadsGas(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final PeriodicMeterReadsGasRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime) throws OsgpException {
+            @ResponseUrl final String responseUrl, @ScheduleTime final String scheduleTime) throws OsgpException {
 
         LOGGER.debug("Incoming PeriodicMeterReadsGasRequest for meter: {}.", request.getDeviceIdentification());
 
         return (PeriodicMeterReadsGasAsyncResponse) this.getPeriodicAsyncResponseForEandG(organisationIdentification,
-                request, MessagePriorityEnum.getMessagePriority(messagePriority), scheduleTime);
+                request, MessagePriorityEnum.getMessagePriority(messagePriority), scheduleTime, responseUrl);
     }
 
     private AsyncResponse getPeriodicAsyncResponseForEandG(final String organisationIdentification,
-            final PeriodicReadsRequest request, final int messagePriority, final String scheduleTime)
-                    throws OsgpException {
+            final PeriodicReadsRequest request, final int messagePriority, final String scheduleTime,
+            final String responseUrl) throws OsgpException {
         AsyncResponse response = null;
 
         try {
@@ -112,6 +112,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
                     : new PeriodicMeterReadsGasAsyncResponse();
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
+            this.responseUrlService.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
             LOGGER.error("Exception: {} while requesting meter reads for device: {} for organisation {}.",
                     new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
@@ -182,14 +183,15 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
     public ActualMeterReadsAsyncResponse getActualMeterReads(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final ActualMeterReadsRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime) throws OsgpException {
+            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
 
         final String deviceIdentification = request.getDeviceIdentification();
 
         LOGGER.debug("Incoming ActualMeterReadsRequest for meter: {}", deviceIdentification);
 
         return (ActualMeterReadsAsyncResponse) this.getActualAsyncResponseForEandG(organisationIdentification,
-                deviceIdentification, false, MessagePriorityEnum.getMessagePriority(messagePriority), scheduleTime);
+                deviceIdentification, false, MessagePriorityEnum.getMessagePriority(messagePriority), scheduleTime,
+                responseUrl);
     }
 
     @PayloadRoot(localPart = "ActualMeterReadsGasRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)
@@ -197,19 +199,20 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
     public ActualMeterReadsGasAsyncResponse getActualMeterReadsGas(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final ActualMeterReadsGasRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime) throws OsgpException {
+            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
 
         final String deviceIdentification = request.getDeviceIdentification();
 
         LOGGER.debug("Incoming ActualMeterReadsGasRequest for meter: {}", deviceIdentification);
 
         return (ActualMeterReadsGasAsyncResponse) this.getActualAsyncResponseForEandG(organisationIdentification,
-                deviceIdentification, true, MessagePriorityEnum.getMessagePriority(messagePriority), scheduleTime);
+                deviceIdentification, true, MessagePriorityEnum.getMessagePriority(messagePriority), scheduleTime,
+                responseUrl);
     }
 
     private AsyncResponse getActualAsyncResponseForEandG(final String organisationIdentification,
-            final String deviceIdentification, final boolean gas, final int messagePriority, final String scheduleTime)
-                    throws OsgpException {
+            final String deviceIdentification, final boolean gas, final int messagePriority, final String scheduleTime,
+            final String responseUrl) throws OsgpException {
         AsyncResponse asyncResponse = null;
 
         try {
@@ -226,7 +229,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
                             .createActualMeterReadsAsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
             asyncResponse.setDeviceIdentification(deviceIdentification);
-
+            this.responseUrlService.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
             LOGGER.error("Exception: {} while requesting actual meter reads for device: {} for organisation {}.",
                     new Object[] { e.getMessage(), deviceIdentification, organisationIdentification }, e);
