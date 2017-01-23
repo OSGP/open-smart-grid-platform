@@ -4,6 +4,7 @@
 package com.alliander.osgp.shared.infra.ws;
 
 import java.io.IOException;
+import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -46,7 +47,7 @@ public class WebServiceTemplateFactory {
 
     private final Jaxb2Marshaller marshaller;
     private final SaajSoapMessageFactory messageFactory;
-    private final String defaultUri;
+    private String defaultUri;
     private final String keyStoreType;
     private final String keyStoreLocation;
     private final String keyStorePassword;
@@ -91,6 +92,12 @@ public class WebServiceTemplateFactory {
         return this.getTemplate(organisationIdentification, userName, this.applicationName);
     }
 
+    public WebServiceTemplate getTemplate(final String organisationIdentification, final String userName, final URL defaultUri)
+            throws WebServiceSecurityException {
+        this.defaultUri = defaultUri.toString();
+        return this.getTemplate(organisationIdentification, userName, this.applicationName);
+    }
+
     public WebServiceTemplate getTemplate(final String organisationIdentification, final String userName,
             final String applicationName) throws WebServiceSecurityException {
 
@@ -128,13 +135,16 @@ public class WebServiceTemplateFactory {
             final String applicationName) throws WebServiceSecurityException {
         final WebServiceTemplate webServiceTemplate = new WebServiceTemplate(this.messageFactory);
 
-        webServiceTemplate.setDefaultUri(this.defaultUri);
+        if (this.defaultUri != null) {
+            webServiceTemplate.setDefaultUri(this.defaultUri);
+        }
+
         webServiceTemplate.setMarshaller(this.marshaller);
         webServiceTemplate.setUnmarshaller(this.marshaller);
         webServiceTemplate.setInterceptors(new ClientInterceptor[] {
                 new OrganisationIdentificationClientInterceptor(organisationIdentification, userName, applicationName,
                         NAMESPACE, ORGANISATION_IDENTIFICATION_HEADER, USER_NAME_HEADER, APPLICATION_NAME_HEADER) });
-        if (this.defaultUri.contains("proxy-server")) {
+        if (this.defaultUri != null && this.defaultUri.contains("proxy-server")) {
             webServiceTemplate.setCheckConnectionForFault(false);
         } else {
             webServiceTemplate.setCheckConnectionForFault(true);
