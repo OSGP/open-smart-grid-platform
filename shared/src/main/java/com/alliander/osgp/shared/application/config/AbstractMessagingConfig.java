@@ -32,6 +32,9 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
     @Value("${jms.activemq.broker.url:tcp://localhost:61616}")
     protected String aciveMqBroker;
 
+    @Value("${jms.activemq.connection.pool.size:10}")
+    protected int connectionPoolSize;
+
     @Bean
     protected PropertiesFactoryBean propertiesFactoryBean() {
         return new PropertiesFactoryBean();
@@ -48,6 +51,7 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
     protected PooledConnectionFactory pooledConnectionFactory() {
         final PooledConnectionFactory pooledConnectionFactory = new PooledConnectionFactory();
         pooledConnectionFactory.setConnectionFactory(this.connectionFactory());
+        pooledConnectionFactory.setMaxConnections(this.connectionPoolSize);
         return pooledConnectionFactory;
     }
 
