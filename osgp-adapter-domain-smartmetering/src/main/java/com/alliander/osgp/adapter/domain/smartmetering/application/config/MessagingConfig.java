@@ -21,6 +21,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRe
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageListener;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.shared.application.config.AbstractMessagingConfig;
+import com.alliander.osgp.shared.application.config.jms.JmsConfiguration;
 import com.alliander.osgp.shared.application.config.jms.JmsConfigurationFactory;
 
 /**
@@ -44,18 +45,28 @@ public class MessagingConfig extends AbstractMessagingConfig {
     @Qualifier("domainSmartMeteringIncomingOsgpCoreRequestMessageListener")
     private OsgpCoreRequestMessageListener incomingOsgpCoreRequestMessageListener;
 
+    @Bean
+    public JmsConfiguration incomingWebServiceJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
+        return jmsConfigurationFactory.initializeConfiguration("jms.incoming.ws.requests",
+                this.incomingWebServiceRequestMessageListener);
+    }
+
     @Bean(name = "domainSmartMeteringIncomingWebServiceRequestMessageListenerContainer")
     public DefaultMessageListenerContainer incomingWebServiceRequestsMessageListenerContainer(
-            final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory
-                .initializeConfiguration("jms.incoming.ws.requests", this.incomingWebServiceRequestMessageListener)
-                .getMessageListenerContainer();
+            final JmsConfiguration incomingWebServiceJmsConfiguration) {
+        return incomingWebServiceJmsConfiguration.getMessageListenerContainer();
     }
 
     // JMS SETTINGS: OUTGOING WEB SERVICE RESPONSES
+    @Bean
+    public JmsConfiguration outgoingWebServiceJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
+        return jmsConfigurationFactory.initializeConfiguration("jms.outgoing.ws.responses");
+    }
+
     @Bean(name = "domainSmartMeteringOutgoingWebServiceResponsesJmsTemplate")
-    public JmsTemplate outgoingWebServiceResponsesJmsTemplate(final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.outgoing.ws.responses").getJmsTemplate();
+    public JmsTemplate outgoingWebServiceResponsesJmsTemplate(
+            final JmsConfiguration outgoingWebServiceJmsConfiguration) {
+        return outgoingWebServiceJmsConfiguration.getJmsTemplate();
     }
 
     @Bean(name = "domainSmartMeteringOutgoingWebServiceResponseMessageSender")
@@ -64,37 +75,62 @@ public class MessagingConfig extends AbstractMessagingConfig {
     }
 
     // JMS SETTINGS: OUTGOING OSGP CORE REQUESTS (Sending requests to osgp core)
+    @Bean
+    public JmsConfiguration outgoingOsgpCoreRequestsJmsConfiguration(
+            final JmsConfigurationFactory jmsConfigurationFactory) {
+        return jmsConfigurationFactory.initializeConfiguration("jms.outgoing.osgp.core.requests");
+    }
+
     @Bean(name = "domainSmartMeteringOutgoingOsgpCoreRequestsJmsTemplate")
-    public JmsTemplate outgoingOsgpCoreRequestsJmsTemplate(final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.outgoing.osgp.core.requests").getJmsTemplate();
+    public JmsTemplate outgoingOsgpCoreRequestsJmsTemplate(
+            final JmsConfiguration outgoingOsgpCoreRequestsJmsConfiguration) {
+        return outgoingOsgpCoreRequestsJmsConfiguration.getJmsTemplate();
     }
 
     // JMS SETTINGS: INCOMING OSGP CORE RESPONSES (receiving responses from osgp
     // core)
 
-    @Bean(name = "domainSmartMeteringIncomingOsgpCoreResponsesMessageListenerContainer")
-    public DefaultMessageListenerContainer incomingOsgpCoreResponsesMessageListenerContainer(
+    @Bean
+    public JmsConfiguration incomingOsgpCoreResponsesJmsConfiguration(
             final JmsConfigurationFactory jmsConfigurationFactory) {
         return jmsConfigurationFactory.initializeConfiguration("jms.incoming.osgp.core.responses",
-                this.incomingOsgpCoreResponseMessageListener).getMessageListenerContainer();
+                this.incomingOsgpCoreResponseMessageListener);
+    }
+
+    @Bean(name = "domainSmartMeteringIncomingOsgpCoreResponsesMessageListenerContainer")
+    public DefaultMessageListenerContainer incomingOsgpCoreResponsesMessageListenerContainer(
+            final JmsConfiguration incomingOsgpCoreResponsesJmsConfiguration) {
+        return incomingOsgpCoreResponsesJmsConfiguration.getMessageListenerContainer();
     }
 
     // JMS SETTINGS: INCOMING OSGP CORE REQUESTS (receiving requests from osgp
     // core)
 
+    @Bean
+    public JmsConfiguration incomingOsgpCoreRequestsJmsConfiguration(
+            final JmsConfigurationFactory jmsConfigurationFactory) {
+        return jmsConfigurationFactory.initializeConfiguration("jms.incoming.osgp.core.requests",
+                this.incomingOsgpCoreRequestMessageListener);
+    }
+
     @Bean(name = "domainSmartMeteringIncomingOsgpCoreRequestsMessageListenerContainer")
     public DefaultMessageListenerContainer incomingOsgpCoreRequestsMessageListenerContainer(
-            final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory
-                .initializeConfiguration("jms.incoming.osgp.core.requests", this.incomingOsgpCoreRequestMessageListener)
-                .getMessageListenerContainer();
+            final JmsConfiguration incomingOsgpCoreRequestsJmsConfiguration) {
+        return incomingOsgpCoreRequestsJmsConfiguration.getMessageListenerContainer();
     }
 
     // JMS SETTINGS: OUTGOING OSGP CORE RESPONSES (sending responses to osgp
     // core)
 
+    @Bean
+    public JmsConfiguration outgoingOsgpCoreResponsesJmsConfiguration(
+            final JmsConfigurationFactory jmsConfigurationFactory) {
+        return jmsConfigurationFactory.initializeConfiguration("jms.outgoing.osgp.core.responses");
+    }
+
     @Bean(name = "domainSmartMeteringOutgoingOsgpCoreResponsesJmsTemplate")
-    public JmsTemplate outgoingOsgpCoreResponsesJmsTemplate(final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.outgoing.osgp.core.responses").getJmsTemplate();
+    public JmsTemplate outgoingOsgpCoreResponsesJmsTemplate(
+            final JmsConfiguration outgoingOsgpCoreResponsesJmsConfiguration) {
+        return outgoingOsgpCoreResponsesJmsConfiguration.getJmsTemplate();
     }
 }
