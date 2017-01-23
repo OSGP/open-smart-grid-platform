@@ -25,6 +25,7 @@ import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.alliander.osgp.shared.application.config.AbstractMessagingConfig;
+import com.alliander.osgp.shared.application.config.jms.JmsConfiguration;
 import com.alliander.osgp.shared.application.config.jms.JmsConfigurationFactory;
 
 /**
@@ -46,18 +47,25 @@ public class MessagingConfig extends AbstractMessagingConfig {
     }
 
     // === JMS SETTINGS ===
-
     @Bean
-    public DefaultMessageListenerContainer dlmsRequestsMessageListenerContainer(
-            JmsConfigurationFactory jmsConfigurationFactory) {
-
-        return jmsConfigurationFactory.initializeConfiguration("jms.dlms.requests", this.dlmsRequestsMessageListener)
-                .getMessageListenerContainer();
+    public JmsConfiguration dlmsRequestJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
+        return jmsConfigurationFactory.initializeConfiguration("jms.dlms.requests", this.dlmsRequestsMessageListener);
     }
 
     @Bean
-    public JmsTemplate dlmsResponsesJmsTemplate(final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.dlms.responses").getJmsTemplate();
+    public DefaultMessageListenerContainer dlmsRequestsMessageListenerContainer(
+            JmsConfiguration dlmsRequestJmsConfiguration) {
+        return dlmsRequestJmsConfiguration.getMessageListenerContainer();
+    }
+
+    @Bean
+    public JmsConfiguration dlmsResponseJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
+        return jmsConfigurationFactory.initializeConfiguration("jms.dlms.responses");
+    }
+
+    @Bean
+    public JmsTemplate dlmsResponsesJmsTemplate(final JmsConfiguration dlmsResponseJmsConfiguration) {
+        return dlmsResponseJmsConfiguration.getJmsTemplate();
     }
 
     @Bean
@@ -66,8 +74,13 @@ public class MessagingConfig extends AbstractMessagingConfig {
     }
 
     @Bean
-    public JmsTemplate dlmsLogItemRequestsJmsTemplate(final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.dlms.log.item.requests").getJmsTemplate();
+    public JmsConfiguration dlmsLogItemRequestJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
+        return jmsConfigurationFactory.initializeConfiguration("jms.dlms.log.item.requests");
+    }
+
+    @Bean
+    public JmsTemplate dlmsLogItemRequestsJmsTemplate(final JmsConfiguration dlmsLogItemRequestJmsConfiguration) {
+        return dlmsLogItemRequestJmsConfiguration.getJmsTemplate();
     }
 
     @Bean
@@ -76,14 +89,24 @@ public class MessagingConfig extends AbstractMessagingConfig {
     }
 
     @Bean
-    public DefaultMessageListenerContainer osgpResponsesMessageListenerContainer(
-            final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.osgp.responses").getMessageListenerContainer();
+    public JmsConfiguration osgpResponseJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
+        return jmsConfigurationFactory.initializeConfiguration("jms.osgp.responses");
     }
 
     @Bean
-    public JmsTemplate osgpRequestsJmsTemplate(final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.osgp.requests").getJmsTemplate();
+    public DefaultMessageListenerContainer osgpResponsesMessageListenerContainer(
+            final JmsConfiguration osgpResponseJmsConfiguration) {
+        return osgpResponseJmsConfiguration.getMessageListenerContainer();
+    }
+
+    @Bean
+    public JmsConfiguration osgpRequestJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
+        return jmsConfigurationFactory.initializeConfiguration("jms.osgp.requests");
+    }
+
+    @Bean
+    public JmsTemplate osgpRequestsJmsTemplate(final JmsConfiguration osgpRequestJmsConfiguration) {
+        return osgpRequestJmsConfiguration.getJmsTemplate();
     }
 
     @Bean
