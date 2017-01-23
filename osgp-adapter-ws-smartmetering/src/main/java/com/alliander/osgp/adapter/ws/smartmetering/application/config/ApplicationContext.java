@@ -44,10 +44,6 @@ import com.alliander.osgp.ws.smartmetering.config.SmartmeteringWebServiceConfig;
         @PropertySource(value = "file:${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true), })
 public class ApplicationContext extends AbstractConfig {
 
-    static {
-        new SmartmeteringWebServiceConfig();
-    }
-
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);
 
     /**
