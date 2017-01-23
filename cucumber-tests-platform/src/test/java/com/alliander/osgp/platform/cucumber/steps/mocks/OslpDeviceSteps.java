@@ -32,6 +32,7 @@ import com.alliander.osgp.oslp.Oslp.Event;
 import com.alliander.osgp.oslp.Oslp.EventNotification;
 import com.alliander.osgp.oslp.Oslp.EventNotificationRequest;
 import com.alliander.osgp.oslp.Oslp.EventNotificationResponse;
+import com.alliander.osgp.oslp.Oslp.GetFirmwareVersionRequest;
 import com.alliander.osgp.oslp.Oslp.LightType;
 import com.alliander.osgp.oslp.Oslp.LightValue;
 import com.alliander.osgp.oslp.Oslp.LinkType;
@@ -326,7 +327,9 @@ public class OslpDeviceSteps {
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.GET_FIRMWARE_VERSION);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasGetFirmwareVersionRequest());
-        // TODO: Check actual message for the correct firmware(s).
+        
+        @SuppressWarnings("unused")
+        final GetFirmwareVersionRequest getFirmwareVersionRequest = message.getGetFirmwareVersionRequest();
     }
 
     /**

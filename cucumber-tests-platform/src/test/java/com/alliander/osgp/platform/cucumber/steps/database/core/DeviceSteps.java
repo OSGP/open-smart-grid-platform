@@ -206,23 +206,20 @@ public class DeviceSteps {
         boolean success = false;
         int count = 0;
         while (!success) {
-            try {
-                if (count > this.configuration.defaultTimeout) {
-                    Assert.fail("Failed");
-                }
-
-                // Wait for next try to retrieve a response
-                count++;
-                Thread.sleep(1000);
-
-                final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-
-                Assert.assertTrue(device.isActive());
-
-                success = true;
-            } catch (final Exception e) {
-                // Do nothing
+            if (count > this.configuration.defaultTimeout) {
+                Assert.fail("Failed");
             }
+
+            // Wait for next try to retrieve a response
+            count++;
+            Thread.sleep(1000);
+
+            final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+            if (device == null) continue;
+
+            Assert.assertTrue(device.isActive());
+
+            success = true;
         }
     }
 
