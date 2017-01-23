@@ -187,4 +187,22 @@ public class Keys {
     public static final String SCHEDULE_CURRENTPAGE = "CurrentPages";
     public static final String SCHEDULE_PAGESIZE = "PageSize";
     public static final String SCHEDULE_TOTALPAGES = "TotalPages";
+    public static final String ACTUALCONSUMEDPOWER = "ActualConsumedPower";
+    public static final String METERTYPE = "MeterType";
+    public static final String RECORDTIME = "RecordTime";
+    public static final String TOTALCONSUMEDENERGY = "TotalConsumedEnergy";
+    public static final String TOTALLIGHTINGHOURS = "TotalLightingHours";
+    public static final String ACTUALCURRENT1 = "ActualCurrent1";
+    public static final String ACTUALCURRENT2 = "ActualCurrent2";
+    public static final String ACTUALCURRENT3 = "ActualCurrent3";
+    public static final String ACTUALPOWER1 = "ActualPower1";
+    public static final String ACTUALPOWER2 = "ActualPower2";
+    public static final String ACTUALPOWER3 = "ActualPower3";
+    public static final String AVERAGEPOWERFACTOR1 = "AveragePowerFactor1";
+    public static final String AVERAGEPOWERFACTOR2 = "AveragePowerFactor2";
+    public static final String AVERAGEPOWERFACTOR3 = "AveragePowerFactor3";
+    public static final String RELAYDATA = "RelayData";
+    public static final String HISTORY_TERM_TYPE = "HistoryTermType";
+    public static final String STARTTIME = "StartTime";
+    public static final String ENDTIME = "EndTime";
 }

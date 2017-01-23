@@ -58,7 +58,7 @@ public class Helpers {
      */
     public static Integer getInteger(final Map<String, String> settings, final String key, final Integer defaultValue) {
 
-        if (!settings.containsKey(key)) {
+        if (!settings.containsKey(key) || settings.get(key).isEmpty()) {
             return defaultValue;
         }
 

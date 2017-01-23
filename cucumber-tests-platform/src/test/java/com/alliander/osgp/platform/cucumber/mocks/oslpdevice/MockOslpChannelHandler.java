@@ -389,6 +389,9 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         } else if (request.hasSetDeviceVerificationKeyRequest()
                 && this.mockResponses.containsKey(DeviceRequestMessageType.UPDATE_KEY)) {
             response = this.processRequest(DeviceRequestMessageType.UPDATE_KEY, request);
+        } else if (request.hasGetActualPowerUsageRequest()
+                && this.mockResponses.containsKey(DeviceRequestMessageType.GET_ACTUAL_POWER_USAGE)) {
+            response = this.processRequest(DeviceRequestMessageType.GET_ACTUAL_POWER_USAGE, request);
         } else if (request.hasSetScheduleRequest()) {
             if (this.mockResponses.containsKey(DeviceRequestMessageType.SET_LIGHT_SCHEDULE)) {
                 response = this.processRequest(DeviceRequestMessageType.SET_LIGHT_SCHEDULE, request);

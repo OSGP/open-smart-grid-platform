@@ -32,11 +32,14 @@ import com.alliander.osgp.oslp.Oslp.Event;
 import com.alliander.osgp.oslp.Oslp.EventNotification;
 import com.alliander.osgp.oslp.Oslp.EventNotificationRequest;
 import com.alliander.osgp.oslp.Oslp.EventNotificationResponse;
+import com.alliander.osgp.oslp.Oslp.GetActualPowerUsageRequest;
 import com.alliander.osgp.oslp.Oslp.GetFirmwareVersionRequest;
+import com.alliander.osgp.oslp.Oslp.GetPowerUsageHistoryRequest;
 import com.alliander.osgp.oslp.Oslp.LightType;
 import com.alliander.osgp.oslp.Oslp.LightValue;
 import com.alliander.osgp.oslp.Oslp.LinkType;
 import com.alliander.osgp.oslp.Oslp.Message;
+import com.alliander.osgp.oslp.Oslp.MeterType;
 import com.alliander.osgp.oslp.Oslp.ResumeScheduleRequest;
 import com.alliander.osgp.oslp.Oslp.Schedule;
 import com.alliander.osgp.oslp.Oslp.SetScheduleRequest;
@@ -86,6 +89,35 @@ public class OslpDeviceSteps {
         this.oslpMockServer.mockSetLightResponse(oslpStatus);
     }
 
+    /**
+     * Setup method to set the firmware which should be returned by the mock.
+     *
+     * @param firmwareVersion
+     *            The firmware to respond.
+     * @throws Throwable
+     */
+    @Given("^the device returns a get actual power usage response over OSLP$")
+    public void theDeviceReturnsAGetActualPowerUsageOverOSLP(final Map<String, String> responseData) throws Throwable {
+        this.oslpMockServer.mockGetActualPowerUsageResponse(
+                getEnum(responseData, Keys.KEY_STATUS, Status.class),
+                getInteger(responseData, Keys.ACTUALCONSUMEDPOWER, null),
+                getEnum(responseData, Keys.METERTYPE, MeterType.class),
+                getString(responseData, Keys.RECORDTIME),
+                getInteger(responseData, Keys.TOTALCONSUMEDENERGY, null),
+                getInteger(responseData, Keys.TOTALLIGHTINGHOURS, null),
+                getInteger(responseData, Keys.ACTUALCURRENT1, null),
+                getInteger(responseData, Keys.ACTUALCURRENT2, null),
+                getInteger(responseData, Keys.ACTUALCURRENT3, null),
+                getInteger(responseData, Keys.ACTUALPOWER1, null),
+                getInteger(responseData, Keys.ACTUALPOWER2, null),
+                getInteger(responseData, Keys.ACTUALPOWER3, null),
+                getInteger(responseData, Keys.AVERAGEPOWERFACTOR1, null),
+                getInteger(responseData, Keys.AVERAGEPOWERFACTOR2, null),
+                getInteger(responseData, Keys.AVERAGEPOWERFACTOR3, null),
+                getString(responseData, Keys.RELAYDATA, null)
+                );
+    }
+    
     /**
      * Setup method to set the firmware which should be returned by the mock.
      *
@@ -363,6 +395,29 @@ public class OslpDeviceSteps {
         Assert.assertTrue(message.hasSetLightRequest());
 
         Assert.assertEquals(nofLightValues, message.getSetLightRequest().getValuesList().size());
+    }
+
+    @Then("^a get actual power usage OSLP message is sent to the device$")
+    public void aGetActualPowerUsageOslpMessageIsSentToTheDevice() {
+        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.GET_ACTUAL_POWER_USAGE);
+        Assert.assertNotNull(message);
+        Assert.assertTrue(message.hasGetActualPowerUsageRequest());
+
+        @SuppressWarnings("unused")
+        GetActualPowerUsageRequest request = message.getGetActualPowerUsageRequest();
+    }
+
+    @Then("^a get power usage history OSLP message is sent to the device$")
+    public void aGetPowerUsageHistoryOslpMessageIsSentToTheDevice(final Map<String, String> expected) {
+        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.GET_POWER_USAGE_HISTORY);
+        Assert.assertNotNull(message);
+        Assert.assertTrue(message.hasGetPowerUsageHistoryRequest());
+
+        GetPowerUsageHistoryRequest request = message.getGetPowerUsageHistoryRequest();
+        Assert.assertEquals(expected.get(Keys.HISTORY_TERM_TYPE), request.getTermType());
+        Assert.assertEquals(expected.get(Keys.KEY_PAGE), request.getPage());
+        Assert.assertEquals(expected.get(Keys.STARTTIME), request.getTimePeriod().getStartTime());
+        Assert.assertEquals(expected.get(Keys.ENDTIME), request.getTimePeriod().getEndTime());
     }
 
     /**
