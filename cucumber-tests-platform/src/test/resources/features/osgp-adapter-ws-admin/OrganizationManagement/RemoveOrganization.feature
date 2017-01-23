@@ -3,8 +3,6 @@ Feature: OrganizationManagement Organization Removal
   I want to manage the Organizations in the platform
   In order ...
   
-   Note: Does only work if all the words 'organisation' are changed to 'organization', or it has to remain the same as it is.
-
   Scenario Outline: Remove An Existing Organization
     Given an organization
       | OrganizationIdentification | TEST1024000000001   |
