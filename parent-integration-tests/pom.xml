@@ -45,7 +45,7 @@
     <osgp.iec61850.simulator.version>4.1.0-SNAPSHOT</osgp.iec61850.simulator.version>
 
     <spring.version>4.3.3.RELEASE</spring.version>
-    <spring.ws.version>2.2.2.RELEASE</spring.ws.version>
+    <spring.ws.version>2.2.0.RELEASE</spring.ws.version>
     <spring.data.version>1.6.4.RELEASE</spring.data.version>
     <spring.data.key.version>1.1.5.RELEASE</spring.data.key.version>
     <spring.security.version>3.2.5.RELEASE</spring.security.version>
