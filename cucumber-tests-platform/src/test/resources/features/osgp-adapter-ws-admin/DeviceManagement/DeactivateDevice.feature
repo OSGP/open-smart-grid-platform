@@ -18,4 +18,3 @@ Feature: AdminDeviceManagement Device Deactivation
       | DeviceIdentification | TEST1024000000001 |
     Then the deactivate device response contains a soap fault
       | Message | UNKNOWN_DEVICE |
-    

@@ -34,7 +34,7 @@ Feature: OrganizationManagement Organization Updating
       | Name                          | A new test organization name |
       | NewPlatformFunctionGroup      | ADMIN                        |
       | NewDomains                    | COMMON                       |
-    Then the create organization response contains
+    Then the update organization response contains
       | Message | UNKNOWN_ORGANISATION |
 
   Scenario: Change data of an unknown organization
@@ -44,5 +44,5 @@ Feature: OrganizationManagement Organization Updating
       | Name                          | A new test organization name |
       | NewPlatformFunctionGroup      | ADMIN                        |
       | NewDomains                    | COMMON                       |
-    Then the create organization response contains
+    Then the update organization response contains
       | Message | UNKNOWN_ORGANISATION |
