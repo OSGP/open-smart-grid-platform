@@ -61,6 +61,7 @@ public class GenericResponseSteps {
         }
 
         if (actualObj instanceof EnumMap) {
+            @SuppressWarnings("unchecked")
             final Map<FaultDetailElement, String> actual = (Map<FaultDetailElement, String>) actualObj;
             for (final Map.Entry<String, String> expectedEntry : expected.entrySet()) {
                 final String localName = expectedEntry.getKey();
@@ -112,6 +113,7 @@ public class GenericResponseSteps {
 
     private static void assertExpectedAndActualValues(final String localName, final String expectedValue,
             final Object actual, final int counter) {
+        @SuppressWarnings("unchecked")
         final String actualValue = ((List<String>) actual).get(counter);
         assertEquals(localName, expectedValue, actualValue);
     }
