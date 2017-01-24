@@ -135,8 +135,12 @@ public class WebServiceTemplateFactory {
             final String applicationName) throws WebServiceSecurityException {
         final WebServiceTemplate webServiceTemplate = new WebServiceTemplate(this.messageFactory);
 
+        webServiceTemplate.setCheckConnectionForFault(true);
         if (this.defaultUri != null) {
             webServiceTemplate.setDefaultUri(this.defaultUri);
+            if (this.defaultUri.contains("proxy-server")) {
+                webServiceTemplate.setCheckConnectionForFault(false);
+            }
         }
 
         webServiceTemplate.setMarshaller(this.marshaller);
@@ -144,11 +148,6 @@ public class WebServiceTemplateFactory {
         webServiceTemplate.setInterceptors(new ClientInterceptor[] {
                 new OrganisationIdentificationClientInterceptor(organisationIdentification, userName, applicationName,
                         NAMESPACE, ORGANISATION_IDENTIFICATION_HEADER, USER_NAME_HEADER, APPLICATION_NAME_HEADER) });
-        if (this.defaultUri != null && this.defaultUri.contains("proxy-server")) {
-            webServiceTemplate.setCheckConnectionForFault(false);
-        } else {
-            webServiceTemplate.setCheckConnectionForFault(true);
-        }
 
         try {
             webServiceTemplate.setMessageSender(this.webServiceMessageSender(organisationIdentification));
