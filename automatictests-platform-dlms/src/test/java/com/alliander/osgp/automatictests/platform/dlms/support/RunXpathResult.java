@@ -7,7 +7,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.automatictests.platform.support;
+package com.alliander.osgp.automatictests.platform.dlms.support;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

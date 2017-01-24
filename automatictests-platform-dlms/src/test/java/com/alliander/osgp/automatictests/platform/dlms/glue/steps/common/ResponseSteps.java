@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.automatictests.platform.glue.steps.common;
+package com.alliander.osgp.automatictests.platform.dlms.glue.steps.common;
 
 import java.io.IOException;
 import java.util.Map;
@@ -16,7 +16,7 @@ import javax.xml.xpath.XPathExpressionException;
 import org.junit.Assert;
 import org.xml.sax.SAXException;
 
-import com.alliander.osgp.automatictests.platform.support.RunXpathResult;
+import com.alliander.osgp.automatictests.platform.dlms.support.RunXpathResult;
 
 /**
  * Class with generic response steps

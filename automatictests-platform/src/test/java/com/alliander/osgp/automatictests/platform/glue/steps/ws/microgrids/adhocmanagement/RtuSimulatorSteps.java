@@ -8,12 +8,15 @@
 package com.alliander.osgp.automatictests.platform.glue.steps.ws.microgrids.adhocmanagement;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.automatictests.platform.mocks.iec61850.Iec61850MockServer;
 
+import cucumber.api.PendingException;
 import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
 
 public class RtuSimulatorSteps {
 

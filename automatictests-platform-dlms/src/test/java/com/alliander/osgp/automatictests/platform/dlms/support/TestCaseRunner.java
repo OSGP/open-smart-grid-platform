@@ -7,7 +7,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.automatictests.platform.support;
+package com.alliander.osgp.automatictests.platform.dlms.support;
 
 import static org.junit.Assert.assertTrue;
 
@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.automatictests.platform.Keys;
-import com.alliander.osgp.automatictests.platform.SoapUiRunner;
+import com.alliander.osgp.automatictests.platform.dlms.SoapUiRunner;
 import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCase;
 import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCaseRunner;
 import com.eviware.soapui.model.support.PropertiesMap;

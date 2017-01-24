@@ -10,10 +10,10 @@ package com.alliander.osgp.automatictests.platform.dlms.glue.hooks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import com.alliander.osgp.automatictests.platform.core.ScenarioContext;
 import com.alliander.osgp.automatictests.platform.StepsBase;
+import com.alliander.osgp.automatictests.platform.core.ScenarioContext;
 import com.alliander.osgp.automatictests.platform.dlms.hooks.database.DlmsDatabaseSteps;
-import com.alliander.osgp.automatictests.platform.support.ServiceEndpoint;
+import com.alliander.osgp.automatictests.platform.dlms.support.ServiceEndpoint;
 
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
