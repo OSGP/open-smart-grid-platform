@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.repositories.ManufacturerRepository;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
+import com.alliander.osgp.platform.cucumber.steps.Keys;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -44,8 +45,10 @@ public class ManufacturerSteps {
     @Given("^a manufacturer")
     public void aManufacturer(final Map<String, String> settings) throws Throwable {
 
-        Manufacturer entity = new Manufacturer(getString(settings, "ManufacturerId", DEFAULT_MANUFACTURER_ID),
-                getString(settings, "Name", DEFAULT_NAME), getBoolean(settings, "UsePrefix", DEFAULT_USEPREFIX));
+        Manufacturer entity = new Manufacturer(
+                getString(settings, Keys.MANUFACTURER_ID, DEFAULT_MANUFACTURER_ID),
+                getString(settings, "Name", DEFAULT_NAME), 
+                getBoolean(settings, "UsePrefix", DEFAULT_USEPREFIX));
 
         repo.save(entity);
     }

@@ -177,13 +177,28 @@ public class Helpers {
      * @return The date time.
      */
     public static DateTime getDate(final Map<String, String> settings, final String key) {
+        return getDate(settings, key, DateTime.now());
+    }
+
+    /**
+     * Get a date time object based on the settings if the key exists.
+     * 
+     * @param settings
+     *            The settings
+     * @param key
+     *            The key in the settings for the date time.
+     * @param defaultDate
+     *              The default date to return.
+     * @return The date time.
+     */
+    public static DateTime getDate(final Map<String, String> settings, final String key, final DateTime defaultDate) {
         if (!settings.containsKey(key)) {
-            return DateTime.now();
+            return defaultDate;
         }
 
         return DateTime.parse(settings.get(key));
     }
-
+    
     /**
      * Get a float object based on the settings if the key exists.
      *

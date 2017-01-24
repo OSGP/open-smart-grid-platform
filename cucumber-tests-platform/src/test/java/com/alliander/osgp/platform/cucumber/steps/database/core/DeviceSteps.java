@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,8 +53,6 @@ import cucumber.api.java.en.Then;
 
 @Transactional("txMgrCore")
 public class DeviceSteps {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceSteps.class);
 
     public static String DEFAULT_DEVICE_IDENTIFICATION = "test-device";
     public static String DEFAULT_DEVICE_TYPE = "OSLP";
@@ -206,23 +203,21 @@ public class DeviceSteps {
         boolean success = false;
         int count = 0;
         while (!success) {
-            try {
-                if (count > this.configuration.defaultTimeout) {
-                    Assert.fail("Failed");
-                }
-
-                // Wait for next try to retrieve a response
-                count++;
-                Thread.sleep(1000);
-
-                final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-
-                Assert.assertTrue(device.isActive());
-
-                success = true;
-            } catch (final Exception e) {
-                // Do nothing
+            if (count > this.configuration.getTimeout()) {
+                Assert.fail("Failed");
             }
+
+            // Wait for next try to retrieve a response
+            count++;
+            Thread.sleep(1000);
+
+            final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+            if (device == null)
+                continue;
+
+            Assert.assertTrue(device.isActive());
+
+            success = true;
         }
     }
 
@@ -236,22 +231,21 @@ public class DeviceSteps {
         boolean success = false;
         int count = 0;
         while (!success) {
-            try {
-                if (count > this.configuration.defaultTimeout) {
-                    Assert.fail("Failed");
-                }
-
-                // Wait for next try to retrieve a response
-                count++;
-                Thread.sleep(1000);
-
-                final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-                Assert.assertFalse(device.isActive());
-
-                success = true;
-            } catch (final Exception e) {
-                // Do nothing
+            if (count > this.configuration.getTimeout()) {
+                Assert.fail("Failed");
             }
+
+            // Wait for next try to retrieve a response
+            count++;
+            Thread.sleep(1000);
+
+            final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+            if (device == null)
+                continue;
+
+            Assert.assertFalse(device.isActive());
+
+            success = true;
         }
     }
 
@@ -267,7 +261,7 @@ public class DeviceSteps {
         boolean success = false;
         int count = 0;
         while (!success) {
-            if (count > this.configuration.defaultTimeout) {
+            if (count > this.configuration.getTimeout()) {
                 Assert.fail("Failed");
             }
 
@@ -275,18 +269,13 @@ public class DeviceSteps {
             Thread.sleep(1000);
             LoggerFactory.getLogger(DeviceSteps.class).info("Sleeping ls " + count);
 
-            try {
-                // Wait for next try to retrieve a response
-
-                device = this.deviceRepository.findByDeviceIdentification(settings.get(Keys.KEY_DEVICE_IDENTIFICATION));
-                if (device == null) {
-                    continue;
-                }
-
-                success = true;
-            } catch (final Exception e) {
-                LOGGER.info(e.getMessage());
+            // Wait for next try to retrieve a response
+            device = this.deviceRepository.findByDeviceIdentification(settings.get(Keys.KEY_DEVICE_IDENTIFICATION));
+            if (device == null) {
+                continue;
             }
+
+            success = true;
         }
 
         if (settings.containsKey("Alias")) {

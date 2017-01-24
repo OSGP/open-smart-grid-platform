@@ -22,6 +22,7 @@ import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.DeactivateDev
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
+import com.alliander.osgp.platform.cucumber.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.platform.cucumber.support.ws.admin.AdminDeviceManagementClient;
 
 import cucumber.api.java.en.Then;
@@ -56,5 +57,16 @@ public class DeactivateDeviceSteps {
         DeactivateDeviceResponse response = (DeactivateDeviceResponse) ScenarioContext.Current().get(Keys.RESPONSE);
 
         Assert.assertEquals(getEnum(expectedResponse, Keys.KEY_RESULT, OsgpResultType.class), response.getResult());
+    }
+    
+    /**
+     * Verifies the soap fault.
+     * 
+     * @param expectedResult
+     * @throws Throwable
+     */
+    @Then("^the deactivate device response contains a soap fault$")
+    public void theDeactivateDeviceResponseContainsASoapFault(final Map<String, String> expectedResult) throws Throwable {
+        GenericResponseSteps.verifySoapFault(expectedResult);
     }
 }

@@ -74,8 +74,8 @@ public class GetFirmwareVersionSteps {
             throws Throwable {
     	GetFirmwareVersionAsyncResponse response = (GetFirmwareVersionAsyncResponse)ScenarioContext.Current().get(Keys.RESPONSE);
     	
+        Assert.assertEquals(getString(expectedResponseData,  Keys.KEY_DEVICE_IDENTIFICATION), response.getAsyncResponse().getDeviceId());
     	Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
-    	Assert.assertEquals(getString(expectedResponseData,  Keys.KEY_DEVICE_IDENTIFICATION), response.getAsyncResponse().getDeviceId());
 
         // Save the returned CorrelationUid in the Scenario related context for further use.
         saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
@@ -96,7 +96,7 @@ public class GetFirmwareVersionSteps {
        	boolean success = false;
     	int count = 0;
     	while (!success) {
-    		if (count > configuration.defaultTimeout) {
+    		if (count > configuration.getTimeout()) {
     			Assert.fail("Timeout");
     		}
     		

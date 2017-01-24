@@ -75,5 +75,5 @@ Feature: OrganizationManagement Organization Creating
     # Note: The validation errors are ; separated if there are multiple.
     Examples: 
       | Invalid Organization Identification | ValidationErrors                                                                                                                                                                                                                            |
-      | A Test Organization                 | cvc-pattern-valid: Value 'A Test Organization' is not facet-valid with respect to pattern '[^ ]{0,40}' for type 'Identification'.;cvc-type.3.1.3: The value 'A Test Organization' of element 'ns1:OrganizationIdentification' is not valid. |
-      |                                     | cvc-minLength-valid: Value '' with length = '0' is not facet-valid with respect to minLength '1' for type 'Identification'.;cvc-type.3.1.3: The value '' of element 'ns1:OrganizationIdentification' is not valid.                          |
+      | A Test Organization                 | cvc-pattern-valid: Value 'A Test Organization' is not facet-valid with respect to pattern '[^ ]{0,40}' for type 'Identification'.;cvc-type.3.1.3: The value 'A Test Organization' of element 'ns2:OrganisationIdentification' is not valid. |
+      |                                     | cvc-minLength-valid: Value '' with length = '0' is not facet-valid with respect to minLength '1' for type 'Identification'.;cvc-type.3.1.3: The value '' of element 'ns2:OrganisationIdentification' is not valid.                          |

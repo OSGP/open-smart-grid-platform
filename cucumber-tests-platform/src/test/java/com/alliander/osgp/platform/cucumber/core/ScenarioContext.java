@@ -11,47 +11,41 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The ScenarioContext class is used to store scenario specific data. It will be
- * destroyed after each
+ * The ScenarioContext class is used to store scenario specific data. It will be destroyed after each 
  */
 public class ScenarioContext {
-
-    /**
-     * The current context.
-     */
-    public static ScenarioContext context = null;
-
-    /**
-     * The data object to store the scenario specific context in.
-     */
-    private Map<String, Object> Data = new HashMap<String, Object>();
-
-    /**
-     * Get the current context and instantiate it.
-     * 
-     * @return
-     */
-    public static ScenarioContext Current() {
-        if (context == null) {
-            context = new ScenarioContext();
-        }
-
-        return context;
-    }
-
-    public Object get(final Object key) {
-        return this.Data.get(key);
-    }
+	
+	/**
+	 * The current context.
+	 */
+	public static ScenarioContext context = null;
+	
+	/**
+	 * The data object to store the scenario specific context in.
+	 */
+	private Map<String, Object> Data = new HashMap<String, Object>();
+	
+	/**
+	 * Get the current context and instantiate it.
+	 * @return
+	 */
+	public static ScenarioContext Current() {
+		if (context == null) {
+			context = new ScenarioContext();
+		}
+		
+		return context;
+	}
+	
+	public Object get(final Object key) {
+	    return this.Data.get(key);
+	}
 
     public void put(final String key, final Object value) {
         this.Data.put(key, value);
     }
 
-    public boolean containsKey(final String key) {
-        return this.Data.containsKey(key);
-    }
-
-    public Object get(final String key, final String defaultValue) {
+    public Object get(String key, String defaultValue) {
         if (!this.Data.containsKey(key)) {
             return defaultValue;
         } else {

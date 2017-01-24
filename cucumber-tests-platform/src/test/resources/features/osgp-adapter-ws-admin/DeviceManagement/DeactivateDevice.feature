@@ -11,4 +11,10 @@ Feature: AdminDeviceManagement Device Deactivation
       | DeviceIdentification | TEST1024000000001 |
     Then the deactivate device response contains
       | Result | OK |
-    And the device with device identification "<DeviceIdentification>" should be inactive
+    And the device with device identification "TEST1024000000001" should be inactive
+
+   Scenario: Deactivate an unknown device
+    When receiving a deactivate device request
+      | DeviceIdentification | TEST1024000000001 |
+    Then the deactivate device response contains a soap fault
+      | Message | UNKNOWN_DEVICE |
