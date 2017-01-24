@@ -49,6 +49,7 @@ import com.alliander.osgp.oslp.Oslp.SetDeviceVerificationKeyResponse;
 import com.alliander.osgp.oslp.Oslp.SetEventNotificationsResponse;
 import com.alliander.osgp.oslp.Oslp.SetLightResponse;
 import com.alliander.osgp.oslp.Oslp.SetRebootResponse;
+import com.alliander.osgp.oslp.Oslp.SetScheduleResponse;
 import com.alliander.osgp.oslp.Oslp.SetTransitionResponse;
 import com.alliander.osgp.oslp.Oslp.StartSelfTestResponse;
 import com.alliander.osgp.oslp.Oslp.StopSelfTestResponse;
@@ -150,12 +151,12 @@ public class MockOslpServer {
         return this.receivedRequests.get(requestType);
     }
 
-    public Message sendRequest(Message message) throws DeviceSimulatorException, IOException, ParseException {
+    public Message sendRequest(final Message message) throws DeviceSimulatorException, IOException, ParseException {
 
-        OslpEnvelope envelope = new OslpEnvelope();
+        final OslpEnvelope envelope = new OslpEnvelope();
         envelope.setPayloadMessage(message);
 
-        return this.channelHandler.handleRequest(envelope, channelHandler.getSequenceNumber());
+        return this.channelHandler.handleRequest(envelope, this.channelHandler.getSequenceNumber());
     }
 
     private ServerBootstrap serverBootstrap() {
@@ -259,15 +260,13 @@ public class MockOslpServer {
             final int eventNotificationMask, final Oslp.Status status, final List<LightValue> lightValues) {
 
         final Builder response = GetStatusResponse.newBuilder().setPreferredLinktype(preferred)
-                .setActualLinktype(actual)
-                .setLightType(lightType)
-                .setEventNotificationMask(eventNotificationMask)
+                .setActualLinktype(actual).setLightType(lightType).setEventNotificationMask(eventNotificationMask)
                 .setStatus(status);
 
         for (final LightValue lightValue : lightValues) {
             response.addValue(lightValue);
         }
-        
+
         this.mockResponses.put(DeviceRequestMessageType.GET_STATUS,
                 Oslp.Message.newBuilder().setGetStatusResponse(response).build());
     }
@@ -303,8 +302,12 @@ public class MockOslpServer {
             response.addValue(lightValue);
         }
 
-                
-        this.mockResponses.put(DeviceRequestMessageType.GET_LIGHT_STATUS, Oslp.Message.newBuilder()
-                .setGetStatusResponse(response).build());
+        this.mockResponses.put(DeviceRequestMessageType.GET_LIGHT_STATUS,
+                Oslp.Message.newBuilder().setGetStatusResponse(response).build());
+    }
+
+    public void mockSetScheduleResponse(final DeviceRequestMessageType type, final Oslp.Status status) {
+        this.mockResponses.put(type, Oslp.Message.newBuilder()
+                .setSetScheduleResponse(SetScheduleResponse.newBuilder().setStatus(status)).build());
     }
 }

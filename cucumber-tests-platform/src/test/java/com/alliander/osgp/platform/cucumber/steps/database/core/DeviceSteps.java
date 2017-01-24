@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,8 +53,6 @@ import cucumber.api.java.en.Then;
 
 @Transactional("txMgrCore")
 public class DeviceSteps {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceSteps.class);
 
     public static String DEFAULT_DEVICE_IDENTIFICATION = "test-device";
     public static String DEFAULT_DEVICE_TYPE = "OSLP";
@@ -100,7 +97,7 @@ public class DeviceSteps {
     public void aDevice(final Map<String, String> settings) throws Throwable {
 
         // Set the required stuff
-        final String deviceIdentification = settings.get("DeviceIdentification");
+        final String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION);
         final Ssld ssld = new Ssld(deviceIdentification);
 
         ssld.setPublicKeyPresent(getBoolean(settings, Keys.KEY_PUBLICKEYPRESENT, Defaults.DEFAULT_PUBLICKEYPRESENT));
@@ -109,8 +106,8 @@ public class DeviceSteps {
         if (settings.containsKey(Keys.KEY_INTERNALID) || settings.containsKey(Keys.KEY_EXTERNALID)
                 || settings.containsKey(Keys.KEY_RELAY_TYPE)) {
             final List<DeviceOutputSetting> dosList = new ArrayList<>();
-            final int internalId = getInteger(settings, Keys.KEY_INTERNALID, Defaults.DEFAULT_INTERNALID), externalId = getInteger(
-                    settings, Keys.KEY_EXTERNALID, Defaults.DEFAULT_EXTERNALID);
+            final int internalId = getInteger(settings, Keys.KEY_INTERNALID, Defaults.DEFAULT_INTERNALID),
+                    externalId = getInteger(settings, Keys.KEY_EXTERNALID, Defaults.DEFAULT_EXTERNALID);
             final RelayType relayType = getEnum(settings, Keys.KEY_RELAY_TYPE, RelayType.class, RelayType.LIGHT);
 
             if (relayType != null) {
@@ -128,7 +125,7 @@ public class DeviceSteps {
 
     /**
      * Update a device entity given its device identification.
-     * 
+     *
      * @param deviceIdentification
      *            The deviceIdentification.
      * @param settings
@@ -141,7 +138,7 @@ public class DeviceSteps {
 
     /**
      * Update an existing device with the given settings.
-     * 
+     *
      * @param device
      * @param settings
      */
@@ -152,8 +149,8 @@ public class DeviceSteps {
             device.setTechnicalInstallationDate(getDate(settings, Keys.KEY_TECH_INSTALL_DATE).toDate());
         }
 
-        final DeviceModel deviceModel = this.deviceModelRepository.findByModelCode(getString(settings, "DeviceModel",
-                Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
+        final DeviceModel deviceModel = this.deviceModelRepository
+                .findByModelCode(getString(settings, "DeviceModel", Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
         device.setDeviceModel(deviceModel);
 
         device.updateProtocol(this.protocolInfoRepository.findByProtocolAndProtocolVersion(
@@ -172,8 +169,8 @@ public class DeviceSteps {
         device.setActive(getBoolean(settings, Keys.KEY_ACTIVE, Defaults.DEFAULT_ACTIVE));
         if (getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION)
                 .toLowerCase() != "null") {
-            device.addOrganisation(getString(settings, "OrganizationIdentification",
-                    Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+            device.addOrganisation(
+                    getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
         }
         device.updateMetaData(getString(settings, "Alias", Defaults.DEFAULT_ALIAS),
                 getString(settings, "containerCity", Defaults.DEFAULT_CONTAINER_CITY),
@@ -206,23 +203,21 @@ public class DeviceSteps {
         boolean success = false;
         int count = 0;
         while (!success) {
-            try {
-                if (count > this.configuration.getTimeout()) {
-                    Assert.fail("Failed");
-                }
-
-                // Wait for next try to retrieve a response
-                count++;
-                Thread.sleep(1000);
-
-                final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-
-                Assert.assertTrue(device.isActive());
-
-                success = true;
-            } catch (final Exception e) {
-                // Do nothing
+            if (count > this.configuration.getTimeout()) {
+                Assert.fail("Failed");
             }
+
+            // Wait for next try to retrieve a response
+            count++;
+            Thread.sleep(1000);
+
+            final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+            if (device == null)
+                continue;
+
+            Assert.assertTrue(device.isActive());
+
+            success = true;
         }
     }
 
@@ -236,22 +231,21 @@ public class DeviceSteps {
         boolean success = false;
         int count = 0;
         while (!success) {
-            try {
-                if (count > this.configuration.getTimeout()) {
-                    Assert.fail("Failed");
-                }
-
-                // Wait for next try to retrieve a response
-                count++;
-                Thread.sleep(1000);
-
-                final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-                Assert.assertFalse(device.isActive());
-
-                success = true;
-            } catch (final Exception e) {
-                // Do nothing
+            if (count > this.configuration.getTimeout()) {
+                Assert.fail("Failed");
             }
+
+            // Wait for next try to retrieve a response
+            count++;
+            Thread.sleep(1000);
+
+            final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+            if (device == null)
+                continue;
+
+            Assert.assertFalse(device.isActive());
+
+            success = true;
         }
     }
 
@@ -275,27 +269,21 @@ public class DeviceSteps {
             Thread.sleep(1000);
             LoggerFactory.getLogger(DeviceSteps.class).info("Sleeping ls " + count);
 
-            try {
-                // Wait for next try to retrieve a response
-
-                device = this.deviceRepository.findByDeviceIdentification(settings.get(Keys.KEY_DEVICE_IDENTIFICATION));
-                if (device == null) {
-                    continue;
-                }
-                ;
-
-                success = true;
-            } catch (final Exception e) {
-                LOGGER.info(e.getMessage());
+            // Wait for next try to retrieve a response
+            device = this.deviceRepository.findByDeviceIdentification(settings.get(Keys.KEY_DEVICE_IDENTIFICATION));
+            if (device == null) {
+                continue;
             }
+
+            success = true;
         }
 
         if (settings.containsKey("Alias")) {
             Assert.assertEquals(settings.get("Alias"), device.getAlias());
         }
         if (settings.containsKey("OrganizationIdentification")) {
-            Assert.assertEquals(settings.get("OrganizationIdentification"), device.getOwner()
-                    .getOrganisationIdentification());
+            Assert.assertEquals(settings.get("OrganizationIdentification"),
+                    device.getOwner().getOrganisationIdentification());
         }
         if (settings.containsKey("ContainerPostalCode")) {
             Assert.assertEquals(settings.get("ContainerPostalCode"), device.getContainerPostalCode());
@@ -320,6 +308,9 @@ public class DeviceSteps {
         }
         if (settings.containsKey("Activated")) {
             Assert.assertTrue(Boolean.parseBoolean(settings.get("Activated")) == device.isActivated());
+        }
+        if (settings.containsKey("Active")) {
+            Assert.assertTrue(Boolean.parseBoolean(settings.get("Active")) == device.isActive());
         }
         if (settings.containsKey("HasSchedule") || settings.containsKey("PublicKeyPresent")) {
             final Ssld ssld = this.ssldRepository.findByDeviceIdentification(settings.get("DeviceIdentification"));

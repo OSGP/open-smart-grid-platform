@@ -172,6 +172,22 @@ public class Keys {
     public static final String DEVICEMODEL_DESCRIPTION = "DeviceModelDescription";
     public static final String DEVICEMODEL_FILESTORAGE = "DeviceModelFileStorage";
     public static final String DEVICEMODEL_METERED = "DeviceModelMetered";
+
     public static final String TIMEOUT = "Timeout";
     public static final String DEVICE_OUTPUT_SETTINGS = "DeviceOutputSettings";
+
+    public static final String SCHEDULE_WEEKDAY = "WeekDay";
+    public static final String SCHEDULE_STARTDAY = "StartDay";
+    public static final String SCHEDULE_ENDDAY = "EndDay";
+    public static final String SCHEDULE_ACTIONTIME = "ActionTime";
+    public static final String SCHEDULE_TIME = "Time";
+    public static final String SCHEDULE_TRIGGERWINDOW = "TriggerWindow";
+    public static final String SCHEDULE_LIGHTVALUES = "LightValues";
+    public static final String SCHEDULE_TRIGGERTYPE = "TriggerType";
+    public static final String SCHEDULE_SCHEDULEDTIME = "ScheduledTime";
+
+    public static final String SCHEDULE_TARIFFVALUES = "TariffValues";
+    public static final String SCHEDULE_CURRENTPAGE = "CurrentPages";
+    public static final String SCHEDULE_PAGESIZE = "PageSize";
+    public static final String SCHEDULE_TOTALPAGES = "TotalPages";
 }

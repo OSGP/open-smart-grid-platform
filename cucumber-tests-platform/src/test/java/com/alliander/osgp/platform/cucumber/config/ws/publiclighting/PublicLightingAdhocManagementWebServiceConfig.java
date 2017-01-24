@@ -57,7 +57,7 @@ public class PublicLightingAdhocManagementWebServiceConfig extends BaseWebServic
      * @return MarshallingPayloadMethodProcessor
      */
     @Bean
-    public MarshallingPayloadMethodProcessor publiclighingAdHocManagementMarshallingPayloadMethodProcessor() {
+    public MarshallingPayloadMethodProcessor publicLightingAdHocManagementMarshallingPayloadMethodProcessor() {
         return new MarshallingPayloadMethodProcessor(this.publiclightingAdHocManagementMarshaller(),
                 this.publiclightingAdHocManagementMarshaller());
     }
