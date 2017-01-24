@@ -369,7 +369,7 @@ public class Helpers {
      */
     public static Map<String, String> addSetting(final Map<String, String> settings, final String key,
             final String value) {
-        final Map<String, String> result = new HashMap<String, String>();
+        final Map<String, String> result = new HashMap<>();
         result.putAll(settings);
         result.put(key, value);
         return result;

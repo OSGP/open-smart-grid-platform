@@ -215,7 +215,9 @@ public class DeviceSteps {
             Thread.sleep(1000);
 
             final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-            if (device == null) continue;
+            if (device == null) {
+                continue;
+            }
 
             Assert.assertTrue(device.isActive());
 

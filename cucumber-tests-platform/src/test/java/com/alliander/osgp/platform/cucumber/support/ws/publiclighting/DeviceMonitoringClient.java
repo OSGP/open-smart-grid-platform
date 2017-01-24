@@ -29,28 +29,32 @@ import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory
 @Component
 public class DeviceMonitoringClient extends BaseClient {
 
-	@Autowired
+    @Autowired
     private WebServiceTemplateFactory publicLightingDeviceMonitoringWstf;
 
-    public GetActualPowerUsageAsyncResponse getActualPowerUsage(GetActualPowerUsageRequest request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
+    public GetActualPowerUsageAsyncResponse getActualPowerUsage(final GetActualPowerUsageRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate webServiceTemplate = this.publicLightingDeviceMonitoringWstf
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (GetActualPowerUsageAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
-    }   
+    }
 
-    public GetActualPowerUsageResponse getGetActualPowerUsageResponse(GetActualPowerUsageAsyncRequest request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
+    public GetActualPowerUsageResponse getGetActualPowerUsageResponse(final GetActualPowerUsageAsyncRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate webServiceTemplate = this.publicLightingDeviceMonitoringWstf
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (GetActualPowerUsageResponse) webServiceTemplate.marshalSendAndReceive(request);
     }
 
-    public GetPowerUsageHistoryAsyncResponse getPowerUsageHistory(GetPowerUsageHistoryRequest request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
+    public GetPowerUsageHistoryAsyncResponse getPowerUsageHistory(final GetPowerUsageHistoryRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate webServiceTemplate = this.publicLightingDeviceMonitoringWstf
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (GetPowerUsageHistoryAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
-    }   
+    }
 
-    public GetPowerUsageHistoryResponse getGetPowerUsageHistoryResponse(GetPowerUsageHistoryAsyncRequest request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
+    public GetPowerUsageHistoryResponse getGetPowerUsageHistoryResponse(final GetPowerUsageHistoryAsyncRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate webServiceTemplate = this.publicLightingDeviceMonitoringWstf
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (GetPowerUsageHistoryResponse) webServiceTemplate.marshalSendAndReceive(request);

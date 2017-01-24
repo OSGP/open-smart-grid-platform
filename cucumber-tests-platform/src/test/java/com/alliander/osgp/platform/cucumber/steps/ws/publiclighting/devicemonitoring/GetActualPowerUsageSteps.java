@@ -9,13 +9,18 @@
  */
 package com.alliander.osgp.platform.cucumber.steps.ws.publiclighting.devicemonitoring;
 
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getDate;
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getEnum;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getInteger;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.saveCorrelationUidInScenarioContext;
 
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 
+import javax.xml.datatype.DatatypeFactory;
+
+import org.joda.time.DateTimeZone;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,10 +35,12 @@ import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.GetA
 import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.GetActualPowerUsageResponse;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.MeterType;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.PowerUsageData;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.RelayData;
 import com.alliander.osgp.platform.cucumber.config.CoreDeviceConfiguration;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
+import com.alliander.osgp.platform.cucumber.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.platform.cucumber.support.ws.publiclighting.DeviceMonitoringClient;
 
 import cucumber.api.java.en.Then;
@@ -55,7 +62,7 @@ public class GetActualPowerUsageSteps {
     /**
      * Sends a Get Actual Power Usage request to the platform for a given device
      * identification.
-     * 
+     *
      * @param requestParameters
      *            The table with the request parameters.
      * @throws Throwable
@@ -63,13 +70,13 @@ public class GetActualPowerUsageSteps {
     @When("^receiving a get actual power usage request$")
     public void receivingAGetActualPowerUsageRequest(final Map<String, String> requestParameters) throws Throwable {
 
-        GetActualPowerUsageRequest request = new GetActualPowerUsageRequest();
+        final GetActualPowerUsageRequest request = new GetActualPowerUsageRequest();
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         try {
-            ScenarioContext.Current().put(Keys.RESPONSE, client.getActualPowerUsage(request));
-        } catch (SoapFaultClientException ex) {
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.getActualPowerUsage(request));
+        } catch (final SoapFaultClientException ex) {
             ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
     }
@@ -80,12 +87,12 @@ public class GetActualPowerUsageSteps {
         // Force the request being send to the platform as a given organization.
         ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
 
-        receivingAGetActualPowerUsageRequest(requestParameters);
+        this.receivingAGetActualPowerUsageRequest(requestParameters);
     }
 
     /**
      * The check for the response from the Platform.
-     * 
+     *
      * @param expectedResponseData
      *            The table with the expected fields in the response.
      * @note The response will contain the correlation uid, so store that in the
@@ -96,7 +103,7 @@ public class GetActualPowerUsageSteps {
     public void theGetActualPowerUsageAsyncResponseContains(final Map<String, String> expectedResponseData)
             throws Throwable {
 
-        GetActualPowerUsageAsyncResponse response = (GetActualPowerUsageAsyncResponse) ScenarioContext.Current()
+        final GetActualPowerUsageAsyncResponse response = (GetActualPowerUsageAsyncResponse) ScenarioContext.Current()
                 .get(Keys.RESPONSE);
 
         Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
@@ -114,13 +121,12 @@ public class GetActualPowerUsageSteps {
 
     @Then("^the get actual power usage response contains soap fault$")
     public void theGetActualPowerUsageResponseContainsSoapFault(final Map<String, String> expectedResponseData) {
-        SoapFaultClientException response = (SoapFaultClientException) ScenarioContext.Current().get(Keys.RESPONSE);
-
-        Assert.assertEquals(expectedResponseData.get(Keys.KEY_MESSAGE), response.getMessage());
+        GenericResponseSteps.verifySoapFault(expectedResponseData);
     }
 
     /**
      * The platform should receive a get actual power usage response message.
+     *
      * @param deviceIdentification
      * @param expectedResult
      * @throws Throwable
@@ -128,8 +134,8 @@ public class GetActualPowerUsageSteps {
     @Then("^the platform buffers a get actual power usage response message for device \"([^\"]*)\"$")
     public void thePlatformBuffersAGetActualPowerUsageResponseMessageForDevice(final String deviceIdentification,
             final Map<String, String> expectedResult) throws Throwable {
-        GetActualPowerUsageAsyncRequest request = new GetActualPowerUsageAsyncRequest();
-        AsyncRequest asyncRequest = new AsyncRequest();
+        final GetActualPowerUsageAsyncRequest request = new GetActualPowerUsageAsyncRequest();
+        final AsyncRequest asyncRequest = new AsyncRequest();
         asyncRequest.setDeviceId(deviceIdentification);
         asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
         request.setAsyncRequest(asyncRequest);
@@ -138,7 +144,7 @@ public class GetActualPowerUsageSteps {
         int count = 0;
         GetActualPowerUsageResponse response = null;
         while (!success) {
-            if (count > configuration.defaultTimeout) {
+            if (count > this.configuration.defaultTimeout) {
                 Assert.fail("Timeout");
             }
 
@@ -146,37 +152,79 @@ public class GetActualPowerUsageSteps {
             Thread.sleep(1000);
 
             try {
-                response = client.getGetActualPowerUsageResponse(request);
+                response = this.client.getGetActualPowerUsageResponse(request);
+
+                if (getEnum(expectedResult, Keys.KEY_STATUS, OsgpResultType.class,
+                        Defaults.PUBLICLIGHTING_STATUS) != response.getResult()) {
+                    continue;
+                }
+
+                final String expectedDescription = getString(expectedResult, Keys.KEY_DESCRIPTION,
+                        Defaults.PUBLICLIGHTING_DESCRIPTION);
+                if (expectedResult.containsKey(Keys.KEY_DESCRIPTION) && !expectedDescription.isEmpty()
+                        && expectedDescription != response.getDescription()) {
+                    continue;
+                }
+
                 success = true;
-            } catch (Exception ex) {
+            } catch (final Exception ex) {
                 // Do nothing
                 LOGGER.info(ex.getMessage());
             }
         }
-        
-        Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.KEY_STATUS)), response.getResult());
-        String expectedDescription = expectedResult.get(Keys.KEY_DESCRIPTION);
-        if (!expectedDescription.isEmpty()) {
-            Assert.assertEquals(expectedDescription, response.getDescription());
+
+        final PowerUsageData data = response.getPowerUsageData();
+
+        Assert.assertEquals(
+                (int) getInteger(expectedResult, Keys.ACTUAL_CONSUMED_POWER, Defaults.ACTUAL_CONSUMED_POWER),
+                data.getActualConsumedPower());
+        Assert.assertEquals(
+                (int) getInteger(expectedResult, Keys.TOTAL_CONSUMED_ENERGY, Defaults.ACTUAL_CONSUMED_ENERGY),
+                data.getTotalConsumedEnergy());
+        Assert.assertEquals(getEnum(expectedResult, Keys.METER_TYPE, MeterType.class, Defaults.METER_TYPE),
+                data.getMeterType());
+
+        Assert.assertEquals(
+                DatatypeFactory.newInstance().newXMLGregorianCalendar(
+                        (getDate(expectedResult, Keys.RECORD_TIME)).toDateTime(DateTimeZone.UTC).toGregorianCalendar()),
+                data.getRecordTime());
+
+        Assert.assertEquals((int) getInteger(expectedResult, Keys.TOTAL_LIGHTING_HOURS, Defaults.TOTAL_LIGHTING_HOURS),
+                data.getPsldData().getTotalLightingHours());
+        Assert.assertEquals((int) getInteger(expectedResult, Keys.ACTUAL_CURRENT1, Defaults.ACTUAL_CURRENT1),
+                data.getSsldData().getActualCurrent1());
+        Assert.assertEquals((int) getInteger(expectedResult, Keys.ACTUAL_CURRENT2, Defaults.ACTUAL_CURRENT2),
+                data.getSsldData().getActualCurrent2());
+        Assert.assertEquals((int) getInteger(expectedResult, Keys.ACTUAL_CURRENT3, Defaults.ACTUAL_CURRENT3),
+                data.getSsldData().getActualCurrent3());
+        Assert.assertEquals((int) getInteger(expectedResult, Keys.ACTUAL_POWER1, Defaults.ACTUAL_POWER1),
+                data.getSsldData().getActualPower1());
+        Assert.assertEquals((int) getInteger(expectedResult, Keys.ACTUAL_POWER2, Defaults.ACTUAL_POWER2),
+                data.getSsldData().getActualPower2());
+        Assert.assertEquals((int) getInteger(expectedResult, Keys.ACTUAL_POWER3, Defaults.ACTUAL_POWER3),
+                data.getSsldData().getActualPower3());
+        Assert.assertEquals(
+                (int) getInteger(expectedResult, Keys.AVERAGE_POWER_FACTOR1, Defaults.AVERAGE_POWER_FACTOR1),
+                data.getSsldData().getAveragePowerFactor1());
+        Assert.assertEquals(
+                (int) getInteger(expectedResult, Keys.AVERAGE_POWER_FACTOR2, Defaults.AVERAGE_POWER_FACTOR2),
+                data.getSsldData().getAveragePowerFactor2());
+        Assert.assertEquals(
+                (int) getInteger(expectedResult, Keys.AVERAGE_POWER_FACTOR3, Defaults.AVERAGE_POWER_FACTOR3),
+                data.getSsldData().getAveragePowerFactor3());
+
+        // TODO Get RelayData and check on 'index' and 'totalLightingMinutes'
+        final List<RelayData> relayDataList = data.getSsldData().getRelayData();
+        if (relayDataList != null && !relayDataList.isEmpty()) {
+            final String[] expectedRelayData = getString(expectedResult, Keys.RELAY_DATA)
+                    .split(Keys.SEPARATOR_SEMICOLON);
+            Assert.assertEquals(expectedRelayData.length, relayDataList.size());
+
+            for (int i = 0; i < expectedRelayData.length; i++) {
+                final String sRelayData = String.format("%d,%d", relayDataList.get(i).getIndex(),
+                        relayDataList.get(i).getTotalLightingMinutes());
+                Assert.assertEquals(expectedRelayData[i], sRelayData);
+            }
         }
-        
-        PowerUsageData data = response.getPowerUsageData();
-        
-        Assert.assertEquals(expectedResult.get(Keys.ACTUALCONSUMEDPOWER), data.getActualConsumedPower());
-        Assert.assertEquals(expectedResult.get(Keys.TOTALCONSUMEDENERGY), data.getTotalConsumedEnergy());
-        Assert.assertEquals(Enum.valueOf(MeterType.class, expectedResult.get(Keys.METERTYPE)), data.getMeterType());
-        Assert.assertEquals(expectedResult.get(Keys.RECORDTIME), data.getRecordTime());
-        Assert.assertEquals((int)getInteger(expectedResult, Keys.TOTALLIGHTINGHOURS), data.getPsldData().getTotalLightingHours());
-        Assert.assertEquals((int)getInteger(expectedResult, Keys.ACTUALCURRENT1), data.getSsldData().getActualCurrent1());
-        Assert.assertEquals((int)getInteger(expectedResult, Keys.ACTUALCURRENT2), data.getSsldData().getActualCurrent2());
-        Assert.assertEquals((int)getInteger(expectedResult, Keys.ACTUALCURRENT3), data.getSsldData().getActualCurrent3());
-        Assert.assertEquals((int)getInteger(expectedResult, Keys.ACTUALPOWER1), data.getSsldData().getActualPower1());
-        Assert.assertEquals((int)getInteger(expectedResult, Keys.ACTUALPOWER2), data.getSsldData().getActualPower2());
-        Assert.assertEquals((int)getInteger(expectedResult, Keys.ACTUALPOWER3), data.getSsldData().getActualPower3());
-        Assert.assertEquals((int)getInteger(expectedResult, Keys.AVERAGEPOWERFACTOR1), data.getSsldData().getAveragePowerFactor1());
-        Assert.assertEquals((int)getInteger(expectedResult, Keys.AVERAGEPOWERFACTOR2), data.getSsldData().getAveragePowerFactor2());
-        Assert.assertEquals((int)getInteger(expectedResult, Keys.AVERAGEPOWERFACTOR3), data.getSsldData().getAveragePowerFactor3());
-        
-        // TODO RElaydata
     }
 }

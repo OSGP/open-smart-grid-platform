@@ -35,6 +35,7 @@ import com.alliander.osgp.oslp.Oslp.EventNotificationResponse;
 import com.alliander.osgp.oslp.Oslp.GetActualPowerUsageRequest;
 import com.alliander.osgp.oslp.Oslp.GetFirmwareVersionRequest;
 import com.alliander.osgp.oslp.Oslp.GetPowerUsageHistoryRequest;
+import com.alliander.osgp.oslp.Oslp.HistoryTermType;
 import com.alliander.osgp.oslp.Oslp.LightType;
 import com.alliander.osgp.oslp.Oslp.LightValue;
 import com.alliander.osgp.oslp.Oslp.LinkType;
@@ -98,26 +99,49 @@ public class OslpDeviceSteps {
      */
     @Given("^the device returns a get actual power usage response over OSLP$")
     public void theDeviceReturnsAGetActualPowerUsageOverOSLP(final Map<String, String> responseData) throws Throwable {
-        this.oslpMockServer.mockGetActualPowerUsageResponse(
-                getEnum(responseData, Keys.KEY_STATUS, Status.class),
-                getInteger(responseData, Keys.ACTUALCONSUMEDPOWER, null),
-                getEnum(responseData, Keys.METERTYPE, MeterType.class),
-                getString(responseData, Keys.RECORDTIME),
-                getInteger(responseData, Keys.TOTALCONSUMEDENERGY, null),
-                getInteger(responseData, Keys.TOTALLIGHTINGHOURS, null),
-                getInteger(responseData, Keys.ACTUALCURRENT1, null),
-                getInteger(responseData, Keys.ACTUALCURRENT2, null),
-                getInteger(responseData, Keys.ACTUALCURRENT3, null),
-                getInteger(responseData, Keys.ACTUALPOWER1, null),
-                getInteger(responseData, Keys.ACTUALPOWER2, null),
-                getInteger(responseData, Keys.ACTUALPOWER3, null),
-                getInteger(responseData, Keys.AVERAGEPOWERFACTOR1, null),
-                getInteger(responseData, Keys.AVERAGEPOWERFACTOR2, null),
-                getInteger(responseData, Keys.AVERAGEPOWERFACTOR3, null),
-                getString(responseData, Keys.RELAYDATA, null)
-                );
+        this.oslpMockServer.mockGetActualPowerUsageResponse(getEnum(responseData, Keys.KEY_STATUS, Status.class),
+                getInteger(responseData, Keys.ACTUAL_CONSUMED_POWER, null),
+                getEnum(responseData, Keys.METER_TYPE, MeterType.class),
+                getDate(responseData, Keys.RECORD_TIME).toDateTime(DateTimeZone.UTC).toString("yyyyMMddHHmmss"),
+                getInteger(responseData, Keys.TOTAL_CONSUMED_ENERGY, null),
+                getInteger(responseData, Keys.TOTAL_LIGHTING_HOURS, null),
+                getInteger(responseData, Keys.ACTUAL_CURRENT1, null),
+                getInteger(responseData, Keys.ACTUAL_CURRENT2, null),
+                getInteger(responseData, Keys.ACTUAL_CURRENT3, null),
+                getInteger(responseData, Keys.ACTUAL_POWER1, null), getInteger(responseData, Keys.ACTUAL_POWER2, null),
+                getInteger(responseData, Keys.ACTUAL_POWER3, null),
+                getInteger(responseData, Keys.AVERAGE_POWER_FACTOR1, null),
+                getInteger(responseData, Keys.AVERAGE_POWER_FACTOR2, null),
+                getInteger(responseData, Keys.AVERAGE_POWER_FACTOR3, null),
+                getString(responseData, Keys.RELAY_DATA, null));
     }
-    
+
+    /**
+     * Setup method to set the firmware which should be returned by the mock.
+     *
+     * @param firmwareVersion
+     *            The firmware to respond.
+     * @throws Throwable
+     */
+    @Given("^the device returns a get power usage history response over OSLP$")
+    public void theDeviceReturnsAGetPowerUsageHistoryOverOSLP(final Map<String, String> responseData) throws Throwable {
+        this.oslpMockServer.mockGetPowerUsageHistoryResponse(getEnum(responseData, Keys.KEY_STATUS, Status.class),
+                getString(responseData, Keys.RECORD_TIME), getInteger(responseData, Keys.KEY_INDEX),
+                getInteger(responseData, Keys.ACTUAL_CONSUMED_POWER, null),
+                getEnum(responseData, Keys.METER_TYPE, MeterType.class),
+                getInteger(responseData, Keys.TOTAL_CONSUMED_ENERGY, null),
+                getInteger(responseData, Keys.TOTAL_LIGHTING_HOURS, null),
+                getInteger(responseData, Keys.ACTUAL_CURRENT1, null),
+                getInteger(responseData, Keys.ACTUAL_CURRENT2, null),
+                getInteger(responseData, Keys.ACTUAL_CURRENT3, null),
+                getInteger(responseData, Keys.ACTUAL_POWER1, null), getInteger(responseData, Keys.ACTUAL_POWER2, null),
+                getInteger(responseData, Keys.ACTUAL_POWER3, null),
+                getInteger(responseData, Keys.AVERAGE_POWER_FACTOR1, null),
+                getInteger(responseData, Keys.AVERAGE_POWER_FACTOR2, null),
+                getInteger(responseData, Keys.AVERAGE_POWER_FACTOR3, null),
+                getString(responseData, Keys.RELAY_DATA, null));
+    }
+
     /**
      * Setup method to set the firmware which should be returned by the mock.
      *
@@ -359,7 +383,7 @@ public class OslpDeviceSteps {
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.GET_FIRMWARE_VERSION);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasGetFirmwareVersionRequest());
-        
+
         @SuppressWarnings("unused")
         final GetFirmwareVersionRequest getFirmwareVersionRequest = message.getGetFirmwareVersionRequest();
     }
@@ -404,7 +428,7 @@ public class OslpDeviceSteps {
         Assert.assertTrue(message.hasGetActualPowerUsageRequest());
 
         @SuppressWarnings("unused")
-        GetActualPowerUsageRequest request = message.getGetActualPowerUsageRequest();
+        final GetActualPowerUsageRequest request = message.getGetActualPowerUsageRequest();
     }
 
     @Then("^a get power usage history OSLP message is sent to the device$")
@@ -413,11 +437,21 @@ public class OslpDeviceSteps {
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasGetPowerUsageHistoryRequest());
 
-        GetPowerUsageHistoryRequest request = message.getGetPowerUsageHistoryRequest();
-        Assert.assertEquals(expected.get(Keys.HISTORY_TERM_TYPE), request.getTermType());
-        Assert.assertEquals(expected.get(Keys.KEY_PAGE), request.getPage());
-        Assert.assertEquals(expected.get(Keys.STARTTIME), request.getTimePeriod().getStartTime());
-        Assert.assertEquals(expected.get(Keys.ENDTIME), request.getTimePeriod().getEndTime());
+        final GetPowerUsageHistoryRequest request = message.getGetPowerUsageHistoryRequest();
+        Assert.assertEquals(
+                getEnum(expected, Keys.HISTORY_TERM_TYPE, HistoryTermType.class, Defaults.OSLP_HISTORY_TERM_TYPE),
+                request.getTermType());
+        if (expected.containsKey(Keys.KEY_PAGE) && !expected.get(Keys.KEY_PAGE).isEmpty()) {
+            Assert.assertEquals((int) getInteger(expected, Keys.KEY_PAGE), request.getPage());
+        }
+        if (expected.containsKey(Keys.START_TIME) && !expected.get(Keys.START_TIME).isEmpty()
+                && expected.get(Keys.START_TIME) != null) {
+            Assert.assertEquals(getString(expected, Keys.START_TIME), request.getTimePeriod().getStartTime());
+        }
+        if (expected.containsKey(Keys.END_TIME) && !expected.get(Keys.END_TIME).isEmpty()
+                && expected.get(Keys.END_TIME) != null) {
+            Assert.assertEquals(getString(expected, Keys.END_TIME), request.getTimePeriod().getEndTime());
+        }
     }
 
     /**

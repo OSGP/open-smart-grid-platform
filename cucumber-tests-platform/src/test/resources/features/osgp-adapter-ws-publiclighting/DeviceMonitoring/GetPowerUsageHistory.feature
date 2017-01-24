@@ -7,8 +7,8 @@ Feature: PublicLightingDeviceMonitoring get actual power usage
   Scenario Outline: Get power usage history
     Given an oslp device
       | DeviceIdentification | TEST1024000000001 |
-    And the device returns a get actual power usage response over OSLP
-      | Status              | <Status>              |
+    And the device returns a get power usage history response over OSLP
+      | Status              | OK                    |
       | RecordTime          | <RecordTime>          |
       | Index               | <Index>               |
       | MeterType           | <MeterType>           |
@@ -34,9 +34,9 @@ Feature: PublicLightingDeviceMonitoring get actual power usage
     And a get power usage history OSLP message is sent to the device
       | FromDate  | <FromDate>  |
       | UntilDate | <UntilDate> |
-    And the platform buffers a get actual power usage response message for device "TEST1024000000001"
-      | Status              | <Status>              |
-      | Description         | <Description>         |
+    And the platform buffers a get power usage history response message for device "TEST1024000000001"
+      | Status              | OK                    |
+      | Description         |                       |
       | RecordTime          | <RecordTime>          |
       | MeterType           | <MeterType>           |
       | TotalConsumedEnergy | <TotalConsumedEnergy> |
@@ -54,19 +54,28 @@ Feature: PublicLightingDeviceMonitoring get actual power usage
       | RelayData           | <RelayData>           |
 
     Examples: 
-      | fromDate       | untilDate      | recordTime     | index | meterType | totalConsumedEnergy | actualConsumedPower | TotalLightingHours | actualCurrent1 | actualCurrent2 | actualCurrent3 | actualPower1 | actualPower2 | actualPower3 | averagePowerFactor1 | averagePowerFactor2 | averagePowerFactor3 | RelayData   | Result | Description |
-      | 20120202120000 | 20130202120000 | 20130202120000 |     1 | PULSE     |                1000 |                 200 |                100 |            240 |            360 |             12 |           15 |           15 |           15 |                  15 |                  15 |                  15 | 1,600;2,480 | OK     |             |
-      | 20120202120000 | 20130202120000 | 20130202120000 |     1 | P1        |                  10 |                 400 |                400 |            140 |            160 |            112 |          115 |           15 |           15 |                  15 |                  15 |                  15 | 1,600;2,480 | OK     |             |
-      | 20110202120000 | 20140202120000 | 20130202120000 |     1 | AUX       |                 200 |                 360 |                100 |            240 |            360 |             12 |           15 |           15 |           15 |                  15 |                  15 |                  15 | 1,600;2,480 | OK     |             |
+      | FromDate            | UntilDate           | RecordTime          | Index | MeterType | TotalConsumedEnergy | ActualConsumedPower | TotalLightingHours | ActualCurrent1 | ActualCurrent2 | ActualCurrent3 | ActualPower1 | ActualPower2 | ActualPower3 | AveragePowerFactor1 | AveragePowerFactor2 | AveragePowerFactor3 | RelayData                       |
+      | 2013-02-02T12:00:00 | 2014-02-02T12:00:00 | 2013-02-02T12:00:00 |     1 | AUX       |                   0 |                   0 |                  0 |              0 |              0 |              0 |            0 |            0 |            0 |                   0 |                   0 |                   0 |                                 |
+      | 2012-02-02T12:00:00 | 2013-02-02T12:00:00 | 2013-02-02T12:00:00 |     1 | PULSE     |                1000 |                 200 |                100 |            240 |            360 |             12 |           15 |           15 |           15 |                  15 |                  15 |                  15 | 1,600;2,480                     |
+      | 2012-02-02T12:00:00 | 2013-02-02T12:00:00 | 2013-02-02T12:00:00 |     1 | P1        |                  10 |                 400 |                400 |            140 |            160 |            112 |          115 |           15 |           15 |                  15 |                  15 |                  15 | 1,600;2,480                     |
+      | 2013-02-02T12:00:00 | 2014-02-02T12:00:00 | 2013-02-02T12:00:00 |     1 | PULSE     |                1000 |                 200 |                100 |            240 |            360 |             12 |           15 |           15 |           15 |                  15 |                  15 |                  15 | 1,600;2,480                     |
+      | 2011-02-02T12:00:00 | 2014-02-02T12:00:00 | 2013-02-02T12:00:00 |     1 | AUX       |                 200 |                 360 |                 12 |             15 |             15 |             15 |           15 |           15 |           15 |                   1 |                 600 |                   2 | 0,480;                          |
+      | 2015-02-02T12:00:00 | 2017-02-02T12:00:00 | 2016-01-04T22:00:00 |     1 | P1        |               55229 |                2370 |               7110 |             10 |             20 |             30 |           10 |           20 |           30 |                  10 |                  20 |                  30 | 1,99897;2,99897;3,99897;4,99897 |
 
   Scenario: Get the power usage history as an unauthorized organization
     When receiving a get power usage history request as an unknown organization
-      | OrganizationIdentification | TEST1024000000001 |
+      | DeviceIdentification | TEST1024000000001   |
+      | FromDate             | 2012-02-02T12:00:00 |
+      | UntilDate            | 2013-02-02T12:00:00 |
     Then the get power usage history response contains soap fault
-      | Message | UNKNOWN_ORGANISATION |
+      | FaultCode   | SOAP-ENV:Server      |
+      | Message     | UNKNOWN_ORGANISATION |
 
   Scenario: Get the power usage history for an unknown device
     When receiving a get power usage history request
-      | OrganizationIdentification | unknown |
+      | DeviceIdentification | unknown             |
+      | FromDate             | 2012-02-02T12:00:00 |
+      | UntilDate            | 2013-02-02T12:00:00 |
     Then the get power usage history response contains soap fault
-      | Message | UNKNOWN_DEVICE |
+      | FaultCode   | SOAP-ENV:Server  |
+      | Message     | UNKNOWN_DEVICE   |

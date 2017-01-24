@@ -8,7 +8,8 @@
 package com.alliander.osgp.platform.cucumber.steps;
 
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.TransitionType;
-import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.HistoryTermType;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.common.OsgpResultType;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.MeterType;
 import com.alliander.osgp.oslp.Oslp.LightType;
 import com.alliander.osgp.oslp.Oslp.LinkType;
 import com.alliander.osgp.oslp.Oslp.Status;
@@ -31,7 +32,7 @@ public class Defaults {
     public static final String DEFAULT_DEVICE_IDENTIFICATION = "TD01";
     public static final String DEFAULT_SMART_METER_DEVICE_IDENTIFICATION = "TEST1024000000001";
     public static final String DEFAULT_SMART_METER_GAS_DEVICE_IDENTIFICATION = "TESTG102400000001";
-    
+
     public static final Boolean DEFAULT_DEVICE_MODEL_METERED = true;
 
     public static final String DLMS_DEFAULT_COMMUNICATION_METHOD = "GPRS";
@@ -105,5 +106,23 @@ public class Defaults {
     public static final Status DEFAULT_STATUS = Status.OK;
     public static final String DEFAULT_LIGHTVALUES = "";
     public static final String DEFAULT_EVENTNOTIFICATIONTYPES = "";
-    public static final HistoryTermType HISTORY_TERM_TYPE = HistoryTermType.SHORT;
+
+    public static final OsgpResultType PUBLICLIGHTING_STATUS = OsgpResultType.OK;
+    public static final String PUBLICLIGHTING_DESCRIPTION = "";
+    public static final Integer ACTUAL_CONSUMED_POWER = 48;
+    public static final Integer ACTUAL_CONSUMED_ENERGY = 96;
+    public static final MeterType METER_TYPE = MeterType.AUX;
+    public static final String RECORD_TIME = "";
+    public static final Integer TOTAL_LIGHTING_HOURS = 144;
+    public static final Integer ACTUAL_CURRENT1 = 1;
+    public static final Integer ACTUAL_CURRENT2 = 2;
+    public static final Integer ACTUAL_CURRENT3 = 3;
+    public static final Integer ACTUAL_POWER1 = 1;
+    public static final Integer ACTUAL_POWER2 = 2;
+    public static final Integer ACTUAL_POWER3 = 3;
+    public static final Integer AVERAGE_POWER_FACTOR1 = 1;
+    public static final Integer AVERAGE_POWER_FACTOR2 = 2;
+    public static final Integer AVERAGE_POWER_FACTOR3 = 3;
+    public static final com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.HistoryTermType HISTORY_TERM_TYPE = com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.HistoryTermType.SHORT;
+    public static final com.alliander.osgp.oslp.Oslp.HistoryTermType OSLP_HISTORY_TERM_TYPE = com.alliander.osgp.oslp.Oslp.HistoryTermType.Short;
 }

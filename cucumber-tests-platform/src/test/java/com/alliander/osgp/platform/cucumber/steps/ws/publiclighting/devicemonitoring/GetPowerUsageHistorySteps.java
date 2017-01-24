@@ -16,6 +16,10 @@ import static com.alliander.osgp.platform.cucumber.core.Helpers.saveCorrelationU
 
 import java.util.Map;
 
+import javax.xml.datatype.DatatypeFactory;
+
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,10 +35,12 @@ import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.GetP
 import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.HistoryTermType;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.MeterType;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.PowerUsageData;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.TimePeriod;
 import com.alliander.osgp.platform.cucumber.config.CoreDeviceConfiguration;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
+import com.alliander.osgp.platform.cucumber.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.platform.cucumber.support.ws.publiclighting.DeviceMonitoringClient;
 
 import cucumber.api.java.en.Then;
@@ -54,9 +60,9 @@ public class GetPowerUsageHistorySteps {
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPowerUsageHistorySteps.class);
 
     /**
-     * Sends a Get Power Usage history request to the platform for a given device
-     * identification.
-     * 
+     * Sends a Get Power Usage history request to the platform for a given
+     * device identification.
+     *
      * @param requestParameters
      *            The table with the request parameters.
      * @throws Throwable
@@ -64,31 +70,41 @@ public class GetPowerUsageHistorySteps {
     @When("^receiving a get power usage history request$")
     public void receivingAGetPowerUsageHistoryRequest(final Map<String, String> requestParameters) throws Throwable {
 
-        GetPowerUsageHistoryRequest request = new GetPowerUsageHistoryRequest();
+        final GetPowerUsageHistoryRequest request = new GetPowerUsageHistoryRequest();
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+
+        final TimePeriod tp = new TimePeriod();
+        tp.setStartTime(DatatypeFactory.newInstance()
+                .newXMLGregorianCalendar(DateTime.parse(getString(requestParameters, Keys.FROM_DATE))
+                        .toDateTime(DateTimeZone.UTC).toGregorianCalendar()));
+        tp.setEndTime(DatatypeFactory.newInstance()
+                .newXMLGregorianCalendar(DateTime.parse(getString(requestParameters, Keys.UNTIL_DATE))
+                        .toDateTime(DateTimeZone.UTC).toGregorianCalendar()));
+        request.setTimePeriod(tp);
+
         request.setHistoryTermType(
                 getEnum(requestParameters, Keys.HISTORY_TERM_TYPE, HistoryTermType.class, Defaults.HISTORY_TERM_TYPE));
 
         try {
-            ScenarioContext.Current().put(Keys.RESPONSE, client.getPowerUsageHistory(request));
-        } catch (SoapFaultClientException ex) {
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.getPowerUsageHistory(request));
+        } catch (final SoapFaultClientException ex) {
             ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
     }
 
     @When("^receiving a get power usage history request as an unknown organization$")
-    public void receivingAGetPowerUsageHistoryRequestAsAnUnknownOrganization(final Map<String, String> requestParameters)
-            throws Throwable {
+    public void receivingAGetPowerUsageHistoryRequestAsAnUnknownOrganization(
+            final Map<String, String> requestParameters) throws Throwable {
         // Force the request being send to the platform as a given organization.
         ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
 
-        receivingAGetPowerUsageHistoryRequest(requestParameters);
+        this.receivingAGetPowerUsageHistoryRequest(requestParameters);
     }
 
     /**
      * The check for the response from the Platform.
-     * 
+     *
      * @param expectedResponseData
      *            The table with the expected fields in the response.
      * @note The response will contain the correlation uid, so store that in the
@@ -99,7 +115,7 @@ public class GetPowerUsageHistorySteps {
     public void theGetPowerUsageHistoryAsyncResponseContains(final Map<String, String> expectedResponseData)
             throws Throwable {
 
-        GetPowerUsageHistoryAsyncResponse response = (GetPowerUsageHistoryAsyncResponse) ScenarioContext.Current()
+        final GetPowerUsageHistoryAsyncResponse response = (GetPowerUsageHistoryAsyncResponse) ScenarioContext.Current()
                 .get(Keys.RESPONSE);
 
         Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
@@ -117,13 +133,12 @@ public class GetPowerUsageHistorySteps {
 
     @Then("^the get power usage history response contains soap fault$")
     public void theGetPowerUsageHistoryResponseContainsSoapFault(final Map<String, String> expectedResponseData) {
-        SoapFaultClientException response = (SoapFaultClientException) ScenarioContext.Current().get(Keys.RESPONSE);
-
-        Assert.assertEquals(expectedResponseData.get(Keys.KEY_MESSAGE), response.getMessage());
+        GenericResponseSteps.verifySoapFault(expectedResponseData);
     }
 
     /**
      * The platform should receive a get power usage history response message.
+     *
      * @param deviceIdentification
      * @param expectedResult
      * @throws Throwable
@@ -131,8 +146,8 @@ public class GetPowerUsageHistorySteps {
     @Then("^the platform buffers a get power usage history response message for device \"([^\"]*)\"$")
     public void thePlatformBuffersAGetPowerUsageHistoryResponseMessageForDevice(final String deviceIdentification,
             final Map<String, String> expectedResult) throws Throwable {
-        GetPowerUsageHistoryAsyncRequest request = new GetPowerUsageHistoryAsyncRequest();
-        AsyncRequest asyncRequest = new AsyncRequest();
+        final GetPowerUsageHistoryAsyncRequest request = new GetPowerUsageHistoryAsyncRequest();
+        final AsyncRequest asyncRequest = new AsyncRequest();
         asyncRequest.setDeviceId(deviceIdentification);
         asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
         request.setAsyncRequest(asyncRequest);
@@ -141,7 +156,7 @@ public class GetPowerUsageHistorySteps {
         boolean success = false;
         int count = 0;
         while (!success) {
-            if (count > configuration.defaultTimeout) {
+            if (count > this.configuration.defaultTimeout) {
                 Assert.fail("Timeout");
             }
 
@@ -149,36 +164,48 @@ public class GetPowerUsageHistorySteps {
             Thread.sleep(1000);
 
             try {
-                response = client.getGetPowerUsageHistoryResponse(request);
+                response = this.client.getGetPowerUsageHistoryResponse(request);
                 success = true;
-            } catch (Exception ex) {
+            } catch (final Exception ex) {
                 // Do nothing
                 LOGGER.info(ex.getMessage());
             }
         }
-        
-        Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.KEY_STATUS)), response.getResult());
-        String expectedDescription = expectedResult.get(Keys.KEY_DESCRIPTION);
+
+        Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.KEY_STATUS)),
+                response.getResult());
+        final String expectedDescription = expectedResult.get(Keys.KEY_DESCRIPTION);
         if (!expectedDescription.isEmpty()) {
             Assert.assertEquals(expectedDescription, response.getDescription());
         }
-        
-        for (PowerUsageData data : response.getPowerUsageData()){
-            Assert.assertEquals(expectedResult.get(Keys.ACTUALCONSUMEDPOWER), data.getActualConsumedPower());
-            Assert.assertEquals(expectedResult.get(Keys.TOTALCONSUMEDENERGY), data.getTotalConsumedEnergy());
-            Assert.assertEquals(Enum.valueOf(MeterType.class, expectedResult.get(Keys.METERTYPE)), data.getMeterType());
-            Assert.assertEquals(expectedResult.get(Keys.RECORDTIME), data.getRecordTime());
-            Assert.assertEquals((int)getInteger(expectedResult, Keys.TOTALLIGHTINGHOURS), data.getPsldData().getTotalLightingHours());
-            Assert.assertEquals((int)getInteger(expectedResult, Keys.ACTUALCURRENT1), data.getSsldData().getActualCurrent1());
-            Assert.assertEquals((int)getInteger(expectedResult, Keys.ACTUALCURRENT2), data.getSsldData().getActualCurrent2());
-            Assert.assertEquals((int)getInteger(expectedResult, Keys.ACTUALCURRENT3), data.getSsldData().getActualCurrent3());
-            Assert.assertEquals((int)getInteger(expectedResult, Keys.ACTUALPOWER1), data.getSsldData().getActualPower1());
-            Assert.assertEquals((int)getInteger(expectedResult, Keys.ACTUALPOWER2), data.getSsldData().getActualPower2());
-            Assert.assertEquals((int)getInteger(expectedResult, Keys.ACTUALPOWER3), data.getSsldData().getActualPower3());
-            Assert.assertEquals((int)getInteger(expectedResult, Keys.AVERAGEPOWERFACTOR1), data.getSsldData().getAveragePowerFactor1());
-            Assert.assertEquals((int)getInteger(expectedResult, Keys.AVERAGEPOWERFACTOR2), data.getSsldData().getAveragePowerFactor2());
-            Assert.assertEquals((int)getInteger(expectedResult, Keys.AVERAGEPOWERFACTOR3), data.getSsldData().getAveragePowerFactor3());
-                
+
+        for (final PowerUsageData data : response.getPowerUsageData()) {
+            Assert.assertEquals(expectedResult.get(Keys.ACTUAL_CONSUMED_POWER), data.getActualConsumedPower());
+            Assert.assertEquals(expectedResult.get(Keys.TOTAL_CONSUMED_ENERGY), data.getTotalConsumedEnergy());
+            Assert.assertEquals(Enum.valueOf(MeterType.class, expectedResult.get(Keys.METER_TYPE)),
+                    data.getMeterType());
+            Assert.assertEquals(expectedResult.get(Keys.RECORD_TIME), data.getRecordTime());
+            Assert.assertEquals((int) getInteger(expectedResult, Keys.TOTAL_LIGHTING_HOURS),
+                    data.getPsldData().getTotalLightingHours());
+            Assert.assertEquals((int) getInteger(expectedResult, Keys.ACTUAL_CURRENT1),
+                    data.getSsldData().getActualCurrent1());
+            Assert.assertEquals((int) getInteger(expectedResult, Keys.ACTUAL_CURRENT2),
+                    data.getSsldData().getActualCurrent2());
+            Assert.assertEquals((int) getInteger(expectedResult, Keys.ACTUAL_CURRENT3),
+                    data.getSsldData().getActualCurrent3());
+            Assert.assertEquals((int) getInteger(expectedResult, Keys.ACTUAL_POWER1),
+                    data.getSsldData().getActualPower1());
+            Assert.assertEquals((int) getInteger(expectedResult, Keys.ACTUAL_POWER2),
+                    data.getSsldData().getActualPower2());
+            Assert.assertEquals((int) getInteger(expectedResult, Keys.ACTUAL_POWER3),
+                    data.getSsldData().getActualPower3());
+            Assert.assertEquals((int) getInteger(expectedResult, Keys.AVERAGE_POWER_FACTOR1),
+                    data.getSsldData().getAveragePowerFactor1());
+            Assert.assertEquals((int) getInteger(expectedResult, Keys.AVERAGE_POWER_FACTOR2),
+                    data.getSsldData().getAveragePowerFactor2());
+            Assert.assertEquals((int) getInteger(expectedResult, Keys.AVERAGE_POWER_FACTOR3),
+                    data.getSsldData().getAveragePowerFactor3());
+
             // TODO RElaydata
         }
     }
