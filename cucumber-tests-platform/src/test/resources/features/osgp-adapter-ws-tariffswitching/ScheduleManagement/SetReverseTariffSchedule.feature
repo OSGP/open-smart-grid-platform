@@ -103,7 +103,7 @@ Feature: TariffSwitchingScheduleManagement Set Reverse Tariff Schedule
       | InnerMessage | Validation Exception, violations: startDay may not be null when weekDay is set to ABSOLUTEDAY; |
 
   # Note: Result is 'NOT_FOUND' because there isn't a record in the database with a CorrelationUID
-  #l Note: HasScheduled is set to 'false' because the response type is 'NOT_OK', but should be 'OK'
+  # Note: HasScheduled is set to 'false' because the response type is 'NOT_OK', but should be 'OK'
   @OslpMockServer
   Scenario: Set reverse tariff schedule with 50 schedules # Success
     Given an oslp device
