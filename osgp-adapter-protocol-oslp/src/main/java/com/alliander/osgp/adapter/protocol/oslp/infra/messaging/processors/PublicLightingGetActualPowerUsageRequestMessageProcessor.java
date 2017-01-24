@@ -39,8 +39,8 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
  * Class for processing public lighting get power usage request messages
  */
 @Component("oslpPublicLightingGetActualPowerUsageRequestMessageProcessor")
-public class PublicLightingGetActualPowerUsageRequestMessageProcessor extends DeviceRequestMessageProcessor implements
-        OslpEnvelopeProcessor {
+public class PublicLightingGetActualPowerUsageRequestMessageProcessor extends DeviceRequestMessageProcessor
+        implements OslpEnvelopeProcessor {
     /**
      * Logger for this class
      */
@@ -74,8 +74,8 @@ public class PublicLightingGetActualPowerUsageRequestMessageProcessor extends De
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
             ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
             retryCount = message.getIntProperty(Constants.RETRY_COUNT);
-            isScheduled = message.propertyExists(Constants.IS_SCHEDULED) ? message
-                    .getBooleanProperty(Constants.IS_SCHEDULED) : false;
+            isScheduled = message.propertyExists(Constants.IS_SCHEDULED)
+                    ? message.getBooleanProperty(Constants.IS_SCHEDULED) : false;
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -141,7 +141,8 @@ public class PublicLightingGetActualPowerUsageRequestMessageProcessor extends De
 
             @Override
             public void handleResponse(final DeviceResponse deviceResponse) {
-                PublicLightingGetActualPowerUsageRequestMessageProcessor.this.handleEmptyDeviceResponse(deviceResponse,
+                PublicLightingGetActualPowerUsageRequestMessageProcessor.this.handleGetActualPowerUsageDeviceResponse(
+                        deviceResponse,
                         PublicLightingGetActualPowerUsageRequestMessageProcessor.this.responseMessageSender, domain,
                         domainVersion, messageType, retryCount);
             }
@@ -161,8 +162,8 @@ public class PublicLightingGetActualPowerUsageRequestMessageProcessor extends De
         try {
             this.deviceService.doGetActualPowerUsage(oslpEnvelope, deviceRequest, deviceResponseHandler, ipAddress);
         } catch (final IOException e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
-                    domainVersion, messageType, retryCount);
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain, domainVersion,
+                    messageType, retryCount);
         }
     }
 }
