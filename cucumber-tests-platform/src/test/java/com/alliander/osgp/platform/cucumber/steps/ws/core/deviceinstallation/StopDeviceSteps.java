@@ -107,7 +107,7 @@ public class StopDeviceSteps {
         boolean success = false;
         int count = 0;
         while (!success) {
-            if (count > configuration.defaultTimeout) {
+            if (count > configuration.getTimeout()) {
                 Assert.fail("Timeout");
             }
 

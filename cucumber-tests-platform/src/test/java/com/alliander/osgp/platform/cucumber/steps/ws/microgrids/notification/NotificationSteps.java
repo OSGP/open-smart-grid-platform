@@ -52,16 +52,11 @@ public class NotificationSteps {
 
             // Organisation Identification is always needed to retrieve a
             // response.
-            if (!ScenarioContext.Current().containsKey(Keys.KEY_ORGANIZATION_IDENTIFICATION)) {
-                ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                        Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
-            }
+            ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION,
+                    Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
 
-            // Username is always needed to retrieve a
-            // response.
-            if (!ScenarioContext.Current().containsKey(Keys.KEY_USER_NAME)) {
-                ScenarioContext.Current().put(Keys.KEY_USER_NAME, Defaults.DEFAULT_USER_NAME);
-            }
+            // Username is always needed to retrieve a response.
+            ScenarioContext.Current().put(Keys.KEY_USER_NAME, Defaults.DEFAULT_USER_NAME);
         } else {
             Assert.fail("Did not receive a notification within the timeout limit.");
         }
