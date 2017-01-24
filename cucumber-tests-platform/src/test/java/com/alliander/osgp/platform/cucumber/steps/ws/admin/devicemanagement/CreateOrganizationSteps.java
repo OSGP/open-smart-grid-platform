@@ -46,34 +46,35 @@ public class CreateOrganizationSteps {
     @When("^receiving a create organization request$")
     public void receivingACreateOrganizationRequest(final Map<String, String> requestSettings) throws Throwable {
 
-    	CreateOrganisationRequest request = new CreateOrganisationRequest();
-    	Organisation organization = new Organisation();
-    	
-    	// Required fields
-        organization.setName(getString(requestSettings, Keys.KEY_NAME, Defaults.DEFAULT_ORGANIZATION_NAME));
-    	organization.setOrganisationIdentification(getString(requestSettings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
-    	organization.setPrefix(getString(requestSettings, Keys.KEY_PREFIX, Defaults.DEFAULT_ORGANIZATION_PREFIX));
-    	
-    	PlatformFunctionGroup platformFunctionGroup = getEnum(requestSettings, 
-    	        Keys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class, Defaults.DEFAULT_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP);
-    	organization.setFunctionGroup(platformFunctionGroup);
+        final CreateOrganisationRequest request = new CreateOrganisationRequest();
+        final Organisation organization = new Organisation();
 
-	    for (String domain : getString(requestSettings, Keys.KEY_DOMAINS, Defaults.DEFAULT_DOMAINS).split(";")) {
+        // Required fields
+        organization.setName(getString(requestSettings, Keys.KEY_NAME, Defaults.DEFAULT_ORGANIZATION_NAME));
+        organization.setOrganisationIdentification(getString(requestSettings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
+                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+        organization.setPrefix(getString(requestSettings, Keys.KEY_PREFIX, Defaults.DEFAULT_ORGANIZATION_PREFIX));
+
+        final PlatformFunctionGroup platformFunctionGroup = getEnum(requestSettings, Keys.KEY_PLATFORM_FUNCTION_GROUP,
+                PlatformFunctionGroup.class, Defaults.DEFAULT_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP);
+        organization.setFunctionGroup(platformFunctionGroup);
+
+        for (final String domain : getString(requestSettings, Keys.KEY_DOMAINS, Defaults.DEFAULT_DOMAINS).split(";")) {
             organization.getDomains().add(Enum.valueOf(PlatformDomain.class, domain));
         }
-    	
-	    // Optional fields
-	    if (requestSettings.containsKey(Keys.KEY_ENABLED) && !requestSettings.get(Keys.KEY_ENABLED).isEmpty()) {
-	        organization.setEnabled(getBoolean(requestSettings, Keys.KEY_ENABLED));
-	    }
-	    
-	    request.setOrganisation(organization);
-        
-    	try {
-    		ScenarioContext.Current().put(Keys.RESPONSE, client.createOrganization(request));
-    	} catch (SoapFaultClientException e) {
-    		ScenarioContext.Current().put(Keys.RESPONSE, e);
-    	}
+
+        // Optional fields
+        if (requestSettings.containsKey(Keys.KEY_ENABLED) && !requestSettings.get(Keys.KEY_ENABLED).isEmpty()) {
+            organization.setEnabled(getBoolean(requestSettings, Keys.KEY_ENABLED));
+        }
+
+        request.setOrganisation(organization);
+
+        try {
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.createOrganization(request));
+        } catch (final SoapFaultClientException e) {
+            ScenarioContext.Current().put(Keys.RESPONSE, e);
+        }
     }
 
     /**
@@ -93,6 +94,7 @@ public class CreateOrganizationSteps {
 
     /**
      * Verify that the create organization response is successful.
+     *
      * @throws Throwable
      */
     @Then("^the create organization response is successful$")
@@ -103,11 +105,13 @@ public class CreateOrganizationSteps {
     /**
      * Verify that the create organization response contains the fault with the
      * given expectedResult parameters.
+     *
      * @param expectedResult
      * @throws Throwable
      */
-    @Then("^the create organization response contains$")
-    public void theCreateOrganizationResponseContains(final Map<String, String> expectedResult) throws Throwable {
+    @Then("^the create organization response contains soap fault$")
+    public void theCreateOrganizationResponseContainsSoapFault(final Map<String, String> expectedResult)
+            throws Throwable {
         GenericResponseSteps.verifySoapFault(expectedResult);
     }
 }

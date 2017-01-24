@@ -49,6 +49,7 @@ import com.alliander.osgp.oslp.Oslp.SetDeviceVerificationKeyResponse;
 import com.alliander.osgp.oslp.Oslp.SetEventNotificationsResponse;
 import com.alliander.osgp.oslp.Oslp.SetLightResponse;
 import com.alliander.osgp.oslp.Oslp.SetRebootResponse;
+import com.alliander.osgp.oslp.Oslp.SetScheduleResponse;
 import com.alliander.osgp.oslp.Oslp.SetTransitionResponse;
 import com.alliander.osgp.oslp.Oslp.StartSelfTestResponse;
 import com.alliander.osgp.oslp.Oslp.StopSelfTestResponse;
@@ -150,12 +151,12 @@ public class MockOslpServer {
         return this.receivedRequests.get(requestType);
     }
 
-    public Message sendRequest(Message message) throws DeviceSimulatorException, IOException, ParseException {
+    public Message sendRequest(final Message message) throws DeviceSimulatorException, IOException, ParseException {
 
-        OslpEnvelope envelope = new OslpEnvelope();
+        final OslpEnvelope envelope = new OslpEnvelope();
         envelope.setPayloadMessage(message);
 
-        return this.channelHandler.handleRequest(envelope, channelHandler.getSequenceNumber());
+        return this.channelHandler.handleRequest(envelope, this.channelHandler.getSequenceNumber());
     }
 
     private ServerBootstrap serverBootstrap() {
@@ -289,5 +290,10 @@ public class MockOslpServer {
         this.mockResponses.put(DeviceRequestMessageType.UPDATE_KEY, Oslp.Message.newBuilder()
                 .setSetDeviceVerificationKeyResponse(SetDeviceVerificationKeyResponse.newBuilder().setStatus(status))
                 .build());
+    }
+
+    public void mockSetScheduleResponse(final DeviceRequestMessageType type, final Oslp.Status status) {
+        this.mockResponses.put(type, Oslp.Message.newBuilder()
+                .setSetScheduleResponse(SetScheduleResponse.newBuilder().setStatus(status)).build());
     }
 }
