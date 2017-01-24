@@ -134,6 +134,7 @@ public class CreateDeviceSteps {
         device.setHasSchedule(getBoolean(settings, Keys.HAS_SCHEDULE, Defaults.HASSCHEDULE));
         device.setOwner(getString(settings, Keys.OWNER, Defaults.OWNER));
         device.setPublicKeyPresent(getBoolean(settings, Keys.PUBLICKEYPRESENT, Defaults.PUBLICKEYPRESENT));
+        device.setActivated(getBoolean(settings, Keys.ACTIVATED, Defaults.ACTIVATED));
 
         return device;
     }

@@ -116,7 +116,7 @@ public class DeviceSteps {
 
         Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
         device = this.updateDevice(device, settings);
-        
+
         return device;
     }
 
@@ -142,7 +142,8 @@ public class DeviceSteps {
     private Device updateDevice(Device device, final Map<String, String> settings) {
 
         // Now set the optional stuff
-        if (settings.containsKey(Keys.TECHNICAL_INSTALLATION_DATE) && !settings.get(Keys.TECHNICAL_INSTALLATION_DATE).isEmpty()) {
+        if (settings.containsKey(Keys.TECHNICAL_INSTALLATION_DATE)
+                && !settings.get(Keys.TECHNICAL_INSTALLATION_DATE).isEmpty()) {
             device.setTechnicalInstallationDate(getDate(settings, Keys.TECHNICAL_INSTALLATION_DATE).toDate());
         }
 
@@ -191,10 +192,10 @@ public class DeviceSteps {
             final Device savedDevice = this.deviceRepository.save(device);
             this.deviceAuthorizationRepository.save(authorization);
             ScenarioContext.Current().put(Keys.DEVICE_IDENTIFICATION, savedDevice.getDeviceIdentification());
-            
+
             device = savedDevice;
         }
-        
+
         return device;
     }
 
@@ -204,23 +205,21 @@ public class DeviceSteps {
         boolean success = false;
         int count = 0;
         while (!success) {
-            try {
-                if (count > this.configuration.getTimeout()) {
-                    Assert.fail("Failed");
-                }
-
-                // Wait for next try to retrieve a response
-                count++;
-                Thread.sleep(1000);
-
-                final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-
-                Assert.assertTrue(device.isActive());
-
-                success = true;
-            } catch (final Exception e) {
-                // Do nothing
+            if (count > this.configuration.getTimeout()) {
+                Assert.fail("Failed");
             }
+
+            // Wait for next try to retrieve a response
+            count++;
+            Thread.sleep(1000);
+
+            final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+            if (device == null)
+                continue;
+
+            Assert.assertTrue(device.isActive());
+
+            success = true;
         }
     }
 

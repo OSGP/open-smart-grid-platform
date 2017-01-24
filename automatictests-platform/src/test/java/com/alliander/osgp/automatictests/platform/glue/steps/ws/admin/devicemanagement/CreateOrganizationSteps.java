@@ -46,34 +46,35 @@ public class CreateOrganizationSteps {
     @When("^receiving a create organization request$")
     public void receivingACreateOrganizationRequest(final Map<String, String> requestSettings) throws Throwable {
 
-    	CreateOrganisationRequest request = new CreateOrganisationRequest();
-    	Organisation organization = new Organisation();
-    	
-    	// Required fields
-        organization.setName(getString(requestSettings, Keys.NAME, Defaults.ORGANIZATION_NAME));
-    	organization.setOrganisationIdentification(getString(requestSettings, Keys.ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION));
-    	organization.setPrefix(getString(requestSettings, Keys.PREFIX, Defaults.ORGANIZATION_PREFIX));
-    	
-    	PlatformFunctionGroup platformFunctionGroup = getEnum(requestSettings, 
-    	        Keys.PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class, Defaults.NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP);
-    	organization.setFunctionGroup(platformFunctionGroup);
+        final CreateOrganisationRequest request = new CreateOrganisationRequest();
+        final Organisation organization = new Organisation();
 
-	    for (String domain : getString(requestSettings, Keys.DOMAINS, Defaults.DOMAINS).split(";")) {
+        // Required fields
+        organization.setName(getString(requestSettings, Keys.NAME, Defaults.ORGANIZATION_NAME));
+        organization.setOrganisationIdentification(getString(requestSettings, Keys.ORGANIZATION_IDENTIFICATION,
+                Defaults.ORGANIZATION_IDENTIFICATION));
+        organization.setPrefix(getString(requestSettings, Keys.PREFIX, Defaults.ORGANIZATION_PREFIX));
+
+        final PlatformFunctionGroup platformFunctionGroup = getEnum(requestSettings, Keys.PLATFORM_FUNCTION_GROUP,
+                PlatformFunctionGroup.class, Defaults.NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP);
+        organization.setFunctionGroup(platformFunctionGroup);
+
+        for (final String domain : getString(requestSettings, Keys.DOMAINS, Defaults.DOMAINS).split(";")) {
             organization.getDomains().add(Enum.valueOf(PlatformDomain.class, domain));
         }
-    	
-	    // Optional fields
-	    if (requestSettings.containsKey(Keys.ENABLED) && !requestSettings.get(Keys.ENABLED).isEmpty()) {
-	        organization.setEnabled(getBoolean(requestSettings, Keys.ENABLED));
-	    }
-	    
-	    request.setOrganisation(organization);
-        
-    	try {
-    		ScenarioContext.Current().put(Keys.RESPONSE, client.createOrganization(request));
-    	} catch (SoapFaultClientException e) {
-    		ScenarioContext.Current().put(Keys.RESPONSE, e);
-    	}
+
+        // Optional fields
+        if (requestSettings.containsKey(Keys.ENABLED) && !requestSettings.get(Keys.ENABLED).isEmpty()) {
+            organization.setEnabled(getBoolean(requestSettings, Keys.ENABLED));
+        }
+
+        request.setOrganisation(organization);
+
+        try {
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.createOrganization(request));
+        } catch (final SoapFaultClientException e) {
+            ScenarioContext.Current().put(Keys.RESPONSE, e);
+        }
     }
 
     /**
@@ -93,6 +94,7 @@ public class CreateOrganizationSteps {
 
     /**
      * Verify that the create organization response is successful.
+     *
      * @throws Throwable
      */
     @Then("^the create organization response is successful$")
@@ -103,11 +105,13 @@ public class CreateOrganizationSteps {
     /**
      * Verify that the create organization response contains the fault with the
      * given expectedResult parameters.
+     *
      * @param expectedResult
      * @throws Throwable
      */
-    @Then("^the create organization response contains$")
-    public void theCreateOrganizationResponseContains(final Map<String, String> expectedResult) throws Throwable {
+    @Then("^the create organization response contains soap fault$")
+    public void theCreateOrganizationResponseContainsSoapFault(final Map<String, String> expectedResult)
+            throws Throwable {
         GenericResponseSteps.verifySoapFault(expectedResult);
     }
 }

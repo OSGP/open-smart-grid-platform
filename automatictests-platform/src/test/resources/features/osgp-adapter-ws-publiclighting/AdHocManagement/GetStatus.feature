@@ -1,7 +1,7 @@
-Feature: Adhoc Management
-  In order to ... 
+Feature: PublicLightingAdhocManagement GetStatus
   As a platform 
   I want to asynchronously handle set light requests
+  In order to ... 
 
   @OslpMockServer
   Scenario Outline: Get Status from a device
@@ -9,7 +9,7 @@ Feature: Adhoc Management
       | DeviceIdentification | TEST1024000000001 |
       | Status               | Active            |
       | RelayType            | <RelayType>       |
-    And the device returns a get status response over OSLP
+    And the device returns a get status response "OK" over OSLP
       | PreferredLinkType  | <PreferredLinkType>      |
       | ActualLinkType     | <ActualLinkType>         |
       | LightType          | <LightType>              |

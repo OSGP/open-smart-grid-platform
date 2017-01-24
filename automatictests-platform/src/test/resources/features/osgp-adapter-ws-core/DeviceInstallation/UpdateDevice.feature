@@ -1,5 +1,5 @@
-Feature: Update device
-  As a grid operator
+Feature: CoreDeviceInstallation Device Updating
+  As a ...
   I want to be able to perform DeviceInstallation operations on a device
   In order to ...
 
@@ -24,9 +24,10 @@ Feature: Update device
       | UsePrefix                 | false                   |
       | Metered                   | false                   |
     Then the update device response is successfull
+    # Note: Alias is empty after update
     And the device exists
       | DeviceIdentification | TEST1024000000001 |
-  		#| Alias                | AfterTest         |
+  #		| Alias                | AfterTest         |
 
   Scenario: Updating a non existing device
     When receiving an update device request

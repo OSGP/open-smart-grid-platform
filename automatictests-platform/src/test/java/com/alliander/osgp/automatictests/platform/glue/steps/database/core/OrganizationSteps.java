@@ -82,16 +82,15 @@ public class OrganizationSteps {
         if (expectedOrganization.containsKey(Keys.NAME)) {
             Assert.assertEquals(getString(expectedOrganization, Keys.NAME), entity.getName());
         }
-        
         if (expectedOrganization.containsKey(Keys.PLATFORM_FUNCTION_GROUP)) {
             Assert.assertEquals(
                     getEnum(expectedOrganization, Keys.PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class),
                     entity.getFunctionGroup());
         }
 
-        if (expectedOrganization.containsKey(Keys.DOMAINS) && !expectedOrganization.get(Keys.DOMAINS).isEmpty()) {
-            for (String domain : expectedOrganization.get(Keys.DOMAINS).split(Keys.SEPARATOR_SEMICOLON))
-            {
+        if (expectedOrganization.containsKey(Keys.DOMAINS)
+                && !expectedOrganization.get(Keys.DOMAINS).isEmpty()) {
+            for (final String domain : expectedOrganization.get(Keys.DOMAINS).split(Keys.SEPARATOR_SEMICOLON)) {
                 Assert.assertTrue(entity.getDomains().contains(PlatformDomain.valueOf(domain)));
             }
         }
@@ -140,10 +139,11 @@ public class OrganizationSteps {
      * @throws Throwable
      */
     @Then("^the organization with organization identification \"([^\"]*)\" should be disabled$")
-    public void theOrganizationWithOrganizationIdentificationShouldBeDisabled(
-            final String organizationIdentification) throws Throwable {
+    public void theOrganizationWithOrganizationIdentificationShouldBeDisabled(final String organizationIdentification)
+            throws Throwable {
         final Organisation entity = this.repo.findByOrganisationIdentification(organizationIdentification);
 
+        // Note: 'entity' could be 'null'
         Assert.assertTrue(entity.isEnabled() == false);
     }
 
@@ -154,8 +154,8 @@ public class OrganizationSteps {
      * @throws Throwable
      */
     @Then("^the organization with organization identification \"([^\"]*)\" should be enabled")
-    public void theOrganizationWithOrganizationIdentificationShouldBeEnabled(
-            final String organizationIdentification) throws Throwable {
+    public void theOrganizationWithOrganizationIdentificationShouldBeEnabled(final String organizationIdentification)
+            throws Throwable {
         final Organisation entity = this.repo.findByOrganisationIdentification(organizationIdentification);
 
         Assert.assertTrue(entity.isEnabled() == true);

@@ -22,6 +22,7 @@ import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ActivateDevic
 import com.alliander.osgp.automatictests.platform.Defaults;
 import com.alliander.osgp.automatictests.platform.Keys;
 import com.alliander.osgp.automatictests.platform.core.ScenarioContext;
+import com.alliander.osgp.automatictests.platform.glue.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.automatictests.platform.support.ws.admin.AdminDeviceManagementClient;
 
 import cucumber.api.java.en.Then;
@@ -60,5 +61,10 @@ public class ActivateDeviceSteps {
 
         Assert.assertEquals(response.getResult(),
                 getEnum(expectedResponse, Keys.RESULT, OsgpResultType.class, OsgpResultType.OK));
+    }
+
+    @Then("^the activate device response return a soap fault$")
+    public void theActivateDeviceResponseReturnsASoapFault(final Map<String, String> expectedResult) throws Throwable {
+        GenericResponseSteps.verifySoapFault(expectedResult);
     }
 }
