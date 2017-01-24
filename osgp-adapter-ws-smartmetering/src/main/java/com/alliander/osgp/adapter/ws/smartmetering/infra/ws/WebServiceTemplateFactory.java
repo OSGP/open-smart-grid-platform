@@ -30,9 +30,10 @@ import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.soap.security.support.KeyStoreFactoryBean;
 import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 
-import com.alliander.osgp.adapter.ws.smartmetering.exceptions.WebServiceSecurityException;
+import com.alliander.osgp.adapter.ws.shared.services.IWebserviceTemplateFactory;
+import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 
-public class WebServiceTemplateFactory {
+public class WebServiceTemplateFactory implements IWebserviceTemplateFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceTemplateFactory.class);
 
     private final Map<String, WebServiceTemplate> webServiceTemplates;
@@ -66,6 +67,7 @@ public class WebServiceTemplateFactory {
         this.webServiceTemplates = new HashMap<>();
     }
 
+    @Override
     public WebServiceTemplate getTemplate(final String organisationIdentification, final String userName,
             final String notificationURL) throws WebServiceSecurityException {
 
@@ -84,8 +86,10 @@ public class WebServiceTemplateFactory {
             this.lock.lock();
 
             // Create new webservice template, if not yet available for
-            // organisation
-            final String key = organisationIdentification.concat("-").concat(userName).concat(this.applicationName);
+            // organisation, username and notificationUrl
+            final String key = organisationIdentification.concat("-").concat(userName).concat("-")
+                    .concat(this.applicationName).concat("-").concat(notificationURL);
+
             if (!this.webServiceTemplates.containsKey(key)) {
                 this.webServiceTemplates.put(key,
                         this.createTemplate(organisationIdentification, userName, notificationURL));

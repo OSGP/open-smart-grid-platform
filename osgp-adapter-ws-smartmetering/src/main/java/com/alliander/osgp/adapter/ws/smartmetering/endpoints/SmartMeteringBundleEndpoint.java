@@ -20,6 +20,7 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
+import com.alliander.osgp.adapter.ws.endpointinterceptors.ResponseUrl;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.Actions;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleAsyncResponse;
@@ -57,11 +58,11 @@ public class SmartMeteringBundleEndpoint extends SmartMeteringEndpoint {
     @PayloadRoot(localPart = "BundleRequest", namespace = NAMESPACE)
     @ResponsePayload
     public BundleAsyncResponse bundleRequest(@OrganisationIdentification final String organisationIdentification,
-            @MessagePriority final String messagePriority, @RequestPayload final BundleRequest request)
-                    throws OsgpException {
+            @MessagePriority final String messagePriority, @ResponseUrl final String responseUrl,
+            @RequestPayload final BundleRequest request) throws OsgpException {
 
-        LOGGER.info("Bundle request for organisation: {} and device: {}.", organisationIdentification,
-                request.getDeviceIdentification());
+        LOGGER.info("Bundle request for organisation: {} and device: {}. and responseUrl: {}",
+                organisationIdentification, request.getDeviceIdentification(), responseUrl);
 
         BundleAsyncResponse response = null;
         try {
@@ -82,6 +83,7 @@ public class SmartMeteringBundleEndpoint extends SmartMeteringEndpoint {
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
 
+            this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
             this.handleException(e);
         }

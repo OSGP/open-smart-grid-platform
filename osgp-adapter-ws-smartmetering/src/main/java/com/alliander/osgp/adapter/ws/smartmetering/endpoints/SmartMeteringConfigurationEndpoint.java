@@ -21,6 +21,7 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
+import com.alliander.osgp.adapter.ws.endpointinterceptors.ResponseUrl;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.ScheduleTime;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
@@ -126,7 +127,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     public GetFirmwareVersionAsyncResponse getFirmwareVersion(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final GetFirmwareVersionRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime) throws OsgpException {
+            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
 
         LOGGER.info("GetFirmwareVersion Request received from organisation {} for device {}.",
                 organisationIdentification, request.getDeviceIdentification());
@@ -140,6 +141,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
                     this.configurationMapper.map(scheduleTime, Long.class));
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
+            this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
             this.handleException(e);
         }
@@ -203,7 +205,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     public UpdateFirmwareAsyncResponse updateFirmware(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final UpdateFirmwareRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime) throws OsgpException {
+            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
 
         LOGGER.info("UpdateFirmware Request received from organisation {} for device {}.", organisationIdentification,
                 request.getDeviceIdentification());
@@ -218,6 +220,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
+            this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
 
         } catch (final Exception e) {
             this.handleException(e);
@@ -268,8 +271,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     public SetAdministrativeStatusAsyncResponse setAdministrativeStatus(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SetAdministrativeStatusRequest request,
-            @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime)
-            throws OsgpException {
+            @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
+            @ResponseUrl final String responseUrl) throws OsgpException {
 
         final com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusType dataRequest = this.configurationMapper
                 .map(request.getEnabled(),
@@ -281,9 +284,11 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
                 this.configurationMapper.map(scheduleTime, Long.class));
 
         final SetAdministrativeStatusAsyncResponse asyncResponse = new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ObjectFactory()
-                .createSetAdministrativeStatusAsyncResponse();
+        .createSetAdministrativeStatusAsyncResponse();
         asyncResponse.setCorrelationUid(correlationUid);
         asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
+
+        this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
 
         return asyncResponse;
     }
@@ -314,8 +319,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     public GetAdministrativeStatusAsyncResponse getAdministrativeStatus(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final GetAdministrativeStatusRequest request,
-            @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime)
-            throws OsgpException {
+            @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
+            @ResponseUrl final String responseUrl) throws OsgpException {
 
         final String correlationUid = this.configurationService.requestGetAdministrativeStatus(
                 organisationIdentification, request.getDeviceIdentification(),
@@ -326,6 +331,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         asyncResponse.setCorrelationUid(correlationUid);
         asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
+
+        this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
 
         return asyncResponse;
     }
@@ -358,7 +365,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     public SetSpecialDaysAsyncResponse setSpecialDaysData(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SetSpecialDaysRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime) throws OsgpException {
+            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
 
         final SetSpecialDaysAsyncResponse response = new SetSpecialDaysAsyncResponse();
 
@@ -372,6 +379,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         response.setCorrelationUid(correlationUid);
         response.setDeviceIdentification(request.getDeviceIdentification());
+
+        this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
 
         return response;
     }
@@ -402,7 +411,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     public SetConfigurationObjectAsyncResponse setConfigurationObject(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SetConfigurationObjectRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime) throws OsgpException {
+            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
 
         final SetConfigurationObjectAsyncResponse response = new SetConfigurationObjectAsyncResponse();
 
@@ -417,6 +426,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         response.setCorrelationUid(correlationUid);
         response.setDeviceIdentification(request.getDeviceIdentification());
+
+        this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
 
         return response;
     }
@@ -468,8 +479,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     public SetEncryptionKeyExchangeOnGMeterAsyncResponse setEncryptionKeyExchangeOnGMeter(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SetEncryptionKeyExchangeOnGMeterRequest request,
-            @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime)
-            throws OsgpException {
+            @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
+            @ResponseUrl final String responseUrl) throws OsgpException {
 
         LOGGER.info("Incoming SetEncryptionKeyExchangeOnGMeterRequest for meter: {}.",
                 request.getDeviceIdentification());
@@ -486,6 +497,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
+            this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
 
             LOGGER.error(
@@ -501,7 +513,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     public SetPushSetupAlarmAsyncResponse setPushSetupAlarm(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SetPushSetupAlarmRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime) throws OsgpException {
+            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
 
         LOGGER.info("Incoming SetPushSetupAlarmRequest for meter: {}.", request.getDeviceIdentification());
 
@@ -521,6 +533,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         response.setCorrelationUid(correlationUid);
         response.setDeviceIdentification(deviceIdentification);
+
+        this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
 
         return response;
     }
@@ -555,7 +569,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     public SetPushSetupSmsAsyncResponse setPushSetupSms(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SetPushSetupSmsRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime) throws OsgpException {
+            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
 
         LOGGER.info("Incoming SetPushSetupSmsRequest for meter: {}.", request.getDeviceIdentification());
 
@@ -575,6 +589,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         response.setCorrelationUid(correlationUid);
         response.setDeviceIdentification(deviceIdentification);
+
+        this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
 
         return response;
     }
@@ -609,7 +625,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     public SetActivityCalendarAsyncResponse setActivityCalendar(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SetActivityCalendarRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime) throws OsgpException {
+            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
 
         LOGGER.info("Incoming SetActivityCalendarRequest for meter: {}.", request.getDeviceIdentification());
 
@@ -629,6 +645,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
+            this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
 
             LOGGER.error("Exception: {} while setting activity calendar on device: {} for organisation {}.",
@@ -667,7 +684,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     public SetAlarmNotificationsAsyncResponse setAlarmNotifications(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SetAlarmNotificationsRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime) throws OsgpException {
+            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
 
         LOGGER.info("Incoming SetAlarmNotificationsRequest for meter: {}.", request.getDeviceIdentification());
 
@@ -689,6 +706,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             asyncResponse.setCorrelationUid(correlationUid);
             asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
             response.setAsyncResponse(asyncResponse);
+            this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
 
             LOGGER.error("Exception: {} while setting alarm notifications on device: {} for organisation {}.",
@@ -724,7 +742,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     @ResponsePayload
     public ReplaceKeysAsyncResponse replaceKeys(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final ReplaceKeysRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime) throws OsgpException {
+            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
 
         ReplaceKeysAsyncResponse asyncResponse = null;
         try {
@@ -742,6 +760,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
             asyncResponse.setCorrelationUid(correlationUid);
             asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
+            this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
             this.handleException(e);
         }

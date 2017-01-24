@@ -29,17 +29,15 @@ import com.alliander.osgp.adapter.ws.endpointinterceptors.AnnotationMethodArgume
 import com.alliander.osgp.adapter.ws.endpointinterceptors.CertificateAndSoapHeaderAuthorizationEndpointInterceptor;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderEndpointInterceptor;
-import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderMessagePriorityEndpointInterceptor;
+import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderInterceptor;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.WebServiceMonitorInterceptor;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.X509CertificateRdnAttributeValueEndpointInterceptor;
 import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 @Configuration
-@PropertySources({
-	@PropertySource("classpath:osgp-adapter-ws-core.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "file:${osgp/AdapterWsCore/config}", ignoreResourceNotFound = true),
-})
+@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-core.properties"),
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/AdapterWsCore/config}", ignoreResourceNotFound = true), })
 public class WebServiceConfig extends AbstractConfig {
 
     private static final String PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_DEVICE_INSTALLATION = "jaxb2.marshaller.context.path.deviceinstallation";
@@ -52,7 +50,6 @@ public class WebServiceConfig extends AbstractConfig {
     private static final String ORGANISATION_IDENTIFICATION_CONTEXT = ORGANISATION_IDENTIFICATION_HEADER;
 
     private static final String MESSAGE_PRIORITY_HEADER = "MessagePriority";
-    private static final String MESSAGE_PRIORITY_CONTEXT = MESSAGE_PRIORITY_HEADER;
 
     private static final String USER_NAME_HEADER = "UserName";
 
@@ -286,11 +283,11 @@ public class WebServiceConfig extends AbstractConfig {
                 ORGANISATION_IDENTIFICATION_CONTEXT);
     }
 
-    @Bean
-    public SoapHeaderMessagePriorityEndpointInterceptor messagePriorityInterceptor() {
+    @Bean(name = "SoapHeaderMessagePriorityEndpointInterceptor")
+    public SoapHeaderInterceptor messagePriorityInterceptor() {
         LOGGER.debug("Creating Message Priority Interceptor Bean");
 
-        return new SoapHeaderMessagePriorityEndpointInterceptor(MESSAGE_PRIORITY_HEADER, MESSAGE_PRIORITY_CONTEXT);
+        return new SoapHeaderInterceptor(MESSAGE_PRIORITY_HEADER, MESSAGE_PRIORITY_HEADER);
     }
 
     /**
