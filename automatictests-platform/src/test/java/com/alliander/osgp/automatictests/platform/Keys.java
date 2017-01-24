@@ -191,4 +191,5 @@ public class Keys {
     public static final String DEVICE_OUTPUT_SETTINGS = "DeviceOutputSettings";
     public static final String PLATFORMDOMAIN = "PlatformDomain";
     public static final String SUPPLIER = "Supplier";
+    public static final String ORGANIZATION_DESCRIPTION = "Description";
 }
