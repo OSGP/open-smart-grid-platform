@@ -71,10 +71,9 @@ public class OslpDeviceSteps {
     private MockOslpServer oslpMockServer;
 
     /**
-     * Setup method to set the firmware which should be returned by the mock.
+     * Setup method to set a light which should be returned by the mock.
      *
-     * @param firmwareVersion
-     *            The firmware to respond.
+     * @param result
      * @throws Throwable
      */
     @Given("^the device returns a set light response \"([^\"]*)\" over OSLP$")
@@ -91,10 +90,11 @@ public class OslpDeviceSteps {
     }
 
     /**
-     * Setup method to set the firmware which should be returned by the mock.
+     * Setup method to get an actual power usage which should be returned by the
+     * mock.
      *
-     * @param firmwareVersion
-     *            The firmware to respond.
+     * @param responseData
+     *            The data to respond.
      * @throws Throwable
      */
     @Given("^the device returns a get actual power usage response over OSLP$")
@@ -117,10 +117,10 @@ public class OslpDeviceSteps {
     }
 
     /**
-     * Setup method to set the firmware which should be returned by the mock.
+     * Setup method to get the power usage history which should be returned by
+     * the mock.
      *
-     * @param firmwareVersion
-     *            The firmware to respond.
+     * @param responseData
      * @throws Throwable
      */
     @Given("^the device returns a get power usage history response over OSLP$")
@@ -158,8 +158,7 @@ public class OslpDeviceSteps {
      * Setup method to set the event notification which should be returned by
      * the mock.
      *
-     * @param firmwareVersion
-     *            The event notification to respond.
+     * @param result
      * @throws Throwable
      */
 
@@ -180,7 +179,6 @@ public class OslpDeviceSteps {
      * Setup method to start a device which should be returned by the mock.
      *
      * @param result
-     *            The start device to respond.
      * @throws Throwable
      */
     @Given("^the device returns a start device response \"([^\"]*)\" over OSLP$")
@@ -200,7 +198,6 @@ public class OslpDeviceSteps {
      * Setup method to stop a device which should be returned by the mock.
      *
      * @param result
-     *            The stop device to respond.
      * @throws Throwable
      */
     @Given("^the device returns a stop device response \"([^\"]*)\" over OSLP$")
@@ -220,7 +217,6 @@ public class OslpDeviceSteps {
      * Setup method to get a status which should be returned by the mock.
      *
      * @param result
-     *            The get status to respond.
      * @throws Throwable
      */
     @Given("^the device returns a get status response \"([^\"]*)\" over OSLP$")
@@ -269,7 +265,6 @@ public class OslpDeviceSteps {
      * Setup method to resume a schedule which should be returned by the mock.
      *
      * @param result
-     *            The resume schedule to respond.
      * @throws Throwable
      */
     @Given("^the device returns a resume schedule response \"([^\"]*)\" over OSLP$")
@@ -309,7 +304,6 @@ public class OslpDeviceSteps {
      * Setup method to set a transition which should be returned by the mock.
      *
      * @param result
-     *            The stop device to respond.
      * @throws Throwable
      */
     @Given("^the device returns a set transition response \"([^\"]*)\" over OSLP$")
@@ -329,7 +323,6 @@ public class OslpDeviceSteps {
      * Setup method to get a status which should be returned by the mock.
      *
      * @param result
-     *            The get status to respond.
      * @throws Throwable
      */
     @Given("^the device returns a set light schedule response \"([^\"]*)\" over OSLP$")
@@ -342,7 +335,6 @@ public class OslpDeviceSteps {
      * Setup method to get a status which should be returned by the mock.
      *
      * @param result
-     *            The get status to respond.
      * @throws Throwable
      */
     @Given("^the device returns a set tariff schedule response \"([^\"]*)\" over OSLP$")
@@ -391,6 +383,8 @@ public class OslpDeviceSteps {
     /**
      * Verify that a set light OSLP message is sent to the device.
      *
+     * @param expectedParameters
+     *            The parameters expected in the message of the device.
      * @throws Throwable
      */
     @Then("^a set light OSLP message with one light value is sent to the device$")
@@ -412,6 +406,13 @@ public class OslpDeviceSteps {
         Assert.assertEquals(getBoolean(expectedParameters, Keys.KEY_ON, Defaults.DEFAULT_ON), lightValue.getOn());
     }
 
+    /**
+     * Verify that a set light OSLP message is sent to the device.
+     *
+     * @param nofLightValues
+     *            The parameters expected in the message of the device.
+     * @throws Throwable
+     */
     @Then("^a set light OSLP message with \"([^\"]*)\" lightvalues is sent to the device$")
     public void aSetLightOslpMessageWithLightValuesIsSentToTheDevice(final int nofLightValues) {
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.SET_LIGHT);
@@ -421,6 +422,10 @@ public class OslpDeviceSteps {
         Assert.assertEquals(nofLightValues, message.getSetLightRequest().getValuesList().size());
     }
 
+    /**
+     * Verify that a get actual power usage OSLP message is sent to the device.
+     *
+     */
     @Then("^a get actual power usage OSLP message is sent to the device$")
     public void aGetActualPowerUsageOslpMessageIsSentToTheDevice() {
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.GET_ACTUAL_POWER_USAGE);
@@ -431,26 +436,32 @@ public class OslpDeviceSteps {
         final GetActualPowerUsageRequest request = message.getGetActualPowerUsageRequest();
     }
 
+    /**
+     * Verify that a get power usage history OSLP message is sent to the device.
+     *
+     * @param expectedParameters
+     *            The parameters expected in the message of the device.
+     * @throws Throwable
+     */
     @Then("^a get power usage history OSLP message is sent to the device$")
-    public void aGetPowerUsageHistoryOslpMessageIsSentToTheDevice(final Map<String, String> expected) {
+    public void aGetPowerUsageHistoryOslpMessageIsSentToTheDevice(final Map<String, String> expectedParameters) {
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.GET_POWER_USAGE_HISTORY);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasGetPowerUsageHistoryRequest());
 
         final GetPowerUsageHistoryRequest request = message.getGetPowerUsageHistoryRequest();
-        Assert.assertEquals(
-                getEnum(expected, Keys.HISTORY_TERM_TYPE, HistoryTermType.class, Defaults.OSLP_HISTORY_TERM_TYPE),
-                request.getTermType());
-        if (expected.containsKey(Keys.KEY_PAGE) && !expected.get(Keys.KEY_PAGE).isEmpty()) {
-            Assert.assertEquals((int) getInteger(expected, Keys.KEY_PAGE), request.getPage());
+        Assert.assertEquals(getEnum(expectedParameters, Keys.HISTORY_TERM_TYPE, HistoryTermType.class,
+                Defaults.OSLP_HISTORY_TERM_TYPE), request.getTermType());
+        if (expectedParameters.containsKey(Keys.KEY_PAGE) && !expectedParameters.get(Keys.KEY_PAGE).isEmpty()) {
+            Assert.assertEquals((int) getInteger(expectedParameters, Keys.KEY_PAGE), request.getPage());
         }
-        if (expected.containsKey(Keys.START_TIME) && !expected.get(Keys.START_TIME).isEmpty()
-                && expected.get(Keys.START_TIME) != null) {
-            Assert.assertEquals(getString(expected, Keys.START_TIME), request.getTimePeriod().getStartTime());
+        if (expectedParameters.containsKey(Keys.START_TIME) && !expectedParameters.get(Keys.START_TIME).isEmpty()
+                && expectedParameters.get(Keys.START_TIME) != null) {
+            Assert.assertEquals(getString(expectedParameters, Keys.START_TIME), request.getTimePeriod().getStartTime());
         }
-        if (expected.containsKey(Keys.END_TIME) && !expected.get(Keys.END_TIME).isEmpty()
-                && expected.get(Keys.END_TIME) != null) {
-            Assert.assertEquals(getString(expected, Keys.END_TIME), request.getTimePeriod().getEndTime());
+        if (expectedParameters.containsKey(Keys.END_TIME) && !expectedParameters.get(Keys.END_TIME).isEmpty()
+                && expectedParameters.get(Keys.END_TIME) != null) {
+            Assert.assertEquals(getString(expectedParameters, Keys.END_TIME), request.getTimePeriod().getEndTime());
         }
     }
 
