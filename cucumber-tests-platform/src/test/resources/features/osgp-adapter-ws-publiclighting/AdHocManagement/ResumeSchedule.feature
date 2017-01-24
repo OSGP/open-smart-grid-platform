@@ -1,13 +1,13 @@
 Feature: PublicLightingAdhocManagement Resume Schedule
   As a platform 
   I want to asynchronously handle set light requests
-  In order to ... 
+  In order to ...
 
   @OslpMockServer
   Scenario Outline: Resume Schedule
     Given an oslp device
       | DeviceIdentification | TEST1024000000001 |
-      | HasSchedule          | true     |
+      | HasSchedule          | true              |
     And the device returns a resume schedule response "OK" over OSLP
     When receiving a resume schedule request
       | DeviceIdentification | TEST1024000000001 |
@@ -28,7 +28,7 @@ Feature: PublicLightingAdhocManagement Resume Schedule
       |     1 | true        |
       |     6 | true        |
 
-	@OslpMockServer
+  @OslpMockServer
   Scenario Outline: Resume Schedule for a device with no has schedule
     Given an oslp device
       | DeviceIdentification | TEST1024000000001 |
@@ -68,8 +68,8 @@ Feature: PublicLightingAdhocManagement Resume Schedule
       | Index                | <Index>           |
       | IsImmediate          | true              |
     Then the resume schedule async response contains soap fault
-      | FaultCode        | SOAP-ENV:Client                                                                                                                                                                                                     |
-      | FaultString      | Validation error                                                                                                                                                                                                    |
+      | FaultCode        | SOAP-ENV:Client                                                                                                                                                                                                                    |
+      | FaultString      | Validation error                                                                                                                                                                                                                   |
       | ValidationErrors | cvc-<Inclusive>-valid: Value '<Index>' is not facet-valid with respect to <Inclusive> '<MinOrMaxNumber>' for type '#AnonType_IndexResumeScheduleRequest'.;cvc-type.3.1.3: The value '<Index>' of element 'ns2:Index' is not valid. |
 
     Examples: 
