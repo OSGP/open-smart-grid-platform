@@ -158,7 +158,7 @@ public class JmsConfigurationFactory {
             final JmsTemplate jmsTemplate = new JmsTemplate();
             jmsTemplate.setDefaultDestination(this.destinationQueue);
             jmsTemplate.setExplicitQosEnabled(this.property(PROPERTY_EXPLICIT_QOS_ENABLED, boolean.class));
-            jmsTemplate.setTimeToLive(this.property(PROPERTY_TIME_TO_LIVE, int.class));
+            jmsTemplate.setTimeToLive(this.property(PROPERTY_TIME_TO_LIVE, long.class));
             jmsTemplate.setDeliveryPersistent(this.property(PROPERTY_DELIVERY_PERSISTENT, boolean.class));
             jmsTemplate.setConnectionFactory(JmsConfigurationFactory.this.pooledConnectionFactory);
             return jmsTemplate;
@@ -166,11 +166,11 @@ public class JmsConfigurationFactory {
 
         private RedeliveryPolicy redeliveryPolicy() {
             final RedeliveryPolicy redeliveryPolicy = this.redeliveryPolicy(this.destinationQueue,
-                    this.property(PROPERTY_INITIAL_REDELIVERY_DELAY, int.class),
+                    this.property(PROPERTY_INITIAL_REDELIVERY_DELAY, long.class),
                     this.property(PROPERTY_MAXIMUM_REDELIVERIES, int.class),
-                    this.property(PROPERTY_MAXIMUM_REDELIVERY_DELAY, int.class),
-                    this.property(PROPERTY_REDELIVERY_DELAY, int.class),
-                    this.property(PROPERTY_BACK_OFF_MULTIPLIER, int.class),
+                    this.property(PROPERTY_MAXIMUM_REDELIVERY_DELAY, long.class),
+                    this.property(PROPERTY_REDELIVERY_DELAY, long.class),
+                    this.property(PROPERTY_BACK_OFF_MULTIPLIER, long.class),
                     this.property(PROPERTY_USE_EXPONENTIAL_BACK_OFF, boolean.class));
 
             JmsConfigurationFactory.this.redeliveryPolicyMap.put(this.destinationQueue, redeliveryPolicy);

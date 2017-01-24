@@ -16,12 +16,7 @@ import org.springframework.context.annotation.Bean;
 import com.alliander.osgp.shared.application.config.jms.JmsConfigurationFactory;
 
 /**
- * This abstract class can be used by modules to configure to Jms configuration
- * with little code. The base class only needs to provide the names of the
- * request / responses / logging queue the rest is filled in by this class with
- * default values. The base class can overwrite these values by providing its
- * own property (using one of the keys below) in value in the corresponding
- * properties file.
+ * This class provides the basic components used for JMS messaging.
  */
 public abstract class AbstractMessagingConfig extends AbstractConfig {
 
