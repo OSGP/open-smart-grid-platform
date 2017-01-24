@@ -150,7 +150,7 @@ public class MockOslpServer {
                 Assert.fail("Polling for response interrupted");
             }
 
-            if (count > this.configuration.defaultTimeout) {
+            if (count > this.configuration.getTimeout()) {
                 Assert.fail("Polling for response failed, no reponse found");
             }
         }
@@ -297,6 +297,20 @@ public class MockOslpServer {
         this.mockResponses.put(DeviceRequestMessageType.UPDATE_KEY, Oslp.Message.newBuilder()
                 .setSetDeviceVerificationKeyResponse(SetDeviceVerificationKeyResponse.newBuilder().setStatus(status))
                 .build());
+    }
+
+    public void mockGetLightStatusResponse(final LinkType preferred, final LinkType actual, final LightType lightType,
+            final int eventNotificationMask, final Oslp.Status status, final List<LightValue> lightValues) {
+        final Builder response = GetStatusResponse.newBuilder().setPreferredLinktype(preferred)
+                .setActualLinktype(actual).setLightType(lightType).setEventNotificationMask(eventNotificationMask)
+                .setStatus(status);
+
+        for (final LightValue lightValue : lightValues) {
+            response.addValue(lightValue);
+        }
+
+        this.mockResponses.put(DeviceRequestMessageType.GET_LIGHT_STATUS,
+                Oslp.Message.newBuilder().setGetStatusResponse(response).build());
     }
 
     public void mockSetScheduleResponse(final DeviceRequestMessageType type, final Oslp.Status status) {

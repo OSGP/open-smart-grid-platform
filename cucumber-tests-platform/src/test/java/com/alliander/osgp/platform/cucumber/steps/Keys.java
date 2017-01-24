@@ -173,6 +173,9 @@ public class Keys {
     public static final String DEVICEMODEL_FILESTORAGE = "DeviceModelFileStorage";
     public static final String DEVICEMODEL_METERED = "DeviceModelMetered";
 
+    public static final String TIMEOUT = "Timeout";
+    public static final String DEVICE_OUTPUT_SETTINGS = "DeviceOutputSettings";
+
     public static final String SCHEDULE_WEEKDAY = "WeekDay";
     public static final String SCHEDULE_STARTDAY = "StartDay";
     public static final String SCHEDULE_ENDDAY = "EndDay";

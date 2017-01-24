@@ -149,7 +149,7 @@ public class ResumeScheduleSteps {
 
         int count = 0;
         while (true) {
-            if (count > this.configuration.defaultTimeout) {
+            if (count > this.configuration.getTimeout()) {
                 Assert.fail("Timeout");
             }
 
