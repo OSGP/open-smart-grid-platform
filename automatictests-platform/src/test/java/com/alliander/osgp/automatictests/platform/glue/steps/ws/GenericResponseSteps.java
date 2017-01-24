@@ -20,6 +20,7 @@ import javax.xml.namespace.QName;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.alliander.osgp.automatictests.platform.Keys;
+import com.alliander.osgp.automatictests.platform.StepsBase;
 import com.alliander.osgp.automatictests.platform.core.ScenarioContext;
 import com.alliander.osgp.automatictests.platform.support.ws.FaultDetailElement;
 import com.alliander.osgp.automatictests.platform.support.ws.SoapFaultHelper;
@@ -27,7 +28,7 @@ import com.alliander.osgp.automatictests.platform.support.ws.SoapFaultHelper;
 /**
  * Class with generic web service response steps.
  */
-public class GenericResponseSteps {
+public abstract class GenericResponseSteps extends StepsBase {
 
     private static String faultCode;
     private static String faultString;

@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.automatictests.platform.Defaults;
 import com.alliander.osgp.automatictests.platform.Keys;
+import com.alliander.osgp.automatictests.platform.StepsBase;
 import com.alliander.osgp.automatictests.platform.core.ScenarioContext;
 import com.alliander.osgp.automatictests.platform.mocks.oslpdevice.DeviceSimulatorException;
 import com.alliander.osgp.automatictests.platform.mocks.oslpdevice.MockOslpServer;
@@ -53,7 +54,7 @@ import cucumber.api.java.en.When;
  * Class which holds all the OSLP device mock steps in order to let the device
  * mock behave correctly for the automatic test.
  */
-public class OslpDeviceSteps {
+public class OslpDeviceSteps extends StepsBase {
 
 
 	@Autowired

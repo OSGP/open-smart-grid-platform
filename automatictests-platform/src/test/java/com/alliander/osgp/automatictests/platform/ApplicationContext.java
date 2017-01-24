@@ -21,4 +21,7 @@ import com.alliander.osgp.automatictests.platform.config.ws.microgrids.Microgrid
     excludeFilters = @ComponentScan.Filter(value = MicrogridsNotificationWebServiceConfig.class, type = FilterType.ASSIGNABLE_TYPE)
 )public class ApplicationContext {
 
+    public ApplicationContext() {
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Constructing ApplicationContext");
+    }
 }

@@ -21,13 +21,14 @@ import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.DeactivateDev
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.DeactivateDeviceResponse;
 import com.alliander.osgp.automatictests.platform.Defaults;
 import com.alliander.osgp.automatictests.platform.Keys;
+import com.alliander.osgp.automatictests.platform.StepsBase;
 import com.alliander.osgp.automatictests.platform.core.ScenarioContext;
 import com.alliander.osgp.automatictests.platform.support.ws.admin.AdminDeviceManagementClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class DeactivateDeviceSteps {
+public class DeactivateDeviceSteps extends StepsBase {
 
     @Autowired
     private AdminDeviceManagementClient client;

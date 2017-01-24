@@ -11,11 +11,12 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.automatictests.platform.StepsBase;
 import com.alliander.osgp.automatictests.platform.mocks.iec61850.Iec61850MockServer;
 
 import cucumber.api.java.en.Given;
 
-public class RtuSimulatorSteps {
+public class RtuSimulatorSteps extends StepsBase {
 
     private static final int NUMBER_OF_INPUTS_FOR_MOCK_VALUE = 3;
     private static final int INDEX_LOGICAL_DEVICE_NAME = 0;

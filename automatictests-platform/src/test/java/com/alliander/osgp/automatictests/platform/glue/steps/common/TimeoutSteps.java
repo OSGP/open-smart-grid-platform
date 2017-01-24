@@ -8,11 +8,12 @@
 package com.alliander.osgp.automatictests.platform.glue.steps.common;
 
 import com.alliander.osgp.automatictests.platform.Keys;
+import com.alliander.osgp.automatictests.platform.StepsBase;
 import com.alliander.osgp.automatictests.platform.core.ScenarioContext;
 
 import cucumber.api.java.en.Given;
 
-public class TimeoutSteps {
+public class TimeoutSteps extends StepsBase {
     
     @Given("^a timeout of \"([^\"]*)\" seconds$")
     public void aTimeoutOfSeconds(final String seconds) {

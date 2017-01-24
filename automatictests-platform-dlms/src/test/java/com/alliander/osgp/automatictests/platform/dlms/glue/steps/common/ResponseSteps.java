@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.automatictests.platform.glue.steps.common;
+package com.alliander.osgp.automatictests.platform.dlms.glue.steps.common;
 
 import java.io.IOException;
 import java.util.Map;

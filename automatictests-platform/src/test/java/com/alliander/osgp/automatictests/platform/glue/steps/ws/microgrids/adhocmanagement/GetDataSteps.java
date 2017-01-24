@@ -31,6 +31,7 @@ import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.Measureme
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.Profile;
 import com.alliander.osgp.automatictests.platform.Defaults;
 import com.alliander.osgp.automatictests.platform.Keys;
+import com.alliander.osgp.automatictests.platform.StepsBase;
 import com.alliander.osgp.automatictests.platform.core.ScenarioContext;
 import com.alliander.osgp.automatictests.platform.helpers.SettingsHelper;
 import com.alliander.osgp.automatictests.platform.support.ws.microgrids.adhocmanagement.AdHocManagementClient;
@@ -40,7 +41,7 @@ import cucumber.api.PendingException;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class GetDataSteps {
+public class GetDataSteps extends StepsBase {
 
     /**
      * Delta value for which two measurement values are considered equal if

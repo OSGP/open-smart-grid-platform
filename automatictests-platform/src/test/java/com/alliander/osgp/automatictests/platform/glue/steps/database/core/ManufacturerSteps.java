@@ -16,6 +16,7 @@ import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.automatictests.platform.Defaults;
+import com.alliander.osgp.automatictests.platform.StepsBase;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.repositories.ManufacturerRepository;
 
@@ -25,7 +26,7 @@ import cucumber.api.java.en.Then;
 /**
  * The manufacturer related steps.
  */
-public class ManufacturerSteps {
+public class ManufacturerSteps extends StepsBase {
 
     @Autowired
     private ManufacturerRepository repo;

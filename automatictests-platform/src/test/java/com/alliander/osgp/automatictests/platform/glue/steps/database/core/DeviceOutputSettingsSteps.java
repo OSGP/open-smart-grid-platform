@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.automatictests.platform.Defaults;
 import com.alliander.osgp.automatictests.platform.Keys;
+import com.alliander.osgp.automatictests.platform.StepsBase;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
 import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
@@ -26,7 +27,7 @@ import com.alliander.osgp.domain.core.valueobjects.RelayType;
 
 import cucumber.api.java.en.Given;
 
-public class DeviceOutputSettingsSteps {
+public class DeviceOutputSettingsSteps extends StepsBase {
 
     @Autowired
     private SsldRepository ssldRepository;

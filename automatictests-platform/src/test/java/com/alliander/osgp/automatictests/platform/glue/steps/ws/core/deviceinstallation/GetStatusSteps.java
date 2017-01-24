@@ -24,6 +24,7 @@ import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.GetStatusReq
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.GetStatusResponse;
 import com.alliander.osgp.automatictests.platform.Defaults;
 import com.alliander.osgp.automatictests.platform.Keys;
+import com.alliander.osgp.automatictests.platform.StepsBase;
 import com.alliander.osgp.automatictests.platform.config.CoreDeviceConfiguration;
 import com.alliander.osgp.automatictests.platform.core.ScenarioContext;
 import com.alliander.osgp.automatictests.platform.support.ws.core.CoreDeviceInstallationClient;
@@ -31,7 +32,7 @@ import com.alliander.osgp.automatictests.platform.support.ws.core.CoreDeviceInst
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class GetStatusSteps {
+public class GetStatusSteps extends StepsBase {
 
     @Autowired
     private CoreDeviceConfiguration configuration;

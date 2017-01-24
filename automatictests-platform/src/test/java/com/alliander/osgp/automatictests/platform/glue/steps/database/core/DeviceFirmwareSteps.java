@@ -18,6 +18,7 @@ import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.Writ
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableFirmwareRepository;
 import com.alliander.osgp.automatictests.platform.Defaults;
 import com.alliander.osgp.automatictests.platform.Keys;
+import com.alliander.osgp.automatictests.platform.StepsBase;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceFirmware;
 import com.alliander.osgp.domain.core.entities.Firmware;
@@ -25,7 +26,7 @@ import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 
 import cucumber.api.java.en.Given;
 
-public class DeviceFirmwareSteps {
+public class DeviceFirmwareSteps extends StepsBase {
     
     @Autowired
     private DeviceRepository deviceRepository;

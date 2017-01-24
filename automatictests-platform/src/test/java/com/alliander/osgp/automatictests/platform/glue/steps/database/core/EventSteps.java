@@ -17,6 +17,7 @@ import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.automatictests.platform.Keys;
+import com.alliander.osgp.automatictests.platform.StepsBase;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.Event;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
@@ -25,7 +26,7 @@ import com.alliander.osgp.domain.core.valueobjects.EventType;
 
 import cucumber.api.java.en.Then;
 
-public class EventSteps {
+public class EventSteps extends StepsBase {
 
     @Autowired
     private EventRepository eventRepository;

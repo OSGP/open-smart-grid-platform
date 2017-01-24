@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850Device;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
 import com.alliander.osgp.automatictests.platform.Keys;
+import com.alliander.osgp.automatictests.platform.StepsBase;
 import com.alliander.osgp.automatictests.platform.config.Iec61850MockServerConfig;
 import com.alliander.osgp.automatictests.platform.helpers.SettingsHelper;
 import com.alliander.osgp.domain.microgrids.entities.RtuDevice;
@@ -28,7 +29,7 @@ import cucumber.api.java.en.Given;
 /**
  * RTU device specific steps.
  */
-public class RtuDeviceSteps {
+public class RtuDeviceSteps extends StepsBase {
 
     private static final String DEFAULT_DEVICE_IDENTIFICATION = "RTU00001";
     private static final String DEFAULT_DEVICE_TYPE = "RTU";

@@ -31,10 +31,6 @@
       <artifactId>logback-classic</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.smartbear.soapui</groupId>
-      <artifactId>soapui-maven-plugin</artifactId>
-    </dependency>
-    <dependency>
       <groupId>jgoodies</groupId>
       <artifactId>forms</artifactId>
     </dependency>
@@ -205,10 +201,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>com.smartbear.soapui</groupId>
-        <artifactId>soapui-maven-plugin</artifactId>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

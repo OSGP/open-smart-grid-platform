@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.automatictests.platform.Defaults;
 import com.alliander.osgp.automatictests.platform.Keys;
+import com.alliander.osgp.automatictests.platform.StepsBase;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
@@ -26,7 +27,7 @@ import com.alliander.osgp.domain.core.repositories.ManufacturerRepository;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
-public class DeviceModelSteps {
+public class DeviceModelSteps extends StepsBase {
 
     @Autowired
     private DeviceModelRepository repo;

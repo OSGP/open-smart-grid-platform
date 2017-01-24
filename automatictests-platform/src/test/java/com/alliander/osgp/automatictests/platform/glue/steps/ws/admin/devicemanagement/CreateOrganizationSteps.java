@@ -24,6 +24,7 @@ import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformDomai
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup;
 import com.alliander.osgp.automatictests.platform.Defaults;
 import com.alliander.osgp.automatictests.platform.Keys;
+import com.alliander.osgp.automatictests.platform.StepsBase;
 import com.alliander.osgp.automatictests.platform.core.ScenarioContext;
 import com.alliander.osgp.automatictests.platform.glue.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.automatictests.platform.support.ws.admin.AdminDeviceManagementClient;
@@ -34,7 +35,7 @@ import cucumber.api.java.en.When;
 /**
  * Class with all the create organization requests steps
  */
-public class CreateOrganizationSteps {
+public class CreateOrganizationSteps extends StepsBase {
 
     @Autowired
     private AdminDeviceManagementClient client;

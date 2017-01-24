@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.automatictests.platform.Defaults;
 import com.alliander.osgp.automatictests.platform.Keys;
+import com.alliander.osgp.automatictests.platform.StepsBase;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.Organisation;
@@ -26,7 +27,7 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 
 import cucumber.api.java.en.Given;
 
-public class DeviceAuthorizationSteps {
+public class DeviceAuthorizationSteps extends StepsBase {
     
     @Autowired
     private DeviceRepository deviceRepository;

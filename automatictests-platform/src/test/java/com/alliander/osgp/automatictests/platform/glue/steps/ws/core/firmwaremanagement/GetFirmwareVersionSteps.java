@@ -26,6 +26,7 @@ import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareV
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionResponse;
 import com.alliander.osgp.automatictests.platform.Defaults;
 import com.alliander.osgp.automatictests.platform.Keys;
+import com.alliander.osgp.automatictests.platform.StepsBase;
 import com.alliander.osgp.automatictests.platform.config.CoreDeviceConfiguration;
 import com.alliander.osgp.automatictests.platform.core.ScenarioContext;
 import com.alliander.osgp.automatictests.platform.support.ws.core.CoreFirmwareManagementClient;
@@ -36,7 +37,8 @@ import cucumber.api.java.en.Then;
 /**
  * Class with all the firmware requests steps
  */
-public class GetFirmwareVersionSteps {
+public class GetFirmwareVersionSteps extends StepsBase {
+    
 	@Autowired
 	private CoreDeviceConfiguration configuration;
 

@@ -15,13 +15,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alliander.osgp.adapter.ws.schema.microgrids.notification.Notification;
 import com.alliander.osgp.automatictests.platform.Defaults;
 import com.alliander.osgp.automatictests.platform.Keys;
+import com.alliander.osgp.automatictests.platform.StepsBase;
 import com.alliander.osgp.automatictests.platform.core.ScenarioContext;
 import com.alliander.osgp.automatictests.platform.support.ws.microgrids.NotificationService;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class NotificationSteps {
+public class NotificationSteps extends StepsBase {
 
     private int WAIT_FOR_NEXT_NOTIFICATION_CHECK = 1000;
     private int MAX_WAIT_FOR_NOTIFICATION = 1200000;
@@ -29,7 +30,7 @@ public class NotificationSteps {
     private static final Logger LOGGER = LoggerFactory.getLogger(NotificationSteps.class);
 
     @Autowired
-    NotificationService mockNotificationService;
+    private NotificationService mockNotificationService;
 
     @When("^the OSGP connection is lost with the RTU device$")
     public void theOSGPConnectionIsLostWithTheRTUDevice() throws Throwable {

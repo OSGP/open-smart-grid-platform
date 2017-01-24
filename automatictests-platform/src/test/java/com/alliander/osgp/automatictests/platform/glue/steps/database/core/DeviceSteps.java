@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.automatictests.platform.Defaults;
 import com.alliander.osgp.automatictests.platform.Keys;
+import com.alliander.osgp.automatictests.platform.StepsBase;
 import com.alliander.osgp.automatictests.platform.config.CoreDeviceConfiguration;
 import com.alliander.osgp.automatictests.platform.core.ScenarioContext;
 import com.alliander.osgp.domain.core.entities.Device;
@@ -52,8 +53,8 @@ import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
-@Transactional(value = "txMgrCore")
-public class DeviceSteps {
+// @Transactional(value = "txMgrCore")
+public class DeviceSteps extends StepsBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceSteps.class);
 

@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.automatictests.platform.Defaults;
 import com.alliander.osgp.automatictests.platform.Keys;
+import com.alliander.osgp.automatictests.platform.StepsBase;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.valueobjects.PlatformDomain;
@@ -31,7 +32,7 @@ import cucumber.api.java.en.Then;
 /**
  * Class with all the organization steps
  */
-public class OrganizationSteps {
+public class OrganizationSteps extends StepsBase {
 
     @Autowired
     private OrganisationRepository repo;

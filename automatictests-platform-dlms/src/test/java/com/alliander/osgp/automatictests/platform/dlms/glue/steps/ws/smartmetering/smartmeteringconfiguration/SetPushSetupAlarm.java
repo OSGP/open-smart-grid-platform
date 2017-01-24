@@ -24,9 +24,9 @@ import org.springframework.data.domain.PageRequest;
 import com.alliander.osgp.automatictests.platform.Defaults;
 import com.alliander.osgp.automatictests.platform.Keys;
 import com.alliander.osgp.automatictests.platform.core.ScenarioContext;
+import com.alliander.osgp.automatictests.platform.dlms.glue.steps.common.ResponseSteps;
 import com.alliander.osgp.automatictests.platform.dlms.glue.steps.ws.smartmetering.SmartMeteringStepsBase;
 import com.alliander.osgp.automatictests.platform.dlms.hooks.SimulatePushedAlarmsHooks;
-import com.alliander.osgp.automatictests.platform.glue.steps.common.ResponseSteps;
 import com.alliander.osgp.automatictests.platform.support.ServiceEndpoint;
 import com.alliander.osgp.logging.domain.entities.DeviceLogItem;
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
@@ -172,5 +172,4 @@ public class SetPushSetupAlarm extends SmartMeteringStepsBase {
     public void the_response_contains(final Map<String, String> expectedResult) throws Throwable {
         ResponseSteps.VerifyFaultResponse(this.runXpathResult, this.response, expectedResult);
     }
-
 }

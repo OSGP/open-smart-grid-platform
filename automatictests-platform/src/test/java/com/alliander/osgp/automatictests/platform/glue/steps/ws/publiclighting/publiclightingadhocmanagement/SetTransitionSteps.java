@@ -35,6 +35,7 @@ import com.alliander.osgp.adapter.ws.schema.publiclighting.common.AsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.OsgpResultType;
 import com.alliander.osgp.automatictests.platform.Defaults;
 import com.alliander.osgp.automatictests.platform.Keys;
+import com.alliander.osgp.automatictests.platform.StepsBase;
 import com.alliander.osgp.automatictests.platform.config.CoreDeviceConfiguration;
 import com.alliander.osgp.automatictests.platform.core.ScenarioContext;
 import com.alliander.osgp.automatictests.platform.support.ws.publiclighting.PublicLightingAdHocManagementClient;
@@ -45,7 +46,7 @@ import cucumber.api.java.en.When;
 /**
  * Class with all the set light requests steps
  */
-public class SetTransitionSteps {
+public class SetTransitionSteps extends StepsBase {
 	@Autowired
 	private CoreDeviceConfiguration configuration;
 	
