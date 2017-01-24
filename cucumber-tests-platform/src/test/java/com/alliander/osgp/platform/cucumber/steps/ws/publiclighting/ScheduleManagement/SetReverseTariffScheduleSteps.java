@@ -1,5 +1,5 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -60,6 +60,14 @@ public class SetReverseTariffScheduleSteps {
      *            The table with the request parameters.
      * @throws Throwable
      */
+    /**
+     *
+     * @param countSchedules
+     *            The amount of schedules in this request.
+     * @param requestParameters
+     *            The table with the request parameters.
+     * @throws Throwable
+     */
     @When("^receiving a set reverse tariff schedule request for (\\d+) schedules?$")
     public void receivingASetReverseTariffScheduleRequestForSchedules(final Integer countSchedules,
             final Map<String, String> requestParameters) throws Throwable {
@@ -67,7 +75,7 @@ public class SetReverseTariffScheduleSteps {
         this.setTariffScheduleSteps.receivingASetTariffScheduleRequestForSchedules(countSchedules, requestParameters);
     }
 
-    @When("^receiving a set taiff schedule request by an unknown organization$")
+    @When("^receiving a set reverse tariff schedule request by an unknown organization$")
     public void receivingASetReverseTariffScheduleRequestByAnUnknownOrganization(
             final Map<String, String> requestParameters) throws Throwable {
 

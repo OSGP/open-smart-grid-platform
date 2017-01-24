@@ -37,44 +37,44 @@ Feature: TariffSwitchingScheduleManagement Set Reverse Tariff Schedule
       | ABSOLUTEDAY | 2016-01-01 | 2016-12-31 | 18:00:00.000 | 0,true       | 0,false              |
 
   @OslpMockServer
-  Scenario: Failed set tariff schedule
+  Scenario: Failed set reverse tariff schedule
     Given an oslp device
       | DeviceIdentification | TEST1024000000001 |
       | RelayType            | TARIFF_REVERSED   |
-    And the device returns a set tariff schedule response "FAILURE" over OSLP
-    When receiving a set tariff schedule request
+    And the device returns a set reverse tariff schedule response "FAILURE" over OSLP
+    When receiving a set reverse tariff schedule request
       | DeviceIdentification | TEST1024000000001 |
       | WeekDay              | MONDAY            |
       | StartDay             |                   |
       | EndDay               |                   |
       | Time                 | 18:00:00.000      |
       | TariffValues         | 0,true            |
-    Then the set tariff schedule async response contains
+    Then the set reverse tariff schedule async response contains
       | DeviceIdentification | TEST1024000000001 |
-    And a set tariff schedule OSLP message is sent to device "TEST1024000000001"
+    And a set reverse tariff schedule OSLP message is sent to device "TEST1024000000001"
       | WeekDay      | MONDAY       |
       | StartDay     |              |
       | EndDay       |              |
       | Time         | 18:00:00.000 |
       | TariffValues | 0,false      |
     # Note: The platform throws a TechnicalException when the status is 'FAILURE'.
-    And the platform buffers a set tariff schedule response message for device "TEST1024000000001" contains soap fault
+    And the platform buffers a set reverse tariff schedule response message for device "TEST1024000000001" contains soap fault
       | Message | Device reports failure |
 
   @OslpMockServer
-  Scenario: Rejected set tariff schedule
+  Scenario: Rejected set reverse tariff schedule
     Given an oslp device
       | DeviceIdentification | TEST1024000000001 |
       | RelayType            | TARIFF_REVERSED   |
-    And the device returns a set tariff schedule response "REJECTED" over OSLP
-    When receiving a set tariff schedule request
+    And the device returns a set reverse tariff schedule response "REJECTED" over OSLP
+    When receiving a set reverse tariff schedule request
       | DeviceIdentification | TEST1024000000001 |
       | WeekDay              | MONDAY            |
       | StartDay             |                   |
       | EndDay               |                   |
       | Time                 | 18:00:00.000      |
       | TariffValues         | 0,true            |
-    Then the set tariff schedule async response contains
+    Then the set reverse tariff schedule async response contains
       | DeviceIdentification | TEST1024000000001 |
     And a set tariff schedule OSLP message is sent to device "TEST1024000000001"
       | WeekDay      | MONDAY       |
@@ -83,21 +83,21 @@ Feature: TariffSwitchingScheduleManagement Set Reverse Tariff Schedule
       | Time         | 18:00:00.000 |
       | TariffValues | 0,false      |
     # Note: The platform throws a TechnicalException when the status is 'REJECTED'.
-    And the platform buffers a set tariff schedule response message for device "TEST1024000000001" contains soap fault
+    And the platform buffers a set reverse tariff schedule response message for device "TEST1024000000001" contains soap fault
       | Message | Device reports rejected |
 
-  Scenario: Set tariff schedule with invalid schedule
+  Scenario: Set reverse tariff schedule with invalid schedule
     Given an oslp device
       | DeviceIdentification | TEST1024000000001 |
       | RelayType            | TARIFF_REVERSED   |
-    When receiving a set tariff schedule request
+    When receiving a set reverse tariff schedule request
       | DeviceIdentification | TEST1024000000001 |
       | WeekDay              | ABSOLUTEDAY       |
       | StartDay             |                   |
       | EndDay               |                   |
       | Time                 | 18:00:00.000      |
       | TariffValues         | 0,true            |
-    Then the set tariff schedule response contains soap fault
+    Then the set reverse tariff schedule response contains soap fault
       | FaultCode    | SOAP-ENV:Server                                                                                |
       | FaultString  | VALIDATION_ERROR                                                                               |
       | InnerMessage | Validation Exception, violations: startDay may not be null when weekDay is set to ABSOLUTEDAY; |
@@ -105,35 +105,35 @@ Feature: TariffSwitchingScheduleManagement Set Reverse Tariff Schedule
   # Note: Result is 'NOT_FOUND' because there isn't a record in the database with a CorrelationUID
   #l Note: HasScheduled is set to 'false' because the response type is 'NOT_OK', but should be 'OK'
   @OslpMockServer
-  Scenario: Set tariff schedule with 50 schedules # Success
+  Scenario: Set reverse tariff schedule with 50 schedules # Success
     Given an oslp device
       | DeviceIdentification | TEST1024000000001 |
       | RelayType            | TARIFF_REVERSED   |
-    And the device returns a set tariff schedule response "OK" over OSLP
-    When receiving a set tariff schedule request for 50 schedules
+    And the device returns a set reverse tariff schedule response "OK" over OSLP
+    When receiving a set reverse tariff schedule request for 50 schedules
       | DeviceIdentification | TEST1024000000001 |
       | WeekDay              | ABSOLUTEDAY       |
       | StartDay             | 2016-01-01        |
       | EndDay               | 2016-12-31        |
       | Time                 | 18:00:00.000      |
       | TariffValues         | 0,true            |
-    Then the set tariff schedule async response contains
+    Then the set reverse tariff schedule async response contains
       | DeviceIdentification | TEST1024000000001 |
-    And a set tariff schedule OSLP message is sent to device "TEST1024000000001"
+    And a set reverse tariff schedule OSLP message is sent to device "TEST1024000000001"
       | WeekDay      | ABSOLUTEDAY  |
       | WeekDay      | ABSOLUTEDAY  |
       | StartDay     | 2016-01-01   |
       | EndDay       | 2016-12-31   |
       | Time         | 18:00:00.000 |
       | TariffValues | 0,false      |
-    And the platform buffers a set tariff schedule response message for device "TEST1024000000001"
+    And the platform buffers a set reverse tariff schedule response message for device "TEST1024000000001"
       | Result | NOT_FOUND |
 
-  Scenario: Set tariff schedule with 51 schedules # Fail
+  Scenario: Set reverse tariff schedule with 51 schedules # Fail
     Given an oslp device
       | DeviceIdentification | TEST1024000000001 |
       | RelayType            | TARIFF_REVERSED   |
-    When receiving a set tariff schedule request for 51 schedules
+    When receiving a set reverse tariff schedule request for 51 schedules
       | DeviceIdentification | TEST1024000000001 |
       | WeekDay              | ABSOLUTEDAY       |
       | StartDay             | 2016-01-01        |
@@ -141,7 +141,7 @@ Feature: TariffSwitchingScheduleManagement Set Reverse Tariff Schedule
       | Time                 | 18:00:00.000      |
       | TariffValues         | 0,true            |
       | ScheduledTime        | 2016-12-15        |
-    Then the set tariff schedule response contains soap fault
+    Then the set reverse tariff schedule response contains soap fault
       | FaultCode        | SOAP-ENV:Client                                                                                                                                                                                                                                                                                             |
       | FaultString      | Validation error                                                                                                                                                                                                                                                                                            |
       | ValidationErrors | cvc-complex-type.2.4.a: Invalid content was found starting with element 'ns2:Schedules'. One of '{"http://www.alliander.com/schemas/osgp/tariffswitching/schedulemanagement/2014/10":Page, "http://www.alliander.com/schemas/osgp/tariffswitching/schedulemanagement/2014/10":scheduled_time}' is expected. |
