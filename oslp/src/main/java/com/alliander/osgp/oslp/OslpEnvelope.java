@@ -127,7 +127,8 @@ public class OslpEnvelope implements Serializable {
      *            payload to deliver
      */
     private OslpEnvelope(final String signature, final String provider, final PrivateKey privateKey,
-            final byte[] securityKey, final byte[] sequenceNumber, final byte[] deviceId, final Message payloadMessage) {
+            final byte[] securityKey, final byte[] sequenceNumber, final byte[] deviceId,
+            final Message payloadMessage) {
         this.signature = signature;
         this.provider = provider;
         this.privateKey = privateKey;
@@ -201,8 +202,8 @@ public class OslpEnvelope implements Serializable {
             this.sequenceNumber = new byte[0];
         } else {
             if (newSequenceNumber.length != SEQUENCE_NUMBER_LENGTH) {
-                throw new IllegalArgumentException("SequenceNumber is not of expected Length: "
-                        + SEQUENCE_NUMBER_LENGTH);
+                throw new IllegalArgumentException(
+                        "SequenceNumber is not of expected Length: " + SEQUENCE_NUMBER_LENGTH);
             }
             this.sequenceNumber = Arrays.copyOf(newSequenceNumber, newSequenceNumber.length);
         }
