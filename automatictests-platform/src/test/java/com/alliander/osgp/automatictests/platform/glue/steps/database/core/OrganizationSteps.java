@@ -17,7 +17,6 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.automatictests.platform.Defaults;
 import com.alliander.osgp.automatictests.platform.Keys;
@@ -32,7 +31,6 @@ import cucumber.api.java.en.Then;
 /**
  * Class with all the organization steps
  */
-@Component
 public class OrganizationSteps {
 
     @Autowired

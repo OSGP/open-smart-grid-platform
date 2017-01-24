@@ -86,11 +86,9 @@
     <module>Platform/osgp-core</module>
     <module>Platform/osgp-logging</module>
 
-    <!-- Temporary switched off, since the test servers are not available yet, 
-      only local deployment test (which will fail op build server -->
     <!-- Automatic tests project -->
-    <module>cucumber-tests-platform</module>
-    <module>cucumber-tests-platform-dlms</module>
+    <module>automatictests-platform</module>
+    <module>automatictests-platform-dlms</module>
 
     <!-- Fitnesse Acceptance Test Project (Obsolete, but in here because not 
       all tests are moved to the cucumber projects -->
