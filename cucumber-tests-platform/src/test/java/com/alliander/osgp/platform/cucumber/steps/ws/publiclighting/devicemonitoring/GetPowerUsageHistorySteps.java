@@ -156,7 +156,7 @@ public class GetPowerUsageHistorySteps {
         boolean success = false;
         int count = 0;
         while (!success) {
-            if (count > this.configuration.defaultTimeout) {
+            if (count > this.configuration.getTimeout()) {
                 Assert.fail("Timeout");
             }
 

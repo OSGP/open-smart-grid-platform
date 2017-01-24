@@ -144,7 +144,7 @@ public class GetActualPowerUsageSteps {
         int count = 0;
         GetActualPowerUsageResponse response = null;
         while (!success) {
-            if (count > this.configuration.defaultTimeout) {
+            if (count > this.configuration.getTimeout()) {
                 Assert.fail("Timeout");
             }
 
