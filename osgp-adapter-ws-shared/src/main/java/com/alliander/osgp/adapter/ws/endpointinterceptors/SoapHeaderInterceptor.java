@@ -14,18 +14,17 @@ import org.springframework.ws.soap.SoapHeader;
 import org.springframework.ws.soap.SoapMessage;
 
 /**
- * Intercept a SOAP Header and put the message priority contents in the
- * MessageContext.
+ * Intercept a SOAP Header and puts the given headerName and contextPropertyName
+ * in the MessageContext.
  */
-public class SoapHeaderMessagePriorityEndpointInterceptor implements EndpointInterceptor {
+public class SoapHeaderInterceptor implements EndpointInterceptor {
 
-    private final String messagePriorityHeaderName;
-    private final String messagePriorityContextPropertyName;
+    private final String headerName;
+    private final String contextPropertyName;
 
-    public SoapHeaderMessagePriorityEndpointInterceptor(final String messagePriorityHeaderName,
-            final String messagePriorityContextPropertyName) {
-        this.messagePriorityHeaderName = messagePriorityHeaderName;
-        this.messagePriorityContextPropertyName = messagePriorityContextPropertyName;
+    public SoapHeaderInterceptor(final String headerName, final String contextPropertyName) {
+        this.headerName = headerName;
+        this.contextPropertyName = contextPropertyName;
     }
 
     @Override
@@ -36,12 +35,11 @@ public class SoapHeaderMessagePriorityEndpointInterceptor implements EndpointInt
         final SoapHeader soapHeader = request.getSoapHeader();
 
         // Try to get the value from the Soap Header.
-        final String messagePriority = SoapHeaderEndpointInterceptorHelper.getHeaderValue(soapHeader,
-                this.messagePriorityHeaderName);
+        final String messagePriority = SoapHeaderEndpointInterceptorHelper.getHeaderValue(soapHeader, this.headerName);
 
         // Finally, set the message priority into the message
         // context, so it can be used in the end point later.
-        messageContext.setProperty(this.messagePriorityContextPropertyName, messagePriority);
+        messageContext.setProperty(this.contextPropertyName, messagePriority);
 
         // Return true so the interceptor chain will continue.
         return true;

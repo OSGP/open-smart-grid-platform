@@ -57,6 +57,7 @@
         <ref bean="x509CertificateSubjectCnEndpointInterceptor"/>
         <ref bean="organisationIdentificationInterceptor"/>
         <ref bean="messagePriorityInterceptor"/>
+        <ref bean="responseUrlInterceptor"/>
         <ref bean="scheduleTimeInterceptor"/>
         <ref bean="organisationIdentificationInCertificateCnEndpointInterceptor"/>
         <ref bean="payloadValidatingInterceptor"/>

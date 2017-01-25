@@ -23,6 +23,7 @@
 		<wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
 		<wsdl:part element="common:UserName" name="UserName" />
 		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
+		<wsdl:part element="common:ResponseUrl" name="ResponseUrl" />
 	</wsdl:message>
 	<wsdl:message name="BundleRequest">
 		<wsdl:part element="bundle:BundleRequest" name="BundleRequest">
@@ -37,6 +38,7 @@
 		<wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
 		<wsdl:part element="common:UserName" name="UserName" />
 		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
+		<wsdl:part element="common:ResponseUrl" name="ResponseUrl" />
 	</wsdl:message>
 	<wsdl:message name="BundleAsyncRequest">
 		<wsdl:part element="bundle:BundleAsyncRequest" name="BundleAsyncRequest">
@@ -77,6 +79,7 @@
 				<soap:header message="tns:BundleHeader" part="OrganisationIdentification" use="literal" />
 				<soap:header message="tns:BundleHeader" part="UserName" use="literal" />
 				<soap:header message="tns:BundleHeader" part="ApplicationName" use="literal" />
+				<soap:header message="tns:BundleHeader" part="ResponseUrl" use="literal" />
 				<soap:body use="literal" />
 			</wsdl:input>
 			<wsdl:output name="BundleAsyncResponse">
