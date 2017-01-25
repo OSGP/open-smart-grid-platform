@@ -37,6 +37,7 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.oslp.Oslp;
+import com.alliander.osgp.oslp.Oslp.GetConfigurationResponse;
 import com.alliander.osgp.oslp.Oslp.GetFirmwareVersionResponse;
 import com.alliander.osgp.oslp.Oslp.GetStatusResponse;
 import com.alliander.osgp.oslp.Oslp.GetStatusResponse.Builder;
@@ -57,6 +58,7 @@ import com.alliander.osgp.oslp.Oslp.SetScheduleResponse;
 import com.alliander.osgp.oslp.Oslp.SetTransitionResponse;
 import com.alliander.osgp.oslp.Oslp.SsldData;
 import com.alliander.osgp.oslp.Oslp.StartSelfTestResponse;
+import com.alliander.osgp.oslp.Oslp.Status;
 import com.alliander.osgp.oslp.Oslp.StopSelfTestResponse;
 import com.alliander.osgp.oslp.OslpDecoder;
 import com.alliander.osgp.oslp.OslpEncoder;
@@ -232,6 +234,11 @@ public class MockOslpServer {
     private PrivateKey privateKey()
             throws IOException, InvalidKeySpecException, NoSuchAlgorithmException, NoSuchProviderException {
         return CertificateHelper.createPrivateKey(this.signKeyPath, this.keytype, this.oslpSignatureProvider);
+    }
+
+    public void mockConfigurationResponse(final Status oslpStatus) {
+        this.mockResponses.put(DeviceRequestMessageType.GET_CONFIGURATION, Oslp.Message.newBuilder()
+                .setGetConfigurationResponse(GetConfigurationResponse.newBuilder().setStatus(oslpStatus)).build());
     }
 
     public void mockFirmwareResponse(final String fwVersion) {

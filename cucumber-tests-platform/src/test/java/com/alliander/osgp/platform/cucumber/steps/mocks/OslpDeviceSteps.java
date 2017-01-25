@@ -89,6 +89,27 @@ public class OslpDeviceSteps {
 
         this.oslpMockServer.mockSetLightResponse(oslpStatus);
     }
+    // the device returns configuration status "OK" over OSLP
+
+    /**
+     * Setup method to set the configuration status which should be returned by
+     * the mock.
+     *
+     * @param status
+     *            The status to respond.
+     * @throws Throwable
+     */
+    @Given("^the device returns configuration status \"([^\"]*)\" over OSLP$")
+    public void theDeviceReturnsConfigurationStatusOverOSLP(final String status) throws Throwable {
+        Oslp.Status oslpStatus = Status.OK;
+
+        switch (status) {
+        case "OK":
+            oslpStatus = Status.OK;
+            // TODO: Implement other possible status
+        }
+        this.oslpMockServer.mockConfigurationResponse(oslpStatus);
+    }
 
     /**
      * Setup method to get an actual power usage which should be returned by the
@@ -373,6 +394,21 @@ public class OslpDeviceSteps {
         }
 
         this.oslpMockServer.mockSetScheduleResponse(type, oslpStatus);
+    }
+
+    /**
+     * Verify that a get configuration OSLP message is sent to the device.
+     *
+     * @param deviceIdentification
+     *            The device identification expected in the message to the
+     *            device.
+     * @throws Throwable
+     */
+    @Then("^a get configuration OSLP message is sent to device \"([^\"]*)\"$")
+    public void aGetConfigurationOSLPMessageIsSentToDevice(final String deviceIdentification) throws Throwable {
+        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.GET_CONFIGURATION);
+        Assert.assertNotNull(message);
+        Assert.assertTrue(message.hasGetConfigurationRequest());
     }
 
     /**
