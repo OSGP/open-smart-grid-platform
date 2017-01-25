@@ -37,7 +37,6 @@
               <clearOutputDir>false</clearOutputDir>
             </configuration>
           </execution>
-
           <execution>
             <id>smart-metering-management</id>
             <goals>
@@ -55,7 +54,6 @@
               <clearOutputDir>false</clearOutputDir>
             </configuration>
           </execution>
-
           <execution>
             <id>smart-metering-installation</id>
             <goals>
@@ -73,7 +71,6 @@
               <clearOutputDir>false</clearOutputDir>
             </configuration>
           </execution>
-
           <execution>
             <id>smart-metering-notification</id>
             <goals>
@@ -91,7 +88,6 @@
               <clearOutputDir>false</clearOutputDir>
             </configuration>
           </execution>
-
           <execution>
             <id>smart-metering-monitoring</id>
             <goals>
@@ -109,7 +105,6 @@
               <clearOutputDir>false</clearOutputDir>
             </configuration>
           </execution>
-
           <execution>
             <id>smart-metering-adhoc</id>
             <goals>
@@ -127,7 +122,6 @@
               <clearOutputDir>false</clearOutputDir>
             </configuration>
           </execution>
-
           <execution>
             <id>smart-metering-configuration</id>
             <goals>
@@ -145,30 +139,7 @@
               <clearOutputDir>false</clearOutputDir>
             </configuration>
           </execution>
-
         </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-war-plugin</artifactId>
-        <version>2.4</version>
-        <configuration>
-          <attachClasses>true</attachClasses>
-          <failOnMissingWebXml>false</failOnMissingWebXml>
-          <nonFilteredFileExtensions>
-            <nonFilteredFileExtension>gif</nonFilteredFileExtension>
-            <nonFilteredFileExtension>ico</nonFilteredFileExtension>
-            <nonFilteredFileExtension>jpg</nonFilteredFileExtension>
-            <nonFilteredFileExtension>png</nonFilteredFileExtension>
-            <nonFilteredFileExtension>pdf</nonFilteredFileExtension>
-          </nonFilteredFileExtensions>
-          <webResources>
-            <resource>
-              <directory>src/main/resources</directory>
-              <filtering>true</filtering>
-            </resource>
-          </webResources>
-        </configuration>
       </plugin>
     </plugins>
   </build>
@@ -184,7 +155,6 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
     </dependency>
-
     <!-- Spring WS -->
     <dependency>
       <groupId>org.springframework.ws</groupId>

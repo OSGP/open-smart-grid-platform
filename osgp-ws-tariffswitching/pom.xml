@@ -19,7 +19,6 @@
         <artifactId>jaxb2-maven-plugin</artifactId>
         <version>1.5</version>
         <executions>
-          <!-- TARRIF SWITCHING -->
           <execution>
             <id>tarrif-switching-ad-hoc-management</id>
             <goals>
@@ -37,7 +36,6 @@
               <clearOutputDir>false</clearOutputDir>
             </configuration>
           </execution>
-
           <execution>
             <id>tarrif-switching-schedule-management</id>
             <goals>
@@ -59,7 +57,7 @@
       </plugin>
     </plugins>
   </build>
-  
+
   <dependencies>
     <!-- Spring Framework -->
     <dependency>

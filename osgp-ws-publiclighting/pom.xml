@@ -19,7 +19,6 @@
         <artifactId>jaxb2-maven-plugin</artifactId>
         <version>1.5</version>
         <executions>
-          <!-- PUBLIC LIGHTING -->
           <execution>
             <id>public-lighting-ad-hoc-management</id>
             <goals>
@@ -37,7 +36,6 @@
               <clearOutputDir>true</clearOutputDir>
             </configuration>
           </execution>
-
           <execution>
             <id>public-lighting-schedule-management</id>
             <goals>
@@ -55,7 +53,6 @@
               <clearOutputDir>false</clearOutputDir>
             </configuration>
           </execution>
-
           <execution>
             <id>device-monitoring</id>
             <goals>
@@ -73,7 +70,6 @@
               <clearOutputDir>false</clearOutputDir>
             </configuration>
           </execution>
-
         </executions>
       </plugin>
     </plugins>

@@ -173,14 +173,16 @@
         minOccurs="0" maxOccurs="1">
         <xsd:annotation>
           <xsd:documentation>Start of DST / SummerTime. Last Sunday of
-            March for Europe.</xsd:documentation>
+            March for Europe.
+          </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
       <xsd:element name="WinterTimeDetails" type="xsd:dateTime"
         minOccurs="0" maxOccurs="1">
         <xsd:annotation>
           <xsd:documentation>End of DST / SummerTime. Last Sunday of
-            October for Europe.</xsd:documentation>
+            October for Europe.
+          </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>

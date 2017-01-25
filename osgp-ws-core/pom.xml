@@ -12,7 +12,7 @@
   </parent>
 
   <artifactId>osgp-ws-core</artifactId>
-  
+
   <build>
     <plugins>
       <plugin>

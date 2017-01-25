@@ -19,90 +19,109 @@ import org.springframework.xml.xsd.SimpleXsdSchema;
 @Configuration
 public class SmartmeteringWebServiceConfig {
 
+    private static final String COMMON_XSD_PATH = "schemas/common.xsd";
+    private static final String SMART_METERING_INSTALLATION_XSD_PATH = "schemas/sm-installation.xsd";
+    private static final String SMART_METERING_MANAGEMENT_XSD_PATH = "schemas/sm-management.xsd";
+    private static final String SMART_METERING_BUNDLE_XSD_PATH = "schemas/sm-bundle.xsd";
+    private static final String SMART_METERING_MONITORING_XSD_PATH = "schemas/sm-monitoring.xsd";
+    private static final String SMART_METERING_ADHOC_XSD_PATH = "schemas/sm-adhoc.xsd";
+    private static final String SMART_METERING_CONFIGURATION_XSD_PATH = "schemas/sm-configuration.xsd";
+    private static final String SMART_METERING_NOTIFICATION_XSD_PATH = "schemas/sm-notification.xsd";
+
+    private static final String SMART_METERING_INSTALLATION_WSDL_PATH = "SmartMeteringInstallation.wsdl";
+    private static final String SMART_METERING_MANAGEMENT_WSDL_PATH = "SmartMeteringManagement.wsdl";
+    private static final String SMART_METERING_BUNDLE_WSDL_PATH = "SmartMeteringBundle.wsdl";
+    private static final String SMART_METERING_MONITORING_WSDL_PATH = "SmartMeteringMonitoring.wsdl";
+    private static final String SMART_METERING_ADHOC_WSDL_PATH = "SmartMeteringAdhoc.wsdl";
+    private static final String SMART_METERING_CONFIGURATION_WSDL_PATH = "SmartMeteringConfiguration.wsdl";
+    private static final String SMART_METERING_NOTIFICATION_WSDL_PATH = "SmartMeteringNotification.wsdl";
+
     @Bean
     public PayloadValidatingInterceptor payloadValidatingInterceptor() {
         final PayloadValidatingInterceptor payloadValidatingInterceptor = new PayloadValidatingInterceptor();
-        final Resource[] resources = new Resource[] { new ClassPathResource("schemas/common.xsd"),
-                new ClassPathResource("schemas/sm-installation.xsd"),
-                new ClassPathResource("schemas/sm-management.xsd"), new ClassPathResource("schemas/sm-bundle.xsd"),
-                new ClassPathResource("schemas/sm-monitoring.xsd"), new ClassPathResource("schemas/sm-adhoc.xsd"),
-                new ClassPathResource("schemas/sm-configuration.xsd") };
+        final Resource[] resources = new Resource[] { new ClassPathResource(COMMON_XSD_PATH),
+                new ClassPathResource(SMART_METERING_INSTALLATION_XSD_PATH),
+                new ClassPathResource(SMART_METERING_MANAGEMENT_XSD_PATH),
+                new ClassPathResource(SMART_METERING_BUNDLE_XSD_PATH),
+                new ClassPathResource(SMART_METERING_MONITORING_XSD_PATH),
+                new ClassPathResource(SMART_METERING_ADHOC_XSD_PATH),
+                new ClassPathResource(SMART_METERING_CONFIGURATION_XSD_PATH) };
         payloadValidatingInterceptor.setSchemas(resources);
         return payloadValidatingInterceptor;
     }
 
     @Bean(name = "common")
     public SimpleXsdSchema commonXsd() {
-        return new SimpleXsdSchema(new ClassPathResource("schemas/common.xsd"));
+        return new SimpleXsdSchema(new ClassPathResource(COMMON_XSD_PATH));
     }
 
     @Bean(name = "SmartMeteringInstallation")
     public WsdlDefinition smartMeteringInstallationWsdl() {
-        return new SimpleWsdl11Definition(new ClassPathResource("SmartMeteringInstallation.wsdl"));
+        return new SimpleWsdl11Definition(new ClassPathResource(SMART_METERING_INSTALLATION_WSDL_PATH));
     }
 
     @Bean(name = "sm-installation")
     public SimpleXsdSchema smartMeteringInstallationXsd() {
-        return new SimpleXsdSchema(new ClassPathResource("schemas/sm-installation.xsd"));
+        return new SimpleXsdSchema(new ClassPathResource(SMART_METERING_INSTALLATION_XSD_PATH));
     }
 
     @Bean(name = "SmartMeteringManagement")
     public WsdlDefinition smartMeteringManagementWsdl() {
-        return new SimpleWsdl11Definition(new ClassPathResource("SmartMeteringManagement.wsdl"));
+        return new SimpleWsdl11Definition(new ClassPathResource(SMART_METERING_MANAGEMENT_WSDL_PATH));
     }
 
     @Bean(name = "sm-management")
     public SimpleXsdSchema smartMeteringManagementXsd() {
-        return new SimpleXsdSchema(new ClassPathResource("schemas/sm-management.xsd"));
+        return new SimpleXsdSchema(new ClassPathResource(SMART_METERING_MANAGEMENT_XSD_PATH));
     }
 
     @Bean(name = "SmartMeteringBundle")
     public WsdlDefinition smartMeteringBundleWsdl() {
-        return new SimpleWsdl11Definition(new ClassPathResource("SmartMeteringBundle.wsdl"));
+        return new SimpleWsdl11Definition(new ClassPathResource(SMART_METERING_BUNDLE_WSDL_PATH));
     }
 
     @Bean(name = "sm-bundle")
     public SimpleXsdSchema smartMeteringBundleXsd() {
-        return new SimpleXsdSchema(new ClassPathResource("schemas/sm-bundle.xsd"));
+        return new SimpleXsdSchema(new ClassPathResource(SMART_METERING_BUNDLE_XSD_PATH));
     }
 
     @Bean(name = "SmartMeteringMonitoring")
     public WsdlDefinition smartMeteringMonitoringWsdl() {
-        return new SimpleWsdl11Definition(new ClassPathResource("SmartMeteringMonitoring.wsdl"));
+        return new SimpleWsdl11Definition(new ClassPathResource(SMART_METERING_MONITORING_WSDL_PATH));
     }
 
     @Bean(name = "sm-monitoring")
     public SimpleXsdSchema smartMeteringMonitoringXsd() {
-        return new SimpleXsdSchema(new ClassPathResource("schemas/sm-monitoring.xsd"));
+        return new SimpleXsdSchema(new ClassPathResource(SMART_METERING_MONITORING_XSD_PATH));
     }
 
     @Bean(name = "SmartMeteringAdhoc")
     public WsdlDefinition smartMeteringAdhocWsdl() {
-        return new SimpleWsdl11Definition(new ClassPathResource("SmartMeteringAdhoc.wsdl"));
+        return new SimpleWsdl11Definition(new ClassPathResource(SMART_METERING_ADHOC_WSDL_PATH));
     }
 
     @Bean(name = "sm-adhoc")
     public SimpleXsdSchema smartMeteringAdhocXsd() {
-        return new SimpleXsdSchema(new ClassPathResource("schemas/sm-adhoc.xsd"));
+        return new SimpleXsdSchema(new ClassPathResource(SMART_METERING_ADHOC_XSD_PATH));
     }
 
     @Bean(name = "SmartMeteringConfiguration")
     public WsdlDefinition smartMeteringConfigurationWsdl() {
-        return new SimpleWsdl11Definition(new ClassPathResource("SmartMeteringConfiguration.wsdl"));
+        return new SimpleWsdl11Definition(new ClassPathResource(SMART_METERING_CONFIGURATION_WSDL_PATH));
     }
 
     @Bean(name = "sm-configuration")
     public SimpleXsdSchema smartMeteringConfigurationXsd() {
-        return new SimpleXsdSchema(new ClassPathResource("schemas/sm-configuration.xsd"));
+        return new SimpleXsdSchema(new ClassPathResource(SMART_METERING_CONFIGURATION_XSD_PATH));
     }
 
     @Bean(name = "SmartMeteringNotification")
     public WsdlDefinition smartMeteringNotificationWsdl() {
-        return new SimpleWsdl11Definition(new ClassPathResource("SmartMeteringNotification.wsdl"));
+        return new SimpleWsdl11Definition(new ClassPathResource(SMART_METERING_NOTIFICATION_WSDL_PATH));
     }
 
     @Bean(name = "sm-notification")
     public SimpleXsdSchema smartMeteringNotificationXsd() {
-        return new SimpleXsdSchema(new ClassPathResource("schemas/sm-notification.xsd"));
+        return new SimpleXsdSchema(new ClassPathResource(SMART_METERING_NOTIFICATION_XSD_PATH));
     }
 }

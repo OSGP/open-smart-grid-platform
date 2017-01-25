@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Platform version: ${display.version} -->
 
-<wsdl:definitions
-  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
   xmlns:fman="http://www.alliander.com/schemas/osgp/common/firmwaremanagement/2014/10"
   xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10"
   xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
@@ -10,15 +9,18 @@
   targetNamespace="http://www.alliander.com/definitions/osgp/common/firmwaremanagement-v1.0">
 
   <wsdl:types>
-    <xsd:schema targetNamespace="http://www.alliander.com/definitions/osgp/common/firmwaremanagement/imports"
+    <xsd:schema
+      targetNamespace="http://www.alliander.com/definitions/osgp/common/firmwaremanagement/imports"
       xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-      <xsd:import namespace="http://www.alliander.com/schemas/osgp/common/firmwaremanagement/2014/10"
+      <xsd:import
+        namespace="http://www.alliander.com/schemas/osgp/common/firmwaremanagement/2014/10"
         schemaLocation="schemas/firmwaremanagement.xsd" />
     </xsd:schema>
   </wsdl:types>
 
   <wsdl:message name="UpdateFirmwareHeader">
-    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
     <wsdl:part element="common:UserName" name="UserName" />
     <wsdl:part element="common:ApplicationName" name="ApplicationName" />
   </wsdl:message>
@@ -27,12 +29,14 @@
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="UpdateFirmwareAsyncResponse">
-    <wsdl:part element="fman:UpdateFirmwareAsyncResponse" name="UpdateFirmwareAsyncResponse">
+    <wsdl:part element="fman:UpdateFirmwareAsyncResponse"
+      name="UpdateFirmwareAsyncResponse">
     </wsdl:part>
   </wsdl:message>
 
   <wsdl:message name="UpdateFirmwareAsyncHeader">
-    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
     <wsdl:part element="common:UserName" name="UserName" />
     <wsdl:part element="common:ApplicationName" name="ApplicationName" />
   </wsdl:message>
@@ -46,7 +50,8 @@
   </wsdl:message>
 
   <wsdl:message name="GetFirmwareVersionHeader">
-    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
     <wsdl:part element="common:UserName" name="UserName" />
     <wsdl:part element="common:ApplicationName" name="ApplicationName" />
   </wsdl:message>
@@ -55,17 +60,20 @@
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="GetFirmwareVersionAsyncResponse">
-    <wsdl:part element="fman:GetFirmwareVersionAsyncResponse" name="GetFirmwareVersionAsyncResponse">
+    <wsdl:part element="fman:GetFirmwareVersionAsyncResponse"
+      name="GetFirmwareVersionAsyncResponse">
     </wsdl:part>
   </wsdl:message>
 
   <wsdl:message name="GetFirmwareVersionAsyncHeader">
-    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
     <wsdl:part element="common:UserName" name="UserName" />
     <wsdl:part element="common:ApplicationName" name="ApplicationName" />
   </wsdl:message>
   <wsdl:message name="GetFirmwareVersionAsyncRequest">
-    <wsdl:part element="fman:GetFirmwareVersionAsyncRequest" name="GetFirmwareVersionAsyncRequest">
+    <wsdl:part element="fman:GetFirmwareVersionAsyncRequest"
+      name="GetFirmwareVersionAsyncRequest">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="GetFirmwareVersionResponse">
@@ -74,7 +82,8 @@
   </wsdl:message>
 
   <wsdl:message name="FindAllDeviceModelsHeader">
-    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
     <wsdl:part element="common:UserName" name="UserName" />
     <wsdl:part element="common:ApplicationName" name="ApplicationName" />
   </wsdl:message>
@@ -83,12 +92,14 @@
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="FindAllDeviceModelsResponse">
-    <wsdl:part element="fman:FindAllDeviceModelsResponse" name="FindAllDeviceModelsResponse">
+    <wsdl:part element="fman:FindAllDeviceModelsResponse"
+      name="FindAllDeviceModelsResponse">
     </wsdl:part>
   </wsdl:message>
 
   <wsdl:message name="FindDeviceModelHeader">
-    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
     <wsdl:part element="common:UserName" name="UserName" />
     <wsdl:part element="common:ApplicationName" name="ApplicationName" />
   </wsdl:message>
@@ -102,7 +113,8 @@
   </wsdl:message>
 
   <wsdl:message name="AddDeviceModelHeader">
-    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
     <wsdl:part element="common:UserName" name="UserName" />
     <wsdl:part element="common:ApplicationName" name="ApplicationName" />
   </wsdl:message>
@@ -116,7 +128,8 @@
   </wsdl:message>
 
   <wsdl:message name="RemoveDeviceModelHeader">
-    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
     <wsdl:part element="common:UserName" name="UserName" />
     <wsdl:part element="common:ApplicationName" name="ApplicationName" />
   </wsdl:message>
@@ -130,7 +143,8 @@
   </wsdl:message>
 
   <wsdl:message name="ChangeDeviceModelHeader">
-    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
     <wsdl:part element="common:UserName" name="UserName" />
     <wsdl:part element="common:ApplicationName" name="ApplicationName" />
   </wsdl:message>
@@ -144,7 +158,8 @@
   </wsdl:message>
 
   <wsdl:message name="FindAllFirmwaresHeader">
-    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
     <wsdl:part element="common:UserName" name="UserName" />
     <wsdl:part element="common:ApplicationName" name="ApplicationName" />
   </wsdl:message>
@@ -158,7 +173,8 @@
   </wsdl:message>
 
   <wsdl:message name="FindFirmwareHeader">
-    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
     <wsdl:part element="common:UserName" name="UserName" />
     <wsdl:part element="common:ApplicationName" name="ApplicationName" />
   </wsdl:message>
@@ -172,21 +188,25 @@
   </wsdl:message>
 
   <wsdl:message name="SaveCurrentDeviceFirmwareHeader">
-    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
     <wsdl:part element="common:UserName" name="UserName" />
     <wsdl:part element="common:ApplicationName" name="ApplicationName" />
   </wsdl:message>
   <wsdl:message name="SaveCurrentDeviceFirmwareRequest">
-    <wsdl:part element="fman:SaveCurrentDeviceFirmwareRequest" name="SaveCurrentDeviceFirmwareRequest">
+    <wsdl:part element="fman:SaveCurrentDeviceFirmwareRequest"
+      name="SaveCurrentDeviceFirmwareRequest">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="SaveCurrentDeviceFirmwareResponse">
-    <wsdl:part element="fman:SaveCurrentDeviceFirmwareResponse" name="SaveCurrentDeviceFirmwareResponse">
+    <wsdl:part element="fman:SaveCurrentDeviceFirmwareResponse"
+      name="SaveCurrentDeviceFirmwareResponse">
     </wsdl:part>
   </wsdl:message>
 
   <wsdl:message name="AddFirmwareHeader">
-    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
     <wsdl:part element="common:UserName" name="UserName" />
     <wsdl:part element="common:ApplicationName" name="ApplicationName" />
   </wsdl:message>
@@ -200,7 +220,8 @@
   </wsdl:message>
 
   <wsdl:message name="RemoveFirmwareHeader">
-    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
     <wsdl:part element="common:UserName" name="UserName" />
     <wsdl:part element="common:ApplicationName" name="ApplicationName" />
   </wsdl:message>
@@ -214,7 +235,8 @@
   </wsdl:message>
 
   <wsdl:message name="ChangeFirmwareHeader">
-    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
     <wsdl:part element="common:UserName" name="UserName" />
     <wsdl:part element="common:ApplicationName" name="ApplicationName" />
   </wsdl:message>
@@ -228,35 +250,42 @@
   </wsdl:message>
 
   <wsdl:message name="GetDeviceFirmwareHistoryHeader">
-    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
     <wsdl:part element="common:UserName" name="UserName" />
     <wsdl:part element="common:ApplicationName" name="ApplicationName" />
   </wsdl:message>
   <wsdl:message name="GetDeviceFirmwareHistoryRequest">
-    <wsdl:part element="fman:GetDeviceFirmwareHistoryRequest" name="GetDeviceFirmwareHistoryRequest">
+    <wsdl:part element="fman:GetDeviceFirmwareHistoryRequest"
+      name="GetDeviceFirmwareHistoryRequest">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="GetDeviceFirmwareHistoryResponse">
-    <wsdl:part element="fman:GetDeviceFirmwareHistoryResponse" name="GetDeviceFirmwareHistoryResponse">
+    <wsdl:part element="fman:GetDeviceFirmwareHistoryResponse"
+      name="GetDeviceFirmwareHistoryResponse">
     </wsdl:part>
   </wsdl:message>
 
   <wsdl:message name="FindAllManufacturersHeader">
-    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
     <wsdl:part element="common:UserName" name="UserName" />
     <wsdl:part element="common:ApplicationName" name="ApplicationName" />
   </wsdl:message>
   <wsdl:message name="FindAllManufacturersRequest">
-    <wsdl:part element="fman:FindAllManufacturersRequest" name="FindAllManufacturersRequest">
+    <wsdl:part element="fman:FindAllManufacturersRequest"
+      name="FindAllManufacturersRequest">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="FindAllManufacturersResponse">
-    <wsdl:part element="fman:FindAllManufacturersResponse" name="FindAllManufacturersResponse">
+    <wsdl:part element="fman:FindAllManufacturersResponse"
+      name="FindAllManufacturersResponse">
     </wsdl:part>
   </wsdl:message>
 
   <wsdl:message name="AddManufacturerHeader">
-    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
     <wsdl:part element="common:UserName" name="UserName" />
     <wsdl:part element="common:ApplicationName" name="ApplicationName" />
   </wsdl:message>
@@ -270,7 +299,8 @@
   </wsdl:message>
 
   <wsdl:message name="RemoveManufacturerHeader">
-    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
     <wsdl:part element="common:UserName" name="UserName" />
     <wsdl:part element="common:ApplicationName" name="ApplicationName" />
   </wsdl:message>
@@ -284,7 +314,8 @@
   </wsdl:message>
 
   <wsdl:message name="ChangeManufacturerHeader">
-    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
     <wsdl:part element="common:UserName" name="UserName" />
     <wsdl:part element="common:ApplicationName" name="ApplicationName" />
   </wsdl:message>
@@ -298,7 +329,8 @@
   </wsdl:message>
 
   <wsdl:message name="SwitchFirmwareHeader">
-    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
     <wsdl:part element="common:UserName" name="UserName" />
     <wsdl:part element="common:ApplicationName" name="ApplicationName" />
   </wsdl:message>
@@ -307,12 +339,14 @@
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="SwitchFirmwareAsyncResponse">
-    <wsdl:part element="fman:SwitchFirmwareAsyncResponse" name="SwitchFirmwareAsyncResponse">
+    <wsdl:part element="fman:SwitchFirmwareAsyncResponse"
+      name="SwitchFirmwareAsyncResponse">
     </wsdl:part>
   </wsdl:message>
 
   <wsdl:message name="SwitchFirmwareAsyncHeader">
-    <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
     <wsdl:part element="common:UserName" name="UserName" />
     <wsdl:part element="common:ApplicationName" name="ApplicationName" />
   </wsdl:message>
@@ -329,112 +363,138 @@
     <wsdl:operation name="UpdateFirmware">
       <wsdl:input message="tns:UpdateFirmwareRequest" name="UpdateFirmwareRequest">
       </wsdl:input>
-      <wsdl:output message="tns:UpdateFirmwareAsyncResponse" name="UpdateFirmwareAsyncResponse">
+      <wsdl:output message="tns:UpdateFirmwareAsyncResponse"
+        name="UpdateFirmwareAsyncResponse">
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="GetUpdateFirmwareResponse">
-      <wsdl:input message="tns:UpdateFirmwareAsyncRequest" name="UpdateFirmwareAsyncRequest">
+      <wsdl:input message="tns:UpdateFirmwareAsyncRequest"
+        name="UpdateFirmwareAsyncRequest">
       </wsdl:input>
-      <wsdl:output message="tns:UpdateFirmwareResponse" name="UpdateFirmwareResponse">
+      <wsdl:output message="tns:UpdateFirmwareResponse"
+        name="UpdateFirmwareResponse">
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="GetFirmwareVersion">
-      <wsdl:input message="tns:GetFirmwareVersionRequest" name="GetFirmwareVersionRequest">
+      <wsdl:input message="tns:GetFirmwareVersionRequest"
+        name="GetFirmwareVersionRequest">
       </wsdl:input>
-      <wsdl:output message="tns:GetFirmwareVersionAsyncResponse" name="GetFirmwareVersionAsyncResponse">
+      <wsdl:output message="tns:GetFirmwareVersionAsyncResponse"
+        name="GetFirmwareVersionAsyncResponse">
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="GetGetFirmwareVersionResponse">
-      <wsdl:input message="tns:GetFirmwareVersionAsyncRequest" name="GetFirmwareVersionAsyncRequest">
+      <wsdl:input message="tns:GetFirmwareVersionAsyncRequest"
+        name="GetFirmwareVersionAsyncRequest">
       </wsdl:input>
-      <wsdl:output message="tns:GetFirmwareVersionResponse" name="GetFirmwareVersionResponse">
+      <wsdl:output message="tns:GetFirmwareVersionResponse"
+        name="GetFirmwareVersionResponse">
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="FindAllManufacturers">
-      <wsdl:input message="tns:FindAllManufacturersRequest" name="FindAllManufacturersRequest">
+      <wsdl:input message="tns:FindAllManufacturersRequest"
+        name="FindAllManufacturersRequest">
       </wsdl:input>
-      <wsdl:output message="tns:FindAllManufacturersResponse" name="FindAllManufacturersResponse">
+      <wsdl:output message="tns:FindAllManufacturersResponse"
+        name="FindAllManufacturersResponse">
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="AddManufacturer">
       <wsdl:input message="tns:AddManufacturerRequest" name="AddManufacturerRequest">
       </wsdl:input>
-      <wsdl:output message="tns:AddManufacturerResponse" name="AddManufacturerResponse">
+      <wsdl:output message="tns:AddManufacturerResponse"
+        name="AddManufacturerResponse">
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="ChangeManufacturer">
-      <wsdl:input message="tns:ChangeManufacturerRequest" name="ChangeManufacturerRequest">
+      <wsdl:input message="tns:ChangeManufacturerRequest"
+        name="ChangeManufacturerRequest">
       </wsdl:input>
-      <wsdl:output message="tns:ChangeManufacturerResponse" name="ChangeManufacturerResponse">
+      <wsdl:output message="tns:ChangeManufacturerResponse"
+        name="ChangeManufacturerResponse">
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="RemoveManufacturer">
-      <wsdl:input message="tns:RemoveManufacturerRequest" name="RemoveManufacturerRequest">
+      <wsdl:input message="tns:RemoveManufacturerRequest"
+        name="RemoveManufacturerRequest">
       </wsdl:input>
-      <wsdl:output message="tns:RemoveManufacturerResponse" name="RemoveManufacturerResponse">
+      <wsdl:output message="tns:RemoveManufacturerResponse"
+        name="RemoveManufacturerResponse">
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="SwitchFirmware">
       <wsdl:input message="tns:SwitchFirmwareRequest" name="SwitchFirmwareRequest">
       </wsdl:input>
-      <wsdl:output message="tns:SwitchFirmwareAsyncResponse" name="SwitchFirmwareAsyncResponse">
+      <wsdl:output message="tns:SwitchFirmwareAsyncResponse"
+        name="SwitchFirmwareAsyncResponse">
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="GetSwitchFirmwareResponse">
-      <wsdl:input message="tns:SwitchFirmwareAsyncRequest" name="SwitchFirmwareAsyncRequest">
+      <wsdl:input message="tns:SwitchFirmwareAsyncRequest"
+        name="SwitchFirmwareAsyncRequest">
       </wsdl:input>
-      <wsdl:output message="tns:SwitchFirmwareResponse" name="SwitchFirmwareResponse">
+      <wsdl:output message="tns:SwitchFirmwareResponse"
+        name="SwitchFirmwareResponse">
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="FindAllDeviceModels">
-      <wsdl:input message="tns:FindAllDeviceModelsRequest" name="FindAllDeviceModelsRequest">
+      <wsdl:input message="tns:FindAllDeviceModelsRequest"
+        name="FindAllDeviceModelsRequest">
       </wsdl:input>
-      <wsdl:output message="tns:FindAllDeviceModelsResponse" name="FindAllDeviceModelsResponse">
+      <wsdl:output message="tns:FindAllDeviceModelsResponse"
+        name="FindAllDeviceModelsResponse">
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="FindDeviceModel">
       <wsdl:input message="tns:FindDeviceModelRequest" name="FindDeviceModelRequest">
       </wsdl:input>
-      <wsdl:output message="tns:FindDeviceModelResponse" name="FindDeviceModelResponse">
+      <wsdl:output message="tns:FindDeviceModelResponse"
+        name="FindDeviceModelResponse">
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="AddDeviceModel">
       <wsdl:input message="tns:AddDeviceModelRequest" name="AddDeviceModelRequest">
       </wsdl:input>
-      <wsdl:output message="tns:AddDeviceModelResponse" name="AddDeviceModelResponse">
+      <wsdl:output message="tns:AddDeviceModelResponse"
+        name="AddDeviceModelResponse">
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="ChangeDeviceModel">
-      <wsdl:input message="tns:ChangeDeviceModelRequest" name="ChangeDeviceModelRequest">
+      <wsdl:input message="tns:ChangeDeviceModelRequest"
+        name="ChangeDeviceModelRequest">
       </wsdl:input>
-      <wsdl:output message="tns:ChangeDeviceModelResponse" name="ChangeDeviceModelResponse">
+      <wsdl:output message="tns:ChangeDeviceModelResponse"
+        name="ChangeDeviceModelResponse">
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="RemoveDeviceModel">
-      <wsdl:input message="tns:RemoveDeviceModelRequest" name="RemoveDeviceModelRequest">
+      <wsdl:input message="tns:RemoveDeviceModelRequest"
+        name="RemoveDeviceModelRequest">
       </wsdl:input>
-      <wsdl:output message="tns:RemoveDeviceModelResponse" name="RemoveDeviceModelResponse">
+      <wsdl:output message="tns:RemoveDeviceModelResponse"
+        name="RemoveDeviceModelResponse">
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="FindAllFirmwares">
       <wsdl:input message="tns:FindAllFirmwaresRequest" name="FindAllFirmwaresRequest">
       </wsdl:input>
-      <wsdl:output message="tns:FindAllFirmwaresResponse" name="FindAllFirmwaresResponse">
+      <wsdl:output message="tns:FindAllFirmwaresResponse"
+        name="FindAllFirmwaresResponse">
       </wsdl:output>
     </wsdl:operation>
 
@@ -446,9 +506,11 @@
     </wsdl:operation>
 
     <wsdl:operation name="SaveCurrentDeviceFirmware">
-      <wsdl:input message="tns:SaveCurrentDeviceFirmwareRequest" name="SaveCurrentDeviceFirmwareRequest">
+      <wsdl:input message="tns:SaveCurrentDeviceFirmwareRequest"
+        name="SaveCurrentDeviceFirmwareRequest">
       </wsdl:input>
-      <wsdl:output message="tns:SaveCurrentDeviceFirmwareResponse" name="SaveCurrentDeviceFirmwareResponse">
+      <wsdl:output message="tns:SaveCurrentDeviceFirmwareResponse"
+        name="SaveCurrentDeviceFirmwareResponse">
       </wsdl:output>
     </wsdl:operation>
 
@@ -462,33 +524,41 @@
     <wsdl:operation name="ChangeFirmware">
       <wsdl:input message="tns:ChangeFirmwareRequest" name="ChangeFirmwareRequest">
       </wsdl:input>
-      <wsdl:output message="tns:ChangeFirmwareResponse" name="ChangeFirmwareResponse">
+      <wsdl:output message="tns:ChangeFirmwareResponse"
+        name="ChangeFirmwareResponse">
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="RemoveFirmware">
       <wsdl:input message="tns:RemoveFirmwareRequest" name="RemoveFirmwareRequest">
       </wsdl:input>
-      <wsdl:output message="tns:RemoveFirmwareResponse" name="RemoveFirmwareResponse">
+      <wsdl:output message="tns:RemoveFirmwareResponse"
+        name="RemoveFirmwareResponse">
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="GetDeviceFirmwareHistory">
-      <wsdl:input message="tns:GetDeviceFirmwareHistoryRequest" name="GetDeviceFirmwareHistoryRequest">
+      <wsdl:input message="tns:GetDeviceFirmwareHistoryRequest"
+        name="GetDeviceFirmwareHistoryRequest">
       </wsdl:input>
-      <wsdl:output message="tns:GetDeviceFirmwareHistoryResponse" name="GetDeviceFirmwareHistoryResponse">
+      <wsdl:output message="tns:GetDeviceFirmwareHistoryResponse"
+        name="GetDeviceFirmwareHistoryResponse">
       </wsdl:output>
     </wsdl:operation>
   </wsdl:portType>
 
   <wsdl:binding name="FirmwareManagementPortSoap11" type="tns:FirmwareManagementPort">
-    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+    <soap:binding style="document"
+      transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="UpdateFirmware">
       <soap:operation soapAction="" />
       <wsdl:input name="UpdateFirmwareRequest">
-        <soap:header message="tns:UpdateFirmwareHeader" part="OrganisationIdentification" use="literal" />
-        <soap:header message="tns:UpdateFirmwareHeader" part="UserName" use="literal" />
-        <soap:header message="tns:UpdateFirmwareHeader" part="ApplicationName" use="literal" />
+        <soap:header message="tns:UpdateFirmwareHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:UpdateFirmwareHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:UpdateFirmwareHeader"
+          part="ApplicationName" use="literal" />
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="UpdateFirmwareAsyncResponse">
@@ -499,9 +569,12 @@
     <wsdl:operation name="GetUpdateFirmwareResponse">
       <soap:operation soapAction="" />
       <wsdl:input name="UpdateFirmwareAsyncRequest">
-        <soap:header message="tns:UpdateFirmwareAsyncHeader" part="OrganisationIdentification" use="literal" />
-        <soap:header message="tns:UpdateFirmwareAsyncHeader" part="UserName" use="literal" />
-        <soap:header message="tns:UpdateFirmwareAsyncHeader" part="ApplicationName" use="literal" />
+        <soap:header message="tns:UpdateFirmwareAsyncHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:UpdateFirmwareAsyncHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:UpdateFirmwareAsyncHeader"
+          part="ApplicationName" use="literal" />
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="UpdateFirmwareResponse">
@@ -512,9 +585,12 @@
     <wsdl:operation name="GetFirmwareVersion">
       <soap:operation soapAction="" />
       <wsdl:input name="GetFirmwareVersionRequest">
-        <soap:header message="tns:GetFirmwareVersionHeader" part="OrganisationIdentification" use="literal" />
-        <soap:header message="tns:GetFirmwareVersionHeader" part="UserName" use="literal" />
-        <soap:header message="tns:GetFirmwareVersionHeader" part="ApplicationName" use="literal" />
+        <soap:header message="tns:GetFirmwareVersionHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:GetFirmwareVersionHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:GetFirmwareVersionHeader"
+          part="ApplicationName" use="literal" />
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="GetFirmwareVersionAsyncResponse">
@@ -525,9 +601,12 @@
     <wsdl:operation name="GetGetFirmwareVersionResponse">
       <soap:operation soapAction="" />
       <wsdl:input name="GetFirmwareVersionAsyncRequest">
-        <soap:header message="tns:GetFirmwareVersionAsyncHeader" part="OrganisationIdentification" use="literal" />
-        <soap:header message="tns:GetFirmwareVersionAsyncHeader" part="UserName" use="literal" />
-        <soap:header message="tns:GetFirmwareVersionAsyncHeader" part="ApplicationName" use="literal" />
+        <soap:header message="tns:GetFirmwareVersionAsyncHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:GetFirmwareVersionAsyncHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:GetFirmwareVersionAsyncHeader"
+          part="ApplicationName" use="literal" />
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="GetFirmwareVersionResponse">
@@ -538,9 +617,12 @@
     <wsdl:operation name="SwitchFirmware">
       <soap:operation soapAction="" />
       <wsdl:input name="SwitchFirmwareRequest">
-        <soap:header message="tns:SwitchFirmwareHeader" part="OrganisationIdentification" use="literal" />
-        <soap:header message="tns:SwitchFirmwareHeader" part="UserName" use="literal" />
-        <soap:header message="tns:SwitchFirmwareHeader" part="ApplicationName" use="literal" />
+        <soap:header message="tns:SwitchFirmwareHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:SwitchFirmwareHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:SwitchFirmwareHeader"
+          part="ApplicationName" use="literal" />
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="SwitchFirmwareAsyncResponse">
@@ -551,9 +633,12 @@
     <wsdl:operation name="GetSwitchFirmwareResponse">
       <soap:operation soapAction="" />
       <wsdl:input name="SwitchFirmwareAsyncRequest">
-        <soap:header message="tns:SwitchFirmwareAsyncHeader" part="OrganisationIdentification" use="literal" />
-        <soap:header message="tns:SwitchFirmwareAsyncHeader" part="UserName" use="literal" />
-        <soap:header message="tns:SwitchFirmwareAsyncHeader" part="ApplicationName" use="literal" />
+        <soap:header message="tns:SwitchFirmwareAsyncHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:SwitchFirmwareAsyncHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:SwitchFirmwareAsyncHeader"
+          part="ApplicationName" use="literal" />
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="SwitchFirmwareResponse">
@@ -564,9 +649,12 @@
     <wsdl:operation name="FindAllDeviceModels">
       <soap:operation soapAction="" />
       <wsdl:input name="FindAllDeviceModelsRequest">
-        <soap:header message="tns:FindAllDeviceModelsHeader" part="OrganisationIdentification" use="literal" />
-        <soap:header message="tns:FindAllDeviceModelsHeader" part="UserName" use="literal" />
-        <soap:header message="tns:FindAllDeviceModelsHeader" part="ApplicationName" use="literal" />
+        <soap:header message="tns:FindAllDeviceModelsHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:FindAllDeviceModelsHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:FindAllDeviceModelsHeader"
+          part="ApplicationName" use="literal" />
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="FindAllDeviceModelsResponse">
@@ -577,9 +665,12 @@
     <wsdl:operation name="FindDeviceModel">
       <soap:operation soapAction="" />
       <wsdl:input name="FindDeviceModelRequest">
-        <soap:header message="tns:FindDeviceModelHeader" part="OrganisationIdentification" use="literal" />
-        <soap:header message="tns:FindDeviceModelHeader" part="UserName" use="literal" />
-        <soap:header message="tns:FindDeviceModelHeader" part="ApplicationName" use="literal" />
+        <soap:header message="tns:FindDeviceModelHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:FindDeviceModelHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:FindDeviceModelHeader"
+          part="ApplicationName" use="literal" />
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="FindDeviceModelResponse">
@@ -590,9 +681,12 @@
     <wsdl:operation name="AddDeviceModel">
       <soap:operation soapAction="" />
       <wsdl:input name="AddDeviceModelRequest">
-        <soap:header message="tns:AddDeviceModelHeader" part="OrganisationIdentification" use="literal" />
-        <soap:header message="tns:AddDeviceModelHeader" part="UserName" use="literal" />
-        <soap:header message="tns:AddDeviceModelHeader" part="ApplicationName" use="literal" />
+        <soap:header message="tns:AddDeviceModelHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:AddDeviceModelHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:AddDeviceModelHeader"
+          part="ApplicationName" use="literal" />
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="AddDeviceModelResponse">
@@ -603,9 +697,12 @@
     <wsdl:operation name="ChangeDeviceModel">
       <soap:operation soapAction="" />
       <wsdl:input name="ChangeDeviceModelRequest">
-        <soap:header message="tns:ChangeDeviceModelHeader" part="OrganisationIdentification" use="literal" />
-        <soap:header message="tns:ChangeDeviceModelHeader" part="UserName" use="literal" />
-        <soap:header message="tns:ChangeDeviceModelHeader" part="ApplicationName" use="literal" />
+        <soap:header message="tns:ChangeDeviceModelHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:ChangeDeviceModelHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:ChangeDeviceModelHeader"
+          part="ApplicationName" use="literal" />
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="ChangeDeviceModelResponse">
@@ -616,9 +713,12 @@
     <wsdl:operation name="RemoveDeviceModel">
       <soap:operation soapAction="" />
       <wsdl:input name="RemoveDeviceModelRequest">
-        <soap:header message="tns:RemoveDeviceModelHeader" part="OrganisationIdentification" use="literal" />
-        <soap:header message="tns:RemoveDeviceModelHeader" part="UserName" use="literal" />
-        <soap:header message="tns:RemoveDeviceModelHeader" part="ApplicationName" use="literal" />
+        <soap:header message="tns:RemoveDeviceModelHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:RemoveDeviceModelHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:RemoveDeviceModelHeader"
+          part="ApplicationName" use="literal" />
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="RemoveDeviceModelResponse">
@@ -629,9 +729,12 @@
     <wsdl:operation name="FindAllFirmwares">
       <soap:operation soapAction="" />
       <wsdl:input name="FindAllFirmwaresRequest">
-        <soap:header message="tns:FindAllFirmwaresHeader" part="OrganisationIdentification" use="literal" />
-        <soap:header message="tns:FindAllFirmwaresHeader" part="UserName" use="literal" />
-        <soap:header message="tns:FindAllFirmwaresHeader" part="ApplicationName" use="literal" />
+        <soap:header message="tns:FindAllFirmwaresHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:FindAllFirmwaresHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:FindAllFirmwaresHeader"
+          part="ApplicationName" use="literal" />
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="FindAllFirmwaresResponse">
@@ -642,9 +745,12 @@
     <wsdl:operation name="FindFirmware">
       <soap:operation soapAction="" />
       <wsdl:input name="FindFirmwareRequest">
-        <soap:header message="tns:FindFirmwareHeader" part="OrganisationIdentification" use="literal" />
-        <soap:header message="tns:FindFirmwareHeader" part="UserName" use="literal" />
-        <soap:header message="tns:FindFirmwareHeader" part="ApplicationName" use="literal" />
+        <soap:header message="tns:FindFirmwareHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:FindFirmwareHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:FindFirmwareHeader" part="ApplicationName"
+          use="literal" />
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="FindFirmwareResponse">
@@ -655,9 +761,12 @@
     <wsdl:operation name="SaveCurrentDeviceFirmware">
       <soap:operation soapAction="" />
       <wsdl:input name="SaveCurrentDeviceFirmwareRequest">
-        <soap:header message="tns:SaveCurrentDeviceFirmwareHeader" part="OrganisationIdentification" use="literal" />
-        <soap:header message="tns:SaveCurrentDeviceFirmwareHeader" part="UserName" use="literal" />
-        <soap:header message="tns:SaveCurrentDeviceFirmwareHeader" part="ApplicationName" use="literal" />
+        <soap:header message="tns:SaveCurrentDeviceFirmwareHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:SaveCurrentDeviceFirmwareHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:SaveCurrentDeviceFirmwareHeader"
+          part="ApplicationName" use="literal" />
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="SaveCurrentDeviceFirmwareResponse">
@@ -668,9 +777,12 @@
     <wsdl:operation name="AddFirmware">
       <soap:operation soapAction="" />
       <wsdl:input name="AddFirmwareRequest">
-        <soap:header message="tns:AddFirmwareHeader" part="OrganisationIdentification" use="literal" />
-        <soap:header message="tns:AddFirmwareHeader" part="UserName" use="literal" />
-        <soap:header message="tns:AddFirmwareHeader" part="ApplicationName" use="literal" />
+        <soap:header message="tns:AddFirmwareHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:AddFirmwareHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:AddFirmwareHeader" part="ApplicationName"
+          use="literal" />
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="AddFirmwareResponse">
@@ -681,9 +793,12 @@
     <wsdl:operation name="ChangeFirmware">
       <soap:operation soapAction="" />
       <wsdl:input name="ChangeFirmwareRequest">
-        <soap:header message="tns:ChangeFirmwareHeader" part="OrganisationIdentification" use="literal" />
-        <soap:header message="tns:ChangeFirmwareHeader" part="UserName" use="literal" />
-        <soap:header message="tns:ChangeFirmwareHeader" part="ApplicationName" use="literal" />
+        <soap:header message="tns:ChangeFirmwareHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:ChangeFirmwareHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:ChangeFirmwareHeader"
+          part="ApplicationName" use="literal" />
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="ChangeFirmwareResponse">
@@ -694,9 +809,12 @@
     <wsdl:operation name="RemoveFirmware">
       <soap:operation soapAction="" />
       <wsdl:input name="RemoveFirmwareRequest">
-        <soap:header message="tns:RemoveFirmwareHeader" part="OrganisationIdentification" use="literal" />
-        <soap:header message="tns:RemoveFirmwareHeader" part="UserName" use="literal" />
-        <soap:header message="tns:RemoveFirmwareHeader" part="ApplicationName" use="literal" />
+        <soap:header message="tns:RemoveFirmwareHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:RemoveFirmwareHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:RemoveFirmwareHeader"
+          part="ApplicationName" use="literal" />
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="RemoveFirmwareResponse">
@@ -707,9 +825,12 @@
     <wsdl:operation name="FindAllManufacturers">
       <soap:operation soapAction="" />
       <wsdl:input name="FindAllManufacturersRequest">
-        <soap:header message="tns:FindAllManufacturersHeader" part="OrganisationIdentification" use="literal" />
-        <soap:header message="tns:FindAllManufacturersHeader" part="UserName" use="literal" />
-        <soap:header message="tns:FindAllManufacturersHeader" part="ApplicationName" use="literal" />
+        <soap:header message="tns:FindAllManufacturersHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:FindAllManufacturersHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:FindAllManufacturersHeader"
+          part="ApplicationName" use="literal" />
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="FindAllManufacturersResponse">
@@ -720,9 +841,12 @@
     <wsdl:operation name="AddManufacturer">
       <soap:operation soapAction="" />
       <wsdl:input name="AddManufacturerRequest">
-        <soap:header message="tns:AddManufacturerHeader" part="OrganisationIdentification" use="literal" />
-        <soap:header message="tns:AddManufacturerHeader" part="UserName" use="literal" />
-        <soap:header message="tns:AddManufacturerHeader" part="ApplicationName" use="literal" />
+        <soap:header message="tns:AddManufacturerHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:AddManufacturerHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:AddManufacturerHeader"
+          part="ApplicationName" use="literal" />
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="AddManufacturerResponse">
@@ -733,9 +857,12 @@
     <wsdl:operation name="ChangeManufacturer">
       <soap:operation soapAction="" />
       <wsdl:input name="ChangeManufacturerRequest">
-        <soap:header message="tns:ChangeManufacturerHeader" part="OrganisationIdentification" use="literal" />
-        <soap:header message="tns:ChangeManufacturerHeader" part="UserName" use="literal" />
-        <soap:header message="tns:ChangeManufacturerHeader" part="ApplicationName" use="literal" />
+        <soap:header message="tns:ChangeManufacturerHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:ChangeManufacturerHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:ChangeManufacturerHeader"
+          part="ApplicationName" use="literal" />
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="ChangeManufacturerResponse">
@@ -746,9 +873,12 @@
     <wsdl:operation name="RemoveManufacturer">
       <soap:operation soapAction="" />
       <wsdl:input name="RemoveManufacturerRequest">
-        <soap:header message="tns:RemoveManufacturerHeader" part="OrganisationIdentification" use="literal" />
-        <soap:header message="tns:RemoveManufacturerHeader" part="UserName" use="literal" />
-        <soap:header message="tns:RemoveManufacturerHeader" part="ApplicationName" use="literal" />
+        <soap:header message="tns:RemoveManufacturerHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:RemoveManufacturerHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:RemoveManufacturerHeader"
+          part="ApplicationName" use="literal" />
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="RemoveManufacturerResponse">
@@ -759,9 +889,12 @@
     <wsdl:operation name="GetDeviceFirmwareHistory">
       <soap:operation soapAction="" />
       <wsdl:input name="GetDeviceFirmwareHistoryRequest">
-        <soap:header message="tns:GetDeviceFirmwareHistoryHeader" part="OrganisationIdentification" use="literal" />
-        <soap:header message="tns:GetDeviceFirmwareHistoryHeader" part="UserName" use="literal" />
-        <soap:header message="tns:GetDeviceFirmwareHistoryHeader" part="ApplicationName" use="literal" />
+        <soap:header message="tns:GetDeviceFirmwareHistoryHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:GetDeviceFirmwareHistoryHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:GetDeviceFirmwareHistoryHeader"
+          part="ApplicationName" use="literal" />
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="GetDeviceFirmwareHistoryResponse">
@@ -771,8 +904,10 @@
   </wsdl:binding>
 
   <wsdl:service name="FirmwareManagementPortService">
-    <wsdl:port binding="tns:FirmwareManagementPortSoap11" name="FirmwareManagementPortSoap11">
-      <soap:address location="http://localhost:8080/osgp-adapter-ws-core/common/firmwareManagementService/" />
+    <wsdl:port binding="tns:FirmwareManagementPortSoap11"
+      name="FirmwareManagementPortSoap11">
+      <soap:address
+        location="http://localhost:8080/osgp-adapter-ws-core/common/firmwareManagementService/" />
     </wsdl:port>
   </wsdl:service>
 

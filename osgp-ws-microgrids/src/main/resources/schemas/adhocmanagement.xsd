@@ -1,16 +1,22 @@
-<!-- Copyright 2015 Smart Society Services B.V. Licensed under the Apache License, Version 2.0 (the "License"); you may not 
-  use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 -->
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10"
-  xmlns:tns="http://www.alliander.com/schemas/osgp/microgrids/adhocmanagement/2016/06" attributeFormDefault="unqualified"
-  elementFormDefault="qualified" targetNamespace="http://www.alliander.com/schemas/osgp/microgrids/adhocmanagement/2016/06">
+<!-- Copyright 2015 Smart Society Services B.V. Licensed under the Apache 
+  License, Version 2.0 (the "License"); you may not use this file except in 
+  compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10"
+  xmlns:tns="http://www.alliander.com/schemas/osgp/microgrids/adhocmanagement/2016/06"
+  attributeFormDefault="unqualified" elementFormDefault="qualified"
+  targetNamespace="http://www.alliander.com/schemas/osgp/microgrids/adhocmanagement/2016/06">
 
-  <xsd:import namespace="http://www.alliander.com/schemas/osgp/common/2014/10" schemaLocation="common.xsd" />
+  <xsd:import namespace="http://www.alliander.com/schemas/osgp/common/2014/10"
+    schemaLocation="common.xsd" />
 
   <xsd:element name="GetDataRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="common:Identification" minOccurs="1" maxOccurs="1" />
-        <xsd:element name="System" type="tns:SystemFilter" minOccurs="0" maxOccurs="unbounded" />
+        <xsd:element name="DeviceIdentification" type="common:Identification"
+          minOccurs="1" maxOccurs="1" />
+        <xsd:element name="System" type="tns:SystemFilter"
+          minOccurs="0" maxOccurs="unbounded" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -34,9 +40,12 @@
   <xsd:element name="GetDataResponse">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="Result" type="common:OsgpResultType" minOccurs="1" />
-        <xsd:element name="Report" type="tns:Report" minOccurs="0" maxOccurs="1" />
-        <xsd:element name="System" type="tns:GetDataSystemIdentifier" minOccurs="0" maxOccurs="unbounded" />
+        <xsd:element name="Result" type="common:OsgpResultType"
+          minOccurs="1" />
+        <xsd:element name="Report" type="tns:Report"
+          minOccurs="0" maxOccurs="1" />
+        <xsd:element name="System" type="tns:GetDataSystemIdentifier"
+          minOccurs="0" maxOccurs="unbounded" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -44,8 +53,10 @@
   <xsd:element name="SetDataRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="common:Identification" minOccurs="1" maxOccurs="1" />
-        <xsd:element name="System" type="tns:SetDataSystemIdentifier" minOccurs="0" maxOccurs="unbounded" />
+        <xsd:element name="DeviceIdentification" type="common:Identification"
+          minOccurs="1" maxOccurs="1" />
+        <xsd:element name="System" type="tns:SetDataSystemIdentifier"
+          minOccurs="0" maxOccurs="unbounded" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -69,11 +80,12 @@
   <xsd:element name="SetDataResponse">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="Result" type="common:OsgpResultType" minOccurs="1" />
+        <xsd:element name="Result" type="common:OsgpResultType"
+          minOccurs="1" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
-  
+
   <xsd:complexType name="ReportIdentifier">
     <xsd:attribute name="id" type="xsd:string" use="required" />
   </xsd:complexType>
@@ -106,8 +118,10 @@
     <xsd:complexContent>
       <xsd:extension base="tns:ReportIdentifier">
         <xsd:sequence>
-            <xsd:element name="SequenceNumber" type="xsd:int" minOccurs="1" maxOccurs="1" />
-            <xsd:element name="TimeOfEntry" type="xsd:dateTime" minOccurs="1" maxOccurs="1" />
+          <xsd:element name="SequenceNumber" type="xsd:int"
+            minOccurs="1" maxOccurs="1" />
+          <xsd:element name="TimeOfEntry" type="xsd:dateTime"
+            minOccurs="1" maxOccurs="1" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -117,8 +131,10 @@
     <xsd:complexContent>
       <xsd:extension base="tns:SystemIdentifier">
         <xsd:sequence>
-          <xsd:element name="Measurement" type="tns:Measurement" minOccurs="0" maxOccurs="unbounded" />
-          <xsd:element name="Profile" type="tns:Profile" minOccurs="0" maxOccurs="unbounded" />
+          <xsd:element name="Measurement" type="tns:Measurement"
+            minOccurs="0" maxOccurs="unbounded" />
+          <xsd:element name="Profile" type="tns:Profile"
+            minOccurs="0" maxOccurs="unbounded" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -128,8 +144,10 @@
     <xsd:complexContent>
       <xsd:extension base="tns:SystemIdentifier">
         <xsd:sequence>
-          <xsd:element name="SetPoint" type="tns:SetPoint" minOccurs="0" maxOccurs="unbounded" />
-          <xsd:element name="Profile" type="tns:Profile" minOccurs="0" maxOccurs="unbounded" />
+          <xsd:element name="SetPoint" type="tns:SetPoint"
+            minOccurs="0" maxOccurs="unbounded" />
+          <xsd:element name="Profile" type="tns:Profile"
+            minOccurs="0" maxOccurs="unbounded" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -139,8 +157,10 @@
     <xsd:complexContent>
       <xsd:extension base="tns:SystemIdentifier">
         <xsd:sequence>
-          <xsd:element name="MeasurementFilter" type="tns:MeasurementFilter" minOccurs="0" maxOccurs="unbounded" />
-          <xsd:element name="ProfileFilter" type="tns:ProfileFilter" minOccurs="0" maxOccurs="unbounded" />
+          <xsd:element name="MeasurementFilter" type="tns:MeasurementFilter"
+            minOccurs="0" maxOccurs="unbounded" />
+          <xsd:element name="ProfileFilter" type="tns:ProfileFilter"
+            minOccurs="0" maxOccurs="unbounded" />
         </xsd:sequence>
         <xsd:attribute name="all" type="xsd:boolean" use="optional" />
       </xsd:extension>
@@ -179,7 +199,8 @@
     <xsd:complexContent>
       <xsd:extension base="tns:ProfileIdentifier">
         <xsd:sequence>
-          <xsd:element name="ProfileEntry" type="tns:ProfileEntry" minOccurs="0" maxOccurs="50" />
+          <xsd:element name="ProfileEntry" type="tns:ProfileEntry"
+            minOccurs="0" maxOccurs="50" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -200,9 +221,12 @@
     <xsd:complexContent>
       <xsd:extension base="tns:SetPointIdentifier">
         <xsd:sequence>
-          <xsd:element name="value" type="xsd:double" minOccurs="1" maxOccurs="1" />
-          <xsd:element name="startTime" type="xsd:dateTime" minOccurs="0" maxOccurs="1" />
-          <xsd:element name="endTime" type="xsd:dateTime" minOccurs="0" maxOccurs="1" />
+          <xsd:element name="value" type="xsd:double"
+            minOccurs="1" maxOccurs="1" />
+          <xsd:element name="startTime" type="xsd:dateTime"
+            minOccurs="0" maxOccurs="1" />
+          <xsd:element name="endTime" type="xsd:dateTime"
+            minOccurs="0" maxOccurs="1" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>

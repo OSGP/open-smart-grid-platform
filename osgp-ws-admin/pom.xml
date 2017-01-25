@@ -33,7 +33,7 @@
               <wsdl>true</wsdl>
               <xmlschema>false</xmlschema>
               <staleFile>${project.build.directory}/jaxb2/.schema-device-management-stale-flag</staleFile>
-              <!-- USE THIS ONLU FOR THE FIRST EXECUTION -->
+              <!-- USE THIS ONLY FOR THE FIRST EXECUTION -->
               <clearOutputDir>true</clearOutputDir>
             </configuration>
           </execution>
