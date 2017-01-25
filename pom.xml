@@ -77,12 +77,12 @@
     <module>parent-platform</module>
     <module>Shared/shared</module>
     <module>Shared/osgp-dto</module>
-    <module>osgp-ws-smartmetering</module>
-    <module>osgp-ws-core</module>
-    <module>osgp-ws-admin</module>
-    <module>osgp-ws-tariffswitching</module>
-    <module>osgp-ws-publiclighting</module>
-    <module>osgp-ws-microgrids</module>
+    <module>Shared/osgp-ws-smartmetering</module>
+    <module>Shared/osgp-ws-core</module>
+    <module>Shared/osgp-ws-admin</module>
+    <module>Shared/osgp-ws-tariffswitching</module>
+    <module>Shared/osgp-ws-publiclighting</module>
+    <module>Shared/osgp-ws-microgrids</module>
 
     <!-- Domain -->
     <module>osgp-domain-core</module>
