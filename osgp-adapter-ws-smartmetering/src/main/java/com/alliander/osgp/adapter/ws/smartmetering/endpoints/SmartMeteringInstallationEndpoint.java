@@ -18,6 +18,7 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
+import com.alliander.osgp.adapter.ws.endpointinterceptors.ResponseUrl;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.ScheduleTime;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceAsyncRequest;
@@ -67,7 +68,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
     @ResponsePayload
     public AddDeviceAsyncResponse addDevice(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final AddDeviceRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime) throws OsgpException {
+            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
 
         LOGGER.info("Incoming AddDeviceRequest for meter: {}.", request.getDevice().getDeviceIdentification());
 
@@ -84,7 +85,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDevice().getDeviceIdentification());
-
+            this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final MethodConstraintViolationException e) {
 
             LOGGER.error("Exception: {} while adding device: {} for organisation {}.", new Object[] { e.getMessage(),
@@ -144,7 +145,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
     public CoupleMbusDeviceAsyncResponse coupleMbusDevice(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final CoupleMbusDeviceRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime) throws OsgpException {
+            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
 
         final String deviceIdentification = request.getDeviceIdentification();
         final String mbusDeviceIdentification = request.getMbusDeviceIdentification();
@@ -163,7 +164,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(deviceIdentification);
-
+            this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
 
             LOGGER.error("Exception: {} while coupling devices: {} and {} on channel {} for organisation {}.",
@@ -223,7 +224,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
     public DeCoupleMbusDeviceAsyncResponse deCoupleMbusDevice(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final DeCoupleMbusDeviceRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime) throws OsgpException {
+            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
 
         final String deviceIdentification = request.getDeviceIdentification();
         final String mbusDeviceIdentification = request.getMbusDeviceIdentification();
@@ -241,7 +242,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(deviceIdentification);
-
+            this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
 
             LOGGER.error("Exception: {} while decoupling devices: {} and {} for organisation {}.",
