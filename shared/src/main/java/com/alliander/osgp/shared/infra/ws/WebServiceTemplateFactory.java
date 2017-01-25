@@ -45,9 +45,11 @@ public class WebServiceTemplateFactory {
 
     private static final String NAMESPACE = "http://www.alliander.com/schemas/osp/common";
 
+    private static final String PROXY_SERVER = "proxy-server";
+
     private final Jaxb2Marshaller marshaller;
     private final SaajSoapMessageFactory messageFactory;
-    private String defaultUri;
+    private String targetUri;
     private final String keyStoreType;
     private final String keyStoreLocation;
     private final String keyStorePassword;
@@ -74,11 +76,11 @@ public class WebServiceTemplateFactory {
     }
 
     public WebServiceTemplateFactory(final Jaxb2Marshaller marshaller, final SaajSoapMessageFactory messageFactory,
-            final String defaultUri, final String keyStoreType, final String keyStoreLocation,
+            final String targetUri, final String keyStoreType, final String keyStoreLocation,
             final String keyStorePassword, final KeyStoreFactoryBean trustStoreFactory, final String applicationName) {
         this.marshaller = marshaller;
         this.messageFactory = messageFactory;
-        this.defaultUri = defaultUri;
+        this.targetUri = targetUri;
         this.keyStoreType = keyStoreType;
         this.keyStoreLocation = keyStoreLocation;
         this.keyStorePassword = keyStorePassword;
@@ -92,9 +94,9 @@ public class WebServiceTemplateFactory {
         return this.getTemplate(organisationIdentification, userName, this.applicationName);
     }
 
-    public WebServiceTemplate getTemplate(final String organisationIdentification, final String userName, final URL defaultUri)
+    public WebServiceTemplate getTemplate(final String organisationIdentification, final String userName, final URL targetUri)
             throws WebServiceSecurityException {
-        this.defaultUri = defaultUri.toString();
+        this.targetUri = targetUri.toString();
         return this.getTemplate(organisationIdentification, userName, this.applicationName);
     }
 
@@ -116,8 +118,10 @@ public class WebServiceTemplateFactory {
             this.lock.lock();
 
             // Create new webservice template, if not yet available for
-            // organisation
-            final String key = organisationIdentification.concat("-").concat(userName).concat(applicationName);
+            // a combination of organisation, username, applicationName and targetUri
+            final String url =  (this.targetUri == null) ? "" : "-" + this.targetUri;
+            final String key = organisationIdentification.concat("-").concat(userName).concat(applicationName).concat(url);
+
             if (!this.webServiceTemplates.containsKey(key)) {
                 this.webServiceTemplates.put(key,
                         this.createTemplate(organisationIdentification, userName, applicationName));
@@ -136,9 +140,9 @@ public class WebServiceTemplateFactory {
         final WebServiceTemplate webServiceTemplate = new WebServiceTemplate(this.messageFactory);
 
         webServiceTemplate.setCheckConnectionForFault(true);
-        if (this.defaultUri != null) {
-            webServiceTemplate.setDefaultUri(this.defaultUri);
-            if (this.defaultUri.contains("proxy-server")) {
+        if (this.targetUri != null) {
+            webServiceTemplate.setDefaultUri(this.targetUri);
+            if (this.targetUri.contains(PROXY_SERVER)) {
                 webServiceTemplate.setCheckConnectionForFault(false);
             }
         }
