@@ -12,6 +12,7 @@
   <xsd:element name="ApplicationName" type="tns:Identification" />
   <xsd:element name="MessagePriority" type="tns:MessagePriority" />
   <xsd:element name="ScheduleTime" type="tns:ScheduleTime" />
+  <xsd:element name="ResponseUrl" type="tns:ResponseUrl" />
 
   <xsd:simpleType name="MessagePriority">
     <xsd:restriction base="xsd:int">
@@ -31,6 +32,15 @@
       <xsd:pattern value="[^ ]{0,40}" />
     </xsd:restriction>
   </xsd:simpleType>
+
+
+  <xsd:simpleType name="ResponseUrl">
+    <xsd:restriction base="xsd:anyURI">
+      <xsd:minLength value="10" />
+      <xsd:pattern value="https?://.+" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
 
   <xsd:simpleType name="DeviceIdentification">
     <xsd:restriction base="tns:AlphaNumericType">
