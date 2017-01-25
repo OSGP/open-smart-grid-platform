@@ -180,8 +180,6 @@ public class OslpDeviceSteps {
      * Setup method to start a device which should be returned by the mock.
      *
      * @param result
-     *            <<<<<<< HEAD ======= The start device to respond. >>>>>>>
-     *            5cd21de2aff88ede791d68e390eb6b2eb8f5de7a
      * @throws Throwable
      */
     @Given("^the device returns a start device response \"([^\"]*)\" over OSLP$")
@@ -201,8 +199,6 @@ public class OslpDeviceSteps {
      * Setup method to stop a device which should be returned by the mock.
      *
      * @param result
-     *            <<<<<<< HEAD ======= The stop device to respond. >>>>>>>
-     *            5cd21de2aff88ede791d68e390eb6b2eb8f5de7a
      * @throws Throwable
      */
     @Given("^the device returns a stop device response \"([^\"]*)\" over OSLP$")
@@ -397,11 +393,8 @@ public class OslpDeviceSteps {
     /**
      * Verify that a set light OSLP message is sent to the device.
      *
-     * <<<<<<< HEAD
-     *
      * @param expectedParameters
-     *            The parameters expected in the message of the device. =======
-     *            >>>>>>> 5cd21de2aff88ede791d68e390eb6b2eb8f5de7a
+     *            The parameters expected in the message of the device.
      * @throws Throwable
      */
     @Then("^a set light OSLP message with one light value is sent to the device$")
@@ -440,8 +433,7 @@ public class OslpDeviceSteps {
     }
 
     /**
-     * <<<<<<< HEAD Verify that a get actual power usage OSLP message is sent to
-     * the device.
+     * Verify that a get actual power usage OSLP message is sent to the device.
      *
      */
     @Then("^a get actual power usage OSLP message is sent to the device$")
@@ -484,8 +476,7 @@ public class OslpDeviceSteps {
     }
 
     /**
-     * ======= >>>>>>> 5cd21de2aff88ede791d68e390eb6b2eb8f5de7a Verify that a
-     * event notification OSLP message is sent to the device.
+     * Verify that an event notification OSLP message is sent to the device.
      *
      * @param deviceIdentification
      *            The device identification expected in the message to the
