@@ -37,18 +37,23 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.oslp.Oslp;
+import com.alliander.osgp.oslp.Oslp.DaliConfiguration;
 import com.alliander.osgp.oslp.Oslp.GetConfigurationResponse;
 import com.alliander.osgp.oslp.Oslp.GetFirmwareVersionResponse;
 import com.alliander.osgp.oslp.Oslp.GetStatusResponse;
 import com.alliander.osgp.oslp.Oslp.GetStatusResponse.Builder;
+import com.alliander.osgp.oslp.Oslp.IndexAddressMap;
 import com.alliander.osgp.oslp.Oslp.LightType;
 import com.alliander.osgp.oslp.Oslp.LightValue;
 import com.alliander.osgp.oslp.Oslp.LinkType;
+import com.alliander.osgp.oslp.Oslp.LongTermIntervalType;
 import com.alliander.osgp.oslp.Oslp.Message;
 import com.alliander.osgp.oslp.Oslp.MeterType;
 import com.alliander.osgp.oslp.Oslp.PowerUsageData;
 import com.alliander.osgp.oslp.Oslp.PsldData;
+import com.alliander.osgp.oslp.Oslp.RelayConfiguration;
 import com.alliander.osgp.oslp.Oslp.RelayData;
+import com.alliander.osgp.oslp.Oslp.RelayType;
 import com.alliander.osgp.oslp.Oslp.ResumeScheduleResponse;
 import com.alliander.osgp.oslp.Oslp.SetDeviceVerificationKeyResponse;
 import com.alliander.osgp.oslp.Oslp.SetEventNotificationsResponse;
@@ -67,6 +72,7 @@ import com.alliander.osgp.oslp.OslpUtils;
 import com.alliander.osgp.platform.cucumber.config.CoreDeviceConfiguration;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.shared.security.CertificateHelper;
+import com.google.protobuf.ByteString;
 
 @Component
 public class MockOslpServer {
@@ -236,9 +242,54 @@ public class MockOslpServer {
         return CertificateHelper.createPrivateKey(this.signKeyPath, this.keytype, this.oslpSignatureProvider);
     }
 
-    public void mockConfigurationResponse(final Status oslpStatus) {
-        this.mockResponses.put(DeviceRequestMessageType.GET_CONFIGURATION, Oslp.Message.newBuilder()
-                .setGetConfigurationResponse(GetConfigurationResponse.newBuilder().setStatus(oslpStatus)).build());
+    public void mockConfigurationResponse(final Status oslpStatus, final LightType lightType, final Integer dcLights,
+            final String dcMap, final RelayType rcType, final String rcMap, final LinkType preferredLinkType,
+            final MeterType meterType, final Integer shortInterval, final Integer longInterval,
+            final LongTermIntervalType intervalType) {
+
+        final String[] dcMapArray = dcMap.split(",");
+        final String[] rcMapArray = rcMap.split(",");
+
+        final GetConfigurationResponse.Builder builder = GetConfigurationResponse.newBuilder();
+
+        builder.setStatus(oslpStatus);
+        if (lightType != null && lightType != LightType.LT_NOT_SET) {
+            builder.setLightType(lightType);
+        }
+
+        final RelayConfiguration.Builder relayConfigurationBuilder = RelayConfiguration.newBuilder();
+        if (!rcMapArray[0].isEmpty() && rcType != RelayType.RT_NOT_SET) {
+            relayConfigurationBuilder
+                    .addAddressMap(IndexAddressMap.newBuilder().setIndex(ByteString.copyFromUtf8(rcMapArray[0]))
+                            .setAddress(ByteString.copyFromUtf8(rcMapArray[1])).setRelayType(rcType));
+            builder.setRelayConfiguration(relayConfigurationBuilder.build());
+        }
+
+        final DaliConfiguration.Builder daliConfigurationBuilder = DaliConfiguration.newBuilder();
+        if (!dcMapArray[0].isEmpty() && dcLights != RelayType.RT_NOT_SET_VALUE) {
+            daliConfigurationBuilder.addAddressMap(IndexAddressMap.newBuilder()
+                    .setIndex(ByteString.copyFromUtf8(dcMapArray[0])).setAddress(ByteString.copyFromUtf8(dcMapArray[1]))
+                    .setRelayType(RelayType.valueOf(dcLights)));
+            builder.setDaliConfiguration(daliConfigurationBuilder.build());
+        }
+
+        if (preferredLinkType != null && preferredLinkType != LinkType.LINK_NOT_SET) {
+            builder.setPreferredLinkType(preferredLinkType);
+        }
+
+        if (meterType != null && meterType != MeterType.MT_NOT_SET) {
+            builder.setMeterType(meterType);
+        }
+
+        builder.setShortTermHistoryIntervalMinutes(shortInterval);
+        builder.setLongTermHistoryInterval(longInterval);
+
+        if (intervalType != null && intervalType != LongTermIntervalType.LT_INT_NOT_SET) {
+            builder.setLongTermHistoryIntervalType(intervalType);
+        }
+
+        this.mockResponses.put(DeviceRequestMessageType.GET_CONFIGURATION,
+                Oslp.Message.newBuilder().setGetConfigurationResponse(builder).build());
     }
 
     public void mockFirmwareResponse(final String fwVersion) {

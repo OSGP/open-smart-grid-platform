@@ -7,10 +7,12 @@
  */
 package com.alliander.osgp.platform.cucumber.steps.ws.core.configurationmanagement;
 
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getEnum;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.saveCorrelationUidInScenarioContext;
 
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 import org.junit.Assert;
 import org.slf4j.Logger;
@@ -95,7 +97,7 @@ public class GetConfigurationSteps {
     }
 
     @Then("^the platform buffers a get configuration response message for device \"([^\"]*)\"$")
-    public void thePlatformBufferesAGetConfigurationResponseMessage(final String deviceIdentification,
+    public void thePlatformBufferesAGetConfigurationResponseMessageForDevice(final String deviceIdentification,
             final Map<String, String> expectedResponseData) throws Throwable {
         final GetConfigurationAsyncRequest request = new GetConfigurationAsyncRequest();
         final AsyncRequest asyncRequest = new AsyncRequest();
@@ -106,23 +108,34 @@ public class GetConfigurationSteps {
         boolean success = false;
         int count = 0;
         while (!success) {
-            if (count > this.configuration.defaultTimeout) {
-                Assert.fail("Timeout");
+            if (count > this.configuration.getTimeout()) {
+                throw new TimeoutException();
             }
 
             count++;
             Thread.sleep(1000);
 
-            try {
-                final GetConfigurationResponse response = this.client.getGetConfiguration(request);
+            final GetConfigurationResponse response = this.client.getGetConfiguration(request);
 
-                Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResponseData.get(Keys.KEY_RESULT)),
-                        response.getResult());
-
-                success = true;
-            } catch (final Exception ex) {
-                LOGGER.debug(ex.getMessage());
+            if (!expectedResponseData.containsKey(Keys.KEY_RESULT)
+                    || getEnum(expectedResponseData, Keys.KEY_RESULT, OsgpResultType.class) == response.getResult()) {
+                continue;
             }
+
+            success = true;
+        }
+    }
+
+    @Then("^the platform buffers a get configuration response message for device \"([^\"]*)\" contains soap fault$")
+    public void thePlatformBufferesAGetConfigurationResponseMessageForDeviceContainsSoapFault(
+            final String deviceIdentification, final Map<String, String> expectedResponseData) throws Throwable {
+        try {
+            this.thePlatformBufferesAGetConfigurationResponseMessageForDevice(deviceIdentification,
+                    expectedResponseData);
+        } catch (final SoapFaultClientException ex) {
+            // Note: The exception returns always the string "Exception occurred
+            // while getting device configuration"
+            Assert.assertEquals(getString(expectedResponseData, Keys.KEY_MESSAGE), ex.getMessage());
         }
     }
 }

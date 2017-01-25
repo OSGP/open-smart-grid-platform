@@ -40,8 +40,10 @@ import com.alliander.osgp.oslp.Oslp.HistoryTermType;
 import com.alliander.osgp.oslp.Oslp.LightType;
 import com.alliander.osgp.oslp.Oslp.LightValue;
 import com.alliander.osgp.oslp.Oslp.LinkType;
+import com.alliander.osgp.oslp.Oslp.LongTermIntervalType;
 import com.alliander.osgp.oslp.Oslp.Message;
 import com.alliander.osgp.oslp.Oslp.MeterType;
+import com.alliander.osgp.oslp.Oslp.RelayType;
 import com.alliander.osgp.oslp.Oslp.ResumeScheduleRequest;
 import com.alliander.osgp.oslp.Oslp.Schedule;
 import com.alliander.osgp.oslp.Oslp.SetScheduleRequest;
@@ -99,16 +101,33 @@ public class OslpDeviceSteps {
      *            The status to respond.
      * @throws Throwable
      */
-    @Given("^the device returns configuration status \"([^\"]*)\" over OSLP$")
-    public void theDeviceReturnsConfigurationStatusOverOSLP(final String status) throws Throwable {
+    @Given("^the device returns configuration status over OSLP$")
+    public void theDeviceReturnsConfigurationStatusOverOSLP(final Map<String, String> requestParameters)
+            throws Throwable {
         Oslp.Status oslpStatus = Status.OK;
 
-        switch (status) {
+        switch (getString(requestParameters, Keys.KEY_STATUS)) {
         case "OK":
             oslpStatus = Status.OK;
+            break;
+        case "FAILURE":
+            oslpStatus = Status.FAILURE;
+            break;
+        case "REJECTED":
+            oslpStatus = Status.REJECTED;
             // TODO: Implement other possible status
         }
-        this.oslpMockServer.mockConfigurationResponse(oslpStatus);
+
+        this.oslpMockServer.mockConfigurationResponse(oslpStatus,
+                getEnum(requestParameters, Keys.KEY_LIGHTTYPE, LightType.class),
+                getInteger(requestParameters, Keys.DC_LIGHTS, Defaults.DC_LIGHTS),
+                getString(requestParameters, Keys.DC_MAP), getEnum(requestParameters, Keys.RC_TYPE, RelayType.class),
+                getString(requestParameters, Keys.RC_MAP),
+                getEnum(requestParameters, Keys.KEY_PREFERRED_LINKTYPE, LinkType.class),
+                getEnum(requestParameters, Keys.METER_TYPE, MeterType.class),
+                getInteger(requestParameters, Keys.SHORT_INTERVAL, Defaults.SHORT_INTERVAL),
+                getInteger(requestParameters, Keys.LONG_INTERVAL, Defaults.LONG_INTERVAL),
+                getEnum(requestParameters, Keys.INTERVAL_TYPE, LongTermIntervalType.class));
     }
 
     /**
