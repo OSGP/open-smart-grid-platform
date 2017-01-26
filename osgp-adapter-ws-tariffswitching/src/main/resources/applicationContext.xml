@@ -13,32 +13,6 @@
 
     <sws:annotation-driven/>
 
- 	<sws:static-wsdl id="TariffSwitchingAdHocManagement" location="/WEB-INF/wsdl/tariffswitching/TariffSwitchingAdHocManagement.wsdl"/>
- 	<sws:static-wsdl id="TariffSwitchingScheduleManagement" location="/WEB-INF/wsdl/tariffswitching/TariffSwitchingScheduleManagement.wsdl"/>
- 	
- 	<bean id="common" class="org.springframework.xml.xsd.SimpleXsdSchema">
-        <property name="xsd" value="/WEB-INF/wsdl/tariffswitching/schemas/common.xsd" />
-    </bean>
-    
-    <bean id="ts-adhocmanagement" class="org.springframework.xml.xsd.SimpleXsdSchema">
-        <property name="xsd" value="/WEB-INF/wsdl/tariffswitching/schemas/ts-adhocmanagement.xsd" />
-    </bean>
-
-    <bean id="ts-schedulemanagement" class="org.springframework.xml.xsd.SimpleXsdSchema">
-        <property name="xsd" value="/WEB-INF/wsdl/tariffswitching/schemas/ts-schedulemanagement.xsd" />
-    </bean>
-    
-
-	<bean id="payloadValidatingInterceptor" class="org.springframework.ws.soap.server.endpoint.interceptor.PayloadValidatingInterceptor">
-		<property name="schemas">
-			<list>
-				<value>/WEB-INF/wsdl/tariffswitching/schemas/*.xsd</value>
-			</list>			
-		</property>
-		<property name="validateRequest" value="true" />
-		<property name="validateResponse" value="false" />	
-	</bean>
-
     <sws:interceptors>
         <ref bean="x509CertificateSubjectCnEndpointInterceptor"/>
         <ref bean="organisationIdentificationInterceptor"/>

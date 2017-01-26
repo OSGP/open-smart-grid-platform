@@ -22,6 +22,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
 import com.alliander.osgp.shared.application.config.AbstractConfig;
+import com.alliander.osgp.ws.tariffswitching.config.TariffSwitchingWebServiceConfig;
 
 /**
  * An application context Java configuration class. The usage of Java
@@ -31,12 +32,11 @@ import com.alliander.osgp.shared.application.config.AbstractConfig;
 @ComponentScan(basePackages = { "com.alliander.osgp.domain.core", "com.alliander.osgp.adapter.ws.tariffswitching" })
 @EnableTransactionManagement()
 @ImportResource("classpath:applicationContext.xml")
-@Import({ PersistenceConfig.class, MessagingConfig.class, WebServiceConfig.class })
-@PropertySources({
-	@PropertySource("classpath:osgp-adapter-ws-tariffswitching.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "file:${osgp/AdapterWsTariffSwitching/config}", ignoreResourceNotFound = true),
-})
+@Import({ PersistenceConfig.class, MessagingConfig.class, WebServiceConfig.class,
+        TariffSwitchingWebServiceConfig.class })
+@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-tariffswitching.properties"),
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/AdapterWsTariffSwitching/config}", ignoreResourceNotFound = true), })
 public class ApplicationContext extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);

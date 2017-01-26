@@ -25,74 +25,74 @@ import com.alliander.osgp.domain.core.specifications.EventSpecifications;
 import com.alliander.osgp.logging.domain.config.ReadOnlyLoggingConfig;
 import com.alliander.osgp.shared.application.config.AbstractConfig;
 import com.alliander.osgp.shared.application.config.PagingSettings;
+import com.alliander.osgp.ws.admin.config.AdminWebServiceConfig;
 
 /**
  * An application context Java configuration class.
  */
 @Configuration
 @ComponentScan(basePackages = { "com.alliander.osgp.domain.core", "com.alliander.osgp.adapter.ws.admin",
-		"com.alliander.osgp.logging.domain" })
+        "com.alliander.osgp.logging.domain" })
 @ImportResource("classpath:applicationContext.xml")
-@Import({ MessagingConfig.class, PersistenceConfig.class, WebServiceConfig.class, ReadOnlyLoggingConfig.class })
-@PropertySources({
-	@PropertySource("classpath:osgp-adapter-ws-admin.properties"),
-	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-    @PropertySource(value = "file:${osgp/AdapterWsAdmin/config}", ignoreResourceNotFound = true),
-})
+@Import({ MessagingConfig.class, PersistenceConfig.class, WebServiceConfig.class, ReadOnlyLoggingConfig.class,
+        AdminWebServiceConfig.class })
+@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-admin.properties"),
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/AdapterWsAdmin/config}", ignoreResourceNotFound = true), })
 public class ApplicationContext extends AbstractConfig {
 
-	private static final String PROPERTY_NAME_DEFAULT_PROTOCOL = "default.protocol";
-	private static final String PROPERTY_NAME_DEFAULT_PROTOCOL_VERSION = "default.protocol.version";
+    private static final String PROPERTY_NAME_DEFAULT_PROTOCOL = "default.protocol";
+    private static final String PROPERTY_NAME_DEFAULT_PROTOCOL_VERSION = "default.protocol.version";
 
-	private static final String PROPERTY_NAME_RECENT_DEVICES_PERIOD = "recent.devices.period";
+    private static final String PROPERTY_NAME_RECENT_DEVICES_PERIOD = "recent.devices.period";
 
-	private static final String PROPERTY_NAME_PAGING_MAXIMUM_PAGE_SIZE = "paging.maximum.pagesize";
-	private static final String PROPERTY_NAME_PAGING_DEFAULT_PAGE_SIZE = "paging.default.pagesize";
+    private static final String PROPERTY_NAME_PAGING_MAXIMUM_PAGE_SIZE = "paging.maximum.pagesize";
+    private static final String PROPERTY_NAME_PAGING_DEFAULT_PAGE_SIZE = "paging.default.pagesize";
 
-	@Bean
-	public String defaultProtocol() {
-		return this.environment.getRequiredProperty(PROPERTY_NAME_DEFAULT_PROTOCOL);
-	}
+    @Bean
+    public String defaultProtocol() {
+        return this.environment.getRequiredProperty(PROPERTY_NAME_DEFAULT_PROTOCOL);
+    }
 
-	@Bean
-	public String defaultProtocolVersion() {
-		return this.environment.getRequiredProperty(PROPERTY_NAME_DEFAULT_PROTOCOL_VERSION);
-	}
+    @Bean
+    public String defaultProtocolVersion() {
+        return this.environment.getRequiredProperty(PROPERTY_NAME_DEFAULT_PROTOCOL_VERSION);
+    }
 
-	@Bean
-	public Integer recentDevicesPeriod() {
-		return Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_RECENT_DEVICES_PERIOD));
-	}
+    @Bean
+    public Integer recentDevicesPeriod() {
+        return Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_RECENT_DEVICES_PERIOD));
+    }
 
-	@Bean
-	public PagingSettings pagingSettings() {
-		return new PagingSettings(
-				Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_PAGING_MAXIMUM_PAGE_SIZE)),
-				Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_PAGING_DEFAULT_PAGE_SIZE)));
-	}
+    @Bean
+    public PagingSettings pagingSettings() {
+        return new PagingSettings(
+                Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_PAGING_MAXIMUM_PAGE_SIZE)),
+                Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_PAGING_DEFAULT_PAGE_SIZE)));
+    }
 
-	@Bean
-	public EventSpecifications eventSpecifications() {
-		return new JpaEventSpecifications();
-	}
+    @Bean
+    public EventSpecifications eventSpecifications() {
+        return new JpaEventSpecifications();
+    }
 
-	@Bean
-	public DeviceSpecifications deviceSpecifications() {
-		return new JpaDeviceSpecifications();
-	}
+    @Bean
+    public DeviceSpecifications deviceSpecifications() {
+        return new JpaDeviceSpecifications();
+    }
 
-	@Bean
-	public LocalValidatorFactoryBean validator() {
-		final LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
-		final org.springframework.core.io.Resource[] resources = { new ClassPathResource("constraint-mappings.xml") };
-		localValidatorFactoryBean.setMappingLocations(resources);
-		return localValidatorFactoryBean;
-	}
+    @Bean
+    public LocalValidatorFactoryBean validator() {
+        final LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
+        final org.springframework.core.io.Resource[] resources = { new ClassPathResource("constraint-mappings.xml") };
+        localValidatorFactoryBean.setMappingLocations(resources);
+        return localValidatorFactoryBean;
+    }
 
-	@Bean
-	public MethodValidationPostProcessor methodValidationPostProcessor() {
-		final MethodValidationPostProcessor m = new MethodValidationPostProcessor();
-		m.setValidatorFactory(this.validator());
-		return m;
-	}
+    @Bean
+    public MethodValidationPostProcessor methodValidationPostProcessor() {
+        final MethodValidationPostProcessor m = new MethodValidationPostProcessor();
+        m.setValidatorFactory(this.validator());
+        return m;
+    }
 }

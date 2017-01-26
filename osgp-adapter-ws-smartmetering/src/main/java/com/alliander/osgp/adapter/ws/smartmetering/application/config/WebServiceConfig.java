@@ -338,8 +338,8 @@ public class WebServiceConfig extends AbstractConfig {
                 OrganisationIdentification.class));
         methodArgumentResolvers
                 .add(new AnnotationMethodArgumentResolver(MESSAGE_PRIORITY_HEADER, MessagePriority.class));
-        methodArgumentResolvers.add(new AnnotationMethodArgumentResolver(MESSAGE_SCHEDULETIME_HEADER,
-                ScheduleTime.class));
+        methodArgumentResolvers
+                .add(new AnnotationMethodArgumentResolver(MESSAGE_SCHEDULETIME_HEADER, ScheduleTime.class));
         methodArgumentResolvers
                 .add(new AnnotationMethodArgumentResolver(MESSAGE_RESPONSE_URL_HEADER, ResponseUrl.class));
         defaultMethodEndpointAdapter.setMethodArgumentResolvers(methodArgumentResolvers);
