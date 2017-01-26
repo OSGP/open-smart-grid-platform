@@ -7,12 +7,12 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.steps.ws.publiclighting.adhocmanagement;
+package com.alliander.osgp.automatictests.platform.glue.steps.ws.publiclighting.adhocmanagement;
 
-import static com.alliander.osgp.platform.cucumber.core.Helpers.getBoolean;
-import static com.alliander.osgp.platform.cucumber.core.Helpers.getInteger;
-import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
-import static com.alliander.osgp.platform.cucumber.core.Helpers.saveCorrelationUidInScenarioContext;
+import static com.alliander.osgp.automatictests.platform.core.Helpers.getBoolean;
+import static com.alliander.osgp.automatictests.platform.core.Helpers.getInteger;
+import static com.alliander.osgp.automatictests.platform.core.Helpers.getString;
+import static com.alliander.osgp.automatictests.platform.core.Helpers.saveCorrelationUidInScenarioContext;
 
 import java.util.Map;
 
@@ -28,12 +28,12 @@ import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.Resum
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.ResumeScheduleResponse;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.AsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.OsgpResultType;
-import com.alliander.osgp.platform.cucumber.config.CoreDeviceConfiguration;
-import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
-import com.alliander.osgp.platform.cucumber.steps.Defaults;
-import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.steps.ws.GenericResponseSteps;
-import com.alliander.osgp.platform.cucumber.support.ws.publiclighting.PublicLightingAdHocManagementClient;
+import com.alliander.osgp.automatictests.platform.config.CoreDeviceConfiguration;
+import com.alliander.osgp.automatictests.platform.core.ScenarioContext;
+import com.alliander.osgp.automatictests.platform.glue.steps.ws.GenericResponseSteps;
+import com.alliander.osgp.automatictests.platform.Defaults;
+import com.alliander.osgp.automatictests.platform.Keys;
+import com.alliander.osgp.automatictests.platform.support.ws.publiclighting.PublicLightingAdHocManagementClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -63,9 +63,9 @@ public class ResumeScheduleSteps {
 
         final ResumeScheduleRequest request = new ResumeScheduleRequest();
 
-        request.setDeviceIdentification(getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION));
-        request.setIndex(getInteger(requestParameters, Keys.KEY_INDEX, Defaults.DEFAULT_INDEX));
-        request.setIsImmediate(getBoolean(requestParameters, Keys.KEY_ISIMMEDIATE, Defaults.DEFAULT_ISIMMEDIATE));
+        request.setDeviceIdentification(getString(requestParameters, Keys.DEVICE_IDENTIFICATION));
+        request.setIndex(getInteger(requestParameters, Keys.INDEX, Defaults.INDEX));
+        request.setIsImmediate(getBoolean(requestParameters, Keys.ISIMMEDIATE, Defaults.ISIMMEDIATE));
 
         try {
             ScenarioContext.Current().put(Keys.RESPONSE, this.client.resumeScheduleStatus(request));
@@ -78,7 +78,7 @@ public class ResumeScheduleSteps {
     public void receivingASetResumeScheduleByAnUnknownOrganization(final Map<String, String> requestParameters)
             throws Throwable {
         // Force the request being send to the platform as a given organization.
-        ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
+        ScenarioContext.Current().put(Keys.ORGANIZATION_IDENTIFICATION, "unknown-organization");
 
         this.receivingAResumeScheduleRequest(requestParameters);
     }
@@ -99,24 +99,24 @@ public class ResumeScheduleSteps {
                 .get(Keys.RESPONSE);
 
         Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
-        Assert.assertEquals(getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION),
+        Assert.assertEquals(getString(expectedResponseData, Keys.DEVICE_IDENTIFICATION),
                 response.getAsyncResponse().getDeviceId());
 
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.
         saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
-                getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                        Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+                getString(expectedResponseData, Keys.ORGANIZATION_IDENTIFICATION,
+                        Defaults.ORGANIZATION_IDENTIFICATION));
 
-        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
+        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.CORRELATION_UID) + "]");
     }
 
     @Then("^the platform buffers a resume schedule response message for device \"([^\"]*)\"$")
     public void thenThePlatformBuffersAResumeScheduleResponseMessage(final String deviceIdentification,
             final Map<String, String> expectedResult) throws Throwable {
         final ResumeScheduleResponse response = this.getResponseWithCorrelationUID(deviceIdentification,
-                (String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
-        Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.KEY_RESULT)),
+                (String) ScenarioContext.Current().get(Keys.CORRELATION_UID));
+        Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.RESULT)),
                 response.getResult());
     }
 
@@ -135,7 +135,7 @@ public class ResumeScheduleSteps {
             this.getResponseWithCorrelationUID(deviceIdentification,
                     asyncResponse.getAsyncResponse().getCorrelationUid());
         } catch (final SoapFaultClientException ex) {
-            Assert.assertEquals(getString(expectedResult, Keys.KEY_FAULTSTRING), ex.getFaultStringOrReason());
+            Assert.assertEquals(getString(expectedResult, Keys.FAULTSTRING), ex.getFaultStringOrReason());
         }
     }
 

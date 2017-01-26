@@ -129,22 +129,13 @@ public class CreateDeviceSteps extends StepsBase {
         deviceModel.setModelCode(
                 getString(settings, Keys.DEVICE_MODEL_MODELCODE, Defaults.DEVICE_MODEL_MODEL_CODE));
         device.setDeviceModel(deviceModel);
-<<<<<<< HEAD:automatictests-platform/src/test/java/com/alliander/osgp/automatictests/platform/glue/steps/ws/core/deviceinstallation/CreateDeviceSteps.java
         device.setDeviceUid(getString(settings, Keys.DEVICE_UID, OslpDeviceSteps.DEFAULT_DEVICE_UID));
         device.setGpsLatitude(getFloat(settings, Keys.LATITUDE, Defaults.LATITUDE));
         device.setGpsLongitude(getFloat(settings, Keys.LONGITUDE, Defaults.LONGITUDE));
         device.setHasSchedule(getBoolean(settings, Keys.HAS_SCHEDULE, Defaults.HASSCHEDULE));
         device.setOwner(getString(settings, Keys.OWNER, Defaults.OWNER));
         device.setPublicKeyPresent(getBoolean(settings, Keys.PUBLICKEYPRESENT, Defaults.PUBLICKEYPRESENT));
-=======
-        device.setDeviceUid(getString(settings, Keys.KEY_DEVICE_UID, OslpDeviceSteps.DEFAULT_DEVICE_UID));
-        device.setGpsLatitude(getFloat(settings, Keys.KEY_LATITUDE, Defaults.DEFAULT_LATITUDE));
-        device.setGpsLongitude(getFloat(settings, Keys.KEY_LONGITUDE, Defaults.DEFAULT_LONGITUDE));
-        device.setHasSchedule(getBoolean(settings, Keys.KEY_HAS_SCHEDULE, Defaults.DEFAULT_HASSCHEDULE));
-        device.setOwner(getString(settings, Keys.KEY_OWNER, Defaults.DEFAULT_OWNER));
-        device.setPublicKeyPresent(getBoolean(settings, Keys.KEY_PUBLICKEYPRESENT, Defaults.DEFAULT_PUBLICKEYPRESENT));
-        device.setActivated(getBoolean(settings, Keys.KEY_ACTIVATED, Defaults.DEFAULT_ACTIVATED));
->>>>>>> 3ccf56a85cff1219f2d93ef91f86a3dd8e3e9de3:cucumber-tests-platform/src/test/java/com/alliander/osgp/platform/cucumber/steps/ws/core/deviceinstallation/CreateDeviceSteps.java
+        device.setActivated(getBoolean(settings, Keys.ACTIVATED, Defaults.ACTIVATED));
 
         return device;
     }

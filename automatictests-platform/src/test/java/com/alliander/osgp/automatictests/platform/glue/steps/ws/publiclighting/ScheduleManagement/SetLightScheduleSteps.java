@@ -7,12 +7,12 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.steps.ws.publiclighting.ScheduleManagement;
+package com.alliander.osgp.automatictests.platform.glue.steps.ws.publiclighting.ScheduleManagement;
 
-import static com.alliander.osgp.platform.cucumber.core.Helpers.getDate;
-import static com.alliander.osgp.platform.cucumber.core.Helpers.getEnum;
-import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
-import static com.alliander.osgp.platform.cucumber.core.Helpers.saveCorrelationUidInScenarioContext;
+import static com.alliander.osgp.automatictests.platform.core.Helpers.getDate;
+import static com.alliander.osgp.automatictests.platform.core.Helpers.getEnum;
+import static com.alliander.osgp.automatictests.platform.core.Helpers.getString;
+import static com.alliander.osgp.automatictests.platform.core.Helpers.saveCorrelationUidInScenarioContext;
 
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
@@ -40,12 +40,12 @@ import com.alliander.osgp.adapter.ws.schema.publiclighting.schedulemanagement.Se
 import com.alliander.osgp.adapter.ws.schema.publiclighting.schedulemanagement.TriggerType;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.schedulemanagement.WeekDayType;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.schedulemanagement.WindowType;
-import com.alliander.osgp.platform.cucumber.config.CoreDeviceConfiguration;
-import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
-import com.alliander.osgp.platform.cucumber.steps.Defaults;
-import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.steps.ws.GenericResponseSteps;
-import com.alliander.osgp.platform.cucumber.support.ws.publiclighting.PublicLightingScheduleManagementClient;
+import com.alliander.osgp.automatictests.platform.config.CoreDeviceConfiguration;
+import com.alliander.osgp.automatictests.platform.core.ScenarioContext;
+import com.alliander.osgp.automatictests.platform.glue.steps.ws.GenericResponseSteps;
+import com.alliander.osgp.automatictests.platform.Defaults;
+import com.alliander.osgp.automatictests.platform.Keys;
+import com.alliander.osgp.automatictests.platform.support.ws.publiclighting.PublicLightingScheduleManagementClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -97,7 +97,7 @@ public class SetLightScheduleSteps {
 
         final SetScheduleRequest request = new SetScheduleRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+                getString(requestParameters, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
         if (requestParameters.containsKey(Keys.SCHEDULE_SCHEDULEDTIME)) {
             request.setScheduledTime(DatatypeFactory.newInstance()
                     .newXMLGregorianCalendar(((requestParameters.get(Keys.SCHEDULE_SCHEDULEDTIME).isEmpty())
@@ -171,7 +171,7 @@ public class SetLightScheduleSteps {
     public void receivingASetLightScheduleRequestByAnUnknownOrganization(final Map<String, String> requestParameters)
             throws Throwable {
         // Force the request being send to the platform as a given organization.
-        ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
+        ScenarioContext.Current().put(Keys.ORGANIZATION_IDENTIFICATION, "unknown-organization");
 
         this.receivingASetLightScheduleRequest(requestParameters);
     }
@@ -193,16 +193,16 @@ public class SetLightScheduleSteps {
                 .get(Keys.RESPONSE);
 
         Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
-        Assert.assertEquals(getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION),
+        Assert.assertEquals(getString(expectedResponseData, Keys.DEVICE_IDENTIFICATION),
                 response.getAsyncResponse().getDeviceId());
 
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.
         saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
-                getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                        Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+                getString(expectedResponseData, Keys.ORGANIZATION_IDENTIFICATION,
+                        Defaults.ORGANIZATION_IDENTIFICATION));
 
-        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
+        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.CORRELATION_UID) + "]");
     }
 
     @Then("^the set light schedule response contains soap fault$")
@@ -216,7 +216,7 @@ public class SetLightScheduleSteps {
         final SetScheduleAsyncRequest request = new SetScheduleAsyncRequest();
         final AsyncRequest asyncRequest = new AsyncRequest();
         asyncRequest.setDeviceId(deviceIdentification);
-        asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
+        asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.CORRELATION_UID));
         request.setAsyncRequest(asyncRequest);
 
         boolean success = false;
@@ -231,12 +231,12 @@ public class SetLightScheduleSteps {
 
             final SetScheduleResponse response = this.client.getSetSchedule(request);
 
-            if (getEnum(expectedResult, Keys.KEY_RESULT, OsgpResultType.class) != response.getResult()) {
+            if (getEnum(expectedResult, Keys.RESULT, OsgpResultType.class) != response.getResult()) {
                 continue;
             }
 
-            if (expectedResult.containsKey(Keys.KEY_DESCRIPTION)
-                    && !getString(expectedResult, Keys.KEY_DESCRIPTION).equals(response.getDescription())) {
+            if (expectedResult.containsKey(Keys.DESCRIPTION)
+                    && !getString(expectedResult, Keys.DESCRIPTION).equals(response.getDescription())) {
                 continue;
             }
 
@@ -250,7 +250,7 @@ public class SetLightScheduleSteps {
         try {
             this.thePlatformBuffersASetLightScheduleResponseMessageForDevice(deviceIdentification, expectedResult);
         } catch (final SoapFaultClientException ex) {
-            Assert.assertEquals(getString(expectedResult, Keys.KEY_MESSAGE), ex.getMessage());
+            Assert.assertEquals(getString(expectedResult, Keys.MESSAGE), ex.getMessage());
         }
     }
 }

@@ -87,27 +87,14 @@ public class OrganizationSteps extends StepsBase {
         if (expectedOrganization.containsKey(Keys.NAME)) {
             Assert.assertEquals(getString(expectedOrganization, Keys.NAME), entity.getName());
         }
-<<<<<<< HEAD:automatictests-platform/src/test/java/com/alliander/osgp/automatictests/platform/glue/steps/database/core/OrganizationSteps.java
-        
         if (expectedOrganization.containsKey(Keys.PLATFORM_FUNCTION_GROUP)) {
-=======
-
-        if (expectedOrganization.containsKey(Keys.KEY_PLATFORM_FUNCTION_GROUP)) {
->>>>>>> 3ccf56a85cff1219f2d93ef91f86a3dd8e3e9de3:cucumber-tests-platform/src/test/java/com/alliander/osgp/platform/cucumber/steps/database/core/OrganizationSteps.java
             Assert.assertEquals(
                     getEnum(expectedOrganization, Keys.PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class),
                     entity.getFunctionGroup());
         }
 
-<<<<<<< HEAD:automatictests-platform/src/test/java/com/alliander/osgp/automatictests/platform/glue/steps/database/core/OrganizationSteps.java
         if (expectedOrganization.containsKey(Keys.DOMAINS) && !expectedOrganization.get(Keys.DOMAINS).isEmpty()) {
-            for (String domain : expectedOrganization.get(Keys.DOMAINS).split(Keys.SEPARATOR_SEMICOLON))
-            {
-=======
-        if (expectedOrganization.containsKey(Keys.KEY_DOMAINS)
-                && !expectedOrganization.get(Keys.KEY_DOMAINS).isEmpty()) {
-            for (final String domain : expectedOrganization.get(Keys.KEY_DOMAINS).split(Keys.SEPARATOR_SEMICOLON)) {
->>>>>>> 3ccf56a85cff1219f2d93ef91f86a3dd8e3e9de3:cucumber-tests-platform/src/test/java/com/alliander/osgp/platform/cucumber/steps/database/core/OrganizationSteps.java
+            for (final String domain : expectedOrganization.get(Keys.DOMAINS).split(Keys.SEPARATOR_SEMICOLON)) {
                 Assert.assertTrue(entity.getDomains().contains(PlatformDomain.valueOf(domain)));
             }
         }

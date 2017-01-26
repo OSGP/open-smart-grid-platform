@@ -7,11 +7,11 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.steps.ws.publiclighting.adhocmanagement;
+package com.alliander.osgp.automatictests.platform.glue.steps.ws.publiclighting.adhocmanagement;
 
-import static com.alliander.osgp.platform.cucumber.core.Helpers.getEnum;
-import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
-import static com.alliander.osgp.platform.cucumber.core.Helpers.saveCorrelationUidInScenarioContext;
+import static com.alliander.osgp.automatictests.platform.core.Helpers.getEnum;
+import static com.alliander.osgp.automatictests.platform.core.Helpers.getString;
+import static com.alliander.osgp.automatictests.platform.core.Helpers.saveCorrelationUidInScenarioContext;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -33,11 +33,11 @@ import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.SetTr
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.TransitionType;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.AsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.OsgpResultType;
-import com.alliander.osgp.platform.cucumber.config.CoreDeviceConfiguration;
-import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
-import com.alliander.osgp.platform.cucumber.steps.Defaults;
-import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.support.ws.publiclighting.PublicLightingAdHocManagementClient;
+import com.alliander.osgp.automatictests.platform.config.CoreDeviceConfiguration;
+import com.alliander.osgp.automatictests.platform.core.ScenarioContext;
+import com.alliander.osgp.automatictests.platform.Defaults;
+import com.alliander.osgp.automatictests.platform.Keys;
+import com.alliander.osgp.automatictests.platform.support.ws.publiclighting.PublicLightingAdHocManagementClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -63,17 +63,17 @@ public class SetTransitionSteps {
     public void receivingASetTransitionRequest(final Map<String, String> requestParameters) throws Throwable {
 
     	SetTransitionRequest request = new SetTransitionRequest();
-    	request.setDeviceIdentification(getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+    	request.setDeviceIdentification(getString(requestParameters, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
 
-    	if (requestParameters.containsKey(Keys.KEY_TRANSITION_TYPE) && !requestParameters.get(Keys.KEY_TRANSITION_TYPE).isEmpty()) {
-        	request.setTransitionType(getEnum(requestParameters, Keys.KEY_TRANSITION_TYPE, TransitionType.class, Defaults.DEFAULT_TRANSITION_TYPE));
+    	if (requestParameters.containsKey(Keys.TRANSITION_TYPE) && !requestParameters.get(Keys.TRANSITION_TYPE).isEmpty()) {
+        	request.setTransitionType(getEnum(requestParameters, Keys.TRANSITION_TYPE, TransitionType.class, Defaults.TRANSITION_TYPE));
     	}
     	
-    	if (requestParameters.containsKey(Keys.KEY_TIME) && !requestParameters.get(Keys.KEY_TIME).isEmpty()) {
+    	if (requestParameters.containsKey(Keys.TIME) && !requestParameters.get(Keys.TIME).isEmpty()) {
         	GregorianCalendar gcal = new GregorianCalendar();
-        	gcal.add(Calendar.HOUR, Integer.parseInt(requestParameters.get(Keys.KEY_TIME).substring(0, 2)));
-        	gcal.add(Calendar.MINUTE, Integer.parseInt(requestParameters.get(Keys.KEY_TIME).substring(2, 4)));
-        	gcal.add(Calendar.SECOND, Integer.parseInt(requestParameters.get(Keys.KEY_TIME).substring(4, 6)));
+        	gcal.add(Calendar.HOUR, Integer.parseInt(requestParameters.get(Keys.TIME).substring(0, 2)));
+        	gcal.add(Calendar.MINUTE, Integer.parseInt(requestParameters.get(Keys.TIME).substring(2, 4)));
+        	gcal.add(Calendar.SECOND, Integer.parseInt(requestParameters.get(Keys.TIME).substring(4, 6)));
             XMLGregorianCalendar xgcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
     		request.setTime(xgcal);
     	}
@@ -88,7 +88,7 @@ public class SetTransitionSteps {
     @When("^receiving a set transition request by an unknown organization$")
     public void receivingASetTransitionRequestByAnUnknownOrganization(final Map<String, String> requestParameters) throws Throwable {
         // Force the request being send to the platform as a given organization.
-    	ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
+    	ScenarioContext.Current().put(Keys.ORGANIZATION_IDENTIFICATION, "unknown-organization");
     	
     	receivingASetTransitionRequest(requestParameters);
     }
@@ -104,13 +104,13 @@ public class SetTransitionSteps {
     	SetTransitionAsyncResponse response = (SetTransitionAsyncResponse)ScenarioContext.Current().get(Keys.RESPONSE);
     	
     	Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
-    	Assert.assertEquals(getString(expectedResponseData,  Keys.KEY_DEVICE_IDENTIFICATION), response.getAsyncResponse().getDeviceId());
+    	Assert.assertEquals(getString(expectedResponseData,  Keys.DEVICE_IDENTIFICATION), response.getAsyncResponse().getDeviceId());
 
         // Save the returned CorrelationUid in the Scenario related context for further use.
         saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
-                getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+                getString(expectedResponseData, Keys.ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION));
 
-     	LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
+     	LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.CORRELATION_UID) + "]");
     }
 
     @Then("^the platform buffers a set transition response message for device \"([^\"]*)\"$")
@@ -118,7 +118,7 @@ public class SetTransitionSteps {
     	SetTransitionAsyncRequest request = new SetTransitionAsyncRequest();
     	AsyncRequest asyncRequest = new AsyncRequest();
     	asyncRequest.setDeviceId(deviceIdentification);
-    	asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
+    	asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.CORRELATION_UID));
     	request.setAsyncRequest(asyncRequest);
     	
     	boolean success = false;
@@ -134,7 +134,7 @@ public class SetTransitionSteps {
     		try {
     			SetTransitionResponse response = client.getSetTransitionResponse(request);
     			
-    			Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.KEY_RESULT)), response.getResult());
+    			Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.RESULT)), response.getResult());
     			
     			success = true; 
     		}
@@ -148,6 +148,6 @@ public class SetTransitionSteps {
     public void theSetTransitionAsyncResponseContainsASoapFault(final Map<String, String> expectedResult) {
     	SoapFaultClientException response = (SoapFaultClientException)ScenarioContext.Current().get(Keys.RESPONSE);
     	
-    	Assert.assertEquals(expectedResult.get(Keys.KEY_MESSAGE), response.getMessage());
+    	Assert.assertEquals(expectedResult.get(Keys.MESSAGE), response.getMessage());
     }
 }

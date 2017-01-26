@@ -118,12 +118,8 @@ public abstract class GenericResponseSteps extends StepsBase {
 
     private static void assertExpectedAndActualValues(final String localName, final String expectedValue,
             final Object actual, final int counter) {
-<<<<<<< HEAD:automatictests-platform/src/test/java/com/alliander/osgp/automatictests/platform/glue/steps/ws/GenericResponseSteps.java
-        @SuppressWarnings("unchecked")
-=======
 
         final Pattern pattern = Pattern.compile("('.+\\d+:.+')", Pattern.CASE_INSENSITIVE);
->>>>>>> 3ccf56a85cff1219f2d93ef91f86a3dd8e3e9de3:cucumber-tests-platform/src/test/java/com/alliander/osgp/platform/cucumber/steps/ws/GenericResponseSteps.java
         final String actualValue = ((List<String>) actual).get(counter);
         final Matcher matcher = pattern.matcher(actualValue);
         if (matcher.find()) {

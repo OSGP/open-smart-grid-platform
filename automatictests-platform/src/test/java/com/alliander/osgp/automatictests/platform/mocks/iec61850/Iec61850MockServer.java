@@ -88,11 +88,6 @@ public class Iec61850MockServer {
         if (!this.isInitialised()) {
             throw new AssertionError("RtuSimulator has not yet been initialised.");
         }
-<<<<<<< HEAD:automatictests-platform/src/test/java/com/alliander/osgp/automatictests/platform/mocks/iec61850/Iec61850MockServer.java
         this.rtuSimulator.assertValue(logicalDeviceName, node, value);
-=======
-        // TODO: assertValue method is missing in the RtuSimulator class
-        // this.rtuSimulator.assertValue(logicalDeviceName, node, value);
->>>>>>> 3ccf56a85cff1219f2d93ef91f86a3dd8e3e9de3:cucumber-tests-platform/src/test/java/com/alliander/osgp/platform/cucumber/mocks/iec61850/Iec61850MockServer.java
     }
 }

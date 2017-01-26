@@ -16,14 +16,10 @@ import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.automatictests.platform.Defaults;
+import com.alliander.osgp.automatictests.platform.Keys;
 import com.alliander.osgp.automatictests.platform.StepsBase;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.repositories.ManufacturerRepository;
-<<<<<<< HEAD:automatictests-platform/src/test/java/com/alliander/osgp/automatictests/platform/glue/steps/database/core/ManufacturerSteps.java
-=======
-import com.alliander.osgp.platform.cucumber.steps.Defaults;
-import com.alliander.osgp.platform.cucumber.steps.Keys;
->>>>>>> 3ccf56a85cff1219f2d93ef91f86a3dd8e3e9de3:cucumber-tests-platform/src/test/java/com/alliander/osgp/platform/cucumber/steps/database/core/ManufacturerSteps.java
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -46,15 +42,10 @@ public class ManufacturerSteps extends StepsBase {
     @Given("^a manufacturer")
     public void aManufacturer(final Map<String, String> settings) throws Throwable {
 
-<<<<<<< HEAD:automatictests-platform/src/test/java/com/alliander/osgp/automatictests/platform/glue/steps/database/core/ManufacturerSteps.java
-        Manufacturer entity = new Manufacturer(getString(settings, "ManufacturerId", Defaults.MANUFACTURER_ID),
-                getString(settings, "Name", Defaults.MANUFACTURER_NAME), getBoolean(settings, "UsePrefix", Defaults.MANUFACTURER_USE_PREFIX));
-=======
         Manufacturer entity = new Manufacturer(
-                getString(settings, Keys.MANUFACTURER_ID, DEFAULT_MANUFACTURER_ID),
-                getString(settings, "Name", DEFAULT_NAME), 
-                getBoolean(settings, "UsePrefix", DEFAULT_USEPREFIX));
->>>>>>> 3ccf56a85cff1219f2d93ef91f86a3dd8e3e9de3:cucumber-tests-platform/src/test/java/com/alliander/osgp/platform/cucumber/steps/database/core/ManufacturerSteps.java
+                getString(settings, Keys.MANUFACTURER_ID, Defaults.MANUFACTURER_ID),
+                getString(settings, Keys.NAME, Defaults.MANUFACTURER_NAME), 
+                getBoolean(settings, Keys.USE_PREFIX, Defaults.MANUFACTURER_USE_PREFIX));
 
         repo.save(entity);
     }

@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.support.ws.tariffswitching;
+package com.alliander.osgp.automatictests.platform.support.ws.tariffswitching;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -18,9 +18,9 @@ import com.alliander.osgp.adapter.ws.schema.tariffswitching.schedulemanagement.S
 import com.alliander.osgp.adapter.ws.schema.tariffswitching.schedulemanagement.SetScheduleAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.tariffswitching.schedulemanagement.SetScheduleRequest;
 import com.alliander.osgp.adapter.ws.schema.tariffswitching.schedulemanagement.SetScheduleResponse;
-import com.alliander.osgp.platform.cucumber.support.ws.BaseClient;
-import com.alliander.osgp.platform.cucumber.support.ws.WebServiceSecurityException;
-import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.automatictests.platform.support.ws.BaseClient;
+import com.alliander.osgp.automatictests.platform.support.ws.WebServiceSecurityException;
+import com.alliander.osgp.automatictests.platform.support.ws.WebServiceTemplateFactory;
 
 @Component
 public class TariffSwitchingScheduleManagementClient extends BaseClient {

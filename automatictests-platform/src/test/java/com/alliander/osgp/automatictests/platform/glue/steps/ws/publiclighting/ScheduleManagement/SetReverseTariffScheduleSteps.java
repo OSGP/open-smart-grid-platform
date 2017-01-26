@@ -7,7 +7,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.steps.ws.publiclighting.ScheduleManagement;
+package com.alliander.osgp.automatictests.platform.glue.steps.ws.publiclighting.ScheduleManagement;
 
 import java.util.Map;
 
@@ -15,8 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alliander.osgp.platform.cucumber.config.CoreDeviceConfiguration;
-import com.alliander.osgp.platform.cucumber.support.ws.tariffswitching.TariffSwitchingScheduleManagementClient;
+import com.alliander.osgp.automatictests.platform.config.CoreDeviceConfiguration;
+import com.alliander.osgp.automatictests.platform.support.ws.tariffswitching.TariffSwitchingScheduleManagementClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;

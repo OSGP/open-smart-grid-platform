@@ -5,7 +5,7 @@
  * use this file except in compliance with the License.
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.config.ws.tariffswitching;
+package com.alliander.osgp.automatictests.platform.config.ws.tariffswitching;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -13,8 +13,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadMethodProcessor;
 
-import com.alliander.osgp.platform.cucumber.config.ws.BaseWebServiceConfig;
-import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.automatictests.platform.config.ws.BaseWebServiceConfig;
+import com.alliander.osgp.automatictests.platform.support.ws.WebServiceTemplateFactory;
 
 @Configuration
 public class TariffSwitchingAdhocManagementWebServiceConfig extends BaseWebServiceConfig {
