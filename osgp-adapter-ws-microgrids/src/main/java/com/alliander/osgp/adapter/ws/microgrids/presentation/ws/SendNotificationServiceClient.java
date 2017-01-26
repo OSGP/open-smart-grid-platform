@@ -15,14 +15,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alliander.osgp.adapter.ws.schema.microgrids.notification.Notification;
 import com.alliander.osgp.adapter.ws.schema.microgrids.notification.SendNotificationRequest;
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
-import com.alliander.osgp.shared.infra.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 public class SendNotificationServiceClient {
 
-    private final WebServiceTemplateFactory webServiceTemplateFactory;
+    private final DefaultWebServiceTemplateFactory webServiceTemplateFactory;
 
     @Autowired
-    public SendNotificationServiceClient(final WebServiceTemplateFactory webServiceTemplateFactory) {
+    public SendNotificationServiceClient(final DefaultWebServiceTemplateFactory webServiceTemplateFactory) {
         this.webServiceTemplateFactory = webServiceTemplateFactory;
     }
 

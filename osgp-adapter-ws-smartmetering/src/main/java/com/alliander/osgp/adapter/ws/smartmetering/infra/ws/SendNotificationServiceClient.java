@@ -19,16 +19,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.Notification;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.SendNotificationRequest;
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
-import com.alliander.osgp.shared.infra.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 public class SendNotificationServiceClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SendNotificationServiceClient.class);
 
-    private final WebServiceTemplateFactory webServiceTemplateFactory;
+    private final DefaultWebServiceTemplateFactory webServiceTemplateFactory;
 
     @Autowired
-    public SendNotificationServiceClient(final WebServiceTemplateFactory webServiceTemplateFactory) {
+    public SendNotificationServiceClient(final DefaultWebServiceTemplateFactory webServiceTemplateFactory) {
         this.webServiceTemplateFactory = webServiceTemplateFactory;
     }
 

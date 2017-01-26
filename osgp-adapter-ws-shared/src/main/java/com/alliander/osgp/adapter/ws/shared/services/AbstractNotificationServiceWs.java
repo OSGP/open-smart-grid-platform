@@ -14,7 +14,7 @@ import org.springframework.ws.client.WebServiceTransportException;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
-import com.alliander.osgp.shared.infra.ws.WebserviceTemplateFactoryImpl;
+import com.alliander.osgp.shared.infra.ws.WebserviceTemplateFactory;
 
 public abstract class AbstractNotificationServiceWs {
 
@@ -28,7 +28,7 @@ public abstract class AbstractNotificationServiceWs {
         this.notificationUsername = notificationUsername;
     }
 
-    protected void doSendNotification(final WebserviceTemplateFactoryImpl wsTemplateFactory,
+    protected void doSendNotification(final WebserviceTemplateFactory wsTemplateFactory,
             final String organisationIdentification, final String userName, final String notificationURL,
             final Object notification) {
 

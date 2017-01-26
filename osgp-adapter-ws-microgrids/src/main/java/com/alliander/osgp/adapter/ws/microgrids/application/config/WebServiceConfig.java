@@ -42,7 +42,7 @@ import com.alliander.osgp.adapter.ws.microgrids.application.services.Notificatio
 import com.alliander.osgp.adapter.ws.microgrids.application.services.NotificationServiceWs;
 import com.alliander.osgp.adapter.ws.microgrids.presentation.ws.SendNotificationServiceClient;
 import com.alliander.osgp.shared.application.config.AbstractConfig;
-import com.alliander.osgp.shared.infra.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Configuration
 @PropertySources({ @PropertySource("classpath:osgp-adapter-ws-microgrids.properties"),
@@ -250,8 +250,8 @@ public class WebServiceConfig extends AbstractConfig {
                 .notificationSenderMarshaller()));
     }
 
-    private WebServiceTemplateFactory createWebServiceTemplateFactory(final Jaxb2Marshaller marshaller) {
-        return new WebServiceTemplateFactory.Builder().setMarshaller(marshaller)
+    private DefaultWebServiceTemplateFactory createWebServiceTemplateFactory(final Jaxb2Marshaller marshaller) {
+        return new DefaultWebServiceTemplateFactory.Builder().setMarshaller(marshaller)
                 .setMessageFactory(this.messageFactory())
                 .setTargetUri(this.webserviceNotificationUrl)
                 .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)

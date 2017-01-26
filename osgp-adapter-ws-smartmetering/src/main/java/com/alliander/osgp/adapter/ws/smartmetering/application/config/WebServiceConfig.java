@@ -44,7 +44,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.application.exceptionhandling
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationServiceWs;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.SendNotificationServiceClient;
 import com.alliander.osgp.shared.application.config.AbstractConfig;
-import com.alliander.osgp.shared.infra.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Configuration
 @PropertySources({ @PropertySource("classpath:osgp-adapter-ws-smartmetering.properties"),
@@ -139,8 +139,8 @@ public class WebServiceConfig extends AbstractConfig {
                 this.createWebServiceTemplateFactory(this.notificationSenderMarshaller()));
     }
 
-    private WebServiceTemplateFactory createWebServiceTemplateFactory(final Jaxb2Marshaller marshaller) {
-        return new WebServiceTemplateFactory.Builder().setMarshaller(marshaller)
+    private DefaultWebServiceTemplateFactory createWebServiceTemplateFactory(final Jaxb2Marshaller marshaller) {
+        return new DefaultWebServiceTemplateFactory.Builder().setMarshaller(marshaller)
                 .setMessageFactory(this.messageFactory()).setTargetUri(this.webserviceNotificationUrl)
                 .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
                 .setKeyStorePassword(this.webserviceKeystorePassword)
