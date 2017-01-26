@@ -56,6 +56,10 @@ public class WebServiceTemplateFactory implements WebserviceTemplateFactoryImpl 
     private KeyStoreFactoryBean trustStoreFactory;
     private String applicationName;
 
+    private WebServiceTemplateFactory() {
+        this.webServiceTemplates = new HashMap<>();
+    }
+
     public WebServiceTemplate getTemplate(final String organisationIdentification, final String userName)
             throws WebServiceSecurityException {
         return this.getTemplate(organisationIdentification, userName, this.applicationName);
@@ -65,10 +69,6 @@ public class WebServiceTemplateFactory implements WebserviceTemplateFactoryImpl 
             throws WebServiceSecurityException {
         this.targetUri = targetUri.toString();
         return this.getTemplate(organisationIdentification, userName, this.applicationName);
-    }
-
-    private WebServiceTemplateFactory() {
-        this.webServiceTemplates = new HashMap<>();
     }
 
     public static class Builder {
