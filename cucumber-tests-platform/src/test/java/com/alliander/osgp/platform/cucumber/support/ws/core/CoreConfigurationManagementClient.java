@@ -18,6 +18,10 @@ import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.GetConf
 import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.GetConfigurationAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.GetConfigurationRequest;
 import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.GetConfigurationResponse;
+import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.SetConfigurationAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.SetConfigurationAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.SetConfigurationRequest;
+import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.SetConfigurationResponse;
 import com.alliander.osgp.platform.cucumber.support.ws.BaseClient;
 import com.alliander.osgp.platform.cucumber.support.ws.WebServiceSecurityException;
 import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
@@ -40,5 +44,19 @@ public class CoreConfigurationManagementClient extends BaseClient {
         final WebServiceTemplate wst = this.coreConfigurationManagementWstf
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (GetConfigurationResponse) wst.marshalSendAndReceive(request);
+    }
+
+    public SetConfigurationAsyncResponse setConfiguration(final SetConfigurationRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final WebServiceTemplate wst = this.coreConfigurationManagementWstf
+                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
+        return (SetConfigurationAsyncResponse) wst.marshalSendAndReceive(request);
+    }
+
+    public SetConfigurationResponse getSetConfiguration(final SetConfigurationAsyncRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final WebServiceTemplate wst = this.coreConfigurationManagementWstf
+                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
+        return (SetConfigurationResponse) wst.marshalSendAndReceive(request);
     }
 }

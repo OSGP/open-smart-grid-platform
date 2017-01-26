@@ -55,6 +55,7 @@ import com.alliander.osgp.oslp.Oslp.RelayConfiguration;
 import com.alliander.osgp.oslp.Oslp.RelayData;
 import com.alliander.osgp.oslp.Oslp.RelayType;
 import com.alliander.osgp.oslp.Oslp.ResumeScheduleResponse;
+import com.alliander.osgp.oslp.Oslp.SetConfigurationResponse;
 import com.alliander.osgp.oslp.Oslp.SetDeviceVerificationKeyResponse;
 import com.alliander.osgp.oslp.Oslp.SetEventNotificationsResponse;
 import com.alliander.osgp.oslp.Oslp.SetLightResponse;
@@ -63,7 +64,6 @@ import com.alliander.osgp.oslp.Oslp.SetScheduleResponse;
 import com.alliander.osgp.oslp.Oslp.SetTransitionResponse;
 import com.alliander.osgp.oslp.Oslp.SsldData;
 import com.alliander.osgp.oslp.Oslp.StartSelfTestResponse;
-import com.alliander.osgp.oslp.Oslp.Status;
 import com.alliander.osgp.oslp.Oslp.StopSelfTestResponse;
 import com.alliander.osgp.oslp.OslpDecoder;
 import com.alliander.osgp.oslp.OslpEncoder;
@@ -242,13 +242,13 @@ public class MockOslpServer {
         return CertificateHelper.createPrivateKey(this.signKeyPath, this.keytype, this.oslpSignatureProvider);
     }
 
-    public void mockConfigurationResponse(final Status oslpStatus, final LightType lightType, final Integer dcLights,
-            final String dcMap, final RelayType rcType, final String rcMap, final LinkType preferredLinkType,
-            final MeterType meterType, final Integer shortInterval, final Integer longInterval,
-            final LongTermIntervalType intervalType) {
+    public void mockGetConfigurationResponse(final Oslp.Status oslpStatus, final LightType lightType,
+            final String dcLights, final String dcMap, final RelayType rcType, final String rcMap,
+            final LinkType preferredLinkType, final MeterType meterType, final Integer shortInterval,
+            final Integer longInterval, final LongTermIntervalType intervalType) {
 
-        final String[] dcMapArray = dcMap.split(",");
-        final String[] rcMapArray = rcMap.split(",");
+        final String[] dcMapArray = dcMap.split(";");
+        final String[] rcMapArray = rcMap.split(";");
 
         final GetConfigurationResponse.Builder builder = GetConfigurationResponse.newBuilder();
 
@@ -257,20 +257,45 @@ public class MockOslpServer {
             builder.setLightType(lightType);
         }
 
-        final RelayConfiguration.Builder relayConfigurationBuilder = RelayConfiguration.newBuilder();
-        if (!rcMapArray[0].isEmpty() && rcType != RelayType.RT_NOT_SET) {
-            relayConfigurationBuilder
-                    .addAddressMap(IndexAddressMap.newBuilder().setIndex(ByteString.copyFromUtf8(rcMapArray[0]))
-                            .setAddress(ByteString.copyFromUtf8(rcMapArray[1])).setRelayType(rcType));
-            builder.setRelayConfiguration(relayConfigurationBuilder.build());
-        }
+        if (rcType != RelayType.RT_NOT_SET) {
+            final ByteString bsDcLights = ByteString.copyFromUtf8(dcLights);
+            if (!rcMapArray[0].isEmpty()) {
 
-        final DaliConfiguration.Builder daliConfigurationBuilder = DaliConfiguration.newBuilder();
-        if (!dcMapArray[0].isEmpty() && dcLights != RelayType.RT_NOT_SET_VALUE) {
-            daliConfigurationBuilder.addAddressMap(IndexAddressMap.newBuilder()
-                    .setIndex(ByteString.copyFromUtf8(dcMapArray[0])).setAddress(ByteString.copyFromUtf8(dcMapArray[1]))
-                    .setRelayType(RelayType.valueOf(dcLights)));
-            builder.setDaliConfiguration(daliConfigurationBuilder.build());
+                final DaliConfiguration.Builder dcBuilder = DaliConfiguration.newBuilder();
+
+                for (int i = 0; i < dcMapArray.length; i++) {
+                    final String[] dcSubMapArray = dcMapArray[i].split(",");
+                    if (dcSubMapArray[i] != null && !dcSubMapArray[i].isEmpty()) {
+                        dcBuilder.addAddressMap(
+                                IndexAddressMap.newBuilder().setIndex(ByteString.copyFromUtf8(dcSubMapArray[0]))
+                                        .setAddress(ByteString.copyFromUtf8(dcSubMapArray[1])).setRelayType(rcType));
+                    }
+                }
+
+                if (!bsDcLights.isEmpty()) {
+                    dcBuilder.setNumberOfLights(bsDcLights);
+                }
+
+                if (!dcLights.isEmpty() && dcBuilder.getAddressMapCount() != Integer.parseInt(dcLights)) {
+                    builder.setDaliConfiguration(dcBuilder.build());
+                }
+            }
+
+            if (!rcMapArray[0].isEmpty()) {
+
+                final RelayConfiguration.Builder rcBuilder = RelayConfiguration.newBuilder();
+
+                for (int i = 0; i < rcMapArray.length; i++) {
+                    final String[] rcSubMapArray = rcMapArray[i].split(",");
+                    if (rcSubMapArray[i] != null && !rcSubMapArray[i].isEmpty()) {
+                        rcBuilder.addAddressMap(
+                                IndexAddressMap.newBuilder().setIndex(ByteString.copyFromUtf8(rcSubMapArray[0]))
+                                        .setAddress(ByteString.copyFromUtf8(rcSubMapArray[1])).setRelayType(rcType));
+                    }
+                }
+
+                builder.setRelayConfiguration(rcBuilder.build());
+            }
         }
 
         if (preferredLinkType != null && preferredLinkType != LinkType.LINK_NOT_SET) {
@@ -290,6 +315,13 @@ public class MockOslpServer {
 
         this.mockResponses.put(DeviceRequestMessageType.GET_CONFIGURATION,
                 Oslp.Message.newBuilder().setGetConfigurationResponse(builder).build());
+    }
+
+    public void mockSetConfigurationResponse(final Oslp.Status oslpStatus) {
+
+        this.mockResponses.put(DeviceRequestMessageType.SET_CONFIGURATION, Oslp.Message.newBuilder()
+                .setSetConfigurationResponse(SetConfigurationResponse.newBuilder().setStatus(oslpStatus).build())
+                .build());
     }
 
     public void mockFirmwareResponse(final String fwVersion) {

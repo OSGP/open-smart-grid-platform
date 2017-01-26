@@ -30,11 +30,11 @@ import com.alliander.osgp.platform.cucumber.config.CoreDeviceConfiguration;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.steps.ws.core.firmwaremanagement.GetFirmwareVersionSteps;
+import com.alliander.osgp.platform.cucumber.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.platform.cucumber.support.ws.core.CoreConfigurationManagementClient;
 
-import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
 
 /**
  * Class with all the firmware requests steps
@@ -46,7 +46,7 @@ public class GetConfigurationSteps {
     @Autowired
     private CoreConfigurationManagementClient client;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetFirmwareVersionSteps.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetConfigurationSteps.class);
 
     /**
      * Sends a Get Configuration request to the platform for a given device
@@ -56,7 +56,7 @@ public class GetConfigurationSteps {
      *            The table with the request parameters.
      * @throws Throwable
      */
-    @Given("^receiving a get configuration request$")
+    @When("^receiving a get configuration request$")
     public void receivingAGetConfigurationRequest(final Map<String, String> requestParameters) throws Throwable {
         final GetConfigurationRequest request = new GetConfigurationRequest();
         request.setDeviceIdentification(
@@ -96,6 +96,19 @@ public class GetConfigurationSteps {
         LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
     }
 
+    /**
+     * The check for the response from the Platform.
+     *
+     * @param expectedResponseData
+     *            The table with the expected fields in the response.
+     * @throws Throwable
+     */
+    @Then("^the get configuration async response contains soap fault$")
+    public void theGetConfigurationResponseContainsSoapFault(final Map<String, String> expectedResponseData)
+            throws Throwable {
+        GenericResponseSteps.verifySoapFault(expectedResponseData);
+    }
+
     @Then("^the platform buffers a get configuration response message for device \"([^\"]*)\"$")
     public void thePlatformBufferesAGetConfigurationResponseMessageForDevice(final String deviceIdentification,
             final Map<String, String> expectedResponseData) throws Throwable {
@@ -133,8 +146,6 @@ public class GetConfigurationSteps {
             this.thePlatformBufferesAGetConfigurationResponseMessageForDevice(deviceIdentification,
                     expectedResponseData);
         } catch (final SoapFaultClientException ex) {
-            // Note: The exception returns always the string "Exception occurred
-            // while getting device configuration"
             Assert.assertEquals(getString(expectedResponseData, Keys.KEY_MESSAGE), ex.getMessage());
         }
     }
