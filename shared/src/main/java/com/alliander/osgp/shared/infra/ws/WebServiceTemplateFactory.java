@@ -47,14 +47,14 @@ public class WebServiceTemplateFactory {
 
     private static final String PROXY_SERVER = "proxy-server";
 
-    private final Jaxb2Marshaller marshaller;
-    private final SaajSoapMessageFactory messageFactory;
+    private Jaxb2Marshaller marshaller;
+    private SaajSoapMessageFactory messageFactory;
     private String targetUri;
-    private final String keyStoreType;
-    private final String keyStoreLocation;
-    private final String keyStorePassword;
-    private final KeyStoreFactoryBean trustStoreFactory;
-    private final String applicationName;
+    private String keyStoreType;
+    private String keyStoreLocation;
+    private String keyStorePassword;
+    private KeyStoreFactoryBean trustStoreFactory;
+    private String applicationName;
 
     public WebServiceTemplateFactory(final Jaxb2Marshaller marshaller, final SaajSoapMessageFactory messageFactory,
             final String applicationName) {
@@ -98,6 +98,74 @@ public class WebServiceTemplateFactory {
             throws WebServiceSecurityException {
         this.targetUri = targetUri.toString();
         return this.getTemplate(organisationIdentification, userName, this.applicationName);
+    }
+
+    private WebServiceTemplateFactory() {
+        this.webServiceTemplates = new HashMap<>();
+    }
+
+    public static class Builder {
+        private String applicationName;
+        private Jaxb2Marshaller marshaller;
+        private SaajSoapMessageFactory messageFactory;
+        private String targetUri;
+        private String keyStoreType;
+        private String keyStoreLocation;
+        private String keyStorePassword;
+        private KeyStoreFactoryBean trustStoreFactory;
+
+        public Builder setApplicationName(final String applicationName) {
+            this.applicationName = applicationName;
+            return this;
+        }
+
+        public Builder setMarshaller(final Jaxb2Marshaller marshaller) {
+            this.marshaller = marshaller;
+            return this;
+        }
+
+        public Builder setMessageFactory(final SaajSoapMessageFactory messageFactory) {
+            this.messageFactory = messageFactory;
+            return this;
+        }
+
+        public Builder setTargetUri(final String targetUri) {
+            this.targetUri = targetUri;
+            return this;
+        }
+
+        public Builder setKeyStoreType(final String keyStoreType) {
+            this.keyStoreType = keyStoreType;
+            return this;
+        }
+
+        public Builder setKeyStoreLocation(final String keyStoreLocation) {
+            this.keyStoreLocation = keyStoreLocation;
+            return this;
+        }
+
+        public Builder setKeyStorePassword(final String keyStorePassword) {
+            this.keyStorePassword = keyStorePassword;
+            return this;
+        }
+
+        public Builder setTrustStoreFactory(final KeyStoreFactoryBean trustStoreFactory) {
+            this.trustStoreFactory = trustStoreFactory;
+            return this;
+        }
+
+        public WebServiceTemplateFactory build() {
+            final WebServiceTemplateFactory webServiceTemplateFactory = new WebServiceTemplateFactory();
+            webServiceTemplateFactory.setMarshaller(this.marshaller);
+            webServiceTemplateFactory.setMessageFactory(this.messageFactory);
+            webServiceTemplateFactory.setTargetUri(this.targetUri);
+            webServiceTemplateFactory.setKeyStoreType(this.keyStoreType);
+            webServiceTemplateFactory.setKeyStoreLocation(this.keyStoreLocation);
+            webServiceTemplateFactory.setKeyStorePassword(this.keyStorePassword);
+            webServiceTemplateFactory.setTrustStoreFactory(this.trustStoreFactory);
+            webServiceTemplateFactory.setApplicationName(this.applicationName);
+            return webServiceTemplateFactory;
+        }
     }
 
     public WebServiceTemplate getTemplate(final String organisationIdentification, final String userName,
@@ -195,5 +263,37 @@ public class WebServiceTemplateFactory {
         clientbuilder.addInterceptorFirst(new HttpComponentsMessageSender.RemoveSoapHeadersInterceptor());
 
         return new HttpComponentsMessageSender(clientbuilder.build());
+    }
+
+    private void setApplicationName(final String applicationName) {
+        this.applicationName = applicationName;
+    }
+
+    private void setMarshaller(final Jaxb2Marshaller marshaller) {
+        this.marshaller = marshaller;
+    }
+
+    private void setMessageFactory(final SaajSoapMessageFactory messageFactory) {
+        this.messageFactory = messageFactory;
+    }
+
+    private void setKeyStoreType(final String keyStoreType) {
+        this.keyStoreType = keyStoreType;
+    }
+
+    private void setKeyStoreLocation(final String keyStoreLocation) {
+        this.keyStoreLocation = keyStoreLocation;
+    }
+
+    private void setKeyStorePassword(final String keyStorePassword) {
+        this.keyStorePassword = keyStorePassword;
+    }
+
+    private void setTrustStoreFactory(final KeyStoreFactoryBean trustStoreFactory) {
+        this.trustStoreFactory = trustStoreFactory;
+    }
+
+    private void setTargetUri(final String targetUri) {
+        this.targetUri = targetUri;
     }
 }
