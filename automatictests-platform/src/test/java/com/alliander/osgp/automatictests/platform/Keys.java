@@ -178,4 +178,5 @@ public class Keys {
     public static final String PLATFORMDOMAIN = "PlatformDomain";
     public static final String SUPPLIER = "Supplier";
     public static final String PLATFORMDOMAINS = "PlatformDomains";
+    public static final String EANS = "Eans";
 }

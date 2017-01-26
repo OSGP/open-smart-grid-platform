@@ -53,7 +53,6 @@ import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
-// @Transactional(value = "txMgrCore")
 public class DeviceSteps extends StepsBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceSteps.class);
@@ -90,7 +89,8 @@ public class DeviceSteps extends StepsBase {
      * @throws Throwable
      */
     @Given("^a device$")
-    public Device aDevice(final Map<String, String> settings) throws Throwable {
+    @Transactional("txMgrCore")
+    public Device anSsldDevice(final Map<String, String> settings) throws Throwable {
 
         // Set the required stuff
         final String deviceIdentification = getString(settings, Keys.DEVICE_IDENTIFICATION);
@@ -98,7 +98,7 @@ public class DeviceSteps extends StepsBase {
 
         ssld.setPublicKeyPresent(getBoolean(settings, Keys.PUBLICKEYPRESENT, Defaults.PUBLICKEYPRESENT));
         ssld.setHasSchedule(getBoolean(settings, Keys.HAS_SCHEDULE, Defaults.HASSCHEDULE));
-
+        
         if (settings.containsKey(Keys.INTERNALID) || settings.containsKey(Keys.EXTERNALID)
                 || settings.containsKey(Keys.RELAY_TYPE)) {
             final List<DeviceOutputSetting> dosList = new ArrayList<>();
@@ -171,13 +171,13 @@ public class DeviceSteps extends StepsBase {
                     getString(settings, Keys.ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION));
         }
         device.updateMetaData(getString(settings, Keys.ALIAS, Defaults.ALIAS),
-                getString(settings, "containerCity", Defaults.CONTAINER_CITY),
-                getString(settings, "containerPostalCode", Defaults.CONTAINER_POSTALCODE),
-                getString(settings, "containerStreet", Defaults.CONTAINER_STREET),
-                getString(settings, "containerNumber", Defaults.CONTAINER_NUMBER),
-                getString(settings, "containerMunicipality", Defaults.CONTAINER_MUNICIPALITY),
-                getFloat(settings, "gpsLatitude", Defaults.LATITUDE),
-                getFloat(settings, "gpsLongitude", Defaults.LONGITUDE));
+                getString(settings, Keys.CITY, Defaults.CONTAINER_CITY),
+                getString(settings, Keys.POSTCODE, Defaults.CONTAINER_POSTALCODE),
+                getString(settings, Keys.STREET, Defaults.CONTAINER_STREET),
+                getString(settings, Keys.NUMBER, Defaults.CONTAINER_NUMBER),
+                getString(settings, Keys.MUNICIPALITY, Defaults.CONTAINER_MUNICIPALITY),
+                getFloat(settings, Keys.LATITUDE, Defaults.LATITUDE),
+                getFloat(settings, Keys.LONGITUDE, Defaults.LONGITUDE));
 
         device.setActivated(getBoolean(settings, Keys.IS_ACTIVATED, Defaults.IS_ACTIVATED));
         device = this.deviceRepository.save(device);

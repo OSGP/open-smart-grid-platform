@@ -58,7 +58,11 @@ public class OrganizationSteps extends StepsBase {
                         Defaults.PLATFORM_FUNCTION_GROUP));
 
         // Add all the mandatory stuff.
-        entity.addDomain(getEnum(settings, Keys.PLATFORMDOMAIN, PlatformDomain.class, Defaults.PLATFORMDOMAIN));
+        if (settings.containsKey(Keys.DOMAINS) && !settings.get(Keys.DOMAINS).isEmpty()) {
+            for (String domain : settings.get(Keys.DOMAINS).split(Keys.SEPARATOR_SEMICOLON)){
+                entity.addDomain(Enum.valueOf(PlatformDomain.class, domain));
+            }
+        }
 
         entity.setIsEnabled(getBoolean(settings, Keys.ENABLED, Defaults.ORGANIZATION_ENABLED));
 

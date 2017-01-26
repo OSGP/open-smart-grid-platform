@@ -41,7 +41,7 @@ public class OslpDeviceSteps extends StepsBase {
     public void anOslpDevice(final Map<String, String> settings) throws Throwable {
 
         // First create the device itself
-        this.deviceSteps.aDevice(settings);
+        this.deviceSteps.anSsldDevice(settings);
         
         // Now create the OSLP device in the OSLP database
         final String deviceIdentification = getString(settings, Keys.DEVICE_IDENTIFICATION,

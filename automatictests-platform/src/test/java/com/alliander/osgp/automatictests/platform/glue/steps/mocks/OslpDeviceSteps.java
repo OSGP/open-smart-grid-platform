@@ -174,10 +174,10 @@ public class OslpDeviceSteps extends StepsBase {
 				
 		List<LightValue> lightValues = new ArrayList<LightValue>();
 		if (!getString(result, Keys.LIGHTVALUES, Defaults.LIGHTVALUES).isEmpty() && 
-				getString(result, Keys.LIGHTVALUES, Defaults.LIGHTVALUES).split(Keys.SEPARATOR).length > 0) {
+				getString(result, Keys.LIGHTVALUES, Defaults.LIGHTVALUES).split(Keys.SEPARATOR_SEMICOLON).length > 0) {
 			
-			for (String lightValueString : getString(result, Keys.LIGHTVALUES, Defaults.LIGHTVALUES).split(Keys.SEPARATOR)) {
-				String[] parts = lightValueString.split(Keys.SEPARATOR_SEMICOLON);
+			for (String lightValueString : getString(result, Keys.LIGHTVALUES, Defaults.LIGHTVALUES).split(Keys.SEPARATOR_SEMICOLON)) {
+				String[] parts = lightValueString.split(Keys.SEPARATOR);
 	
 				LightValue lightValue = LightValue.newBuilder()
 						.setIndex(OslpUtils.integerToByteString(Integer.parseInt(parts[0])))

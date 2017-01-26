@@ -13,13 +13,14 @@ import org.springframework.context.annotation.FilterType;
 import com.alliander.osgp.automatictests.platform.config.ws.microgrids.MicrogridsNotificationWebServiceConfig;
 
 /**
- * Scan all automatictests namespaces.
+ * Scan all automatic tests packages.
  */
 @ComponentScan(basePackages={
         "com.alliander.osgp.automatictests"
     },
     excludeFilters = @ComponentScan.Filter(value = MicrogridsNotificationWebServiceConfig.class, type = FilterType.ASSIGNABLE_TYPE)
-)public class ApplicationContext {
+)
+public class ApplicationContext {
 
     public ApplicationContext() {
         System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Constructing ApplicationContext");

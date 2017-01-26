@@ -62,16 +62,16 @@ public class DeviceOutputSettingsSteps extends StepsBase {
         
         Ssld device = this.ssldRepository.findByDeviceIdentification(deviceIdentification);
         
-        String[] lightValues = getString(settings, Keys.LIGHTVALUES, Defaults.DEVICE_IDENTIFICATION).split(Keys.SEPARATOR);
+        String[] lightValues = getString(settings, Keys.LIGHTVALUES, Defaults.DEVICE_IDENTIFICATION).split(Keys.SEPARATOR_SEMICOLON);
         
-        String[] deviceOutputSettings = getString(settings, Keys.DEVICE_OUTPUT_SETTINGS, "").split(Keys.SEPARATOR);
+        String[] deviceOutputSettings = getString(settings, Keys.DEVICE_OUTPUT_SETTINGS, "").split(Keys.SEPARATOR_SEMICOLON);
         
         List<DeviceOutputSetting> outputSettings = new ArrayList<>();
         for (int i = 0; i < lightValues.length;i++) {
             
-            final String[] lightValueParts = lightValues[i].split(Keys.SEPARATOR_SEMICOLON); 
+            final String[] lightValueParts = lightValues[i].split(Keys.SEPARATOR); 
             
-            final String[] deviceOutputSettingsPart = deviceOutputSettings[i].split(Keys.SEPARATOR_SEMICOLON);
+            final String[] deviceOutputSettingsPart = deviceOutputSettings[i].split(Keys.SEPARATOR);
             
             DeviceOutputSetting deviceOutputSettingsForLightValue = new DeviceOutputSetting(
                     Integer.parseInt(deviceOutputSettingsPart[0]), 

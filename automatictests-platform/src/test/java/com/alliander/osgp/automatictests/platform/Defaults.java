@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.automatictests.platform;
 
+import org.joda.time.DateTime;
+
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.TransitionType;
 import com.alliander.osgp.domain.core.valueobjects.PlatformDomain;
 import com.alliander.osgp.domain.core.valueobjects.RelayType;
@@ -32,7 +34,7 @@ public class Defaults {
     public static final String DEVICE_MODEL_MODEL_CODE = "TestModel";
     public static final String DEVICE_MODEL_DESCRIPTION = "Test Model";
     public static final String DEVICE_IDENTIFICATION = "TD01";
-    
+
     public static final Boolean DEVICE_MODEL_METERED = true;
 
     public static final String SMART_METER_DEVICE_IDENTIFICATION = "TEST1024000000001";
@@ -52,13 +54,16 @@ public class Defaults {
     public static final Boolean IS_ACTIVATED = true;
     public static final Boolean ACTIVE = true;
     public static final String ALIAS = "";
-    public static final String CONTAINER_CITY = "";
-    public static final String CONTAINER_POSTALCODE = "";
-    public static final String CONTAINER_STREET = "";
-    public static final String CONTAINER_NUMBER = "";
-    public static final String CONTAINER_MUNICIPALITY = "";
-    public static final Float LATITUDE = new Float(0);
-    public static final Float LONGITUDE = new Float(0);
+    public static final String CONTAINER_CITY = "Maastricht";
+    public static final String CONTAINER_POSTALCODE = "6221 BT";
+    public static final String CONTAINER_STREET = "Stationsplein";
+    public static final String CONTAINER_NUMBER = "12";
+    public static final String CONTAINER_MUNICIPALITY = "Gemeente Maastricht";
+    // The following GPS coordinates is the GPS location to Stationsplein 12,
+    // 6221 BT Maastricht, Netherlands. Source:
+    // (http://www.gps-coordinates.net/).
+    public static final Float LATITUDE = new Float(50.848274);
+    public static final Float LONGITUDE = new Float(5.706087);
     public static final Short CHANNEL = new Short((short) 1);
     public static final Short PAGE = 0;
 
@@ -115,4 +120,5 @@ public class Defaults {
     public static final Boolean FILESTORAGE = true;
     public static final PlatformDomain PLATFORMDOMAIN = PlatformDomain.COMMON;
     public static final String SUPPLIER = "Kaifa";
+    public static final DateTime TECHNICAL_INSTALLATION_DATE = DateTime.now().minusDays(10);
 }
