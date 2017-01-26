@@ -1,4 +1,4 @@
-Feature: Device management
+Feature: AdminDeviceManagement Deactivate Device
   As a grid operator
   I want to be able to perform DeviceManagement operations on a device
   In order to ...

@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
 
@@ -74,8 +76,10 @@ public abstract class GenericResponseSteps extends StepsBase {
                      */
                     continue;
                 }
+
                 final String expectedValue = expectedEntry.getValue();
                 final String actualValue = actual.get(faultDetailElement);
+
                 assertEquals(localName, expectedValue, actualValue);
             }
         } else if (actualObj instanceof ArrayList) {
@@ -114,8 +118,19 @@ public abstract class GenericResponseSteps extends StepsBase {
 
     private static void assertExpectedAndActualValues(final String localName, final String expectedValue,
             final Object actual, final int counter) {
+<<<<<<< HEAD:automatictests-platform/src/test/java/com/alliander/osgp/automatictests/platform/glue/steps/ws/GenericResponseSteps.java
         @SuppressWarnings("unchecked")
+=======
+
+        final Pattern pattern = Pattern.compile("('.+\\d+:.+')", Pattern.CASE_INSENSITIVE);
+>>>>>>> 3ccf56a85cff1219f2d93ef91f86a3dd8e3e9de3:cucumber-tests-platform/src/test/java/com/alliander/osgp/platform/cucumber/steps/ws/GenericResponseSteps.java
         final String actualValue = ((List<String>) actual).get(counter);
-        assertEquals(localName, expectedValue, actualValue);
+        final Matcher matcher = pattern.matcher(actualValue);
+        if (matcher.find()) {
+            final String group = matcher.group(1);
+            assertEquals(localName, expectedValue.replaceAll("('.+\\d+:.+')", group), actualValue);
+        } else {
+            assertEquals(localName, expectedValue, actualValue);
+        }
     }
 }

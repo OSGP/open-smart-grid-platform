@@ -1,6 +1,6 @@
-Feature: Add Device
+Feature: CoreDeviceInstallation Device Creating
   As a ...
-  I want to ...
+  I want to be able to perform DeviceInstallation operations on a device
   In order to ...
 
   Scenario Outline: Add New Device
@@ -26,8 +26,7 @@ Feature: Add Device
       | Description           | <Description>           |
       | Metered               | <Metered>               |
     Then the add device response is successful
-    # 'Activated' is altijd 'false' wanneer een nieuwe device wordt aangemaakt.
-    # Om deze stap volledig succesvol te laten verlopen moet de value van 'Activated' 'false' zijn.
+    # Note: 'Activated' en 'Active' moeten altijd 'false' zijn, de device zet deze waarden automatisch op 'true'
     And the device exists
       | DeviceIdentification       | <DeviceIdentification>  |
       | alias                      | <Alias>                 |

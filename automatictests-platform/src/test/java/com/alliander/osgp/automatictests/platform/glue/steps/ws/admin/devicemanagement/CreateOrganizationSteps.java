@@ -47,6 +47,7 @@ public class CreateOrganizationSteps extends StepsBase {
     @When("^receiving a create organization request$")
     public void receivingACreateOrganizationRequest(final Map<String, String> requestSettings) throws Throwable {
 
+<<<<<<< HEAD:automatictests-platform/src/test/java/com/alliander/osgp/automatictests/platform/glue/steps/ws/admin/devicemanagement/CreateOrganizationSteps.java
     	CreateOrganisationRequest request = new CreateOrganisationRequest();
     	Organisation organization = new Organisation();
     	
@@ -75,6 +76,37 @@ public class CreateOrganizationSteps extends StepsBase {
     	} catch (SoapFaultClientException e) {
     		ScenarioContext.Current().put(Keys.RESPONSE, e);
     	}
+=======
+        final CreateOrganisationRequest request = new CreateOrganisationRequest();
+        final Organisation organization = new Organisation();
+
+        // Required fields
+        organization.setName(getString(requestSettings, Keys.KEY_NAME, Defaults.DEFAULT_ORGANIZATION_NAME));
+        organization.setOrganisationIdentification(getString(requestSettings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
+                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+        organization.setPrefix(getString(requestSettings, Keys.KEY_PREFIX, Defaults.DEFAULT_ORGANIZATION_PREFIX));
+
+        final PlatformFunctionGroup platformFunctionGroup = getEnum(requestSettings, Keys.KEY_PLATFORM_FUNCTION_GROUP,
+                PlatformFunctionGroup.class, Defaults.DEFAULT_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP);
+        organization.setFunctionGroup(platformFunctionGroup);
+
+        for (final String domain : getString(requestSettings, Keys.KEY_DOMAINS, Defaults.DEFAULT_DOMAINS).split(";")) {
+            organization.getDomains().add(Enum.valueOf(PlatformDomain.class, domain));
+        }
+
+        // Optional fields
+        if (requestSettings.containsKey(Keys.KEY_ENABLED) && !requestSettings.get(Keys.KEY_ENABLED).isEmpty()) {
+            organization.setEnabled(getBoolean(requestSettings, Keys.KEY_ENABLED));
+        }
+
+        request.setOrganisation(organization);
+
+        try {
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.createOrganization(request));
+        } catch (final SoapFaultClientException e) {
+            ScenarioContext.Current().put(Keys.RESPONSE, e);
+        }
+>>>>>>> 3ccf56a85cff1219f2d93ef91f86a3dd8e3e9de3:cucumber-tests-platform/src/test/java/com/alliander/osgp/platform/cucumber/steps/ws/admin/devicemanagement/CreateOrganizationSteps.java
     }
 
     /**
@@ -94,6 +126,7 @@ public class CreateOrganizationSteps extends StepsBase {
 
     /**
      * Verify that the create organization response is successful.
+     *
      * @throws Throwable
      */
     @Then("^the create organization response is successful$")
@@ -104,11 +137,13 @@ public class CreateOrganizationSteps extends StepsBase {
     /**
      * Verify that the create organization response contains the fault with the
      * given expectedResult parameters.
+     *
      * @param expectedResult
      * @throws Throwable
      */
-    @Then("^the create organization response contains$")
-    public void theCreateOrganizationResponseContains(final Map<String, String> expectedResult) throws Throwable {
+    @Then("^the create organization response contains soap fault$")
+    public void theCreateOrganizationResponseContainsSoapFault(final Map<String, String> expectedResult)
+            throws Throwable {
         GenericResponseSteps.verifySoapFault(expectedResult);
     }
 }

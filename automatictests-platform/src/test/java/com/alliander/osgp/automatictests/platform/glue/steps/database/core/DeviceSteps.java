@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,7 +54,17 @@ import cucumber.api.java.en.Then;
 
 public class DeviceSteps extends StepsBase {
 
+<<<<<<< HEAD:automatictests-platform/src/test/java/com/alliander/osgp/automatictests/platform/glue/steps/database/core/DeviceSteps.java
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceSteps.class);
+=======
+    public static String DEFAULT_DEVICE_IDENTIFICATION = "test-device";
+    public static String DEFAULT_DEVICE_TYPE = "OSLP";
+    public static String DEFAULT_PROTOCOL = "OSLP";
+    public static String DEFAULT_PROTOCOL_VERSION = "1.0";
+
+    @SuppressWarnings("unused")
+    private final Long DEFAULT_DEVICE_ID = new java.util.Random().nextLong();
+>>>>>>> 3ccf56a85cff1219f2d93ef91f86a3dd8e3e9de3:cucumber-tests-platform/src/test/java/com/alliander/osgp/platform/cucumber/steps/database/core/DeviceSteps.java
 
     @Autowired
     private CoreDeviceConfiguration configuration;
@@ -205,23 +214,21 @@ public class DeviceSteps extends StepsBase {
         boolean success = false;
         int count = 0;
         while (!success) {
-            try {
-                if (count > this.configuration.getTimeout()) {
-                    Assert.fail("Failed");
-                }
-
-                // Wait for next try to retrieve a response
-                count++;
-                Thread.sleep(1000);
-
-                final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-
-                Assert.assertTrue(device.isActive());
-
-                success = true;
-            } catch (final Exception e) {
-                // Do nothing
+            if (count > this.configuration.getTimeout()) {
+                Assert.fail("Failed");
             }
+
+            // Wait for next try to retrieve a response
+            count++;
+            Thread.sleep(1000);
+
+            final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+            if (device == null)
+                continue;
+
+            Assert.assertTrue(device.isActive());
+
+            success = true;
         }
     }
 
@@ -235,22 +242,21 @@ public class DeviceSteps extends StepsBase {
         boolean success = false;
         int count = 0;
         while (!success) {
-            try {
-                if (count > this.configuration.getTimeout()) {
-                    Assert.fail("Failed");
-                }
-
-                // Wait for next try to retrieve a response
-                count++;
-                Thread.sleep(1000);
-
-                final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-                Assert.assertFalse(device.isActive());
-
-                success = true;
-            } catch (final Exception e) {
-                // Do nothing
+            if (count > this.configuration.getTimeout()) {
+                Assert.fail("Failed");
             }
+
+            // Wait for next try to retrieve a response
+            count++;
+            Thread.sleep(1000);
+
+            final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+            if (device == null)
+                continue;
+
+            Assert.assertFalse(device.isActive());
+
+            success = true;
         }
     }
 
@@ -274,6 +280,7 @@ public class DeviceSteps extends StepsBase {
             Thread.sleep(1000);
             LoggerFactory.getLogger(DeviceSteps.class).info("Sleeping ls " + count);
 
+<<<<<<< HEAD:automatictests-platform/src/test/java/com/alliander/osgp/automatictests/platform/glue/steps/database/core/DeviceSteps.java
             try {
                 // Wait for next try to retrieve a response
 
@@ -285,7 +292,15 @@ public class DeviceSteps extends StepsBase {
                 success = true;
             } catch (final Exception e) {
                 LOGGER.info(e.getMessage());
+=======
+            // Wait for next try to retrieve a response
+            device = this.deviceRepository.findByDeviceIdentification(settings.get(Keys.KEY_DEVICE_IDENTIFICATION));
+            if (device == null) {
+                continue;
+>>>>>>> 3ccf56a85cff1219f2d93ef91f86a3dd8e3e9de3:cucumber-tests-platform/src/test/java/com/alliander/osgp/platform/cucumber/steps/database/core/DeviceSteps.java
             }
+
+            success = true;
         }
 
         if (settings.containsKey("Alias")) {

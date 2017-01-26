@@ -19,11 +19,21 @@ import org.springframework.ws.soap.client.SoapFaultClientException;
 import com.alliander.osgp.adapter.ws.schema.admin.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ActivateDeviceRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ActivateDeviceResponse;
+<<<<<<< HEAD:automatictests-platform/src/test/java/com/alliander/osgp/automatictests/platform/glue/steps/ws/admin/devicemanagement/ActivateDeviceSteps.java
 import com.alliander.osgp.automatictests.platform.Defaults;
 import com.alliander.osgp.automatictests.platform.Keys;
 import com.alliander.osgp.automatictests.platform.StepsBase;
 import com.alliander.osgp.automatictests.platform.core.ScenarioContext;
 import com.alliander.osgp.automatictests.platform.support.ws.admin.AdminDeviceManagementClient;
+=======
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
+import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
+import com.alliander.osgp.platform.cucumber.steps.Defaults;
+import com.alliander.osgp.platform.cucumber.steps.Keys;
+import com.alliander.osgp.platform.cucumber.steps.common.ResponseSteps;
+import com.alliander.osgp.platform.cucumber.steps.ws.GenericResponseSteps;
+import com.alliander.osgp.platform.cucumber.support.ws.admin.AdminDeviceManagementClient;
+>>>>>>> 3ccf56a85cff1219f2d93ef91f86a3dd8e3e9de3:cucumber-tests-platform/src/test/java/com/alliander/osgp/platform/cucumber/steps/ws/admin/devicemanagement/ActivateDeviceSteps.java
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -61,5 +71,10 @@ public class ActivateDeviceSteps extends StepsBase {
 
         Assert.assertEquals(response.getResult(),
                 getEnum(expectedResponse, Keys.RESULT, OsgpResultType.class, OsgpResultType.OK));
+    }
+    
+    @Then("^the activate device response return a soap fault$")
+    public void theActivateDeviceResponseReturnsASoapFault(final Map<String, String> expectedResult) throws Throwable {
+        GenericResponseSteps.verifySoapFault(expectedResult);
     }
 }

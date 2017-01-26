@@ -1,4 +1,4 @@
-Feature: Get Gas Furnace Data
+Feature: MicroGrids Get Gas Furnace Data
   In order to be able to know data of a gas furnace with a remote terminal unit
   As an OSGP client
   I want to get Gas Furnace data from an RTU

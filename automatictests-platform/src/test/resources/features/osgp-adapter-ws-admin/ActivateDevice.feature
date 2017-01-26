@@ -1,4 +1,4 @@
-Feature: Device management 
+Feature: AdminDeviceManagement Activate Device 
   As a grid operator
   I want to be able to perform DeviceManagement operations on a device
   In order to ...

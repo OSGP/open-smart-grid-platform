@@ -19,11 +19,19 @@ import org.springframework.ws.soap.client.SoapFaultClientException;
 import com.alliander.osgp.adapter.ws.schema.admin.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.DeactivateDeviceRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.DeactivateDeviceResponse;
+<<<<<<< HEAD:automatictests-platform/src/test/java/com/alliander/osgp/automatictests/platform/glue/steps/ws/admin/devicemanagement/DeactivateDeviceSteps.java
 import com.alliander.osgp.automatictests.platform.Defaults;
 import com.alliander.osgp.automatictests.platform.Keys;
 import com.alliander.osgp.automatictests.platform.StepsBase;
 import com.alliander.osgp.automatictests.platform.core.ScenarioContext;
 import com.alliander.osgp.automatictests.platform.support.ws.admin.AdminDeviceManagementClient;
+=======
+import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
+import com.alliander.osgp.platform.cucumber.steps.Defaults;
+import com.alliander.osgp.platform.cucumber.steps.Keys;
+import com.alliander.osgp.platform.cucumber.steps.ws.GenericResponseSteps;
+import com.alliander.osgp.platform.cucumber.support.ws.admin.AdminDeviceManagementClient;
+>>>>>>> 3ccf56a85cff1219f2d93ef91f86a3dd8e3e9de3:cucumber-tests-platform/src/test/java/com/alliander/osgp/platform/cucumber/steps/ws/admin/devicemanagement/DeactivateDeviceSteps.java
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -57,5 +65,16 @@ public class DeactivateDeviceSteps extends StepsBase {
         DeactivateDeviceResponse response = (DeactivateDeviceResponse) ScenarioContext.Current().get(Keys.RESPONSE);
 
         Assert.assertEquals(getEnum(expectedResponse, Keys.RESULT, OsgpResultType.class), response.getResult());
+    }
+    
+    /**
+     * Verifies the soap fault.
+     * 
+     * @param expectedResult
+     * @throws Throwable
+     */
+    @Then("^the deactivate device response contains a soap fault$")
+    public void theDeactivateDeviceResponseContainsASoapFault(final Map<String, String> expectedResult) throws Throwable {
+        GenericResponseSteps.verifySoapFault(expectedResult);
     }
 }
