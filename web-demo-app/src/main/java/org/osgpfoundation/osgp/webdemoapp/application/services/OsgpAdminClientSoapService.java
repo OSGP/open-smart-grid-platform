@@ -11,7 +11,7 @@ import org.osgpfoundation.osgp.webdemoapp.infra.platform.SoapRequestHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
-import com.alliander.osgp.platform.ws.schema.admin.devicemanagement.UpdateKeyRequest;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.UpdateKeyRequest;
 
 import ma.glasnost.orika.MapperFacade;
 
@@ -25,7 +25,7 @@ public class OsgpAdminClientSoapService {
     @Autowired
     SoapRequestHelper soapRequestHelper;
 
-    private MapperFacade adminAdHocMapperFacade;
+    private final MapperFacade adminAdHocMapperFacade;
 
     public OsgpAdminClientSoapService(final MapperFacade mapper) {
         this.adminAdHocMapperFacade = mapper;

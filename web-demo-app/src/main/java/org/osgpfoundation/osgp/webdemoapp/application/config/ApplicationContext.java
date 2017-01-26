@@ -105,6 +105,7 @@ public class ApplicationContext {
 
     /**
      * Spring SoapMessageFactory for creating Soap Messages
+     *
      * @return SaajSoapMessageFactory
      */
     private SaajSoapMessageFactory messageFactory() {
@@ -119,11 +120,12 @@ public class ApplicationContext {
 
     /**
      * Customized mapper facade for Orika
+     *
      * @return MapperFacade
      */
     private MapperFacade adminAdHocMapperFacade() {
         final MapperFactory factory = new DefaultMapperFactory.Builder().build();
-        factory.classMap(com.alliander.osgp.platform.ws.schema.admin.devicemanagement.Device.class,
+        factory.classMap(com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.Device.class,
                 org.osgpfoundation.osgp.webdemoapp.domain.Device.class).byDefault().register();
 
         return factory.getMapperFacade();
@@ -131,11 +133,12 @@ public class ApplicationContext {
 
     /**
      * Customized mapper facade for Orika
+     *
      * @return MapperFacade
      */
     private MapperFacade publicLightingAdHocMapperFacade() {
         final MapperFactory factory = new DefaultMapperFactory.Builder().build();
-        factory.classMap(com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement.Device.class,
+        factory.classMap(com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.Device.class,
                 org.osgpfoundation.osgp.webdemoapp.domain.Device.class).byDefault().register();
 
         return factory.getMapperFacade();
