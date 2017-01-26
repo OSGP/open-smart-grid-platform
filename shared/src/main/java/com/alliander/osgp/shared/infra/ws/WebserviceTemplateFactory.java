@@ -13,7 +13,7 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 
 @FunctionalInterface
-public interface WebserviceTemplateFactoryImpl {
+public interface WebserviceTemplateFactory {
 
     WebServiceTemplate getTemplate(final String organisationIdentification, final String userName,
             final String notificationURL) throws WebServiceSecurityException;

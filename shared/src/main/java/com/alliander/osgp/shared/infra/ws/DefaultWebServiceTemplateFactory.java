@@ -32,9 +32,9 @@ import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 
-public class WebServiceTemplateFactory implements WebserviceTemplateFactoryImpl {
+public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceTemplateFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultWebServiceTemplateFactory.class);
 
     private Map<String, WebServiceTemplate> webServiceTemplates;
     private final Lock lock = new ReentrantLock();
@@ -56,7 +56,7 @@ public class WebServiceTemplateFactory implements WebserviceTemplateFactoryImpl 
     private KeyStoreFactoryBean trustStoreFactory;
     private String applicationName;
 
-    private WebServiceTemplateFactory() {
+    private DefaultWebServiceTemplateFactory() {
         this.webServiceTemplates = new HashMap<>();
     }
 
@@ -121,8 +121,8 @@ public class WebServiceTemplateFactory implements WebserviceTemplateFactoryImpl 
             return this;
         }
 
-        public WebServiceTemplateFactory build() {
-            final WebServiceTemplateFactory webServiceTemplateFactory = new WebServiceTemplateFactory();
+        public DefaultWebServiceTemplateFactory build() {
+            final DefaultWebServiceTemplateFactory webServiceTemplateFactory = new DefaultWebServiceTemplateFactory();
             webServiceTemplateFactory.setMarshaller(this.marshaller);
             webServiceTemplateFactory.setMessageFactory(this.messageFactory);
             webServiceTemplateFactory.setTargetUri(this.targetUri);
