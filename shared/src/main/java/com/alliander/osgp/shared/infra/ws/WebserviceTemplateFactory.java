@@ -8,13 +8,16 @@
 
 package com.alliander.osgp.shared.infra.ws;
 
+import java.net.URL;
+
 import org.springframework.ws.client.core.WebServiceTemplate;
 
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 
-@FunctionalInterface
 public interface WebserviceTemplateFactory {
-
     WebServiceTemplate getTemplate(final String organisationIdentification, final String userName,
             final String notificationURL) throws WebServiceSecurityException;
+
+    WebServiceTemplate getTemplate(final String organisationIdentification, final String userName, final URL targetUri)
+            throws WebServiceSecurityException;
 }
