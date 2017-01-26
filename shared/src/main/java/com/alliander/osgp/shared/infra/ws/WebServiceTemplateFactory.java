@@ -32,7 +32,7 @@ import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 
-public class WebServiceTemplateFactory {
+public class WebServiceTemplateFactory implements WebserviceTemplateFactoryImpl {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceTemplateFactory.class);
 
@@ -55,39 +55,6 @@ public class WebServiceTemplateFactory {
     private String keyStorePassword;
     private KeyStoreFactoryBean trustStoreFactory;
     private String applicationName;
-
-    public WebServiceTemplateFactory(final Jaxb2Marshaller marshaller, final SaajSoapMessageFactory messageFactory,
-            final String applicationName) {
-        this(marshaller, messageFactory, null, null, null, null, null, applicationName);
-    }
-
-    public WebServiceTemplateFactory(final Jaxb2Marshaller marshaller, final SaajSoapMessageFactory messageFactory,
-            final String keyStoreType, final String keyStoreLocation, final String keyStorePassword,
-            final KeyStoreFactoryBean trustStoreFactory, final String applicationName) {
-        this(marshaller, messageFactory, null, keyStoreType, keyStoreLocation, keyStorePassword, trustStoreFactory,
-                applicationName);
-    }
-
-    public WebServiceTemplateFactory(final Jaxb2Marshaller marshaller, final SaajSoapMessageFactory messageFactory,
-            final String defaultUri, final String keyStoreType, final String keyStoreLocation,
-            final String keyStorePassword, final KeyStoreFactoryBean trustStoreFactory) {
-        this(marshaller, messageFactory, defaultUri, keyStoreType, keyStoreLocation, keyStorePassword,
-                trustStoreFactory, null);
-    }
-
-    public WebServiceTemplateFactory(final Jaxb2Marshaller marshaller, final SaajSoapMessageFactory messageFactory,
-            final String targetUri, final String keyStoreType, final String keyStoreLocation,
-            final String keyStorePassword, final KeyStoreFactoryBean trustStoreFactory, final String applicationName) {
-        this.marshaller = marshaller;
-        this.messageFactory = messageFactory;
-        this.targetUri = targetUri;
-        this.keyStoreType = keyStoreType;
-        this.keyStoreLocation = keyStoreLocation;
-        this.keyStorePassword = keyStorePassword;
-        this.trustStoreFactory = trustStoreFactory;
-        this.applicationName = applicationName;
-        this.webServiceTemplates = new HashMap<>();
-    }
 
     public WebServiceTemplate getTemplate(final String organisationIdentification, final String userName)
             throws WebServiceSecurityException {
@@ -168,6 +135,7 @@ public class WebServiceTemplateFactory {
         }
     }
 
+    @Override
     public WebServiceTemplate getTemplate(final String organisationIdentification, final String userName,
             final String applicationName) throws WebServiceSecurityException {
 
