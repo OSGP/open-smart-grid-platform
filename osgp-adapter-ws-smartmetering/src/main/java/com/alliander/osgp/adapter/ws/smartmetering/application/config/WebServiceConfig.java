@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,15 +32,15 @@ import com.alliander.osgp.adapter.ws.endpointinterceptors.AnnotationMethodArgume
 import com.alliander.osgp.adapter.ws.endpointinterceptors.CertificateAndSoapHeaderAuthorizationEndpointInterceptor;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
+import com.alliander.osgp.adapter.ws.endpointinterceptors.ResponseUrl;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.ScheduleTime;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderEndpointInterceptor;
-import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderMessagePriorityEndpointInterceptor;
-import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderScheduleTimeEndpointInterceptor;
+import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderInterceptor;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.X509CertificateRdnAttributeValueEndpointInterceptor;
+import com.alliander.osgp.adapter.ws.shared.services.NotificationService;
+import com.alliander.osgp.adapter.ws.shared.services.NotificationServiceBlackHole;
 import com.alliander.osgp.adapter.ws.smartmetering.application.exceptionhandling.DetailSoapFaultMappingExceptionResolver;
 import com.alliander.osgp.adapter.ws.smartmetering.application.exceptionhandling.SoapFaultMapper;
-import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationService;
-import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationServiceBlackHole;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationServiceWs;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.SendNotificationServiceClient;
 import com.alliander.osgp.shared.application.config.AbstractConfig;
@@ -102,8 +101,8 @@ public class WebServiceConfig extends AbstractConfig {
     private static final String ORGANISATION_IDENTIFICATION_CONTEXT = ORGANISATION_IDENTIFICATION_HEADER;
 
     private static final String MESSAGE_PRIORITY_HEADER = "MessagePriority";
-    private static final String MESSAGE_PRIORITY_CONTEXT = MESSAGE_PRIORITY_HEADER;
     private static final String MESSAGE_SCHEDULETIME_HEADER = "ScheduleTime";
+    private static final String MESSAGE_RESPONSE_URL_HEADER = "ResponseUrl";
 
     private static final String X509_RDN_ATTRIBUTE_ID = "cn";
     private static final String X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME = "CommonNameSet";
@@ -158,9 +157,9 @@ public class WebServiceConfig extends AbstractConfig {
 
     @Bean
     public NotificationService wsSmartMeteringNotificationService() throws GeneralSecurityException {
-        if (this.webserviceNotificationEnabled && !StringUtils.isEmpty(this.notificationUrl())) {
-            return new NotificationServiceWs(this.sendNotificationServiceClient(), this.notificationUrl(),
-                    this.notificationUsername());
+        if (this.webserviceNotificationEnabled) {
+            return new NotificationServiceWs(this.createWebServiceTemplateFactory(this.notificationSenderMarshaller()),
+                    this.notificationUrl(), this.notificationUsername());
         } else {
             return new NotificationServiceBlackHole();
         }
@@ -347,9 +346,11 @@ public class WebServiceConfig extends AbstractConfig {
         methodArgumentResolvers.add(new AnnotationMethodArgumentResolver(ORGANISATION_IDENTIFICATION_CONTEXT,
                 OrganisationIdentification.class));
         methodArgumentResolvers
-                .add(new AnnotationMethodArgumentResolver(MESSAGE_PRIORITY_CONTEXT, MessagePriority.class));
+                .add(new AnnotationMethodArgumentResolver(MESSAGE_PRIORITY_HEADER, MessagePriority.class));
         methodArgumentResolvers
                 .add(new AnnotationMethodArgumentResolver(MESSAGE_SCHEDULETIME_HEADER, ScheduleTime.class));
+        methodArgumentResolvers
+                .add(new AnnotationMethodArgumentResolver(MESSAGE_RESPONSE_URL_HEADER, ResponseUrl.class));
         defaultMethodEndpointAdapter.setMethodArgumentResolvers(methodArgumentResolvers);
 
         final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<MethodReturnValueHandler>();
@@ -398,13 +399,20 @@ public class WebServiceConfig extends AbstractConfig {
     }
 
     @Bean
-    public SoapHeaderMessagePriorityEndpointInterceptor messagePriorityInterceptor() {
-        return new SoapHeaderMessagePriorityEndpointInterceptor(MESSAGE_PRIORITY_HEADER, MESSAGE_PRIORITY_CONTEXT);
+    public SoapHeaderInterceptor messagePriorityInterceptor() {
+        LOGGER.debug("Creating Message Priority Interceptor Bean");
+
+        return new SoapHeaderInterceptor(MESSAGE_PRIORITY_HEADER, MESSAGE_PRIORITY_HEADER);
     }
 
     @Bean
-    public SoapHeaderScheduleTimeEndpointInterceptor scheduleTimeInterceptor() {
-        return new SoapHeaderScheduleTimeEndpointInterceptor(MESSAGE_SCHEDULETIME_HEADER);
+    public SoapHeaderInterceptor scheduleTimeInterceptor() {
+        return new SoapHeaderInterceptor(MESSAGE_SCHEDULETIME_HEADER, MESSAGE_SCHEDULETIME_HEADER);
+    }
+
+    @Bean
+    public SoapHeaderInterceptor responseUrlInterceptor() {
+        return new SoapHeaderInterceptor(MESSAGE_RESPONSE_URL_HEADER, MESSAGE_RESPONSE_URL_HEADER);
     }
 
     /**

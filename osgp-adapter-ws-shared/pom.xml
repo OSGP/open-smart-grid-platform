@@ -60,6 +60,10 @@
       <groupId>com.alliander.osgp</groupId>
       <artifactId>osgp-domain-core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.alliander.osgp</groupId>
+      <artifactId>shared</artifactId>
+    </dependency>
 
         <!-- Spring Framework -->
     <dependency>
