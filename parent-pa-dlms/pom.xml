@@ -7,8 +7,8 @@
   <version>3.5.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>parent-pa-dlms</name>
-    <!-- Description, Organization, Licences, URL and Distribution Management 
-        elements are needed for the maven-jxr-plugin to generate a maven site -->
+  <!-- Description, Organization, Licences, URL and Distribution Management elements are needed for the maven-jxr-plugin 
+    to generate a maven site -->
   <description>Parent module.</description>
   <organization>
     <name>OSGP</name>
@@ -20,7 +20,7 @@
       <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
     </license>
   </licenses>
-    <!-- URL is passed in as a maven argument: -Dmaven.site.url=http://my/url/for/the/site -->
+  <!-- URL is passed in as a maven argument: -Dmaven.site.url=http://my/url/for/the/site -->
   <url>${maven.site.url}</url>
   <distributionManagement>
     <repository>
@@ -40,7 +40,7 @@
     <site>
       <id>pa-dlms</id>
       <name>pa-dlms</name>
-            <!-- URL is passed in as a maven argument: -Dmaven.site.distributionManagement.site.url=file:////the/path/to/deploy/the/site/to -->
+      <!-- URL is passed in as a maven argument: -Dmaven.site.distributionManagement.site.url=file:////the/path/to/deploy/the/site/to -->
       <url>${maven.site.distributionManagement.site.url}</url>
     </site>
   </distributionManagement>
@@ -53,12 +53,12 @@
     <osgp.jasper-interface.version>3.5.0-SNAPSHOT</osgp.jasper-interface.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <spring.version>4.3.3.RELEASE</spring.version>
-    <spring.data.version>1.8.2.RELEASE</spring.data.version>
-    <spring.wscore.version>2.2.0.RELEASE</spring.wscore.version>
-    <spring.wssecurity.version>2.2.0.RELEASE</spring.wssecurity.version>
-    <spring.wssupport.version>2.2.0.RELEASE</spring.wssupport.version>
-    <spring.ws.version>2.1.3.RELEASE</spring.ws.version>
+    <spring.version>4.3.5.RELEASE</spring.version>
+    <spring.data.version>1.10.6.RELEASE</spring.data.version>
+    <spring.wscore.version>2.4.0.RELEASE</spring.wscore.version>
+    <spring.wssecurity.version>2.4.0.RELEASE</spring.wssecurity.version>
+    <spring.wssupport.version>2.4.0.RELEASE</spring.wssupport.version>
+    <spring.ws.version>2.4.0.RELEASE</spring.ws.version>
     <xmlunit.version>1.6</xmlunit.version>
     <mockito.version>1.10.19</mockito.version>
     <apache.wss4j.version>1.6.19</apache.wss4j.version>
@@ -110,14 +110,14 @@
 
   <dependencyManagement>
     <dependencies>
-            <!-- OpenMUC jDLMS -->
+      <!-- OpenMUC jDLMS -->
       <dependency>
         <groupId>org.openmuc</groupId>
         <artifactId>jdlms</artifactId>
         <version>${openmuc.jdlms.version}</version>
       </dependency>
 
-            <!-- OSGP -->
+      <!-- OSGP -->
       <dependency>
         <groupId>com.alliander.osgp</groupId>
         <artifactId>osgp-dto</artifactId>
@@ -140,7 +140,7 @@
         <version>${osgp.dlms.version}</version>
       </dependency>
 
-            <!-- Spring Framework -->
+      <!-- Spring Framework -->
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-beans</artifactId>
@@ -177,21 +177,21 @@
         <version>${spring.version}</version>
       </dependency>
 
-            <!-- Spring JMS -->
+      <!-- Spring JMS -->
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-jms</artifactId>
         <version>${spring.version}</version>
       </dependency>
 
-            <!-- Spring Data -->
+      <!-- Spring Data -->
       <dependency>
         <groupId>org.springframework.data</groupId>
         <artifactId>spring-data-jpa</artifactId>
         <version>${spring.data.version}</version>
       </dependency>
 
-            <!-- Spring WS -->
+      <!-- Spring WS -->
       <dependency>
         <groupId>org.springframework.ws</groupId>
         <artifactId>spring-ws-core</artifactId>
@@ -209,19 +209,18 @@
       </dependency>
       <dependency>
         <groupId>org.springframework.ws</groupId>
-        <artifactId>spring-ws</artifactId>
+        <artifactId>spring-ws-test</artifactId>
         <version>${spring.ws.version}</version>
-        <classifier>all</classifier>
       </dependency>
 
-            <!-- javax inject -->
+      <!-- javax inject -->
       <dependency>
         <groupId>javax.inject</groupId>
         <artifactId>javax.inject</artifactId>
         <version>${javax.inject.version}</version>
       </dependency>
 
-            <!-- ws support -->
+      <!-- ws support -->
       <dependency>
         <groupId>org.apache.ws.security</groupId>
         <artifactId>wss4j</artifactId>
@@ -229,7 +228,7 @@
       </dependency>
 
 
-            <!-- Servlet API 3.0 -->
+      <!-- Servlet API 3.0 -->
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>javax.servlet-api</artifactId>
@@ -242,14 +241,14 @@
         <version>${servlet.jstl.version}</version>
       </dependency>
 
-            <!-- Joda Time (Date/Time functions) -->
+      <!-- Joda Time (Date/Time functions) -->
       <dependency>
         <groupId>joda-time</groupId>
         <artifactId>joda-time</artifactId>
         <version>${joda.version}</version>
       </dependency>
 
-            <!-- Hibernate -->
+      <!-- Hibernate -->
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-core</artifactId>
@@ -261,7 +260,7 @@
         <version>${hibernate.version}</version>
       </dependency>
 
-            <!-- Flyway (DB Migration) -->
+      <!-- Flyway (DB Migration) -->
       <dependency>
         <groupId>com.googlecode.flyway</groupId>
         <artifactId>flyway-core</artifactId>
@@ -275,12 +274,12 @@
         <scope>compile</scope>
       </dependency>
 
-            <!-- Apache MQ client -->
+      <!-- Apache MQ client -->
       <dependency>
         <groupId>org.apache.activemq</groupId>
         <artifactId>activemq-client</artifactId>
         <version>${apache.activemq.version}</version>
-                <!-- Exclude the non-client JAR files -->
+        <!-- Exclude the non-client JAR files -->
         <exclusions>
           <exclusion>
             <groupId>org.springframework</groupId>
@@ -342,14 +341,14 @@
         <version>${commons.pool.version}</version>
       </dependency>
 
-            <!-- Orika (mapping framework) -->
+      <!-- Orika (mapping framework) -->
       <dependency>
         <groupId>ma.glasnost.orika</groupId>
         <artifactId>orika-core</artifactId>
         <version>${orika.version}</version>
       </dependency>
 
-            <!-- Testing dependencies -->
+      <!-- Testing dependencies -->
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
@@ -357,7 +356,7 @@
         <scope>test</scope>
       </dependency>
 
-            <!-- Spring Test -->
+      <!-- Spring Test -->
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-test</artifactId>
@@ -382,7 +381,7 @@
         <version>${apache.commons.lang.version}</version>
       </dependency>
 
-            <!-- Logging dependencies -->
+      <!-- Logging dependencies -->
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
