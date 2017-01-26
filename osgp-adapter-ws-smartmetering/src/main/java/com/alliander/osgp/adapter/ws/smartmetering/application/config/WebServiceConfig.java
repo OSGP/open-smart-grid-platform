@@ -140,9 +140,12 @@ public class WebServiceConfig extends AbstractConfig {
     }
 
     private WebServiceTemplateFactory createWebServiceTemplateFactory(final Jaxb2Marshaller marshaller) {
-        return new WebServiceTemplateFactory(marshaller, this.messageFactory(), this.webserviceNotificationUrl,
-                this.webserviceKeystoreType, this.webserviceKeystoreLocation, this.webserviceKeystorePassword,
-                this.webServiceTrustStoreFactory(), this.applicationName);
+        return new WebServiceTemplateFactory.Builder().setMarshaller(marshaller)
+                .setMessageFactory(this.messageFactory()).setTargetUri(this.webserviceNotificationUrl)
+                .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
+                .setKeyStorePassword(this.webserviceKeystorePassword)
+                .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)
+                .build();
     }
 
     @Bean
