@@ -65,6 +65,7 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
         return this.getTemplate(organisationIdentification, userName, this.applicationName);
     }
 
+    @Override
     public WebServiceTemplate getTemplate(final String organisationIdentification, final String userName, final URL targetUri)
             throws WebServiceSecurityException {
         this.targetUri = targetUri.toString();
