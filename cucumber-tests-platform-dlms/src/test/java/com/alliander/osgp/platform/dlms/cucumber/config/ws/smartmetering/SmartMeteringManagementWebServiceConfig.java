@@ -15,7 +15,7 @@ import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadM
 
 import com.alliander.osgp.platform.cucumber.config.ws.BaseWebServiceConfig;
 import com.alliander.osgp.platform.dlms.cucumber.config.ApplicationConfiguration;
-import com.alliander.osgp.shared.infra.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Configuration
 public class SmartMeteringManagementWebServiceConfig extends BaseWebServiceConfig {
@@ -24,8 +24,8 @@ public class SmartMeteringManagementWebServiceConfig extends BaseWebServiceConfi
     private ApplicationConfiguration configuration;
 
     @Bean
-    public WebServiceTemplateFactory smartMeteringManagementWstf() {
-        return new WebServiceTemplateFactory.Builder().setMarshaller(this.smartMeteringManagementMarshaller())
+    public DefaultWebServiceTemplateFactory smartMeteringManagementWstf() {
+        return new DefaultWebServiceTemplateFactory.Builder().setMarshaller(this.smartMeteringManagementMarshaller())
                 .setMessageFactory(this.messageFactory())
                 .setTargetUri(this.baseUri.concat(this.configuration.webserviceTemplateDefaultUriSmartMeteringManagement))
                 .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)

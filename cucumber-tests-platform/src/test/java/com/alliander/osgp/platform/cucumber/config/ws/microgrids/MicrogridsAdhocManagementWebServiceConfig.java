@@ -14,7 +14,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadMethodProcessor;
 
 import com.alliander.osgp.platform.cucumber.config.ws.BaseWebServiceConfig;
-import com.alliander.osgp.shared.infra.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Configuration
 public class MicrogridsAdhocManagementWebServiceConfig extends BaseWebServiceConfig {
@@ -29,8 +29,8 @@ public class MicrogridsAdhocManagementWebServiceConfig extends BaseWebServiceCon
     private String contextPathSmartmeteringInstallationManagement;
 
     @Bean
-    public WebServiceTemplateFactory webServiceTemplateFactoryMicrogridsAdHocManagement() {
-        return new WebServiceTemplateFactory.Builder().setMarshaller(this.microgridsAdHocManagementMarshaller())
+    public DefaultWebServiceTemplateFactory webServiceTemplateFactoryMicrogridsAdHocManagement() {
+        return new DefaultWebServiceTemplateFactory.Builder().setMarshaller(this.microgridsAdHocManagementMarshaller())
                 .setMessageFactory(this.messageFactory())
                 .setTargetUri(this.baseUri.concat(this.webserviceTemplateDefaultUriMicrogridsAdHocManagement))
                 .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)

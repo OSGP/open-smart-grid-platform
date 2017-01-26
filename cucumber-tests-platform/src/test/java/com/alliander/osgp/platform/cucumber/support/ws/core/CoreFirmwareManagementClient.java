@@ -20,13 +20,13 @@ import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareV
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionResponse;
 import com.alliander.osgp.platform.cucumber.support.ws.BaseClient;
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
-import com.alliander.osgp.shared.infra.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Component
 public class CoreFirmwareManagementClient extends BaseClient {
 
     @Autowired
-    private WebServiceTemplateFactory coreFirmwareManagementWstf;
+    private DefaultWebServiceTemplateFactory coreFirmwareManagementWstf;
 
     public GetFirmwareVersionAsyncResponse getFirmwareVersion(final GetFirmwareVersionRequest request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.coreFirmwareManagementWstf.getTemplate(this.getOrganizationIdentification(), this.getUserName());

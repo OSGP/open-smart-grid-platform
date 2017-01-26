@@ -14,7 +14,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadMethodProcessor;
 
 import com.alliander.osgp.platform.cucumber.config.ws.BaseWebServiceConfig;
-import com.alliander.osgp.shared.infra.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Configuration
 public class TariffSwitchingScheduleManagementWebServiceConfig extends BaseWebServiceConfig {
@@ -26,8 +26,8 @@ public class TariffSwitchingScheduleManagementWebServiceConfig extends BaseWebSe
     private String contextPathTariffSwitchingScheduleManagement;
 
     @Bean
-    public WebServiceTemplateFactory tariffSwitchingScheduleManagementWstf() {
-        return new WebServiceTemplateFactory.Builder().setMarshaller(this.tariffSwitchingScheduleManagementMarshaller())
+    public DefaultWebServiceTemplateFactory tariffSwitchingScheduleManagementWstf() {
+        return new DefaultWebServiceTemplateFactory.Builder().setMarshaller(this.tariffSwitchingScheduleManagementMarshaller())
                 .setMessageFactory(this.messageFactory())
                 .setTargetUri(this.baseUri.concat(this.webserviceTemplateDefaultUriTariffSwitchingScheduleManagement))
                 .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)

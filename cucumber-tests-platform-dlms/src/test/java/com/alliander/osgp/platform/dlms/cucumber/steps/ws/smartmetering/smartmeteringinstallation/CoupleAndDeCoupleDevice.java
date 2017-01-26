@@ -36,7 +36,7 @@ import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.cucumber.steps.ws.OsgpResponsePoller;
 import com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.AbstractSmartMeteringSteps;
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
-import com.alliander.osgp.shared.infra.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -52,7 +52,7 @@ public class CoupleAndDeCoupleDevice extends AbstractSmartMeteringSteps {
     private int sleepTime;
 
     @Autowired
-    private WebServiceTemplateFactory smartMeteringInstallationManagementWstf;
+    private DefaultWebServiceTemplateFactory smartMeteringInstallationManagementWstf;
 
     @When("^the Couple G-meter \"([^\"]*)\" request on channel (\\d+) is received$")
     public void theCoupleGMeterRequestIsReceived(final String gasMeter, final Short channel)

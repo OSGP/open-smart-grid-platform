@@ -15,19 +15,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
-import com.alliander.osgp.shared.infra.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 public class OsgpResponsePoller<AsyncRequest, Response> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OsgpResponsePoller.class);
 
-    private final WebServiceTemplateFactory webserviceTemplateFactory;
+    private final DefaultWebServiceTemplateFactory webserviceTemplateFactory;
     private final String organizationIdentification;
     private final String username;
     private final int maxWaitTimeForResponse;
     private final int sleepTime;
 
-    public OsgpResponsePoller(final WebServiceTemplateFactory webserviceTemplateFactory,
+    public OsgpResponsePoller(final DefaultWebServiceTemplateFactory webserviceTemplateFactory,
             final String organizationIdentification, final String username, final int maxWaitTimeForResponse,
             final int sleepTime) {
         this.webserviceTemplateFactory = webserviceTemplateFactory;

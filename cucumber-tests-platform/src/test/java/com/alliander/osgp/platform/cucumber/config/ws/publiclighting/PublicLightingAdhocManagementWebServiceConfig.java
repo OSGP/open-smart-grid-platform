@@ -14,7 +14,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadMethodProcessor;
 
 import com.alliander.osgp.platform.cucumber.config.ws.BaseWebServiceConfig;
-import com.alliander.osgp.shared.infra.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Configuration
 public class PublicLightingAdhocManagementWebServiceConfig extends BaseWebServiceConfig {
@@ -26,8 +26,8 @@ public class PublicLightingAdhocManagementWebServiceConfig extends BaseWebServic
     private String contextPathPublicLightingAdHocManagement;
 
     @Bean
-    public WebServiceTemplateFactory publicLightingAdHocManagementWstf() {
-        return new WebServiceTemplateFactory.Builder().setMarshaller(this.publiclightingAdHocManagementMarshaller())
+    public DefaultWebServiceTemplateFactory publicLightingAdHocManagementWstf() {
+        return new DefaultWebServiceTemplateFactory.Builder().setMarshaller(this.publiclightingAdHocManagementMarshaller())
                 .setMessageFactory(this.messageFactory())
                 .setTargetUri(this.baseUri.concat(this.webserviceTemplateDefaultUriPublicLightingAdHocManagement))
                 .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)

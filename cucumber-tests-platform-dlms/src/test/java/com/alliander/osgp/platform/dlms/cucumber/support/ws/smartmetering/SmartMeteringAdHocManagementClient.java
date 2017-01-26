@@ -11,12 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.platform.cucumber.support.ws.BaseClient;
-import com.alliander.osgp.shared.infra.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Component
 public class SmartMeteringAdHocManagementClient extends BaseClient {
 
     @Autowired
-    private WebServiceTemplateFactory smartMeteringAdHocManagementWstf;
+    private DefaultWebServiceTemplateFactory smartMeteringAdHocManagementWstf;
 
 }

@@ -14,7 +14,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadMethodProcessor;
 
 import com.alliander.osgp.platform.cucumber.config.ws.BaseWebServiceConfig;
-import com.alliander.osgp.shared.infra.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Configuration
 public class CoreDeviceManagementWebServiceConfig extends BaseWebServiceConfig {
@@ -26,8 +26,8 @@ public class CoreDeviceManagementWebServiceConfig extends BaseWebServiceConfig {
     private String contextPathCoreDeviceManagement;
 
     @Bean
-    public WebServiceTemplateFactory coreDeviceManagementWstf() {
-        return new WebServiceTemplateFactory.Builder().setMarshaller(this.coreDeviceManagementMarshaller())
+    public DefaultWebServiceTemplateFactory coreDeviceManagementWstf() {
+        return new DefaultWebServiceTemplateFactory.Builder().setMarshaller(this.coreDeviceManagementMarshaller())
                 .setMessageFactory(this.messageFactory())
                 .setTargetUri(this.baseUri.concat(this.webserviceTemplateDefaultUriCoreDeviceManagement))
                 .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
