@@ -30,9 +30,13 @@ public class MicrogridsAdhocManagementWebServiceConfig extends BaseWebServiceCon
 
     @Bean
     public WebServiceTemplateFactory webServiceTemplateFactoryMicrogridsAdHocManagement() {
-        return new WebServiceTemplateFactory(this.microgridsAdHocManagementMarshaller(), this.messageFactory(),
-                this.baseUri.concat(this.webserviceTemplateDefaultUriMicrogridsAdHocManagement), this.webserviceKeystoreType,
-                this.webserviceKeystoreLocation, this.webserviceKeystorePassword, this.webServiceTrustStoreFactory(), this.applicationName);
+        return new WebServiceTemplateFactory.Builder().setMarshaller(this.microgridsAdHocManagementMarshaller())
+                .setMessageFactory(this.messageFactory())
+                .setTargetUri(this.baseUri.concat(this.webserviceTemplateDefaultUriMicrogridsAdHocManagement))
+                .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
+                .setKeyStorePassword(this.webserviceKeystorePassword)
+                .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)
+                .build();
     }
 
     /**

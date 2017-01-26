@@ -25,10 +25,13 @@ public class SmartMeteringAdHocWebServiceConfig extends BaseWebServiceConfig {
 
     @Bean
     public WebServiceTemplateFactory smartMeteringAdHocManagementWstf() {
-        return new WebServiceTemplateFactory(this.smartMeteringAdHocManagementMarshaller(), this.messageFactory(),
-                this.baseUri.concat(this.configuration.webserviceTemplateDefaultUriSmartMeteringAdHocManagement), this.webserviceKeystoreType,
-                this.webserviceKeystoreLocation, this.webserviceKeystorePassword, this.webServiceTrustStoreFactory(), this.applicationName);
-
+        return new WebServiceTemplateFactory.Builder().setMarshaller(this.smartMeteringAdHocManagementMarshaller())
+                .setMessageFactory(this.messageFactory())
+                .setTargetUri(this.baseUri.concat(this.configuration.webserviceTemplateDefaultUriSmartMeteringAdHocManagement))
+                .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
+                .setKeyStorePassword(this.webserviceKeystorePassword)
+                .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)
+                .build();
     }
 
     /**

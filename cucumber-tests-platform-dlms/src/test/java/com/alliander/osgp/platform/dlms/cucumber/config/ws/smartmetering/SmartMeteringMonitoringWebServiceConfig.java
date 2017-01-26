@@ -25,9 +25,13 @@ public class SmartMeteringMonitoringWebServiceConfig extends BaseWebServiceConfi
 
     @Bean
     public WebServiceTemplateFactory smartMeteringMonitoringManagementWstf() {
-        return new WebServiceTemplateFactory(this.smartMeteringMonitoringManagementMarshaller(), this.messageFactory(),
-                this.baseUri.concat(this.configuration.webserviceTemplateDefaultUriSmartMeteringMonitoringManagement), this.webserviceKeystoreType,
-                this.webserviceKeystoreLocation, this.webserviceKeystorePassword, this.webServiceTrustStoreFactory(), this.applicationName);
+        return new WebServiceTemplateFactory.Builder().setMarshaller(this.smartMeteringMonitoringManagementMarshaller())
+                .setMessageFactory(this.messageFactory())
+                .setTargetUri(this.baseUri.concat(this.configuration.webserviceTemplateDefaultUriSmartMeteringMonitoringManagement))
+                .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
+                .setKeyStorePassword(this.webserviceKeystorePassword)
+                .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)
+                .build();
     }
 
     /**

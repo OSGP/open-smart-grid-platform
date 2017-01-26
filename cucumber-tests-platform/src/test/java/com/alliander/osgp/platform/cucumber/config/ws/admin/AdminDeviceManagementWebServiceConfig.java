@@ -30,10 +30,13 @@ public class AdminDeviceManagementWebServiceConfig extends BaseWebServiceConfig 
 
     @Bean
     public WebServiceTemplateFactory adminDeviceManagementWstf() {
-        return new WebServiceTemplateFactory(this.adminDeviceManagementMarshaller(), this.messageFactory(),
-                this.baseUri.concat(this.webserviceTemplateDefaultUriAdminDeviceManagement), this.webserviceKeystoreType,
-                this.webserviceKeystoreLocation, this.webserviceKeystorePassword, this.webServiceTrustStoreFactory(), this.applicationName);
-
+        return new WebServiceTemplateFactory.Builder().setMarshaller(this.adminDeviceManagementMarshaller())
+                .setMessageFactory(this.messageFactory())
+                .setTargetUri(this.baseUri.concat(this.webserviceTemplateDefaultUriAdminDeviceManagement))
+                .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
+                .setKeyStorePassword(this.webserviceKeystorePassword)
+                .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)
+                .build();
     }
 
     /**

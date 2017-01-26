@@ -27,10 +27,15 @@ public class TariffSwitchingAdhocManagementWebServiceConfig extends BaseWebServi
 
     @Bean
     public WebServiceTemplateFactory tariffSwitchingAdHocManagementWstf() {
-        return new WebServiceTemplateFactory(this.tariffSwitchingAdHocManagementMarshaller(), this.messageFactory(),
-                this.baseUri.concat(this.webserviceTemplateDefaultUriTariffSwitchingAdHocManagement), this.webserviceKeystoreType,
-                this.webserviceKeystoreLocation, this.webserviceKeystorePassword, this.webServiceTrustStoreFactory(), this.applicationName);
+        return new WebServiceTemplateFactory.Builder().setMarshaller(this.tariffSwitchingAdHocManagementMarshaller())
+                .setMessageFactory(this.messageFactory())
+                .setTargetUri(this.baseUri.concat(this.webserviceTemplateDefaultUriTariffSwitchingAdHocManagement))
+                .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
+                .setKeyStorePassword(this.webserviceKeystorePassword)
+                .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)
+                .build();
     }
+
 
     /**
      * Method for creating the Marshaller for TariffSwitching AdHocManagement.

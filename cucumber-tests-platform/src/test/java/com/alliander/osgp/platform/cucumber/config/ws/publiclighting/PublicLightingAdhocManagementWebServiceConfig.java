@@ -27,9 +27,13 @@ public class PublicLightingAdhocManagementWebServiceConfig extends BaseWebServic
 
     @Bean
     public WebServiceTemplateFactory publicLightingAdHocManagementWstf() {
-        return new WebServiceTemplateFactory(this.publiclightingAdHocManagementMarshaller(), this.messageFactory(),
-                this.baseUri.concat(this.webserviceTemplateDefaultUriPublicLightingAdHocManagement), this.webserviceKeystoreType,
-                this.webserviceKeystoreLocation, this.webserviceKeystorePassword, this.webServiceTrustStoreFactory(), this.applicationName);
+        return new WebServiceTemplateFactory.Builder().setMarshaller(this.publiclightingAdHocManagementMarshaller())
+                .setMessageFactory(this.messageFactory())
+                .setTargetUri(this.baseUri.concat(this.webserviceTemplateDefaultUriPublicLightingAdHocManagement))
+                .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
+                .setKeyStorePassword(this.webserviceKeystorePassword)
+                .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)
+                .build();
     }
 
     /**

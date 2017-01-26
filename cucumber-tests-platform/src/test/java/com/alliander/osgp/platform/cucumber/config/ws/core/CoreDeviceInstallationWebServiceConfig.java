@@ -27,9 +27,13 @@ public class CoreDeviceInstallationWebServiceConfig extends BaseWebServiceConfig
 
     @Bean
     public WebServiceTemplateFactory coreDeviceInstallationWstf() {
-        return new WebServiceTemplateFactory(this.coreDeviceInstallationMarshaller(), this.messageFactory(),
-                this.baseUri.concat(this.webserviceTemplateDefaultUriCoreDeviceInstallation), this.webserviceKeystoreType,
-                this.webserviceKeystoreLocation, this.webserviceKeystorePassword, this.webServiceTrustStoreFactory(), this.applicationName);
+        return new WebServiceTemplateFactory.Builder().setMarshaller(this.coreDeviceInstallationMarshaller())
+                .setMessageFactory(this.messageFactory())
+                .setTargetUri(this.baseUri.concat(this.webserviceTemplateDefaultUriCoreDeviceInstallation))
+                .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
+                .setKeyStorePassword(this.webserviceKeystorePassword)
+                .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)
+                .build();
     }
 
     /**

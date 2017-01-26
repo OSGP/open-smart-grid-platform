@@ -27,9 +27,13 @@ public class TariffSwitchingScheduleManagementWebServiceConfig extends BaseWebSe
 
     @Bean
     public WebServiceTemplateFactory tariffSwitchingScheduleManagementWstf() {
-        return new WebServiceTemplateFactory(this.tariffSwitchingScheduleManagementMarshaller(), this.messageFactory(),
-                this.baseUri.concat(this.webserviceTemplateDefaultUriTariffSwitchingScheduleManagement), this.webserviceKeystoreType,
-                this.webserviceKeystoreLocation, this.webserviceKeystorePassword, this.webServiceTrustStoreFactory(), this.applicationName);
+        return new WebServiceTemplateFactory.Builder().setMarshaller(this.tariffSwitchingScheduleManagementMarshaller())
+                .setMessageFactory(this.messageFactory())
+                .setTargetUri(this.baseUri.concat(this.webserviceTemplateDefaultUriTariffSwitchingScheduleManagement))
+                .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
+                .setKeyStorePassword(this.webserviceKeystorePassword)
+                .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)
+                .build();
     }
 
     /**
