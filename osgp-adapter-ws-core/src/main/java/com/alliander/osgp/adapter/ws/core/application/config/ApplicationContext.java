@@ -34,6 +34,7 @@ import com.alliander.osgp.domain.core.valueobjects.FirmwareLocation;
 import com.alliander.osgp.logging.domain.config.ReadOnlyLoggingConfig;
 import com.alliander.osgp.shared.application.config.AbstractConfig;
 import com.alliander.osgp.shared.application.config.PagingSettings;
+import com.alliander.osgp.ws.core.config.CoreWebServiceConfig;
 
 /**
  * An application context Java configuration class.
@@ -42,8 +43,8 @@ import com.alliander.osgp.shared.application.config.PagingSettings;
 @ComponentScan(basePackages = { "com.alliander.osgp.domain.core", "com.alliander.osgp.adapter.ws.core",
         "com.alliander.osgp.domain.logging" })
 @ImportResource("classpath:applicationContext.xml")
-@Import({ PersistenceConfig.class, WritablePersistenceConfig.class, ReadOnlyLoggingConfig.class,
-        WebServiceConfig.class })
+@Import({ PersistenceConfig.class, WritablePersistenceConfig.class, ReadOnlyLoggingConfig.class, WebServiceConfig.class,
+        CoreWebServiceConfig.class })
 @PropertySources({ @PropertySource("classpath:osgp-adapter-ws-core.properties"),
         @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
         @PropertySource(value = "file:${osgp/AdapterWsCore/config}", ignoreResourceNotFound = true), })

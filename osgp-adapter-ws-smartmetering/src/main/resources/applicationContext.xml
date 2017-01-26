@@ -12,47 +12,7 @@
 		http://www.springframework.org/schema/web-services/web-services-2.0.xsd">
 
     <sws:annotation-driven/>
-
-	<sws:static-wsdl id="SmartMeteringInstallation" location="/WEB-INF/wsdl/smartmetering/SmartMeteringInstallation.wsdl"/>
- 	<sws:static-wsdl id="SmartMeteringManagement" location="/WEB-INF/wsdl/smartmetering/SmartMeteringManagement.wsdl"/>
- 	<sws:static-wsdl id="SmartMeteringBundle" location="/WEB-INF/wsdl/smartmetering/SmartMeteringBundle.wsdl"/>
- 	<sws:static-wsdl id="SmartMeteringMonitoring" location="/WEB-INF/wsdl/smartmetering/SmartMeteringMonitoring.wsdl"/>
- 	<sws:static-wsdl id="SmartMeteringAdhoc" location="/WEB-INF/wsdl/smartmetering/SmartMeteringAdhoc.wsdl"/>
- 	<sws:static-wsdl id="SmartMeteringConfiguration" location="/WEB-INF/wsdl/smartmetering/SmartMeteringConfiguration.wsdl"/>
-
- 	<bean id="common" class="org.springframework.xml.xsd.SimpleXsdSchema">
-        <property name="xsd" value="/WEB-INF/wsdl/smartmetering/schemas/common.xsd" />
-    </bean>
     
-    <bean id="sm-installation" class="org.springframework.xml.xsd.SimpleXsdSchema">
-        <property name="xsd" value="/WEB-INF/wsdl/smartmetering/schemas/sm-installation.xsd" />
-    </bean>
-    <bean id="sm-management" class="org.springframework.xml.xsd.SimpleXsdSchema">
-        <property name="xsd" value="/WEB-INF/wsdl/smartmetering/schemas/sm-management.xsd" />
-    </bean>
-    <bean id="sm-bundle" class="org.springframework.xml.xsd.SimpleXsdSchema">
-        <property name="xsd" value="/WEB-INF/wsdl/smartmetering/schemas/sm-bundle.xsd" />
-    </bean>
-    <bean id="sm-monitoring" class="org.springframework.xml.xsd.SimpleXsdSchema">
-        <property name="xsd" value="/WEB-INF/wsdl/smartmetering/schemas/sm-monitoring.xsd" />
-    </bean>
-    <bean id="sm-adhoc" class="org.springframework.xml.xsd.SimpleXsdSchema">
-        <property name="xsd" value="/WEB-INF/wsdl/smartmetering/schemas/sm-adhoc.xsd" />
-    </bean>
-    <bean id="sm-configuration" class="org.springframework.xml.xsd.SimpleXsdSchema">
-        <property name="xsd" value="/WEB-INF/wsdl/smartmetering/schemas/sm-configuration.xsd" />
-    </bean>
-
-	<bean id="payloadValidatingInterceptor" class="org.springframework.ws.soap.server.endpoint.interceptor.PayloadValidatingInterceptor">
-		<property name="schemas">
-			<list>
-				<value>/WEB-INF/wsdl/smartmetering/schemas/*.xsd</value>
-			</list>			
-		</property>
-		<property name="validateRequest" value="true" />
-		<property name="validateResponse" value="false" />	
-	</bean>
-
     <sws:interceptors>
         <ref bean="x509CertificateSubjectCnEndpointInterceptor"/>
         <ref bean="organisationIdentificationInterceptor"/>

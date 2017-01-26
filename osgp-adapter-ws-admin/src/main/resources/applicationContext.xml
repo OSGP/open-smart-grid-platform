@@ -13,26 +13,6 @@
 
     <sws:annotation-driven/>
 
- 	<sws:static-wsdl id="DeviceManagement" location="/WEB-INF/wsdl/admin/DeviceManagement.wsdl"/>
-
-    <bean id="common" class="org.springframework.xml.xsd.SimpleXsdSchema">
-        <property name="xsd" value="/WEB-INF/wsdl/admin/schemas/common.xsd" />
-    </bean>
-
-     <bean id="devicemanagement" class="org.springframework.xml.xsd.SimpleXsdSchema">
-        <property name="xsd" value="/WEB-INF/wsdl/admin/schemas/devicemanagement.xsd" />
-    </bean>
- 
-	<bean id="payloadValidatingInterceptor" class="org.springframework.ws.soap.server.endpoint.interceptor.PayloadValidatingInterceptor">
-		<property name="schemas">
-			<list>
-				<value>/WEB-INF/wsdl/admin/schemas/*.xsd</value>
-			</list>			
-		</property>
-		<property name="validateRequest" value="true" />
-		<property name="validateResponse" value="false" />	
-	</bean>
-
     <sws:interceptors>
         <ref bean="x509CertificateSubjectCnEndpointInterceptor"/>
         <ref bean="organisationIdentificationInterceptor"/>
