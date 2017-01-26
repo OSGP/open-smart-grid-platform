@@ -141,7 +141,6 @@ public class WebServiceConfig extends AbstractConfig {
     }
 
     private WebServiceTemplateFactory createWebServiceTemplateFactory(final Jaxb2Marshaller marshaller) {
-
         return new WebServiceTemplateFactory(marshaller, this.messageFactory(), this.webserviceNotificationUrl,
                 this.webserviceKeystoreType, this.webserviceKeystoreLocation, this.webserviceKeystorePassword,
                 this.webServiceTrustStoreFactory(), this.applicationName);
