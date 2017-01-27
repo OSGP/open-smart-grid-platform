@@ -39,10 +39,14 @@ import com.alliander.osgp.oslp.Oslp.Event;
 import com.alliander.osgp.oslp.Oslp.EventNotification;
 import com.alliander.osgp.oslp.Oslp.EventNotificationRequest;
 import com.alliander.osgp.oslp.Oslp.EventNotificationResponse;
+import com.alliander.osgp.oslp.Oslp.GetActualPowerUsageRequest;
+import com.alliander.osgp.oslp.Oslp.GetPowerUsageHistoryRequest;
+import com.alliander.osgp.oslp.Oslp.HistoryTermType;
 import com.alliander.osgp.oslp.Oslp.LightType;
 import com.alliander.osgp.oslp.Oslp.LightValue;
 import com.alliander.osgp.oslp.Oslp.LinkType;
 import com.alliander.osgp.oslp.Oslp.Message;
+import com.alliander.osgp.oslp.Oslp.MeterType;
 import com.alliander.osgp.oslp.Oslp.ResumeScheduleRequest;
 import com.alliander.osgp.oslp.Oslp.Schedule;
 import com.alliander.osgp.oslp.Oslp.SetScheduleRequest;
@@ -670,5 +674,113 @@ public class OslpDeviceSteps extends StepsBase {
         }
 
         this.oslpMockServer.mockSetScheduleResponse(type, oslpStatus);
+    }
+    
+    /**
+     * Setup method to get an actual power usage which should be returned by the
+     * mock.
+     *
+     * @param responseData
+     *            The data to respond.
+     * @throws Throwable
+     */
+    @Given("^the device returns a get actual power usage response over OSLP$")
+    public void theDeviceReturnsAGetActualPowerUsageOverOSLP(final Map<String, String> responseData) throws Throwable {
+
+        // Note: This piece of code has been made because there are multiple
+        // enumerations with the name MeterType, but not all of them has all
+        // values the same. Some with underscore and some without.s
+        MeterType meterType = MeterType.MT_NOT_SET;
+        final String sMeterType = getString(responseData, Keys.METER_TYPE);
+        if (!sMeterType.toString().contains("_") && sMeterType.equals(MeterType.P1_VALUE)) {
+            final String[] sMeterTypeArray = sMeterType.toString().split("");
+            meterType = MeterType.valueOf(sMeterTypeArray[0] + "_" + sMeterTypeArray[1]);
+        } else {
+            meterType = getEnum(responseData, Keys.METER_TYPE, MeterType.class);
+        }
+
+        this.oslpMockServer.mockGetActualPowerUsageResponse(getEnum(responseData, Keys.STATUS, Status.class),
+                getInteger(responseData, Keys.ACTUAL_CONSUMED_POWER, null), meterType,
+                getDate(responseData, Keys.RECORD_TIME).toDateTime(DateTimeZone.UTC).toString("yyyyMMddHHmmss"),
+                getInteger(responseData, Keys.TOTAL_CONSUMED_ENERGY, null),
+                getInteger(responseData, Keys.TOTAL_LIGHTING_HOURS, null),
+                getInteger(responseData, Keys.ACTUAL_CURRENT1, null),
+                getInteger(responseData, Keys.ACTUAL_CURRENT2, null),
+                getInteger(responseData, Keys.ACTUAL_CURRENT3, null),
+                getInteger(responseData, Keys.ACTUAL_POWER1, null), getInteger(responseData, Keys.ACTUAL_POWER2, null),
+                getInteger(responseData, Keys.ACTUAL_POWER3, null),
+                getInteger(responseData, Keys.AVERAGE_POWER_FACTOR1, null),
+                getInteger(responseData, Keys.AVERAGE_POWER_FACTOR2, null),
+                getInteger(responseData, Keys.AVERAGE_POWER_FACTOR3, null),
+                getString(responseData, Keys.RELAY_DATA, null));
+    }
+
+    /**
+     * Setup method to get the power usage history which should be returned by
+     * the mock.
+     *
+     * @param responseData
+     * @throws Throwable
+     */
+    @Given("^the device returns a get power usage history response over OSLP$")
+    public void theDeviceReturnsAGetPowerUsageHistoryOverOSLP(final Map<String, String> responseData) throws Throwable {
+        this.oslpMockServer.mockGetPowerUsageHistoryResponse(getEnum(responseData, Keys.STATUS, Status.class),
+                getString(responseData, Keys.RECORD_TIME), getInteger(responseData, Keys.INDEX),
+                getInteger(responseData, Keys.ACTUAL_CONSUMED_POWER, null),
+                getEnum(responseData, Keys.METER_TYPE, MeterType.class),
+                getInteger(responseData, Keys.TOTAL_CONSUMED_ENERGY, null),
+                getInteger(responseData, Keys.TOTAL_LIGHTING_HOURS, null),
+                getInteger(responseData, Keys.ACTUAL_CURRENT1, null),
+                getInteger(responseData, Keys.ACTUAL_CURRENT2, null),
+                getInteger(responseData, Keys.ACTUAL_CURRENT3, null),
+                getInteger(responseData, Keys.ACTUAL_POWER1, null), getInteger(responseData, Keys.ACTUAL_POWER2, null),
+                getInteger(responseData, Keys.ACTUAL_POWER3, null),
+                getInteger(responseData, Keys.AVERAGE_POWER_FACTOR1, null),
+                getInteger(responseData, Keys.AVERAGE_POWER_FACTOR2, null),
+                getInteger(responseData, Keys.AVERAGE_POWER_FACTOR3, null),
+                getString(responseData, Keys.RELAY_DATA, null));
+    }
+
+    /**
+     * Verify that a get actual power usage OSLP message is sent to the device.
+     *
+     */
+    @Then("^a get actual power usage OSLP message is sent to the device$")
+    public void aGetActualPowerUsageOslpMessageIsSentToTheDevice() {
+        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.GET_ACTUAL_POWER_USAGE);
+        Assert.assertNotNull(message);
+        Assert.assertTrue(message.hasGetActualPowerUsageRequest());
+
+        @SuppressWarnings("unused")
+        final GetActualPowerUsageRequest request = message.getGetActualPowerUsageRequest();
+    }
+
+    /**
+     * Verify that a get power usage history OSLP message is sent to the device.
+     *
+     * @param expectedParameters
+     *            The parameters expected in the message of the device.
+     * @throws Throwable
+     */
+    @Then("^a get power usage history OSLP message is sent to the device$")
+    public void aGetPowerUsageHistoryOslpMessageIsSentToTheDevice(final Map<String, String> expectedParameters) {
+        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.GET_POWER_USAGE_HISTORY);
+        Assert.assertNotNull(message);
+        Assert.assertTrue(message.hasGetPowerUsageHistoryRequest());
+
+        final GetPowerUsageHistoryRequest request = message.getGetPowerUsageHistoryRequest();
+        Assert.assertEquals(getEnum(expectedParameters, Keys.HISTORY_TERM_TYPE, HistoryTermType.class,
+                Defaults.OSLP_HISTORY_TERM_TYPE), request.getTermType());
+        if (expectedParameters.containsKey(Keys.PAGE) && !expectedParameters.get(Keys.PAGE).isEmpty()) {
+            Assert.assertEquals((int) getInteger(expectedParameters, Keys.PAGE), request.getPage());
+        }
+        if (expectedParameters.containsKey(Keys.START_TIME) && !expectedParameters.get(Keys.START_TIME).isEmpty()
+                && expectedParameters.get(Keys.START_TIME) != null) {
+            Assert.assertEquals(getString(expectedParameters, Keys.START_TIME), request.getTimePeriod().getStartTime());
+        }
+        if (expectedParameters.containsKey(Keys.END_TIME) && !expectedParameters.get(Keys.END_TIME).isEmpty()
+                && expectedParameters.get(Keys.END_TIME) != null) {
+            Assert.assertEquals(getString(expectedParameters, Keys.END_TIME), request.getTimePeriod().getEndTime());
+        }
     }
 }

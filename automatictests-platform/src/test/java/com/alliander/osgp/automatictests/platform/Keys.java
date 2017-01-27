@@ -194,4 +194,25 @@ public class Keys {
     public static final String USE_PREFIX = "UsePrefix";
     public static final String SUPPLIER = "Supplier";
     public static final String PLATFORMDOMAINS = "PlatformDomains";
+
+    public static final String ACTUAL_CONSUMED_POWER = "ActualConsumedPower";
+    public static final String METER_TYPE = "MeterType";
+    public static final String RECORD_TIME = "RecordTime";
+    public static final String TOTAL_CONSUMED_ENERGY = "TotalConsumedEnergy";
+    public static final String TOTAL_LIGHTING_HOURS = "TotalLightingHours";
+    public static final String ACTUAL_CURRENT1 = "ActualCurrent1";
+    public static final String ACTUAL_CURRENT2 = "ActualCurrent2";
+    public static final String ACTUAL_CURRENT3 = "ActualCurrent3";
+    public static final String ACTUAL_POWER1 = "ActualPower1";
+    public static final String ACTUAL_POWER2 = "ActualPower2";
+    public static final String ACTUAL_POWER3 = "ActualPower3";
+    public static final String AVERAGE_POWER_FACTOR1 = "AveragePowerFactor1";
+    public static final String AVERAGE_POWER_FACTOR2 = "AveragePowerFactor2";
+    public static final String AVERAGE_POWER_FACTOR3 = "AveragePowerFactor3";
+    public static final String RELAY_DATA = "RelayData";
+    public static final String HISTORY_TERM_TYPE = "HistoryTermType";
+    public static final String START_TIME = "StartTime";
+    public static final String END_TIME = "EndTime";
+    public static final String FROM_DATE = "FromDate";
+    public static final String UNTIL_DATE = "UntilDate";
 }

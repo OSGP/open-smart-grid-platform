@@ -10,6 +10,8 @@ package com.alliander.osgp.automatictests.platform;
 import org.joda.time.DateTime;
 
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.TransitionType;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.common.OsgpResultType;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.MeterType;
 import com.alliander.osgp.domain.core.valueobjects.PlatformDomain;
 import com.alliander.osgp.domain.core.valueobjects.RelayType;
 import com.alliander.osgp.oslp.Oslp.LightType;
@@ -121,4 +123,23 @@ public class Defaults {
     public static final PlatformDomain PLATFORMDOMAIN = PlatformDomain.COMMON;
     public static final String SUPPLIER = "Kaifa";
     public static final DateTime TECHNICAL_INSTALLATION_DATE = DateTime.now().minusDays(10);
+    
+    public static final OsgpResultType PUBLICLIGHTING_STATUS = OsgpResultType.OK;
+    public static final String PUBLICLIGHTING_DESCRIPTION = "";
+    public static final Integer ACTUAL_CONSUMED_POWER = 48;
+    public static final Integer ACTUAL_CONSUMED_ENERGY = 96;
+    public static final MeterType METER_TYPE = MeterType.AUX;
+    public static final String RECORD_TIME = "";
+    public static final Integer TOTAL_LIGHTING_HOURS = 144;
+    public static final Integer ACTUAL_CURRENT1 = 1;
+    public static final Integer ACTUAL_CURRENT2 = 2;
+    public static final Integer ACTUAL_CURRENT3 = 3;
+    public static final Integer ACTUAL_POWER1 = 1;
+    public static final Integer ACTUAL_POWER2 = 2;
+    public static final Integer ACTUAL_POWER3 = 3;
+    public static final Integer AVERAGE_POWER_FACTOR1 = 1;
+    public static final Integer AVERAGE_POWER_FACTOR2 = 2;
+    public static final Integer AVERAGE_POWER_FACTOR3 = 3;
+    public static final com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.HistoryTermType HISTORY_TERM_TYPE = com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.HistoryTermType.SHORT;
+    public static final com.alliander.osgp.oslp.Oslp.HistoryTermType OSLP_HISTORY_TERM_TYPE = com.alliander.osgp.oslp.Oslp.HistoryTermType.Short;
 }
