@@ -2,7 +2,7 @@ Feature: OrganizationManagement Organization Removal
   As a ...
   I want to manage the Organizations in the platform
   In order ...
-  
+
   Scenario Outline: Remove An Existing Organization
     Given an organization
       | OrganizationIdentification | TEST1024000000001   |
@@ -18,7 +18,7 @@ Feature: OrganizationManagement Organization Removal
     Then the remove organization response is successful
     And the organization with organization identification "TEST1024000000001" should be disabled
 
-    Examples: 
+    Examples:
       | FunctionGroup |
       | ADMIN         |
       | USER          |

@@ -33,10 +33,15 @@ import com.alliander.osgp.oslp.Oslp.Event;
 import com.alliander.osgp.oslp.Oslp.EventNotification;
 import com.alliander.osgp.oslp.Oslp.EventNotificationRequest;
 import com.alliander.osgp.oslp.Oslp.EventNotificationResponse;
+import com.alliander.osgp.oslp.Oslp.GetActualPowerUsageRequest;
+import com.alliander.osgp.oslp.Oslp.GetFirmwareVersionRequest;
+import com.alliander.osgp.oslp.Oslp.GetPowerUsageHistoryRequest;
+import com.alliander.osgp.oslp.Oslp.HistoryTermType;
 import com.alliander.osgp.oslp.Oslp.LightType;
 import com.alliander.osgp.oslp.Oslp.LightValue;
 import com.alliander.osgp.oslp.Oslp.LinkType;
 import com.alliander.osgp.oslp.Oslp.Message;
+import com.alliander.osgp.oslp.Oslp.MeterType;
 import com.alliander.osgp.oslp.Oslp.ResumeScheduleRequest;
 import com.alliander.osgp.oslp.Oslp.Schedule;
 import com.alliander.osgp.oslp.Oslp.SetScheduleRequest;
@@ -67,10 +72,9 @@ public class OslpDeviceSteps {
     private MockOslpServer oslpMockServer;
 
     /**
-     * Setup method to set the firmware which should be returned by the mock.
+     * Setup method to set a light which should be returned by the mock.
      *
-     * @param firmwareVersion
-     *            The firmware to respond.
+     * @param result
      * @throws Throwable
      */
     @Given("^the device returns a set light response \"([^\"]*)\" over OSLP$")
@@ -84,6 +88,71 @@ public class OslpDeviceSteps {
         }
 
         this.oslpMockServer.mockSetLightResponse(oslpStatus);
+    }
+
+    /**
+     * Setup method to get an actual power usage which should be returned by the
+     * mock.
+     *
+     * @param responseData
+     *            The data to respond.
+     * @throws Throwable
+     */
+    @Given("^the device returns a get actual power usage response over OSLP$")
+    public void theDeviceReturnsAGetActualPowerUsageOverOSLP(final Map<String, String> responseData) throws Throwable {
+
+        // Note: This piece of code has been made because there are multiple
+        // enumerations with the name MeterType, but not all of them has all
+        // values the same. Some with underscore and some without.s
+        MeterType meterType = MeterType.MT_NOT_SET;
+        final String sMeterType = getString(responseData, Keys.METER_TYPE);
+        if (!sMeterType.toString().contains("_") && sMeterType.equals(MeterType.P1_VALUE)) {
+            final String[] sMeterTypeArray = sMeterType.toString().split("");
+            meterType = MeterType.valueOf(sMeterTypeArray[0] + "_" + sMeterTypeArray[1]);
+        } else {
+            meterType = getEnum(responseData, Keys.METER_TYPE, MeterType.class);
+        }
+
+        this.oslpMockServer.mockGetActualPowerUsageResponse(getEnum(responseData, Keys.KEY_STATUS, Status.class),
+                getInteger(responseData, Keys.ACTUAL_CONSUMED_POWER, null), meterType,
+                getDate(responseData, Keys.RECORD_TIME).toDateTime(DateTimeZone.UTC).toString("yyyyMMddHHmmss"),
+                getInteger(responseData, Keys.TOTAL_CONSUMED_ENERGY, null),
+                getInteger(responseData, Keys.TOTAL_LIGHTING_HOURS, null),
+                getInteger(responseData, Keys.ACTUAL_CURRENT1, null),
+                getInteger(responseData, Keys.ACTUAL_CURRENT2, null),
+                getInteger(responseData, Keys.ACTUAL_CURRENT3, null),
+                getInteger(responseData, Keys.ACTUAL_POWER1, null), getInteger(responseData, Keys.ACTUAL_POWER2, null),
+                getInteger(responseData, Keys.ACTUAL_POWER3, null),
+                getInteger(responseData, Keys.AVERAGE_POWER_FACTOR1, null),
+                getInteger(responseData, Keys.AVERAGE_POWER_FACTOR2, null),
+                getInteger(responseData, Keys.AVERAGE_POWER_FACTOR3, null),
+                getString(responseData, Keys.RELAY_DATA, null));
+    }
+
+    /**
+     * Setup method to get the power usage history which should be returned by
+     * the mock.
+     *
+     * @param responseData
+     * @throws Throwable
+     */
+    @Given("^the device returns a get power usage history response over OSLP$")
+    public void theDeviceReturnsAGetPowerUsageHistoryOverOSLP(final Map<String, String> responseData) throws Throwable {
+        this.oslpMockServer.mockGetPowerUsageHistoryResponse(getEnum(responseData, Keys.KEY_STATUS, Status.class),
+                getString(responseData, Keys.RECORD_TIME), getInteger(responseData, Keys.KEY_INDEX),
+                getInteger(responseData, Keys.ACTUAL_CONSUMED_POWER, null),
+                getEnum(responseData, Keys.METER_TYPE, MeterType.class),
+                getInteger(responseData, Keys.TOTAL_CONSUMED_ENERGY, null),
+                getInteger(responseData, Keys.TOTAL_LIGHTING_HOURS, null),
+                getInteger(responseData, Keys.ACTUAL_CURRENT1, null),
+                getInteger(responseData, Keys.ACTUAL_CURRENT2, null),
+                getInteger(responseData, Keys.ACTUAL_CURRENT3, null),
+                getInteger(responseData, Keys.ACTUAL_POWER1, null), getInteger(responseData, Keys.ACTUAL_POWER2, null),
+                getInteger(responseData, Keys.ACTUAL_POWER3, null),
+                getInteger(responseData, Keys.AVERAGE_POWER_FACTOR1, null),
+                getInteger(responseData, Keys.AVERAGE_POWER_FACTOR2, null),
+                getInteger(responseData, Keys.AVERAGE_POWER_FACTOR3, null),
+                getString(responseData, Keys.RELAY_DATA, null));
     }
 
     /**
@@ -102,13 +171,12 @@ public class OslpDeviceSteps {
      * Setup method to set the event notification which should be returned by
      * the mock.
      *
-     * @param firmwareVersion
-     *            The event notification to respond.
+     * @param result
      * @throws Throwable
      */
 
     @Given("^the device returns a set event notification \"([^\"]*)\" over OSLP$")
-    public void theDeviceReturnsAnEventNotificationOverOSLP(final String result) throws Throwable {
+    public void theDeviceReturnsASetEventNotificationOverOSLP(final String result) throws Throwable {
         Oslp.Status oslpStatus = Status.OK;
 
         switch (result) {
@@ -124,7 +192,6 @@ public class OslpDeviceSteps {
      * Setup method to start a device which should be returned by the mock.
      *
      * @param result
-     *            The start device to respond.
      * @throws Throwable
      */
     @Given("^the device returns a start device response \"([^\"]*)\" over OSLP$")
@@ -144,7 +211,6 @@ public class OslpDeviceSteps {
      * Setup method to stop a device which should be returned by the mock.
      *
      * @param result
-     *            The stop device to respond.
      * @throws Throwable
      */
     @Given("^the device returns a stop device response \"([^\"]*)\" over OSLP$")
@@ -164,7 +230,6 @@ public class OslpDeviceSteps {
      * Setup method to get a status which should be returned by the mock.
      *
      * @param result
-     *            The get status to respond.
      * @throws Throwable
      */
     @Given("^the device returns a get status response \"([^\"]*)\" over OSLP$")
@@ -210,110 +275,13 @@ public class OslpDeviceSteps {
     }
 
     /**
-     * Setup method to get a status which should be returned by the mock.
-     *
-     * @param result
-     *            The get status to respond.
-     * @throws Throwable
-     */
-    @Given("^the device returns a set light schedule response \"([^\"]*)\" over OSLP$")
-    public void theDeviceReturnsASetLightScheduleResponseOverOSLP(final String result) throws Throwable {
-
-        this.callMockSetScheduleResponse(result, DeviceRequestMessageType.SET_LIGHT_SCHEDULE);
-    }
-
-    @Given("^the device returns a set tariff schedule response \"([^\"]*)\" over OSLP$")
-    public void theDeviceReturnsASetTariffScheduleResponseOverOSLP(final String result) throws Throwable {
-
-        this.callMockSetScheduleResponse(result, DeviceRequestMessageType.SET_TARIFF_SCHEDULE);
-    }
-
-    @Given("^the device returns a set reverse tariff schedule response \"([^\"]*)\" over OSLP$")
-    public void theDeviceReturnsASetReverseTariffScheduleResponseOverOSLP(final String result) throws Throwable {
-
-        this.theDeviceReturnsASetTariffScheduleResponseOverOSLP(result);
-    }
-
-    /**
-     * Setup method to get a status which should be returned by the mock.
-     *
-     * @param result
-     *            The get status to respond.
-     * @throws Throwable
-     */
-    private void callMockSetScheduleResponse(final String result, final DeviceRequestMessageType type) {
-        Oslp.Status oslpStatus = Status.OK;
-
-        switch (result) {
-        case "OK":
-            oslpStatus = Status.OK;
-            break;
-        case "FAILURE":
-            oslpStatus = Status.FAILURE;
-            break;
-        case "REJECTED":
-            oslpStatus = Status.REJECTED;
-            break;
-        // TODO: Implement other possible status
-        }
-
-        this.oslpMockServer.mockSetScheduleResponse(type, oslpStatus);
-    }
-
-    /**
-     * Setup method to get a status which should be returned by the mock.
-     *
-     * @param result
-     *            The get status to respond.
-     * @throws Throwable
-     */
-    @Given("^the device returns a get status response over OSLP$")
-    public void theDeviceReturnsAGetStatusResponseOverOSLP(final Map<String, String> result) throws Throwable {
-
-        int eventNotificationTypes = 0;
-        final String eventNotificationTypesString = getString(result, Keys.KEY_EVENTNOTIFICATIONTYPES,
-                Defaults.DEFAULT_EVENTNOTIFICATIONTYPES);
-        for (final String eventNotificationType : eventNotificationTypesString.split(Keys.SEPARATOR)) {
-            if (!eventNotificationType.isEmpty()) {
-                eventNotificationTypes = eventNotificationTypes
-                        + Enum.valueOf(EventNotificationTypeDto.class, eventNotificationType.trim()).getValue();
-            }
-        }
-
-        final List<LightValue> lightValues = new ArrayList<>();
-        if (!getString(result, Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES).isEmpty()
-                && getString(result, Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES)
-                        .split(Keys.SEPARATOR).length > 0) {
-
-            for (final String lightValueString : getString(result, Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES)
-                    .split(Keys.SEPARATOR)) {
-                final String[] parts = lightValueString.split(Keys.SEPARATOR_SEMICOLON);
-
-                final LightValue lightValue = LightValue.newBuilder()
-                        .setIndex(OslpUtils.integerToByteString(Integer.parseInt(parts[0])))
-                        .setOn(parts[1].toLowerCase().equals("true"))
-                        .setDimValue(OslpUtils.integerToByteString(Integer.parseInt(parts[2]))).build();
-
-                lightValues.add(lightValue);
-            }
-        }
-
-        this.oslpMockServer.mockGetStatusResponse(
-                getEnum(result, Keys.KEY_PREFERRED_LINKTYPE, LinkType.class, Defaults.DEFAULT_PREFERRED_LINKTYPE),
-                getEnum(result, Keys.KEY_ACTUAL_LINKTYPE, LinkType.class, Defaults.DEFAULT_ACTUAL_LINKTYPE),
-                getEnum(result, Keys.KEY_LIGHTTYPE, LightType.class, Defaults.DEFAULT_LIGHTTYPE),
-                eventNotificationTypes, getEnum(result, Keys.KEY_STATUS, Oslp.Status.class, Defaults.DEFAULT_STATUS),
-                lightValues);
-    }
-
-    /**
      * Setup method to resume a schedule which should be returned by the mock.
      *
      * @param result
-     *            The resume schedule to respond.
      * @throws Throwable
      */
     @Given("^the device returns a resume schedule response \"([^\"]*)\" over OSLP$")
+
     public void theDeviceReturnsAResumeScheduleResponseOverOSLP(final String result) throws Throwable {
         Oslp.Status oslpStatus = Status.OK;
 
@@ -350,7 +318,6 @@ public class OslpDeviceSteps {
      * Setup method to set a transition which should be returned by the mock.
      *
      * @param result
-     *            The stop device to respond.
      * @throws Throwable
      */
     @Given("^the device returns a set transition response \"([^\"]*)\" over OSLP$")
@@ -367,6 +334,56 @@ public class OslpDeviceSteps {
     }
 
     /**
+     * Setup method to get a status which should be returned by the mock.
+     *
+     * @param result
+     * @throws Throwable
+     */
+    @Given("^the device returns a set light schedule response \"([^\"]*)\" over OSLP$")
+
+    public void theDeviceReturnsASetLightScheduleResponseOverOSLP(final String result) throws Throwable {
+
+        this.callMockSetScheduleResponse(result, DeviceRequestMessageType.SET_LIGHT_SCHEDULE);
+    }
+
+    @Given("^the device returns a set tariff schedule response \"([^\"]*)\" over OSLP$")
+    public void theDeviceReturnsASetTariffScheduleResponseOverOSLP(final String result) throws Throwable {
+
+        this.callMockSetScheduleResponse(result, DeviceRequestMessageType.SET_TARIFF_SCHEDULE);
+    }
+
+    @Given("^the device returns a set reverse tariff schedule response \"([^\"]*)\" over OSLP$")
+    public void theDeviceReturnsASetReverseTariffScheduleResponseOverOSLP(final String result) throws Throwable {
+
+        this.theDeviceReturnsASetTariffScheduleResponseOverOSLP(result);
+    }
+
+    /**
+     * Setup method to get a status which should be returned by the mock.
+     *
+     * @param result
+     * @throws Throwable
+     */
+    private void callMockSetScheduleResponse(final String result, final DeviceRequestMessageType type) {
+        Oslp.Status oslpStatus = Status.OK;
+
+        switch (result) {
+        case "OK":
+            oslpStatus = Status.OK;
+            break;
+        case "FAILURE":
+            oslpStatus = Status.FAILURE;
+            break;
+        case "REJECTED":
+            oslpStatus = Status.REJECTED;
+            break;
+        // TODO: Implement other possible status
+        }
+
+        this.oslpMockServer.mockSetScheduleResponse(type, oslpStatus);
+    }
+
+    /**
      * Verify that a get firmware version OSLP message is sent to the device.
      *
      * @param deviceIdentification
@@ -379,12 +396,17 @@ public class OslpDeviceSteps {
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.GET_FIRMWARE_VERSION);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasGetFirmwareVersionRequest());
+
         // TODO: Check actual message for the correct firmware(s).
+        @SuppressWarnings("unused")
+        final GetFirmwareVersionRequest getFirmwareVersionRequest = message.getGetFirmwareVersionRequest();
     }
 
     /**
      * Verify that a set light OSLP message is sent to the device.
      *
+     * @param expectedParameters
+     *            The parameters expected in the message of the device.
      * @throws Throwable
      */
     @Then("^a set light OSLP message with one light value is sent to the device$")
@@ -406,6 +428,13 @@ public class OslpDeviceSteps {
         Assert.assertEquals(getBoolean(expectedParameters, Keys.KEY_ON, Defaults.DEFAULT_ON), lightValue.getOn());
     }
 
+    /**
+     * Verify that a set light OSLP message is sent to the device.
+     *
+     * @param nofLightValues
+     *            The parameters expected in the message of the device.
+     * @throws Throwable
+     */
     @Then("^a set light OSLP message with \"([^\"]*)\" lightvalues is sent to the device$")
     public void aSetLightOslpMessageWithLightValuesIsSentToTheDevice(final int nofLightValues) {
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.SET_LIGHT);
@@ -416,7 +445,50 @@ public class OslpDeviceSteps {
     }
 
     /**
-     * Verify that a event notification OSLP message is sent to the device.
+     * Verify that a get actual power usage OSLP message is sent to the device.
+     *
+     */
+    @Then("^a get actual power usage OSLP message is sent to the device$")
+    public void aGetActualPowerUsageOslpMessageIsSentToTheDevice() {
+        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.GET_ACTUAL_POWER_USAGE);
+        Assert.assertNotNull(message);
+        Assert.assertTrue(message.hasGetActualPowerUsageRequest());
+
+        @SuppressWarnings("unused")
+        final GetActualPowerUsageRequest request = message.getGetActualPowerUsageRequest();
+    }
+
+    /**
+     * Verify that a get power usage history OSLP message is sent to the device.
+     *
+     * @param expectedParameters
+     *            The parameters expected in the message of the device.
+     * @throws Throwable
+     */
+    @Then("^a get power usage history OSLP message is sent to the device$")
+    public void aGetPowerUsageHistoryOslpMessageIsSentToTheDevice(final Map<String, String> expectedParameters) {
+        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.GET_POWER_USAGE_HISTORY);
+        Assert.assertNotNull(message);
+        Assert.assertTrue(message.hasGetPowerUsageHistoryRequest());
+
+        final GetPowerUsageHistoryRequest request = message.getGetPowerUsageHistoryRequest();
+        Assert.assertEquals(getEnum(expectedParameters, Keys.HISTORY_TERM_TYPE, HistoryTermType.class,
+                Defaults.OSLP_HISTORY_TERM_TYPE), request.getTermType());
+        if (expectedParameters.containsKey(Keys.KEY_PAGE) && !expectedParameters.get(Keys.KEY_PAGE).isEmpty()) {
+            Assert.assertEquals((int) getInteger(expectedParameters, Keys.KEY_PAGE), request.getPage());
+        }
+        if (expectedParameters.containsKey(Keys.START_TIME) && !expectedParameters.get(Keys.START_TIME).isEmpty()
+                && expectedParameters.get(Keys.START_TIME) != null) {
+            Assert.assertEquals(getString(expectedParameters, Keys.START_TIME), request.getTimePeriod().getStartTime());
+        }
+        if (expectedParameters.containsKey(Keys.END_TIME) && !expectedParameters.get(Keys.END_TIME).isEmpty()
+                && expectedParameters.get(Keys.END_TIME) != null) {
+            Assert.assertEquals(getString(expectedParameters, Keys.END_TIME), request.getTimePeriod().getEndTime());
+        }
+    }
+
+    /**
+     * Verify that an event notification OSLP message is sent to the device.
      *
      * @param deviceIdentification
      *            The device identification expected in the message to the
@@ -509,7 +581,6 @@ public class OslpDeviceSteps {
      */
     @Then("^a set reboot OSLP message is sent to device \"([^\"]*)\"$")
     public void aSetRebootOSLPMessageIsSentToDevice(final String deviceIdentification) throws Throwable {
-        // TODO: Sent an OSLP start device message to device
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.SET_REBOOT);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasSetRebootRequest());
@@ -539,6 +610,53 @@ public class OslpDeviceSteps {
             // Assert.assertEquals(expectedResult.get(Keys.KEY_TIME),
             // request.getTime());
         }
+    }
+
+    /**
+     * Setup method to get a status which should be returned by the mock.
+     *
+     * @param result
+     *            The get status to respond.
+     * @throws Throwable
+     */
+    @Given("^the device returns a get status response over OSLP$")
+
+    public void theDeviceReturnsAGetStatusResponseOverOSLP(final Map<String, String> result) throws Throwable {
+
+        int eventNotificationTypes = 0;
+        final String eventNotificationTypesString = getString(result, Keys.KEY_EVENTNOTIFICATIONTYPES,
+                Defaults.DEFAULT_EVENTNOTIFICATIONTYPES);
+        for (final String eventNotificationType : eventNotificationTypesString.split(Keys.SEPARATOR)) {
+            if (!eventNotificationType.isEmpty()) {
+                eventNotificationTypes = eventNotificationTypes
+                        + Enum.valueOf(EventNotificationTypeDto.class, eventNotificationType.trim()).getValue();
+            }
+        }
+
+        final List<LightValue> lightValues = new ArrayList<>();
+        if (!getString(result, Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES).isEmpty()
+                && getString(result, Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES)
+                        .split(Keys.SEPARATOR).length > 0) {
+
+            for (final String lightValueString : getString(result, Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES)
+                    .split(Keys.SEPARATOR)) {
+                final String[] parts = lightValueString.split(Keys.SEPARATOR_SEMICOLON);
+
+                final LightValue lightValue = LightValue.newBuilder()
+                        .setIndex(OslpUtils.integerToByteString(Integer.parseInt(parts[0])))
+                        .setOn(parts[1].toLowerCase().equals("true"))
+                        .setDimValue(OslpUtils.integerToByteString(Integer.parseInt(parts[2]))).build();
+
+                lightValues.add(lightValue);
+            }
+        }
+
+        this.oslpMockServer.mockGetStatusResponse(
+                getEnum(result, Keys.KEY_PREFERRED_LINKTYPE, LinkType.class, Defaults.DEFAULT_PREFERRED_LINKTYPE),
+                getEnum(result, Keys.KEY_ACTUAL_LINKTYPE, LinkType.class, Defaults.DEFAULT_ACTUAL_LINKTYPE),
+                getEnum(result, Keys.KEY_LIGHTTYPE, LightType.class, Defaults.DEFAULT_LIGHTTYPE),
+                eventNotificationTypes, getEnum(result, Keys.KEY_STATUS, Oslp.Status.class, Defaults.DEFAULT_STATUS),
+                lightValues);
     }
 
     @Then("^an update key OSLP message is sent to device \"([^\"]*)\"$")
