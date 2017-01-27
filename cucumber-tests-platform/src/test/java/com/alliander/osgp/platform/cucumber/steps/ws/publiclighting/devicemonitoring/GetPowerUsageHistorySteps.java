@@ -1,5 +1,5 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -14,6 +14,7 @@ import static com.alliander.osgp.platform.cucumber.core.Helpers.getInteger;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.saveCorrelationUidInScenarioContext;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.datatype.DatatypeFactory;
@@ -35,6 +36,7 @@ import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.GetP
 import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.HistoryTermType;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.MeterType;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.PowerUsageData;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.RelayData;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.TimePeriod;
 import com.alliander.osgp.platform.cucumber.config.CoreDeviceConfiguration;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
@@ -96,7 +98,7 @@ public class GetPowerUsageHistorySteps {
     @When("^receiving a get power usage history request as an unknown organization$")
     public void receivingAGetPowerUsageHistoryRequestAsAnUnknownOrganization(
             final Map<String, String> requestParameters) throws Throwable {
-        // Force the request being send to the platform as a given organization.
+        // Force the request being sent to the platform as a given organization.
         ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
 
         this.receivingAGetPowerUsageHistoryRequest(requestParameters);
@@ -163,13 +165,8 @@ public class GetPowerUsageHistorySteps {
             count++;
             Thread.sleep(1000);
 
-            try {
-                response = this.client.getGetPowerUsageHistoryResponse(request);
-                success = true;
-            } catch (final Exception ex) {
-                // Do nothing
-                LOGGER.info(ex.getMessage());
-            }
+            response = this.client.getGetPowerUsageHistoryResponse(request);
+            success = true;
         }
 
         Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.KEY_STATUS)),
@@ -206,7 +203,18 @@ public class GetPowerUsageHistorySteps {
             Assert.assertEquals((int) getInteger(expectedResult, Keys.AVERAGE_POWER_FACTOR3),
                     data.getSsldData().getAveragePowerFactor3());
 
-            // TODO RElaydata
+            final List<RelayData> relayDataList = data.getSsldData().getRelayData();
+            if (relayDataList != null && !relayDataList.isEmpty()) {
+                final String[] expectedRelayData = getString(expectedResult, Keys.RELAY_DATA)
+                        .split(Keys.SEPARATOR_SEMICOLON);
+                Assert.assertEquals(expectedRelayData.length, relayDataList.size());
+
+                for (int i = 0; i < expectedRelayData.length; i++) {
+                    final String sRelayData = String.format("%d,%d", relayDataList.get(i).getIndex(),
+                            relayDataList.get(i).getTotalLightingMinutes());
+                    Assert.assertEquals(expectedRelayData[i], sRelayData);
+                }
+            }
         }
     }
 }

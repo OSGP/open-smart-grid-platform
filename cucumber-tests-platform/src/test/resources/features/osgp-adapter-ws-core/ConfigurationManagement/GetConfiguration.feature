@@ -57,7 +57,7 @@ Feature: ConfigurationManagement GetConfiguration
       | RELAY                   |          |         | LIGHT  |       | CDMA              | PULSE     |            15 |           30 | DAYS         |
       | RELAY                   |          |         | LIGHT  |   1,1 | ETHERNET          | P1        |            15 |            1 | DAYS         |
 
-Scenario: Get configuration data with unknown device
+	Scenario: Get configuration data with unknown device
     And the device returns a get configuration status over OSLP
       | Status            | OK       |
       | LightType         | RELAY    |
@@ -97,7 +97,6 @@ Scenario: Get configuration data with unknown device
     Then the get configuration async response contains
       | DeviceIdentification | TEST1024000000001 |
     And a get configuration OSLP message is sent to device "TEST1024000000001"
-    # Note: The exception returns always the string "Exception occurred while getting device configuration"
     And the platform buffers a get configuration response message for device "TEST1024000000001" contains soap fault
       | Message | Device reports failure |
 
@@ -123,6 +122,5 @@ Scenario: Get configuration data with unknown device
     Then the get configuration async response contains
       | DeviceIdentification | TEST1024000000001 |
     And a get configuration OSLP message is sent to device "TEST1024000000001"
-    # Note: The exception returns always the string "Exception occurred while getting device configuration"
     And the platform buffers a get configuration response message for device "TEST1024000000001" contains soap fault
       | Message | Device reports rejected |

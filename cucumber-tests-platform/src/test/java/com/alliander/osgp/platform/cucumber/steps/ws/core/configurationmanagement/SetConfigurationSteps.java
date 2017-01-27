@@ -97,7 +97,8 @@ public class SetConfigurationSteps {
         // values the same. Some with underscore and some without.s
         MeterType meterType = null;
         final String sMeterType = getString(requestParameters, Keys.METER_TYPE);
-        if (!sMeterType.toString().contains("_") && sMeterType.equals(MeterType.P_1.toString().replace("_", ""))) {
+        if (sMeterType != null && !sMeterType.contains("_")
+                && sMeterType.equals(MeterType.P_1.toString().replace("_", ""))) {
             final String[] sMeterTypeArray = sMeterType.toString().split("");
             meterType = MeterType.valueOf(sMeterTypeArray[0] + "_" + sMeterTypeArray[1]);
         } else {

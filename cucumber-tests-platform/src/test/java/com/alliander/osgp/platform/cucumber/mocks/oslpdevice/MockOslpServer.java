@@ -417,7 +417,7 @@ public class MockOslpServer {
 
         final com.alliander.osgp.oslp.Oslp.SsldData.Builder ssldData = SsldData.newBuilder();
 
-        if (!relayData.isEmpty()) {
+        if (relayData != null && !relayData.isEmpty()) {
             for (final String data : relayData.split(Keys.SEPARATOR_SEMICOLON)) {
                 final String[] dataParts = data.split(Keys.SEPARATOR);
 
@@ -428,23 +428,23 @@ public class MockOslpServer {
             }
         }
 
-        final com.alliander.osgp.oslp.Oslp.PowerUsageData.Builder powerUserData = PowerUsageData.newBuilder();
+        final com.alliander.osgp.oslp.Oslp.PowerUsageData.Builder powerUsageData = PowerUsageData.newBuilder();
 
         if (meterType != null) {
-            powerUserData.setMeterType(meterType);
+            powerUsageData.setMeterType(meterType);
         }
 
         if (totalLightingHours != null) {
-            powerUserData.setPsldData(PsldData.newBuilder().setTotalLightingHours(totalLightingHours).build());
+            powerUsageData.setPsldData(PsldData.newBuilder().setTotalLightingHours(totalLightingHours).build());
         }
 
         if (!recordTime.isEmpty()) {
-            powerUserData.setRecordTime(recordTime);
+            powerUsageData.setRecordTime(recordTime);
         }
 
         final com.alliander.osgp.oslp.Oslp.GetActualPowerUsageResponse response = com.alliander.osgp.oslp.Oslp.GetActualPowerUsageResponse
                 .newBuilder().setStatus(status)
-                .setPowerUsageData(powerUserData.setActualConsumedPower(actualConsumedPower)
+                .setPowerUsageData(powerUsageData.setActualConsumedPower(actualConsumedPower)
                         .setTotalConsumedEnergy(totalConsumedEnergy)
                         .setSsldData(ssldData.setActualCurrent1(actualCurrent1).setActualCurrent2(actualCurrent2)
                                 .setActualCurrent3(actualCurrent3).setActualPower1(actualPower1)
@@ -467,7 +467,7 @@ public class MockOslpServer {
 
         final com.alliander.osgp.oslp.Oslp.SsldData.Builder ssldData = SsldData.newBuilder();
 
-        if (!relayData.isEmpty()) {
+        if (relayData != null && !relayData.isEmpty()) {
             for (final String data : relayData.split(Keys.SEPARATOR_SEMICOLON)) {
                 final String[] dataParts = data.split(Keys.SEPARATOR);
 
@@ -478,18 +478,18 @@ public class MockOslpServer {
             }
         }
 
-        final com.alliander.osgp.oslp.Oslp.PowerUsageData.Builder powerUserData = PowerUsageData.newBuilder();
+        final com.alliander.osgp.oslp.Oslp.PowerUsageData.Builder powerUsageData = PowerUsageData.newBuilder();
 
         if (meterType != null) {
-            powerUserData.setMeterType(meterType);
+            powerUsageData.setMeterType(meterType);
         }
 
         if (totalLightingHours != null) {
-            powerUserData.setPsldData(PsldData.newBuilder().setTotalLightingHours(totalLightingHours).build());
+            powerUsageData.setPsldData(PsldData.newBuilder().setTotalLightingHours(totalLightingHours).build());
         }
 
         if (!recordTime.isEmpty()) {
-            powerUserData.setRecordTime(recordTime);
+            powerUsageData.setRecordTime(recordTime);
         }
 
         com.alliander.osgp.oslp.Oslp.GetPowerUsageHistoryResponse response = null;
@@ -498,7 +498,7 @@ public class MockOslpServer {
                 .newBuilder();
 
         if (builder.getPowerUsageDataCount() > 0) {
-            response = builder.setStatus(status).setPowerUsageData(index, powerUserData
+            response = builder.setStatus(status).setPowerUsageData(index, powerUsageData
                     .setActualConsumedPower(actualConsumedPower).setTotalConsumedEnergy(totalConsumedEnergy)
                     .setSsldData(ssldData.setActualCurrent1(actualCurrent1).setActualCurrent2(actualCurrent2)
                             .setActualCurrent3(actualCurrent3).setActualPower1(actualPower1)

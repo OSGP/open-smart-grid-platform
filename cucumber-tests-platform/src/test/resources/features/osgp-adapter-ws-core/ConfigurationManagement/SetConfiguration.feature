@@ -73,7 +73,7 @@ Feature: ConfigurationManagement SetConfiguration
     Then the get configuration async response contains soap fault
       | Message | UNKNOWN_DEVICE |
 
-Scenario Outline: Set configuration data with invalid data which result in validation errors
+  Scenario Outline: Set configuration data with invalid data which result in validation errors
     Given an oslp device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SSLD              |
@@ -142,7 +142,6 @@ Scenario Outline: Set configuration data with invalid data which result in valid
       |                 |          |       |                 |       |               |                   |           |           31 | DAYS         | LongTermInterval and LongTermIntervalType must both be omitted or both be present. Further the permitted range for LongTermIntervalType.DAYS is from 1 to 30 and for LongTermIntervalType.MONTHS is from 1 to 12. |
       |                 |          |       |                 |       |               |                   |           |           13 | MONTHS       | LongTermInterval and LongTermIntervalType must both be omitted or both be present. Further the permitted range for LongTermIntervalType.DAYS is from 1 to 30 and for LongTermIntervalType.MONTHS is from 1 to 12. |
 
-  #	Scenario: Set configuration data with invalid data
   @OslpMockServer
   Scenario: Failed set configuration of a device
     Given an oslp device
@@ -165,7 +164,6 @@ Scenario Outline: Set configuration data with invalid data which result in valid
     Then the set configuration async response contains
       | DeviceIdentification | TEST1024000000001 |
     And a set configuration OSLP message is sent to device "TEST1024000000001"
-    # Note: The exception returns always the string "Exception occurred while getting device configuration"
     And the platform buffers a set configuration response message for device "TEST1024000000001" contains soap fault
       | Message | Device reports failure |
 
@@ -191,6 +189,5 @@ Scenario Outline: Set configuration data with invalid data which result in valid
     Then the set configuration async response contains
       | DeviceIdentification | TEST1024000000001 |
     And a set configuration OSLP message is sent to device "TEST1024000000001"
-    # Note: The exception returns always the string "Exception occurred while getting device configuration"
     And the platform buffers a set configuration response message for device "TEST1024000000001" contains soap fault
       | Message | Device reports rejected |

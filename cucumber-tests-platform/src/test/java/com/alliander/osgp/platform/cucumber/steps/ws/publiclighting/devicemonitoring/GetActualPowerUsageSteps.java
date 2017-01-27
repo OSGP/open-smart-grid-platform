@@ -1,5 +1,5 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -84,7 +84,7 @@ public class GetActualPowerUsageSteps {
     @When("^receiving a get actual power usage request as an unknown organization$")
     public void receivingAGetActualPowerUsageRequestAsAnUnknownOrganization(final Map<String, String> requestParameters)
             throws Throwable {
-        // Force the request being send to the platform as a given organization.
+        // Force the request being sent to the platform as a given organization.
         ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
 
         this.receivingAGetActualPowerUsageRequest(requestParameters);
@@ -151,26 +151,21 @@ public class GetActualPowerUsageSteps {
             count++;
             Thread.sleep(1000);
 
-            try {
-                response = this.client.getGetActualPowerUsageResponse(request);
+            response = this.client.getGetActualPowerUsageResponse(request);
 
-                if (getEnum(expectedResult, Keys.KEY_STATUS, OsgpResultType.class,
-                        Defaults.PUBLICLIGHTING_STATUS) != response.getResult()) {
-                    continue;
-                }
-
-                final String expectedDescription = getString(expectedResult, Keys.KEY_DESCRIPTION,
-                        Defaults.PUBLICLIGHTING_DESCRIPTION);
-                if (expectedResult.containsKey(Keys.KEY_DESCRIPTION) && !expectedDescription.isEmpty()
-                        && expectedDescription != response.getDescription()) {
-                    continue;
-                }
-
-                success = true;
-            } catch (final Exception ex) {
-                // Do nothing
-                LOGGER.info(ex.getMessage());
+            if (getEnum(expectedResult, Keys.KEY_STATUS, OsgpResultType.class,
+                    Defaults.PUBLICLIGHTING_STATUS) != response.getResult()) {
+                continue;
             }
+
+            final String expectedDescription = getString(expectedResult, Keys.KEY_DESCRIPTION,
+                    Defaults.PUBLICLIGHTING_DESCRIPTION);
+            if (expectedResult.containsKey(Keys.KEY_DESCRIPTION) && !expectedDescription.isEmpty()
+                    && expectedDescription != response.getDescription()) {
+                continue;
+            }
+
+            success = true;
         }
 
         final PowerUsageData data = response.getPowerUsageData();
@@ -181,8 +176,18 @@ public class GetActualPowerUsageSteps {
         Assert.assertEquals(
                 (int) getInteger(expectedResult, Keys.TOTAL_CONSUMED_ENERGY, Defaults.ACTUAL_CONSUMED_ENERGY),
                 data.getTotalConsumedEnergy());
-        Assert.assertEquals(getEnum(expectedResult, Keys.METER_TYPE, MeterType.class, Defaults.METER_TYPE),
-                data.getMeterType());
+
+        // Note: This piece of code has been made because there are multiple
+        // enumerations with the name MeterType, but not all of them has all
+        // values the same. Some with underscore and some without.
+        final String meterType = getString(expectedResult, Keys.METER_TYPE);
+        if (data.getMeterType().toString().contains("_") && !meterType.contains("_")) {
+            final String[] sMeterTypeArray = meterType.split("");
+            Assert.assertEquals(sMeterTypeArray[0] + "_" + sMeterTypeArray[1], data.getMeterType().toString());
+        } else {
+            Assert.assertEquals(getEnum(expectedResult, Keys.METER_TYPE, MeterType.class, Defaults.METER_TYPE),
+                    data.getMeterType());
+        }
 
         Assert.assertEquals(
                 DatatypeFactory.newInstance().newXMLGregorianCalendar(
@@ -213,7 +218,6 @@ public class GetActualPowerUsageSteps {
                 (int) getInteger(expectedResult, Keys.AVERAGE_POWER_FACTOR3, Defaults.AVERAGE_POWER_FACTOR3),
                 data.getSsldData().getAveragePowerFactor3());
 
-        // TODO Get RelayData and check on 'index' and 'totalLightingMinutes'
         final List<RelayData> relayDataList = data.getSsldData().getRelayData();
         if (relayDataList != null && !relayDataList.isEmpty()) {
             final String[] expectedRelayData = getString(expectedResult, Keys.RELAY_DATA)
