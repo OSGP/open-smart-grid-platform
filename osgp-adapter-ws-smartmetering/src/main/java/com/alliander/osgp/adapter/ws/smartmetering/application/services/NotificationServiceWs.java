@@ -19,7 +19,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.SendNotif
 import com.alliander.osgp.adapter.ws.shared.services.AbstractNotificationServiceWs;
 import com.alliander.osgp.adapter.ws.shared.services.NotificationService;
 import com.alliander.osgp.adapter.ws.shared.services.ResponseUrlService;
-import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Transactional(value = "transactionManager")
 @Validated
@@ -30,10 +30,10 @@ public class NotificationServiceWs extends AbstractNotificationServiceWs impleme
     @Autowired
     private ResponseUrlService responseUrlService;
 
-    private final WebServiceTemplateFactory webServiceTemplateFactory;
+    private final DefaultWebServiceTemplateFactory webServiceTemplateFactory;
 
     @Autowired
-    public NotificationServiceWs(final WebServiceTemplateFactory webServiceTemplateFactory,
+    public NotificationServiceWs(final DefaultWebServiceTemplateFactory webServiceTemplateFactory,
             final String notificationUrl, final String notificationUsername) {
         super(notificationUrl, notificationUsername);
         this.webServiceTemplateFactory = webServiceTemplateFactory;
