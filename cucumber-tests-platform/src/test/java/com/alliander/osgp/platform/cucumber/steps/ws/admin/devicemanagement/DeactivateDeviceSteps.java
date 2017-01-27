@@ -36,37 +36,39 @@ public class DeactivateDeviceSteps {
     @When("^receiving a deactivate device request$")
     public void receivingADeactivateDeviceRequest(final Map<String, String> requestSettings) throws Throwable {
 
-        DeactivateDeviceRequest request = new DeactivateDeviceRequest();
+        final DeactivateDeviceRequest request = new DeactivateDeviceRequest();
         request.setDeviceIdentification(
                 getString(requestSettings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         try {
-            ScenarioContext.Current().put(Keys.RESPONSE, client.deactivateDevice(request));
-        } catch (SoapFaultClientException ex) {
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.deactivateDevice(request));
+        } catch (final SoapFaultClientException ex) {
             ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
     }
 
     /**
      * Verify that the deactivate device response is successful.
-     * 
+     *
      * @throws Throwable
      */
     @Then("^the deactivate device response contains$")
     public void theDeactivateDeviceResponseContains(final Map<String, String> expectedResponse) throws Throwable {
-        DeactivateDeviceResponse response = (DeactivateDeviceResponse) ScenarioContext.Current().get(Keys.RESPONSE);
+        final DeactivateDeviceResponse response = (DeactivateDeviceResponse) ScenarioContext.Current()
+                .get(Keys.RESPONSE);
 
         Assert.assertEquals(getEnum(expectedResponse, Keys.KEY_RESULT, OsgpResultType.class), response.getResult());
     }
-    
+
     /**
      * Verifies the soap fault.
-     * 
+     *
      * @param expectedResult
      * @throws Throwable
      */
-    @Then("^the deactivate device response contains a soap fault$")
-    public void theDeactivateDeviceResponseContainsASoapFault(final Map<String, String> expectedResult) throws Throwable {
+    @Then("^the deactivate device response contains soap fault$")
+    public void theDeactivateDeviceResponseContainsASoapFault(final Map<String, String> expectedResult)
+            throws Throwable {
         GenericResponseSteps.verifySoapFault(expectedResult);
     }
 }

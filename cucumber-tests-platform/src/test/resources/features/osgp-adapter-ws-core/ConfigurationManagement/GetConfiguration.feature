@@ -57,8 +57,24 @@ Feature: ConfigurationManagement GetConfiguration
       | RELAY                   |          |         | LIGHT  |       | CDMA              | PULSE     |            15 |           30 | DAYS         |
       | RELAY                   |          |         | LIGHT  |   1,1 | ETHERNET          | P1        |            15 |            1 | DAYS         |
 
-  # @Skip
-  #	Scenario: Get configuration data with invalid data
+Scenario: Get configuration data with unknown device
+    And the device returns a get configuration status over OSLP
+      | Status            | OK       |
+      | LightType         | RELAY    |
+      | DcLights          |          |
+      | DcMap             |          |
+      | RcType            | LIGHT    |
+      | RcMap             |      1,1 |
+      | PreferredLinkType | ETHERNET |
+      | MeterType         | P1       |
+      | ShortInterval     |       15 |
+      | LongInterval      |        1 |
+      | IntervalType      | DAYS     |
+    When receiving a get configuration request
+      | DeviceIdentification | TEST1024000000001 |
+    Then the get configuration async response contains soap fault
+      | Message | UNKNOWN_DEVICE |
+
   @OslpMockServer
   Scenario: Failed get configuration of a device
     Given an oslp device

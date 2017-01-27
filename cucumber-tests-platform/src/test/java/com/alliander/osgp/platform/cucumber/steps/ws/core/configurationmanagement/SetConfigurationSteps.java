@@ -92,7 +92,18 @@ public class SetConfigurationSteps {
         config.setPreferredLinkType(preferredLinkType);
         // }
 
-        final MeterType meterType = getEnum(requestParameters, Keys.METER_TYPE, MeterType.class);
+        // Note: This piece of code has been made because there are multiple
+        // enumerations with the name MeterType, but not all of them has all
+        // values the same. Some with underscore and some without.s
+        MeterType meterType = null;
+        final String sMeterType = getString(requestParameters, Keys.METER_TYPE);
+        if (!sMeterType.toString().contains("_") && sMeterType.equals(MeterType.P_1.toString().replace("_", ""))) {
+            final String[] sMeterTypeArray = sMeterType.toString().split("");
+            meterType = MeterType.valueOf(sMeterTypeArray[0] + "_" + sMeterTypeArray[1]);
+        } else {
+            meterType = getEnum(requestParameters, Keys.METER_TYPE, MeterType.class);
+        }
+
         // if (meterType != null) {
         config.setMeterType(meterType);
         // }

@@ -118,13 +118,24 @@ public class OslpDeviceSteps {
             // TODO: Implement other possible status
         }
 
+        // Note: This piece of code has been made because there are multiple
+        // enumerations with the name MeterType, but not all of them has all
+        // values the same. Some with underscore and some without.s
+        MeterType meterType = MeterType.MT_NOT_SET;
+        final String sMeterType = getString(requestParameters, Keys.METER_TYPE);
+        if (!sMeterType.toString().contains("_") && sMeterType.equals(MeterType.P1_VALUE)) {
+            final String[] sMeterTypeArray = sMeterType.toString().split("");
+            meterType = MeterType.valueOf(sMeterTypeArray[0] + "_" + sMeterTypeArray[1]);
+        } else {
+            meterType = getEnum(requestParameters, Keys.METER_TYPE, MeterType.class);
+        }
+
         this.oslpMockServer.mockGetConfigurationResponse(oslpStatus,
                 getEnum(requestParameters, Keys.KEY_LIGHTTYPE, LightType.class),
                 getString(requestParameters, Keys.DC_LIGHTS, Defaults.DC_LIGHTS),
                 getString(requestParameters, Keys.DC_MAP), getEnum(requestParameters, Keys.RC_TYPE, RelayType.class),
                 getString(requestParameters, Keys.RC_MAP),
-                getEnum(requestParameters, Keys.KEY_PREFERRED_LINKTYPE, LinkType.class),
-                getEnum(requestParameters, Keys.METER_TYPE, MeterType.class),
+                getEnum(requestParameters, Keys.KEY_PREFERRED_LINKTYPE, LinkType.class), meterType,
                 getInteger(requestParameters, Keys.SHORT_INTERVAL, Defaults.SHORT_INTERVAL),
                 getInteger(requestParameters, Keys.LONG_INTERVAL, Defaults.LONG_INTERVAL),
                 getEnum(requestParameters, Keys.INTERVAL_TYPE, LongTermIntervalType.class));
