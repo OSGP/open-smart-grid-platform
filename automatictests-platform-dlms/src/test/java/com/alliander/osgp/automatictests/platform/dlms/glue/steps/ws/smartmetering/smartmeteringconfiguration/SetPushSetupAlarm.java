@@ -172,5 +172,4 @@ public class SetPushSetupAlarm extends SmartMeteringStepsBase {
     public void the_response_contains(final Map<String, String> expectedResult) throws Throwable {
         ResponseSteps.VerifyFaultResponse(this.runXpathResult, this.response, expectedResult);
     }
-
 }

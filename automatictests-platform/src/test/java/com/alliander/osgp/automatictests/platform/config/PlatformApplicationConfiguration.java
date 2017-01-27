@@ -7,8 +7,11 @@
  */
 package com.alliander.osgp.automatictests.platform.config;
 
+import org.springframework.context.annotation.Configuration;
+
 /**
  * Base class for the application configuration.
  */
+@Configuration
 public class PlatformApplicationConfiguration extends BaseApplicationConfiguration {
 }

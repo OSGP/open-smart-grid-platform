@@ -19,6 +19,7 @@ import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.SetOwnerReque
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.SetOwnerResponse;
 import com.alliander.osgp.automatictests.platform.Defaults;
 import com.alliander.osgp.automatictests.platform.Keys;
+import com.alliander.osgp.automatictests.platform.StepsBase;
 import com.alliander.osgp.automatictests.platform.core.ScenarioContext;
 import com.alliander.osgp.automatictests.platform.support.ws.admin.AdminDeviceManagementClient;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
@@ -28,7 +29,7 @@ import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class SetOwnerSteps {
+public class SetOwnerSteps extends StepsBase {
 
     @Autowired
     private DeviceAuthorizationRepository deviceAuthorizationRepo;

@@ -18,6 +18,7 @@ import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.FindRecentDevicesRequest;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.FindRecentDevicesResponse;
 import com.alliander.osgp.automatictests.platform.Keys;
+import com.alliander.osgp.automatictests.platform.StepsBase;
 import com.alliander.osgp.automatictests.platform.core.ScenarioContext;
 import com.alliander.osgp.automatictests.platform.glue.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.automatictests.platform.support.ws.core.CoreDeviceInstallationClient;
@@ -25,7 +26,7 @@ import com.alliander.osgp.automatictests.platform.support.ws.core.CoreDeviceInst
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class FindRecentDeviceSteps {
+public class FindRecentDeviceSteps extends StepsBase {
 
     @Autowired
     private CoreDeviceInstallationClient client;

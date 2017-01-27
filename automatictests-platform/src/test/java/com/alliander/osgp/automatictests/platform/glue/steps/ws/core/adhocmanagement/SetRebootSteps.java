@@ -28,6 +28,7 @@ import com.alliander.osgp.adapter.ws.schema.core.common.AsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.common.OsgpResultType;
 import com.alliander.osgp.automatictests.platform.Defaults;
 import com.alliander.osgp.automatictests.platform.Keys;
+import com.alliander.osgp.automatictests.platform.StepsBase;
 import com.alliander.osgp.automatictests.platform.config.CoreDeviceConfiguration;
 import com.alliander.osgp.automatictests.platform.core.ScenarioContext;
 import com.alliander.osgp.automatictests.platform.support.ws.core.CoreAdHocManagementClient;
@@ -38,7 +39,7 @@ import cucumber.api.java.en.When;
 /**
  * Class with all the set light requests steps
  */
-public class SetRebootSteps {
+public class SetRebootSteps extends StepsBase {
 
 	@Autowired
 	private CoreDeviceConfiguration configuration;

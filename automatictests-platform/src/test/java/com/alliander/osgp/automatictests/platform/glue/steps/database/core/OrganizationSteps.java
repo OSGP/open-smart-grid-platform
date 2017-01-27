@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.automatictests.platform.Defaults;
 import com.alliander.osgp.automatictests.platform.Keys;
+import com.alliander.osgp.automatictests.platform.StepsBase;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.valueobjects.PlatformDomain;
@@ -31,7 +32,7 @@ import cucumber.api.java.en.Then;
 /**
  * Class with all the organization steps
  */
-public class OrganizationSteps {
+public class OrganizationSteps extends StepsBase {
 
     @Autowired
     private OrganisationRepository repo;
@@ -57,7 +58,11 @@ public class OrganizationSteps {
                         Defaults.PLATFORM_FUNCTION_GROUP));
 
         // Add all the mandatory stuff.
-        entity.addDomain(getEnum(settings, Keys.PLATFORMDOMAIN, PlatformDomain.class, Defaults.PLATFORMDOMAIN));
+        if (settings.containsKey(Keys.DOMAINS) && !settings.get(Keys.DOMAINS).isEmpty()) {
+            for (String domain : getString(settings, Keys.DOMAINS, Defaults.DOMAINS).split(Keys.SEPARATOR_SEMICOLON)){
+                entity.addDomain(Enum.valueOf(PlatformDomain.class, domain));
+            }
+        }
 
         entity.setIsEnabled(getBoolean(settings, Keys.ENABLED, Defaults.ORGANIZATION_ENABLED));
 

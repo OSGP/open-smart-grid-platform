@@ -7,8 +7,6 @@
  */
 package com.alliander.osgp.automatictests.platform.dlms;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -128,7 +126,6 @@ public abstract class SoapUiRunner {
     protected void requestRunner(final TestStepStatus testStepStatus, final Map<String, String> propertiesMap,
             final String testCaseNameRequest, final String testCaseXml, final String testSuiteXml) throws Throwable {
 
-    	
         LOGGER.debug("Sending request [{} => {} => {}] ...", testSuiteXml, testCaseXml, testCaseNameRequest);
         propertiesMap.put(SERVICE_ENDPOINT_LABEL, this.serviceEndpoint);
 
@@ -139,7 +136,7 @@ public abstract class SoapUiRunner {
                 testCaseNameRequest);
         final TestStepResult runTestStepByNameResult = runTestStepByName.getRunTestStepByName();
         
-        assertEquals(testStepStatus, runTestStepByNameResult.getStatus());
+        Assert.assertEquals(testStepStatus, runTestStepByNameResult.getStatus());
 
         final WsdlTestCaseRunner wsdlTestCaseRunner = runTestStepByName.getResults();
         final MessageExchange messageExchange = (MessageExchange) wsdlTestCaseRunner.getResults().get(0);

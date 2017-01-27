@@ -63,7 +63,7 @@ public class SetTariffScheduleSteps {
     private static final Logger LOGGER = LoggerFactory.getLogger(SetTariffScheduleSteps.class);
 
     /**
-     * Sends a Set Schedule request to the platform for a given device
+     * Sends a Set Tariff Schedule request to the platform for a given device
      * identification.
      *
      * @param requestParameters
@@ -77,7 +77,7 @@ public class SetTariffScheduleSteps {
     }
 
     /**
-     * Sends a Set Schedule request to the platform for a given device
+     * Sends a Set Tariff Schedule request to the platform for a given device
      * identification.
      *
      * @param requestParameters
@@ -156,7 +156,7 @@ public class SetTariffScheduleSteps {
         request.getSchedules().add(schedule);
     }
 
-    @When("^receiving a set taiff schedule request by an unknown organization$")
+    @When("^receiving a set tariff schedule request by an unknown organization$")
     public void receivingASetTariffScheduleRequestByAnUnknownOrganization(final Map<String, String> requestParameters)
             throws Throwable {
         // Force the request being send to the platform as a given organization.
@@ -233,7 +233,7 @@ public class SetTariffScheduleSteps {
     }
 
     @Then("^the platform buffers a set tariff schedule response message for device \"([^\"]*)\" contains soap fault$")
-    public void thePlatformBuffersASetLightScheduleResponseMessageForDeviceContainsSoapFault(
+    public void thePlatformBuffersASetTariffScheduleResponseMessageForDeviceContainsSoapFault(
             final String deviceIdentification, final Map<String, String> expectedResult) throws Throwable {
         try {
             this.thePlatformBuffersASetTariffScheduleResponseMessageForDevice(deviceIdentification, expectedResult);

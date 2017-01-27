@@ -22,6 +22,7 @@ import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.UpdateKeyRequ
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.UpdateKeyResponse;
 import com.alliander.osgp.automatictests.platform.Defaults;
 import com.alliander.osgp.automatictests.platform.Keys;
+import com.alliander.osgp.automatictests.platform.StepsBase;
 import com.alliander.osgp.automatictests.platform.core.ScenarioContext;
 import com.alliander.osgp.automatictests.platform.support.ws.admin.AdminDeviceManagementClient;
 
@@ -31,7 +32,7 @@ import cucumber.api.java.en.When;
 /**
  * Class with all the remove organization requests steps
  */
-public class UpdateKeySteps {
+public class UpdateKeySteps extends StepsBase {
 
     @Autowired
     private AdminDeviceManagementClient client;

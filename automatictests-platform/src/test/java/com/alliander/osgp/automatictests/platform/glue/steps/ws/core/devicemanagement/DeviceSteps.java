@@ -15,8 +15,9 @@ import org.junit.Assert;
 
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device;
 import com.alliander.osgp.automatictests.platform.Keys;
+import com.alliander.osgp.automatictests.platform.StepsBase;
 
-public class DeviceSteps {
+public class DeviceSteps extends StepsBase {
 
 	public static void checkDevice(final Map<String, String> expectedDevice, final Device actualDevice) {
     	if (expectedDevice.containsKey(Keys.DEVICE_IDENTIFICATION)) {

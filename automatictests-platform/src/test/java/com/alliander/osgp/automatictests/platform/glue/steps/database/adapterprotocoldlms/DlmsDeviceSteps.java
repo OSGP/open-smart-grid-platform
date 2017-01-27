@@ -25,8 +25,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.automatictests.platform.Defaults;
 import com.alliander.osgp.automatictests.platform.Keys;
+import com.alliander.osgp.automatictests.platform.StepsBase;
 
-public class DlmsDeviceSteps {
+public class DlmsDeviceSteps extends StepsBase {
 
     private static final SecurityKeyType E_METER_SECURITY_KEYTYPES[] = new SecurityKeyType[]
             {SecurityKeyType.E_METER_ENCRYPTION, SecurityKeyType.E_METER_MASTER, SecurityKeyType.E_METER_AUTHENTICATION};

@@ -9,19 +9,16 @@ package com.alliander.osgp.automatictests.platform;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.alliander.osgp.automatictests.platform.config.ws.microgrids.MicrogridsNotificationWebServiceConfig;
 
 /**
- * Scan all automatictests namespaces.
+ * Scan all automatic tests packages.
  */
 @ComponentScan(basePackages={
         "com.alliander.osgp.automatictests"
     },
     excludeFilters = @ComponentScan.Filter(value = MicrogridsNotificationWebServiceConfig.class, type = FilterType.ASSIGNABLE_TYPE)
 )
-@EnableTransactionManagement
 public class ApplicationContext {
-
 }

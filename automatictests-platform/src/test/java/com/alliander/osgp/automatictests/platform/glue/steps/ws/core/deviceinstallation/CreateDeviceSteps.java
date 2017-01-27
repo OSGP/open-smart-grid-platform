@@ -27,6 +27,7 @@ import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.UpdateDevice
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.UpdateDeviceResponse;
 import com.alliander.osgp.automatictests.platform.Defaults;
 import com.alliander.osgp.automatictests.platform.Keys;
+import com.alliander.osgp.automatictests.platform.StepsBase;
 import com.alliander.osgp.automatictests.platform.core.ScenarioContext;
 import com.alliander.osgp.automatictests.platform.glue.steps.database.adapterprotocoloslp.OslpDeviceSteps;
 import com.alliander.osgp.automatictests.platform.glue.steps.ws.GenericResponseSteps;
@@ -38,7 +39,7 @@ import cucumber.api.java.en.When;
 /**
  * Class with all the create organization requests steps
  */
-public class CreateDeviceSteps {
+public class CreateDeviceSteps extends StepsBase {
 
     @Autowired
     private CoreDeviceInstallationClient client;

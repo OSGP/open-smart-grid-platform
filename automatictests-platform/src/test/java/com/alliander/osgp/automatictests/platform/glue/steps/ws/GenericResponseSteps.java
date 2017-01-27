@@ -14,12 +14,15 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
 
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.alliander.osgp.automatictests.platform.Keys;
+import com.alliander.osgp.automatictests.platform.StepsBase;
 import com.alliander.osgp.automatictests.platform.core.ScenarioContext;
 import com.alliander.osgp.automatictests.platform.support.ws.FaultDetailElement;
 import com.alliander.osgp.automatictests.platform.support.ws.SoapFaultHelper;
@@ -27,7 +30,7 @@ import com.alliander.osgp.automatictests.platform.support.ws.SoapFaultHelper;
 /**
  * Class with generic web service response steps.
  */
-public class GenericResponseSteps {
+public abstract class GenericResponseSteps extends StepsBase {
 
     private static String faultCode;
     private static String faultString;
@@ -73,8 +76,10 @@ public class GenericResponseSteps {
                      */
                     continue;
                 }
+
                 final String expectedValue = expectedEntry.getValue();
                 final String actualValue = actual.get(faultDetailElement);
+
                 assertEquals(localName, expectedValue, actualValue);
             }
         } else if (actualObj instanceof ArrayList) {
@@ -113,8 +118,15 @@ public class GenericResponseSteps {
 
     private static void assertExpectedAndActualValues(final String localName, final String expectedValue,
             final Object actual, final int counter) {
-        @SuppressWarnings("unchecked")
+
+        final Pattern pattern = Pattern.compile("('.+\\d+:.+')", Pattern.CASE_INSENSITIVE);
         final String actualValue = ((List<String>) actual).get(counter);
-        assertEquals(localName, expectedValue, actualValue);
+        final Matcher matcher = pattern.matcher(actualValue);
+        if (matcher.find()) {
+            final String group = matcher.group(1);
+            assertEquals(localName, expectedValue.replaceAll("('.+\\d+:.+')", group), actualValue);
+        } else {
+            assertEquals(localName, expectedValue, actualValue);
+        }
     }
 }

@@ -4,7 +4,7 @@ Feature: CoreDeviceInstallation Get Status
   In order to ...
 
   @Skip
-  Scenario: Get status of a device
+  Scenario Outline: Get status of a device
     Given a device
       | DeviceIdentification | TEST1024000000001 |
     And the device returns a get status response "OK" over OSLP
@@ -14,4 +14,11 @@ Feature: CoreDeviceInstallation Get Status
       | DeviceIdentification | TEST1024000000001 |
     And a get status OSLP message is sent to device "TEST1024000000001"
     And the platform buffers a device installation get status response message for device "TEST1024000000001"
-      | Result | OK |
+      | Result            | <Result>                    |
+      | PreferredLinkType | <ExpectedPreferredLinkType> |
+      | ActualLinkType    | <ExpectedActualLinkType>    |
+      | LightType         | <ExpectedLightType>         |
+
+    Examples: 
+      | RelayType | PreferredLinkType | ActualLinkType | LightType  | EventNotificationTypes | LightValues | Result | ExpectedPreferredLinkType | ExpectedActualLinkType | ExpectedLightType |
+      | LIGHT     | LINK_NOT_SET      | LINK_NOT_SET   | LT_NOT_SET |                        | 1,true,100  | OK     |                           |                        |                   |

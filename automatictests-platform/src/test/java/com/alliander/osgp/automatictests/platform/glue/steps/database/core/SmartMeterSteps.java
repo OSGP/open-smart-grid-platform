@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.automatictests.platform.Defaults;
 import com.alliander.osgp.automatictests.platform.Keys;
+import com.alliander.osgp.automatictests.platform.StepsBase;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
@@ -24,7 +25,7 @@ import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 
 import cucumber.api.java.en.Given;
 
-public class SmartMeterSteps {
+public class SmartMeterSteps extends StepsBase {
 
     @Autowired
     private SmartMeterRepository smartMeterRepository;

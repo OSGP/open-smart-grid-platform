@@ -9,12 +9,13 @@ package com.alliander.osgp.automatictests.platform.glue.hooks;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.automatictests.platform.StepsBase;
 import com.alliander.osgp.automatictests.platform.mocks.iec61850.Iec61850MockServer;
 
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 
-public class Iec61850MockServerHooks {
+public class Iec61850MockServerHooks extends StepsBase {
 
     @Autowired
     private Iec61850MockServer mockServer;

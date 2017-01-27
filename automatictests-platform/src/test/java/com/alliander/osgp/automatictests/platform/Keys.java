@@ -35,6 +35,7 @@ public class Keys {
     public static final String TECHNICAL_INSTALLATION_DATE = "TechnicalInstallationDate";
 
     public static final String ORGANIZATION_IDENTIFICATION = "OrganizationIdentification";
+    public static final String ORGANIZATION_DESCRIPTION = "Description";
     public static final String USER_NAME = "UserName";
     public static final String DEVICEFUNCTIONGROUP = "DeviceFunctionGroup";
     public static final String COMM_METHOD = "CommunicationMethod";
@@ -173,6 +174,9 @@ public class Keys {
     public static final String DEVICEMODEL_FILESTORAGE = "DeviceModelFileStorage";
     public static final String DEVICEMODEL_METERED = "DeviceModelMetered";
 
+    public static final String TIMEOUT = "Timeout";
+    public static final String DEVICE_OUTPUT_SETTINGS = "DeviceOutputSettings";
+
     public static final String SCHEDULE_WEEKDAY = "WeekDay";
     public static final String SCHEDULE_STARTDAY = "StartDay";
     public static final String SCHEDULE_ENDDAY = "EndDay";
@@ -187,9 +191,7 @@ public class Keys {
     public static final String SCHEDULE_CURRENTPAGE = "CurrentPages";
     public static final String SCHEDULE_PAGESIZE = "PageSize";
     public static final String SCHEDULE_TOTALPAGES = "TotalPages";
-    public static final String TIMEOUT = "Timeout";
-    public static final String DEVICE_OUTPUT_SETTINGS = "DeviceOutputSettings";
-    public static final String PLATFORMDOMAIN = "PlatformDomain";
+    public static final String USE_PREFIX = "UsePrefix";
     public static final String SUPPLIER = "Supplier";
-    public static final String ORGANIZATION_DESCRIPTION = "Description";
+    public static final String PLATFORMDOMAINS = "PlatformDomains";
 }

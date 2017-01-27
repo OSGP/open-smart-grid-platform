@@ -16,6 +16,8 @@ import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.automatictests.platform.Defaults;
+import com.alliander.osgp.automatictests.platform.Keys;
+import com.alliander.osgp.automatictests.platform.StepsBase;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.repositories.ManufacturerRepository;
 
@@ -25,7 +27,7 @@ import cucumber.api.java.en.Then;
 /**
  * The manufacturer related steps.
  */
-public class ManufacturerSteps {
+public class ManufacturerSteps extends StepsBase {
 
     @Autowired
     private ManufacturerRepository repo;
@@ -40,8 +42,10 @@ public class ManufacturerSteps {
     @Given("^a manufacturer")
     public void aManufacturer(final Map<String, String> settings) throws Throwable {
 
-        Manufacturer entity = new Manufacturer(getString(settings, "ManufacturerId", Defaults.MANUFACTURER_ID),
-                getString(settings, "Name", Defaults.MANUFACTURER_NAME), getBoolean(settings, "UsePrefix", Defaults.MANUFACTURER_USE_PREFIX));
+        Manufacturer entity = new Manufacturer(
+                getString(settings, Keys.MANUFACTURER_ID, Defaults.MANUFACTURER_ID),
+                getString(settings, Keys.NAME, Defaults.MANUFACTURER_NAME), 
+                getBoolean(settings, Keys.USE_PREFIX, Defaults.MANUFACTURER_USE_PREFIX));
 
         repo.save(entity);
     }

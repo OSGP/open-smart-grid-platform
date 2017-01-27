@@ -22,6 +22,7 @@ import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataRe
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataResponse;
 import com.alliander.osgp.automatictests.platform.Defaults;
 import com.alliander.osgp.automatictests.platform.Keys;
+import com.alliander.osgp.automatictests.platform.StepsBase;
 import com.alliander.osgp.automatictests.platform.core.ScenarioContext;
 import com.alliander.osgp.automatictests.platform.helpers.SettingsHelper;
 import com.alliander.osgp.automatictests.platform.support.ws.microgrids.adhocmanagement.AdHocManagementClient;
@@ -30,7 +31,7 @@ import com.alliander.osgp.automatictests.platform.support.ws.microgrids.adhocman
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class SetDataSteps {
+public class SetDataSteps extends StepsBase {
 
     @Autowired
     private AdHocManagementClient client;
