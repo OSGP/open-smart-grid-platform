@@ -120,26 +120,6 @@ public class OslpDeviceSteps extends StepsBase {
 	}
 
 	/**
-	 * Setup method to start a device which should be returned by the mock.
-	 * 
-	 * @param result
-	 *            The start device to respond.
-	 * @throws Throwable
-	 */
-	@Given("^the device returns a start device response \"([^\"]*)\" over OSLP$")
-	public void theDeviceReturns_AStartDeviceResponseOverOSLP(final String result) throws Throwable {
-		Oslp.Status oslpStatus = Status.OK;
-
-		switch (result) {
-		case "OK":
-			oslpStatus = Status.OK;
-			// TODO: Implement other possible status
-		}
-		// TODO: Make Mock method
-		this.oslpMockServer.mockStartDeviceResponse(oslpStatus);
-	}
-
-	/**
 	 * Setup method to stop a device which should be returned by the mock.
 	 * 
 	 * @param result
