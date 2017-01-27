@@ -59,7 +59,7 @@ public class OrganizationSteps extends StepsBase {
 
         // Add all the mandatory stuff.
         if (settings.containsKey(Keys.DOMAINS) && !settings.get(Keys.DOMAINS).isEmpty()) {
-            for (String domain : settings.get(Keys.DOMAINS).split(Keys.SEPARATOR_SEMICOLON)){
+            for (String domain : getString(settings, Keys.DOMAINS, Defaults.DOMAINS).split(Keys.SEPARATOR_SEMICOLON)){
                 entity.addDomain(Enum.valueOf(PlatformDomain.class, domain));
             }
         }

@@ -28,4 +28,4 @@ Feature: CoreDeviceInstallation Get Status
 
     Examples: 
       | RelayType | PreferredLinkType | ActualLinkType | LightType  | EventNotificationTypes | LightValues | Result | ExpectedPreferredLinkType | ExpectedActualLinkType | ExpectedLightType |
-      | LIGHT     | LINK_NOT_SET      | LINK_NOT_SET   | LT_NOT_SET |                        | 1;true;100  | OK     |                           |                        |                   |
+      | LIGHT     | LINK_NOT_SET      | LINK_NOT_SET   | LT_NOT_SET |                        | 1,true,100  | OK     |                           |                        |                   |
