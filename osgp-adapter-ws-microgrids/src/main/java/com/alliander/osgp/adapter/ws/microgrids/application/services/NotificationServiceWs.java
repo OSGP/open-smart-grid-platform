@@ -12,10 +12,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
-import com.alliander.osgp.adapter.ws.microgrids.application.exceptions.WebServiceSecurityException;
 import com.alliander.osgp.adapter.ws.microgrids.presentation.ws.SendNotificationServiceClient;
 import com.alliander.osgp.adapter.ws.schema.microgrids.notification.Notification;
 import com.alliander.osgp.adapter.ws.schema.microgrids.notification.NotificationType;
+import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 
 @Transactional(value = "transactionManager")
 @Validated

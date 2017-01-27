@@ -20,12 +20,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.server.endpoint.adapter.DefaultMethodEndpointAdapter;
 import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadMethodProcessor;
 import org.springframework.ws.server.endpoint.adapter.method.MethodArgumentResolver;
 import org.springframework.ws.server.endpoint.adapter.method.MethodReturnValueHandler;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
+import org.springframework.ws.soap.security.support.KeyStoreFactoryBean;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.AnnotationMethodArgumentResolver;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.CertificateAndSoapHeaderAuthorizationEndpointInterceptor;
@@ -39,13 +41,13 @@ import com.alliander.osgp.adapter.ws.microgrids.application.services.Notificatio
 import com.alliander.osgp.adapter.ws.microgrids.application.services.NotificationServiceBlackHole;
 import com.alliander.osgp.adapter.ws.microgrids.application.services.NotificationServiceWs;
 import com.alliander.osgp.adapter.ws.microgrids.presentation.ws.SendNotificationServiceClient;
-import com.alliander.osgp.adapter.ws.microgrids.presentation.ws.WebServiceTemplateFactory;
 import com.alliander.osgp.shared.application.config.AbstractConfig;
+import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Configuration
 @PropertySources({ @PropertySource("classpath:osgp-adapter-ws-microgrids.properties"),
-        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true), })
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+    @PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true), })
 public class WebServiceConfig extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceConfig.class);
@@ -71,6 +73,24 @@ public class WebServiceConfig extends AbstractConfig {
 
     @Value("${web.service.notification.username:#{null}}")
     private String webserviceNotificationUsername;
+
+    @Value("${web.service.keystore.type}")
+    private String webserviceKeystoreType;
+
+    @Value("${web.service.keystore.location}")
+    private String webserviceKeystoreLocation;
+
+    @Value("${web.service.keystore.password}")
+    private String webserviceKeystorePassword;
+
+    @Value("${web.service.truststore.type}")
+    private String webserviceTruststoreType;
+
+    @Value("${web.service.truststore.location}")
+    private String webserviceTruststoreLocation;
+
+    @Value("${web.service.truststore.password}")
+    private String webserviceTruststorePassword;
 
     private static final String SERVER = "SERVER";
 
@@ -207,6 +227,16 @@ public class WebServiceConfig extends AbstractConfig {
     }
 
     @Bean
+    public KeyStoreFactoryBean webServiceTrustStoreFactory() {
+        final KeyStoreFactoryBean factory = new KeyStoreFactoryBean();
+        factory.setType(this.webserviceTruststoreType);
+        factory.setLocation(new FileSystemResource(this.webserviceTruststoreLocation));
+        factory.setPassword(this.webserviceTruststorePassword);
+
+        return factory;
+    }
+
+    @Bean
     public Jaxb2Marshaller notificationSenderMarshaller() {
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
         marshaller.setContextPath(this.environment
@@ -214,13 +244,19 @@ public class WebServiceConfig extends AbstractConfig {
         return marshaller;
     }
 
-    private WebServiceTemplateFactory createWebServiceTemplateFactory(final Jaxb2Marshaller marshaller) {
-        return new WebServiceTemplateFactory(marshaller, this.messageFactory(), "ZownStream");
-    }
-
     @Bean
     public SendNotificationServiceClient sendNotificationServiceClient() throws java.security.GeneralSecurityException {
         return new SendNotificationServiceClient(this.createWebServiceTemplateFactory(this
                 .notificationSenderMarshaller()));
+    }
+
+    private DefaultWebServiceTemplateFactory createWebServiceTemplateFactory(final Jaxb2Marshaller marshaller) {
+        return new DefaultWebServiceTemplateFactory.Builder().setMarshaller(marshaller)
+                .setMessageFactory(this.messageFactory())
+                .setTargetUri(this.webserviceNotificationUrl)
+                .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
+                .setKeyStorePassword(this.webserviceKeystorePassword)
+                .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName("ZownStream")
+                .build();
     }
 }

@@ -42,8 +42,9 @@ import com.alliander.osgp.adapter.ws.shared.services.NotificationServiceBlackHol
 import com.alliander.osgp.adapter.ws.smartmetering.application.exceptionhandling.DetailSoapFaultMappingExceptionResolver;
 import com.alliander.osgp.adapter.ws.smartmetering.application.exceptionhandling.SoapFaultMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationServiceWs;
-import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.SendNotificationServiceClient;
 import com.alliander.osgp.shared.application.config.AbstractConfig;
+import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Configuration
 @PropertySources({ @PropertySource("classpath:osgp-adapter-ws-smartmetering.properties"),
@@ -68,8 +69,10 @@ public class WebServiceConfig extends AbstractConfig {
 
     @Value("${web.service.truststore.location}")
     private String webserviceTruststoreLocation;
+
     @Value("${web.service.truststore.password}")
     private String webserviceTruststorePassword;
+
     @Value("${web.service.truststore.type}")
     private String webserviceTruststoreType;
 
@@ -130,10 +133,19 @@ public class WebServiceConfig extends AbstractConfig {
         return marshaller;
     }
 
-    private WebServiceTemplateFactory createWebServiceTemplateFactory(final Jaxb2Marshaller marshaller) {
-        return new WebServiceTemplateFactory(marshaller, this.messageFactory(), this.webserviceKeystoreType,
-                this.webserviceKeystoreLocation, this.webserviceKeystorePassword, this.webServiceTrustStoreFactory(),
-                this.applicationName);
+    @Bean
+    public SendNotificationServiceClient sendNotificationServiceClient() throws java.security.GeneralSecurityException {
+        return new SendNotificationServiceClient(
+                this.createWebServiceTemplateFactory(this.notificationSenderMarshaller()));
+    }
+
+    private DefaultWebServiceTemplateFactory createWebServiceTemplateFactory(final Jaxb2Marshaller marshaller) {
+        return new DefaultWebServiceTemplateFactory.Builder().setMarshaller(marshaller)
+                .setMessageFactory(this.messageFactory()).setTargetUri(this.webserviceNotificationUrl)
+                .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
+                .setKeyStorePassword(this.webserviceKeystorePassword)
+                .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)
+                .build();
     }
 
     @Bean
