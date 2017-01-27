@@ -10,9 +10,9 @@ package com.alliander.osgp.platform.cucumber.steps;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.TransitionType;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.MeterType;
+import com.alliander.osgp.domain.core.valueobjects.RelayType;
 import com.alliander.osgp.oslp.Oslp.LightType;
 import com.alliander.osgp.oslp.Oslp.LinkType;
-import com.alliander.osgp.domain.core.valueobjects.RelayType;
 import com.alliander.osgp.oslp.Oslp.Status;
 
 /**

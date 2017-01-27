@@ -176,8 +176,18 @@ public class GetActualPowerUsageSteps {
         Assert.assertEquals(
                 (int) getInteger(expectedResult, Keys.TOTAL_CONSUMED_ENERGY, Defaults.ACTUAL_CONSUMED_ENERGY),
                 data.getTotalConsumedEnergy());
-        Assert.assertEquals(getEnum(expectedResult, Keys.METER_TYPE, MeterType.class, Defaults.METER_TYPE),
-                data.getMeterType());
+
+        // Note: This piece of code has been made because there are multiple
+        // enumerations with the name MeterType, but not all of them has all
+        // values the same. Some with underscore and some without.
+        final String meterType = getString(expectedResult, Keys.METER_TYPE);
+        if (data.getMeterType().toString().contains("_") && !meterType.contains("_")) {
+            final String[] sMeterTypeArray = meterType.split("");
+            Assert.assertEquals(sMeterTypeArray[0] + "_" + sMeterTypeArray[1], data.getMeterType().toString());
+        } else {
+            Assert.assertEquals(getEnum(expectedResult, Keys.METER_TYPE, MeterType.class, Defaults.METER_TYPE),
+                    data.getMeterType());
+        }
 
         Assert.assertEquals(
                 DatatypeFactory.newInstance().newXMLGregorianCalendar(

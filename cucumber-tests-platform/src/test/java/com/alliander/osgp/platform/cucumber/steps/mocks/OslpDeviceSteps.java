@@ -100,9 +100,21 @@ public class OslpDeviceSteps {
      */
     @Given("^the device returns a get actual power usage response over OSLP$")
     public void theDeviceReturnsAGetActualPowerUsageOverOSLP(final Map<String, String> responseData) throws Throwable {
+
+        // Note: This piece of code has been made because there are multiple
+        // enumerations with the name MeterType, but not all of them has all
+        // values the same. Some with underscore and some without.s
+        MeterType meterType = MeterType.MT_NOT_SET;
+        final String sMeterType = getString(responseData, Keys.METER_TYPE);
+        if (!sMeterType.toString().contains("_") && sMeterType.equals(MeterType.P1_VALUE)) {
+            final String[] sMeterTypeArray = sMeterType.toString().split("");
+            meterType = MeterType.valueOf(sMeterTypeArray[0] + "_" + sMeterTypeArray[1]);
+        } else {
+            meterType = getEnum(responseData, Keys.METER_TYPE, MeterType.class);
+        }
+
         this.oslpMockServer.mockGetActualPowerUsageResponse(getEnum(responseData, Keys.KEY_STATUS, Status.class),
-                getInteger(responseData, Keys.ACTUAL_CONSUMED_POWER, null),
-                getEnum(responseData, Keys.METER_TYPE, MeterType.class),
+                getInteger(responseData, Keys.ACTUAL_CONSUMED_POWER, null), meterType,
                 getDate(responseData, Keys.RECORD_TIME).toDateTime(DateTimeZone.UTC).toString("yyyyMMddHHmmss"),
                 getInteger(responseData, Keys.TOTAL_CONSUMED_ENERGY, null),
                 getInteger(responseData, Keys.TOTAL_LIGHTING_HOURS, null),

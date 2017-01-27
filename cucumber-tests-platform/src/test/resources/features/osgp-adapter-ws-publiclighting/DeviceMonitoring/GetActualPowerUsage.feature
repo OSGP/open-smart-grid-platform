@@ -56,7 +56,7 @@ Feature: PublicLightingDeviceMonitoring get actual power usage
       | 2013-02-02T12:00:00 | P1        |                  10 |                  10 |                 10 |             10 |             10 |             10 |           10 |           10 |           10 |                  10 |                  10 |                  10 | 1,600;2,480 |
       | 2013-02-02T12:00:00 | PULSE     |                   0 |                 200 |                 90 |             90 |              0 |             90 |           90 |            0 |            0 |                   0 |                   0 |                   0 |             |
       | 2014-01-01T12:00:00 | AUX       |                   0 |                  90 |                  0 |             90 |              0 |             90 |           90 |            0 |            0 |                   0 |                   0 |                   0 |             |
-
+  
   Scenario: Get the actual power usage as an unauthorized organization
     When receiving a get actual power usage request as an unknown organization
       | OrganizationIdentification | TEST1024000000001 |
