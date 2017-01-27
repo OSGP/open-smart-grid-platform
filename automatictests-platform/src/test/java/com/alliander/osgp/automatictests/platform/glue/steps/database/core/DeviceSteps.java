@@ -137,7 +137,7 @@ public class DeviceSteps extends StepsBase {
      * @param device
      * @param settings
      */
-    private Device updateDevice(Device device, final Map<String, String> settings) {
+    public Device updateDevice(Device device, final Map<String, String> settings) {
 
         // Now set the optional stuff
         if (settings.containsKey(Keys.TECHNICAL_INSTALLATION_DATE)
@@ -257,7 +257,7 @@ public class DeviceSteps extends StepsBase {
     @And("^the device exists")
     public void theDeviceExists(final Map<String, String> settings) throws Throwable {
         Device device = null;
-
+        
         boolean success = false;
         int count = 0;
         while (!success) {
