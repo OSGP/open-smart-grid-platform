@@ -39,8 +39,8 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageSender;
  * Class for processing common get configuration request messages
  */
 @Component("oslpCommonGetConfigurationRequestMessageProcessor")
-public class CommonGetConfigurationRequestMessageProcessor extends DeviceRequestMessageProcessor implements
-OslpEnvelopeProcessor {
+public class CommonGetConfigurationRequestMessageProcessor extends DeviceRequestMessageProcessor
+        implements OslpEnvelopeProcessor {
     /**
      * Logger for this class
      */
@@ -73,8 +73,8 @@ OslpEnvelopeProcessor {
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
             ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
             retryCount = message.getIntProperty(Constants.RETRY_COUNT);
-            isScheduled = message.propertyExists(Constants.IS_SCHEDULED) ? message
-                    .getBooleanProperty(Constants.IS_SCHEDULED) : false;
+            isScheduled = message.propertyExists(Constants.IS_SCHEDULED)
+                    ? message.getBooleanProperty(Constants.IS_SCHEDULED) : false;
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -115,8 +115,8 @@ OslpEnvelopeProcessor {
             @Override
             public void handleResponse(final DeviceResponse deviceResponse) {
                 CommonGetConfigurationRequestMessageProcessor.this.handleGetConfigurationDeviceResponse(deviceResponse,
-                        CommonGetConfigurationRequestMessageProcessor.this.responseMessageSender, domain,
-                        domainVersion, messageType, retryCount);
+                        CommonGetConfigurationRequestMessageProcessor.this.responseMessageSender, domain, domainVersion,
+                        messageType, retryCount);
             }
 
             @Override
@@ -134,8 +134,8 @@ OslpEnvelopeProcessor {
         try {
             this.deviceService.doGetConfiguration(oslpEnvelope, deviceRequest, deviceResponseHandler, ipAddress);
         } catch (final IOException e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
-                    domainVersion, messageType, retryCount);
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain, domainVersion,
+                    messageType, retryCount);
         }
     }
 
@@ -147,15 +147,25 @@ OslpEnvelopeProcessor {
         OsgpException osgpException = null;
         ConfigurationDto configuration = null;
 
+        final GetConfigurationDeviceResponse response = (GetConfigurationDeviceResponse) deviceResponse;
         try {
-            final GetConfigurationDeviceResponse response = (GetConfigurationDeviceResponse) deviceResponse;
             this.deviceResponseService.handleDeviceMessageStatus(response.getStatus());
             configuration = response.getConfiguration();
         } catch (final Exception e) {
             LOGGER.error("Device Response Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            osgpException = new TechnicalException(ComponentType.UNKNOWN,
-                    "Exception occurred while getting device configuration", e);
+
+            String exception;
+            switch (response.getStatus()) {
+            case FAILURE:
+            case REJECTED:
+                exception = e.getMessage();
+                break;
+            default:
+                exception = "Exception occurred while getting device configuration";
+                break;
+            }
+            osgpException = new TechnicalException(ComponentType.UNKNOWN, exception, e);
         }
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
