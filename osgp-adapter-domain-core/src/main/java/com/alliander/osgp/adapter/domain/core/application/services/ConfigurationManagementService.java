@@ -179,8 +179,7 @@ public class ConfigurationManagementService extends AbstractService {
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception for messageType: {}", messageType, e);
             result = ResponseMessageResultType.NOT_OK;
-            osgpException = new TechnicalException(ComponentType.UNKNOWN,
-                    "Exception occurred while getting device configuration", e);
+            osgpException = new TechnicalException(ComponentType.UNKNOWN, e.getMessage(), e);
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
