@@ -57,9 +57,8 @@ Feature: ConfigurationManagement GetConfiguration
       | RELAY                   |          |         | LIGHT  |       | CDMA              | PULSE     |            15 |           30 | DAYS         |
       | RELAY                   |          |         | LIGHT  |   1,1 | ETHERNET          | P1        |            15 |            1 | DAYS         |
 
-# @Skip
-#	Scenario: Get configuration data with invalid data
-
+  # @Skip
+  #	Scenario: Get configuration data with invalid data
   @OslpMockServer
   Scenario: Failed get configuration of a device
     Given an oslp device
