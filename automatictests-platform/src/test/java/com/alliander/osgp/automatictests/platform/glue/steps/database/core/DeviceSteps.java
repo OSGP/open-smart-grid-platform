@@ -7,35 +7,17 @@
  */
 package com.alliander.osgp.automatictests.platform.glue.steps.database.core;
 
-import static com.alliander.osgp.automatictests.platform.core.Helpers.getBoolean;
-import static com.alliander.osgp.automatictests.platform.core.Helpers.getDate;
-import static com.alliander.osgp.automatictests.platform.core.Helpers.getEnum;
-import static com.alliander.osgp.automatictests.platform.core.Helpers.getFloat;
-import static com.alliander.osgp.automatictests.platform.core.Helpers.getInteger;
-import static com.alliander.osgp.automatictests.platform.core.Helpers.getLong;
-import static com.alliander.osgp.automatictests.platform.core.Helpers.getString;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
-import com.alliander.osgp.automatictests.platform.Defaults;
 import com.alliander.osgp.automatictests.platform.Keys;
-import com.alliander.osgp.automatictests.platform.StepsBase;
 import com.alliander.osgp.automatictests.platform.config.CoreDeviceConfiguration;
-import com.alliander.osgp.automatictests.platform.core.ScenarioContext;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
-import com.alliander.osgp.domain.core.entities.DeviceModel;
-import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
-import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
@@ -45,20 +27,14 @@ import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
-import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
-import com.alliander.osgp.domain.core.valueobjects.RelayType;
 
 import cucumber.api.java.en.And;
-import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
-public class DeviceSteps extends StepsBase {
+public class DeviceSteps extends BaseDeviceSteps {
 
     @Autowired
     private CoreDeviceConfiguration configuration;
-
-    @Autowired
-    private DeviceModelRepository deviceModelRepository;
 
     @Autowired
     private DeviceRepository deviceRepository;
@@ -67,135 +43,10 @@ public class DeviceSteps extends StepsBase {
     private SmartMeterRepository smartMeterRepository;
 
     @Autowired
-    private OrganisationRepository organizationRepository;
-
-    @Autowired
     private DeviceAuthorizationRepository deviceAuthorizationRepository;
 
     @Autowired
-    private ProtocolInfoRepository protocolInfoRepository;
-
-    @Autowired
     private SsldRepository ssldRepository;
-
-    /**
-     * Generic method which adds a device using the settings.
-     *
-     * @param settings
-     *            The settings for the device to be used.
-     * @throws Throwable
-     */
-    @Given("^a device$")
-    @Transactional("txMgrCore")
-    public Device anSsldDevice(final Map<String, String> settings) throws Throwable {
-
-        // Set the required stuff
-        final String deviceIdentification = getString(settings, Keys.DEVICE_IDENTIFICATION);
-        final Ssld ssld = new Ssld(deviceIdentification);
-
-        ssld.setPublicKeyPresent(getBoolean(settings, Keys.PUBLICKEYPRESENT, Defaults.PUBLICKEYPRESENT));
-        ssld.setHasSchedule(getBoolean(settings, Keys.HAS_SCHEDULE, Defaults.HASSCHEDULE));
-        
-        if (settings.containsKey(Keys.INTERNALID) || settings.containsKey(Keys.EXTERNALID)
-                || settings.containsKey(Keys.RELAY_TYPE)) {
-            final List<DeviceOutputSetting> dosList = new ArrayList<>();
-            final int internalId = getInteger(settings, Keys.INTERNALID, Defaults.INTERNALID),
-                    externalId = getInteger(settings, Keys.EXTERNALID, Defaults.EXTERNALID);
-            final RelayType relayType = getEnum(settings, Keys.RELAY_TYPE, RelayType.class, RelayType.LIGHT);
-
-            if (relayType != null) {
-                dosList.add(new DeviceOutputSetting(internalId, externalId, relayType));
-
-                ssld.updateOutputSettings(dosList);
-            }
-        }
-
-        this.ssldRepository.save(ssld);
-
-        Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-        device = this.updateDevice(device, settings);
-
-        return device;
-    }
-
-    /**
-     * Update a device entity given its device identification.
-     *
-     * @param deviceIdentification
-     *            The deviceIdentification.
-     * @param settings
-     *            The settings.
-     */
-    public Device updateDevice(final String deviceIdentification, final Map<String, String> settings) {
-        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-        return this.updateDevice(device, settings);
-    }
-
-    /**
-     * Update an existing device with the given settings.
-     *
-     * @param device
-     * @param settings
-     */
-    public Device updateDevice(Device device, final Map<String, String> settings) {
-
-        // Now set the optional stuff
-        if (settings.containsKey(Keys.TECHNICAL_INSTALLATION_DATE)
-                && !settings.get(Keys.TECHNICAL_INSTALLATION_DATE).isEmpty()) {
-            device.setTechnicalInstallationDate(getDate(settings, Keys.TECHNICAL_INSTALLATION_DATE).toDate());
-        }
-
-        final DeviceModel deviceModel = this.deviceModelRepository
-                .findByModelCode(getString(settings, Keys.DEVICE_MODEL, Defaults.DEVICE_MODEL_MODEL_CODE));
-        device.setDeviceModel(deviceModel);
-
-        device.updateProtocol(this.protocolInfoRepository.findByProtocolAndProtocolVersion(
-                getString(settings, Keys.PROTOCOL, Defaults.PROTOCOL),
-                getString(settings, Keys.PROTOCOL_VERSION, Defaults.PROTOCOL_VERSION)));
-
-        InetAddress inetAddress;
-        try {
-            inetAddress = InetAddress.getByName(this.configuration.getDeviceNetworkAddress());
-        } catch (final UnknownHostException e) {
-            inetAddress = InetAddress.getLoopbackAddress();
-        }
-        device.updateRegistrationData(inetAddress, getString(settings, Keys.DEVICE_TYPE, Defaults.DEVICE_TYPE));
-
-        device.setVersion(getLong(settings, Keys.VERSION));
-        device.setActive(getBoolean(settings, Keys.ACTIVE, Defaults.ACTIVE));
-        if (getString(settings, Keys.ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION)
-                .toLowerCase() != "null") {
-            device.addOrganisation(
-                    getString(settings, Keys.ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION));
-        }
-        device.updateMetaData(getString(settings, Keys.ALIAS, Defaults.ALIAS),
-                getString(settings, Keys.CITY, Defaults.CONTAINER_CITY),
-                getString(settings, Keys.POSTCODE, Defaults.CONTAINER_POSTALCODE),
-                getString(settings, Keys.STREET, Defaults.CONTAINER_STREET),
-                getString(settings, Keys.NUMBER, Defaults.CONTAINER_NUMBER),
-                getString(settings, Keys.MUNICIPALITY, Defaults.CONTAINER_MUNICIPALITY),
-                getFloat(settings, Keys.LATITUDE, Defaults.LATITUDE),
-                getFloat(settings, Keys.LONGITUDE, Defaults.LONGITUDE));
-
-        device.setActivated(getBoolean(settings, Keys.IS_ACTIVATED, Defaults.IS_ACTIVATED));
-        device = this.deviceRepository.save(device);
-
-        if (getString(settings, Keys.ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION)
-                .toLowerCase() != "null") {
-            final Organisation organization = this.organizationRepository.findByOrganisationIdentification(
-                    getString(settings, Keys.ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION));
-            final DeviceFunctionGroup functionGroup = getEnum(settings, Keys.DEVICEFUNCTIONGROUP,
-                    DeviceFunctionGroup.class, DeviceFunctionGroup.OWNER);
-            final DeviceAuthorization authorization = device.addAuthorization(organization, functionGroup);
-            final Device savedDevice = this.deviceRepository.save(device);
-            this.deviceAuthorizationRepository.save(authorization);
-            ScenarioContext.Current().put(Keys.DEVICE_IDENTIFICATION, savedDevice.getDeviceIdentification());
-
-            device = savedDevice;
-        }
-
-        return device;
-    }
 
     @Then("^the device with device identification \"([^\"]*)\" should be active$")
     public void theDeviceWithDeviceIdentificationShouldBeActive(final String deviceIdentification) throws Throwable {

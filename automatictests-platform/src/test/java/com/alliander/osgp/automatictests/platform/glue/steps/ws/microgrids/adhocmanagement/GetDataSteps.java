@@ -20,7 +20,9 @@ import java.util.Map;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataAsyncResponse;
@@ -29,9 +31,11 @@ import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataRe
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataSystemIdentifier;
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.Measurement;
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.Profile;
+import com.alliander.osgp.adapter.ws.schema.microgrids.common.AsyncRequest;
 import com.alliander.osgp.automatictests.platform.Defaults;
 import com.alliander.osgp.automatictests.platform.Keys;
 import com.alliander.osgp.automatictests.platform.StepsBase;
+import com.alliander.osgp.automatictests.platform.config.CoreDeviceConfiguration;
 import com.alliander.osgp.automatictests.platform.core.ScenarioContext;
 import com.alliander.osgp.automatictests.platform.helpers.SettingsHelper;
 import com.alliander.osgp.automatictests.platform.support.ws.microgrids.adhocmanagement.AdHocManagementClient;
@@ -42,6 +46,9 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 public class GetDataSteps extends StepsBase {
+
+    @Autowired
+    private CoreDeviceConfiguration configuration;
 
     /**
      * Delta value for which two measurement values are considered equal if
@@ -57,29 +64,42 @@ public class GetDataSteps extends StepsBase {
     @When("^a get data request is received$")
     public void aGetDataRequestIsReceived(final Map<String, String> requestParameters) throws Throwable {
 
-        final String organizationIdentification = (String) ScenarioContext.Current().get(
-                Keys.ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION);
-        ScenarioContext.Current().put(Keys.ORGANIZATION_IDENTIFICATION, organizationIdentification);
-        final String userName = (String) ScenarioContext.Current().get(Keys.USER_NAME, Defaults.USER_NAME);
-        ScenarioContext.Current().put(Keys.USER_NAME, userName);
-
         final GetDataRequest getDataRequest = GetDataRequestBuilder.fromParameterMap(requestParameters);
         final GetDataAsyncResponse response = this.client.getDataAsync(getDataRequest);
 
         ScenarioContext.Current().put(Keys.CORRELATION_UID, response.getAsyncResponse().getCorrelationUid());
+        ScenarioContext.Current().put(Keys.DEVICE_IDENTIFICATION, response.getAsyncResponse().getDeviceId());
     }
 
     @Then("^the get data response should be returned$")
     public void theGetDataResponseShouldBeReturned(final Map<String, String> responseParameters) throws Throwable {
 
-        final String correlationUid = (String) ScenarioContext.Current().get(Keys.CORRELATION_UID);
-        final Map<String, String> extendedParameters = SettingsHelper.addDefault(responseParameters,
-                Keys.CORRELATION_UID, correlationUid);
-
-        final GetDataAsyncRequest getDataAsyncRequest = GetDataRequestBuilder.fromParameterMapAsync(extendedParameters);
+        GetDataAsyncRequest request = new GetDataAsyncRequest();
+        AsyncRequest asyncRequest = new AsyncRequest();
+        asyncRequest.setDeviceId((String)ScenarioContext.Current().get(Keys.DEVICE_IDENTIFICATION));
+        asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.CORRELATION_UID));
+        request.setAsyncRequest(asyncRequest);
         
-        // Wait for the response...
-        final GetDataResponse response = this.client.getData(getDataAsyncRequest);
+        GetDataResponse response = null;
+        boolean success = false;
+        int count = 0;
+        while (!success) {
+            if (count > configuration.getTimeout()) {
+                Assert.fail("Timeout");
+            }
+            
+            count++;
+            Thread.sleep(1000);
+
+            try {
+                response = this.client.getData(request);
+                                            
+                success = true; 
+            }
+            catch(Exception ex) {
+            }
+        }
+        
         final String expectedResult = responseParameters.get(Keys.RESULT);
         assertNotNull("Result", response.getResult());
         assertEquals("Result", expectedResult, response.getResult().name());

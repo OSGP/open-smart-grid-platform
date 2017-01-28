@@ -18,7 +18,7 @@ import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRe
 import com.alliander.osgp.automatictests.platform.Defaults;
 import com.alliander.osgp.automatictests.platform.Keys;
 import com.alliander.osgp.automatictests.platform.StepsBase;
-import com.alliander.osgp.automatictests.platform.glue.steps.database.core.DeviceSteps;
+import com.alliander.osgp.automatictests.platform.glue.steps.database.core.SsldDeviceSteps;
 
 import cucumber.api.java.en.Given;
 
@@ -35,13 +35,13 @@ public class OslpDeviceSteps extends StepsBase {
     private OslpDeviceRepository oslpDeviceRespository;
 
     @Autowired
-    private DeviceSteps deviceSteps;
+    private SsldDeviceSteps ssldDeviceSteps;
 
     @Given("^an oslp device$")
     public void anOslpDevice(final Map<String, String> settings) throws Throwable {
 
         // First create the device itself
-        this.deviceSteps.anSsldDevice(settings);
+        this.ssldDeviceSteps.anSsldDevice(settings);
         
         // Now create the OSLP device in the OSLP database
         final String deviceIdentification = getString(settings, Keys.DEVICE_IDENTIFICATION,

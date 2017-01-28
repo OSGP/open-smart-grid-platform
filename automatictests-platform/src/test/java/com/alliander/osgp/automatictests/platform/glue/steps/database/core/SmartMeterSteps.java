@@ -14,10 +14,10 @@ import static com.alliander.osgp.automatictests.platform.core.Helpers.getString;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.automatictests.platform.Defaults;
 import com.alliander.osgp.automatictests.platform.Keys;
-import com.alliander.osgp.automatictests.platform.StepsBase;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
@@ -25,7 +25,7 @@ import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 
 import cucumber.api.java.en.Given;
 
-public class SmartMeterSteps extends StepsBase {
+public class SmartMeterSteps extends BaseDeviceSteps {
 
     @Autowired
     private SmartMeterRepository smartMeterRepository;
@@ -33,18 +33,16 @@ public class SmartMeterSteps extends StepsBase {
     @Autowired
     private DeviceRepository deviceRepository;
     
-    @Autowired
-    private DeviceSteps deviceSteps;
-    
     /**
      * Given a smart meter exists.
-     * 
+     * .
      * @param settings
      */
     @Given("^a smart meter$")
+    @Transactional("txMgrCore")
     public Device aSmartMeter(final Map<String, String> settings) {
         
-        final String deviceIdentification =getString(settings, "DeviceIdentification", Defaults.DEVICE_IDENTIFICATION); 
+        final String deviceIdentification = getString(settings, "DeviceIdentification", Defaults.DEVICE_IDENTIFICATION); 
     	SmartMeter smartMeter = new SmartMeter(
     	        deviceIdentification,
         		getString(settings, "Alias", Defaults.ALIAS),
@@ -67,6 +65,6 @@ public class SmartMeterSteps extends StepsBase {
     	
     	smartMeterRepository.save(smartMeter);
     	
-    	return deviceSteps.updateDevice(deviceIdentification, settings);
+    	return this.updateDevice(deviceIdentification, settings);
     }
 }

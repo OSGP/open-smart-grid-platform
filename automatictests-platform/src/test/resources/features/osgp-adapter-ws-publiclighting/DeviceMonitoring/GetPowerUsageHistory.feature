@@ -68,8 +68,8 @@ Feature: PublicLightingDeviceMonitoring get actual power usage
       | FromDate             | 2012-02-02T12:00:00 |
       | UntilDate            | 2013-02-02T12:00:00 |
     Then the get power usage history response contains soap fault
-      | FaultCode   | SOAP-ENV:Server      |
-      | Message     | UNKNOWN_ORGANISATION |
+      | FaultCode | SOAP-ENV:Server      |
+      | Message   | UNKNOWN_ORGANISATION |
 
   Scenario: Get the power usage history for an unknown device
     When receiving a get power usage history request
@@ -77,5 +77,5 @@ Feature: PublicLightingDeviceMonitoring get actual power usage
       | FromDate             | 2012-02-02T12:00:00 |
       | UntilDate            | 2013-02-02T12:00:00 |
     Then the get power usage history response contains soap fault
-      | FaultCode   | SOAP-ENV:Server  |
-      | Message     | UNKNOWN_DEVICE   |
+      | FaultCode | SOAP-ENV:Server |
+      | Message   | UNKNOWN_DEVICE  |

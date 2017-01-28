@@ -5,7 +5,7 @@ Feature: MicroGrids Get Heat Buffer Data
 
   @Iec61850MockServer
   Scenario: Request Heat Buffer
-    Given an rtu device
+    Given an iec61850 device
       | DeviceIdentification | RTU10001 |
     And an rtu simulator returning
       | HEAT_BUFFER1 | TTMP1.TmpSv.instMag.f |   20 |
