@@ -8,9 +8,11 @@
 package com.alliander.osgp.platform.cucumber.steps.ws.core.configurationmanagement;
 
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getEnum;
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getInteger;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.saveCorrelationUidInScenarioContext;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
@@ -22,10 +24,21 @@ import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.alliander.osgp.adapter.ws.schema.core.common.AsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.common.OsgpResultType;
+import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.Configuration;
+import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.DaliConfiguration;
 import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.GetConfigurationAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.GetConfigurationAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.GetConfigurationRequest;
 import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.GetConfigurationResponse;
+import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.IndexAddressMap;
+import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.LightType;
+import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.LinkType;
+import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.MeterType;
+import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.RelayConfiguration;
+import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.RelayMap;
+import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.RelayMatrix;
+import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.RelayType;
+import com.alliander.osgp.oslp.Oslp.LongTermIntervalType;
 import com.alliander.osgp.platform.cucumber.config.CoreDeviceConfiguration;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
@@ -118,6 +131,8 @@ public class GetConfigurationSteps {
         asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
         request.setAsyncRequest(asyncRequest);
 
+        GetConfigurationResponse response = null;
+
         boolean success = false;
         int count = 0;
         while (!success) {
@@ -128,14 +143,105 @@ public class GetConfigurationSteps {
             count++;
             Thread.sleep(1000);
 
-            final GetConfigurationResponse response = this.client.getGetConfiguration(request);
+            response = this.client.getGetConfiguration(request);
 
             if (!expectedResponseData.containsKey(Keys.KEY_RESULT)
-                    || getEnum(expectedResponseData, Keys.KEY_RESULT, OsgpResultType.class) == response.getResult()) {
+                    || getEnum(expectedResponseData, Keys.KEY_RESULT, OsgpResultType.class) != response.getResult()) {
                 continue;
             }
 
             success = true;
+        }
+
+        final Configuration configuration = response.getConfiguration();
+
+        if (configuration == null) {
+            Assert.assertNotNull(configuration);
+        }
+
+        if (expectedResponseData.containsKey(Keys.KEY_LIGHTTYPE)
+                && !expectedResponseData.get(Keys.KEY_LIGHTTYPE).isEmpty() && configuration.getLightType() != null) {
+            Assert.assertEquals(getEnum(expectedResponseData, Keys.KEY_LIGHTTYPE, LightType.class),
+                    configuration.getLightType());
+        }
+
+        final DaliConfiguration daliConfiguration = configuration.getDaliConfiguration();
+        if (expectedResponseData.containsKey(Keys.DC_LIGHTS) && !expectedResponseData.get(Keys.DC_LIGHTS).isEmpty()
+                && daliConfiguration.getNumberOfLights() != 0) {
+            Assert.assertEquals((int) getInteger(expectedResponseData, Keys.DC_LIGHTS),
+                    daliConfiguration.getNumberOfLights());
+        }
+
+        if (expectedResponseData.containsKey(Keys.DC_MAP) && !expectedResponseData.get(Keys.DC_MAP).isEmpty()
+                && daliConfiguration.getIndexAddressMap() != null) {
+            final List<IndexAddressMap> indexAddressMapList = daliConfiguration.getIndexAddressMap();
+            final String[] dcMapArray = getString(expectedResponseData, Keys.DC_MAP).split(";");
+            for (int i = 0; i < dcMapArray.length; i++) {
+                final String[] dcMapArrayElements = dcMapArray[i].split(",");
+                Assert.assertEquals(Integer.parseInt(dcMapArrayElements[0]), indexAddressMapList.get(i).getIndex());
+                Assert.assertEquals(Integer.parseInt(dcMapArrayElements[1]), indexAddressMapList.get(i).getAddress());
+            }
+        }
+
+        final RelayConfiguration relayConfiguration = configuration.getRelayConfiguration();
+        if (expectedResponseData.containsKey(Keys.RC_MAP) && !expectedResponseData.get(Keys.RC_MAP).isEmpty()
+                && relayConfiguration.getRelayMap() != null) {
+            final List<RelayMap> relayMapList = relayConfiguration.getRelayMap();
+            final String[] rcMapArray = getString(expectedResponseData, Keys.RC_MAP).split(";");
+            for (int i = 0; i < rcMapArray.length; i++) {
+                final String[] rcMapArrayElements = rcMapArray[i].split(",");
+                if (rcMapArrayElements.length > 0) {
+                    Assert.assertEquals(Integer.parseInt(rcMapArrayElements[0]), relayMapList.get(i).getIndex());
+                    Assert.assertEquals(Integer.parseInt(rcMapArrayElements[1]), relayMapList.get(i).getAddress());
+
+                    if (expectedResponseData.containsKey(Keys.KEY_RELAY_TYPE)
+                            && !expectedResponseData.get(Keys.KEY_RELAY_TYPE).isEmpty()
+                            && relayMapList.get(i).getRelayType() != null) {
+                        Assert.assertEquals(getEnum(expectedResponseData, Keys.KEY_RELAY_TYPE, RelayType.class),
+                                relayMapList.get(i).getRelayType());
+                    }
+                }
+            }
+        }
+
+        //// Note: This information isn't added in the fitnesse test, how to
+        //// test this?
+        // configuration.getRelayLinking();
+
+        final List<RelayMatrix> relayLinking = configuration.getRelayLinking();
+
+        if (expectedResponseData.containsKey(Keys.KEY_PREFERRED_LINKTYPE)
+                && !expectedResponseData.get(Keys.KEY_PREFERRED_LINKTYPE).isEmpty()
+                && configuration.getPreferredLinkType() != null) {
+            Assert.assertEquals(getEnum(expectedResponseData, Keys.KEY_PREFERRED_LINKTYPE, LinkType.class),
+                    configuration.getPreferredLinkType());
+        }
+
+        if (expectedResponseData.containsKey(Keys.METER_TYPE) && !expectedResponseData.get(Keys.METER_TYPE).isEmpty()
+                && configuration.getMeterType() != null) {
+            Assert.assertEquals(getEnum(expectedResponseData, Keys.METER_TYPE, MeterType.class),
+                    configuration.getMeterType());
+        }
+
+        if (expectedResponseData.containsKey(Keys.SHORT_INTERVAL)
+                && !expectedResponseData.get(Keys.SHORT_INTERVAL).isEmpty()
+                && configuration.getShortTermHistoryIntervalMinutes() != null) {
+            Assert.assertEquals(getInteger(expectedResponseData, Keys.SHORT_INTERVAL, Defaults.SHORT_INTERVAL),
+                    configuration.getMeterType());
+        }
+
+        if (expectedResponseData.containsKey(Keys.LONG_INTERVAL)
+                && !expectedResponseData.get(Keys.LONG_INTERVAL).isEmpty()
+                && configuration.getLongTermHistoryInterval() != null) {
+            Assert.assertEquals(getInteger(expectedResponseData, Keys.LONG_INTERVAL, Defaults.LONG_INTERVAL),
+                    configuration.getMeterType());
+        }
+
+        if (expectedResponseData.containsKey(Keys.INTERVAL_TYPE)
+                && !expectedResponseData.get(Keys.INTERVAL_TYPE).isEmpty()
+                && configuration.getLongTermHistoryIntervalType() != null) {
+            Assert.assertEquals(getEnum(expectedResponseData, Keys.INTERVAL_TYPE, LongTermIntervalType.class),
+                    configuration.getMeterType());
         }
     }
 

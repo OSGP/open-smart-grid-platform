@@ -254,7 +254,7 @@ public class SetConfigurationSteps {
             final SetConfigurationResponse response = this.client.getSetConfiguration(request);
 
             if (!expectedResponseData.containsKey(Keys.KEY_RESULT)
-                    || getEnum(expectedResponseData, Keys.KEY_RESULT, OsgpResultType.class) == response.getResult()) {
+                    || getEnum(expectedResponseData, Keys.KEY_RESULT, OsgpResultType.class) != response.getResult()) {
                 continue;
             }
 

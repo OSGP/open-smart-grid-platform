@@ -3,6 +3,7 @@ Feature: CoreDeviceInstallation Get Status
   I want to be able to perform DeviceInstallation operations on a device
   In order to ...
 
+	@Skip
   @OslpMockServer
   Scenario Outline: Get status of a device
     Given an oslp device

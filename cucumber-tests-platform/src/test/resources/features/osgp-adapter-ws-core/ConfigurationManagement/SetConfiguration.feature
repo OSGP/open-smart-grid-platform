@@ -26,18 +26,7 @@ Feature: ConfigurationManagement SetConfiguration
       | DeviceIdentification | TEST1024000000001 |
     And a set configuration OSLP message is sent to device "TEST1024000000001"
     And the platform buffers a set configuration response message for device "TEST1024000000001"
-      | Result            | OK                  |
-      | Description       |                     |
-      | LightType         | <LightType>         |
-      | DcLights          | <DcLights>          |
-      | DcMap             | <DcMap>             |
-      | RcType            | <RcType>            |
-      | RcMap             | <RcMap>             |
-      | PreferredLinkType | <PreferredLinkType> |
-      | MeterType         | <MeterType>         |
-      | ShortInterval     | <ShortInterval>     |
-      | LongInterval      | <LongInterval>      |
-      | IntervalType      | <IntervalType>      |
+      | Result | OK |
 
     Examples: 
       | LightType               | DcLights | DcMap   | RcType | RcMap | PreferredLinkType | MeterType | ShortInterval | LongInterval | IntervalType |
