@@ -49,7 +49,6 @@ Feature: ConfigurationManagement GetConfiguration
       |                         |          |         |        |       |                   |           |            30 |              |              |
       |                         |          |         |        |       | GPRS              |           |               |              |              |
       | DALI                    |          |         |        |       |                   |           |               |              |              |
-      | RELAY                   |          |         | LIGHT  |   1,1 |                   |           |               |              |              |
       |                         |          |         |        |       |                   |           |               |              |              |
       |                         |          |         |        |       |                   | P1        |               |              |              |
       |                         |          |         |        |       |                   |           |               |           10 | DAYS         |
