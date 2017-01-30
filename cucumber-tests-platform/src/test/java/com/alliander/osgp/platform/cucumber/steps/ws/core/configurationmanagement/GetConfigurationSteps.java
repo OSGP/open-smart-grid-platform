@@ -33,12 +33,11 @@ import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.GetConf
 import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.IndexAddressMap;
 import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.LightType;
 import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.LinkType;
+import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.LongTermIntervalType;
 import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.MeterType;
 import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.RelayConfiguration;
 import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.RelayMap;
-import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.RelayMatrix;
 import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.RelayType;
-import com.alliander.osgp.oslp.Oslp.LongTermIntervalType;
 import com.alliander.osgp.platform.cucumber.config.CoreDeviceConfiguration;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
@@ -166,39 +165,46 @@ public class GetConfigurationSteps {
         }
 
         final DaliConfiguration daliConfiguration = configuration.getDaliConfiguration();
-        if (expectedResponseData.containsKey(Keys.DC_LIGHTS) && !expectedResponseData.get(Keys.DC_LIGHTS).isEmpty()
-                && daliConfiguration.getNumberOfLights() != 0) {
-            Assert.assertEquals((int) getInteger(expectedResponseData, Keys.DC_LIGHTS),
-                    daliConfiguration.getNumberOfLights());
-        }
+        if (daliConfiguration != null) {
 
-        if (expectedResponseData.containsKey(Keys.DC_MAP) && !expectedResponseData.get(Keys.DC_MAP).isEmpty()
-                && daliConfiguration.getIndexAddressMap() != null) {
-            final List<IndexAddressMap> indexAddressMapList = daliConfiguration.getIndexAddressMap();
-            final String[] dcMapArray = getString(expectedResponseData, Keys.DC_MAP).split(";");
-            for (int i = 0; i < dcMapArray.length; i++) {
-                final String[] dcMapArrayElements = dcMapArray[i].split(",");
-                Assert.assertEquals(Integer.parseInt(dcMapArrayElements[0]), indexAddressMapList.get(i).getIndex());
-                Assert.assertEquals(Integer.parseInt(dcMapArrayElements[1]), indexAddressMapList.get(i).getAddress());
+            if (expectedResponseData.containsKey(Keys.DC_LIGHTS) && !expectedResponseData.get(Keys.DC_LIGHTS).isEmpty()
+                    && daliConfiguration.getNumberOfLights() != 0) {
+                Assert.assertEquals((int) getInteger(expectedResponseData, Keys.DC_LIGHTS),
+                        daliConfiguration.getNumberOfLights());
+            }
+
+            if (expectedResponseData.containsKey(Keys.DC_MAP) && !expectedResponseData.get(Keys.DC_MAP).isEmpty()
+                    && daliConfiguration.getIndexAddressMap() != null) {
+                final List<IndexAddressMap> indexAddressMapList = daliConfiguration.getIndexAddressMap();
+                final String[] dcMapArray = getString(expectedResponseData, Keys.DC_MAP).split(";");
+                for (int i = 0; i < dcMapArray.length; i++) {
+                    final String[] dcMapArrayElements = dcMapArray[i].split(",");
+                    Assert.assertEquals(Integer.parseInt(dcMapArrayElements[0]), indexAddressMapList.get(i).getIndex());
+                    Assert.assertEquals(Integer.parseInt(dcMapArrayElements[1]),
+                            indexAddressMapList.get(i).getAddress());
+                }
             }
         }
 
         final RelayConfiguration relayConfiguration = configuration.getRelayConfiguration();
-        if (expectedResponseData.containsKey(Keys.RC_MAP) && !expectedResponseData.get(Keys.RC_MAP).isEmpty()
-                && relayConfiguration.getRelayMap() != null) {
-            final List<RelayMap> relayMapList = relayConfiguration.getRelayMap();
-            final String[] rcMapArray = getString(expectedResponseData, Keys.RC_MAP).split(";");
-            for (int i = 0; i < rcMapArray.length; i++) {
-                final String[] rcMapArrayElements = rcMapArray[i].split(",");
-                if (rcMapArrayElements.length > 0) {
-                    Assert.assertEquals(Integer.parseInt(rcMapArrayElements[0]), relayMapList.get(i).getIndex());
-                    Assert.assertEquals(Integer.parseInt(rcMapArrayElements[1]), relayMapList.get(i).getAddress());
+        if (relayConfiguration != null) {
 
-                    if (expectedResponseData.containsKey(Keys.KEY_RELAY_TYPE)
-                            && !expectedResponseData.get(Keys.KEY_RELAY_TYPE).isEmpty()
-                            && relayMapList.get(i).getRelayType() != null) {
-                        Assert.assertEquals(getEnum(expectedResponseData, Keys.KEY_RELAY_TYPE, RelayType.class),
-                                relayMapList.get(i).getRelayType());
+            if (expectedResponseData.containsKey(Keys.RC_MAP) && !expectedResponseData.get(Keys.RC_MAP).isEmpty()
+                    && relayConfiguration.getRelayMap() != null) {
+                final List<RelayMap> relayMapList = relayConfiguration.getRelayMap();
+                final String[] rcMapArray = getString(expectedResponseData, Keys.RC_MAP).split(";");
+                for (int i = 0; i < rcMapArray.length; i++) {
+                    final String[] rcMapArrayElements = rcMapArray[i].split(",");
+                    if (rcMapArrayElements.length > 0 && relayMapList.size() > 0) {
+                        Assert.assertEquals(Integer.parseInt(rcMapArrayElements[0]), relayMapList.get(i).getIndex());
+                        Assert.assertEquals(Integer.parseInt(rcMapArrayElements[1]), relayMapList.get(i).getAddress());
+
+                        if (expectedResponseData.containsKey(Keys.KEY_RELAY_TYPE)
+                                && !expectedResponseData.get(Keys.KEY_RELAY_TYPE).isEmpty()
+                                && relayMapList.get(i).getRelayType() != null) {
+                            Assert.assertEquals(getEnum(expectedResponseData, Keys.KEY_RELAY_TYPE, RelayType.class),
+                                    relayMapList.get(i).getRelayType());
+                        }
                     }
                 }
             }
@@ -208,8 +214,6 @@ public class GetConfigurationSteps {
         //// test this?
         // configuration.getRelayLinking();
 
-        final List<RelayMatrix> relayLinking = configuration.getRelayLinking();
-
         if (expectedResponseData.containsKey(Keys.KEY_PREFERRED_LINKTYPE)
                 && !expectedResponseData.get(Keys.KEY_PREFERRED_LINKTYPE).isEmpty()
                 && configuration.getPreferredLinkType() != null) {
@@ -217,31 +221,43 @@ public class GetConfigurationSteps {
                     configuration.getPreferredLinkType());
         }
 
+        // Note: This piece of code has been made because there are multiple
+        // enumerations with the name MeterType, but not all of them has all
+        // values the same. Some with underscore and some without.s
+
         if (expectedResponseData.containsKey(Keys.METER_TYPE) && !expectedResponseData.get(Keys.METER_TYPE).isEmpty()
                 && configuration.getMeterType() != null) {
-            Assert.assertEquals(getEnum(expectedResponseData, Keys.METER_TYPE, MeterType.class),
-                    configuration.getMeterType());
+            MeterType meterType = null;
+            final String sMeterType = getString(expectedResponseData, Keys.METER_TYPE);
+            if (!sMeterType.toString().contains("_")
+                    && sMeterType.equals(MeterType.P_1.toString().replaceAll("_", ""))) {
+                final String[] sMeterTypeArray = sMeterType.toString().split("");
+                meterType = MeterType.valueOf(sMeterTypeArray[0] + "_" + sMeterTypeArray[1]);
+            } else {
+                meterType = getEnum(expectedResponseData, Keys.METER_TYPE, MeterType.class);
+            }
+            Assert.assertEquals(meterType, configuration.getMeterType());
         }
 
         if (expectedResponseData.containsKey(Keys.SHORT_INTERVAL)
                 && !expectedResponseData.get(Keys.SHORT_INTERVAL).isEmpty()
                 && configuration.getShortTermHistoryIntervalMinutes() != null) {
             Assert.assertEquals(getInteger(expectedResponseData, Keys.SHORT_INTERVAL, Defaults.SHORT_INTERVAL),
-                    configuration.getMeterType());
+                    configuration.getShortTermHistoryIntervalMinutes());
         }
 
         if (expectedResponseData.containsKey(Keys.LONG_INTERVAL)
                 && !expectedResponseData.get(Keys.LONG_INTERVAL).isEmpty()
                 && configuration.getLongTermHistoryInterval() != null) {
             Assert.assertEquals(getInteger(expectedResponseData, Keys.LONG_INTERVAL, Defaults.LONG_INTERVAL),
-                    configuration.getMeterType());
+                    configuration.getLongTermHistoryInterval());
         }
 
         if (expectedResponseData.containsKey(Keys.INTERVAL_TYPE)
                 && !expectedResponseData.get(Keys.INTERVAL_TYPE).isEmpty()
                 && configuration.getLongTermHistoryIntervalType() != null) {
             Assert.assertEquals(getEnum(expectedResponseData, Keys.INTERVAL_TYPE, LongTermIntervalType.class),
-                    configuration.getMeterType());
+                    configuration.getLongTermHistoryIntervalType());
         }
     }
 
