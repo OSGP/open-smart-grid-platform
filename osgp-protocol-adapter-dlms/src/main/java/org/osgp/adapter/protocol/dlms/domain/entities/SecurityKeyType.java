@@ -13,5 +13,6 @@ public enum SecurityKeyType {
     E_METER_AUTHENTICATION,
     E_METER_ENCRYPTION,
     G_METER_ENCRYPTION,
-    M_BUS_USER
+    M_BUS_USER,
+    PASSWORD
 }

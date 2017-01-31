@@ -11,24 +11,33 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.openmuc.jdlms.AuthenticationMechanism;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.SecuritySuite;
 import org.openmuc.jdlms.TcpConnectionBuilder;
 import org.openmuc.jdlms.settings.client.ReferencingMethod;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
+import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.EncrypterException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
+import com.alliander.osgp.shared.security.EncryptionService;
 
 public class Lls1Connector extends DlmsConnector {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Lls1Connector.class);
+
+    @Autowired
+    private EncryptionService encryptionService;
 
     private final int clientAccessPoint;
 
@@ -99,10 +108,47 @@ public class Lls1Connector extends DlmsConnector {
     private void setSecurity(final DlmsDevice device, final TcpConnectionBuilder tcpConnectionBuilder)
             throws TechnicalException {
 
+        final SecurityKey validPassword = this.getSecurityKey(device, SecurityKeyType.PASSWORD);
+
+        LOGGER.info("validPassword is {}", validPassword.getKey());
+
+        // Decode the key final from Hexstring final to bytes
+        byte[] password = null;
+        try {
+            password = Hex.decodeHex(validPassword.getKey().toCharArray());
+        } catch (final DecoderException e) {
+            throw new EncrypterException(e);
+        }
+
+        // Decrypt the key, discard ivBytes
+        final byte[] decryptedPassword = this.encryptionService.decrypt(password);
+
+        LOGGER.info("unencrypted: {}", decryptedPassword);
+
         final SecuritySuite securitySuite = SecuritySuite.builder()
-                .setAuthenticationMechanism(AuthenticationMechanism.LOW).setPassword(device.getPassword().getBytes())
-                .build();
+                .setAuthenticationMechanism(AuthenticationMechanism.LOW).setPassword(decryptedPassword).build();
 
         tcpConnectionBuilder.setSecuritySuite(securitySuite).setClientId(this.clientAccessPoint);
     }
+
+    /**
+     * Get the valid securityKey of a given type for the device.
+     *
+     * @param securityKeyType
+     * @return SecurityKey
+     * @throws TechnicalException
+     *             when there is no valid key of the given type.
+     */
+    private SecurityKey getSecurityKey(final DlmsDevice device, final SecurityKeyType securityKeyType)
+            throws TechnicalException {
+        final SecurityKey securityKey = device.getValidSecurityKey(securityKeyType);
+        if (securityKey == null) {
+            throw new TechnicalException(ComponentType.PROTOCOL_DLMS,
+                    String.format("There is no valid key for device '%s' of type '%s'.",
+                            device.getDeviceIdentification(), securityKeyType.name()));
+        }
+
+        return securityKey;
+    }
+
 }
