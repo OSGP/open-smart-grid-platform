@@ -223,7 +223,7 @@ public class GetConfigurationSteps {
 
         // Note: This piece of code has been made because there are multiple
         // enumerations with the name MeterType, but not all of them has all
-        // values the same. Some with underscore and some without.s
+        // values the same. Some with underscore and some without.
 
         if (expectedResponseData.containsKey(Keys.METER_TYPE) && !expectedResponseData.get(Keys.METER_TYPE).isEmpty()
                 && configuration.getMeterType() != null) {
