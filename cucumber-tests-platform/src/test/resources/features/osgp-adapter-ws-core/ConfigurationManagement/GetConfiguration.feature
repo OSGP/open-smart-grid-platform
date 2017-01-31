@@ -1,4 +1,4 @@
-Feature: ConfigurationManagement GetConfiguration
+Feature: CoreConfigurationManagement GetConfiguration
   As a ...
   I want to ...
   In order to ...
@@ -7,7 +7,6 @@ Feature: ConfigurationManagement GetConfiguration
   Scenario Outline: Get configuration of a device
     Given an oslp device
       | DeviceIdentification | TEST1024000000001 |
-      | DeviceType           | SSLD              |
     And the device returns a get configuration status over OSLP
       | Status            | OK                  |
       | LightType         | <LightType>         |
@@ -78,7 +77,6 @@ Feature: ConfigurationManagement GetConfiguration
   Scenario: Failed get configuration of a device
     Given an oslp device
       | DeviceIdentification | TEST1024000000001 |
-      | DeviceType           | SSLD              |
     And the device returns a get configuration status over OSLP
       | Status            | FAILURE  |
       | LightType         | RELAY    |
@@ -103,7 +101,6 @@ Feature: ConfigurationManagement GetConfiguration
   Scenario: Rejected get configuration of a device
     Given an oslp device
       | DeviceIdentification | TEST1024000000001 |
-      | DeviceType           | SSLD              |
     And the device returns a get configuration status over OSLP
       | Status            | REJECTED |
       | LightType         | RELAY    |

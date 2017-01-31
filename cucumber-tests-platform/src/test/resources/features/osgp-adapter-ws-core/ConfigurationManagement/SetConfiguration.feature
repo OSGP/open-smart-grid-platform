@@ -1,4 +1,4 @@
-Feature: ConfigurationManagement SetConfiguration
+Feature: CoreConfigurationManagement SetConfiguration
   As a ...
   I want to ...
   In order to ...
@@ -7,7 +7,6 @@ Feature: ConfigurationManagement SetConfiguration
   Scenario Outline: Set configuration of a device
     Given an oslp device
       | DeviceIdentification | TEST1024000000001 |
-      | DeviceType           | SSLD              |
     And the device returns a set configuration status over OSLP
       | Status | OK |
     When receiving a set configuration request
@@ -65,7 +64,6 @@ Feature: ConfigurationManagement SetConfiguration
   Scenario Outline: Set configuration data with invalid data which result in validation errors
     Given an oslp device
       | DeviceIdentification | TEST1024000000001 |
-      | DeviceType           | SSLD              |
     And the device returns a set configuration status over OSLP
       | Status | OK |
     When receiving a set configuration request
@@ -99,7 +97,6 @@ Feature: ConfigurationManagement SetConfiguration
   Scenario Outline: Set configuration data with invalid data
     Given an oslp device
       | DeviceIdentification | TEST1024000000001 |
-      | DeviceType           | SSLD              |
     And the device returns a set configuration status over OSLP
       | Status | OK |
     When receiving a set configuration request
@@ -135,7 +132,6 @@ Feature: ConfigurationManagement SetConfiguration
   Scenario: Failed set configuration of a device
     Given an oslp device
       | DeviceIdentification | TEST1024000000001 |
-      | DeviceType           | SSLD              |
     And the device returns a set configuration status over OSLP
       | Status            | FAILURE  |
       | LightType         | RELAY    |
@@ -160,7 +156,6 @@ Feature: ConfigurationManagement SetConfiguration
   Scenario: Rejected set configuration of a device
     Given an oslp device
       | DeviceIdentification | TEST1024000000001 |
-      | DeviceType           | SSLD              |
     And the device returns a set configuration status over OSLP
       | Status            | REJECTED |
       | LightType         | RELAY    |
