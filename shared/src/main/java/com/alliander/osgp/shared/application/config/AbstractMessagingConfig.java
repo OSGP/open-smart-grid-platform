@@ -10,8 +10,10 @@ package com.alliander.osgp.shared.application.config;
 import org.apache.activemq.broker.region.policy.RedeliveryPolicyMap;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.apache.activemq.spring.ActiveMQConnectionFactory;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
 
 import com.alliander.osgp.shared.application.config.jms.JmsConfigurationFactory;
 
@@ -27,12 +29,13 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
     protected int connectionPoolSize;
 
     @Bean
-    protected JmsConfigurationFactory jmsConfigurationFactory(final PooledConnectionFactory pooledConnectionFactory,
+    protected JmsConfigurationFactory jmsConfigurationFactory(final ObjectFactory<PooledConnectionFactory> pooledConnectionFactoryProvider,
             final RedeliveryPolicyMap redeliveryPolicyMap) {
-        return new JmsConfigurationFactory(this.environment, pooledConnectionFactory, redeliveryPolicyMap);
+        return new JmsConfigurationFactory(this.environment, pooledConnectionFactoryProvider, redeliveryPolicyMap);
     }
 
     @Bean(destroyMethod = "stop")
+    @Scope("Prototype")
     protected PooledConnectionFactory pooledConnectionFactory() {
         final PooledConnectionFactory pooledConnectionFactory = new PooledConnectionFactory();
         pooledConnectionFactory.setConnectionFactory(this.connectionFactory());
