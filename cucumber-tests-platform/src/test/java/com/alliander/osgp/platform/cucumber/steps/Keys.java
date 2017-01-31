@@ -218,4 +218,7 @@ public class Keys {
     public static final String SHORT_INTERVAL = "ShortInterval";
     public static final String LONG_INTERVAL = "LongInterval";
     public static final String INTERVAL_TYPE = "IntervalType";
+
+    public static final String DEVICE_FUNCTION = "DeviceFunction";
+    public static final String ALLOWED = "Allowed";
 }

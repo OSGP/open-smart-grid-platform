@@ -137,4 +137,6 @@ public class Defaults {
     public static final Integer SHORT_INTERVAL = 15;
     public static final Integer LONG_INTERVAL = 1;
     public static final LongTermIntervalType INTERVAL_TYPE = LongTermIntervalType.DAYS;
+
+    public static final Boolean ALLOWED = false;
 }
