@@ -14,6 +14,7 @@ import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 
+import org.apache.commons.codec.binary.Hex;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
 
 public class DeviceConverter extends BidirectionalConverter<SmartMeteringDeviceDto, DlmsDevice> {
@@ -31,17 +32,17 @@ public class DeviceConverter extends BidirectionalConverter<SmartMeteringDeviceD
 
         if (source.getMasterKey() != null) {
             dlmsDevice.addSecurityKey(new SecurityKey(dlmsDevice, SecurityKeyType.E_METER_MASTER,
-                    source.getMasterKey(), source.getDeliveryDate(), null));
+                    Hex.encodeHexString(source.getMasterKey()), source.getDeliveryDate(), null));
         }
 
         if (source.getAuthenticationKey() != null) {
-            dlmsDevice.addSecurityKey(new SecurityKey(dlmsDevice, SecurityKeyType.E_METER_AUTHENTICATION, source
-                    .getAuthenticationKey(), source.getDeliveryDate(), null));
+            dlmsDevice.addSecurityKey(new SecurityKey(dlmsDevice, SecurityKeyType.E_METER_AUTHENTICATION, Hex.encodeHexString(source
+                    .getAuthenticationKey()), source.getDeliveryDate(), null));
         }
 
         if (source.getGlobalEncryptionUnicastKey() != null) {
-            dlmsDevice.addSecurityKey(new SecurityKey(dlmsDevice, SecurityKeyType.E_METER_ENCRYPTION, source
-                    .getGlobalEncryptionUnicastKey(), source.getDeliveryDate(), null));
+            dlmsDevice.addSecurityKey(new SecurityKey(dlmsDevice, SecurityKeyType.E_METER_ENCRYPTION, Hex.encodeHexString(source
+                    .getGlobalEncryptionUnicastKey()), source.getDeliveryDate(), null));
         }
 
         return dlmsDevice;
