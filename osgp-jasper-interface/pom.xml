@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    Copyright 2016 Smart Society Services B.V.
-
-    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
-
-        http://www.apache.org/licenses/LICENSE-2.0
-
--->
+<!-- Copyright 2016 Smart Society Services B.V. Licensed under the Apache License, Version 2.0 (the "License"); you may not 
+  use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
@@ -17,14 +10,14 @@
 
   <name>jasper-interface</name>
   <url>http://maven.apache.org</url>
-  
+
   <parent>
     <groupId>org.osgp</groupId>
     <artifactId>parent-pa-dlms</artifactId>
     <version>3.5.0-SNAPSHOT</version>
     <relativePath>../parent-pa-dlms/pom.xml</relativePath>
   </parent>
-  
+
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -48,7 +41,7 @@
               <wsdl>true</wsdl>
               <xmlschema>false</xmlschema>
               <staleFile>${project.build.directory}/jaxb2/.schema-smart-metering-configuration-stale-flag</staleFile>
-                            <!-- USE THIS ONLY FOR THE FIRST EXECUTION -->
+              <!-- USE THIS ONLY FOR THE FIRST EXECUTION -->
               <clearOutputDir>false</clearOutputDir>
             </configuration>
           </execution>
@@ -128,7 +121,7 @@
       <artifactId>xmlunit</artifactId>
       <scope>test</scope>
     </dependency>
-    
+
     <!-- Spring WS -->
     <dependency>
       <groupId>org.springframework.ws</groupId>
@@ -144,8 +137,7 @@
     </dependency>
     <dependency>
       <groupId>org.springframework.ws</groupId>
-      <artifactId>spring-ws</artifactId>
-      <classifier>all</classifier>
+      <artifactId>spring-ws-test</artifactId>
     </dependency>
 
     <!-- Apache ws support -->
