@@ -36,7 +36,7 @@ public class DeviceMappingTest {
     private static final String DSMR_VERSION = "dsmrVersion1";
     private static final String SUPPLIER = "supplier1";
     private static final boolean IS_ACTIVE = true;
-    private static final String KEY = "key";
+    private static final byte[] KEY = "key".getBytes();
     private Date deliveryDateSmartMeteringDevice = new Date();
     private XMLGregorianCalendar deliveryDateDevice;
 

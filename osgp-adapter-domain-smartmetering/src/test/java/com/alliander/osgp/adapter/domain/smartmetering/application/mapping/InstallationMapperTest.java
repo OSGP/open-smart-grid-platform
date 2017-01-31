@@ -36,9 +36,9 @@ public class InstallationMapperTest {
         smartMeteringDevice.setCommunicationProvider("theInternet");
         smartMeteringDevice.setICCId("value");
         smartMeteringDevice.setDSMRVersion("latestVersion");
-        smartMeteringDevice.setMasterKey("masterKey");
-        smartMeteringDevice.setGlobalEncryptionUnicastKey("globalEncryptionUnicastKey");
-        smartMeteringDevice.setAuthenticationKey("authenticationKey");
+        smartMeteringDevice.setMasterKey("masterKey".getBytes());
+        smartMeteringDevice.setGlobalEncryptionUnicastKey("globalEncryptionUnicastKey".getBytes());
+        smartMeteringDevice.setAuthenticationKey("authenticationKey".getBytes());
         smartMeteringDevice.setSupplier("supplier");
         smartMeteringDevice.setHLS3Active(true);
         smartMeteringDevice.setHLS4Active(true);
@@ -62,9 +62,9 @@ public class InstallationMapperTest {
         smartMeteringDevice.setCommunicationProvider("theInternet");
         smartMeteringDevice.setICCId("value");
         smartMeteringDevice.setDSMRVersion("latestVersion");
-        smartMeteringDevice.setMasterKey("masterKey");
-        smartMeteringDevice.setGlobalEncryptionUnicastKey("globalEncryptionUnicastKey");
-        smartMeteringDevice.setAuthenticationKey("authenticationKey");
+        smartMeteringDevice.setMasterKey("masterKey".getBytes());
+        smartMeteringDevice.setGlobalEncryptionUnicastKey("globalEncryptionUnicastKey".getBytes());
+        smartMeteringDevice.setAuthenticationKey("authenticationKey".getBytes());
         smartMeteringDevice.setSupplier("supplier");
         smartMeteringDevice.setHLS3Active(true);
         smartMeteringDevice.setHLS4Active(true);
