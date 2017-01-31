@@ -214,7 +214,7 @@ public class Iec61850RtuDeviceReportingService {
 
         try {
             final NodeContainer reportingNode = deviceConnection.getFcModelNode(logicalDevice, logicalDeviceIndex,
-                    LogicalNode.LOGICAL_NODE_ZERO, reportName, Fc.RP);
+                    LogicalNode.LOGICAL_NODE_ZERO, reportName, Fc.BR);
             reportingNode.writeBoolean(SubDataAttribute.ENABLE_REPORTING, true);
         } catch (final NullPointerException e) {
             LOGGER.debug("NullPointerException", e);
