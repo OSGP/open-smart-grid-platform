@@ -186,11 +186,11 @@
       <xsd:element name="HLS5_active" type="xsd:boolean"
         minOccurs="0" />
       <!-- no type restriction for unencrypted keys for now -->
-      <xsd:element name="Master_key" type="xsd:string"
+      <xsd:element name="Master_key" type="xsd:hexBinary"
         minOccurs="0" />
       <xsd:element name="Global_encryption_unicast_key"
-        type="xsd:string" minOccurs="0" />
-      <xsd:element name="Authentication_key" type="xsd:string"
+        type="xsd:hexBinary" minOccurs="0" />
+      <xsd:element name="Authentication_key" type="xsd:hexBinary"
         minOccurs="0" />
       <xsd:element name="Delivery_date" type="xsd:dateTime"
         minOccurs="1" maxOccurs="1" />
