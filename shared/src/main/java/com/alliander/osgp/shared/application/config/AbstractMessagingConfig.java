@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.shared.application.config;
 
+import org.apache.activemq.ActiveMQPrefetchPolicy;
 import org.apache.activemq.broker.region.policy.RedeliveryPolicyMap;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.apache.activemq.spring.ActiveMQConnectionFactory;
@@ -27,6 +28,9 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
 
     @Value("${jms.activemq.connection.pool.size:10}")
     protected int connectionPoolSize;
+    
+    @Value("${jms.activemq.connection.queue.prefetch:1}")
+    protected int queuePrefetch;
 
     @Bean
     protected JmsConfigurationFactory jmsConfigurationFactory(final ObjectFactory<PooledConnectionFactory> pooledConnectionFactoryProvider,
@@ -35,7 +39,7 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
     }
 
     @Bean(destroyMethod = "stop")
-    @Scope("Prototype")
+    @Scope(value = "prototype")
     protected PooledConnectionFactory pooledConnectionFactory() {
         final PooledConnectionFactory pooledConnectionFactory = new PooledConnectionFactory();
         pooledConnectionFactory.setConnectionFactory(this.connectionFactory());
@@ -44,10 +48,14 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
     }
 
     protected ActiveMQConnectionFactory connectionFactory() {
+        final ActiveMQPrefetchPolicy activeMQPrefetchPolicy = new ActiveMQPrefetchPolicy();
+        activeMQPrefetchPolicy.setQueuePrefetch(queuePrefetch);
+        
         final ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory();
         activeMQConnectionFactory.setRedeliveryPolicyMap(this.redeliveryPolicyMap());
         activeMQConnectionFactory.setBrokerURL(this.aciveMqBroker);
         activeMQConnectionFactory.setNonBlockingRedelivery(true);
+        activeMQConnectionFactory.setPrefetchPolicy(activeMQPrefetchPolicy);
         return activeMQConnectionFactory;
     }
 
