@@ -110,8 +110,6 @@ public class Lls1Connector extends DlmsConnector {
 
         final SecurityKey validPassword = this.getSecurityKey(device, SecurityKeyType.PASSWORD);
 
-        LOGGER.info("validPassword is {}", validPassword.getKey());
-
         // Decode the key final from Hexstring final to bytes
         byte[] password = null;
         try {
@@ -122,8 +120,6 @@ public class Lls1Connector extends DlmsConnector {
 
         // Decrypt the key, discard ivBytes
         final byte[] decryptedPassword = this.encryptionService.decrypt(password);
-
-        LOGGER.info("unencrypted: {}", decryptedPassword);
 
         final SecuritySuite securitySuite = SecuritySuite.builder()
                 .setAuthenticationMechanism(AuthenticationMechanism.LOW).setPassword(decryptedPassword).build();

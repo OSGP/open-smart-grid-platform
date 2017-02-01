@@ -139,12 +139,12 @@ public class DlmsConfig extends AbstractConfig {
 
     @Bean
     @Autowired
-    public Lls1Connector lls1Connector(@Value("${jdlms.response_timeout}") final int responseTimeout,
+    public Lls1Connector lls1Connector(@Value("${jdlms.lls1.response_timeout}") final int responseTimeout,
             @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress,
-            @Value("${jdlms.client_access_point}") final int clientAccessPoint) {
-        // return new Lls1Connector(responseTimeout, logicalDeviceAddress,
-        // clientAccessPoint);
-        return new Lls1Connector(7200000, 1, 32);
+            @Value("${jdlms.lls1.client_access_point}") final int clientAccessPoint) {
+        LOGGER.info("responseTimeout: {}, logicalDeviceAddress: {}, clientAccessPoint: {}", responseTimeout,
+                logicalDeviceAddress, clientAccessPoint);
+        return new Lls1Connector(responseTimeout, logicalDeviceAddress, clientAccessPoint);
     }
 
     @Bean

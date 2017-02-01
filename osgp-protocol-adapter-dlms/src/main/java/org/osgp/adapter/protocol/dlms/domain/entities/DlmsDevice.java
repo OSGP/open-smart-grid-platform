@@ -42,11 +42,7 @@ public class DlmsDevice extends AbstractEntity {
     @Column
     private String iccId;
 
-    // TODO store encrypted password in DB
-    @Transient
-    private String password = "11111111";
-    // TODO store boolean in DB
-    @Transient
+    @Column
     private boolean lls1Active = true;
 
     @Column
@@ -175,12 +171,12 @@ public class DlmsDevice extends AbstractEntity {
         return this.iccId;
     }
 
-    public String getPassword() {
-        return this.password;
-    }
-
     public boolean isLls1Active() {
         return this.lls1Active;
+    }
+
+    public void setLls1Active(final boolean lls1Active) {
+        this.lls1Active = lls1Active;
     }
 
     public boolean isHls3Active() {
