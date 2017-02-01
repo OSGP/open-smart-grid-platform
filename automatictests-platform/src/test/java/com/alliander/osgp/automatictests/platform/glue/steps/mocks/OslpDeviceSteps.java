@@ -607,8 +607,8 @@ public class OslpDeviceSteps extends StepsBase {
                         .split(Keys.SEPARATOR).length > 0) {
 
             for (final String lightValueString : getString(requestParameters, Keys.LIGHTVALUES, Defaults.LIGHTVALUES)
-                    .split(Keys.SEPARATOR)) {
-                final String[] parts = lightValueString.split(Keys.SEPARATOR_SEMICOLON);
+                    .split(Keys.SEPARATOR_SEMICOLON)) {
+                final String[] parts = lightValueString.split(Keys.SEPARATOR);
 
                 final LightValue lightValue = LightValue.newBuilder()
                         .setIndex(OslpUtils.integerToByteString(Integer.parseInt(parts[0])))
