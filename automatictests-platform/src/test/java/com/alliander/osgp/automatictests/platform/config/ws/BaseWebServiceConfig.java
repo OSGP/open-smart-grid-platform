@@ -55,4 +55,8 @@ public abstract class BaseWebServiceConfig extends AbstractConfig {
         
         return factory;
     }
+    
+    public String getApplicationName() {
+        return this.applicationName;
+    }
 }

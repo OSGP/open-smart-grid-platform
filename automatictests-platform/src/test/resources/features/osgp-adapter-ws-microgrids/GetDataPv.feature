@@ -5,7 +5,7 @@ Feature: MicroGrids Get PhotoVoltaic System Data
   I want to get PV data from an RTU
 
   Scenario: Request PV1 Health
-    Given an iec61850 device
+    Given an rtu device
       | DeviceIdentification | RTU10001 |
     And an rtu simulator returning
       | PV1 | LLN0.Health.stVal |        3 |

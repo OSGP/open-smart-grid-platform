@@ -5,7 +5,7 @@ Feature: Microgrids Get CHP Data
 
   @Iec61850MockServer
   Scenario: Request CHP
-    Given an iec61850 device
+    Given an rtu device
       | DeviceIdentification | RTU10001 |
     And an rtu simulator returning
       | HEAT_BUFFER1 | TTMP1.TmpSv.instMag.f | 20 |

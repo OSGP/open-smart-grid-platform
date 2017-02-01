@@ -6,7 +6,7 @@ Feature: FirmwareManagement GetFirmware
   # Note: All devices return multiple firmwares. How to solve this?
   @OslpMockServer
   Scenario Outline: Get firmware version
-    Given an oslp device
+    Given an ssld device
       | DeviceIdentification | <DeviceIdentification> |
       | Status               | <Status>               |
       | Organization         | <Organization>         |

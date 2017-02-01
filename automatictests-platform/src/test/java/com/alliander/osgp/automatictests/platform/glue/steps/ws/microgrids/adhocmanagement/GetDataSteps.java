@@ -22,7 +22,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataAsyncResponse;
@@ -32,12 +31,10 @@ import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataSy
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.Measurement;
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.Profile;
 import com.alliander.osgp.adapter.ws.schema.microgrids.common.AsyncRequest;
-import com.alliander.osgp.automatictests.platform.Defaults;
 import com.alliander.osgp.automatictests.platform.Keys;
 import com.alliander.osgp.automatictests.platform.StepsBase;
 import com.alliander.osgp.automatictests.platform.config.CoreDeviceConfiguration;
 import com.alliander.osgp.automatictests.platform.core.ScenarioContext;
-import com.alliander.osgp.automatictests.platform.helpers.SettingsHelper;
 import com.alliander.osgp.automatictests.platform.support.ws.microgrids.adhocmanagement.AdHocManagementClient;
 import com.alliander.osgp.automatictests.platform.support.ws.microgrids.adhocmanagement.GetDataRequestBuilder;
 

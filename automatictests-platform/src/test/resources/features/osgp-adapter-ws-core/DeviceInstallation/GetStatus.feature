@@ -3,11 +3,15 @@ Feature: CoreDeviceInstallation Get Status
   I want to be able to perform DeviceInstallation operations on a device
   In order to ...
 
-  @Skip
   Scenario Outline: Get status of a device
     Given a device
       | DeviceIdentification | TEST1024000000001 |
     And the device returns a get status response "OK" over OSLP
+      | PreferredLinkType  | <PreferredLinkType>      |
+      | ActualLinkType     | <ActualLinkType>         |
+      | LightType          | <LightType>              |
+      | EventNotifications | <EventNotificationTypes> |
+      | LightValues        | <LightValues>            |
     When receiving a device installation get status request
       | DeviceIdentification | TEST1024000000001 |
     Then the device installation get status async response contains

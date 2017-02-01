@@ -5,7 +5,7 @@ Feature: PublicLightingAdhocManagement GetStatus
 
   @OslpMockServer
   Scenario Outline: Get Status from a device
-    Given an oslp device
+    Given an ssld device
       | DeviceIdentification | TEST1024000000001 |
       | Status               | Active            |
       | RelayType            | <RelayType>       |
@@ -70,7 +70,7 @@ Feature: PublicLightingAdhocManagement GetStatus
       | Message | UNKNOWN_DEVICE |
 
   Scenario Outline: Get status for an inactive device
-    Given an oslp device
+    Given an ssld device
       | DeviceIdentification | TEST1024000000001 |
       | IsActivated          | <IsActivated>     |
       | Active               | <IsActive>        |
@@ -85,7 +85,7 @@ Feature: PublicLightingAdhocManagement GetStatus
       | true        | false    |
 
   Scenario: Get status for an unregistered device
-    Given an oslp device
+    Given an ssld device
       | DeviceIdentification | TEST1024000000001 |
       | PublicKeyPresent     | false             |
     When receiving a get status request

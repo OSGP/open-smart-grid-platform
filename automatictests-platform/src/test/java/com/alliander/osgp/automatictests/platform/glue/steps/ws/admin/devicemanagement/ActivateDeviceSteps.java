@@ -50,6 +50,16 @@ public class ActivateDeviceSteps extends StepsBase {
             ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
     }
+    
+    @When("^receiving an activate device request as an unauthorized organization$")
+    public void receivingAnActivateDeviceRequestAsAnUnauthorizedOrganization(final Map<String, String> requestSettings) throws Throwable {
+        
+        // Force WSTF to use a different organization to send the requests with.
+        // (Cerificate is used from the certificates directory).
+        ScenarioContext.Current().put(Keys.ORGANIZATION_IDENTIFICATION, "unknown-organization");
+
+        this.receivingAnActivateDeviceRequest(requestSettings);
+    }
 
     /**
      * Verify that the activate device response is successful.

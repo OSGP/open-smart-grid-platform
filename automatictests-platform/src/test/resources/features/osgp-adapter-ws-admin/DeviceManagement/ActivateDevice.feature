@@ -3,7 +3,7 @@ Feature: AdminDeviceManagement Device Activation
   I want to be able to perform DeviceManagement operations on a device
   In order to ...
 
-  Scenario: Activate a inactive device
+  Scenario: Activate a inactive SSLD
     Given an ssld device
       | DeviceIdentification | TEST1024000000001 |
       | Active               | false             |
@@ -18,3 +18,9 @@ Feature: AdminDeviceManagement Device Activation
       | DeviceIdentification | TEST1024000000001 |
     Then the activate device response return a soap fault
       | Message | UNKNOWN_DEVICE |
+
+  Scenario: Create An Organization As An Unauthorized Organization
+    When receiving an activate device request as an unauthorized organization
+      | DeviceIdentification | TEST1024000000001 |
+    Then the activate device response return a soap fault
+      | Message | UNKNOWN_ORGANISATION |

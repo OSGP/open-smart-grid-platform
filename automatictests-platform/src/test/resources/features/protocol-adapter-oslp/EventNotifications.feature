@@ -1,11 +1,11 @@
-Feature: Event notifications
+Feature: OslpAdapter Event notifications
   As a ...
   I want to ...
   So that ...
 
 @Skip
   Scenario Outline: Successfully receive event notifications
-  Given a device
+  Given an ssld device
   	  | DeviceIdentification |TEST1024000000001|
    When receiving an OSLP event notification message
       | Event | <EventType>|

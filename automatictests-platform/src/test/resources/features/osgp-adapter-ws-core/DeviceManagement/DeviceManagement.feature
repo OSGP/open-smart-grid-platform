@@ -5,7 +5,7 @@ Feature: Core Device management
 
   @OslpMockServer
   Scenario Outline: Set Event Notifications
-    Given an oslp device
+    Given an ssld device
       | DeviceIdentification | <DeviceIdentification> |
     And the device returns a set event notification "<Result>" over OSLP
     When receiving a set event notification message request on OSGP
@@ -35,5 +35,3 @@ Feature: Core Device management
     Examples: 
       | DeviceIdentification | PageSize | Page | Number |
       | TEST1024000000001    |       25 |    0 |      1 |
-
-  
