@@ -4,6 +4,7 @@
 package com.alliander.osgp.shared.infra.ws;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
@@ -36,7 +37,7 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultWebServiceTemplateFactory.class);
 
-    private Map<String, WebServiceTemplate> webServiceTemplates;
+    private final Map<String, WebServiceTemplate> webServiceTemplates;
     private final Lock lock = new ReentrantLock();
 
     private static final String ORGANISATION_IDENTIFICATION_HEADER = "OrganisationIdentification";
@@ -55,6 +56,7 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
     private String keyStorePassword;
     private KeyStoreFactoryBean trustStoreFactory;
     private String applicationName;
+    private int maxConnections = 2;
 
     private DefaultWebServiceTemplateFactory() {
         this.webServiceTemplates = new HashMap<>();
@@ -66,8 +68,8 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
     }
 
     @Override
-    public WebServiceTemplate getTemplate(final String organisationIdentification, final String userName, final URL targetUri)
-            throws WebServiceSecurityException {
+    public WebServiceTemplate getTemplate(final String organisationIdentification, final String userName,
+            final URL targetUri) throws WebServiceSecurityException {
         this.targetUri = targetUri.toString();
         return this.getTemplate(organisationIdentification, userName, this.applicationName);
     }
@@ -81,6 +83,7 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
         private String keyStoreLocation;
         private String keyStorePassword;
         private KeyStoreFactoryBean trustStoreFactory;
+        private int maxConnections = 2;
 
         public Builder setApplicationName(final String applicationName) {
             this.applicationName = applicationName;
@@ -122,6 +125,11 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
             return this;
         }
 
+        public Builder setMaxConnections(final int maxConnections) {
+            this.maxConnections = maxConnections;
+            return this;
+        }
+
         public DefaultWebServiceTemplateFactory build() {
             final DefaultWebServiceTemplateFactory webServiceTemplateFactory = new DefaultWebServiceTemplateFactory();
             webServiceTemplateFactory.setMarshaller(this.marshaller);
@@ -132,6 +140,7 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
             webServiceTemplateFactory.setKeyStorePassword(this.keyStorePassword);
             webServiceTemplateFactory.setTrustStoreFactory(this.trustStoreFactory);
             webServiceTemplateFactory.setApplicationName(this.applicationName);
+            webServiceTemplateFactory.setMaxConnections(this.maxConnections);
             return webServiceTemplateFactory;
         }
     }
@@ -155,9 +164,11 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
             this.lock.lock();
 
             // Create new webservice template, if not yet available for
-            // a combination of organisation, username, applicationName and targetUri
-            final String url =  (this.targetUri == null) ? "" : "-" + this.targetUri;
-            final String key = organisationIdentification.concat("-").concat(userName).concat(applicationName).concat(url);
+            // a combination of organisation, username, applicationName and
+            // targetUri
+            final String url = (this.targetUri == null) ? "" : "-" + this.targetUri;
+            final String key = organisationIdentification.concat("-").concat(userName).concat(applicationName)
+                    .concat(url);
 
             if (!this.webServiceTemplates.containsKey(key)) {
                 this.webServiceTemplates.put(key,
@@ -211,7 +222,7 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
         keyStoreFactory.afterPropertiesSet();
 
         final KeyStore keyStore = keyStoreFactory.getObject();
-        if (keyStore == null || keyStore.size() == 0) {
+        if ((keyStore == null) || (keyStore.size() == 0)) {
             throw new KeyStoreException("Key store is empty");
         }
 
@@ -231,7 +242,17 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
         // http://forum.spring.io/forum/spring-projects/web-services/118857-spring-ws-2-1-4-0-httpclient-proxy-content-length-header-already-present
         clientbuilder.addInterceptorFirst(new HttpComponentsMessageSender.RemoveSoapHeadersInterceptor());
 
-        return new HttpComponentsMessageSender(clientbuilder.build());
+        final HttpComponentsMessageSender sender = new HttpComponentsMessageSender(clientbuilder.build());
+        final Map<String, String> hostProperties = new HashMap<>();
+        hostProperties.put(this.targetUri, String.valueOf(this.maxConnections));
+        try {
+            sender.setMaxConnectionsPerHost(hostProperties);
+        } catch (final URISyntaxException e) {
+            LOGGER.error("Unable to set maximum number of connections for host {} due to wrong URI syntax.",
+                    this.targetUri, e);
+        }
+
+        return sender;
     }
 
     private void setApplicationName(final String applicationName) {
@@ -264,5 +285,9 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
 
     private void setTargetUri(final String targetUri) {
         this.targetUri = targetUri;
+    }
+
+    private void setMaxConnections(final int maxConnections) {
+        this.maxConnections = maxConnections;
     }
 }
