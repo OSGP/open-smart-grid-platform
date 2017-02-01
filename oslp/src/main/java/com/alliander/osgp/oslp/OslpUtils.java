@@ -11,6 +11,7 @@ import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.SecureRandom;
 import java.security.Signature;
 import java.util.Arrays;
 
@@ -26,7 +27,7 @@ import com.google.protobuf.ByteString;
 /**
  * Utility methods to ease usage of OSLP.
  */
-public class OslpUtils {
+public final class OslpUtils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OslpUtils.class);
 
@@ -45,8 +46,14 @@ public class OslpUtils {
      */
     public static final String FALLBACK_DIGEST = "SHA-512";
 
-    public OslpUtils() {
-        // Public constructor.
+    /**
+     * List of signature types which do not allow trailing data and need to be truncated.
+     */
+    private static final String[] TRUNCATE_SIGNATURES = { "NONEwithECDSA", "SHA1withECDSA", "SHA256withECDSA",
+            "SHA384withECDSA", "SHA512withECDSA" };
+    
+    private OslpUtils() {
+        // Empty constructor for static helper class.
     }
 
     /**
@@ -124,7 +131,7 @@ public class OslpUtils {
 
         // Use real signature
         final Signature signatureBuilder = Signature.getInstance(signature, provider);
-        signatureBuilder.initSign(privateKey);
+        signatureBuilder.initSign(privateKey, new SecureRandom());
         signatureBuilder.update(message);
         return signatureBuilder.sign();
     }
@@ -155,11 +162,25 @@ public class OslpUtils {
             return validateEncryptedHash(message, securityKey, publicKey);
         }
 
+        // Using ECDSA as signature
         final Signature signatureBuilder = Signature.getInstance(signature, provider);
         signatureBuilder.initVerify(publicKey);
         signatureBuilder.update(message);
-
-        return signatureBuilder.verify(securityKey);
+        
+        int signatureLength = securityKey.length;
+        
+        if (ArrayUtils.contains(TRUNCATE_SIGNATURES, signature)) {
+            // Fix for https://bugs.openjdk.java.net/browse/JDK-8161571
+            // Read 2nd byte as length indicator for the actual signature bytes, include 2 bytes for 1st 2 bytes
+            // Ensure the byte (which is signed) is converted correctly to a positive int
+            signatureLength = securityKey[1]+2 & 0xFF;
+            if (signatureLength > securityKey.length) {
+                throw new GeneralSecurityException("Size indicator in ASN.1 DSA signature to large [" + signatureLength + "]");
+            }
+        }
+        // Truncate the string to actual ASN.1 DSA length, removing padding
+        byte[] truncated = Arrays.copyOf(securityKey, signatureLength);
+        return signatureBuilder.verify(truncated);
     }
 
     private static byte[] createEncryptedHash(final byte[] message, final PrivateKey privateKey)

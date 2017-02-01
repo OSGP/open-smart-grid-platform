@@ -134,6 +134,39 @@ public class OslpEnvelopeEcDsaTest {
     }
 
     /**
+     * Valid must fail when message when signature length is corrupted
+     * 
+     * @throws IOException
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeySpecException
+     * @throws NoSuchProviderException
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void buildOslpMessageSignatureCorrupt() throws IOException, NoSuchAlgorithmException,
+            InvalidKeySpecException, NoSuchProviderException {
+        final OslpEnvelope request = this.buildMessage();
+
+        // Validate security key is set in request
+        final byte[] securityKey = request.getSecurityKey();
+        assertTrue(securityKey.length == OslpEnvelope.SECURITY_KEY_LENGTH);
+        assertFalse(ArrayUtils.isEmpty(securityKey));
+
+        // Verify the message using public certificate
+        final OslpEnvelope response = new OslpEnvelope.Builder().withSignature(SIGNATURE).withProvider(this.provider())
+                .withSecurityKey(request.getSecurityKey()).withDeviceId(request.getDeviceId())
+                .withSequenceNumber(request.getSequenceNumber()).withPayloadMessage(request.getPayloadMessage())
+                .build();
+
+        // Corrupt the length of the ASN.1 DSA signature
+        byte[] corruptedSecurityKey = response.getSecurityKey();
+        corruptedSecurityKey[1] = (byte) 129;
+        response.setSecurityKey(corruptedSecurityKey);
+        
+        response.validate(CertificateHelper.createPublicKeyFromBase64(PUBLIC_KEY_BASE_64, KEY_TYPE,
+                this.provider()));
+    }
+
+    /**
      * Valid must fail when decryption fails using incorrect keys
      * 
      * @throws IOException
