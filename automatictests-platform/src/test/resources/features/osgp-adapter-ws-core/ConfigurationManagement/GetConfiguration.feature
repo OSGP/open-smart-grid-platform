@@ -5,7 +5,7 @@ Feature: CoreConfigurationManagement GetConfiguration
 
   @OslpMockServer
   Scenario Outline: Get configuration of a device
-    Given an oslp device
+    Given an ssld device
       | DeviceIdentification | TEST1024000000001 |
     And the device returns a get configuration status over OSLP
       | Status            | OK                  |
@@ -55,19 +55,7 @@ Feature: CoreConfigurationManagement GetConfiguration
       | RELAY                   |          |         | LIGHT  |       | CDMA              | PULSE     |            15 |           30 | DAYS         |
       | RELAY                   |          |         | LIGHT  |   1,1 | ETHERNET          | P1        |            15 |            1 | DAYS         |
 
-	Scenario: Get configuration data with unknown device
-    And the device returns a get configuration status over OSLP
-      | Status            | OK       |
-      | LightType         | RELAY    |
-      | DcLights          |          |
-      | DcMap             |          |
-      | RcType            | LIGHT    |
-      | RcMap             |      1,1 |
-      | PreferredLinkType | ETHERNET |
-      | MeterType         | P1       |
-      | ShortInterval     |       15 |
-      | LongInterval      |        1 |
-      | IntervalType      | DAYS     |
+  Scenario: Get configuration data with unknown device
     When receiving a get configuration request
       | DeviceIdentification | TEST1024000000001 |
     Then the get configuration async response contains soap fault
@@ -75,7 +63,7 @@ Feature: CoreConfigurationManagement GetConfiguration
 
   @OslpMockServer
   Scenario: Failed get configuration of a device
-    Given an oslp device
+    Given an ssld device
       | DeviceIdentification | TEST1024000000001 |
     And the device returns a get configuration status over OSLP
       | Status            | FAILURE  |
@@ -99,7 +87,7 @@ Feature: CoreConfigurationManagement GetConfiguration
 
   @OslpMockServer
   Scenario: Rejected get configuration of a device
-    Given an oslp device
+    Given an ssld device
       | DeviceIdentification | TEST1024000000001 |
     And the device returns a get configuration status over OSLP
       | Status            | REJECTED |

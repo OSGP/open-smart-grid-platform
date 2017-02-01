@@ -38,7 +38,7 @@ public class OslpDeviceSteps extends StepsBase {
     private SsldDeviceSteps ssldDeviceSteps;
 
     @Given("^an ssld oslp device$")
-    public void anOslpDevice(final Map<String, String> settings) throws Throwable {
+    public void anSsldOslpDevice(final Map<String, String> settings) throws Throwable {
 
         // First create the device itself
         this.ssldDeviceSteps.anSsldDevice(settings);

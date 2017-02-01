@@ -4,7 +4,7 @@ Feature: MicroGrids Re-establish Connection
 
 @Iec61850MockServer @Skip
   Scenario: Connection lost and reestablished
-    Given an rtu device
+    Given an rtu iec61850 device
       | DeviceIdentification | RTU10001 |
     When the OSGP connection is lost with the RTU device
     Then I should receive a notification

@@ -62,8 +62,8 @@ public class Iec61850DeviceSteps extends StepsBase {
      * @param settings
      * @throws Throwable
      */
-    @Given("^an iec61850 device$")
-    public void anIec61850Device(final Map<String, String> settings) throws Throwable {
+    @Given("^an rtu iec61850 device$")
+    public void anRtuIec61850Device(final Map<String, String> settings) throws Throwable {
 
         ScenarioContext.Current().put(Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION);
         final Map<String, String> rtuSettings = SettingsHelper.addAsDefaults(settings, RTU_DEFAULT_SETTINGS);

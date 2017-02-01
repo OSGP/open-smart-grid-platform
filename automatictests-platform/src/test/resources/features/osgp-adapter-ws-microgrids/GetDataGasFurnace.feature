@@ -5,7 +5,7 @@ Feature: MicroGrids Get Gas Furnace Data
 
   @Iec61850MockServer
   Scenario: GetData for Gas Furnace
-    Given an rtu device
+    Given an rtu iec61850 device
       | DeviceIdentification | RTU10001 |
     And an rtu simulator returning
       | GAS_FURNACE1 | LLN0.Mod.stVal        |             1 |
