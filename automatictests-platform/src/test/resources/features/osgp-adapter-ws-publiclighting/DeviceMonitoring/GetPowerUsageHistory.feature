@@ -5,7 +5,7 @@ Feature: PublicLightingDeviceMonitoring get actual power usage
 
   @OslpMockServer
   Scenario Outline: Get power usage history
-    Given an ssld device
+    Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
     And the device returns a get power usage history response over OSLP
       | Status              | OK                    |

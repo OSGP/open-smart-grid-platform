@@ -591,9 +591,9 @@ public class OslpDeviceSteps extends StepsBase {
 
         int eventNotificationTypes = 0;
         if (getString(requestParameters, Keys.EVENTNOTIFICATIONTYPES, Defaults.EVENTNOTIFICATIONTYPES).trim()
-                .split(",").length > 0) {
+                .split(Keys.SEPARATOR).length > 0) {
             for (final String eventNotificationType : getString(requestParameters, Keys.EVENTNOTIFICATIONTYPES,
-                    Defaults.EVENTNOTIFICATIONTYPES).trim().split(",")) {
+                    Defaults.EVENTNOTIFICATIONTYPES).trim().split(Keys.SEPARATOR)) {
                 if (!eventNotificationType.isEmpty()) {
                     eventNotificationTypes = eventNotificationTypes
                             + Enum.valueOf(EventNotificationType.class, eventNotificationType.trim()).ordinal();
@@ -604,7 +604,7 @@ public class OslpDeviceSteps extends StepsBase {
         final List<LightValue> lightValues = new ArrayList<>();
         if (!getString(requestParameters, Keys.LIGHTVALUES, Defaults.LIGHTVALUES).isEmpty()
                 && getString(requestParameters, Keys.LIGHTVALUES, Defaults.LIGHTVALUES)
-                        .split(Keys.SEPARATOR).length > 0) {
+                        .split(Keys.SEPARATOR_SEMICOLON).length > 0) {
 
             for (final String lightValueString : getString(requestParameters, Keys.LIGHTVALUES, Defaults.LIGHTVALUES)
                     .split(Keys.SEPARATOR_SEMICOLON)) {

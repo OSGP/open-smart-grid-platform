@@ -3,9 +3,9 @@ Feature: CoreDeviceInstallation Get Status
   I want to be able to perform DeviceInstallation operations on a device
   In order to ...
 
-@OslpMockServer
+  @OslpMockServer
   Scenario Outline: Get status of a device
-    Given an ssld device
+    Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
     And the device returns a get status response "OK" over OSLP
       | PreferredLinkType  | <PreferredLinkType>      |

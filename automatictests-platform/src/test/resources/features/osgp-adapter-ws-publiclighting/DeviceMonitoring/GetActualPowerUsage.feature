@@ -4,7 +4,7 @@ Feature: PublicLightingDeviceMonitoring get actual power usage
 
   @OslpMockServer
   Scenario Outline: Get actual power usage
-    Given an ssld device
+    Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SSLD              |
     And the device returns a get actual power usage response over OSLP

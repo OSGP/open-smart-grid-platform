@@ -5,7 +5,7 @@ Feature: PublicLightingAdhocManagement GetStatus
 
   @OslpMockServer
   Scenario Outline: Get Status from a device
-    Given an ssld device
+    Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Status               | Active            |
       | RelayType            | <RelayType>       |

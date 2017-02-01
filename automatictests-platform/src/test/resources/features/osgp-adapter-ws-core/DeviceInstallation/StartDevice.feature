@@ -5,7 +5,7 @@ Feature: CoreDeviceInstallation Device Starting
 
   @OslpMockServer
   Scenario: Start an ssld device
-    Given an ssld device
+    Given an ssld oslp device
       | DeviceIdentification       | TEST1024000000001 |
       | OrganizationIdentification | test-org          |
     And the device returns a start device response "OK" over OSLP

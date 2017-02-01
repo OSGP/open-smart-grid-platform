@@ -5,7 +5,7 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
 
   @OslpMockServer
   Scenario Outline: Set light schedule
-    Given an ssld device
+    Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
     And the device returns a set light schedule response "OK" over OSLP
     When receiving a set light schedule request
@@ -42,7 +42,7 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
 
   @OslpMockServer
   Scenario: Failed set light schedule
-    Given an ssld device
+    Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
     And the device returns a set light schedule response "FAILURE" over OSLP
     When receiving a set light schedule request
@@ -72,7 +72,7 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
 
   @OslpMockServer
   Scenario: Rejected set light schedule
-    Given an ssld device
+    Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
     And the device returns a set light schedule response "REJECTED" over OSLP
     When receiving a set light schedule request
@@ -128,7 +128,7 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
   # Note: HasScheduled is set to 'false' because the response type is 'NOT_OK', but should be 'OK'
   @OslpMockServer
   Scenario Outline: Set light schedule with 50 schedules # Success
-    Given an ssld device
+    Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
     And the device returns a set light schedule response "OK" over OSLP
     When receiving a set light schedule request for 50 schedules

@@ -4,8 +4,8 @@ Feature: CoreDeviceInstallation Device Stopping
   In order to ...
 
   @OslpMockServer
-  Scenario: Stop an ssld Device
-    Given an ssld device
+  Scenario: Stop an ssld oslp Device
+    Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
     And the device returns a stop device response "OK" over OSLP
     When receiving a stop device test request

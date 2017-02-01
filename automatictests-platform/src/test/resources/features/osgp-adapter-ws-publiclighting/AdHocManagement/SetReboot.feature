@@ -6,7 +6,7 @@ Feature: PublicLightingAdhocManagement Set Reboot
 
   @OslpMockServer
   Scenario: Set Reboot
-    Given an ssld device
+    Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
     And the device returns a set reboot response "OK" over OSLP
     When receiving a set reboot request
