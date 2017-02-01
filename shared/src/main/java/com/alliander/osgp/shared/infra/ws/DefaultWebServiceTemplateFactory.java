@@ -4,7 +4,6 @@
 package com.alliander.osgp.shared.infra.ws;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
@@ -56,7 +55,8 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
     private String keyStorePassword;
     private KeyStoreFactoryBean trustStoreFactory;
     private String applicationName;
-    private int maxConnections = 2;
+    private int maxConnectionsPerRoute = 2;
+    private int maxConnectionsTotal = 20;
 
     private DefaultWebServiceTemplateFactory() {
         this.webServiceTemplates = new HashMap<>();
@@ -83,7 +83,8 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
         private String keyStoreLocation;
         private String keyStorePassword;
         private KeyStoreFactoryBean trustStoreFactory;
-        private int maxConnections = 2;
+        private int maxConnectionsPerRoute = 2;
+        private int maxConnectionsTotal = 20;
 
         public Builder setApplicationName(final String applicationName) {
             this.applicationName = applicationName;
@@ -125,8 +126,13 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
             return this;
         }
 
-        public Builder setMaxConnections(final int maxConnections) {
-            this.maxConnections = maxConnections;
+        public Builder setMaxConnectionsPerRoute(final int maxConnectionsPerRoute) {
+            this.maxConnectionsPerRoute = maxConnectionsPerRoute;
+            return this;
+        }
+
+        public Builder setMaxConnectionsTotal(final int maxConnectionsTotal) {
+            this.maxConnectionsTotal = maxConnectionsTotal;
             return this;
         }
 
@@ -140,7 +146,8 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
             webServiceTemplateFactory.setKeyStorePassword(this.keyStorePassword);
             webServiceTemplateFactory.setTrustStoreFactory(this.trustStoreFactory);
             webServiceTemplateFactory.setApplicationName(this.applicationName);
-            webServiceTemplateFactory.setMaxConnections(this.maxConnections);
+            webServiceTemplateFactory.setMaxConnectionsPerRoute(this.maxConnectionsPerRoute);
+            webServiceTemplateFactory.setMaxConnectionsTotal(this.maxConnectionsTotal);
             return webServiceTemplateFactory;
         }
     }
@@ -237,22 +244,15 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
                 SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
         clientbuilder.setSSLSocketFactory(connectionFactory);
 
+        clientbuilder.setMaxConnPerRoute(this.maxConnectionsPerRoute);
+        clientbuilder.setMaxConnTotal(this.maxConnectionsTotal);
+
         // Add intercepter to prevent issue with duplicate headers.
         // See also:
         // http://forum.spring.io/forum/spring-projects/web-services/118857-spring-ws-2-1-4-0-httpclient-proxy-content-length-header-already-present
         clientbuilder.addInterceptorFirst(new HttpComponentsMessageSender.RemoveSoapHeadersInterceptor());
 
-        final HttpComponentsMessageSender sender = new HttpComponentsMessageSender(clientbuilder.build());
-        final Map<String, String> hostProperties = new HashMap<>();
-        hostProperties.put(this.targetUri, String.valueOf(this.maxConnections));
-        try {
-            sender.setMaxConnectionsPerHost(hostProperties);
-        } catch (final URISyntaxException e) {
-            LOGGER.error("Unable to set maximum number of connections for host {} due to wrong URI syntax.",
-                    this.targetUri, e);
-        }
-
-        return sender;
+        return new HttpComponentsMessageSender(clientbuilder.build());
     }
 
     private void setApplicationName(final String applicationName) {
@@ -287,7 +287,11 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
         this.targetUri = targetUri;
     }
 
-    private void setMaxConnections(final int maxConnections) {
-        this.maxConnections = maxConnections;
+    private void setMaxConnectionsPerRoute(final int maxConnectionsPerRoute) {
+        this.maxConnectionsPerRoute = maxConnectionsPerRoute;
+    }
+
+    private void setMaxConnectionsTotal(final int maxConnectionsTotal) {
+        this.maxConnectionsTotal = maxConnectionsTotal;
     }
 }
