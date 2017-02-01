@@ -64,8 +64,8 @@ public class Hls5Connector extends DlmsConnector {
         } catch (final UnknownHostException e) {
             LOGGER.warn("The IP address is not found: {}", device.getIpAddress(), e);
             // Unknown IP, unrecoverable.
-            throw new TechnicalException(ComponentType.PROTOCOL_DLMS, "The IP address is not found: "
-                    + device.getIpAddress());
+            throw new TechnicalException(ComponentType.PROTOCOL_DLMS,
+                    "The IP address is not found: " + device.getIpAddress());
         } catch (final IOException e) {
             if (device.hasNewSecurityKey()) {
                 // Queue key recovery process.
@@ -94,9 +94,9 @@ public class Hls5Connector extends DlmsConnector {
             throws IOException, TechnicalException {
 
         // Setup connection to device
-        final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(InetAddress.getByName(device
-                .getIpAddress())).setResponseTimeout(this.responseTimeout)
-                .setLogicalDeviceId(this.logicalDeviceAddress);
+        final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(
+                InetAddress.getByName(device.getIpAddress())).setResponseTimeout(this.responseTimeout)
+                        .setLogicalDeviceId(this.logicalDeviceAddress);
 
         this.setSecurity(device, tcpConnectionBuilder);
         this.setOptionalValues(device, tcpConnectionBuilder);
@@ -135,23 +135,4 @@ public class Hls5Connector extends DlmsConnector {
         tcpConnectionBuilder.setSecuritySuite(securitySuite).setClientId(this.clientAccessPoint);
     }
 
-    /**
-     * Get the valid securityKey of a given type for the device.
-     *
-     * @param securityKeyType
-     * @return SecurityKey
-     * @throws TechnicalException
-     *             when there is no valid key of the given type.
-     */
-    private SecurityKey getSecurityKey(final DlmsDevice device, final SecurityKeyType securityKeyType)
-            throws TechnicalException {
-        final SecurityKey securityKey = device.getValidSecurityKey(securityKeyType);
-        if (securityKey == null) {
-            throw new TechnicalException(ComponentType.PROTOCOL_DLMS, String.format(
-                    "There is no valid key for device '%s' of type '%s'.", device.getDeviceIdentification(),
-                    securityKeyType.name()));
-        }
-
-        return securityKey;
-    }
 }

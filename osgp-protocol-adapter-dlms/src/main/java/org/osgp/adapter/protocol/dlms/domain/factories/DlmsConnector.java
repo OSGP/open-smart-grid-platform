@@ -15,6 +15,8 @@ import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.TcpConnectionBuilder;
 import org.openmuc.jdlms.settings.client.ReferencingMethod;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
+import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 
@@ -100,4 +102,25 @@ public class DlmsConnector {
         }
 
     }
+
+    /**
+     * Get the valid securityKey of a given type for the device.
+     *
+     * @param securityKeyType
+     * @return SecurityKey
+     * @throws TechnicalException
+     *             when there is no valid key of the given type.
+     */
+    protected SecurityKey getSecurityKey(final DlmsDevice device, final SecurityKeyType securityKeyType)
+            throws TechnicalException {
+        final SecurityKey securityKey = device.getValidSecurityKey(securityKeyType);
+        if (securityKey == null) {
+            throw new TechnicalException(ComponentType.PROTOCOL_DLMS,
+                    String.format("There is no valid key for device '%s' of type '%s'.",
+                            device.getDeviceIdentification(), securityKeyType.name()));
+        }
+
+        return securityKey;
+    }
+
 }

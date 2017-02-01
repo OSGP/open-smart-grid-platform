@@ -127,24 +127,4 @@ public class Lls1Connector extends DlmsConnector {
         tcpConnectionBuilder.setSecuritySuite(securitySuite).setClientId(this.clientAccessPoint);
     }
 
-    /**
-     * Get the valid securityKey of a given type for the device.
-     *
-     * @param securityKeyType
-     * @return SecurityKey
-     * @throws TechnicalException
-     *             when there is no valid key of the given type.
-     */
-    private SecurityKey getSecurityKey(final DlmsDevice device, final SecurityKeyType securityKeyType)
-            throws TechnicalException {
-        final SecurityKey securityKey = device.getValidSecurityKey(securityKeyType);
-        if (securityKey == null) {
-            throw new TechnicalException(ComponentType.PROTOCOL_DLMS,
-                    String.format("There is no valid key for device '%s' of type '%s'.",
-                            device.getDeviceIdentification(), securityKeyType.name()));
-        }
-
-        return securityKey;
-    }
-
 }
