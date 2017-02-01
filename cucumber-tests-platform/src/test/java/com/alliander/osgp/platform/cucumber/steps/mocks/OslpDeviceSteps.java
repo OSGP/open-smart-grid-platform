@@ -117,7 +117,7 @@ public class OslpDeviceSteps {
 
         // Note: This piece of code has been made because there are multiple
         // enumerations with the name MeterType, but not all of them has all
-        // values the same. Some with underscore and some without.s
+        // values the same. Some with underscore and some without.
         MeterType meterType = MeterType.MT_NOT_SET;
         final String sMeterType = getString(requestParameters, Keys.METER_TYPE);
         if (!sMeterType.toString().contains("_") && sMeterType.equals(MeterType.P1_VALUE)) {
@@ -176,7 +176,7 @@ public class OslpDeviceSteps {
 
         // Note: This piece of code has been made because there are multiple
         // enumerations with the name MeterType, but not all of them has all
-        // values the same. Some with underscore and some without.s
+        // values the same. Some with underscore and some without.
         MeterType meterType = MeterType.MT_NOT_SET;
         final String sMeterType = getString(responseData, Keys.METER_TYPE);
         if (!sMeterType.toString().contains("_") && sMeterType.equals(MeterType.P1_VALUE)) {

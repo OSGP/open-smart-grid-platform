@@ -94,7 +94,7 @@ public class SetConfigurationSteps {
 
         // Note: This piece of code has been made because there are multiple
         // enumerations with the name MeterType, but not all of them has all
-        // values the same. Some with underscore and some without.s
+        // values the same. Some with underscore and some without.
         MeterType meterType = null;
         final String sMeterType = getString(requestParameters, Keys.METER_TYPE);
         if (sMeterType != null && !sMeterType.contains("_")
