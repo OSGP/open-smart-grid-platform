@@ -19,11 +19,9 @@ import org.springframework.ws.soap.client.SoapFaultClientException;
 import com.alliander.osgp.adapter.ws.schema.admin.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ActivateDeviceRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ActivateDeviceResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.steps.common.ResponseSteps;
 import com.alliander.osgp.platform.cucumber.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.platform.cucumber.support.ws.admin.AdminDeviceManagementClient;
 
@@ -41,31 +39,31 @@ public class ActivateDeviceSteps {
     @When("^receiving an activate device request$")
     public void receivingAnActivateDeviceRequest(final Map<String, String> requestSettings) throws Throwable {
 
-        ActivateDeviceRequest request = new ActivateDeviceRequest();
+        final ActivateDeviceRequest request = new ActivateDeviceRequest();
         request.setDeviceIdentification(
                 getString(requestSettings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         try {
-            ScenarioContext.Current().put(Keys.RESPONSE, client.activateDevice(request));
-        } catch (SoapFaultClientException ex) {
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.activateDevice(request));
+        } catch (final SoapFaultClientException ex) {
             ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
     }
 
     /**
      * Verify that the activate device response is successful.
-     * 
+     *
      * @throws Throwable
      */
     @Then("^the activate device response contains$")
     public void theActivateDeviceResponseContains(final Map<String, String> expectedResponse) throws Throwable {
-        ActivateDeviceResponse response = (ActivateDeviceResponse) ScenarioContext.Current().get(Keys.RESPONSE);
+        final ActivateDeviceResponse response = (ActivateDeviceResponse) ScenarioContext.Current().get(Keys.RESPONSE);
 
         Assert.assertEquals(response.getResult(),
                 getEnum(expectedResponse, Keys.KEY_RESULT, OsgpResultType.class, OsgpResultType.OK));
     }
-    
-    @Then("^the activate device response return a soap fault$")
+
+    @Then("^the activate device response contains soap fault$")
     public void theActivateDeviceResponseReturnsASoapFault(final Map<String, String> expectedResult) throws Throwable {
         GenericResponseSteps.verifySoapFault(expectedResult);
     }

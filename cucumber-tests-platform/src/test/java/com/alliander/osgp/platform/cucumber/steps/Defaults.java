@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.platform.cucumber.steps;
 
+import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.LongTermIntervalType;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.TransitionType;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.MeterType;
@@ -131,4 +132,9 @@ public class Defaults {
     public static final Integer AVERAGE_POWER_FACTOR3 = 3;
     public static final com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.HistoryTermType HISTORY_TERM_TYPE = com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.HistoryTermType.SHORT;
     public static final com.alliander.osgp.oslp.Oslp.HistoryTermType OSLP_HISTORY_TERM_TYPE = com.alliander.osgp.oslp.Oslp.HistoryTermType.Short;
+
+    public static final String DC_LIGHTS = "0";
+    public static final Integer SHORT_INTERVAL = 15;
+    public static final Integer LONG_INTERVAL = 1;
+    public static final LongTermIntervalType INTERVAL_TYPE = LongTermIntervalType.DAYS;
 }

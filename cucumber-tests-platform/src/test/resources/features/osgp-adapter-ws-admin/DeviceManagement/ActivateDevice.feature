@@ -16,6 +16,6 @@ Feature: AdminDeviceManagement Device Activation
   Scenario: Activate an unknown device
     When receiving an activate device request
       | DeviceIdentification | TEST1024000000001 |
-    Then the activate device response return a soap fault
+    Then the activate device response contains soap fault
       | Message | UNKNOWN_DEVICE |
     
