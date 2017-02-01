@@ -7,7 +7,6 @@
  */
 package com.alliander.osgp.platform.cucumber.steps.ws.basicosgpfunctions;
 
-import static com.alliander.osgp.platform.cucumber.core.Helpers.getBoolean;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getEnum;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 
@@ -16,360 +15,389 @@ import java.security.GeneralSecurityException;
 import java.util.Map;
 
 import javax.naming.OperationNotSupportedException;
+import javax.xml.datatype.DatatypeConfigurationException;
 
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.DeviceAuthorisation;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.DeviceFunctionGroup;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.FindDeviceAuthorisationsRequest;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.FindDeviceAuthorisationsResponse;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.RemoveDeviceRequest;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.UpdateDeviceAuthorisationsRequest;
+import com.alliander.osgp.adapter.ws.schema.core.adhocmanagement.SetRebootRequest;
+import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.Configuration;
+import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.GetConfigurationRequest;
+import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.SetConfigurationRequest;
+import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StartDeviceTestRequest;
+import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StopDeviceTestRequest;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindEventsRequest;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotificationsRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareRequest;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusRequest;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.ResumeScheduleRequest;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.SetLightRequest;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.SetTransitionRequest;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.GetActualPowerUsageRequest;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.GetPowerUsageHistoryRequest;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.cucumber.support.ws.WebServiceSecurityException;
+import com.alliander.osgp.platform.cucumber.support.ws.admin.AdminDeviceManagementClient;
+import com.alliander.osgp.platform.cucumber.support.ws.core.CoreAdHocManagementClient;
+import com.alliander.osgp.platform.cucumber.support.ws.core.CoreConfigurationManagementClient;
+import com.alliander.osgp.platform.cucumber.support.ws.core.CoreDeviceInstallationClient;
+import com.alliander.osgp.platform.cucumber.support.ws.core.CoreDeviceManagementClient;
+import com.alliander.osgp.platform.cucumber.support.ws.core.CoreFirmwareManagementClient;
+import com.alliander.osgp.platform.cucumber.support.ws.publiclighting.PublicLightingAdHocManagementClient;
+import com.alliander.osgp.platform.cucumber.support.ws.publiclighting.PublicLightingDeviceMonitoringClient;
+import com.alliander.osgp.platform.cucumber.support.ws.publiclighting.PublicLightingScheduleManagementClient;
+import com.alliander.osgp.platform.cucumber.support.ws.tariffswitching.TariffSwitchingScheduleManagementClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 /**
- * Class with all the firmware requests steps
+ * Class with all the AuthorizeDeviceFunctions steps
  */
 public class AuthorizeDeviceFunctions {
 
+    @Autowired
+    private AdminDeviceManagementClient adminDeviceManagementClient;
+
+    @Autowired
+    private CoreDeviceInstallationClient coreDeviceInstallationClient;
+
+    @Autowired
+    private CoreDeviceManagementClient coreDeviceManagementClient;
+
+    @Autowired
+    private CoreConfigurationManagementClient coreConfigurationManagementClient;
+
+    @Autowired
+    private CoreAdHocManagementClient coreAdHocManagementClient;
+
+    @Autowired
+    private PublicLightingDeviceMonitoringClient publicLightingDeviceMonitoringClient;
+
+    @Autowired
+    private PublicLightingAdHocManagementClient publicLightingAdHocManagementClient;
+
+    @Autowired
+    private CoreFirmwareManagementClient coreFirmwareManagementClient;
+
+    @Autowired
+    private PublicLightingScheduleManagementClient publicLightingScheduleManagementClient;
+
+    @Autowired
+    private TariffSwitchingScheduleManagementClient tariffSwitchingScheduleManagementClient;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthorizeDeviceFunctions.class);
 
-    private static String deviceIdentification;
+    private DeviceFunction deviceFunction;
+    private Throwable throwable;
 
     @When("receiving a device function request")
     public void receivingADeviceFunctionRequest(final Map<String, String> requestParameters)
             throws OperationNotSupportedException, WebServiceSecurityException, GeneralSecurityException, IOException {
-        final DeviceFunction deviceFunction = getEnum(requestParameters, Keys.DEVICE_FUNCTION, DeviceFunction.class);
+        this.deviceFunction = getEnum(requestParameters, Keys.DEVICE_FUNCTION, DeviceFunction.class);
 
-        deviceIdentification = getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION,
-                Defaults.DEFAULT_DEVICE_IDENTIFICATION);
-
-        switch (deviceFunction) {
-        case START_SELF_TEST:
-
-            break;
-        case STOP_SELF_TEST:
-
-            break;
-        case SET_LIGHT:
-
-            break;
-        case GET_DEVICE_AUTHORIZATION:
-
-            break;
-        case SET_EVENT_NOTIFICATIONS:
-
-            break;
-        case GET_EVENT_NOTIFICATIONS:
-
-            break;
-        case UPDATE_FIRMWARE:
-
-            break;
-        case GET_FIRMWARE_VERSION:
-
-            break;
-        case SET_LIGHT_SCHEDULE:
-
-            break;
-        case SET_TARIFF_SCHEDULE:
-
-            break;
-        case SET_CONFIGURATION:
-
-            break;
-        case GET_CONFIGURATION:
-
-            break;
-        case GET_STATUS:
-
-            break;
-        case REMOVE_DEVICE:
-
-            break;
-        case GET_ACTUAL_POWER_USAGE:
-
-            break;
-        case GET_POWER_USAGE_HISTORY:
-
-            break;
-        case RESUME_SCHEDULE:
-
-            break;
-        case SET_REBOOT:
-
-            break;
-        case SET_TRANSITION:
-
-            break;
-        default:
-            throw new OperationNotSupportedException("DeviceFunction " + deviceFunction + " does not exist.");
+        try {
+            if (requestParameters.containsKey(Keys.DELEGATE_FUNCTION_GROUP)) {
+                this.findDeviceAuthorisations(requestParameters);
+            } else {
+                switch (this.deviceFunction) {
+                case START_SELF_TEST:
+                    this.startSelfTest(requestParameters);
+                    break;
+                case STOP_SELF_TEST:
+                    this.stopSelfTest(requestParameters);
+                    break;
+                case SET_LIGHT:
+                    this.setLight(requestParameters);
+                    break;
+                case GET_STATUS:
+                    this.getStatus(requestParameters);
+                    break;
+                case GET_DEVICE_AUTHORIZATION:
+                    this.getDeviceAuthorization(requestParameters);
+                    break;
+                case SET_EVENT_NOTIFICATIONS:
+                    this.setEventNotifications(requestParameters);
+                    break;
+                case GET_EVENT_NOTIFICATIONS:
+                    this.getEventNotifications(requestParameters);
+                    break;
+                case UPDATE_FIRMWARE:
+                    this.updateFirmware(requestParameters);
+                    break;
+                case GET_FIRMWARE_VERSION:
+                    this.getFirmwareVersion(requestParameters);
+                    break;
+                case SET_LIGHT_SCHEDULE:
+                    this.setLightSchedule(requestParameters);
+                    break;
+                case SET_TARIFF_SCHEDULE:
+                    this.setTariffSchedule(requestParameters);
+                    break;
+                case SET_CONFIGURATION:
+                    this.setConfiguration(requestParameters);
+                    break;
+                case GET_CONFIGURATION:
+                    this.getConfiguration(requestParameters);
+                    break;
+                case REMOVE_DEVICE:
+                    this.removeDevice(requestParameters);
+                    break;
+                case GET_ACTUAL_POWER_USAGE:
+                    this.getActualPowerUsage(requestParameters);
+                    break;
+                case GET_POWER_USAGE_HISTORY:
+                    this.getPowerUsageHistory(requestParameters);
+                    break;
+                case RESUME_SCHEDULE:
+                    this.resumeSchedule(requestParameters);
+                    break;
+                case SET_REBOOT:
+                    this.setReboot(requestParameters);
+                    break;
+                case SET_TRANSITION:
+                    this.setTransition(requestParameters);
+                    break;
+                default:
+                    throw new OperationNotSupportedException(
+                            "DeviceFunction " + this.deviceFunction + " does not exist.");
+                }
+            }
+        } catch (final Throwable t) {
+            LOGGER.info("Exception: {}", t.getClass().getSimpleName());
+            this.throwable = t;
         }
     }
 
-    @Then("the device function response is successful")
-    public void theDeviceFunctionResponseIsSuccessful(final Map<String, String> responseParameters) {
+    @Then("the device function response is \"([^\"]*)\"")
+    public void theDeviceFunctionResponseIsSuccessful(final Boolean allowed) {
         final Object response = ScenarioContext.Current().get(Keys.RESPONSE);
 
-        Assert.assertTrue(getBoolean(responseParameters, Keys.ALLOWED, Defaults.ALLOWED) && response != null
-                && !(response instanceof SoapFaultClientException));
+        if (allowed) {
+            Assert.assertTrue(!(response instanceof SoapFaultClientException));
+        } else {
+            Assert.assertTrue(this.throwable != null);
+        }
     }
 
-    // /**
-    // * Sends a Get Configuration request to the platform for a given device
-    // * identification.
-    // *
-    // * @param requestParameters
-    // * The table with the request parameters.
-    // * @throws Throwable
-    // */
-    // @When("^receiving a get configuration request$")
-    // public void receivingAGetConfigurationRequest(final Map<String, String>
-    // requestParameters) throws Throwable {
-    // final GetConfigurationRequest request = new GetConfigurationRequest();
-    // request.setDeviceIdentification(
-    // getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION,
-    // Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-    //
-    // try {
-    // ScenarioContext.Current().put(Keys.RESPONSE,
-    // this.client.getConfiguration(request));
-    // } catch (final SoapFaultClientException ex) {
-    // ScenarioContext.Current().put(Keys.RESPONSE, ex);
-    // }
-    // }
-    //
-    // /**
-    // * The check for the response from the Platform.
-    // *
-    // * @param expectedResponseData
-    // * The table with the expected fields in the response.
-    // * @note The response will contain the correlation uid, so store that in
-    // the
-    // * current scenario context for later use.
-    // * @throws Throwable
-    // */
-    // @Then("^the get configuration async response contains$")
-    // public void theGetConfigurationResponseContains(final Map<String, String>
-    // expectedResponseData) throws Throwable {
-    // final GetConfigurationAsyncResponse response =
-    // (GetConfigurationAsyncResponse) ScenarioContext.Current()
-    // .get(Keys.RESPONSE);
-    //
-    // Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
-    // Assert.assertEquals(getString(expectedResponseData,
-    // Keys.KEY_DEVICE_IDENTIFICATION),
-    // response.getAsyncResponse().getDeviceId());
-    //
-    // // Save the returned CorrelationUid in the Scenario related context for
-    // // further use.
-    // saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
-    // getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-    // Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
-    //
-    // LOGGER.info("Got CorrelationUid: [" +
-    // ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
-    // }
-    //
-    // /**
-    // * The check for the response from the Platform.
-    // *
-    // * @param expectedResponseData
-    // * The table with the expected fields in the response.
-    // * @throws Throwable
-    // */
-    // @Then("^the get configuration async response contains soap fault$")
-    // public void theGetConfigurationResponseContainsSoapFault(final
-    // Map<String, String> expectedResponseData)
-    // throws Throwable {
-    // GenericResponseSteps.verifySoapFault(expectedResponseData);
-    // }
-    //
-    // @Then("^the platform buffers a get configuration response message for
-    // device \"([^\"]*)\"$")
-    // public void
-    // thePlatformBufferesAGetConfigurationResponseMessageForDevice(final String
-    // deviceIdentification,
-    // final Map<String, String> expectedResponseData) throws Throwable {
-    // final GetConfigurationAsyncRequest request = new
-    // GetConfigurationAsyncRequest();
-    // final AsyncRequest asyncRequest = new AsyncRequest();
-    // asyncRequest.setDeviceId(deviceIdentification);
-    // asyncRequest.setCorrelationUid((String)
-    // ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
-    // request.setAsyncRequest(asyncRequest);
-    //
-    // GetConfigurationResponse response = null;
-    //
-    // boolean success = false;
-    // int count = 0;
-    // while (!success) {
-    // if (count > this.configuration.getTimeout()) {
-    // throw new TimeoutException();
-    // }
-    //
-    // count++;
-    // Thread.sleep(1000);
-    //
-    // response = this.client.getGetConfiguration(request);
-    //
-    // if (!expectedResponseData.containsKey(Keys.KEY_RESULT)
-    // || getEnum(expectedResponseData, Keys.KEY_RESULT, OsgpResultType.class)
-    // != response.getResult()) {
-    // continue;
-    // }
-    //
-    // success = true;
-    // }
-    //
-    // final Configuration configuration = response.getConfiguration();
-    //
-    // if (configuration == null) {
-    // Assert.assertNotNull(configuration);
-    // }
-    //
-    // if (expectedResponseData.containsKey(Keys.KEY_LIGHTTYPE)
-    // && !expectedResponseData.get(Keys.KEY_LIGHTTYPE).isEmpty() &&
-    // configuration.getLightType() != null) {
-    // Assert.assertEquals(getEnum(expectedResponseData, Keys.KEY_LIGHTTYPE,
-    // LightType.class),
-    // configuration.getLightType());
-    // }
-    //
-    // final DaliConfiguration daliConfiguration =
-    // configuration.getDaliConfiguration();
-    // if (daliConfiguration != null) {
-    //
-    // if (expectedResponseData.containsKey(Keys.DC_LIGHTS) &&
-    // !expectedResponseData.get(Keys.DC_LIGHTS).isEmpty()
-    // && daliConfiguration.getNumberOfLights() != 0) {
-    // Assert.assertEquals((int) getInteger(expectedResponseData,
-    // Keys.DC_LIGHTS),
-    // daliConfiguration.getNumberOfLights());
-    // }
-    //
-    // if (expectedResponseData.containsKey(Keys.DC_MAP) &&
-    // !expectedResponseData.get(Keys.DC_MAP).isEmpty()
-    // && daliConfiguration.getIndexAddressMap() != null) {
-    // final List<IndexAddressMap> indexAddressMapList =
-    // daliConfiguration.getIndexAddressMap();
-    // final String[] dcMapArray = getString(expectedResponseData,
-    // Keys.DC_MAP).split(";");
-    // for (int i = 0; i < dcMapArray.length; i++) {
-    // final String[] dcMapArrayElements = dcMapArray[i].split(",");
-    // Assert.assertEquals(Integer.parseInt(dcMapArrayElements[0]),
-    // indexAddressMapList.get(i).getIndex());
-    // Assert.assertEquals(Integer.parseInt(dcMapArrayElements[1]),
-    // indexAddressMapList.get(i).getAddress());
-    // }
-    // }
-    // }
-    //
-    // final RelayConfiguration relayConfiguration =
-    // configuration.getRelayConfiguration();
-    // if (relayConfiguration != null) {
-    //
-    // if (expectedResponseData.containsKey(Keys.RC_MAP) &&
-    // !expectedResponseData.get(Keys.RC_MAP).isEmpty()
-    // && relayConfiguration.getRelayMap() != null) {
-    // final List<RelayMap> relayMapList = relayConfiguration.getRelayMap();
-    // final String[] rcMapArray = getString(expectedResponseData,
-    // Keys.RC_MAP).split(";");
-    // for (int i = 0; i < rcMapArray.length; i++) {
-    // final String[] rcMapArrayElements = rcMapArray[i].split(",");
-    // if (rcMapArrayElements.length > 0 && relayMapList.size() > 0) {
-    // Assert.assertEquals(Integer.parseInt(rcMapArrayElements[0]),
-    // relayMapList.get(i).getIndex());
-    // Assert.assertEquals(Integer.parseInt(rcMapArrayElements[1]),
-    // relayMapList.get(i).getAddress());
-    //
-    // if (expectedResponseData.containsKey(Keys.KEY_RELAY_TYPE)
-    // && !expectedResponseData.get(Keys.KEY_RELAY_TYPE).isEmpty()
-    // && relayMapList.get(i).getRelayType() != null) {
-    // Assert.assertEquals(getEnum(expectedResponseData, Keys.KEY_RELAY_TYPE,
-    // RelayType.class),
-    // relayMapList.get(i).getRelayType());
-    // }
-    // }
-    // }
-    // }
-    // }
-    //
-    // //// Note: This information isn't added in the fitnesse test, how to
-    // //// test this?
-    // // configuration.getRelayLinking();
-    //
-    // if (expectedResponseData.containsKey(Keys.KEY_PREFERRED_LINKTYPE)
-    // && !expectedResponseData.get(Keys.KEY_PREFERRED_LINKTYPE).isEmpty()
-    // && configuration.getPreferredLinkType() != null) {
-    // Assert.assertEquals(getEnum(expectedResponseData,
-    // Keys.KEY_PREFERRED_LINKTYPE, LinkType.class),
-    // configuration.getPreferredLinkType());
-    // }
-    //
-    // // Note: This piece of code has been made because there are multiple
-    // // enumerations with the name MeterType, but not all of them has all
-    // // values the same. Some with underscore and some without.s
-    //
-    // if (expectedResponseData.containsKey(Keys.METER_TYPE) &&
-    // !expectedResponseData.get(Keys.METER_TYPE).isEmpty()
-    // && configuration.getMeterType() != null) {
-    // MeterType meterType = null;
-    // final String sMeterType = getString(expectedResponseData,
-    // Keys.METER_TYPE);
-    // if (!sMeterType.toString().contains("_")
-    // && sMeterType.equals(MeterType.P_1.toString().replaceAll("_", ""))) {
-    // final String[] sMeterTypeArray = sMeterType.toString().split("");
-    // meterType = MeterType.valueOf(sMeterTypeArray[0] + "_" +
-    // sMeterTypeArray[1]);
-    // } else {
-    // meterType = getEnum(expectedResponseData, Keys.METER_TYPE,
-    // MeterType.class);
-    // }
-    // Assert.assertEquals(meterType, configuration.getMeterType());
-    // }
-    //
-    // if (expectedResponseData.containsKey(Keys.SHORT_INTERVAL)
-    // && !expectedResponseData.get(Keys.SHORT_INTERVAL).isEmpty()
-    // && configuration.getShortTermHistoryIntervalMinutes() != null) {
-    // Assert.assertEquals(getInteger(expectedResponseData, Keys.SHORT_INTERVAL,
-    // Defaults.SHORT_INTERVAL),
-    // configuration.getShortTermHistoryIntervalMinutes());
-    // }
-    //
-    // if (expectedResponseData.containsKey(Keys.LONG_INTERVAL)
-    // && !expectedResponseData.get(Keys.LONG_INTERVAL).isEmpty()
-    // && configuration.getLongTermHistoryInterval() != null) {
-    // Assert.assertEquals(getInteger(expectedResponseData, Keys.LONG_INTERVAL,
-    // Defaults.LONG_INTERVAL),
-    // configuration.getLongTermHistoryInterval());
-    // }
-    //
-    // if (expectedResponseData.containsKey(Keys.INTERVAL_TYPE)
-    // && !expectedResponseData.get(Keys.INTERVAL_TYPE).isEmpty()
-    // && configuration.getLongTermHistoryIntervalType() != null) {
-    // Assert.assertEquals(getEnum(expectedResponseData, Keys.INTERVAL_TYPE,
-    // LongTermIntervalType.class),
-    // configuration.getLongTermHistoryIntervalType());
-    // }
-    // }
-    //
-    // @Then("^the platform buffers a get configuration response message for
-    // device \"([^\"]*)\" contains soap fault$")
-    // public void
-    // thePlatformBufferesAGetConfigurationResponseMessageForDeviceContainsSoapFault(
-    // final String deviceIdentification, final Map<String, String>
-    // expectedResponseData) throws Throwable {
-    // try {
-    // this.thePlatformBufferesAGetConfigurationResponseMessageForDevice(deviceIdentification,
-    // expectedResponseData);
-    // } catch (final SoapFaultClientException ex) {
-    // Assert.assertEquals(getString(expectedResponseData, Keys.KEY_MESSAGE),
-    // ex.getMessage());
-    // }
-    // }
+    private void findDeviceAuthorisations(final Map<String, String> requestParameters)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException, OperationNotSupportedException {
+        final FindDeviceAuthorisationsRequest findDeviceAuthorisationsRequest = new FindDeviceAuthorisationsRequest();
+        findDeviceAuthorisationsRequest.setDeviceIdentification(
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+
+        final FindDeviceAuthorisationsResponse response = this.adminDeviceManagementClient
+                .findDeviceAuthorisations(findDeviceAuthorisationsRequest);
+
+        final UpdateDeviceAuthorisationsRequest updateDeviceAuthorisationsRequest = new UpdateDeviceAuthorisationsRequest();
+
+        final DeviceAuthorisation deviceAuthorisation = response.getDeviceAuthorisations().get(0);
+        deviceAuthorisation
+                .setFunctionGroup(getEnum(requestParameters, Keys.KEY_DEVICE_FUNCTION_GRP, DeviceFunctionGroup.class));
+
+        updateDeviceAuthorisationsRequest.getDeviceAuthorisations().add(deviceAuthorisation);
+
+        ScenarioContext.Current().put(Keys.RESPONSE,
+                this.adminDeviceManagementClient.updateDeviceAuthorisations(updateDeviceAuthorisationsRequest));
+    }
+
+    private void startSelfTest(final Map<String, String> requestParameters)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final StartDeviceTestRequest request = new StartDeviceTestRequest();
+        request.setDeviceIdentification(
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+
+        ScenarioContext.Current().put(Keys.RESPONSE, this.coreDeviceInstallationClient.startDeviceTest(request));
+    }
+
+    private void stopSelfTest(final Map<String, String> requestParameters)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final StopDeviceTestRequest request = new StopDeviceTestRequest();
+        request.setDeviceIdentification(
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+
+        ScenarioContext.Current().put(Keys.RESPONSE, this.coreDeviceInstallationClient.stopDeviceTest(request));
+    }
+
+    private void setLight(final Map<String, String> requestParameters)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final SetLightRequest request = new SetLightRequest();
+        request.setDeviceIdentification(
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+        ScenarioContext.Current().put(Keys.RESPONSE, this.publicLightingAdHocManagementClient.setLight(request));
+    }
+
+    private void getStatus(final Map<String, String> requestParameters)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        // Note: This GetStatusRequest is from PublicLighting AdhocManagement
+        final GetStatusRequest request = new GetStatusRequest();
+        request.setDeviceIdentification(
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+
+        ScenarioContext.Current().put(Keys.RESPONSE, this.publicLightingAdHocManagementClient.getStatus(request));
+    }
+
+    private void getDeviceAuthorization(final Map<String, String> requestParameters)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final FindDeviceAuthorisationsRequest request = new FindDeviceAuthorisationsRequest();
+        request.setDeviceIdentification(
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+
+        ScenarioContext.Current().put(Keys.RESPONSE,
+                this.adminDeviceManagementClient.findDeviceAuthorisations(request));
+    }
+
+    private void setEventNotifications(final Map<String, String> requestParameters)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final SetEventNotificationsRequest request = new SetEventNotificationsRequest();
+        request.setDeviceIdentification(
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+
+        ScenarioContext.Current().put(Keys.RESPONSE, this.coreDeviceManagementClient.setEventNotifications(request));
+    }
+
+    private void getEventNotifications(final Map<String, String> requestParameters)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final FindEventsRequest request = new FindEventsRequest();
+        request.setDeviceIdentification(
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+
+        ScenarioContext.Current().put(Keys.RESPONSE, this.coreDeviceManagementClient.findEventsResponse(request));
+    }
+
+    private void updateFirmware(final Map<String, String> requestParameters)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final UpdateFirmwareRequest request = new UpdateFirmwareRequest();
+        request.setDeviceIdentification(
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+        request.setFirmwareIdentification(
+                getString(requestParameters, Keys.KEY_FIRMWARE_IDENTIFICATION, Defaults.FIRMWARE_IDENTIFICATION));
+
+        ScenarioContext.Current().put(Keys.RESPONSE, this.coreFirmwareManagementClient.updateFirmware(request));
+    }
+
+    private void getFirmwareVersion(final Map<String, String> requestParameters)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final GetFirmwareVersionRequest request = new GetFirmwareVersionRequest();
+        request.setDeviceIdentification(
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+
+        ScenarioContext.Current().put(Keys.RESPONSE, this.coreFirmwareManagementClient.getFirmwareVersion(request));
+    }
+
+    private void setLightSchedule(final Map<String, String> requestParameters)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final com.alliander.osgp.adapter.ws.schema.publiclighting.schedulemanagement.SetScheduleRequest request = new com.alliander.osgp.adapter.ws.schema.publiclighting.schedulemanagement.SetScheduleRequest();
+        request.setDeviceIdentification(
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+
+        ScenarioContext.Current().put(Keys.RESPONSE, this.publicLightingScheduleManagementClient.setSchedule(request));
+    }
+
+    private void setTariffSchedule(final Map<String, String> requestParameters)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final com.alliander.osgp.adapter.ws.schema.tariffswitching.schedulemanagement.SetScheduleRequest request = new com.alliander.osgp.adapter.ws.schema.tariffswitching.schedulemanagement.SetScheduleRequest();
+        request.setDeviceIdentification(
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+
+        ScenarioContext.Current().put(Keys.RESPONSE, this.tariffSwitchingScheduleManagementClient.setSchedule(request));
+    }
+
+    private void setConfiguration(final Map<String, String> requestParameters)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final SetConfigurationRequest request = new SetConfigurationRequest();
+        request.setDeviceIdentification(
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+
+        final Configuration config = new Configuration();
+
+        config.setLightType(Defaults.CONFIGURATION_LIGHTTYPE);
+        config.setPreferredLinkType(Defaults.CONFIGURATION_PREFERRED_LINKTYPE);
+        config.setMeterType(Defaults.CONFIGURATION_METER_TYPE);
+        config.setShortTermHistoryIntervalMinutes(Defaults.SHORT_INTERVAL);
+        config.setLongTermHistoryInterval(Defaults.LONG_INTERVAL);
+        config.setLongTermHistoryIntervalType(Defaults.INTERVAL_TYPE);
+
+        request.setConfiguration(config);
+
+        ScenarioContext.Current().put(Keys.RESPONSE, this.coreConfigurationManagementClient.setConfiguration(request));
+    }
+
+    private void getConfiguration(final Map<String, String> requestParameters)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final GetConfigurationRequest request = new GetConfigurationRequest();
+        request.setDeviceIdentification(
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+
+        ScenarioContext.Current().put(Keys.RESPONSE, this.coreConfigurationManagementClient.getConfiguration(request));
+    }
+
+    private void removeDevice(final Map<String, String> requestParameters)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final RemoveDeviceRequest request = new RemoveDeviceRequest();
+        request.setDeviceIdentification(
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+
+        ScenarioContext.Current().put(Keys.RESPONSE, this.adminDeviceManagementClient.removeDevice(request));
+    }
+
+    private void getActualPowerUsage(final Map<String, String> requestParameters)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final GetActualPowerUsageRequest request = new GetActualPowerUsageRequest();
+        request.setDeviceIdentification(
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+
+        ScenarioContext.Current().put(Keys.RESPONSE,
+                this.publicLightingDeviceMonitoringClient.getActualPowerUsage(request));
+    }
+
+    private void getPowerUsageHistory(final Map<String, String> requestParameters)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final GetPowerUsageHistoryRequest request = new GetPowerUsageHistoryRequest();
+        request.setDeviceIdentification(
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+
+        ScenarioContext.Current().put(Keys.RESPONSE,
+                this.publicLightingDeviceMonitoringClient.getPowerUsageHistory(request));
+    }
+
+    private void resumeSchedule(final Map<String, String> requestParameters)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final ResumeScheduleRequest request = new ResumeScheduleRequest();
+        request.setDeviceIdentification(
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+
+        ScenarioContext.Current().put(Keys.RESPONSE, this.publicLightingAdHocManagementClient.resumeSchedule(request));
+    }
+
+    private void setReboot(final Map<String, String> requestParameters)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final SetRebootRequest request = new SetRebootRequest();
+        request.setDeviceIdentification(
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+
+        ScenarioContext.Current().put(Keys.RESPONSE, this.coreAdHocManagementClient.setReboot(request));
+    }
+
+    private void setTransition(final Map<String, String> requestParameters)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException, DatatypeConfigurationException {
+        final SetTransitionRequest request = new SetTransitionRequest();
+        request.setDeviceIdentification(
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+
+        ScenarioContext.Current().put(Keys.RESPONSE, this.publicLightingAdHocManagementClient.setTransition(request));
+    }
 }

@@ -52,7 +52,7 @@ public class PublicLightingAdHocManagementClient extends BaseClient {
         return (GetStatusResponse) webServiceTemplate.marshalSendAndReceive(request);
 	}
 
-	public ResumeScheduleAsyncResponse resumeScheduleStatus(ResumeScheduleRequest request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
+	public ResumeScheduleAsyncResponse resumeSchedule(ResumeScheduleRequest request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate webServiceTemplate = this.publicLightingAdHocManagementWstf
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (ResumeScheduleAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);

@@ -41,7 +41,7 @@ import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.cucumber.steps.ws.GenericResponseSteps;
-import com.alliander.osgp.platform.cucumber.support.ws.publiclighting.DeviceMonitoringClient;
+import com.alliander.osgp.platform.cucumber.support.ws.publiclighting.PublicLightingDeviceMonitoringClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -55,7 +55,7 @@ public class GetActualPowerUsageSteps {
     private CoreDeviceConfiguration configuration;
 
     @Autowired
-    private DeviceMonitoringClient client;
+    private PublicLightingDeviceMonitoringClient client;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetActualPowerUsageSteps.class);
 

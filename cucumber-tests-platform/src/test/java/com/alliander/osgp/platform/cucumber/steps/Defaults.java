@@ -133,10 +133,15 @@ public class Defaults {
     public static final com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.HistoryTermType HISTORY_TERM_TYPE = com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.HistoryTermType.SHORT;
     public static final com.alliander.osgp.oslp.Oslp.HistoryTermType OSLP_HISTORY_TERM_TYPE = com.alliander.osgp.oslp.Oslp.HistoryTermType.Short;
 
+    public static final com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.LightType CONFIGURATION_LIGHTTYPE = com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.LightType.RELAY;
+    public static final com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.LinkType CONFIGURATION_PREFERRED_LINKTYPE = com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.LinkType.ETHERNET;
+    public static final com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.MeterType CONFIGURATION_METER_TYPE = com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.MeterType.AUX;
     public static final String DC_LIGHTS = "0";
     public static final Integer SHORT_INTERVAL = 15;
     public static final Integer LONG_INTERVAL = 1;
     public static final LongTermIntervalType INTERVAL_TYPE = LongTermIntervalType.DAYS;
 
     public static final Boolean ALLOWED = false;
+
+    public static final String FIRMWARE_IDENTIFICATION = "";
 }

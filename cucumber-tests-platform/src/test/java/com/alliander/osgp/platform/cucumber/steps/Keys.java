@@ -221,4 +221,6 @@ public class Keys {
 
     public static final String DEVICE_FUNCTION = "DeviceFunction";
     public static final String ALLOWED = "Allowed";
+
+    public static final String DELEGATE_FUNCTION_GROUP = "DelegateFunctionGroup";
 }
