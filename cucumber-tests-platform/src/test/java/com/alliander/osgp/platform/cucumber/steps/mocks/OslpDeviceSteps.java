@@ -40,8 +40,10 @@ import com.alliander.osgp.oslp.Oslp.HistoryTermType;
 import com.alliander.osgp.oslp.Oslp.LightType;
 import com.alliander.osgp.oslp.Oslp.LightValue;
 import com.alliander.osgp.oslp.Oslp.LinkType;
+import com.alliander.osgp.oslp.Oslp.LongTermIntervalType;
 import com.alliander.osgp.oslp.Oslp.Message;
 import com.alliander.osgp.oslp.Oslp.MeterType;
+import com.alliander.osgp.oslp.Oslp.RelayType;
 import com.alliander.osgp.oslp.Oslp.ResumeScheduleRequest;
 import com.alliander.osgp.oslp.Oslp.Schedule;
 import com.alliander.osgp.oslp.Oslp.SetScheduleRequest;
@@ -89,12 +91,89 @@ public class OslpDeviceSteps {
 
         this.oslpMockServer.mockSetLightResponse(oslpStatus);
     }
+    // the device returns configuration status "OK" over OSLP
+
+    /**
+     * Setup method to set the configuration status which should be returned by
+     * the mock.
+     *
+     * @param status
+     *            The status to respond.
+     * @throws Throwable
+     */
+    @Given("^the device returns a get configuration status over OSLP$")
+    public void theDeviceReturnsAGetConfigurationStatusOverOSLP(final Map<String, String> requestParameters)
+            throws Throwable {
+        Oslp.Status oslpStatus = Status.OK;
+
+        switch (getString(requestParameters, Keys.KEY_STATUS)) {
+        case "OK":
+            oslpStatus = Status.OK;
+            break;
+        case "FAILURE":
+            oslpStatus = Status.FAILURE;
+            break;
+        case "REJECTED":
+            oslpStatus = Status.REJECTED;
+            // TODO: Implement other possible status
+        }
+
+        // Note: This piece of code has been made because there are multiple
+        // enumerations with the name MeterType, but not all of them has all
+        // values the same. Some with underscore and some without.
+        MeterType meterType = MeterType.MT_NOT_SET;
+        final String sMeterType = getString(requestParameters, Keys.METER_TYPE);
+        if (!sMeterType.toString().contains("_") && sMeterType.equals(MeterType.P1_VALUE)) {
+            final String[] sMeterTypeArray = sMeterType.toString().split("");
+            meterType = MeterType.valueOf(sMeterTypeArray[0] + "_" + sMeterTypeArray[1]);
+        } else {
+            meterType = getEnum(requestParameters, Keys.METER_TYPE, MeterType.class);
+        }
+
+        this.oslpMockServer.mockGetConfigurationResponse(oslpStatus,
+                getEnum(requestParameters, Keys.KEY_LIGHTTYPE, LightType.class),
+                getString(requestParameters, Keys.DC_LIGHTS, Defaults.DC_LIGHTS),
+                getString(requestParameters, Keys.DC_MAP), getEnum(requestParameters, Keys.RC_TYPE, RelayType.class),
+                getString(requestParameters, Keys.RC_MAP),
+                getEnum(requestParameters, Keys.KEY_PREFERRED_LINKTYPE, LinkType.class), meterType,
+                getInteger(requestParameters, Keys.SHORT_INTERVAL, Defaults.SHORT_INTERVAL),
+                getInteger(requestParameters, Keys.LONG_INTERVAL, Defaults.LONG_INTERVAL),
+                getEnum(requestParameters, Keys.INTERVAL_TYPE, LongTermIntervalType.class));
+    }
+
+    /**
+     * Setup method to set the configuration status which should be returned by
+     * the mock.
+     *
+     * @param status
+     *            The status to respond.
+     * @throws Throwable
+     */
+    @Given("^the device returns a set configuration status over OSLP$")
+    public void theDeviceReturnsASetConfigurationStatusOverOSLP(final Map<String, String> requestParameters)
+            throws Throwable {
+        Oslp.Status oslpStatus = Status.OK;
+
+        switch (getString(requestParameters, Keys.KEY_STATUS)) {
+        case "OK":
+            oslpStatus = Status.OK;
+            break;
+        case "FAILURE":
+            oslpStatus = Status.FAILURE;
+            break;
+        case "REJECTED":
+            oslpStatus = Status.REJECTED;
+            // TODO: Implement other possible status
+        }
+
+        this.oslpMockServer.mockSetConfigurationResponse(oslpStatus);
+    }
 
     /**
      * Setup method to get an actual power usage which should be returned by the
      * mock.
      *
-     * @param responseData
+     * @param requestParameters
      *            The data to respond.
      * @throws Throwable
      */
@@ -103,7 +182,7 @@ public class OslpDeviceSteps {
 
         // Note: This piece of code has been made because there are multiple
         // enumerations with the name MeterType, but not all of them has all
-        // values the same. Some with underscore and some without.s
+        // values the same. Some with underscore and some without.
         MeterType meterType = MeterType.MT_NOT_SET;
         final String sMeterType = getString(responseData, Keys.METER_TYPE);
         if (!sMeterType.toString().contains("_") && sMeterType.equals(MeterType.P1_VALUE)) {
@@ -133,26 +212,28 @@ public class OslpDeviceSteps {
      * Setup method to get the power usage history which should be returned by
      * the mock.
      *
-     * @param responseData
+     * @param requestParameters
      * @throws Throwable
      */
     @Given("^the device returns a get power usage history response over OSLP$")
-    public void theDeviceReturnsAGetPowerUsageHistoryOverOSLP(final Map<String, String> responseData) throws Throwable {
-        this.oslpMockServer.mockGetPowerUsageHistoryResponse(getEnum(responseData, Keys.KEY_STATUS, Status.class),
-                getString(responseData, Keys.RECORD_TIME), getInteger(responseData, Keys.KEY_INDEX),
-                getInteger(responseData, Keys.ACTUAL_CONSUMED_POWER, null),
-                getEnum(responseData, Keys.METER_TYPE, MeterType.class),
-                getInteger(responseData, Keys.TOTAL_CONSUMED_ENERGY, null),
-                getInteger(responseData, Keys.TOTAL_LIGHTING_HOURS, null),
-                getInteger(responseData, Keys.ACTUAL_CURRENT1, null),
-                getInteger(responseData, Keys.ACTUAL_CURRENT2, null),
-                getInteger(responseData, Keys.ACTUAL_CURRENT3, null),
-                getInteger(responseData, Keys.ACTUAL_POWER1, null), getInteger(responseData, Keys.ACTUAL_POWER2, null),
-                getInteger(responseData, Keys.ACTUAL_POWER3, null),
-                getInteger(responseData, Keys.AVERAGE_POWER_FACTOR1, null),
-                getInteger(responseData, Keys.AVERAGE_POWER_FACTOR2, null),
-                getInteger(responseData, Keys.AVERAGE_POWER_FACTOR3, null),
-                getString(responseData, Keys.RELAY_DATA, null));
+    public void theDeviceReturnsAGetPowerUsageHistoryOverOSLP(final Map<String, String> requestParameters)
+            throws Throwable {
+        this.oslpMockServer.mockGetPowerUsageHistoryResponse(getEnum(requestParameters, Keys.KEY_STATUS, Status.class),
+                getString(requestParameters, Keys.RECORD_TIME), getInteger(requestParameters, Keys.KEY_INDEX),
+                getInteger(requestParameters, Keys.ACTUAL_CONSUMED_POWER, null),
+                getEnum(requestParameters, Keys.METER_TYPE, MeterType.class),
+                getInteger(requestParameters, Keys.TOTAL_CONSUMED_ENERGY, null),
+                getInteger(requestParameters, Keys.TOTAL_LIGHTING_HOURS, null),
+                getInteger(requestParameters, Keys.ACTUAL_CURRENT1, null),
+                getInteger(requestParameters, Keys.ACTUAL_CURRENT2, null),
+                getInteger(requestParameters, Keys.ACTUAL_CURRENT3, null),
+                getInteger(requestParameters, Keys.ACTUAL_POWER1, null),
+                getInteger(requestParameters, Keys.ACTUAL_POWER2, null),
+                getInteger(requestParameters, Keys.ACTUAL_POWER3, null),
+                getInteger(requestParameters, Keys.AVERAGE_POWER_FACTOR1, null),
+                getInteger(requestParameters, Keys.AVERAGE_POWER_FACTOR2, null),
+                getInteger(requestParameters, Keys.AVERAGE_POWER_FACTOR3, null),
+                getString(requestParameters, Keys.RELAY_DATA, null));
     }
 
     /**
@@ -381,6 +462,36 @@ public class OslpDeviceSteps {
         }
 
         this.oslpMockServer.mockSetScheduleResponse(type, oslpStatus);
+    }
+
+    /**
+     * Verify that a get configuration OSLP message is sent to the device.
+     *
+     * @param deviceIdentification
+     *            The device identification expected in the message to the
+     *            device.
+     * @throws Throwable
+     */
+    @Then("^a get configuration OSLP message is sent to device \"([^\"]*)\"$")
+    public void aGetConfigurationOSLPMessageIsSentToDevice(final String deviceIdentification) throws Throwable {
+        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.GET_CONFIGURATION);
+        Assert.assertNotNull(message);
+        Assert.assertTrue(message.hasGetConfigurationRequest());
+    }
+
+    /**
+     * Verify that a set configuration OSLP message is sent to the device.
+     *
+     * @param deviceIdentification
+     *            The device identification expected in the message to the
+     *            device.
+     * @throws Throwable
+     */
+    @Then("^a set configuration OSLP message is sent to device \"([^\"]*)\"$")
+    public void aSetConfigurationOSLPMessageIsSentToDevice(final String deviceIdentification) throws Throwable {
+        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.SET_CONFIGURATION);
+        Assert.assertNotNull(message);
+        Assert.assertTrue(message.hasSetConfigurationRequest());
     }
 
     /**
