@@ -36,7 +36,7 @@ public class GetStatusSteps extends StepsBase {
 
     @Autowired
     private CoreDeviceConfiguration configuration;
-    
+
     @Autowired
     private CoreDeviceInstallationClient client;
 
@@ -52,6 +52,7 @@ public class GetStatusSteps extends StepsBase {
             ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
     }
+
     /**
     *
     * @param expectedResponseData

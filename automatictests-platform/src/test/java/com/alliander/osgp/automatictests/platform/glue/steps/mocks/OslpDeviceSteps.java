@@ -45,8 +45,10 @@ import com.alliander.osgp.oslp.Oslp.HistoryTermType;
 import com.alliander.osgp.oslp.Oslp.LightType;
 import com.alliander.osgp.oslp.Oslp.LightValue;
 import com.alliander.osgp.oslp.Oslp.LinkType;
+import com.alliander.osgp.oslp.Oslp.LongTermIntervalType;
 import com.alliander.osgp.oslp.Oslp.Message;
 import com.alliander.osgp.oslp.Oslp.MeterType;
+import com.alliander.osgp.oslp.Oslp.RelayType;
 import com.alliander.osgp.oslp.Oslp.ResumeScheduleRequest;
 import com.alliander.osgp.oslp.Oslp.Schedule;
 import com.alliander.osgp.oslp.Oslp.SetScheduleRequest;
@@ -89,6 +91,83 @@ public class OslpDeviceSteps extends StepsBase {
         }
 
         this.oslpMockServer.mockSetLightResponse(oslpStatus);
+    }
+    // the device returns configuration status "OK" over OSLP
+
+    /**
+     * Setup method to set the configuration status which should be returned by
+     * the mock.
+     *
+     * @param status
+     *            The status to respond.
+     * @throws Throwable
+     */
+    @Given("^the device returns a get configuration status over OSLP$")
+    public void theDeviceReturnsAGetConfigurationStatusOverOSLP(final Map<String, String> requestParameters)
+            throws Throwable {
+        Oslp.Status oslpStatus = Status.OK;
+
+        switch (getString(requestParameters, Keys.STATUS)) {
+        case "OK":
+            oslpStatus = Status.OK;
+            break;
+        case "FAILURE":
+            oslpStatus = Status.FAILURE;
+            break;
+        case "REJECTED":
+            oslpStatus = Status.REJECTED;
+            // TODO: Implement other possible status
+        }
+
+        // Note: This piece of code has been made because there are multiple
+        // enumerations with the name MeterType, but not all of them has all
+        // values the same. Some with underscore and some without.
+        MeterType meterType = MeterType.MT_NOT_SET;
+        final String sMeterType = getString(requestParameters, Keys.METER_TYPE);
+        if (!sMeterType.toString().contains("_") && sMeterType.equals(MeterType.P1_VALUE)) {
+            final String[] sMeterTypeArray = sMeterType.toString().split("");
+            meterType = MeterType.valueOf(sMeterTypeArray[0] + "_" + sMeterTypeArray[1]);
+        } else {
+            meterType = getEnum(requestParameters, Keys.METER_TYPE, MeterType.class);
+        }
+
+        this.oslpMockServer.mockGetConfigurationResponse(oslpStatus,
+                getEnum(requestParameters, Keys.LIGHTTYPE, LightType.class),
+                getString(requestParameters, Keys.DC_LIGHTS, Defaults.DC_LIGHTS),
+                getString(requestParameters, Keys.DC_MAP), getEnum(requestParameters, Keys.RC_TYPE, RelayType.class),
+                getString(requestParameters, Keys.RC_MAP),
+                getEnum(requestParameters, Keys.PREFERRED_LINKTYPE, LinkType.class), meterType,
+                getInteger(requestParameters, Keys.SHORT_INTERVAL, Defaults.SHORT_INTERVAL),
+                getInteger(requestParameters, Keys.LONG_INTERVAL, Defaults.LONG_INTERVAL),
+                getEnum(requestParameters, Keys.INTERVAL_TYPE, LongTermIntervalType.class));
+    }
+
+    /**
+     * Setup method to set the configuration status which should be returned by
+     * the mock.
+     *
+     * @param status
+     *            The status to respond.
+     * @throws Throwable
+     */
+    @Given("^the device returns a set configuration status over OSLP$")
+    public void theDeviceReturnsASetConfigurationStatusOverOSLP(final Map<String, String> requestParameters)
+            throws Throwable {
+        Oslp.Status oslpStatus = Status.OK;
+
+        switch (getString(requestParameters, Keys.STATUS)) {
+        case "OK":
+            oslpStatus = Status.OK;
+            break;
+        case "FAILURE":
+            oslpStatus = Status.FAILURE;
+            break;
+        case "REJECTED":
+            oslpStatus = Status.REJECTED;
+            // TODO: Implement other possible status
+        }
+
+        this.oslpMockServer.mockSetConfigurationResponse(oslpStatus);
     }
 
     /**
@@ -806,7 +885,7 @@ public class OslpDeviceSteps extends StepsBase {
                 request.getTransitionType());
         if (expectedResult.containsKey(Keys.TIME)) {
             // TODO: How to check the time?
-            // Assert.assertEquals(expectedResult.get(Keys.KEY_TIME),
+            // Assert.assertEquals(expectedResult.get(Keys.TIME),
             // request.getTime());
         }
     }

@@ -146,4 +146,5 @@ public class Defaults {
     public static final Integer SHORT_INTERVAL = null;
     public static final LongTermIntervalType INTERVAL_TYPE = LongTermIntervalType.DAYS;
     public static final Integer LONG_INTERVAL = null;
+    public static final String DC_LIGHTS = "";
 }

@@ -40,13 +40,13 @@ public class ActivateDeviceSteps extends StepsBase {
     @When("^receiving an activate device request$")
     public void receivingAnActivateDeviceRequest(final Map<String, String> requestSettings) throws Throwable {
 
-        ActivateDeviceRequest request = new ActivateDeviceRequest();
+        final ActivateDeviceRequest request = new ActivateDeviceRequest();
         request.setDeviceIdentification(
                 getString(requestSettings, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
 
         try {
-            ScenarioContext.Current().put(Keys.RESPONSE, client.activateDevice(request));
-        } catch (SoapFaultClientException ex) {
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.activateDevice(request));
+        } catch (final SoapFaultClientException ex) {
             ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
     }
@@ -63,19 +63,19 @@ public class ActivateDeviceSteps extends StepsBase {
 
     /**
      * Verify that the activate device response is successful.
-     * 
+     *
      * @throws Throwable
      */
     @Then("^the activate device response contains$")
     public void theActivateDeviceResponseContains(final Map<String, String> expectedResponse) throws Throwable {
-        ActivateDeviceResponse response = (ActivateDeviceResponse) ScenarioContext.Current().get(Keys.RESPONSE);
+        final ActivateDeviceResponse response = (ActivateDeviceResponse) ScenarioContext.Current().get(Keys.RESPONSE);
 
         Assert.assertEquals(response.getResult(),
                 getEnum(expectedResponse, Keys.RESULT, OsgpResultType.class, OsgpResultType.OK));
     }
 
-    @Then("^the activate device response return a soap fault$")
-    public void theActivateDeviceResponseReturnsASoapFault(final Map<String, String> expectedResult) throws Throwable {
+    @Then("^the activate device response contains soap fault$")
+    public void theActivateDeviceResponseContainsASoapFault(final Map<String, String> expectedResult) throws Throwable {
         GenericResponseSteps.verifySoapFault(expectedResult);
     }
 }
