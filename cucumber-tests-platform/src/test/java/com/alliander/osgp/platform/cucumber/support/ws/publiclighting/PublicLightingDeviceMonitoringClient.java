@@ -27,7 +27,7 @@ import com.alliander.osgp.platform.cucumber.support.ws.WebServiceSecurityExcepti
 import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
 
 @Component
-public class DeviceMonitoringClient extends BaseClient {
+public class PublicLightingDeviceMonitoringClient extends BaseClient {
 
     @Autowired
     private WebServiceTemplateFactory publicLightingDeviceMonitoringWstf;
