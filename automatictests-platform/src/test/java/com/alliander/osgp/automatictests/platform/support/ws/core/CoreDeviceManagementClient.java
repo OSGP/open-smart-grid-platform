@@ -50,7 +50,7 @@ public class CoreDeviceManagementClient extends BaseClient {
 
     public SetEventNotificationsResponse getSetEventNotificationsResponse(
             final SetEventNotificationsAsyncRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+                    throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
         return (SetEventNotificationsResponse) wst.marshalSendAndReceive(request);

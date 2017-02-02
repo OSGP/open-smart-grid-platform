@@ -52,7 +52,7 @@ public class OsgpResponsePoller<AsyncRequest, Response> {
      * @throws GeneralSecurityException
      */
     public Response start(final AsyncRequest request) throws InterruptedException, WebServiceSecurityException,
-            GeneralSecurityException, IOException {
+    GeneralSecurityException, IOException {
 
         int timeSlept = 0;
 
@@ -77,7 +77,7 @@ public class OsgpResponsePoller<AsyncRequest, Response> {
     }
 
     private Response pollWsResponse(final AsyncRequest request) throws WebServiceSecurityException,
-            GeneralSecurityException, IOException {
+    GeneralSecurityException, IOException {
         @SuppressWarnings("unchecked")
         final Response response = (Response) this.webserviceTemplateFactory.getTemplate(
                 this.organizationIdentification, this.username).marshalSendAndReceive(request);

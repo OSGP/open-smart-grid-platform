@@ -28,14 +28,14 @@ public class CoreAdHocManagementClient extends BaseClient {
     @Autowired
     private DefaultWebServiceTemplateFactory coreAdHocManagementWstf;
 
-    public SetRebootAsyncResponse setReboot(SetRebootRequest request)
+    public SetRebootAsyncResponse setReboot(final SetRebootRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate webServiceTemplate = this.coreAdHocManagementWstf
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (SetRebootAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
     }
 
-    public SetRebootResponse getSetRebootResponse(SetRebootAsyncRequest request)
+    public SetRebootResponse getSetRebootResponse(final SetRebootAsyncRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate webServiceTemplate = this.coreAdHocManagementWstf
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());

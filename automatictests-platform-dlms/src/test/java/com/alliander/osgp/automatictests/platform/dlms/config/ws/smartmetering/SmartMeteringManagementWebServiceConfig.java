@@ -1,7 +1,7 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -13,8 +13,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadMethodProcessor;
 
+<<<<<<< HEAD:automatictests-platform-dlms/src/test/java/com/alliander/osgp/automatictests/platform/dlms/config/ws/smartmetering/SmartMeteringManagementWebServiceConfig.java
 import com.alliander.osgp.automatictests.platform.config.ws.BaseWebServiceConfig;
 import com.alliander.osgp.automatictests.platform.dlms.config.ApplicationConfiguration;
+=======
+import com.alliander.osgp.platform.cucumber.config.ws.BaseWebServiceConfig;
+import com.alliander.osgp.platform.dlms.cucumber.config.ApplicationConfiguration;
+>>>>>>> 1d7b6b21b837cf95c9ffee3feb3efe9aec24d57c:cucumber-tests-platform-dlms/src/test/java/com/alliander/osgp/platform/dlms/cucumber/config/ws/smartmetering/SmartMeteringManagementWebServiceConfig.java
 import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Configuration
@@ -22,7 +27,7 @@ public class SmartMeteringManagementWebServiceConfig extends BaseWebServiceConfi
 
     @Autowired
     private ApplicationConfiguration configuration;
-    
+
     @Bean
     public DefaultWebServiceTemplateFactory smartMeteringManagementWstf() {
         return new DefaultWebServiceTemplateFactory.Builder().setMarshaller(this.smartMeteringManagementMarshaller())

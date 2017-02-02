@@ -36,6 +36,7 @@ public class TariffSwitchingAdhocManagementWebServiceConfig extends BaseWebServi
                 .build();
     }
 
+
     /**
      * Method for creating the Marshaller for TariffSwitching AdHocManagement.
      *

@@ -147,7 +147,7 @@ public class AdminDeviceManagementClient extends BaseClient {
 
     public UpdateDeviceAuthorisationsResponse updateDeviceAuthorisations(
             final UpdateDeviceAuthorisationsRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+                    throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
         return (UpdateDeviceAuthorisationsResponse) wst.marshalSendAndReceive(request);
