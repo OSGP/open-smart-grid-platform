@@ -5,7 +5,7 @@ Feature: CoreConfigurationManagement GetConfiguration
 
   @OslpMockServer
   Scenario Outline: Get configuration of a device
-    Given an ssld device
+    Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
     And the device returns a get configuration status over OSLP
       | Status            | OK                  |
@@ -63,7 +63,7 @@ Feature: CoreConfigurationManagement GetConfiguration
 
   @OslpMockServer
   Scenario: Failed get configuration of a device
-    Given an ssld device
+    Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
     And the device returns a get configuration status over OSLP
       | Status            | FAILURE  |
@@ -87,7 +87,7 @@ Feature: CoreConfigurationManagement GetConfiguration
 
   @OslpMockServer
   Scenario: Rejected get configuration of a device
-    Given an ssld device
+    Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
     And the device returns a get configuration status over OSLP
       | Status            | REJECTED |

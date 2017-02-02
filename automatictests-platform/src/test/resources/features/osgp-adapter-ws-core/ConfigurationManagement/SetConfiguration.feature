@@ -5,7 +5,7 @@ Feature: CoreConfigurationManagement SetConfiguration
 
   @OslpMockServer
   Scenario Outline: Set configuration of a device
-    Given an ssld device
+    Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
     And the device returns a set configuration status over OSLP
       | Status | OK |
@@ -61,8 +61,9 @@ Feature: CoreConfigurationManagement SetConfiguration
     Then the get configuration async response contains soap fault
       | Message | UNKNOWN_DEVICE |
 
+@OslpMockServer
   Scenario Outline: Set configuration data with invalid data which result in validation errors
-    Given an ssld device
+    Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
     And the device returns a set configuration status over OSLP
       | Status | OK |
@@ -94,8 +95,9 @@ Feature: CoreConfigurationManagement SetConfiguration
       | DALI      |        5 | 1,1;2,2;3,3;4,4;5,5 |                 |                             |               |                   |           |              |              | SOAP-ENV:Client | Validation error | cvc-maxInclusive-valid: Value '5' is not facet-valid with respect to maxInclusive '4' for type '#AnonType_NumberOfLightsDaliConfiguration'.;cvc-type.3.1.3: The value '5' of element 'ns2:NumberOfLights' is not valid.;cvc-complex-type.2.4.d: Invalid content was found starting with element 'ns2:IndexAddressMap'. No child element is expected at this point.;cvc-maxInclusive-valid: Value '5' is not facet-valid with respect to maxInclusive '4' for type '#AnonType_IndexIndexAddressMap'.;cvc-type.3.1.3: The value '5' of element 'ns2:Index' is not valid.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
       | RELAY     |          |                     | LIGHT           | 1,1;2,2;3,3;4,4;5,5;6,6;7,7 |               |                   |           |              |              | SOAP-ENV:Client | Validation error | cvc-maxInclusive-valid: Value '7' is not facet-valid with respect to maxInclusive '6' for type '#AnonType_IndexRelayMap'.;cvc-type.3.1.3: The value '7' of element 'ns2:Index' is not valid.;cvc-maxInclusive-valid: Value '7' is not facet-valid with respect to maxInclusive '6' for type '#AnonType_IndexRelayMap'.;cvc-type.3.1.3: The value '7' of element 'ns2:Index' is not valid.;cvc-maxInclusive-valid: Value '7' is not facet-valid with respect to maxInclusive '6' for type '#AnonType_IndexRelayMap'.;cvc-type.3.1.3: The value '7' of element 'ns2:Index' is not valid.;cvc-maxInclusive-valid: Value '7' is not facet-valid with respect to maxInclusive '6' for type '#AnonType_IndexRelayMap'.;cvc-type.3.1.3: The value '7' of element 'ns2:Index' is not valid.;cvc-maxInclusive-valid: Value '7' is not facet-valid with respect to maxInclusive '6' for type '#AnonType_IndexRelayMap'.;cvc-type.3.1.3: The value '7' of element 'ns2:Index' is not valid.;cvc-maxInclusive-valid: Value '7' is not facet-valid with respect to maxInclusive '6' for type '#AnonType_IndexRelayMap'.;cvc-type.3.1.3: The value '7' of element 'ns2:Index' is not valid.;cvc-complex-type.2.4.d: Invalid content was found starting with element 'ns2:RelayMap'. No child element is expected at this point.;cvc-maxInclusive-valid: Value '7' is not facet-valid with respect to maxInclusive '6' for type '#AnonType_IndexRelayMap'.;cvc-type.3.1.3: The value '7' of element 'ns2:Index' is not valid. |
 
+@OslpMockServer
   Scenario Outline: Set configuration data with invalid data
-    Given an ssld device
+    Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
     And the device returns a set configuration status over OSLP
       | Status | OK |
@@ -130,7 +132,7 @@ Feature: CoreConfigurationManagement SetConfiguration
 
   @OslpMockServer
   Scenario: Failed set configuration of a device
-    Given an ssld device
+    Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
     And the device returns a set configuration status over OSLP
       | Status            | FAILURE  |
@@ -154,7 +156,7 @@ Feature: CoreConfigurationManagement SetConfiguration
 
   @OslpMockServer
   Scenario: Rejected set configuration of a device
-    Given an ssld device
+    Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
     And the device returns a set configuration status over OSLP
       | Status            | REJECTED |
