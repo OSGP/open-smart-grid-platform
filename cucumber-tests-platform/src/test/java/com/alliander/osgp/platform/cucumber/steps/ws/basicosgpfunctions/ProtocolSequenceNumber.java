@@ -7,18 +7,25 @@
  */
 package com.alliander.osgp.platform.cucumber.steps.ws.basicosgpfunctions;
 
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
+import static com.alliander.osgp.platform.cucumber.core.Helpers.saveCorrelationUidInScenarioContext;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Map;
 
+import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.FindRecentDevicesRequest;
-import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.FindRecentDevicesResponse;
+import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StartDeviceTestAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StartDeviceTestRequest;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
+import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
+import com.alliander.osgp.platform.cucumber.steps.mocks.OslpDeviceSteps;
 import com.alliander.osgp.platform.cucumber.support.ws.WebServiceSecurityException;
 import com.alliander.osgp.platform.cucumber.support.ws.core.CoreDeviceInstallationClient;
 
@@ -31,7 +38,10 @@ import cucumber.api.java.en.When;
 public class ProtocolSequenceNumber {
 
     @Autowired
-    private CoreDeviceInstallationClient coreDeviceInstallationClient;
+    private CoreDeviceInstallationClient client;
+
+    @Autowired
+    private OslpDeviceSteps oslpDeviceSteps;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolSequenceNumber.class);
 
@@ -44,21 +54,38 @@ public class ProtocolSequenceNumber {
     @When("receiving a register device request")
     public void receivingARegisterDeviceRequest(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        ScenarioContext.Current().put(Keys.RESPONSE,
-                this.coreDeviceInstallationClient.findRecentDevices(new FindRecentDevicesRequest()));
+        final StartDeviceTestRequest request = new StartDeviceTestRequest();
+        request.setDeviceIdentification(
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        final FindRecentDevicesResponse response = (FindRecentDevicesResponse) ScenarioContext.Current()
-                .get(Keys.RESPONSE);
-        System.out.println(response);
+        try {
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.startDeviceTest(request));
+        } catch (final SoapFaultClientException ex) {
+            ScenarioContext.Current().put(Keys.RESPONSE, ex);
+        }
     }
 
     @Then("the device should contain an expected - equal to init - sequence number")
-    public void theDeviceShouldContainAnExpectedEqualToInitSequenceNumber(final Map<String, String> requestParameters) {
+    public void theDeviceShouldContainAnExpectedEqualToInitSequenceNumber(
+            final Map<String, String> expectedResponseData) throws Throwable {
+        final StartDeviceTestAsyncResponse response = (StartDeviceTestAsyncResponse) ScenarioContext.Current()
+                .get(Keys.RESPONSE);
 
+        Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
+        Assert.assertEquals(getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION),
+                response.getAsyncResponse().getDeviceId());
+
+        // Save the returned CorrelationUid in the Scenario related context for
+        // further use.
+        saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
+                getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
+                        Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
     }
 
     @Then("the device should have both random values set")
     public void theDeviceShouldHaveBothRandomValuesSet(final Map<String, String> requestParameters) {
-
+        this.oslpDeviceSteps.theDeviceReturnsAStartDeviceResponseOverOSLP("OK");
+        this.oslpDeviceSteps.aStartDeviceOSLPMessageIsSentToDevice(
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
     }
 }

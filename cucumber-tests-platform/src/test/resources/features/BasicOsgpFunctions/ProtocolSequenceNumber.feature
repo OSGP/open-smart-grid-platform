@@ -4,7 +4,7 @@ Feature: BasicOsgpFunctions Protocol Sequence Number
   In order to ...
 
   # Note: These tests are connected with the tests of registering a device
-  @Skip
+  @OslpMockServer
   Scenario: Register device that already exists on the platform
     Given an oslp device
       | DeviceIdentification | TEST1024000000001 |
@@ -12,7 +12,9 @@ Feature: BasicOsgpFunctions Protocol Sequence Number
     When receiving a register device request
       | DeviceIdentification | TEST1024000000001 |
     Then the device should contain an expected - equal to init - sequence number
+      | DeviceIdentification | TEST1024000000001 |
     And the device should have both random values set
+      | DeviceIdentification | TEST1024000000001 |
 #
 #	@Skip
   #Scenario: Confirm device registration
