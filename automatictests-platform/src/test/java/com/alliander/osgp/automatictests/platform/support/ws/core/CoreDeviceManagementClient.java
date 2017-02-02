@@ -18,6 +18,8 @@ import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.SetOwnerReque
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.SetOwnerResponse;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindDevicesRequest;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindDevicesResponse;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindEventsRequest;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindEventsResponse;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotificationsAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotificationsAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotificationsRequest;
@@ -54,7 +56,14 @@ public class CoreDeviceManagementClient extends BaseClient {
         return (SetEventNotificationsResponse) wst.marshalSendAndReceive(request);
     }
 
-    public SetOwnerResponse setOwner(SetOwnerRequest request)
+    public FindEventsResponse findEventsResponse(final FindEventsRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
+        return (FindEventsResponse) wst.marshalSendAndReceive(request);
+    }
+
+    public SetOwnerResponse setOwner(final SetOwnerRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());

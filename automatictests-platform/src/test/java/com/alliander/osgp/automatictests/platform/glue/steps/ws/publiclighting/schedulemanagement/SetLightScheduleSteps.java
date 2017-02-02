@@ -7,7 +7,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.automatictests.platform.glue.steps.ws.publiclighting.ScheduleManagement;
+package com.alliander.osgp.automatictests.platform.glue.steps.ws.publiclighting.schedulemanagement;
 
 import static com.alliander.osgp.automatictests.platform.core.Helpers.getDate;
 import static com.alliander.osgp.automatictests.platform.core.Helpers.getEnum;

@@ -43,7 +43,7 @@ import com.alliander.osgp.automatictests.platform.Keys;
 import com.alliander.osgp.automatictests.platform.config.CoreDeviceConfiguration;
 import com.alliander.osgp.automatictests.platform.core.ScenarioContext;
 import com.alliander.osgp.automatictests.platform.glue.steps.ws.GenericResponseSteps;
-import com.alliander.osgp.automatictests.platform.support.ws.publiclighting.DeviceMonitoringClient;
+import com.alliander.osgp.automatictests.platform.support.ws.publiclighting.PublicLightingDeviceMonitoringClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -57,7 +57,7 @@ public class GetPowerUsageHistorySteps {
     private CoreDeviceConfiguration configuration;
 
     @Autowired
-    private DeviceMonitoringClient client;
+    private PublicLightingDeviceMonitoringClient client;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPowerUsageHistorySteps.class);
 

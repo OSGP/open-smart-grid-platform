@@ -7,13 +7,10 @@
  */
 package com.alliander.osgp.automatictests.platform;
 
-import org.joda.time.DateTime;
-
 import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.LongTermIntervalType;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.TransitionType;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.MeterType;
-import com.alliander.osgp.domain.core.valueobjects.PlatformDomain;
 import com.alliander.osgp.domain.core.valueobjects.RelayType;
 import com.alliander.osgp.oslp.Oslp.LightType;
 import com.alliander.osgp.oslp.Oslp.LinkType;
@@ -29,19 +26,17 @@ public class Defaults {
     public static final String ORGANIZATION_IDENTIFICATION = "test-org";
     public static final String USER_NAME = "Cucumber";
     public static final String PREFIX = "MAA";
-    public static final String ORGANIZATION_DOMAINS = "COMMON;PUBLIC_LIGHTING;TARIFF_SWITCHING";
-
     public static final String MANUFACTURER_ID = "Test";
     public static final String MANUFACTURER_NAME = "Test Manufacturer";
     public static final Boolean MANUFACTURER_USE_PREFIX = false;
     public static final String DEVICE_MODEL_MODEL_CODE = "TestModel";
     public static final String DEVICE_MODEL_DESCRIPTION = "Test Model";
     public static final String DEVICE_IDENTIFICATION = "TD01";
+    public static final String SMART_METER_DEVICE_IDENTIFICATION = "TEST1024000000001";
+    public static final String SMART_METER_GAS_DEVICE_IDENTIFICATION = "TESTG102400000001";
 
     public static final Boolean DEVICE_MODEL_METERED = true;
 
-    public static final String SMART_METER_DEVICE_IDENTIFICATION = "TEST1024000000001";
-    public static final String SMART_METER_GAS_DEVICE_IDENTIFICATION = "TESTG102400000001";
     public static final String DLMS_DEFAULT_COMMUNICATION_METHOD = "GPRS";
     public static final Boolean DLMS_DEFAULT_IP_ADDRESS_IS_STATIC = true;
     public static final long DLMS_DEFAULT_PORT = 1024L;
@@ -57,16 +52,13 @@ public class Defaults {
     public static final Boolean IS_ACTIVATED = true;
     public static final Boolean ACTIVE = true;
     public static final String ALIAS = "";
-    public static final String CONTAINER_CITY = "Maastricht";
-    public static final String CONTAINER_POSTALCODE = "6221 BT";
-    public static final String CONTAINER_STREET = "Stationsplein";
-    public static final String CONTAINER_NUMBER = "12";
-    public static final String CONTAINER_MUNICIPALITY = "Gemeente Maastricht";
-    // The following GPS coordinates is the GPS location to Stationsplein 12,
-    // 6221 BT Maastricht, Netherlands. Source:
-    // (http://www.gps-coordinates.net/).
-    public static final Float LATITUDE = new Float(50.848274);
-    public static final Float LONGITUDE = new Float(5.706087);
+    public static final String CONTAINER_CITY = "";
+    public static final String CONTAINER_POSTALCODE = "";
+    public static final String CONTAINER_STREET = "";
+    public static final String CONTAINER_NUMBER = "";
+    public static final String CONTAINER_MUNICIPALITY = "";
+    public static final Float LATITUDE = new Float(0);
+    public static final Float LONGITUDE = new Float(0);
     public static final Short CHANNEL = new Short((short) 1);
     public static final Short PAGE = 0;
 
@@ -116,15 +108,12 @@ public class Defaults {
     public static final Status STATUS = Status.OK;
     public static final String LIGHTVALUES = "";
     public static final String EVENTNOTIFICATIONTYPES = "";
+
     public static final String DEVICE_OUTPUT_SETTING_ALIAS = "Continues burner";
     public static final Integer DEVICE_OUTPUT_SETTING_INTERNALID = 1;
     public static final Integer DEVICE_OUTPUT_SETTING_EXTERNALID = 1;
     public static final RelayType DEVICE_OUTPUT_SETTING_RELAY_TYPE = RelayType.LIGHT;
-    public static final Boolean FILESTORAGE = true;
-    public static final PlatformDomain PLATFORMDOMAIN = PlatformDomain.COMMON;
-    public static final String SUPPLIER = "Kaifa";
-    public static final DateTime TECHNICAL_INSTALLATION_DATE = DateTime.now().minusDays(10);
-    
+
     public static final OsgpResultType PUBLICLIGHTING_STATUS = OsgpResultType.OK;
     public static final String PUBLICLIGHTING_DESCRIPTION = "";
     public static final Integer ACTUAL_CONSUMED_POWER = 48;
@@ -143,8 +132,18 @@ public class Defaults {
     public static final Integer AVERAGE_POWER_FACTOR3 = 3;
     public static final com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.HistoryTermType HISTORY_TERM_TYPE = com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.HistoryTermType.SHORT;
     public static final com.alliander.osgp.oslp.Oslp.HistoryTermType OSLP_HISTORY_TERM_TYPE = com.alliander.osgp.oslp.Oslp.HistoryTermType.Short;
-    public static final Integer SHORT_INTERVAL = null;
+
+    public static final com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.LightType CONFIGURATION_LIGHTTYPE = com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.LightType.RELAY;
+    public static final com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.LinkType CONFIGURATION_PREFERRED_LINKTYPE = com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.LinkType.ETHERNET;
+    public static final com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.MeterType CONFIGURATION_METER_TYPE = com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.MeterType.AUX;
+    public static final String DC_LIGHTS = "0";
+    public static final Integer SHORT_INTERVAL = 15;
+    public static final Integer LONG_INTERVAL = 1;
     public static final LongTermIntervalType INTERVAL_TYPE = LongTermIntervalType.DAYS;
-    public static final Integer LONG_INTERVAL = null;
-    public static final String DC_LIGHTS = "";
+
+    public static final Boolean ALLOWED = false;
+
+    public static final String FIRMWARE_IDENTIFICATION = "";
+	public static final Boolean FILESTORAGE = true;
+	public static final String SUPPLIER = "Kaifa";
 }

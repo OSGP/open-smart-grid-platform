@@ -35,7 +35,6 @@ public class Keys {
     public static final String TECHNICAL_INSTALLATION_DATE = "TechnicalInstallationDate";
 
     public static final String ORGANIZATION_IDENTIFICATION = "OrganizationIdentification";
-    public static final String ORGANIZATION_DESCRIPTION = "Description";
     public static final String USER_NAME = "UserName";
     public static final String DEVICEFUNCTIONGROUP = "DeviceFunctionGroup";
     public static final String COMM_METHOD = "CommunicationMethod";
@@ -191,10 +190,6 @@ public class Keys {
     public static final String SCHEDULE_CURRENTPAGE = "CurrentPages";
     public static final String SCHEDULE_PAGESIZE = "PageSize";
     public static final String SCHEDULE_TOTALPAGES = "TotalPages";
-    public static final String USE_PREFIX = "UsePrefix";
-    public static final String SUPPLIER = "Supplier";
-    public static final String PLATFORMDOMAINS = "PlatformDomains";
-
     public static final String ACTUAL_CONSUMED_POWER = "ActualConsumedPower";
     public static final String METER_TYPE = "MeterType";
     public static final String RECORD_TIME = "RecordTime";
@@ -215,11 +210,19 @@ public class Keys {
     public static final String END_TIME = "EndTime";
     public static final String FROM_DATE = "FromDate";
     public static final String UNTIL_DATE = "UntilDate";
-    public static final String SHORT_INTERVAL = "ShortInterval";
-    public static final String INTERVAL_TYPE = "IntervalType";
-    public static final String LONG_INTERVAL = "LongInterval";
-    public static final String DC_MAP = "DcMap";
+
     public static final String DC_LIGHTS = "DcLights";
-    public static final String RC_MAP = "RcMap";
+    public static final String DC_MAP = "DcMap";
     public static final String RC_TYPE = "RcType";
+    public static final String RC_MAP = "RcMap";
+    public static final String SHORT_INTERVAL = "ShortInterval";
+    public static final String LONG_INTERVAL = "LongInterval";
+    public static final String INTERVAL_TYPE = "IntervalType";
+
+    public static final String DEVICE_FUNCTION = "DeviceFunction";
+    public static final String ALLOWED = "Allowed";
+
+    public static final String DELEGATE_FUNCTION_GROUP = "DelegateFunctionGroup";
+	public static final String USE_PREFIX = "UsePrefix";
+	public static final String SUPPLIER = "Supplier";
 }

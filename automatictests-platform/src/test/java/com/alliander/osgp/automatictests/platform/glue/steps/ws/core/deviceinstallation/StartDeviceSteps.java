@@ -10,6 +10,8 @@ package com.alliander.osgp.automatictests.platform.glue.steps.ws.core.deviceinst
 import static com.alliander.osgp.automatictests.platform.core.Helpers.getString;
 import static com.alliander.osgp.automatictests.platform.core.Helpers.saveCorrelationUidInScenarioContext;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -29,6 +31,7 @@ import com.alliander.osgp.automatictests.platform.config.CoreDeviceConfiguration
 import com.alliander.osgp.automatictests.platform.core.ScenarioContext;
 import com.alliander.osgp.automatictests.platform.glue.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.automatictests.platform.support.ws.core.CoreDeviceInstallationClient;
+import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -44,10 +47,14 @@ public class StartDeviceSteps extends StepsBase {
     /**
      *
      * @param requestParameters
+     * @throws IOException
+     * @throws GeneralSecurityException
+     * @throws WebServiceSecurityException
      * @throws Throwable
      */
     @When("receiving a start device test request")
-    public void receivingAStartDeviceTestRequest(final Map<String, String> requestParameters) throws Throwable {
+    public void receivingAStartDeviceTestRequest(final Map<String, String> requestParameters)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final StartDeviceTestRequest request = new StartDeviceTestRequest();
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
@@ -81,20 +88,20 @@ public class StartDeviceSteps extends StepsBase {
     }
 
     @Then("^the start device response contains soap fault$")
-    public void theStartDeviceResponseContainsSoapFault(final Map<String, String> expectedResult) throws Throwable {
+    public void theStartDeviceResponseContainsSoapFault(final Map<String, String> expectedResult) {
         GenericResponseSteps.verifySoapFault(expectedResult);
     }
 
     /**
      *
      * @param deviceIdentification
-     * @throws Throwable
+     * @throws InterruptedException
      */
     @Then("the platform buffers a start device response message for device \"([^\"]*)\"")
     public void thePlatformBuffersAStartDeviceResponseMessageForDevice(final String deviceIdentification,
-            final Map<String, String> expectedResult) throws Throwable {
-        StartDeviceTestAsyncRequest request = new StartDeviceTestAsyncRequest();
-        AsyncRequest asyncRequest = new AsyncRequest();
+            final Map<String, String> expectedResult) throws InterruptedException {
+        final StartDeviceTestAsyncRequest request = new StartDeviceTestAsyncRequest();
+        final AsyncRequest asyncRequest = new AsyncRequest();
         asyncRequest.setDeviceId(deviceIdentification);
         asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.CORRELATION_UID));
         request.setAsyncRequest(asyncRequest);
@@ -102,7 +109,7 @@ public class StartDeviceSteps extends StepsBase {
         boolean success = false;
         int count = 0;
         while (!success) {
-            if (count > configuration.getTimeout()) {
+            if (count > this.configuration.getTimeout()) {
                 Assert.fail("Timeout");
             }
 
@@ -110,13 +117,13 @@ public class StartDeviceSteps extends StepsBase {
             Thread.sleep(1000);
 
             try {
-                StartDeviceTestResponse response = client.getStartDeviceTestResponse(request);
+                final StartDeviceTestResponse response = this.client.getStartDeviceTestResponse(request);
 
                 Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.RESULT)),
                         response.getResult());
 
                 success = true;
-            } catch (Exception ex) {
+            } catch (final Exception ex) {
                 // Do nothing
             }
         }

@@ -41,94 +41,108 @@ import cucumber.api.java.en.When;
  */
 public class SetRebootSteps extends StepsBase {
 
-	@Autowired
-	private CoreDeviceConfiguration configuration;
-	
-	@Autowired
-	private CoreAdHocManagementClient client;
+    @Autowired
+    private CoreDeviceConfiguration configuration;
+
+    @Autowired
+    private CoreAdHocManagementClient client;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetRebootSteps.class);
 
     /**
-     * Sends a Get Status request to the platform for a given device identification.
-     * @param requestParameters The table with the request parameters.
+     * Sends a Get Status request to the platform for a given device
+     * identification.
+     * 
+     * @param requestParameters
+     *            The table with the request parameters.
      * @throws Throwable
      */
     @When("^receiving a set reboot request$")
     public void receivingASetRebootRequest(final Map<String, String> requestParameters) throws Throwable {
-    	SetRebootRequest request = new SetRebootRequest();
-    	request.setDeviceIdentification(getString(requestParameters, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
-    	
-    	try {
-    		ScenarioContext.Current().put(Keys.RESPONSE, client.setReboot(request));
-    	} catch(SoapFaultClientException ex) {
-    		ScenarioContext.Current().put(Keys.RESPONSE, ex);
-    	}    
+        final SetRebootRequest request = new SetRebootRequest();
+        request.setDeviceIdentification(
+                getString(requestParameters, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+
+        try {
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.setReboot(request));
+        } catch (final SoapFaultClientException ex) {
+            ScenarioContext.Current().put(Keys.RESPONSE, ex);
+        }
     }
-    
+
     @When("^receiving a set reboot request by an unknown organization$")
-    public void receivingASetRebootRequestByAnUnknownOrganization(final Map<String, String> requestParameters) throws Throwable {
+    public void receivingASetRebootRequestByAnUnknownOrganization(final Map<String, String> requestParameters)
+            throws Throwable {
         // Force the request being send to the platform as a given organization.
-    	ScenarioContext.Current().put(Keys.ORGANIZATION_IDENTIFICATION, "unknown-organization");
-    	
-    	receivingASetRebootRequest(requestParameters);
+        ScenarioContext.Current().put(Keys.ORGANIZATION_IDENTIFICATION, "unknown-organization");
+
+        this.receivingASetRebootRequest(requestParameters);
     }
-    
+
     /**
      * The check for the response from the Platform.
-     * @param expectedResponseData The table with the expected fields in the response.
-     * @note The response will contain the correlation uid, so store that in the current scenario context for later use.
+     * 
+     * @param expectedResponseData
+     *            The table with the expected fields in the response.
+     * @note The response will contain the correlation uid, so store that in the
+     *       current scenario context for later use.
      * @throws Throwable
      */
     @Then("^the set reboot async response contains$")
     public void theSetRebootAsyncResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
-    	SetRebootAsyncResponse response = (SetRebootAsyncResponse)ScenarioContext.Current().get(Keys.RESPONSE);
-    	
-    	Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
-    	Assert.assertEquals(getString(expectedResponseData,  Keys.DEVICE_IDENTIFICATION), response.getAsyncResponse().getDeviceId());
+        final SetRebootAsyncResponse response = (SetRebootAsyncResponse) ScenarioContext.Current().get(Keys.RESPONSE);
 
-        // Save the returned CorrelationUid in the Scenario related context for further use.
+        Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
+        Assert.assertEquals(getString(expectedResponseData, Keys.DEVICE_IDENTIFICATION),
+                response.getAsyncResponse().getDeviceId());
+
+        // Save the returned CorrelationUid in the Scenario related context for
+        // further use.
         saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
-                getString(expectedResponseData, Keys.ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION));
 
-     	LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.CORRELATION_UID) + "]");
+                getString(expectedResponseData, Keys.ORGANIZATION_IDENTIFICATION,
+                        Defaults.ORGANIZATION_IDENTIFICATION));
+
+        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.CORRELATION_UID) + "]");
     }
 
     @Then("^the platform buffers a set reboot response message for device \"([^\"]*)\"$")
-    public void thenThePlatformBuffersASetRebootResponseMessage(final String deviceIdentification, final Map<String, String> expectedResult) throws Throwable {
-    	SetRebootAsyncRequest request = new SetRebootAsyncRequest();
-    	AsyncRequest asyncRequest = new AsyncRequest();
-    	asyncRequest.setDeviceId(deviceIdentification);
-    	asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.CORRELATION_UID));
-    	request.setAsyncRequest(asyncRequest);
-    	
-    	boolean success = false;
-    	int count = 0;
-    	while (!success) {
-    		if (count > configuration.getTimeout()) {
-    			Assert.fail("Timeout");
-    		}
-    		
-    		count++;
+    public void thenThePlatformBuffersASetRebootResponseMessage(final String deviceIdentification,
+            final Map<String, String> expectedResult) throws Throwable {
+        final SetRebootAsyncRequest request = new SetRebootAsyncRequest();
+        final AsyncRequest asyncRequest = new AsyncRequest();
+        asyncRequest.setDeviceId(deviceIdentification);
+        asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.CORRELATION_UID));
+        request.setAsyncRequest(asyncRequest);
+
+        boolean success = false;
+        int count = 0;
+        while (!success) {
+            if (count > this.configuration.getTimeout()) {
+                Assert.fail("Timeout");
+            }
+
+            count++;
             Thread.sleep(1000);
 
-    		try {
-    			SetRebootResponse response = client.getSetRebootResponse(request);
-    			
-    			Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.RESULT)), response.getResult());
-    			
-    			success = true; 
-    		}
-    		catch(Exception ex) {
-    			// Do nothing
-    		}
-    	}
+            try {
+                final SetRebootResponse response = this.client.getSetRebootResponse(request);
+
+                Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.RESULT)),
+                        response.getResult());
+
+                success = true;
+            } catch (final Exception ex) {
+                // Do nothing
+            }
+        }
     }
-    
+
     @Then("^the set reboot async response contains a soap fault$")
     public void theSetRebootAsyncResponseContainsASoapFault(final Map<String, String> expectedResult) {
-    	SoapFaultClientException response = (SoapFaultClientException)ScenarioContext.Current().get(Keys.RESPONSE);
-    	
-    	Assert.assertEquals(expectedResult.get(Keys.MESSAGE), response.getMessage());
+        final SoapFaultClientException response = (SoapFaultClientException) ScenarioContext.Current()
+                .get(Keys.RESPONSE);
+
+        Assert.assertEquals(expectedResult.get(Keys.MESSAGE), response.getMessage());
     }
 }

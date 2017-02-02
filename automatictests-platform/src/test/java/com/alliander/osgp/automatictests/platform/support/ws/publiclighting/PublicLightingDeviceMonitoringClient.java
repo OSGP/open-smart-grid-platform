@@ -27,7 +27,7 @@ import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Component
-public class DeviceMonitoringClient extends BaseClient {
+public class PublicLightingDeviceMonitoringClient extends BaseClient {
 
     @Autowired
     private DefaultWebServiceTemplateFactory publicLightingDeviceMonitoringWstf;
