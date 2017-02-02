@@ -143,5 +143,5 @@ public class Defaults {
 
     public static final Boolean ALLOWED = false;
 
-    public static final String FIRMWARE_IDENTIFICATION = "";
+    public static final String FIRMWARE_IDENTIFICATION = "F01";
 }

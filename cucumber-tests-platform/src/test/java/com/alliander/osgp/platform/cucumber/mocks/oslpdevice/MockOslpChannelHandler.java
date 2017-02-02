@@ -363,6 +363,9 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         if (request.hasGetFirmwareVersionRequest()
                 && this.mockResponses.containsKey(DeviceRequestMessageType.GET_FIRMWARE_VERSION)) {
             response = this.processRequest(DeviceRequestMessageType.GET_FIRMWARE_VERSION, request);
+        } else if (request.hasUpdateFirmwareRequest()
+                && this.mockResponses.containsKey(DeviceRequestMessageType.UPDATE_FIRMWARE)) {
+            response = this.processRequest(DeviceRequestMessageType.UPDATE_FIRMWARE, request);
         } else if (request.hasSetLightRequest() && this.mockResponses.containsKey(DeviceRequestMessageType.SET_LIGHT)) {
             response = this.processRequest(DeviceRequestMessageType.SET_LIGHT, request);
         } else if (request.hasSetEventNotificationsRequest()

@@ -21,10 +21,10 @@ import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.alliander.osgp.adapter.ws.schema.core.common.AsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.common.OsgpResultType;
-import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionAsyncRequest;
-import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionAsyncResponse;
-import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionRequest;
-import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionResponse;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareResponse;
 import com.alliander.osgp.platform.cucumber.config.CoreDeviceConfiguration;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
@@ -38,34 +38,37 @@ import cucumber.api.java.en.Then;
 /**
  * Class with all the firmware requests steps
  */
-public class GetFirmwareVersionSteps {
+public class UpdateFirmwareSteps {
     @Autowired
     private CoreDeviceConfiguration configuration;
 
     @Autowired
     private CoreFirmwareManagementClient client;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetFirmwareVersionSteps.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UpdateFirmwareSteps.class);
 
     /**
-     * Sends a Get Firmware Version request to the platform for a given device
+     * Sends a Update Firmware request to the platform for a given device
      * identification.
      *
      * @param requestParameters
      *            The table with the request parameters.
      * @throws Throwable
      */
-    @Given("^receiving a get firmware version request$")
+    @Given("^receiving an update firmware request$")
     public void receivingAGetFirmwareVersionRequest(final Map<String, String> requestParameters) throws Throwable {
 
-        final GetFirmwareVersionRequest request = new GetFirmwareVersionRequest();
+        final UpdateFirmwareRequest request = new UpdateFirmwareRequest();
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+        request.setFirmwareIdentification(
+                getString(requestParameters, Keys.KEY_FIRMWARE_IDENTIFICATION, Defaults.FIRMWARE_IDENTIFICATION));
 
         try {
-            ScenarioContext.Current().put(Keys.RESPONSE, this.client.getFirmwareVersion(request));
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.updateFirmware(request));
         } catch (final SoapFaultClientException ex) {
             ScenarioContext.Current().put(Keys.RESPONSE, ex);
+            GenericResponseSteps.verifySoapFault(requestParameters);
         }
     }
 
@@ -78,9 +81,9 @@ public class GetFirmwareVersionSteps {
      *       current scenario context for later use.
      * @throws Throwable
      */
-    @Then("^the get firmware version async response contains$")
-    public void theGetFirmwareVersionResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
-        final GetFirmwareVersionAsyncResponse response = (GetFirmwareVersionAsyncResponse) ScenarioContext.Current()
+    @Then("^the update firmware async response contains$")
+    public void theUpdateFirmwareResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
+        final UpdateFirmwareAsyncResponse response = (UpdateFirmwareAsyncResponse) ScenarioContext.Current()
                 .get(Keys.RESPONSE);
 
         Assert.assertEquals(getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION),
@@ -96,10 +99,10 @@ public class GetFirmwareVersionSteps {
         LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
     }
 
-    @Then("^the platform buffers a get firmware version response message for device \"([^\"]*)\"$")
-    public void thePlatformBuffersAGetFirmwareVersionResponseMessage(final String deviceIdentification,
+    @Then("^the platform buffers an update firmware response message for device \"([^\"]*)\"$")
+    public void thePlatformBuffersAnUpdateFirmwareResponseMessage(final String deviceIdentification,
             final Map<String, String> expectedResponseData) throws Throwable {
-        final GetFirmwareVersionAsyncRequest request = new GetFirmwareVersionAsyncRequest();
+        final UpdateFirmwareAsyncRequest request = new UpdateFirmwareAsyncRequest();
         final AsyncRequest asyncRequest = new AsyncRequest();
         asyncRequest.setDeviceId(deviceIdentification);
         asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
@@ -116,7 +119,7 @@ public class GetFirmwareVersionSteps {
             Thread.sleep(1000);
 
             try {
-                final GetFirmwareVersionResponse response = this.client.getGetFirmwareVersion(request);
+                final UpdateFirmwareResponse response = this.client.getUpdateFirmware(request);
 
                 if (getEnum(expectedResponseData, Keys.KEY_RESULT, OsgpResultType.class) != response.getResult()) {
                     continue;
@@ -129,8 +132,8 @@ public class GetFirmwareVersionSteps {
         }
     }
 
-    @Then("^the get firmware version response contains soap fault$")
-    public void theGetFirmwareVersionResponseContainsSoapFault(final Map<String, String> expectedResponseData)
+    @Then("^the update firmware response contains soap fault$")
+    public void theUpdateFirmwareResponseContainsSoapFault(final Map<String, String> expectedResponseData)
             throws Throwable {
         GenericResponseSteps.verifySoapFault(expectedResponseData);
     }
