@@ -19,6 +19,9 @@ public class Keys {
     public static final String HLS3ACTIVE = "Hls3active";
     public static final String HLS4ACTIVE = "Hls4active";
     public static final String HLS5ACTIVE = "Hls5active";
+    public static final String LLS1ACTIVE = "Lls1active";
+    public static final String USE_HDLC = "UseHdlc";
+    public static final String USE_SN = "UseSn";
     public static final String CHALLENGE_LENGTH = "ChallengeLength";
     public static final String WITH_LIST_SUPPORTED = "WithListSupported";
     public static final String SELECTIVE_ACCESS_SUPPORTED = "SelectiveAccessSupported";

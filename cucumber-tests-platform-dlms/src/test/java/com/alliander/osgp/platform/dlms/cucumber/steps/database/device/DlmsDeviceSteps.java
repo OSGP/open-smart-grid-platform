@@ -95,8 +95,8 @@ public class DlmsDeviceSteps {
         }
 
         if (inputSettings.containsKey(Keys.GATEWAY_DEVICE_IDENTIFICATION)) {
-            final Device gatewayDevice = this.deviceRepository.findByDeviceIdentification(inputSettings
-                    .get(Keys.GATEWAY_DEVICE_IDENTIFICATION));
+            final Device gatewayDevice = this.deviceRepository
+                    .findByDeviceIdentification(inputSettings.get(Keys.GATEWAY_DEVICE_IDENTIFICATION));
             device.updateGatewayDevice(gatewayDevice);
             device = this.deviceRepository.save(device);
         }
@@ -106,8 +106,8 @@ public class DlmsDeviceSteps {
     private void createDeviceAuthorisationInCoreDatabase(final Device device) {
         final Organisation organisation = this.organisationRepo
                 .findByOrganisationIdentification(Defaults.ORGANISATION_IDENTIFICATION);
-        final DeviceAuthorization deviceAuthorization = device
-                .addAuthorization(organisation, DeviceFunctionGroup.OWNER);
+        final DeviceAuthorization deviceAuthorization = device.addAuthorization(organisation,
+                DeviceFunctionGroup.OWNER);
 
         this.deviceAuthorizationRepository.save(deviceAuthorization);
         this.deviceRepository.save(device);
@@ -115,14 +115,17 @@ public class DlmsDeviceSteps {
 
     private void createDlmsDeviceInProtocolAdapterDatabase(final Map<String, String> inputSettings) {
         final DlmsDeviceBuilder dlmsDeviceBuilder = new DlmsDeviceBuilder().withSettings(inputSettings);
+
         if (inputSettings.containsKey(Keys.GATEWAY_DEVICE_IDENTIFICATION)) {
-            // MBUS devices dont need these keys.
-            dlmsDeviceBuilder.getEncryptionSecurityKeyBuilder().disable();
-            dlmsDeviceBuilder.getMasterSecurityKeyBuilder().disable();
-            dlmsDeviceBuilder.getAuthenticationSecurityKeyBuilder().disable();
+            dlmsDeviceBuilder.getMbusEncryptionSecurityKeyBuilder().enable();
+            dlmsDeviceBuilder.getMbusMasterSecurityKeyBuilder().enable();
+        } else if (inputSettings.containsKey(Keys.LLS1ACTIVE) && "true".equals(inputSettings.get(Keys.LLS1ACTIVE))) {
+            dlmsDeviceBuilder.getPasswordBuilder().enable();
         } else {
-            dlmsDeviceBuilder.getMbusEncryptionSecurityKeyBuilder().disable();
-            dlmsDeviceBuilder.getMbusMasterSecurityKeyBuilder().disable();
+            dlmsDeviceBuilder.getEncryptionSecurityKeyBuilder().enable();
+            dlmsDeviceBuilder.getMasterSecurityKeyBuilder().enable();
+            dlmsDeviceBuilder.getAuthenticationSecurityKeyBuilder().enable();
+
         }
 
         final DlmsDevice dlmsDevice = dlmsDeviceBuilder.build();

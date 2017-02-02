@@ -26,6 +26,9 @@ public class Defaults {
     public static final boolean HLS3ACTIVE = false;
     public static final boolean HLS4ACTIVE = false;
     public static final boolean HLS5ACTIVE = true;
+    public static final boolean LLS1ACTIVE = false;
+    public static final boolean USE_HDLC = false;
+    public static final boolean USE_SN = false;
     public static final Integer CHALLENGE_LENGTH = null;
     public static final boolean WITH_LIST_SUPPORTED = false;
     public static final boolean SELECTIVE_ACCESS_SUPPORTED = false;
@@ -39,6 +42,8 @@ public class Defaults {
     public static final String SECURITY_KEY_TYPE_A = "E_METER_AUTHENTICATION";
     public static final String SECURITY_KEY_TYPE_E = "E_METER_ENCRYPTION";
     public static final Date VALID_TO = null;
+
+    public static final String PASSWORD = "e7233dec0dfbf031960e21c149c3293e";
 
     public static final String SECURITY_KEY_M = "bc082efed278e1bbebddc0431877d4fa16374b00e96dd102beab666dcb72efbd1f0b868412497f6d3d0c62caa4700585";
     public static final String SECURITY_KEY_A = "bc082efed278e1bbebddc0431877d4fae80fa4e72925b6ad0bc67c84b8721598eda8458bcc1b2827fe6e5e7918ce22fd";

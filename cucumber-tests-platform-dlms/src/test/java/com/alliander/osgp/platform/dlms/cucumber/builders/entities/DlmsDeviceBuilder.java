@@ -27,6 +27,9 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     private boolean hls3active = Defaults.HLS3ACTIVE;
     private boolean hls4active = Defaults.HLS4ACTIVE;
     private boolean hls5active = Defaults.HLS5ACTIVE;
+    private boolean lls1active = Defaults.LLS1ACTIVE;
+    private boolean usesn = Defaults.USE_SN;
+    private boolean usehdlc = Defaults.USE_HDLC;
     private Integer challengeLength = Defaults.CHALLENGE_LENGTH;
     private boolean withListSupported = Defaults.WITH_LIST_SUPPORTED;
     private boolean selectiveAccessSupported = Defaults.SELECTIVE_ACCESS_SUPPORTED;
@@ -36,16 +39,18 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     private Long logicalId = Defaults.LOGICAL_ID;
     private boolean inDebugMode = Defaults.IN_DEBUG_MODE;
 
-    private final SecurityKeyBuilder authenticationSecurityKeyBuilder = new SecurityKeyBuilder().setSecurityKeyType(
-            SecurityKeyType.E_METER_AUTHENTICATION).setKey(Defaults.SECURITY_KEY_A);
-    private final SecurityKeyBuilder encryptionSecurityKeyBuilder = new SecurityKeyBuilder().setSecurityKeyType(
-            SecurityKeyType.E_METER_ENCRYPTION).setKey(Defaults.SECURITY_KEY_E);
-    private final SecurityKeyBuilder masterSecurityKeyBuilder = new SecurityKeyBuilder().setSecurityKeyType(
-            SecurityKeyType.E_METER_MASTER).setKey(Defaults.SECURITY_KEY_M);
-    private final SecurityKeyBuilder mbusEncryptionSecurityKeyBuilder = new SecurityKeyBuilder().setSecurityKeyType(
-            SecurityKeyType.G_METER_ENCRYPTION).setKey(Defaults.SECURITY_KEY_G_ENCRYPTION);
-    private final SecurityKeyBuilder mbusMasterSecurityKeyBuilder = new SecurityKeyBuilder().setSecurityKeyType(
-            SecurityKeyType.G_METER_MASTER).setKey(Defaults.SECURITY_KEY_G_MASTER);
+    private final SecurityKeyBuilder passwordBuilder = new SecurityKeyBuilder()
+            .setSecurityKeyType(SecurityKeyType.PASSWORD).setKey(Defaults.PASSWORD);
+    private final SecurityKeyBuilder authenticationSecurityKeyBuilder = new SecurityKeyBuilder()
+            .setSecurityKeyType(SecurityKeyType.E_METER_AUTHENTICATION).setKey(Defaults.SECURITY_KEY_A);
+    private final SecurityKeyBuilder encryptionSecurityKeyBuilder = new SecurityKeyBuilder()
+            .setSecurityKeyType(SecurityKeyType.E_METER_ENCRYPTION).setKey(Defaults.SECURITY_KEY_E);
+    private final SecurityKeyBuilder masterSecurityKeyBuilder = new SecurityKeyBuilder()
+            .setSecurityKeyType(SecurityKeyType.E_METER_MASTER).setKey(Defaults.SECURITY_KEY_M);
+    private final SecurityKeyBuilder mbusEncryptionSecurityKeyBuilder = new SecurityKeyBuilder()
+            .setSecurityKeyType(SecurityKeyType.G_METER_ENCRYPTION).setKey(Defaults.SECURITY_KEY_G_ENCRYPTION);
+    private final SecurityKeyBuilder mbusMasterSecurityKeyBuilder = new SecurityKeyBuilder()
+            .setSecurityKeyType(SecurityKeyType.G_METER_MASTER).setKey(Defaults.SECURITY_KEY_G_MASTER);
 
     public DlmsDeviceBuilder setDeviceIdentification(final String deviceIdentification) {
         this.deviceIdentification = deviceIdentification;
@@ -84,6 +89,21 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
 
     public DlmsDeviceBuilder setHls5Active(final boolean hls5active) {
         this.hls5active = hls5active;
+        return this;
+    }
+
+    public DlmsDeviceBuilder setLls1Active(final boolean lls1active) {
+        this.lls1active = lls1active;
+        return this;
+    }
+
+    public DlmsDeviceBuilder setUsesn(final boolean usesn) {
+        this.usesn = usesn;
+        return this;
+    }
+
+    public DlmsDeviceBuilder setUsehdlc(final boolean usehdlc) {
+        this.usehdlc = usehdlc;
         return this;
     }
 
@@ -137,6 +157,11 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
      */
     public SecurityKeyBuilder getAuthenticationSecurityKeyBuilder() {
         return this.authenticationSecurityKeyBuilder;
+    }
+
+    public SecurityKeyBuilder getPasswordBuilder() {
+        return this.passwordBuilder;
+
     }
 
     /**
@@ -213,6 +238,15 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
         if (inputSettings.containsKey(Keys.HLS5ACTIVE)) {
             this.setHls5Active(Boolean.parseBoolean(inputSettings.get(Keys.HLS5ACTIVE)));
         }
+        if (inputSettings.containsKey(Keys.LLS1ACTIVE)) {
+            this.setLls1Active(Boolean.parseBoolean(inputSettings.get(Keys.LLS1ACTIVE)));
+        }
+        if (inputSettings.containsKey(Keys.USE_HDLC)) {
+            this.setUsehdlc(Boolean.parseBoolean(inputSettings.get(Keys.USE_HDLC)));
+        }
+        if (inputSettings.containsKey(Keys.USE_SN)) {
+            this.setUsesn(Boolean.parseBoolean(inputSettings.get(Keys.USE_SN)));
+        }
         if (inputSettings.containsKey(Keys.CHALLENGE_LENGTH)) {
             this.setChallengeLength(Integer.parseInt(inputSettings.get(Keys.CHALLENGE_LENGTH)));
         }
@@ -252,6 +286,9 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
         dlmsDevice.setHls3Active(this.hls3active);
         dlmsDevice.setHls4Active(this.hls4active);
         dlmsDevice.setHls5Active(this.hls5active);
+        dlmsDevice.setLls1Active(this.lls1active);
+        dlmsDevice.setUseHdlc(this.usehdlc);
+        dlmsDevice.setUseSn(this.usesn);
         dlmsDevice.setChallengeLength(this.challengeLength);
         dlmsDevice.setWithListSupported(this.withListSupported);
         dlmsDevice.setSelectiveAccessSupported(this.selectiveAccessSupported);
@@ -268,8 +305,8 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
          * this circular dependency.
          */
         final List<SecurityKeyBuilder> keyBuilders = Arrays.asList(this.authenticationSecurityKeyBuilder,
-                this.encryptionSecurityKeyBuilder, this.masterSecurityKeyBuilder,
-                this.mbusEncryptionSecurityKeyBuilder, this.mbusMasterSecurityKeyBuilder);
+                this.encryptionSecurityKeyBuilder, this.masterSecurityKeyBuilder, this.mbusEncryptionSecurityKeyBuilder,
+                this.mbusMasterSecurityKeyBuilder, this.passwordBuilder);
         for (final SecurityKeyBuilder keyBuilder : keyBuilders) {
             if (keyBuilder.enabled()) {
                 dlmsDevice.addSecurityKey(keyBuilder.setDlmsDevice(dlmsDevice).build());
