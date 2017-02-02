@@ -55,8 +55,8 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
     private String keyStorePassword;
     private KeyStoreFactoryBean trustStoreFactory;
     private String applicationName;
-    private int maxConnectionsPerRoute = 2;
-    private int maxConnectionsTotal = 20;
+    private int maxConnectionsPerRoute;
+    private int maxConnectionsTotal;
 
     private DefaultWebServiceTemplateFactory() {
         this.webServiceTemplates = new HashMap<>();
@@ -138,16 +138,16 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
 
         public DefaultWebServiceTemplateFactory build() {
             final DefaultWebServiceTemplateFactory webServiceTemplateFactory = new DefaultWebServiceTemplateFactory();
-            webServiceTemplateFactory.setMarshaller(this.marshaller);
-            webServiceTemplateFactory.setMessageFactory(this.messageFactory);
-            webServiceTemplateFactory.setTargetUri(this.targetUri);
-            webServiceTemplateFactory.setKeyStoreType(this.keyStoreType);
-            webServiceTemplateFactory.setKeyStoreLocation(this.keyStoreLocation);
-            webServiceTemplateFactory.setKeyStorePassword(this.keyStorePassword);
-            webServiceTemplateFactory.setTrustStoreFactory(this.trustStoreFactory);
-            webServiceTemplateFactory.setApplicationName(this.applicationName);
-            webServiceTemplateFactory.setMaxConnectionsPerRoute(this.maxConnectionsPerRoute);
-            webServiceTemplateFactory.setMaxConnectionsTotal(this.maxConnectionsTotal);
+            webServiceTemplateFactory.marshaller = this.marshaller;
+            webServiceTemplateFactory.messageFactory = this.messageFactory;
+            webServiceTemplateFactory.targetUri = this.targetUri;
+            webServiceTemplateFactory.keyStoreType = this.keyStoreType;
+            webServiceTemplateFactory.keyStoreLocation = this.keyStoreLocation;
+            webServiceTemplateFactory.keyStorePassword = this.keyStorePassword;
+            webServiceTemplateFactory.trustStoreFactory = this.trustStoreFactory;
+            webServiceTemplateFactory.applicationName = this.applicationName;
+            webServiceTemplateFactory.maxConnectionsPerRoute = this.maxConnectionsPerRoute;
+            webServiceTemplateFactory.maxConnectionsTotal = this.maxConnectionsTotal;
             return webServiceTemplateFactory;
         }
     }
@@ -253,45 +253,5 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
         clientbuilder.addInterceptorFirst(new HttpComponentsMessageSender.RemoveSoapHeadersInterceptor());
 
         return new HttpComponentsMessageSender(clientbuilder.build());
-    }
-
-    private void setApplicationName(final String applicationName) {
-        this.applicationName = applicationName;
-    }
-
-    private void setMarshaller(final Jaxb2Marshaller marshaller) {
-        this.marshaller = marshaller;
-    }
-
-    private void setMessageFactory(final SaajSoapMessageFactory messageFactory) {
-        this.messageFactory = messageFactory;
-    }
-
-    private void setKeyStoreType(final String keyStoreType) {
-        this.keyStoreType = keyStoreType;
-    }
-
-    private void setKeyStoreLocation(final String keyStoreLocation) {
-        this.keyStoreLocation = keyStoreLocation;
-    }
-
-    private void setKeyStorePassword(final String keyStorePassword) {
-        this.keyStorePassword = keyStorePassword;
-    }
-
-    private void setTrustStoreFactory(final KeyStoreFactoryBean trustStoreFactory) {
-        this.trustStoreFactory = trustStoreFactory;
-    }
-
-    private void setTargetUri(final String targetUri) {
-        this.targetUri = targetUri;
-    }
-
-    private void setMaxConnectionsPerRoute(final int maxConnectionsPerRoute) {
-        this.maxConnectionsPerRoute = maxConnectionsPerRoute;
-    }
-
-    private void setMaxConnectionsTotal(final int maxConnectionsTotal) {
-        this.maxConnectionsTotal = maxConnectionsTotal;
     }
 }
