@@ -13,13 +13,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadMethodProcessor;
 
-<<<<<<< HEAD:automatictests-platform-dlms/src/test/java/com/alliander/osgp/automatictests/platform/dlms/config/ws/smartmetering/SmartMeteringConfigurationWebServiceConfig.java
 import com.alliander.osgp.automatictests.platform.config.ws.BaseWebServiceConfig;
 import com.alliander.osgp.automatictests.platform.dlms.config.ApplicationConfiguration;
-=======
-import com.alliander.osgp.platform.cucumber.config.ws.BaseWebServiceConfig;
-import com.alliander.osgp.platform.dlms.cucumber.config.ApplicationConfiguration;
->>>>>>> 1d7b6b21b837cf95c9ffee3feb3efe9aec24d57c:cucumber-tests-platform-dlms/src/test/java/com/alliander/osgp/platform/dlms/cucumber/config/ws/smartmetering/SmartMeteringConfigurationWebServiceConfig.java
 import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Configuration

@@ -31,17 +31,10 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.DeCoupleM
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.DeCoupleMbusDeviceRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.DeCoupleMbusDeviceResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.ObjectFactory;
-<<<<<<< HEAD:automatictests-platform-dlms/src/test/java/com/alliander/osgp/automatictests/platform/dlms/glue/steps/ws/smartmetering/smartmeteringinstallation/CoupleAndDeCoupleDevice.java
 import com.alliander.osgp.automatictests.platform.Keys;
 import com.alliander.osgp.automatictests.platform.core.ScenarioContext;
 import com.alliander.osgp.automatictests.platform.dlms.glue.steps.ws.smartmetering.AbstractSmartMeteringSteps;
 import com.alliander.osgp.automatictests.platform.glue.steps.ws.OsgpResponsePoller;
-=======
-import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
-import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.steps.ws.OsgpResponsePoller;
-import com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.AbstractSmartMeteringSteps;
->>>>>>> 1d7b6b21b837cf95c9ffee3feb3efe9aec24d57c:cucumber-tests-platform-dlms/src/test/java/com/alliander/osgp/platform/dlms/cucumber/steps/ws/smartmetering/smartmeteringinstallation/CoupleAndDeCoupleDevice.java
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
