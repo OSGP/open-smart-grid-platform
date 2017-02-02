@@ -23,14 +23,14 @@ import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.GetP
 import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.GetPowerUsageHistoryRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.GetPowerUsageHistoryResponse;
 import com.alliander.osgp.platform.cucumber.support.ws.BaseClient;
-import com.alliander.osgp.platform.cucumber.support.ws.WebServiceSecurityException;
-import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
+import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Component
 public class PublicLightingDeviceMonitoringClient extends BaseClient {
 
     @Autowired
-    private WebServiceTemplateFactory publicLightingDeviceMonitoringWstf;
+    private DefaultWebServiceTemplateFactory publicLightingDeviceMonitoringWstf;
 
     public GetActualPowerUsageAsyncResponse getActualPowerUsage(final GetActualPowerUsageRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {

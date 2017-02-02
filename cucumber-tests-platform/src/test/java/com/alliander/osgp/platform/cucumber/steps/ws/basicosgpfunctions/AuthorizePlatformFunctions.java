@@ -35,8 +35,8 @@ import com.alliander.osgp.domain.core.valueobjects.PlatformFunction;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.support.ws.WebServiceSecurityException;
 import com.alliander.osgp.platform.cucumber.support.ws.admin.AdminDeviceManagementClient;
+import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
