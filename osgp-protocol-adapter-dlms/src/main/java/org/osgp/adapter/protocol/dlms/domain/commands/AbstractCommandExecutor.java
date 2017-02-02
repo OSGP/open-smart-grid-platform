@@ -9,10 +9,14 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import javax.annotation.PostConstruct;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.MethodResultCode;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.osgp.adapter.protocol.dlms.exceptions.BufferedDateTimeValidationException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto;
 
 public abstract class AbstractCommandExecutor<T, R> implements CommandExecutor<T, R> {
 
@@ -128,6 +133,24 @@ public abstract class AbstractCommandExecutor<T, R> implements CommandExecutor<T
     protected void checkMethodResultCode(final MethodResultCode methodResultCode) throws ProtocolAdapterException {
         if (MethodResultCode.SUCCESS != methodResultCode) {
             throw new ProtocolAdapterException("MethodResultCode: " + methodResultCode);
+        }
+    }
+
+    protected void validateBufferedDateTime(final DateTime bufferedDateTime, final CosemDateTimeDto cosemDateTime,
+            final DateTime beginDateTime, final DateTime endDateTime) throws BufferedDateTimeValidationException {
+
+        if (bufferedDateTime == null) {
+            final DateTimeFormatter dtf = ISODateTimeFormat.dateTime();
+            throw new BufferedDateTimeValidationException("Not using an object from capture buffer (clock="
+                    + cosemDateTime
+                    + "), because the date does not match the given period, since it is not fully specified: ["
+                    + dtf.print(beginDateTime) + " .. " + dtf.print(endDateTime) + "].");
+        }
+        if (bufferedDateTime.isBefore(beginDateTime) || bufferedDateTime.isAfter(endDateTime)) {
+            final DateTimeFormatter dtf = ISODateTimeFormat.dateTime();
+            throw new BufferedDateTimeValidationException("Not using an object from capture buffer (clock="
+                    + dtf.print(bufferedDateTime) + "), because the date does not match the given period: ["
+                    + dtf.print(beginDateTime) + " .. " + dtf.print(endDateTime) + "].");
         }
     }
 }
