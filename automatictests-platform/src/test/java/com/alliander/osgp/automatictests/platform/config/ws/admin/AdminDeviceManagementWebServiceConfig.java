@@ -16,7 +16,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadMethodProcessor;
 
 import com.alliander.osgp.automatictests.platform.config.ws.BaseWebServiceConfig;
-import com.alliander.osgp.automatictests.platform.support.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Configuration
 public class AdminDeviceManagementWebServiceConfig extends BaseWebServiceConfig {
@@ -28,10 +28,10 @@ public class AdminDeviceManagementWebServiceConfig extends BaseWebServiceConfig 
     private String contextPathAdminDeviceManagement;
 
     @Bean
-    public WebServiceTemplateFactory adminDeviceManagementWstf() {
-        return new WebServiceTemplateFactory.Builder().setMarshaller(this.adminDeviceManagementMarshaller())
+    public DefaultWebServiceTemplateFactory adminDeviceManagementWstf() {
+        return new DefaultWebServiceTemplateFactory.Builder().setMarshaller(this.adminDeviceManagementMarshaller())
                 .setMessageFactory(this.messageFactory())
-                .setDefaultUri(this.baseUri.concat(this.webserviceTemplateDefaultUriAdminDeviceManagement))
+                .setTargetUri(this.baseUri.concat(this.webserviceTemplateDefaultUriAdminDeviceManagement))
                 .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
                 .setKeyStorePassword(this.webserviceKeystorePassword)
                 .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)

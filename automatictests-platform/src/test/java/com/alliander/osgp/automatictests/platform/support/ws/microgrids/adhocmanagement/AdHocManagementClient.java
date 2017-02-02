@@ -26,15 +26,15 @@ import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataAs
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataRequest;
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataResponse;
 import com.alliander.osgp.automatictests.platform.support.ws.BaseClient;
-import com.alliander.osgp.automatictests.platform.support.ws.WebServiceSecurityException;
-import com.alliander.osgp.automatictests.platform.support.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
+import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Component
 public class AdHocManagementClient extends BaseClient {
 
     @Autowired
     @Qualifier("webServiceTemplateFactoryMicrogridsAdHocManagement")
-    private WebServiceTemplateFactory webServiceTemplateFactoryMicrogridsAdHocManagement;
+    private DefaultWebServiceTemplateFactory webServiceTemplateFactoryMicrogridsAdHocManagement;
 
     @Autowired
     private RtuResponseDataRepository rtuResponseDataRepository;

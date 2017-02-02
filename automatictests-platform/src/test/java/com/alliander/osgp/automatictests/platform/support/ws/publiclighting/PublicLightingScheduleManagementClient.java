@@ -19,14 +19,14 @@ import com.alliander.osgp.adapter.ws.schema.publiclighting.schedulemanagement.Se
 import com.alliander.osgp.adapter.ws.schema.publiclighting.schedulemanagement.SetScheduleRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.schedulemanagement.SetScheduleResponse;
 import com.alliander.osgp.automatictests.platform.support.ws.BaseClient;
-import com.alliander.osgp.automatictests.platform.support.ws.WebServiceSecurityException;
-import com.alliander.osgp.automatictests.platform.support.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
+import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Component
 public class PublicLightingScheduleManagementClient extends BaseClient {
 
     @Autowired
-    private WebServiceTemplateFactory publicLightingScheduleManagementWstf;
+    private DefaultWebServiceTemplateFactory publicLightingScheduleManagementWstf;
 
     public SetScheduleAsyncResponse setSchedule(final SetScheduleRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {

@@ -14,7 +14,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadMethodProcessor;
 
 import com.alliander.osgp.automatictests.platform.config.ws.BaseWebServiceConfig;
-import com.alliander.osgp.automatictests.platform.support.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Configuration
 public class CoreDeviceInstallationWebServiceConfig extends BaseWebServiceConfig {
@@ -26,10 +26,10 @@ public class CoreDeviceInstallationWebServiceConfig extends BaseWebServiceConfig
     private String contextPathCoreDeviceInstallation;
 
     @Bean
-    public WebServiceTemplateFactory coreDeviceInstallationWstf() {
-        return new WebServiceTemplateFactory.Builder().setMarshaller(this.coreDeviceInstallationMarshaller())
+    public DefaultWebServiceTemplateFactory coreDeviceInstallationWstf() {
+        return new DefaultWebServiceTemplateFactory.Builder().setMarshaller(this.coreDeviceInstallationMarshaller())
                 .setMessageFactory(this.messageFactory())
-                .setDefaultUri(this.baseUri.concat(this.webserviceTemplateDefaultUriCoreDeviceInstallation))
+                .setTargetUri(this.baseUri.concat(this.webserviceTemplateDefaultUriCoreDeviceInstallation))
                 .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
                 .setKeyStorePassword(this.webserviceKeystorePassword)
                 .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)

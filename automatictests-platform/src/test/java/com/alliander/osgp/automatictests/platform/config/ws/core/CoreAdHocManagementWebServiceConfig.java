@@ -14,7 +14,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadMethodProcessor;
 
 import com.alliander.osgp.automatictests.platform.config.ws.BaseWebServiceConfig;
-import com.alliander.osgp.automatictests.platform.support.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Configuration
 public class CoreAdHocManagementWebServiceConfig extends BaseWebServiceConfig {
@@ -26,10 +26,10 @@ public class CoreAdHocManagementWebServiceConfig extends BaseWebServiceConfig {
     private String contextPathCoreAdHocManagement;
 
     @Bean
-    public WebServiceTemplateFactory coreAdHocManagementWstf() {
-        return new WebServiceTemplateFactory.Builder().setMarshaller(this.coreAdHocManagementMarshaller())
+    public DefaultWebServiceTemplateFactory coreAdHocManagementWstf() {
+        return new DefaultWebServiceTemplateFactory.Builder().setMarshaller(this.coreAdHocManagementMarshaller())
                 .setMessageFactory(this.messageFactory())
-                .setDefaultUri(this.baseUri.concat(this.webserviceTemplateDefaultUriCoreAdHocManagement))
+                .setTargetUri(this.baseUri.concat(this.webserviceTemplateDefaultUriCoreAdHocManagement))
                 .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
                 .setKeyStorePassword(this.webserviceKeystorePassword)
                 .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)

@@ -31,14 +31,14 @@ import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.SetTr
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.SetTransitionRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.SetTransitionResponse;
 import com.alliander.osgp.automatictests.platform.support.ws.BaseClient;
-import com.alliander.osgp.automatictests.platform.support.ws.WebServiceSecurityException;
-import com.alliander.osgp.automatictests.platform.support.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
+import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Component
 public class PublicLightingAdHocManagementClient extends BaseClient {
 
 	@Autowired
-    private WebServiceTemplateFactory publicLightingAdHocManagementWstf;
+    private DefaultWebServiceTemplateFactory publicLightingAdHocManagementWstf;
 
 	public GetStatusAsyncResponse getStatus(GetStatusRequest request) throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate webServiceTemplate = this.publicLightingAdHocManagementWstf

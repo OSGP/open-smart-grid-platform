@@ -23,14 +23,14 @@ import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.SetConf
 import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.SetConfigurationRequest;
 import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.SetConfigurationResponse;
 import com.alliander.osgp.automatictests.platform.support.ws.BaseClient;
-import com.alliander.osgp.automatictests.platform.support.ws.WebServiceSecurityException;
-import com.alliander.osgp.automatictests.platform.support.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
+import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Component
 public class CoreConfigurationManagementClient extends BaseClient {
 
     @Autowired
-    private WebServiceTemplateFactory coreConfigurationManagementWstf;
+    private DefaultWebServiceTemplateFactory coreConfigurationManagementWstf;
 
     public GetConfigurationAsyncResponse getConfiguration(final GetConfigurationRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {

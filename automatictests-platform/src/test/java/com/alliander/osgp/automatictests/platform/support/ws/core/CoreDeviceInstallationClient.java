@@ -33,14 +33,14 @@ import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StopDeviceTe
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.UpdateDeviceRequest;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.UpdateDeviceResponse;
 import com.alliander.osgp.automatictests.platform.support.ws.BaseClient;
-import com.alliander.osgp.automatictests.platform.support.ws.WebServiceSecurityException;
-import com.alliander.osgp.automatictests.platform.support.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
+import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Component
 public class CoreDeviceInstallationClient extends BaseClient {
 
     @Autowired
-    private WebServiceTemplateFactory coreDeviceInstallationWstf;
+    private DefaultWebServiceTemplateFactory coreDeviceInstallationWstf;
 
     public AddDeviceResponse addDevice(final AddDeviceRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {

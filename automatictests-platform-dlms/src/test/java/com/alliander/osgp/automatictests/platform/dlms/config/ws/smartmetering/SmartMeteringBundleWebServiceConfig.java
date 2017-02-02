@@ -15,7 +15,7 @@ import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadM
 
 import com.alliander.osgp.automatictests.platform.config.ws.BaseWebServiceConfig;
 import com.alliander.osgp.automatictests.platform.dlms.config.ApplicationConfiguration;
-import com.alliander.osgp.automatictests.platform.support.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Configuration
 public class SmartMeteringBundleWebServiceConfig extends BaseWebServiceConfig {
@@ -24,10 +24,10 @@ public class SmartMeteringBundleWebServiceConfig extends BaseWebServiceConfig {
     private ApplicationConfiguration configuration;
     
     @Bean
-    public WebServiceTemplateFactory smartMeteringBundleManagementWstf() {
-        return new WebServiceTemplateFactory.Builder().setMarshaller(this.smartMeteringBundleManagementMarshaller())
+    public DefaultWebServiceTemplateFactory smartMeteringBundleManagementWstf() {
+        return new DefaultWebServiceTemplateFactory.Builder().setMarshaller(this.smartMeteringBundleManagementMarshaller())
                 .setMessageFactory(this.messageFactory())
-                .setDefaultUri(this.baseUri.concat(this.configuration.webserviceTemplateDefaultUriSmartMeteringBundleManagement))
+                .setTargetUri(this.baseUri.concat(this.configuration.webserviceTemplateDefaultUriSmartMeteringBundleManagement))
                 .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
                 .setKeyStorePassword(this.webserviceKeystorePassword)
                 .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)

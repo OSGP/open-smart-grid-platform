@@ -19,14 +19,14 @@ import com.alliander.osgp.adapter.ws.schema.core.adhocmanagement.SetRebootAsyncR
 import com.alliander.osgp.adapter.ws.schema.core.adhocmanagement.SetRebootRequest;
 import com.alliander.osgp.adapter.ws.schema.core.adhocmanagement.SetRebootResponse;
 import com.alliander.osgp.automatictests.platform.support.ws.BaseClient;
-import com.alliander.osgp.automatictests.platform.support.ws.WebServiceSecurityException;
-import com.alliander.osgp.automatictests.platform.support.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
+import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Component
 public class CoreAdHocManagementClient extends BaseClient {
 
     @Autowired
-    private WebServiceTemplateFactory coreAdHocManagementWstf;
+    private DefaultWebServiceTemplateFactory coreAdHocManagementWstf;
 
     public SetRebootAsyncResponse setReboot(SetRebootRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {

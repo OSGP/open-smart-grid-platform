@@ -23,14 +23,14 @@ import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.GetP
 import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.GetPowerUsageHistoryRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.GetPowerUsageHistoryResponse;
 import com.alliander.osgp.automatictests.platform.support.ws.BaseClient;
-import com.alliander.osgp.automatictests.platform.support.ws.WebServiceSecurityException;
-import com.alliander.osgp.automatictests.platform.support.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
+import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Component
 public class DeviceMonitoringClient extends BaseClient {
 
     @Autowired
-    private WebServiceTemplateFactory publicLightingDeviceMonitoringWstf;
+    private DefaultWebServiceTemplateFactory publicLightingDeviceMonitoringWstf;
 
     public GetActualPowerUsageAsyncResponse getActualPowerUsage(final GetActualPowerUsageRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
