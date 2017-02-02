@@ -38,6 +38,10 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMet
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterRequest;
@@ -47,6 +51,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RetrievePus
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.MonitoringService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataQuery;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushNotificationAlarm;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -374,6 +379,68 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
                     new Object[] { e.getMessage(), request.getCorrelationUid(), organisationIdentification });
 
             this.handleException(e);
+        }
+        return response;
+    }
+
+    // --- ProfileGenericData
+
+    @PayloadRoot(localPart = "ProfileGenericDataRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)
+    @ResponsePayload
+    public ProfileGenericDataAsyncResponse getProfileGenericData(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final ProfileGenericDataRequest request, @MessagePriority final String messagePriority,
+            @ResponseUrl final String responseUrl, @ScheduleTime final String scheduleTime) throws OsgpException {
+
+        LOGGER.debug("Incoming ProfileGenericDataRequest for meter: {}.", request.getDeviceIdentification());
+
+        ProfileGenericDataAsyncResponse response = null;
+
+        try {
+            final ProfileGenericDataQuery dataRequest = this.monitoringMapper.map(request,
+                    ProfileGenericDataQuery.class);
+
+            int msgPrio = MessagePriorityEnum.getMessagePriority(messagePriority);
+            final String correlationUid = this.monitoringService.enqueueProfileGenericDataRequestData(
+                    organisationIdentification, request.getDeviceIdentification(), dataRequest, msgPrio,
+                    this.monitoringMapper.map(scheduleTime, Long.class));
+
+            response = new ProfileGenericDataAsyncResponse();
+            response.setCorrelationUid(correlationUid);
+            response.setDeviceIdentification(request.getDeviceIdentification());
+            this.responseUrlService.saveResponseUrlIfNeeded(correlationUid, responseUrl);
+        } catch (final Exception e) {
+            LOGGER.error("Exception: {} while requesting meter reads for device: {} for organisation {}.",
+                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
+
+            this.handleException(e);
+        }
+        return response;
+
+    }
+
+    @PayloadRoot(localPart = "ProfileGenericDataAsyncRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)
+    @ResponsePayload
+    public ProfileGenericDataResponse getProfileGenericDataResponse(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final ProfileGenericDataAsyncRequest request) throws OsgpException {
+
+        LOGGER.debug("Incoming ProfileGenericDataAsyncRequest for meter: {}.", request.getDeviceIdentification());
+
+        ProfileGenericDataResponse response = null;
+        try {
+            final MeterResponseData meterResponseData = this.monitoringService
+                    .dequeueProfileGenericDataResponse(request.getCorrelationUid());
+
+            this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the periodic meter reads");
+
+            // response =
+            // this.monitoringMapper.map(meterResponseData.getMessageData(),
+            // com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataResponse.class);
+            response = this.monitoringMapper.map(meterResponseData.getMessageData(), ProfileGenericDataResponse.class);
+
+        } catch (final Exception e) {
+            this.handleRetrieveException(e, request, organisationIdentification);
         }
         return response;
     }

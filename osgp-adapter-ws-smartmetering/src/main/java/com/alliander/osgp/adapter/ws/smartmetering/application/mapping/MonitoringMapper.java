@@ -44,6 +44,9 @@ public class MonitoringMapper extends ConfigurableMapper {
 
         // This converter is needed because it contains logic.
         mapperFactory.getConverterFactory().registerConverter(new PeriodicReadsRequestGasQueryConverter());
+
+        // This converter is needed because it contains logic.
+        mapperFactory.getConverterFactory().registerConverter(new ProfileGenericDataRequestConverter());
     }
 
 }

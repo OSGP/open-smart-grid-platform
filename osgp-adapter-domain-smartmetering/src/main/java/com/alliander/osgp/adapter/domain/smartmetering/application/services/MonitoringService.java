@@ -25,16 +25,19 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataQuery;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQueryDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGasResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodTypeDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadGasResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -119,7 +122,7 @@ public class MonitoringService {
                             .getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                             smartMeter.getIpAddress(), this.monitoringMapper.map(periodicMeterReadsValueQuery,
                                     PeriodicMeterReadsRequestDto.class)), deviceMessageMetadata.getMessageType(),
-                                    deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+                    deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
         }
     }
 
@@ -135,12 +138,14 @@ public class MonitoringService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
+        Object obj = this.monitoringMapper.map(periodMeterReadsValueDTO, PeriodicMeterReadsContainer.class);
+
         this.webServiceResponseMessageSender.send(
                 new ResponseMessage(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata
                         .getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(), result,
                         exception, this.monitoringMapper.map(periodMeterReadsValueDTO,
                                 PeriodicMeterReadsContainer.class), deviceMessageMetadata.getMessagePriority()),
-                                deviceMessageMetadata.getMessageType());
+                deviceMessageMetadata.getMessageType());
     }
 
     public void handlePeriodicMeterReadsresponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -160,12 +165,12 @@ public class MonitoringService {
                         .getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(), result,
                         exception, this.monitoringMapper.map(periodMeterReadsValueDTO,
                                 PeriodicMeterReadsContainerGas.class), deviceMessageMetadata.getMessagePriority()),
-                                deviceMessageMetadata.getMessageType());
+                deviceMessageMetadata.getMessageType());
     }
 
     public void requestActualMeterReads(final DeviceMessageMetadata deviceMessageMetadata,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsQuery actualMeterReadsQuery)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.info("requestActualMeterReads for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
@@ -202,8 +207,8 @@ public class MonitoringService {
                     new RequestMessage(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata
                             .getOrganisationIdentification(), gatewayDevice.getDeviceIdentification(), gatewayDevice
                             .getIpAddress(), new ActualMeterReadsQueryDto(
-                                    ChannelDto.fromNumber(smartMeter.getChannel()))), deviceMessageMetadata.getMessageType(),
-                                    deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+                            ChannelDto.fromNumber(smartMeter.getChannel()))), deviceMessageMetadata.getMessageType(),
+                    deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
         } else {
             this.osgpCoreRequestMessageSender.send(
                     new RequestMessage(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata
@@ -287,4 +292,44 @@ public class MonitoringService {
                 result, exception, alarmRegisterValueDomain, deviceMessageMetadata.getMessagePriority()),
                 deviceMessageMetadata.getMessageType());
     }
+
+    public void requestProfileGenericData(final DeviceMessageMetadata deviceMessageMetadata,
+            final ProfileGenericDataQuery profileGenericDataQuery) throws FunctionalException {
+
+        LOGGER.info("requestProfileGenericData for organisationIdentification: {} for deviceIdentification: {}",
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
+
+        final SmartMeter smartMeter = this.domainHelperService.findSmartMeter(deviceMessageMetadata
+                .getDeviceIdentification());
+
+        this.osgpCoreRequestMessageSender.send(
+                new RequestMessage(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata
+                        .getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(), smartMeter
+                        .getIpAddress(), this.monitoringMapper.map(profileGenericDataQuery,
+                        ProfileGenericDataRequestDto.class)), deviceMessageMetadata.getMessageType(),
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+    }
+
+    public void handleProfileGenericDataResponse(final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessageResultType deviceResult, final OsgpException exception,
+            final ProfileGenericDataResponseDto profileGenericDataResponseDto) {
+
+        LOGGER.info("handleProfileGenericDataResponse for MessageType: {}", deviceMessageMetadata.getMessageType());
+
+        ResponseMessageResultType result = deviceResult;
+        if (exception != null) {
+            LOGGER.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
+            result = ResponseMessageResultType.NOT_OK;
+        }
+
+        Object obj = this.monitoringMapper.map(profileGenericDataResponseDto, ProfileGenericDataResponseDto.class);
+
+        this.webServiceResponseMessageSender.send(
+                new ResponseMessage(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata
+                        .getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(), result,
+                        exception, this.monitoringMapper.map(profileGenericDataResponseDto,
+                                ProfileGenericDataResponseDto.class), deviceMessageMetadata.getMessagePriority()),
+                deviceMessageMetadata.getMessageType());
+    }
+
 }
