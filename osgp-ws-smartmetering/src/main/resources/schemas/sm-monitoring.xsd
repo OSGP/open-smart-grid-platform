@@ -453,4 +453,51 @@
     </xsd:simpleContent>
   </xsd:complexType>
 
+ <!-- load-profile -->
+  <xsd:element name="ProfileGenericDataRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="tns:PeriodicReadsRequest"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="ProfileGenericDataAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="ProfileGenericDataAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="ProfileGenericDataResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="PeriodType" type="tns:PeriodType" />
+        <xsd:element name="PeriodicMeterReads" type="tns:PeriodicMeterReads"
+          minOccurs="0" maxOccurs="unbounded" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="ProfileGenericDataResponseData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Response">
+        <xsd:sequence>
+          <xsd:element name="PeriodType" type="tns:PeriodType" />
+          <xsd:element name="PeriodicMeterReads" type="tns:PeriodicMeterReads"
+            minOccurs="0" maxOccurs="unbounded" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
 </xsd:schema>
