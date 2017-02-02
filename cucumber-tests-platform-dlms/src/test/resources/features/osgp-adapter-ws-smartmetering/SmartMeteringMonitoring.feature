@@ -59,3 +59,11 @@ Feature: SmartMetering Monitoring
     When the get actual meter reads request on an inactive device is received
       | DeviceIdentification | E9998000014123414 |
     Then the response "Device E9998000014123414 is not active in the platform" will be returned
+
+@TEST
+  Scenario: Get the profile generic data from a device
+    When the get profile generic data request is received
+      | DeviceIdentification | TEST1024000000001 |
+    Then the profile generic data result should be returned
+      | DeviceIdentification | TEST1024000000001 |
+    

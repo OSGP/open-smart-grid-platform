@@ -69,4 +69,5 @@ public class PeriodicMeterReads extends SmartMeteringStepsBase {
         assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_ACTIVE_ENERGY_EXPORT_TARIFF_TWO,
                 XPATH_MATCHER_RESULT_ACTIVE_ENERGY));
     }
+
 }
