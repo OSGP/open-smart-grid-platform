@@ -14,7 +14,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadMethodProcessor;
 
 import com.alliander.osgp.platform.cucumber.config.ws.BaseWebServiceConfig;
-import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Configuration
 public class CoreConfigurationManagementWebServiceConfig extends BaseWebServiceConfig {
@@ -26,10 +26,10 @@ public class CoreConfigurationManagementWebServiceConfig extends BaseWebServiceC
     private String contextPathCoreConfigurationManagement;
 
     @Bean
-    public WebServiceTemplateFactory coreConfigurationManagementWstf() {
-        return new WebServiceTemplateFactory.Builder().setMarshaller(this.coreConfigurationManagementMarshaller())
+    public DefaultWebServiceTemplateFactory coreConfigurationManagementWstf() {
+        return new DefaultWebServiceTemplateFactory.Builder().setMarshaller(this.coreConfigurationManagementMarshaller())
                 .setMessageFactory(this.messageFactory())
-                .setDefaultUri(this.baseUri.concat(this.webserviceTemplateDefaultUriCoreConfigurationManagement))
+                .setTargetUri(this.baseUri.concat(this.webserviceTemplateDefaultUriCoreConfigurationManagement))
                 .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
                 .setKeyStorePassword(this.webserviceKeystorePassword)
                 .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)
