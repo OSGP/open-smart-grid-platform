@@ -210,4 +210,17 @@ public class Keys {
     public static final String END_TIME = "EndTime";
     public static final String FROM_DATE = "FromDate";
     public static final String UNTIL_DATE = "UntilDate";
+
+    public static final String DC_LIGHTS = "DcLights";
+    public static final String DC_MAP = "DcMap";
+    public static final String RC_TYPE = "RcType";
+    public static final String RC_MAP = "RcMap";
+    public static final String SHORT_INTERVAL = "ShortInterval";
+    public static final String LONG_INTERVAL = "LongInterval";
+    public static final String INTERVAL_TYPE = "IntervalType";
+
+    public static final String DEVICE_FUNCTION = "DeviceFunction";
+    public static final String ALLOWED = "Allowed";
+
+    public static final String DELEGATE_FUNCTION_GROUP = "DelegateFunctionGroup";
 }

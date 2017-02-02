@@ -404,6 +404,12 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
             } else if (this.mockResponses.containsKey(DeviceRequestMessageType.SET_TARIFF_SCHEDULE)) {
                 response = this.processRequest(DeviceRequestMessageType.SET_TARIFF_SCHEDULE, request);
             }
+        } else if (request.hasGetConfigurationRequest()
+                && this.mockResponses.containsKey(DeviceRequestMessageType.GET_CONFIGURATION)) {
+            response = this.processRequest(DeviceRequestMessageType.GET_CONFIGURATION, request);
+        } else if (request.hasSetConfigurationRequest()
+                && this.mockResponses.containsKey(DeviceRequestMessageType.SET_CONFIGURATION)) {
+            response = this.processRequest(DeviceRequestMessageType.SET_CONFIGURATION, request);
         }
         // TODO: Implement further requests.
         else {
@@ -420,7 +426,7 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
 
     private Oslp.Message processRequest(final DeviceRequestMessageType type, final Oslp.Message request) {
         Oslp.Message response = null;
-        
+
         LOGGER.info("Processing [{}] ...", type.name());
         LOGGER.info("Received [{}] ...", request);
 

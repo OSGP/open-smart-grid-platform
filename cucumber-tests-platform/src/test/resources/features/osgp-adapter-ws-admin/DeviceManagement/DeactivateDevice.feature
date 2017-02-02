@@ -16,5 +16,5 @@ Feature: AdminDeviceManagement Device Deactivation
    Scenario: Deactivate an unknown device
     When receiving a deactivate device request
       | DeviceIdentification | TEST1024000000001 |
-    Then the deactivate device response contains a soap fault
+    Then the deactivate device response contains soap fault
       | Message | UNKNOWN_DEVICE |

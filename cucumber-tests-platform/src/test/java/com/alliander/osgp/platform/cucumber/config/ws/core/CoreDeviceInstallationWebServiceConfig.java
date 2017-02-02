@@ -1,7 +1,7 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -14,7 +14,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadMethodProcessor;
 
 import com.alliander.osgp.platform.cucumber.config.ws.BaseWebServiceConfig;
-import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Configuration
 public class CoreDeviceInstallationWebServiceConfig extends BaseWebServiceConfig {
@@ -26,10 +26,10 @@ public class CoreDeviceInstallationWebServiceConfig extends BaseWebServiceConfig
     private String contextPathCoreDeviceInstallation;
 
     @Bean
-    public WebServiceTemplateFactory coreDeviceInstallationWstf() {
-        return new WebServiceTemplateFactory.Builder().setMarshaller(this.coreDeviceInstallationMarshaller())
+    public DefaultWebServiceTemplateFactory coreDeviceInstallationWstf() {
+        return new DefaultWebServiceTemplateFactory.Builder().setMarshaller(this.coreDeviceInstallationMarshaller())
                 .setMessageFactory(this.messageFactory())
-                .setDefaultUri(this.baseUri.concat(this.webserviceTemplateDefaultUriCoreDeviceInstallation))
+                .setTargetUri(this.baseUri.concat(this.webserviceTemplateDefaultUriCoreDeviceInstallation))
                 .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
                 .setKeyStorePassword(this.webserviceKeystorePassword)
                 .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)
@@ -60,5 +60,5 @@ public class CoreDeviceInstallationWebServiceConfig extends BaseWebServiceConfig
     public MarshallingPayloadMethodProcessor coreDeviceInstallationMarshallingPayloadMethodProcessor() {
         return new MarshallingPayloadMethodProcessor(this.coreDeviceInstallationMarshaller(),
                 this.coreDeviceInstallationMarshaller());
-    }    
+    }
 }

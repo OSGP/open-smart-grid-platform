@@ -260,8 +260,6 @@ public class GetStatusSteps {
         LOGGER.info("GIVEN: the get status oslp message from the device contains {}, {}, {}, {}, {}, {}, and {}.",
                 new Object[] { preferredLinkType, actualLinkType, lightType, eventNotifications, index, on, dimValue });
 
-        // final OslpUtils oslpUtils = new OslpUtils();
-
         // LightValue
         final Oslp.LightValue.Builder lightValueBuilder = Oslp.LightValue.newBuilder();
         if (StringUtils.isNotBlank(index)) {
@@ -304,8 +302,6 @@ public class GetStatusSteps {
 
     @DomainStep("the get status oslp message from the device contains (.*) light sources")
     public void givenAnOslpResponseWith(final Integer numberOfLightValues) {
-
-        // final OslpUtils oslpUtils = new OslpUtils();
 
         // LightValues
         final List<Oslp.LightValue> lightValues = new ArrayList<>();

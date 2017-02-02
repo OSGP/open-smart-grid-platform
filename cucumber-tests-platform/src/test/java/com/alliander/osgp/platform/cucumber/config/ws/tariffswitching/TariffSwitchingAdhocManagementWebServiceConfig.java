@@ -14,7 +14,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadMethodProcessor;
 
 import com.alliander.osgp.platform.cucumber.config.ws.BaseWebServiceConfig;
-import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Configuration
 public class TariffSwitchingAdhocManagementWebServiceConfig extends BaseWebServiceConfig {
@@ -26,15 +26,16 @@ public class TariffSwitchingAdhocManagementWebServiceConfig extends BaseWebServi
     private String contextPathTariffSwitchingAdHocManagement;
 
     @Bean
-    public WebServiceTemplateFactory tariffSwitchingAdHocManagementWstf() {
-        return new WebServiceTemplateFactory.Builder().setMarshaller(this.tariffSwitchingAdHocManagementMarshaller())
+    public DefaultWebServiceTemplateFactory tariffSwitchingAdHocManagementWstf() {
+        return new DefaultWebServiceTemplateFactory.Builder().setMarshaller(this.tariffSwitchingAdHocManagementMarshaller())
                 .setMessageFactory(this.messageFactory())
-                .setDefaultUri(this.baseUri.concat(this.webserviceTemplateDefaultUriTariffSwitchingAdHocManagement))
+                .setTargetUri(this.baseUri.concat(this.webserviceTemplateDefaultUriTariffSwitchingAdHocManagement))
                 .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
                 .setKeyStorePassword(this.webserviceKeystorePassword)
                 .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)
                 .build();
     }
+
 
     /**
      * Method for creating the Marshaller for TariffSwitching AdHocManagement.

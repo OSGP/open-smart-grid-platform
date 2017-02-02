@@ -68,7 +68,7 @@ public class ResumeScheduleSteps {
         request.setIsImmediate(getBoolean(requestParameters, Keys.KEY_ISIMMEDIATE, Defaults.DEFAULT_ISIMMEDIATE));
 
         try {
-            ScenarioContext.Current().put(Keys.RESPONSE, this.client.resumeScheduleStatus(request));
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.resumeSchedule(request));
         } catch (final SoapFaultClientException ex) {
             ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }

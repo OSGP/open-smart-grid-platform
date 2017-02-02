@@ -7,7 +7,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.steps.ws.publiclighting.ScheduleManagement;
+package com.alliander.osgp.platform.cucumber.steps.ws.publiclighting.schedulemanagement;
 
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getDate;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getEnum;
