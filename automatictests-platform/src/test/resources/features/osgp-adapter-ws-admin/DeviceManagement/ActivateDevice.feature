@@ -4,7 +4,7 @@ Feature: AdminDeviceManagement Device Activation
   In order to ...
 
   Scenario: Activate a inactive SSLD
-    Given an ssld device
+    Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Active               | false             |
     When receiving an activate device request
