@@ -39,6 +39,12 @@
     <module>parent-integration-tests</module>
     <module>Shared/shared</module>
     <module>Shared/osgp-dto</module>
+    <module>Shared/osgp-ws-core</module>
+    <module>Shared/osgp-ws-admin</module>
+    <module>Shared/osgp-ws-publiclighting</module>
+    <module>Shared/osgp-ws-tariffswitching</module>
+    <module>Shared/osgp-ws-smartmetering</module>
+    <module>Shared/osgp-ws-microgrids</module>
 
     <!-- Protocol-Adapter-IEC61850 -->
     <module>Protocol-Adapter-IEC61850/osgp-iec61850</module>
