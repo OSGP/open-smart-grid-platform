@@ -1,4 +1,4 @@
-Feature: Connection security
+Feature: SmartMetering Connection security
   As a grid operator
   I want to communicate with devices at different levels of security
   So the transferred data is as secure as possible
