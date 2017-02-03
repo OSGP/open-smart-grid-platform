@@ -19,23 +19,23 @@ import com.alliander.osgp.adapter.ws.schema.core.adhocmanagement.SetRebootAsyncR
 import com.alliander.osgp.adapter.ws.schema.core.adhocmanagement.SetRebootRequest;
 import com.alliander.osgp.adapter.ws.schema.core.adhocmanagement.SetRebootResponse;
 import com.alliander.osgp.platform.cucumber.support.ws.BaseClient;
-import com.alliander.osgp.platform.cucumber.support.ws.WebServiceSecurityException;
-import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
+import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Component
 public class CoreAdHocManagementClient extends BaseClient {
 
     @Autowired
-    private WebServiceTemplateFactory coreAdHocManagementWstf;
+    private DefaultWebServiceTemplateFactory coreAdHocManagementWstf;
 
-    public SetRebootAsyncResponse setReboot(SetRebootRequest request)
+    public SetRebootAsyncResponse setReboot(final SetRebootRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate webServiceTemplate = this.coreAdHocManagementWstf
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (SetRebootAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
     }
 
-    public SetRebootResponse getSetRebootResponse(SetRebootAsyncRequest request)
+    public SetRebootResponse getSetRebootResponse(final SetRebootAsyncRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate webServiceTemplate = this.coreAdHocManagementWstf
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
