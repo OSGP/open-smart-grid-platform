@@ -24,7 +24,6 @@ import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.ChangeFirmwa
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.ChangeFirmwareResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.Firmware;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FirmwareModuleData;
-import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetDeviceFirmwareHistoryRequest;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.FirmwareRepository;
 import com.alliander.osgp.platform.cucumber.config.CoreDeviceConfiguration;
@@ -96,24 +95,6 @@ public class UpdateFirmwareSteps {
         firmware.setManufacturer(getString(requestParameters, Keys.MANUFACTURER_NAME, "Test"));
         firmware.setModelCode(getString(requestParameters, Keys.KEY_DEVICE_MODEL_MODELCODE, "TestModel"));
         return firmware;
-    }
-
-    @When("^receiving an update device firmware request$")
-    public void receivingAnUpdateDeviceFirmwareRequest(final Map<String, String> requestParameters) throws Throwable {
-
-        final GetDeviceFirmwareHistoryRequest request = new GetDeviceFirmwareHistoryRequest();
-
-        request.setDeviceIdentification(
-                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-
-        try {
-            ScenarioContext.Current().put(Keys.RESPONSE, this.client.getDeviceFirmwareHistory(request));
-        } catch (final SoapFaultClientException ex) {
-            ScenarioContext.Current().put(Keys.RESPONSE, ex);
-        }
-
-        final Object response = ScenarioContext.Current().get(Keys.RESPONSE);
-        System.out.println(response);
     }
 
     @Then("^the update firmware response contains$")
