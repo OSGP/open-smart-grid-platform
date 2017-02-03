@@ -30,9 +30,11 @@ public class Defaults {
     public static final String USER_NAME = "Cucumber";
     public static final String PREFIX = "MAA";
     public static final String MANUFACTURER_ID = "Test";
+	public static final String MANUFACTURER_CODE = "Test";
     public static final String MANUFACTURER_NAME = "Test Manufacturer";
     public static final Boolean MANUFACTURER_USE_PREFIX = false;
-    public static final String DEVICE_MODEL_MODEL_CODE = "TestModel";
+    public static final String DEVICE_MODEL_MODEL_CODE = "Test";
+	public static final String DEVICE_MODEL_NAME = "Test Model";
     public static final String DEVICE_MODEL_DESCRIPTION = "Test Model";
     public static final String DEVICE_IDENTIFICATION = "TD01";
     public static final String SMART_METER_DEVICE_IDENTIFICATION = "TEST1024000000001";
