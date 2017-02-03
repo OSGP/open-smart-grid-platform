@@ -223,4 +223,8 @@ public class Keys {
     public static final String ALLOWED = "Allowed";
 
     public static final String DELEGATE_FUNCTION_GROUP = "DelegateFunctionGroup";
+
+    public static final String CURRENT_SEQUENCE_NUMBER = "CurrentSequenceNumber";
+    public static final String SEQUENCE_WINDOW = "SequenceWindow";
+    public static final String NEW_SEQUENCE_NUMBER = "NewSequenceNumber";
 }

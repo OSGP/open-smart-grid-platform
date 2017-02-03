@@ -38,6 +38,7 @@ import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMes
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.Oslp.Message;
 import com.alliander.osgp.oslp.OslpEnvelope;
+import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 
 public class MockOslpChannelHandler extends SimpleChannelHandler {
 
@@ -438,7 +439,12 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
     }
 
     private int doGetNextSequence() {
-        int next = this.sequenceNumber + 1;
+        int sequenceNumberValue = 1;
+        if (ScenarioContext.Current().get("NumberToAddToSequenceNumber").toString() != null
+                && !ScenarioContext.Current().get("NumberToAddToSequenceNumber").toString().isEmpty()) {
+            sequenceNumberValue = (Integer) ScenarioContext.Current().get("NumberToAddToSequenceNumber");
+        }
+        int next = this.sequenceNumber + sequenceNumberValue;
         if (next > SEQUENCE_NUMBER_MAXIMUM) {
             next = 0;
         }
