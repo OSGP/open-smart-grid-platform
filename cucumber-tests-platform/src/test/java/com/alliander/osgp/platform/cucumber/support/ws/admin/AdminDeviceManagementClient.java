@@ -45,14 +45,14 @@ import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.UpdateKeyResp
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindAllOrganisationsRequest;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindAllOrganisationsResponse;
 import com.alliander.osgp.platform.cucumber.support.ws.BaseClient;
-import com.alliander.osgp.platform.cucumber.support.ws.WebServiceSecurityException;
-import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
+import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Component
 public class AdminDeviceManagementClient extends BaseClient {
 
     @Autowired
-    private WebServiceTemplateFactory adminDeviceManagementWstf;
+    private DefaultWebServiceTemplateFactory adminDeviceManagementWstf;
 
     public ActivateDeviceResponse activateDevice(final ActivateDeviceRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
@@ -147,7 +147,7 @@ public class AdminDeviceManagementClient extends BaseClient {
 
     public UpdateDeviceAuthorisationsResponse updateDeviceAuthorisations(
             final UpdateDeviceAuthorisationsRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+                    throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
         return (UpdateDeviceAuthorisationsResponse) wst.marshalSendAndReceive(request);
