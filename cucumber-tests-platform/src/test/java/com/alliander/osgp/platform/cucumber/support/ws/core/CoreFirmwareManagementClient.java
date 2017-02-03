@@ -14,6 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.ChangeFirmwareRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.ChangeFirmwareResponse;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetDeviceFirmwareHistoryRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetDeviceFirmwareHistoryResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionRequest;
@@ -58,5 +62,19 @@ public class CoreFirmwareManagementClient extends BaseClient {
         final WebServiceTemplate wst = this.coreFirmwareManagementWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
         return (UpdateFirmwareResponse) wst.marshalSendAndReceive(request);
+    }
+
+    public ChangeFirmwareResponse changeFirmware(final ChangeFirmwareRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final WebServiceTemplate wst = this.coreFirmwareManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
+        return (ChangeFirmwareResponse) wst.marshalSendAndReceive(request);
+    }
+
+    public GetDeviceFirmwareHistoryResponse getDeviceFirmwareHistory(final GetDeviceFirmwareHistoryRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final WebServiceTemplate wst = this.coreFirmwareManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
+        return (GetDeviceFirmwareHistoryResponse) wst.marshalSendAndReceive(request);
     }
 }

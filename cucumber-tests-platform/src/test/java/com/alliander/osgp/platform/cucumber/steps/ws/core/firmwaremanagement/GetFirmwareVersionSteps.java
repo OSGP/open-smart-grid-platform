@@ -21,6 +21,8 @@ import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.alliander.osgp.adapter.ws.schema.core.common.AsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.common.OsgpResultType;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FirmwareModuleType;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FirmwareVersion;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionRequest;
@@ -105,6 +107,8 @@ public class GetFirmwareVersionSteps {
         asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
         request.setAsyncRequest(asyncRequest);
 
+        GetFirmwareVersionResponse response = null;
+
         boolean success = false;
         int count = 0;
         while (!success) {
@@ -115,16 +119,24 @@ public class GetFirmwareVersionSteps {
             count++;
             Thread.sleep(1000);
 
-            try {
-                final GetFirmwareVersionResponse response = this.client.getGetFirmwareVersion(request);
+            response = this.client.getGetFirmwareVersion(request);
 
-                if (getEnum(expectedResponseData, Keys.KEY_RESULT, OsgpResultType.class) != response.getResult()) {
-                    continue;
-                }
+            if (getEnum(expectedResponseData, Keys.KEY_RESULT, OsgpResultType.class) != response.getResult()) {
+                continue;
+            }
 
-                success = true;
-            } catch (final Exception ex) {
-                LOGGER.debug(ex.getMessage());
+            success = true;
+        }
+
+        if (response.getFirmwareVersion() != null) {
+            final FirmwareVersion fwv = response.getFirmwareVersion().get(0);
+            if (fwv.getVersion() != null) {
+                Assert.assertEquals(getString(expectedResponseData, Keys.FIRMWARE_VERSION), fwv.getVersion());
+            }
+            if (fwv.getFirmwareModuleType() != null) {
+                Assert.assertEquals(
+                        getEnum(expectedResponseData, Keys.KEY_FIRMWARE_MODULE_TYPE, FirmwareModuleType.class),
+                        fwv.getFirmwareModuleType());
             }
         }
     }

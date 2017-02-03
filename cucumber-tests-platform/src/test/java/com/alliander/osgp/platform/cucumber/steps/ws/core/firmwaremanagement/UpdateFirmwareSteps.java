@@ -7,9 +7,9 @@
  */
 package com.alliander.osgp.platform.cucumber.steps.ws.core.firmwaremanagement;
 
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getBoolean;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getEnum;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
-import static com.alliander.osgp.platform.cucumber.core.Helpers.saveCorrelationUidInScenarioContext;
 
 import java.util.Map;
 
@@ -19,12 +19,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import com.alliander.osgp.adapter.ws.schema.core.common.AsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.common.OsgpResultType;
-import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareAsyncRequest;
-import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareAsyncResponse;
-import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareRequest;
-import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareResponse;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.ChangeFirmwareRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.ChangeFirmwareResponse;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.Firmware;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FirmwareModuleData;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetDeviceFirmwareHistoryRequest;
+import com.alliander.osgp.domain.core.repositories.DeviceRepository;
+import com.alliander.osgp.domain.core.repositories.FirmwareRepository;
 import com.alliander.osgp.platform.cucumber.config.CoreDeviceConfiguration;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
@@ -32,8 +34,8 @@ import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.cucumber.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.platform.cucumber.support.ws.core.CoreFirmwareManagementClient;
 
-import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
 
 /**
  * Class with all the firmware requests steps
@@ -55,81 +57,70 @@ public class UpdateFirmwareSteps {
      *            The table with the request parameters.
      * @throws Throwable
      */
-    @Given("^receiving an update firmware request$")
-    public void receivingAGetFirmwareVersionRequest(final Map<String, String> requestParameters) throws Throwable {
 
-        final UpdateFirmwareRequest request = new UpdateFirmwareRequest();
-        request.setDeviceIdentification(
-                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-        request.setFirmwareIdentification(
-                getString(requestParameters, Keys.KEY_FIRMWARE_IDENTIFICATION, Defaults.FIRMWARE_IDENTIFICATION));
+    @Autowired
+    private FirmwareRepository firmwareRepo;
+
+    @Autowired
+    private DeviceRepository deviceRepo;
+
+    @When("^receiving an update firmware request$")
+    public void receivingAnUpdateFirmwareRequest(final Map<String, String> requestParameters) throws Throwable {
+
+        final ChangeFirmwareRequest request = new ChangeFirmwareRequest();
+
+        long firmwareId = 0;
+        if (this.firmwareRepo.findAll() != null && this.firmwareRepo.count() > 0) {
+            firmwareId = this.firmwareRepo.findAll().get(0).getId();
+        }
+
+        request.setId((int) firmwareId);
+
+        request.setFirmware(this.createAndGetFirmware(firmwareId, requestParameters));
 
         try {
-            ScenarioContext.Current().put(Keys.RESPONSE, this.client.updateFirmware(request));
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.changeFirmware(request));
         } catch (final SoapFaultClientException ex) {
             ScenarioContext.Current().put(Keys.RESPONSE, ex);
-            GenericResponseSteps.verifySoapFault(requestParameters);
         }
     }
 
-    /**
-     * The check for the response from the Platform.
-     *
-     * @param expectedResponseData
-     *            The table with the expected fields in the response.
-     * @note The response will contain the correlation uid, so store that in the
-     *       current scenario context for later use.
-     * @throws Throwable
-     */
-    @Then("^the update firmware async response contains$")
+    private Firmware createAndGetFirmware(final long firmwareId, final Map<String, String> requestParameters) {
+        final Firmware firmware = new Firmware();
+        firmware.setId((int) firmwareId);
+        firmware.setFilename(getString(requestParameters, Keys.FIRMWARE_FILENAME, ""));
+        firmware.setDescription(getString(requestParameters, Keys.FIRMWARE_DESCRIPTION, ""));
+        firmware.setPushToNewDevices(
+                getBoolean(requestParameters, Keys.FIRMWARE_PUSH_TO_NEW_DEVICES, Defaults.FIRMWARE_PUSH_TO_NEW_DEVICE));
+        firmware.setFirmwareModuleData(new FirmwareModuleData());
+        firmware.setManufacturer(getString(requestParameters, Keys.MANUFACTURER_NAME, "Test"));
+        firmware.setModelCode(getString(requestParameters, Keys.KEY_DEVICE_MODEL_MODELCODE, "TestModel"));
+        return firmware;
+    }
+
+    @When("^receiving an update device firmware request$")
+    public void receivingAnUpdateDeviceFirmwareRequest(final Map<String, String> requestParameters) throws Throwable {
+
+        final GetDeviceFirmwareHistoryRequest request = new GetDeviceFirmwareHistoryRequest();
+
+        request.setDeviceIdentification(
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+
+        try {
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.getDeviceFirmwareHistory(request));
+        } catch (final SoapFaultClientException ex) {
+            ScenarioContext.Current().put(Keys.RESPONSE, ex);
+        }
+
+        final Object response = ScenarioContext.Current().get(Keys.RESPONSE);
+        System.out.println(response);
+    }
+
+    @Then("^the update firmware response contains$")
     public void theUpdateFirmwareResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
-        final UpdateFirmwareAsyncResponse response = (UpdateFirmwareAsyncResponse) ScenarioContext.Current()
-                .get(Keys.RESPONSE);
+        final ChangeFirmwareResponse response = (ChangeFirmwareResponse) ScenarioContext.Current().get(Keys.RESPONSE);
 
-        Assert.assertEquals(getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION),
-                response.getAsyncResponse().getDeviceId());
-        Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
-
-        // Save the returned CorrelationUid in the Scenario related context for
-        // further use.
-        saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
-                getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                        Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
-
-        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
-    }
-
-    @Then("^the platform buffers an update firmware response message for device \"([^\"]*)\"$")
-    public void thePlatformBuffersAnUpdateFirmwareResponseMessage(final String deviceIdentification,
-            final Map<String, String> expectedResponseData) throws Throwable {
-        final UpdateFirmwareAsyncRequest request = new UpdateFirmwareAsyncRequest();
-        final AsyncRequest asyncRequest = new AsyncRequest();
-        asyncRequest.setDeviceId(deviceIdentification);
-        asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
-        request.setAsyncRequest(asyncRequest);
-
-        boolean success = false;
-        int count = 0;
-        while (!success) {
-            if (count > this.configuration.getTimeout()) {
-                Assert.fail("Timeout");
-            }
-
-            count++;
-            Thread.sleep(1000);
-
-            try {
-                final UpdateFirmwareResponse response = this.client.getUpdateFirmware(request);
-
-                if (getEnum(expectedResponseData, Keys.KEY_RESULT, OsgpResultType.class) != response.getResult()) {
-                    continue;
-                }
-
-                success = true;
-            } catch (final Exception ex) {
-                LOGGER.debug(ex.getMessage());
-            }
-        }
+        Assert.assertEquals(getEnum(expectedResponseData, Keys.KEY_RESULT, OsgpResultType.class), response.getResult());
     }
 
     @Then("^the update firmware response contains soap fault$")

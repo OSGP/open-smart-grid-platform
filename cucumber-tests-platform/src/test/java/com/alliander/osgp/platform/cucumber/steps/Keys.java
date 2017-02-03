@@ -168,7 +168,7 @@ public class Keys {
     public static final String DEVICEFIRMWARE_INSTALLED_BY = "DevicefirmwareInstalledBy";
     public static final String DEVICEFIRMWARE_ACTIVE = "DevicefirmwareActive";
 
-    public static final String DEVICEMODEL_MODELCOE = "DeviceModelmodelCode";
+    public static final String DEVICEMODEL_MODELCODE = "DeviceModelmodelCode";
     public static final String DEVICEMODEL_DESCRIPTION = "DeviceModelDescription";
     public static final String DEVICEMODEL_FILESTORAGE = "DeviceModelFileStorage";
     public static final String DEVICEMODEL_METERED = "DeviceModelMetered";
