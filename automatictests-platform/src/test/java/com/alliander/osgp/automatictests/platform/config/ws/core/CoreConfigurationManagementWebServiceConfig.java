@@ -30,9 +30,11 @@ public class CoreConfigurationManagementWebServiceConfig extends BaseWebServiceC
         return new DefaultWebServiceTemplateFactory.Builder().setMarshaller(this.coreConfigurationManagementMarshaller())
                 .setMessageFactory(this.messageFactory())
                 .setTargetUri(this.baseUri.concat(this.webserviceTemplateDefaultUriCoreConfigurationManagement))
-                .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
+                .setKeyStoreType(this.webserviceKeystoreType)
+                .setKeyStoreLocation(this.webserviceKeystoreLocation)
                 .setKeyStorePassword(this.webserviceKeystorePassword)
-                .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)
+                .setTrustStoreFactory(this.webServiceTrustStoreFactory())
+                .setApplicationName(this.applicationName)
                 .build();
     }
 

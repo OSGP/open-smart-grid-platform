@@ -35,6 +35,7 @@ public class Keys {
     public static final String TECHNICAL_INSTALLATION_DATE = "TechnicalInstallationDate";
 
     public static final String ORGANIZATION_IDENTIFICATION = "OrganizationIdentification";
+	public static final String ORGANIZATION_DESCRIPTION = "Description";
     public static final String USER_NAME = "UserName";
     public static final String DEVICEFUNCTIONGROUP = "DeviceFunctionGroup";
     public static final String COMM_METHOD = "CommunicationMethod";
@@ -225,4 +226,5 @@ public class Keys {
     public static final String DELEGATE_FUNCTION_GROUP = "DelegateFunctionGroup";
 	public static final String USE_PREFIX = "UsePrefix";
 	public static final String SUPPLIER = "Supplier";
+	public static final String PLATFORMDOMAINS = "PlatformDomains";
 }

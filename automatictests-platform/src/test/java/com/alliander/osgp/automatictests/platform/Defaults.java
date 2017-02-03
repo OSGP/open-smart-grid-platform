@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.automatictests.platform;
 
+import org.joda.time.DateTime;
+
 import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.LongTermIntervalType;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.TransitionType;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.OsgpResultType;
@@ -24,6 +26,7 @@ public class Defaults {
     // Values
     public static final String ORGANIZATION_DESCRIPTION = "Test Organization";
     public static final String ORGANIZATION_IDENTIFICATION = "test-org";
+	public static final String ORGANIZATION_DOMAINS = "COMMON;PUBLIC_LIGHTING;TARIFF_SWITCHING";
     public static final String USER_NAME = "Cucumber";
     public static final String PREFIX = "MAA";
     public static final String MANUFACTURER_ID = "Test";
@@ -34,6 +37,7 @@ public class Defaults {
     public static final String DEVICE_IDENTIFICATION = "TD01";
     public static final String SMART_METER_DEVICE_IDENTIFICATION = "TEST1024000000001";
     public static final String SMART_METER_GAS_DEVICE_IDENTIFICATION = "TESTG102400000001";
+	public static final DateTime TECHNICAL_INSTALLATION_DATE = DateTime.now().minusDays(1);
 
     public static final Boolean DEVICE_MODEL_METERED = true;
 

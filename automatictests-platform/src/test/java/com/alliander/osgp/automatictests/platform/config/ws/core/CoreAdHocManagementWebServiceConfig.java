@@ -30,9 +30,11 @@ public class CoreAdHocManagementWebServiceConfig extends BaseWebServiceConfig {
         return new DefaultWebServiceTemplateFactory.Builder().setMarshaller(this.coreAdHocManagementMarshaller())
                 .setMessageFactory(this.messageFactory())
                 .setTargetUri(this.baseUri.concat(this.webserviceTemplateDefaultUriCoreAdHocManagement))
-                .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
+                .setKeyStoreType(this.webserviceKeystoreType)
+                .setKeyStoreLocation(this.webserviceKeystoreLocation)
                 .setKeyStorePassword(this.webserviceKeystorePassword)
-                .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)
+                .setTrustStoreFactory(this.webServiceTrustStoreFactory())
+                .setApplicationName(this.applicationName)
                 .build();
     }
 

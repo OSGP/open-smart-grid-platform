@@ -28,9 +28,11 @@ public class SmartMeteringBundleWebServiceConfig extends BaseWebServiceConfig {
         return new DefaultWebServiceTemplateFactory.Builder().setMarshaller(this.smartMeteringBundleManagementMarshaller())
                 .setMessageFactory(this.messageFactory())
                 .setTargetUri(this.baseUri.concat(this.configuration.webserviceTemplateDefaultUriSmartMeteringBundleManagement))
-                .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
+                .setKeyStoreType(this.webserviceKeystoreType)
+                .setKeyStoreLocation(this.webserviceKeystoreLocation)
                 .setKeyStorePassword(this.webserviceKeystorePassword)
-                .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)
+                .setTrustStoreFactory(this.webServiceTrustStoreFactory())
+                .setApplicationName(this.applicationName)
                 .build();
     }
 

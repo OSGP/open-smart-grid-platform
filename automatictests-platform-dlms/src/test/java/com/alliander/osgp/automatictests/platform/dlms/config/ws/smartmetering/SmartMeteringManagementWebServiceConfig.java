@@ -28,9 +28,11 @@ public class SmartMeteringManagementWebServiceConfig extends BaseWebServiceConfi
         return new DefaultWebServiceTemplateFactory.Builder().setMarshaller(this.smartMeteringManagementMarshaller())
                 .setMessageFactory(this.messageFactory())
                 .setTargetUri(this.baseUri.concat(this.configuration.webserviceTemplateDefaultUriSmartMeteringManagement))
-                .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
+                .setKeyStoreType(this.webserviceKeystoreType)
+                .setKeyStoreLocation(this.webserviceKeystoreLocation)
                 .setKeyStorePassword(this.webserviceKeystorePassword)
-                .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)
+                .setTrustStoreFactory(this.webServiceTrustStoreFactory())
+                .setApplicationName(this.applicationName)
                 .build();
     }
 
