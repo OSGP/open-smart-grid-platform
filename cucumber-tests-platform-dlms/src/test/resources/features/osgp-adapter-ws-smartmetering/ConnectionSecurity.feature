@@ -3,7 +3,7 @@ Feature: Connection security
   I want to communicate with devices at different levels of security
   So the transferred data is as secure as possible
 
-@hannek
+@Skip
   Scenario: Communicate with LLS1 encryption
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
