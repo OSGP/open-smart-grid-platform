@@ -49,9 +49,9 @@ public class FindDevicesWithoutOwner extends StepsBase {
         final FindDevicesWhichHaveNoOwnerRequest request = new FindDevicesWhichHaveNoOwnerRequest();
 
         try {
-            ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.findDevicesWithoutOwner(request));
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.findDevicesWithoutOwner(request));
         } catch (final SoapFaultClientException e) {
-            ScenarioContext.Current().put(Keys.KEY_RESPONSE, e);
+            ScenarioContext.Current().put(Keys.RESPONSE, e);
         }
     }
 
@@ -64,7 +64,7 @@ public class FindDevicesWithoutOwner extends StepsBase {
     public void theFindDevicesWithoutOrganizationResponseContains(final Integer expectedCount) throws Throwable {
 
         final FindDevicesWhichHaveNoOwnerResponse findDevicesWhichHaveNoOwnerResponse = (FindDevicesWhichHaveNoOwnerResponse) ScenarioContext
-                .Current().get(Keys.KEY_RESPONSE);
+                .Current().get(Keys.RESPONSE);
 
         Assert.assertEquals((int) expectedCount, findDevicesWhichHaveNoOwnerResponse.getDevices().size());
     }
@@ -79,7 +79,7 @@ public class FindDevicesWithoutOwner extends StepsBase {
             final Map<String, String> expectedResult) throws Throwable {
 
         final FindDevicesWhichHaveNoOwnerResponse response = (FindDevicesWhichHaveNoOwnerResponse) ScenarioContext
-                .Current().get(Keys.KEY_RESPONSE);
+                .Current().get(Keys.RESPONSE);
 
         for (final Device device : response.getDevices()) {
             Assert.assertEquals(getString(expectedResult, Keys.KEY_DEVICE_IDENTIFICATION),

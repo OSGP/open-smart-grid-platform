@@ -64,13 +64,13 @@ public class ResumeScheduleSteps {
         final ResumeScheduleRequest request = new ResumeScheduleRequest();
 
         request.setDeviceIdentification(getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION));
-        request.setIndex(getInteger(requestParameters, Keys.KEY_INDEX, Defaults.INDEX));
-        request.setIsImmediate(getBoolean(requestParameters, Keys.KEY_ISIMMEDIATE, Defaults.ISIMMEDIATE));
+        request.setIndex(getInteger(requestParameters, Keys.KEY_INDEX, Defaults.DEFAULT_INDEX));
+        request.setIsImmediate(getBoolean(requestParameters, Keys.KEY_ISIMMEDIATE, Defaults.DEFAULT_ISIMMEDIATE));
 
         try {
-            ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.resumeSchedule(request));
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.resumeSchedule(request));
         } catch (final SoapFaultClientException ex) {
-            ScenarioContext.Current().put(Keys.KEY_RESPONSE, ex);
+            ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
     }
 
@@ -96,7 +96,7 @@ public class ResumeScheduleSteps {
     public void theResumeScheduleAsyncResponseContains(final Map<String, String> expectedResponseData)
             throws Throwable {
         final ResumeScheduleAsyncResponse response = (ResumeScheduleAsyncResponse) ScenarioContext.Current()
-                .get(Keys.KEY_RESPONSE);
+                .get(Keys.RESPONSE);
 
         Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
         Assert.assertEquals(getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION),
@@ -129,7 +129,7 @@ public class ResumeScheduleSteps {
     public void thePlatformBuffersAGetResumeScheduleResponseMessageForDevice(final String deviceIdentification,
             final Map<String, String> expectedResult) throws InterruptedException {
         final ResumeScheduleAsyncResponse asyncResponse = (ResumeScheduleAsyncResponse) ScenarioContext.Current()
-                .get(Keys.KEY_RESPONSE);
+                .get(Keys.RESPONSE);
 
         try {
             this.getResponseWithCorrelationUID(deviceIdentification,

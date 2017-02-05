@@ -59,9 +59,9 @@ public class GetFirmwareVersionSteps extends StepsBase {
     	request.setDeviceIdentification(getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
     	
     	try {
-    		ScenarioContext.Current().put(Keys.KEY_RESPONSE, client.getFirmwareVersion(request));
+    		ScenarioContext.Current().put(Keys.RESPONSE, client.getFirmwareVersion(request));
     	} catch(SoapFaultClientException ex) {
-    		ScenarioContext.Current().put(Keys.KEY_RESPONSE, ex);
+    		ScenarioContext.Current().put(Keys.RESPONSE, ex);
     	}
     }
 
@@ -74,7 +74,7 @@ public class GetFirmwareVersionSteps extends StepsBase {
     @Then("^the get firmware version async response contains$")
     public void theGetFirmwareVersionResponseContains(final Map<String, String> expectedResponseData)
             throws Throwable {
-    	GetFirmwareVersionAsyncResponse response = (GetFirmwareVersionAsyncResponse)ScenarioContext.Current().get(Keys.KEY_RESPONSE);
+    	GetFirmwareVersionAsyncResponse response = (GetFirmwareVersionAsyncResponse)ScenarioContext.Current().get(Keys.RESPONSE);
     	
         Assert.assertEquals(getString(expectedResponseData,  Keys.KEY_DEVICE_IDENTIFICATION), response.getAsyncResponse().getDeviceId());
     	Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());

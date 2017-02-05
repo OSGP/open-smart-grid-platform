@@ -50,7 +50,7 @@ public class OrganizationSteps extends StepsBase {
         final String organizationIdentification = getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
                 Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
         final Organisation entity = new Organisation(
-                (organizationIdentification.isEmpty()) ? Defaults.NEW_ORGANIZATION_IDENTIFICATION
+                (organizationIdentification.isEmpty()) ? Defaults.DEFAULT_NEW_ORGANIZATION_IDENTIFICATION
                         : organizationIdentification,
                 getString(settings, Keys.KEY_NAME, Defaults.ORGANIZATION_NAME), 
                 getString(settings, Keys.KEY_PREFIX, Defaults.DEFAULT_PREFIX),
@@ -117,7 +117,7 @@ public class OrganizationSteps extends StepsBase {
         final Organisation entity = this.repo
                 .findByOrganisationIdentification(expectedEntity.get(Keys.KEY_ORGANIZATION_IDENTIFICATION));
 
-        Assert.assertEquals(getString(expectedEntity, Keys.KEY_NAME, Defaults.NEW_ORGANIZATION_NAME),
+        Assert.assertEquals(getString(expectedEntity, Keys.KEY_NAME, Defaults.DEFAULT_NEW_ORGANIZATION_NAME),
                 entity.getName());
         final String prefix = getString(expectedEntity, Keys.KEY_PREFIX, Defaults.ORGANIZATION_PREFIX);
         Assert.assertEquals((prefix.isEmpty()) ? Defaults.ORGANIZATION_PREFIX : prefix, entity.getPrefix());

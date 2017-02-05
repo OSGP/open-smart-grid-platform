@@ -55,7 +55,7 @@ public class SmartMeterSteps extends BaseDeviceSteps {
         		getFloat(settings, "GPSLongitude", Defaults.LONGITUDE)
         		);
     	
-    	smartMeter.setSupplier(getString(settings, Keys.SUPPLIER, Defaults.SUPPLIER));
+    	smartMeter.setSupplier(getString(settings, Keys.SUPPLIER, Defaults.DEFAULT_SUPPLIER));
     	
         if (settings.containsKey(Keys.KEY_GATEWAY_DEVICE_ID)) {
             smartMeter.setChannel(getShort(settings, Keys.KEY_CHANNEL, Defaults.CHANNEL));

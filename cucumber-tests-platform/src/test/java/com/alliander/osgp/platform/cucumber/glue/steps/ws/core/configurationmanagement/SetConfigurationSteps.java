@@ -111,23 +111,23 @@ public class SetConfigurationSteps {
 
         config.setShortTermHistoryIntervalMinutes(
 
-                getInteger(requestParameters, Keys.SHORT_INTERVAL, Defaults.SHORT_INTERVAL));
+                getInteger(requestParameters, Keys.SHORT_INTERVAL, Defaults.DEFAULT_SHORT_INTERVAL));
 
         final LongTermIntervalType intervalType = getEnum(requestParameters, Keys.INTERVAL_TYPE,
-                LongTermIntervalType.class, Defaults.INTERVAL_TYPE);
+                LongTermIntervalType.class, Defaults.DEFAULT_INTERVAL_TYPE);
 
         if (intervalType != null) {
             config.setLongTermHistoryInterval(
-                    getInteger(requestParameters, Keys.LONG_INTERVAL, Defaults.LONG_INTERVAL));
+                    getInteger(requestParameters, Keys.LONG_INTERVAL, Defaults.DEFAULT_LONG_INTERVAL));
             config.setLongTermHistoryIntervalType(intervalType);
         }
 
         request.setConfiguration(config);
 
         try {
-            ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.setConfiguration(request));
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.setConfiguration(request));
         } catch (final SoapFaultClientException ex) {
-            ScenarioContext.Current().put(Keys.KEY_RESPONSE, ex);
+            ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
     }
 
@@ -204,7 +204,7 @@ public class SetConfigurationSteps {
     @Then("^the set configuration async response contains$")
     public void theSetConfigurationResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
         final SetConfigurationAsyncResponse response = (SetConfigurationAsyncResponse) ScenarioContext.Current()
-                .get(Keys.KEY_RESPONSE);
+                .get(Keys.RESPONSE);
 
         Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
         Assert.assertEquals(getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION),

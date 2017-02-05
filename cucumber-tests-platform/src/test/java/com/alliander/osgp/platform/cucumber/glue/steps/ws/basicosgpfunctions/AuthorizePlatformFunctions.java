@@ -94,7 +94,7 @@ public class AuthorizePlatformFunctions {
 
     @Then("the platform function response is \"([^\"]*)\"")
     public void theDeviceFunctionResponseIsSuccessful(final Boolean allowed) {
-        final Object response = ScenarioContext.Current().get(Keys.KEY_RESPONSE);
+        final Object response = ScenarioContext.Current().get(Keys.RESPONSE);
 
         if (allowed) {
             Assert.assertTrue(!(response instanceof SoapFaultClientException));
@@ -116,12 +116,12 @@ public class AuthorizePlatformFunctions {
         organisation.setEnabled(Defaults.ORGANIZATION_ENABLED);
         request.setOrganisation(organisation);
 
-        ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.adminDeviceManagementClient.createOrganization(request));
+        ScenarioContext.Current().put(Keys.RESPONSE, this.adminDeviceManagementClient.createOrganization(request));
     }
 
     private void getOrganisations(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        ScenarioContext.Current().put(Keys.KEY_RESPONSE,
+        ScenarioContext.Current().put(Keys.RESPONSE,
                 this.adminDeviceManagementClient.findAllOrganizations(new FindAllOrganisationsRequest()));
     }
 
@@ -132,12 +132,12 @@ public class AuthorizePlatformFunctions {
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.adminDeviceManagementClient.findMessageLogs(request));
+        ScenarioContext.Current().put(Keys.RESPONSE, this.adminDeviceManagementClient.findMessageLogs(request));
     }
 
     private void getDevicesWithoutOwner(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        ScenarioContext.Current().put(Keys.KEY_RESPONSE,
+        ScenarioContext.Current().put(Keys.RESPONSE,
                 this.adminDeviceManagementClient.findDevicesWithoutOwner(new FindDevicesWhichHaveNoOwnerRequest()));
     }
 
@@ -149,7 +149,7 @@ public class AuthorizePlatformFunctions {
         request.setOrganisationIdentification(getString(requestParameters, Keys.KEY_ORGANIZATION_IDENTIFICATION,
                 Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
-        ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.adminDeviceManagementClient.setOwner(request));
+        ScenarioContext.Current().put(Keys.RESPONSE, this.adminDeviceManagementClient.setOwner(request));
     }
 
     private void updateKey(final Map<String, String> requestParameters)
@@ -160,7 +160,7 @@ public class AuthorizePlatformFunctions {
         request.setProtocolInfoId(Defaults.PROTOCOL_INFO_ID);
         request.setPublicKey(Defaults.PUBLIC_KEY);
 
-        ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.adminDeviceManagementClient.getUpdateKeyResponse(request));
+        ScenarioContext.Current().put(Keys.RESPONSE, this.adminDeviceManagementClient.getUpdateKeyResponse(request));
     }
 
     private void revokeKey(final Map<String, String> requestParameters)
@@ -169,6 +169,6 @@ public class AuthorizePlatformFunctions {
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.adminDeviceManagementClient.getRevokeKeyResponse(request));
+        ScenarioContext.Current().put(Keys.RESPONSE, this.adminDeviceManagementClient.getRevokeKeyResponse(request));
     }
 }

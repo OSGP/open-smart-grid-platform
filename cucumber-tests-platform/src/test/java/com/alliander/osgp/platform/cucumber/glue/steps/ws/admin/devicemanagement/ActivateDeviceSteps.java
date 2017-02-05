@@ -45,9 +45,9 @@ public class ActivateDeviceSteps extends StepsBase {
                 getString(requestSettings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         try {
-            ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.activateDevice(request));
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.activateDevice(request));
         } catch (final SoapFaultClientException ex) {
-            ScenarioContext.Current().put(Keys.KEY_RESPONSE, ex);
+            ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
     }
     
@@ -68,7 +68,7 @@ public class ActivateDeviceSteps extends StepsBase {
      */
     @Then("^the activate device response contains$")
     public void theActivateDeviceResponseContains(final Map<String, String> expectedResponse) throws Throwable {
-        final ActivateDeviceResponse response = (ActivateDeviceResponse) ScenarioContext.Current().get(Keys.KEY_RESPONSE);
+        final ActivateDeviceResponse response = (ActivateDeviceResponse) ScenarioContext.Current().get(Keys.RESPONSE);
 
         Assert.assertEquals(response.getResult(),
                 getEnum(expectedResponse, Keys.KEY_RESULT, OsgpResultType.class, OsgpResultType.OK));

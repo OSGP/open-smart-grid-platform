@@ -57,7 +57,7 @@ public class CreateOrganizationSteps extends StepsBase {
         organization.setPrefix(getString(requestSettings, Keys.KEY_PREFIX, Defaults.ORGANIZATION_PREFIX));
 
         final PlatformFunctionGroup platformFunctionGroup = getEnum(requestSettings, Keys.KEY_PLATFORM_FUNCTION_GROUP,
-                PlatformFunctionGroup.class, Defaults.NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP);
+                PlatformFunctionGroup.class, Defaults.DEFAULT_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP);
         organization.setFunctionGroup(platformFunctionGroup);
 
         for (final String domain : getString(requestSettings, Keys.KEY_DOMAINS, Defaults.DOMAINS).split(";")) {
@@ -72,9 +72,9 @@ public class CreateOrganizationSteps extends StepsBase {
         request.setOrganisation(organization);
 
         try {
-            ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.createOrganization(request));
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.createOrganization(request));
         } catch (final SoapFaultClientException e) {
-            ScenarioContext.Current().put(Keys.KEY_RESPONSE, e);
+            ScenarioContext.Current().put(Keys.RESPONSE, e);
         }
     }
 
@@ -100,7 +100,7 @@ public class CreateOrganizationSteps extends StepsBase {
      */
     @Then("^the create organization response is successful$")
     public void theCreateOrganizationResponseIsSuccessful() throws Throwable {
-        Assert.assertTrue(ScenarioContext.Current().get(Keys.KEY_RESPONSE) instanceof CreateOrganisationResponse);
+        Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof CreateOrganisationResponse);
     }
 
     /**

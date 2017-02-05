@@ -68,18 +68,18 @@ public class SetLightSteps {
 		request.setDeviceIdentification(
 				getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 		LightValue lightValue = new LightValue();
-		lightValue.setIndex(getInteger(requestParameters, Keys.KEY_INDEX, Defaults.INDEX));
+		lightValue.setIndex(getInteger(requestParameters, Keys.KEY_INDEX, Defaults.DEFAULT_INDEX));
 		if (requestParameters.containsKey(Keys.KEY_DIMVALUE)
 				&& !StringUtils.isEmpty(requestParameters.get(Keys.KEY_DIMVALUE))) {
-			lightValue.setDimValue(getInteger(requestParameters, Keys.KEY_DIMVALUE, Defaults.DIMVALUE));
+			lightValue.setDimValue(getInteger(requestParameters, Keys.KEY_DIMVALUE, Defaults.DEFAULT_DIMVALUE));
 		}
-		lightValue.setOn(getBoolean(requestParameters, Keys.KEY_ON, Defaults.ON));
+		lightValue.setOn(getBoolean(requestParameters, Keys.KEY_ON, Defaults.DEFAULT_ON));
 		request.getLightValue().add(lightValue);
 
 		try {
-			ScenarioContext.Current().put(Keys.KEY_RESPONSE, client.setLight(request));
+			ScenarioContext.Current().put(Keys.RESPONSE, client.setLight(request));
 		} catch (SoapFaultClientException ex) {
-			ScenarioContext.Current().put(Keys.KEY_RESPONSE, ex);
+			ScenarioContext.Current().put(Keys.RESPONSE, ex);
 		}
 	}
 
@@ -93,24 +93,24 @@ public class SetLightSteps {
 
 		for (int i = 0; i < nofValidLightValues; i++) {
 			LightValue lightValue = new LightValue();
-			lightValue.setIndex(getInteger(requestParameters, Keys.KEY_INDEX, Defaults.INDEX));
-			lightValue.setDimValue(getInteger(requestParameters, Keys.KEY_DIMVALUE, Defaults.DIMVALUE));
-			lightValue.setOn(getBoolean(requestParameters, Keys.KEY_ON, Defaults.ON));
+			lightValue.setIndex(getInteger(requestParameters, Keys.KEY_INDEX, Defaults.DEFAULT_INDEX));
+			lightValue.setDimValue(getInteger(requestParameters, Keys.KEY_DIMVALUE, Defaults.DEFAULT_DIMVALUE));
+			lightValue.setOn(getBoolean(requestParameters, Keys.KEY_ON, Defaults.DEFAULT_ON));
 			request.getLightValue().add(lightValue);
 		}
 
 		for (int i = 0; i < nofInvalidLightValues; i++) {
 			LightValue lightValue = new LightValue();
-			lightValue.setIndex(getInteger(requestParameters, Keys.KEY_INDEX, Defaults.INDEX));
+			lightValue.setIndex(getInteger(requestParameters, Keys.KEY_INDEX, Defaults.DEFAULT_INDEX));
 			lightValue.setDimValue(50);
 			lightValue.setOn(false);
 			request.getLightValue().add(lightValue);
 		}
 
 		try {
-			ScenarioContext.Current().put(Keys.KEY_RESPONSE, client.setLight(request));
+			ScenarioContext.Current().put(Keys.RESPONSE, client.setLight(request));
 		} catch (SoapFaultClientException ex) {
-			ScenarioContext.Current().put(Keys.KEY_RESPONSE, ex);
+			ScenarioContext.Current().put(Keys.RESPONSE, ex);
 		}
 	}
 
@@ -123,16 +123,16 @@ public class SetLightSteps {
 
 		for (int i = 0; i < nofLightValues; i++) {
 			LightValue lightValue = new LightValue();
-			lightValue.setIndex(getInteger(requestParameters, Keys.KEY_INDEX, Defaults.INDEX));
-			lightValue.setDimValue(getInteger(requestParameters, Keys.KEY_DIMVALUE, Defaults.DIMVALUE));
-			lightValue.setOn(getBoolean(requestParameters, Keys.KEY_ON, Defaults.ON));
+			lightValue.setIndex(getInteger(requestParameters, Keys.KEY_INDEX, Defaults.DEFAULT_INDEX));
+			lightValue.setDimValue(getInteger(requestParameters, Keys.KEY_DIMVALUE, Defaults.DEFAULT_DIMVALUE));
+			lightValue.setOn(getBoolean(requestParameters, Keys.KEY_ON, Defaults.DEFAULT_ON));
 			request.getLightValue().add(lightValue);
 		}
 
 		try {
-			ScenarioContext.Current().put(Keys.KEY_RESPONSE, client.setLight(request));
+			ScenarioContext.Current().put(Keys.RESPONSE, client.setLight(request));
 		} catch (SoapFaultClientException ex) {
-			ScenarioContext.Current().put(Keys.KEY_RESPONSE, ex);
+			ScenarioContext.Current().put(Keys.RESPONSE, ex);
 		}
 	}
 
@@ -148,7 +148,7 @@ public class SetLightSteps {
 	@Then("^the set light async response contains$")
 	public void theSetLightResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
 
-		SetLightAsyncResponse response = (SetLightAsyncResponse) ScenarioContext.Current().get(Keys.KEY_RESPONSE);
+		SetLightAsyncResponse response = (SetLightAsyncResponse) ScenarioContext.Current().get(Keys.RESPONSE);
 
 		Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
 		Assert.assertEquals(getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION),

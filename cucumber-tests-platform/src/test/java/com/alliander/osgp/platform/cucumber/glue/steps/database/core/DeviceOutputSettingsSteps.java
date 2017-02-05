@@ -46,10 +46,10 @@ public class DeviceOutputSettingsSteps extends StepsBase {
         
         List<DeviceOutputSetting> outputSettings = new ArrayList<DeviceOutputSetting>();
         DeviceOutputSetting deviceOutputSetting = new DeviceOutputSetting(
-                getInteger(settings, Keys.KEY_INTERNALID, Defaults.DEVICE_OUTPUT_SETTING_INTERNALID), 
-                getInteger(settings, Keys.KEY_EXTERNALID, Defaults.DEVICE_OUTPUT_SETTING_EXTERNALID), 
-                getEnum(settings, Keys.KEY_RELAY_TYPE, RelayType.class, Defaults.DEVICE_OUTPUT_SETTING_RELAY_TYPE),
-                getString(settings, Keys.KEY_ALIAS, Defaults.DEVICE_OUTPUT_SETTING_ALIAS));
+                getInteger(settings, Keys.KEY_INTERNALID, Defaults.DEFAULT_DEVICE_OUTPUT_SETTING_INTERNALID), 
+                getInteger(settings, Keys.KEY_EXTERNALID, Defaults.DEFAULT_DEVICE_OUTPUT_SETTING_EXTERNALID), 
+                getEnum(settings, Keys.KEY_RELAY_TYPE, RelayType.class, Defaults.DEFAULT_DEVICE_OUTPUT_SETTING_RELAY_TYPE),
+                getString(settings, Keys.KEY_ALIAS, Defaults.DEFAULT_DEVICE_OUTPUT_SETTING_ALIAS));
         outputSettings.add(deviceOutputSetting);
         device.updateOutputSettings(outputSettings);
         

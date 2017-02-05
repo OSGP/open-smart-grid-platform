@@ -57,9 +57,9 @@ public class StopDeviceSteps extends StepsBase {
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         try {
-            ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.stopDeviceTest(request));
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.stopDeviceTest(request));
         } catch (final SoapFaultClientException ex) {
-            ScenarioContext.Current().put(Keys.KEY_RESPONSE, ex);
+            ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
     }
 
@@ -71,7 +71,7 @@ public class StopDeviceSteps extends StepsBase {
     @Then("the stop device async response contains")
     public void theStopDeviceAsyncResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
         final StopDeviceTestAsyncResponse response = (StopDeviceTestAsyncResponse) ScenarioContext.Current()
-                .get(Keys.KEY_RESPONSE);
+                .get(Keys.RESPONSE);
 
         Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
         Assert.assertEquals(getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION),

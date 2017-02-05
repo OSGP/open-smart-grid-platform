@@ -44,7 +44,7 @@ public class FaultSteps extends StepsBase {
             final GetDataResponse response = this.client.getData(getDataAsyncRequest);
             fail("Expected a SOAP fault, but got a GetDataResponse with result " + response.getResult().value() + ".");
         } catch (final SoapFaultClientException e) {
-			ScenarioContext.Current().put(Keys.KEY_RESPONSE, e);
+			ScenarioContext.Current().put(Keys.RESPONSE, e);
         }
         
         GenericResponseSteps.verifySoapFault(responseParameters);

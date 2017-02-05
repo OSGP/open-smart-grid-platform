@@ -64,9 +64,9 @@ public class SetRebootSteps extends StepsBase {
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         try {
-            ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.setReboot(request));
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.setReboot(request));
         } catch (final SoapFaultClientException ex) {
-            ScenarioContext.Current().put(Keys.KEY_RESPONSE, ex);
+            ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
     }
 
@@ -90,7 +90,7 @@ public class SetRebootSteps extends StepsBase {
      */
     @Then("^the set reboot async response contains$")
     public void theSetRebootAsyncResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
-        final SetRebootAsyncResponse response = (SetRebootAsyncResponse) ScenarioContext.Current().get(Keys.KEY_RESPONSE);
+        final SetRebootAsyncResponse response = (SetRebootAsyncResponse) ScenarioContext.Current().get(Keys.RESPONSE);
 
         Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
         Assert.assertEquals(getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION),
@@ -141,7 +141,7 @@ public class SetRebootSteps extends StepsBase {
     @Then("^the set reboot async response contains a soap fault$")
     public void theSetRebootAsyncResponseContainsASoapFault(final Map<String, String> expectedResult) {
         final SoapFaultClientException response = (SoapFaultClientException) ScenarioContext.Current()
-                .get(Keys.KEY_RESPONSE);
+                .get(Keys.RESPONSE);
 
         Assert.assertEquals(expectedResult.get(Keys.KEY_MESSAGE), response.getMessage());
     }

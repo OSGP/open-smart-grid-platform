@@ -52,9 +52,9 @@ public class RevokeKeySteps extends StepsBase {
                 getString(requestSettings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         try {
-            ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.getRevokeKeyResponse(request));
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.getRevokeKeyResponse(request));
         } catch (final SoapFaultClientException e) {
-            ScenarioContext.Current().put(Keys.KEY_RESPONSE, e);
+            ScenarioContext.Current().put(Keys.RESPONSE, e);
         }
     }
 
@@ -67,8 +67,8 @@ public class RevokeKeySteps extends StepsBase {
     public void the_revoke_key_response_contains(final Map<String, String> expectedResult) throws Throwable {
         // TODO: Check what the "Revoke Key Response" has to return
 
-        Assert.assertTrue(ScenarioContext.Current().get(Keys.KEY_RESPONSE) instanceof RevokeKeyResponse);
-        final RevokeKeyResponse response = (RevokeKeyResponse) ScenarioContext.Current().get(Keys.KEY_RESPONSE);
+        Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof RevokeKeyResponse);
+        final RevokeKeyResponse response = (RevokeKeyResponse) ScenarioContext.Current().get(Keys.RESPONSE);
         Assert.assertNotNull(response);
     }
 
@@ -81,9 +81,9 @@ public class RevokeKeySteps extends StepsBase {
     public void the_revoke_key_response_contains_soap_fault(final Map<String, String> expectedResult) throws Throwable {
         // TODO: Check what the "Revoke Key Response" has to return
 
-        Assert.assertTrue(ScenarioContext.Current().get(Keys.KEY_RESPONSE) instanceof SoapFaultClientException);
+        Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof SoapFaultClientException);
         final SoapFaultClientException response = (SoapFaultClientException) ScenarioContext.Current()
-                .get(Keys.KEY_RESPONSE);
+                .get(Keys.RESPONSE);
         Assert.assertEquals(getString(expectedResult, Keys.KEY_MESSAGE), response.getMessage());
     }
 }

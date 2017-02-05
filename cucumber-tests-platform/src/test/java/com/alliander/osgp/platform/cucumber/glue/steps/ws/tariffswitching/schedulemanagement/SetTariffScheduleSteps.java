@@ -123,9 +123,9 @@ public class SetTariffScheduleSteps {
         }
 
         try {
-            ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.setSchedule(request));
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.setSchedule(request));
         } catch (final SoapFaultClientException ex) {
-            ScenarioContext.Current().put(Keys.KEY_RESPONSE, ex);
+            ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
     }
 
@@ -178,7 +178,7 @@ public class SetTariffScheduleSteps {
     public void theSetTariffScheduleAsyncResponseContains(final Map<String, String> expectedResponseData)
             throws Throwable {
         final SetScheduleAsyncResponse response = (SetScheduleAsyncResponse) ScenarioContext.Current()
-                .get(Keys.KEY_RESPONSE);
+                .get(Keys.RESPONSE);
 
         Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
         Assert.assertEquals(getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION),

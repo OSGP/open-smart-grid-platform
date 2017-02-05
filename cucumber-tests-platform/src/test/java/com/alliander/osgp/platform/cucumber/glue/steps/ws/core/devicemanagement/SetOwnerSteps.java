@@ -49,13 +49,13 @@ public class SetOwnerSteps extends StepsBase {
         request.setOrganisationIdentification(getString(requestParameters, Keys.KEY_ORGANIZATION_IDENTIFICATION,
                 Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
-        ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.setOwner(request));
+        ScenarioContext.Current().put(Keys.RESPONSE, this.client.setOwner(request));
     }
 
     @Then("^the set owner async response contains$")
     public void theFindDevicesResponseContainsDevices(final Map<String, String> expectedDevice) throws Throwable {
-        Assert.assertTrue(ScenarioContext.Current().get(Keys.KEY_RESPONSE) instanceof SetOwnerResponse);
-        final SetOwnerResponse response = (SetOwnerResponse) ScenarioContext.Current().get(Keys.KEY_RESPONSE);
+        Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof SetOwnerResponse);
+        final SetOwnerResponse response = (SetOwnerResponse) ScenarioContext.Current().get(Keys.RESPONSE);
         Assert.assertNotNull(response);
     }
 

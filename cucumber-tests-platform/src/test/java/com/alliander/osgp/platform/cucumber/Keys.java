@@ -105,7 +105,7 @@ public class Keys {
     public static final String KEY_FIRMWARE_MODULE_VERSION = "FirmwareModuleVersion";
     public static final String KEY_EXACT_MATCH = "ExactMatch";
     public static final String KEY_USE_PAGE = "UsePage";
-    public static final String KEY_RESPONSE = "Response";
+    public static final String RESPONSE = "Response";
     public static final String KEY_USE_PAGES = "UsePages";
     public static final String KEY_NETWORKADDRESS = "NetworkAddress";
     public static final String KEY_ENABLED = "Enabled";

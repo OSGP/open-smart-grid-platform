@@ -67,7 +67,7 @@ public class DeviceModelSteps extends StepsBase {
                 getString(expectedEntity, Keys.KEY_DEVICE_MODEL_DESCRIPTION, Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION),
                 entity.getDescription());
         Assert.assertEquals(
-                getBoolean(expectedEntity, Keys.KEY_DEVICE_MODEL_METERED, Defaults.DEVICE_MODEL_METERED),
+                getBoolean(expectedEntity, Keys.KEY_DEVICE_MODEL_METERED, Defaults.DEFAULT_DEVICE_MODEL_METERED),
                 entity.isMetered());
     }
 
@@ -87,10 +87,10 @@ public class DeviceModelSteps extends StepsBase {
         // Create the new device model.
         final DeviceModel entity = new DeviceModel(manufacturer,
                 getString(settings, Keys.KEY_DEVICE_MODEL_MODELCODE, Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE),
-                description, getBoolean(settings, Keys.KEY_DEVICE_MODEL_FILESTORAGE, Defaults.FILESTORAGE));
+                description, getBoolean(settings, Keys.KEY_DEVICE_MODEL_FILESTORAGE, Defaults.DEFAULT_FILESTORAGE));
 
         entity.updateData(description,
-                getBoolean(settings, Keys.KEY_DEVICE_MODEL_METERED, Defaults.DEVICE_MODEL_METERED));
+                getBoolean(settings, Keys.KEY_DEVICE_MODEL_METERED, Defaults.DEFAULT_DEVICE_MODEL_METERED));
         entity.setVersion(getLong(settings, "Version"));
 
         this.repo.save(entity);

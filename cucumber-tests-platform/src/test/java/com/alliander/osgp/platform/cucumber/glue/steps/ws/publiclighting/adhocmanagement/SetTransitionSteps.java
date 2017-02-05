@@ -66,7 +66,7 @@ public class SetTransitionSteps {
     	request.setDeviceIdentification(getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
     	if (requestParameters.containsKey(Keys.KEY_TRANSITION_TYPE) && !requestParameters.get(Keys.KEY_TRANSITION_TYPE).isEmpty()) {
-        	request.setTransitionType(getEnum(requestParameters, Keys.KEY_TRANSITION_TYPE, TransitionType.class, Defaults.TRANSITION_TYPE));
+        	request.setTransitionType(getEnum(requestParameters, Keys.KEY_TRANSITION_TYPE, TransitionType.class, Defaults.DEFAULT_TRANSITION_TYPE));
     	}
     	
     	if (requestParameters.containsKey(Keys.KEY_TIME) && !requestParameters.get(Keys.KEY_TIME).isEmpty()) {
@@ -79,9 +79,9 @@ public class SetTransitionSteps {
     	}
     	
     	try {
-    		ScenarioContext.Current().put(Keys.KEY_RESPONSE, client.setTransition(request));
+    		ScenarioContext.Current().put(Keys.RESPONSE, client.setTransition(request));
     	} catch(SoapFaultClientException ex) {
-    		ScenarioContext.Current().put(Keys.KEY_RESPONSE, ex);
+    		ScenarioContext.Current().put(Keys.RESPONSE, ex);
     	} 
     }
     
@@ -101,7 +101,7 @@ public class SetTransitionSteps {
      */
     @Then("^the set transition async response contains$")
     public void theSetTransitionAsyncResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
-    	SetTransitionAsyncResponse response = (SetTransitionAsyncResponse)ScenarioContext.Current().get(Keys.KEY_RESPONSE);
+    	SetTransitionAsyncResponse response = (SetTransitionAsyncResponse)ScenarioContext.Current().get(Keys.RESPONSE);
     	
     	Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
     	Assert.assertEquals(getString(expectedResponseData,  Keys.KEY_DEVICE_IDENTIFICATION), response.getAsyncResponse().getDeviceId());
@@ -146,7 +146,7 @@ public class SetTransitionSteps {
     
     @Then("^the set transition async response contains a soap fault$")
     public void theSetTransitionAsyncResponseContainsASoapFault(final Map<String, String> expectedResult) {
-    	SoapFaultClientException response = (SoapFaultClientException)ScenarioContext.Current().get(Keys.KEY_RESPONSE);
+    	SoapFaultClientException response = (SoapFaultClientException)ScenarioContext.Current().get(Keys.RESPONSE);
     	
     	Assert.assertEquals(expectedResult.get(Keys.KEY_MESSAGE), response.getMessage());
     }

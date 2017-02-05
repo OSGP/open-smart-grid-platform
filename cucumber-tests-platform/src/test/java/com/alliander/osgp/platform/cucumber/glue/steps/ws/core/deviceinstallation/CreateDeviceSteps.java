@@ -52,9 +52,9 @@ public class CreateDeviceSteps extends StepsBase {
         request.setDevice(device);
 
         try {
-            ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.addDevice(request));
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.addDevice(request));
         } catch (final SoapFaultClientException ex) {
-            ScenarioContext.Current().put(Keys.KEY_RESPONSE, ex);
+            ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
     }
 
@@ -67,9 +67,9 @@ public class CreateDeviceSteps extends StepsBase {
         request.setDevice(device);
 
         try {
-            ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.addDevice(request, "unknown-organization"));
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.addDevice(request, "unknown-organization"));
         } catch (final SoapFaultClientException ex) {
-            ScenarioContext.Current().put(Keys.KEY_RESPONSE, ex);
+            ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
     }
 
@@ -81,7 +81,7 @@ public class CreateDeviceSteps extends StepsBase {
      */
     @Then("^the add device response is successful$")
     public void theAddDeviceResponseIsSuccessful() throws Throwable {
-        Assert.assertTrue(ScenarioContext.Current().get(Keys.KEY_RESPONSE) instanceof AddDeviceResponse);
+        Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof AddDeviceResponse);
     }
 
     @When("^receiving an update device request")
@@ -101,9 +101,9 @@ public class CreateDeviceSteps extends StepsBase {
         request.setUpdatedDevice(device);
 
         try {
-            ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.updateDevice(request));
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.updateDevice(request));
         } catch (final SoapFaultClientException ex) {
-            ScenarioContext.Current().put(Keys.KEY_RESPONSE, ex);
+            ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
     }
 
@@ -123,9 +123,9 @@ public class CreateDeviceSteps extends StepsBase {
         deviceModel.setDescription(
                 getString(settings, Keys.KEY_DEVICE_MODEL_DESCRIPTION, Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION));
         deviceModel.setManufacturer(
-                getString(settings, Keys.KEY_DEVICE_MODEL_MANUFACTURER, Defaults.DEVICE_MODEL_MANUFACTURER));
+                getString(settings, Keys.KEY_DEVICE_MODEL_MANUFACTURER, Defaults.DEFAULT_DEVICE_MODEL_MANUFACTURER));
         deviceModel
-                .setMetered(getBoolean(settings, Keys.KEY_DEVICE_MODEL_METERED, Defaults.DEVICE_MODEL_METERED));
+                .setMetered(getBoolean(settings, Keys.KEY_DEVICE_MODEL_METERED, Defaults.DEFAULT_DEVICE_MODEL_METERED));
         deviceModel.setModelCode(
                 getString(settings, Keys.KEY_DEVICE_MODEL_MODELCODE, Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
         device.setDeviceModel(deviceModel);
@@ -133,9 +133,9 @@ public class CreateDeviceSteps extends StepsBase {
         device.setGpsLatitude(getFloat(settings, Keys.KEY_LATITUDE, Defaults.LATITUDE));
         device.setGpsLongitude(getFloat(settings, Keys.KEY_LONGITUDE, Defaults.LONGITUDE));
         device.setHasSchedule(getBoolean(settings, Keys.KEY_HAS_SCHEDULE, Defaults.HASSCHEDULE));
-        device.setOwner(getString(settings, Keys.KEY_OWNER, Defaults.OWNER));
+        device.setOwner(getString(settings, Keys.KEY_OWNER, Defaults.DEFAULT_OWNER));
         device.setPublicKeyPresent(getBoolean(settings, Keys.KEY_PUBLICKEYPRESENT, Defaults.PUBLICKEYPRESENT));
-        device.setActivated(getBoolean(settings, Keys.KEY_ACTIVATED, Defaults.ACTIVATED));
+        device.setActivated(getBoolean(settings, Keys.KEY_ACTIVATED, Defaults.DEFAULT_ACTIVATED));
 
         return device;
     }
@@ -148,7 +148,7 @@ public class CreateDeviceSteps extends StepsBase {
      */
     @Then("^the update device response is successfull$")
     public void theUpdateDeviceResponseIsSuccessfull() throws Throwable {
-        Assert.assertTrue(ScenarioContext.Current().get(Keys.KEY_RESPONSE) instanceof UpdateDeviceResponse);
+        Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof UpdateDeviceResponse);
     }
 
     /**
@@ -160,7 +160,7 @@ public class CreateDeviceSteps extends StepsBase {
      */
     @Then("^the add device response contains$")
     public void theAddDeviceResponseContains(final Map<String, String> expectedResult) throws Throwable {
-        Assert.assertTrue(ScenarioContext.Current().get(Keys.KEY_RESPONSE) instanceof AddDeviceResponse);
+        Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof AddDeviceResponse);
     }
 
     @Then("^the add device response contains soap fault$")
@@ -170,7 +170,7 @@ public class CreateDeviceSteps extends StepsBase {
 
     @Then("^the update device response contains$")
     public void theUpdateDeviceResponseContains(final Map<String, String> expectedResult) throws Throwable {
-        Assert.assertTrue(ScenarioContext.Current().get(Keys.KEY_RESPONSE) instanceof UpdateDeviceResponse);
+        Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof UpdateDeviceResponse);
     }
 
     /**

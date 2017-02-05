@@ -66,9 +66,9 @@ public class GetStatusSteps {
     	request.setDeviceIdentification(getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
     	
     	try {
-    		ScenarioContext.Current().put(Keys.KEY_RESPONSE, client.getStatus(request));
+    		ScenarioContext.Current().put(Keys.RESPONSE, client.getStatus(request));
     	} catch(SoapFaultClientException ex) {
-    		ScenarioContext.Current().put(Keys.KEY_RESPONSE, ex);
+    		ScenarioContext.Current().put(Keys.RESPONSE, ex);
     	}
     }
     
@@ -89,7 +89,7 @@ public class GetStatusSteps {
     @Then("^the get status async response contains$")
     public void theGetStatusAsyncResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
         
-    	GetStatusAsyncResponse response = (GetStatusAsyncResponse)ScenarioContext.Current().get(Keys.KEY_RESPONSE);
+    	GetStatusAsyncResponse response = (GetStatusAsyncResponse)ScenarioContext.Current().get(Keys.RESPONSE);
     	
     	Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
     	Assert.assertEquals(getString(expectedResponseData,  Keys.KEY_DEVICE_IDENTIFICATION), response.getAsyncResponse().getDeviceId());
@@ -103,7 +103,7 @@ public class GetStatusSteps {
 
     @Then("^the get status response contains soap fault$")
     public void theGetStatusResponseContainsSoapFault(final Map<String, String> expectedResponseData) {
-    	SoapFaultClientException response = (SoapFaultClientException)ScenarioContext.Current().get(Keys.KEY_RESPONSE);
+    	SoapFaultClientException response = (SoapFaultClientException)ScenarioContext.Current().get(Keys.RESPONSE);
     	
     	Assert.assertEquals(expectedResponseData.get(Keys.KEY_MESSAGE), response.getMessage());
     }
@@ -138,15 +138,15 @@ public class GetStatusSteps {
        			Assert.assertEquals(getEnum(expectedResult, Keys.KEY_LIGHTTYPE, LightType.class), deviceStatus.getLightType());
        			
        			if (expectedResult.containsKey(Keys.KEY_EVENTNOTIFICATIONTYPES) && !expectedResult.get(Keys.KEY_EVENTNOTIFICATIONTYPES).isEmpty()) {
-           			Assert.assertEquals(getString(expectedResult,  Keys.KEY_EVENTNOTIFICATIONS, Defaults.EVENTNOTIFICATIONS).split(Keys.SEPARATOR).length, deviceStatus.getEventNotifications().size());
-           			for (String eventNotification : getString(expectedResult,  Keys.KEY_EVENTNOTIFICATIONS, Defaults.EVENTNOTIFICATIONS).split(Keys.SEPARATOR)) {
+           			Assert.assertEquals(getString(expectedResult,  Keys.KEY_EVENTNOTIFICATIONS, Defaults.DEFAULT_EVENTNOTIFICATIONS).split(Keys.SEPARATOR).length, deviceStatus.getEventNotifications().size());
+           			for (String eventNotification : getString(expectedResult,  Keys.KEY_EVENTNOTIFICATIONS, Defaults.DEFAULT_EVENTNOTIFICATIONS).split(Keys.SEPARATOR)) {
                			Assert.assertTrue(deviceStatus.getEventNotifications().contains(Enum.valueOf(EventNotificationType.class, eventNotification)));
            			}
        			}
        			
        			if (expectedResult.containsKey(Keys.KEY_LIGHTVALUES) && !expectedResult.get(Keys.KEY_LIGHTVALUES).isEmpty()) {
-               		Assert.assertEquals(getString(expectedResult,  Keys.KEY_LIGHTVALUES, Defaults.LIGHTVALUES).split(Keys.SEPARATOR).length, deviceStatus.getLightValues().size());
-	           		for (String lightValues : getString(expectedResult, Keys.KEY_LIGHTVALUES, Defaults.LIGHTVALUES).split(Keys.SEPARATOR)) {
+               		Assert.assertEquals(getString(expectedResult,  Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES).split(Keys.SEPARATOR).length, deviceStatus.getLightValues().size());
+	           		for (String lightValues : getString(expectedResult, Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES).split(Keys.SEPARATOR)) {
 	           			
 	       				String[] parts = lightValues.split(Keys.SEPARATOR_SEMICOLON);
 	       				Integer index = Integer.parseInt(parts[0]);

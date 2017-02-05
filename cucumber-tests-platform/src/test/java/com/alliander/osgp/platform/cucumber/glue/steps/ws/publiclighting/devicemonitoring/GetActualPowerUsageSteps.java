@@ -75,9 +75,9 @@ public class GetActualPowerUsageSteps {
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         try {
-            ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.getActualPowerUsage(request));
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.getActualPowerUsage(request));
         } catch (final SoapFaultClientException ex) {
-            ScenarioContext.Current().put(Keys.KEY_RESPONSE, ex);
+            ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
     }
 
@@ -104,7 +104,7 @@ public class GetActualPowerUsageSteps {
             throws Throwable {
 
         final GetActualPowerUsageAsyncResponse response = (GetActualPowerUsageAsyncResponse) ScenarioContext.Current()
-                .get(Keys.KEY_RESPONSE);
+                .get(Keys.RESPONSE);
 
         Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
         Assert.assertEquals(getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION),
@@ -154,12 +154,12 @@ public class GetActualPowerUsageSteps {
             response = this.client.getGetActualPowerUsageResponse(request);
 
             if (getEnum(expectedResult, Keys.KEY_STATUS, OsgpResultType.class,
-                    Defaults.PUBLICLIGHTING_STATUS) != response.getResult()) {
+                    Defaults.DEFAULT_PUBLICLIGHTING_STATUS) != response.getResult()) {
                 continue;
             }
 
             final String expectedDescription = getString(expectedResult, Keys.KEY_DESCRIPTION,
-                    Defaults.PUBLICLIGHTING_DESCRIPTION);
+                    Defaults.DEFAULT_PUBLICLIGHTING_DESCRIPTION);
             if (expectedResult.containsKey(Keys.KEY_DESCRIPTION) && !expectedDescription.isEmpty()
                     && expectedDescription != response.getDescription()) {
                 continue;
@@ -171,10 +171,10 @@ public class GetActualPowerUsageSteps {
         final PowerUsageData data = response.getPowerUsageData();
 
         Assert.assertEquals(
-                (int) getInteger(expectedResult, Keys.ACTUAL_CONSUMED_POWER, Defaults.ACTUAL_CONSUMED_POWER),
+                (int) getInteger(expectedResult, Keys.ACTUAL_CONSUMED_POWER, Defaults.DEFAULT_ACTUAL_CONSUMED_POWER),
                 data.getActualConsumedPower());
         Assert.assertEquals(
-                (int) getInteger(expectedResult, Keys.TOTAL_CONSUMED_ENERGY, Defaults.ACTUAL_CONSUMED_ENERGY),
+                (int) getInteger(expectedResult, Keys.TOTAL_CONSUMED_ENERGY, Defaults.DEFAULT_ACTUAL_CONSUMED_ENERGY),
                 data.getTotalConsumedEnergy());
 
         // Note: This piece of code has been made because there are multiple
@@ -185,7 +185,7 @@ public class GetActualPowerUsageSteps {
             final String[] sMeterTypeArray = meterType.split("");
             Assert.assertEquals(sMeterTypeArray[0] + "_" + sMeterTypeArray[1], data.getMeterType().toString());
         } else {
-            Assert.assertEquals(getEnum(expectedResult, Keys.METER_TYPE, MeterType.class, Defaults.METER_TYPE),
+            Assert.assertEquals(getEnum(expectedResult, Keys.METER_TYPE, MeterType.class, Defaults.DEFAULT_METER_TYPE),
                     data.getMeterType());
         }
 
@@ -194,28 +194,28 @@ public class GetActualPowerUsageSteps {
                         (getDate(expectedResult, Keys.RECORD_TIME)).toDateTime(DateTimeZone.UTC).toGregorianCalendar()),
                 data.getRecordTime());
 
-        Assert.assertEquals((int) getInteger(expectedResult, Keys.TOTAL_LIGHTING_HOURS, Defaults.TOTAL_LIGHTING_HOURS),
+        Assert.assertEquals((int) getInteger(expectedResult, Keys.TOTAL_LIGHTING_HOURS, Defaults.DEFAULT_TOTAL_LIGHTING_HOURS),
                 data.getPsldData().getTotalLightingHours());
-        Assert.assertEquals((int) getInteger(expectedResult, Keys.ACTUAL_CURRENT1, Defaults.ACTUAL_CURRENT1),
+        Assert.assertEquals((int) getInteger(expectedResult, Keys.ACTUAL_CURRENT1, Defaults.DEFAULT_ACTUAL_CURRENT1),
                 data.getSsldData().getActualCurrent1());
-        Assert.assertEquals((int) getInteger(expectedResult, Keys.ACTUAL_CURRENT2, Defaults.ACTUAL_CURRENT2),
+        Assert.assertEquals((int) getInteger(expectedResult, Keys.ACTUAL_CURRENT2, Defaults.DEFAULT_ACTUAL_CURRENT2),
                 data.getSsldData().getActualCurrent2());
-        Assert.assertEquals((int) getInteger(expectedResult, Keys.ACTUAL_CURRENT3, Defaults.ACTUAL_CURRENT3),
+        Assert.assertEquals((int) getInteger(expectedResult, Keys.ACTUAL_CURRENT3, Defaults.DEFAULT_ACTUAL_CURRENT3),
                 data.getSsldData().getActualCurrent3());
-        Assert.assertEquals((int) getInteger(expectedResult, Keys.ACTUAL_POWER1, Defaults.ACTUAL_POWER1),
+        Assert.assertEquals((int) getInteger(expectedResult, Keys.ACTUAL_POWER1, Defaults.DEFAULT_ACTUAL_POWER1),
                 data.getSsldData().getActualPower1());
-        Assert.assertEquals((int) getInteger(expectedResult, Keys.ACTUAL_POWER2, Defaults.ACTUAL_POWER2),
+        Assert.assertEquals((int) getInteger(expectedResult, Keys.ACTUAL_POWER2, Defaults.DEFAULT_ACTUAL_POWER2),
                 data.getSsldData().getActualPower2());
-        Assert.assertEquals((int) getInteger(expectedResult, Keys.ACTUAL_POWER3, Defaults.ACTUAL_POWER3),
+        Assert.assertEquals((int) getInteger(expectedResult, Keys.ACTUAL_POWER3, Defaults.DEFAULT_ACTUAL_POWER3),
                 data.getSsldData().getActualPower3());
         Assert.assertEquals(
-                (int) getInteger(expectedResult, Keys.AVERAGE_POWER_FACTOR1, Defaults.AVERAGE_POWER_FACTOR1),
+                (int) getInteger(expectedResult, Keys.AVERAGE_POWER_FACTOR1, Defaults.DEFAULT_AVERAGE_POWER_FACTOR1),
                 data.getSsldData().getAveragePowerFactor1());
         Assert.assertEquals(
-                (int) getInteger(expectedResult, Keys.AVERAGE_POWER_FACTOR2, Defaults.AVERAGE_POWER_FACTOR2),
+                (int) getInteger(expectedResult, Keys.AVERAGE_POWER_FACTOR2, Defaults.DEFAULT_AVERAGE_POWER_FACTOR2),
                 data.getSsldData().getAveragePowerFactor2());
         Assert.assertEquals(
-                (int) getInteger(expectedResult, Keys.AVERAGE_POWER_FACTOR3, Defaults.AVERAGE_POWER_FACTOR3),
+                (int) getInteger(expectedResult, Keys.AVERAGE_POWER_FACTOR3, Defaults.DEFAULT_AVERAGE_POWER_FACTOR3),
                 data.getSsldData().getAveragePowerFactor3());
 
         final List<RelayData> relayDataList = data.getSsldData().getRelayData();

@@ -43,7 +43,7 @@ public abstract class GenericResponseSteps extends StepsBase {
      */
     public static void verifySoapFault(final Map<String, String> expectedResult) {
         final SoapFaultClientException soapFault = (SoapFaultClientException) ScenarioContext.Current()
-                .get(Keys.KEY_RESPONSE);
+                .get(Keys.RESPONSE);
 
         final QName qNameFaultCode = soapFault.getFaultCode();
         faultCode = qNameFaultCode.getPrefix() + ":" + qNameFaultCode.getLocalPart();

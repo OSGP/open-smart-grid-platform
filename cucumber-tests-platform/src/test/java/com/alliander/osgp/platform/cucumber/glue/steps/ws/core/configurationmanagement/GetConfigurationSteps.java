@@ -75,9 +75,9 @@ public class GetConfigurationSteps {
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         try {
-            ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.getConfiguration(request));
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.getConfiguration(request));
         } catch (final SoapFaultClientException ex) {
-            ScenarioContext.Current().put(Keys.KEY_RESPONSE, ex);
+            ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
     }
 
@@ -93,7 +93,7 @@ public class GetConfigurationSteps {
     @Then("^the get configuration async response contains$")
     public void theGetConfigurationResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
         final GetConfigurationAsyncResponse response = (GetConfigurationAsyncResponse) ScenarioContext.Current()
-                .get(Keys.KEY_RESPONSE);
+                .get(Keys.RESPONSE);
 
         Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
         Assert.assertEquals(getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION),
@@ -242,14 +242,14 @@ public class GetConfigurationSteps {
         if (expectedResponseData.containsKey(Keys.SHORT_INTERVAL)
                 && !expectedResponseData.get(Keys.SHORT_INTERVAL).isEmpty()
                 && configuration.getShortTermHistoryIntervalMinutes() != null) {
-            Assert.assertEquals(getInteger(expectedResponseData, Keys.SHORT_INTERVAL, Defaults.SHORT_INTERVAL),
+            Assert.assertEquals(getInteger(expectedResponseData, Keys.SHORT_INTERVAL, Defaults.DEFAULT_SHORT_INTERVAL),
                     configuration.getShortTermHistoryIntervalMinutes());
         }
 
         if (expectedResponseData.containsKey(Keys.LONG_INTERVAL)
                 && !expectedResponseData.get(Keys.LONG_INTERVAL).isEmpty()
                 && configuration.getLongTermHistoryInterval() != null) {
-            Assert.assertEquals(getInteger(expectedResponseData, Keys.LONG_INTERVAL, Defaults.LONG_INTERVAL),
+            Assert.assertEquals(getInteger(expectedResponseData, Keys.LONG_INTERVAL, Defaults.DEFAULT_LONG_INTERVAL),
                     configuration.getLongTermHistoryInterval());
         }
 

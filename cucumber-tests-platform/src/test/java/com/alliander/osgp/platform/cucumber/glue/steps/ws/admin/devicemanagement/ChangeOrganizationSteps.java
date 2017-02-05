@@ -53,14 +53,14 @@ public class ChangeOrganizationSteps extends StepsBase {
                 Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
         request.setNewOrganisationName(
-                getString(requestSettings, Keys.KEY_NAME, Defaults.NEW_ORGANIZATION_NAME));
+                getString(requestSettings, Keys.KEY_NAME, Defaults.DEFAULT_NEW_ORGANIZATION_NAME));
 
         request.setNewOrganisationIdentification(getString(requestSettings, Keys.KEY_NEW_ORGANIZATION_IDENTIFICATION,
-                Defaults.NEW_ORGANIZATION_IDENTIFICATION));
+                Defaults.DEFAULT_NEW_ORGANIZATION_IDENTIFICATION));
 
         request.setNewOrganisationPlatformFunctionGroup(
                 getEnum(requestSettings, Keys.KEY_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP, PlatformFunctionGroup.class,
-                        Defaults.NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP));
+                        Defaults.DEFAULT_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP));
 
         request.getNewOrganisationPlatformDomains().clear();
         for (final String platformDomain : getString(requestSettings, Keys.KEY_DOMAINS, Defaults.DOMAINS)
@@ -69,15 +69,15 @@ public class ChangeOrganizationSteps extends StepsBase {
         }
 
         try {
-            ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.changeOrganization(request));
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.changeOrganization(request));
         } catch (final SoapFaultClientException ex) {
-            ScenarioContext.Current().put(Keys.KEY_RESPONSE, ex);
+            ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
     }
 
     @Then("^the update organization response is successful$")
     public void theUpdateOrganizationResponseIsSuccessful() throws Throwable {
-        Assert.assertTrue(ScenarioContext.Current().get(Keys.KEY_RESPONSE) instanceof ChangeOrganisationResponse);
+        Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof ChangeOrganisationResponse);
     }
 
     /**

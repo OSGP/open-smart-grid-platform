@@ -86,12 +86,12 @@ public class GetPowerUsageHistorySteps {
         request.setTimePeriod(tp);
 
         request.setHistoryTermType(
-                getEnum(requestParameters, Keys.HISTORY_TERM_TYPE, HistoryTermType.class, Defaults.HISTORY_TERM_TYPE));
+                getEnum(requestParameters, Keys.HISTORY_TERM_TYPE, HistoryTermType.class, Defaults.DEFAULT_HISTORY_TERM_TYPE));
 
         try {
-            ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.getPowerUsageHistory(request));
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.getPowerUsageHistory(request));
         } catch (final SoapFaultClientException ex) {
-            ScenarioContext.Current().put(Keys.KEY_RESPONSE, ex);
+            ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
     }
 
@@ -118,7 +118,7 @@ public class GetPowerUsageHistorySteps {
             throws Throwable {
 
         final GetPowerUsageHistoryAsyncResponse response = (GetPowerUsageHistoryAsyncResponse) ScenarioContext.Current()
-                .get(Keys.KEY_RESPONSE);
+                .get(Keys.RESPONSE);
 
         Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
         Assert.assertEquals(getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION),

@@ -47,9 +47,9 @@ public class GetStatusSteps extends StepsBase {
         request.setDeviceIdentification(getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         try {
-            ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.getStatus(request));
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.getStatus(request));
         } catch (final SoapFaultClientException ex) {
-            ScenarioContext.Current().put(Keys.KEY_RESPONSE, ex);
+            ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
     }
 
@@ -62,7 +62,7 @@ public class GetStatusSteps extends StepsBase {
    public void theDeviceInstallationGetStatusAsyncResponseContains(final Map<String, String> expectedResponseData)
            throws Throwable {
        final GetStatusAsyncResponse response = (GetStatusAsyncResponse) ScenarioContext.Current()
-               .get(Keys.KEY_RESPONSE);
+               .get(Keys.RESPONSE);
 
        Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
        Assert.assertEquals(getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION),

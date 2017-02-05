@@ -41,7 +41,7 @@ public class Defaults {
     public static final String DEFAULT_SMART_METER_GAS_DEVICE_IDENTIFICATION = "TESTG102400000001";
 	public static final DateTime DEFAULT_TECHNICAL_INSTALLATION_DATE = DateTime.now().minusDays(1);
 
-    public static final Boolean DEVICE_MODEL_METERED = true;
+    public static final Boolean DEFAULT_DEVICE_MODEL_METERED = true;
 
     public static final String DLMS_DEFAULT_COMMUNICATION_METHOD = "GPRS";
     public static final Boolean DLMS_DEFAULT_IP_ADDRESS_IS_STATIC = true;
@@ -93,63 +93,63 @@ public class Defaults {
 
     public static final com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup PLATFORM_FUNCTION_GROUP = com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup.ADMIN;
     public static final String DOMAINS = "COMMON;PUBLIC_LIGHTING;TARIFF_SWITCHING";
-    public static final String NEW_ORGANIZATION_NAME = "New Organization";
-    public static final String NEW_ORGANIZATION_IDENTIFICATION = "NewOrganization";
-    public static final com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP = com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup.ADMIN;
+    public static final String DEFAULT_NEW_ORGANIZATION_NAME = "New Organization";
+    public static final String DEFAULT_NEW_ORGANIZATION_IDENTIFICATION = "NewOrganization";
+    public static final com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup DEFAULT_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP = com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup.ADMIN;
 
-    public static final String OWNER = "test-org";
-    public static final Boolean ACTIVATED = true;
-    public static final String DEVICE_MODEL_MANUFACTURER = "Kaif";
-    public static final Integer INDEX = 0;
-    public static final Boolean ISIMMEDIATE = false;
-    public static final Integer DIMVALUE = 100;
-    public static final Boolean ON = true;
-    public static final TransitionType TRANSITION_TYPE = TransitionType.DAY_NIGHT;
-    public static final Integer INTERNALID = 0;
-    public static final Integer EXTERNALID = 0;
-    public static final String EVENTNOTIFICATIONS = "";
-    public static final LinkType PREFERRED_LINKTYPE = LinkType.LINK_NOT_SET;
-    public static final LinkType ACTUAL_LINKTYPE = LinkType.LINK_NOT_SET;
-    public static final LightType LIGHTTYPE = LightType.LT_NOT_SET;
-    public static final Status STATUS = Status.OK;
-    public static final String LIGHTVALUES = "";
-    public static final String EVENTNOTIFICATIONTYPES = "";
+    public static final String DEFAULT_OWNER = "test-org";
+    public static final Boolean DEFAULT_ACTIVATED = true;
+    public static final String DEFAULT_DEVICE_MODEL_MANUFACTURER = "Kaif";
+    public static final Integer DEFAULT_INDEX = 0;
+    public static final Boolean DEFAULT_ISIMMEDIATE = false;
+    public static final Integer DEFAULT_DIMVALUE = 100;
+    public static final Boolean DEFAULT_ON = true;
+    public static final TransitionType DEFAULT_TRANSITION_TYPE = TransitionType.DAY_NIGHT;
+    public static final Integer DEFAULT_INTERNALID = 0;
+    public static final Integer DEFAULT_EXTERNALID = 0;
+    public static final String DEFAULT_EVENTNOTIFICATIONS = "";
+    public static final LinkType DEFAULT_PREFERRED_LINKTYPE = LinkType.LINK_NOT_SET;
+    public static final LinkType DEFAULT_ACTUAL_LINKTYPE = LinkType.LINK_NOT_SET;
+    public static final LightType DEFAULT_LIGHTTYPE = LightType.LT_NOT_SET;
+    public static final Status DEFAULT_STATUS = Status.OK;
+    public static final String DEFAULT_LIGHTVALUES = "";
+    public static final String DEFAULT_EVENTNOTIFICATIONTYPES = "";
 
-    public static final String DEVICE_OUTPUT_SETTING_ALIAS = "Continues burner";
-    public static final Integer DEVICE_OUTPUT_SETTING_INTERNALID = 1;
-    public static final Integer DEVICE_OUTPUT_SETTING_EXTERNALID = 1;
-    public static final RelayType DEVICE_OUTPUT_SETTING_RELAY_TYPE = RelayType.LIGHT;
+    public static final String DEFAULT_DEVICE_OUTPUT_SETTING_ALIAS = "Continues burner";
+    public static final Integer DEFAULT_DEVICE_OUTPUT_SETTING_INTERNALID = 1;
+    public static final Integer DEFAULT_DEVICE_OUTPUT_SETTING_EXTERNALID = 1;
+    public static final RelayType DEFAULT_DEVICE_OUTPUT_SETTING_RELAY_TYPE = RelayType.LIGHT;
 
-    public static final OsgpResultType PUBLICLIGHTING_STATUS = OsgpResultType.OK;
-    public static final String PUBLICLIGHTING_DESCRIPTION = "";
-    public static final Integer ACTUAL_CONSUMED_POWER = 48;
-    public static final Integer ACTUAL_CONSUMED_ENERGY = 96;
-    public static final MeterType METER_TYPE = MeterType.AUX;
-    public static final String RECORD_TIME = "";
-    public static final Integer TOTAL_LIGHTING_HOURS = 144;
-    public static final Integer ACTUAL_CURRENT1 = 1;
-    public static final Integer ACTUAL_CURRENT2 = 2;
-    public static final Integer ACTUAL_CURRENT3 = 3;
-    public static final Integer ACTUAL_POWER1 = 1;
-    public static final Integer ACTUAL_POWER2 = 2;
-    public static final Integer ACTUAL_POWER3 = 3;
-    public static final Integer AVERAGE_POWER_FACTOR1 = 1;
-    public static final Integer AVERAGE_POWER_FACTOR2 = 2;
-    public static final Integer AVERAGE_POWER_FACTOR3 = 3;
-    public static final com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.HistoryTermType HISTORY_TERM_TYPE = com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.HistoryTermType.SHORT;
-    public static final com.alliander.osgp.oslp.Oslp.HistoryTermType OSLP_HISTORY_TERM_TYPE = com.alliander.osgp.oslp.Oslp.HistoryTermType.Short;
+    public static final OsgpResultType DEFAULT_PUBLICLIGHTING_STATUS = OsgpResultType.OK;
+    public static final String DEFAULT_PUBLICLIGHTING_DESCRIPTION = "";
+    public static final Integer DEFAULT_ACTUAL_CONSUMED_POWER = 48;
+    public static final Integer DEFAULT_ACTUAL_CONSUMED_ENERGY = 96;
+    public static final MeterType DEFAULT_METER_TYPE = MeterType.AUX;
+    public static final String DEFAULT_RECORD_TIME = "";
+    public static final Integer DEFAULT_TOTAL_LIGHTING_HOURS = 144;
+    public static final Integer DEFAULT_ACTUAL_CURRENT1 = 1;
+    public static final Integer DEFAULT_ACTUAL_CURRENT2 = 2;
+    public static final Integer DEFAULT_ACTUAL_CURRENT3 = 3;
+    public static final Integer DEFAULT_ACTUAL_POWER1 = 1;
+    public static final Integer DEFAULT_ACTUAL_POWER2 = 2;
+    public static final Integer DEFAULT_ACTUAL_POWER3 = 3;
+    public static final Integer DEFAULT_AVERAGE_POWER_FACTOR1 = 1;
+    public static final Integer DEFAULT_AVERAGE_POWER_FACTOR2 = 2;
+    public static final Integer DEFAULT_AVERAGE_POWER_FACTOR3 = 3;
+    public static final com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.HistoryTermType DEFAULT_HISTORY_TERM_TYPE = com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.HistoryTermType.SHORT;
+    public static final com.alliander.osgp.oslp.Oslp.HistoryTermType DEFAULT_OSLP_HISTORY_TERM_TYPE = com.alliander.osgp.oslp.Oslp.HistoryTermType.Short;
 
-    public static final com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.LightType CONFIGURATION_LIGHTTYPE = com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.LightType.RELAY;
-    public static final com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.LinkType CONFIGURATION_PREFERRED_LINKTYPE = com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.LinkType.ETHERNET;
-    public static final com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.MeterType CONFIGURATION_METER_TYPE = com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.MeterType.AUX;
-    public static final String DC_LIGHTS = "0";
-    public static final Integer SHORT_INTERVAL = 15;
-    public static final Integer LONG_INTERVAL = 1;
-    public static final LongTermIntervalType INTERVAL_TYPE = LongTermIntervalType.DAYS;
+    public static final com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.LightType DEFAULT_CONFIGURATION_LIGHTTYPE = com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.LightType.RELAY;
+    public static final com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.LinkType DEFAULT_CONFIGURATION_PREFERRED_LINKTYPE = com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.LinkType.ETHERNET;
+    public static final com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.MeterType DEFAULT_CONFIGURATION_METER_TYPE = com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.MeterType.AUX;
+    public static final String DEFAULT_DEFAULT_DC_LIGHTS = "0";
+    public static final Integer DEFAULT_SHORT_INTERVAL = 15;
+    public static final Integer DEFAULT_LONG_INTERVAL = 1;
+    public static final LongTermIntervalType DEFAULT_INTERVAL_TYPE = LongTermIntervalType.DAYS;
 
-    public static final Boolean ALLOWED = false;
+    public static final Boolean DEFAULT_ALLOWED = false;
 
-    public static final String FIRMWARE_IDENTIFICATION = "";
-	public static final Boolean FILESTORAGE = true;
-	public static final String SUPPLIER = "Kaifa";
+    public static final String DEFAULT_FIRMWARE_IDENTIFICATION = "";
+	public static final Boolean DEFAULT_FILESTORAGE = true;
+	public static final String DEFAULT_SUPPLIER = "Kaifa";
 }

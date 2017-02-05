@@ -60,9 +60,9 @@ public class StartDeviceSteps extends StepsBase {
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         try {
-            ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.startDeviceTest(request));
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.startDeviceTest(request));
         } catch (final SoapFaultClientException ex) {
-            ScenarioContext.Current().put(Keys.KEY_RESPONSE, ex);
+            ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
     }
 
@@ -74,7 +74,7 @@ public class StartDeviceSteps extends StepsBase {
     @Then("the start device async response contains")
     public void theStartDeviceAsyncResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
         final StartDeviceTestAsyncResponse response = (StartDeviceTestAsyncResponse) ScenarioContext.Current()
-                .get(Keys.KEY_RESPONSE);
+                .get(Keys.RESPONSE);
 
         Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
         Assert.assertEquals(getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION),

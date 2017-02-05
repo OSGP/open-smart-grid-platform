@@ -65,9 +65,9 @@ public class SetEventNotificationsSteps extends StepsBase {
     	}
     	
     	try {
-    		ScenarioContext.Current().put(Keys.KEY_RESPONSE, client.setEventNotifications(request));
+    		ScenarioContext.Current().put(Keys.RESPONSE, client.setEventNotifications(request));
     	} catch(SoapFaultClientException ex) {
-    		ScenarioContext.Current().put(Keys.KEY_RESPONSE, ex);
+    		ScenarioContext.Current().put(Keys.RESPONSE, ex);
     	}
     }
     
@@ -80,7 +80,7 @@ public class SetEventNotificationsSteps extends StepsBase {
     @Then("^the set event notification async response contains$")
     public void theSetEventNotificationAsyncResponseContains(final Map<String, String> expectedResponseData)
             throws Throwable {
-    	SetEventNotificationsAsyncResponse response = (SetEventNotificationsAsyncResponse)ScenarioContext.Current().get(Keys.KEY_RESPONSE);
+    	SetEventNotificationsAsyncResponse response = (SetEventNotificationsAsyncResponse)ScenarioContext.Current().get(Keys.RESPONSE);
     	
     	Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
     	Assert.assertEquals(getString(expectedResponseData,  Keys.KEY_DEVICE_IDENTIFICATION), response.getAsyncResponse().getDeviceId());

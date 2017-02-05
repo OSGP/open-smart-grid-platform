@@ -164,13 +164,13 @@ public class FindDeviceSteps extends StepsBase {
         	request.setDeviceFilter(deviceFilter);
     	}
     	
-    	ScenarioContext.Current().put(Keys.KEY_RESPONSE, client.findDevices(request));
+    	ScenarioContext.Current().put(Keys.RESPONSE, client.findDevices(request));
     }
     
     @Then("the find devices response contains \"([^\"]*)\" devices")
     public void theFindDevicesResponseContainsDevices(final Integer numberOfDevices) throws Throwable
     {
-    	FindDevicesResponse response = (FindDevicesResponse) ScenarioContext.Current().get(Keys.KEY_RESPONSE);
+    	FindDevicesResponse response = (FindDevicesResponse) ScenarioContext.Current().get(Keys.RESPONSE);
     	
     	Assert.assertTrue(response.getDevices().size() == numberOfDevices);
     }
@@ -178,7 +178,7 @@ public class FindDeviceSteps extends StepsBase {
     @Then("the find devices response contains at index \"([^\"]*)\"")
     public void theFindDevicesResponseContainsAtIndex(final Integer index, final Map<String, String> expectedDevice) throws Throwable
     {
-    	FindDevicesResponse response = (FindDevicesResponse) ScenarioContext.Current().get(Keys.KEY_RESPONSE);
+    	FindDevicesResponse response = (FindDevicesResponse) ScenarioContext.Current().get(Keys.RESPONSE);
     	
     	DeviceSteps.checkDevice(expectedDevice, response.getDevices().get(index - 1));
     }

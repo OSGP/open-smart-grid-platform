@@ -184,7 +184,7 @@ public class AuthorizeDeviceFunctions {
 
     @Then("the device function response is \"([^\"]*)\"")
     public void theDeviceFunctionResponseIsSuccessful(final Boolean allowed) {
-        final Object response = ScenarioContext.Current().get(Keys.KEY_RESPONSE);
+        final Object response = ScenarioContext.Current().get(Keys.RESPONSE);
 
         if (allowed) {
             Assert.assertTrue(!(response instanceof SoapFaultClientException));
@@ -210,7 +210,7 @@ public class AuthorizeDeviceFunctions {
 
         updateDeviceAuthorisationsRequest.getDeviceAuthorisations().add(deviceAuthorisation);
 
-        ScenarioContext.Current().put(Keys.KEY_RESPONSE,
+        ScenarioContext.Current().put(Keys.RESPONSE,
                 this.adminDeviceManagementClient.updateDeviceAuthorisations(updateDeviceAuthorisationsRequest));
     }
 
@@ -220,7 +220,7 @@ public class AuthorizeDeviceFunctions {
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.coreDeviceInstallationClient.startDeviceTest(request));
+        ScenarioContext.Current().put(Keys.RESPONSE, this.coreDeviceInstallationClient.startDeviceTest(request));
     }
 
     private void stopSelfTest(final Map<String, String> requestParameters)
@@ -229,7 +229,7 @@ public class AuthorizeDeviceFunctions {
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.coreDeviceInstallationClient.stopDeviceTest(request));
+        ScenarioContext.Current().put(Keys.RESPONSE, this.coreDeviceInstallationClient.stopDeviceTest(request));
     }
 
     private void setLight(final Map<String, String> requestParameters)
@@ -237,7 +237,7 @@ public class AuthorizeDeviceFunctions {
         final SetLightRequest request = new SetLightRequest();
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-        ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.publicLightingAdHocManagementClient.setLight(request));
+        ScenarioContext.Current().put(Keys.RESPONSE, this.publicLightingAdHocManagementClient.setLight(request));
     }
 
     private void getStatus(final Map<String, String> requestParameters)
@@ -247,7 +247,7 @@ public class AuthorizeDeviceFunctions {
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.publicLightingAdHocManagementClient.getStatus(request));
+        ScenarioContext.Current().put(Keys.RESPONSE, this.publicLightingAdHocManagementClient.getStatus(request));
     }
 
     private void getDeviceAuthorization(final Map<String, String> requestParameters)
@@ -256,7 +256,7 @@ public class AuthorizeDeviceFunctions {
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.Current().put(Keys.KEY_RESPONSE,
+        ScenarioContext.Current().put(Keys.RESPONSE,
                 this.adminDeviceManagementClient.findDeviceAuthorisations(request));
     }
 
@@ -266,7 +266,7 @@ public class AuthorizeDeviceFunctions {
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.coreDeviceManagementClient.setEventNotifications(request));
+        ScenarioContext.Current().put(Keys.RESPONSE, this.coreDeviceManagementClient.setEventNotifications(request));
     }
 
     private void getEventNotifications(final Map<String, String> requestParameters)
@@ -275,7 +275,7 @@ public class AuthorizeDeviceFunctions {
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.coreDeviceManagementClient.findEventsResponse(request));
+        ScenarioContext.Current().put(Keys.RESPONSE, this.coreDeviceManagementClient.findEventsResponse(request));
     }
 
     private void updateFirmware(final Map<String, String> requestParameters)
@@ -284,9 +284,9 @@ public class AuthorizeDeviceFunctions {
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
         request.setFirmwareIdentification(
-                getString(requestParameters, Keys.KEY_FIRMWARE_IDENTIFICATION, Defaults.FIRMWARE_IDENTIFICATION));
+                getString(requestParameters, Keys.KEY_FIRMWARE_IDENTIFICATION, Defaults.DEFAULT_FIRMWARE_IDENTIFICATION));
 
-        ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.coreFirmwareManagementClient.updateFirmware(request));
+        ScenarioContext.Current().put(Keys.RESPONSE, this.coreFirmwareManagementClient.updateFirmware(request));
     }
 
     private void getFirmwareVersion(final Map<String, String> requestParameters)
@@ -295,7 +295,7 @@ public class AuthorizeDeviceFunctions {
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.coreFirmwareManagementClient.getFirmwareVersion(request));
+        ScenarioContext.Current().put(Keys.RESPONSE, this.coreFirmwareManagementClient.getFirmwareVersion(request));
     }
 
     private void setLightSchedule(final Map<String, String> requestParameters)
@@ -304,7 +304,7 @@ public class AuthorizeDeviceFunctions {
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.publicLightingScheduleManagementClient.setSchedule(request));
+        ScenarioContext.Current().put(Keys.RESPONSE, this.publicLightingScheduleManagementClient.setSchedule(request));
     }
 
     private void setTariffSchedule(final Map<String, String> requestParameters)
@@ -313,7 +313,7 @@ public class AuthorizeDeviceFunctions {
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.tariffSwitchingScheduleManagementClient.setSchedule(request));
+        ScenarioContext.Current().put(Keys.RESPONSE, this.tariffSwitchingScheduleManagementClient.setSchedule(request));
     }
 
     private void setConfiguration(final Map<String, String> requestParameters)
@@ -324,16 +324,16 @@ public class AuthorizeDeviceFunctions {
 
         final Configuration config = new Configuration();
 
-        config.setLightType(Defaults.CONFIGURATION_LIGHTTYPE);
-        config.setPreferredLinkType(Defaults.CONFIGURATION_PREFERRED_LINKTYPE);
-        config.setMeterType(Defaults.CONFIGURATION_METER_TYPE);
-        config.setShortTermHistoryIntervalMinutes(Defaults.SHORT_INTERVAL);
-        config.setLongTermHistoryInterval(Defaults.LONG_INTERVAL);
-        config.setLongTermHistoryIntervalType(Defaults.INTERVAL_TYPE);
+        config.setLightType(Defaults.DEFAULT_CONFIGURATION_LIGHTTYPE);
+        config.setPreferredLinkType(Defaults.DEFAULT_CONFIGURATION_PREFERRED_LINKTYPE);
+        config.setMeterType(Defaults.DEFAULT_CONFIGURATION_METER_TYPE);
+        config.setShortTermHistoryIntervalMinutes(Defaults.DEFAULT_SHORT_INTERVAL);
+        config.setLongTermHistoryInterval(Defaults.DEFAULT_LONG_INTERVAL);
+        config.setLongTermHistoryIntervalType(Defaults.DEFAULT_INTERVAL_TYPE);
 
         request.setConfiguration(config);
 
-        ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.coreConfigurationManagementClient.setConfiguration(request));
+        ScenarioContext.Current().put(Keys.RESPONSE, this.coreConfigurationManagementClient.setConfiguration(request));
     }
 
     private void getConfiguration(final Map<String, String> requestParameters)
@@ -342,7 +342,7 @@ public class AuthorizeDeviceFunctions {
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.coreConfigurationManagementClient.getConfiguration(request));
+        ScenarioContext.Current().put(Keys.RESPONSE, this.coreConfigurationManagementClient.getConfiguration(request));
     }
 
     private void removeDevice(final Map<String, String> requestParameters)
@@ -351,7 +351,7 @@ public class AuthorizeDeviceFunctions {
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.adminDeviceManagementClient.removeDevice(request));
+        ScenarioContext.Current().put(Keys.RESPONSE, this.adminDeviceManagementClient.removeDevice(request));
     }
 
     private void getActualPowerUsage(final Map<String, String> requestParameters)
@@ -360,7 +360,7 @@ public class AuthorizeDeviceFunctions {
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.Current().put(Keys.KEY_RESPONSE,
+        ScenarioContext.Current().put(Keys.RESPONSE,
                 this.publicLightingDeviceMonitoringClient.getActualPowerUsage(request));
     }
 
@@ -370,7 +370,7 @@ public class AuthorizeDeviceFunctions {
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.Current().put(Keys.KEY_RESPONSE,
+        ScenarioContext.Current().put(Keys.RESPONSE,
                 this.publicLightingDeviceMonitoringClient.getPowerUsageHistory(request));
     }
 
@@ -380,7 +380,7 @@ public class AuthorizeDeviceFunctions {
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.publicLightingAdHocManagementClient.resumeSchedule(request));
+        ScenarioContext.Current().put(Keys.RESPONSE, this.publicLightingAdHocManagementClient.resumeSchedule(request));
     }
 
     private void setReboot(final Map<String, String> requestParameters)
@@ -389,7 +389,7 @@ public class AuthorizeDeviceFunctions {
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.coreAdHocManagementClient.setReboot(request));
+        ScenarioContext.Current().put(Keys.RESPONSE, this.coreAdHocManagementClient.setReboot(request));
     }
 
     private void setTransition(final Map<String, String> requestParameters)
@@ -398,6 +398,6 @@ public class AuthorizeDeviceFunctions {
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.publicLightingAdHocManagementClient.setTransition(request));
+        ScenarioContext.Current().put(Keys.RESPONSE, this.publicLightingAdHocManagementClient.setTransition(request));
     }
 }
