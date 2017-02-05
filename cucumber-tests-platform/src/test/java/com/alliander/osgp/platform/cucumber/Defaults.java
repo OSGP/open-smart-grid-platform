@@ -142,7 +142,7 @@ public class Defaults {
     public static final com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.LightType DEFAULT_CONFIGURATION_LIGHTTYPE = com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.LightType.RELAY;
     public static final com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.LinkType DEFAULT_CONFIGURATION_PREFERRED_LINKTYPE = com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.LinkType.ETHERNET;
     public static final com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.MeterType DEFAULT_CONFIGURATION_METER_TYPE = com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.MeterType.AUX;
-    public static final String DEFAULT_DEFAULT_DC_LIGHTS = "0";
+    public static final String DEFAULT_DC_LIGHTS = "0";
     public static final Integer DEFAULT_SHORT_INTERVAL = 15;
     public static final Integer DEFAULT_LONG_INTERVAL = 1;
     public static final LongTermIntervalType DEFAULT_INTERVAL_TYPE = LongTermIntervalType.DAYS;

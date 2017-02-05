@@ -128,7 +128,7 @@ public class OslpDeviceSteps extends StepsBase {
 
 		this.oslpMockServer.mockGetConfigurationResponse(oslpStatus,
 				getEnum(requestParameters, Keys.KEY_LIGHTTYPE, LightType.class),
-				getString(requestParameters, Keys.DC_LIGHTS, Defaults.DEFAULT_DEFAULT_DC_LIGHTS),
+				getString(requestParameters, Keys.DC_LIGHTS, Defaults.DEFAULT_DC_LIGHTS),
 				getString(requestParameters, Keys.DC_MAP), getEnum(requestParameters, Keys.RC_TYPE, RelayType.class),
 				getString(requestParameters, Keys.RC_MAP),
 				getEnum(requestParameters, Keys.KEY_PREFERRED_LINKTYPE, LinkType.class), meterType,
