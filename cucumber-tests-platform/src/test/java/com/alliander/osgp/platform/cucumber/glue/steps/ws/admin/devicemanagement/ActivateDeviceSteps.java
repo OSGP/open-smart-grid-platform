@@ -42,12 +42,12 @@ public class ActivateDeviceSteps extends StepsBase {
 
         final ActivateDeviceRequest request = new ActivateDeviceRequest();
         request.setDeviceIdentification(
-                getString(requestSettings, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(requestSettings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
 
         try {
-            ScenarioContext.Current().put(Keys.RESPONSE, this.client.activateDevice(request));
+            ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.activateDevice(request));
         } catch (final SoapFaultClientException ex) {
-            ScenarioContext.Current().put(Keys.RESPONSE, ex);
+            ScenarioContext.Current().put(Keys.KEY_RESPONSE, ex);
         }
     }
     
@@ -56,7 +56,7 @@ public class ActivateDeviceSteps extends StepsBase {
         
         // Force WSTF to use a different organization to send the requests with.
         // (Certificate is used from the certificates directory).
-        ScenarioContext.Current().put(Keys.ORGANIZATION_IDENTIFICATION, "unknown-organization");
+        ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
 
         this.receivingAnActivateDeviceRequest(requestSettings);
     }
@@ -68,10 +68,10 @@ public class ActivateDeviceSteps extends StepsBase {
      */
     @Then("^the activate device response contains$")
     public void theActivateDeviceResponseContains(final Map<String, String> expectedResponse) throws Throwable {
-        final ActivateDeviceResponse response = (ActivateDeviceResponse) ScenarioContext.Current().get(Keys.RESPONSE);
+        final ActivateDeviceResponse response = (ActivateDeviceResponse) ScenarioContext.Current().get(Keys.KEY_RESPONSE);
 
         Assert.assertEquals(response.getResult(),
-                getEnum(expectedResponse, Keys.RESULT, OsgpResultType.class, OsgpResultType.OK));
+                getEnum(expectedResponse, Keys.KEY_RESULT, OsgpResultType.class, OsgpResultType.OK));
     }
 
     @Then("^the activate device response contains soap fault$")

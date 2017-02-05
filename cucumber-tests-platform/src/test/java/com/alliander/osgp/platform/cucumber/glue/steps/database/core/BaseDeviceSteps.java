@@ -78,56 +78,56 @@ public abstract class BaseDeviceSteps extends StepsBase {
     public Device updateDevice(Device device, final Map<String, String> settings) {
 
         // Now set the optional stuff
-        if (settings.containsKey(Keys.TECHNICAL_INSTALLATION_DATE)
-                && !settings.get(Keys.TECHNICAL_INSTALLATION_DATE).isEmpty()) {
-            device.setTechnicalInstallationDate(getDate(settings, Keys.TECHNICAL_INSTALLATION_DATE).toDate());
+        if (settings.containsKey(Keys.KEY_TECHNICAL_INSTALLATION_DATE)
+                && !settings.get(Keys.KEY_TECHNICAL_INSTALLATION_DATE).isEmpty()) {
+            device.setTechnicalInstallationDate(getDate(settings, Keys.KEY_TECHNICAL_INSTALLATION_DATE).toDate());
         }
 
         final DeviceModel deviceModel = this.deviceModelRepository
-                .findByModelCode(getString(settings, Keys.DEVICE_MODEL, Defaults.DEVICE_MODEL_MODEL_CODE));
+                .findByModelCode(getString(settings, Keys.KEY_DEVICE_MODEL, Defaults.DEVICE_MODEL_MODEL_CODE));
         device.setDeviceModel(deviceModel);
 
         device.updateProtocol(this.protocolInfoRepository.findByProtocolAndProtocolVersion(
-                getString(settings, Keys.PROTOCOL, Defaults.PROTOCOL),
-                getString(settings, Keys.PROTOCOL_VERSION, Defaults.PROTOCOL_VERSION)));
+                getString(settings, Keys.KEY_PROTOCOL, Defaults.PROTOCOL),
+                getString(settings, Keys.KEY_PROTOCOL_VERSION, Defaults.PROTOCOL_VERSION)));
 
         InetAddress inetAddress;
         try {
-            inetAddress = InetAddress.getByName(getString(settings, Keys.NETWORKADDRESS, this.configuration.getDeviceNetworkAddress()));
+            inetAddress = InetAddress.getByName(getString(settings, Keys.KEY_NETWORKADDRESS, this.configuration.getDeviceNetworkAddress()));
         } catch (final UnknownHostException e) {
             inetAddress = InetAddress.getLoopbackAddress();
         }
-        device.updateRegistrationData(inetAddress, getString(settings, Keys.DEVICE_TYPE, Defaults.DEVICE_TYPE));
+        device.updateRegistrationData(inetAddress, getString(settings, Keys.KEY_DEVICE_TYPE, Defaults.DEVICE_TYPE));
 
-        device.setVersion(getLong(settings, Keys.VERSION));
-        device.setActive(getBoolean(settings, Keys.ACTIVE, Defaults.ACTIVE));
-        if (getString(settings, Keys.ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION)
+        device.setVersion(getLong(settings, Keys.KEY_VERSION));
+        device.setActive(getBoolean(settings, Keys.KEY_ACTIVE, Defaults.ACTIVE));
+        if (getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION)
                 .toLowerCase() != "null") {
             device.addOrganisation(
-                    getString(settings, Keys.ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION));
+                    getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION));
         }
-        device.updateMetaData(getString(settings, Keys.ALIAS, Defaults.ALIAS),
-                getString(settings, Keys.CITY, Defaults.CONTAINER_CITY),
-                getString(settings, Keys.POSTCODE, Defaults.CONTAINER_POSTALCODE),
-                getString(settings, Keys.STREET, Defaults.CONTAINER_STREET),
-                getString(settings, Keys.NUMBER, Defaults.CONTAINER_NUMBER),
-                getString(settings, Keys.MUNICIPALITY, Defaults.CONTAINER_MUNICIPALITY),
-                getFloat(settings, Keys.LATITUDE, Defaults.LATITUDE),
-                getFloat(settings, Keys.LONGITUDE, Defaults.LONGITUDE));
+        device.updateMetaData(getString(settings, Keys.KEY_ALIAS, Defaults.ALIAS),
+                getString(settings, Keys.KEY_CITY, Defaults.CONTAINER_CITY),
+                getString(settings, Keys.KEY_POSTCODE, Defaults.CONTAINER_POSTALCODE),
+                getString(settings, Keys.KEY_STREET, Defaults.CONTAINER_STREET),
+                getString(settings, Keys.KEY_NUMBER, Defaults.CONTAINER_NUMBER),
+                getString(settings, Keys.KEY_MUNICIPALITY, Defaults.CONTAINER_MUNICIPALITY),
+                getFloat(settings, Keys.KEY_LATITUDE, Defaults.LATITUDE),
+                getFloat(settings, Keys.KEY_LONGITUDE, Defaults.LONGITUDE));
 
-        device.setActivated(getBoolean(settings, Keys.IS_ACTIVATED, Defaults.IS_ACTIVATED));
+        device.setActivated(getBoolean(settings, Keys.KEY_IS_ACTIVATED, Defaults.IS_ACTIVATED));
         device = this.deviceRepository.save(device);
 
-        if (getString(settings, Keys.ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION)
+        if (getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION)
                 .toLowerCase() != "null") {
             final Organisation organization = this.organizationRepository.findByOrganisationIdentification(
-                    getString(settings, Keys.ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION));
-            final DeviceFunctionGroup functionGroup = getEnum(settings, Keys.DEVICEFUNCTIONGROUP,
+                    getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION));
+            final DeviceFunctionGroup functionGroup = getEnum(settings, Keys.KEY_DEVICEFUNCTIONGROUP,
                     DeviceFunctionGroup.class, DeviceFunctionGroup.OWNER);
             final DeviceAuthorization authorization = device.addAuthorization(organization, functionGroup);
             final Device savedDevice = this.deviceRepository.save(device);
             this.deviceAuthorizationRepository.save(authorization);
-            ScenarioContext.Current().put(Keys.DEVICE_IDENTIFICATION, savedDevice.getDeviceIdentification());
+            ScenarioContext.Current().put(Keys.KEY_DEVICE_IDENTIFICATION, savedDevice.getDeviceIdentification());
 
             device = savedDevice;
         }

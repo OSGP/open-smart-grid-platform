@@ -47,26 +47,26 @@ public class OrganizationSteps extends StepsBase {
     @Given("^an organization$")
     public void anOrganization(final Map<String, String> settings) throws Throwable {
 
-        final String organizationIdentification = getString(settings, Keys.ORGANIZATION_IDENTIFICATION,
+        final String organizationIdentification = getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
                 Defaults.ORGANIZATION_IDENTIFICATION);
         final Organisation entity = new Organisation(
                 (organizationIdentification.isEmpty()) ? Defaults.NEW_ORGANIZATION_IDENTIFICATION
                         : organizationIdentification,
-                getString(settings, Keys.NAME, Defaults.ORGANIZATION_NAME), 
-                getString(settings, Keys.PREFIX, Defaults.PREFIX),
-                getEnum(settings, Keys.PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class,
+                getString(settings, Keys.KEY_NAME, Defaults.ORGANIZATION_NAME), 
+                getString(settings, Keys.KEY_PREFIX, Defaults.PREFIX),
+                getEnum(settings, Keys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class,
                         Defaults.PLATFORM_FUNCTION_GROUP));
 
         // Add all the mandatory stuff.
         String domains = Defaults.DOMAINS;
-        if (settings.containsKey(Keys.DOMAINS) && !settings.get(Keys.DOMAINS).isEmpty()) {
-            domains = settings.get(Keys.DOMAINS);
+        if (settings.containsKey(Keys.KEY_DOMAINS) && !settings.get(Keys.KEY_DOMAINS).isEmpty()) {
+            domains = settings.get(Keys.KEY_DOMAINS);
         } 
         for (String domain : domains.split(Keys.SEPARATOR_SEMICOLON)){
             entity.addDomain(Enum.valueOf(PlatformDomain.class, domain));
         }
     
-        entity.setIsEnabled(getBoolean(settings, Keys.ENABLED, Defaults.ORGANIZATION_ENABLED));
+        entity.setIsEnabled(getBoolean(settings, Keys.KEY_ENABLED, Defaults.ORGANIZATION_ENABLED));
 
         // TODO: Add all the optional stuff
         this.repo.save(entity);
@@ -82,22 +82,22 @@ public class OrganizationSteps extends StepsBase {
     @Given("^the organization exists$")
     public void theOrganizationExists(final Map<String, String> expectedOrganization) throws Throwable {
         final Organisation entity = this.repo
-                .findByOrganisationIdentification(expectedOrganization.get(Keys.ORGANIZATION_IDENTIFICATION));
+                .findByOrganisationIdentification(expectedOrganization.get(Keys.KEY_ORGANIZATION_IDENTIFICATION));
 
         Assert.assertNotNull(entity);
 
-        if (expectedOrganization.containsKey(Keys.NAME)) {
-            Assert.assertEquals(getString(expectedOrganization, Keys.NAME), entity.getName());
+        if (expectedOrganization.containsKey(Keys.KEY_NAME)) {
+            Assert.assertEquals(getString(expectedOrganization, Keys.KEY_NAME), entity.getName());
         }
-        if (expectedOrganization.containsKey(Keys.PLATFORM_FUNCTION_GROUP)) {
+        if (expectedOrganization.containsKey(Keys.KEY_PLATFORM_FUNCTION_GROUP)) {
             Assert.assertEquals(
-                    getEnum(expectedOrganization, Keys.PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class),
+                    getEnum(expectedOrganization, Keys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class),
                     entity.getFunctionGroup());
         }
 
-        if (expectedOrganization.containsKey(Keys.DOMAINS)
-                && !expectedOrganization.get(Keys.DOMAINS).isEmpty()) {
-            for (final String domain : expectedOrganization.get(Keys.DOMAINS).split(Keys.SEPARATOR_SEMICOLON)) {
+        if (expectedOrganization.containsKey(Keys.KEY_DOMAINS)
+                && !expectedOrganization.get(Keys.KEY_DOMAINS).isEmpty()) {
+            for (final String domain : expectedOrganization.get(Keys.KEY_DOMAINS).split(Keys.SEPARATOR_SEMICOLON)) {
                 Assert.assertTrue(entity.getDomains().contains(PlatformDomain.valueOf(domain)));
             }
         }
@@ -115,20 +115,20 @@ public class OrganizationSteps extends StepsBase {
     public void thenTheEntityOrganizationExists(final Map<String, String> expectedEntity) throws Throwable {
 
         final Organisation entity = this.repo
-                .findByOrganisationIdentification(expectedEntity.get(Keys.ORGANIZATION_IDENTIFICATION));
+                .findByOrganisationIdentification(expectedEntity.get(Keys.KEY_ORGANIZATION_IDENTIFICATION));
 
-        Assert.assertEquals(getString(expectedEntity, Keys.NAME, Defaults.NEW_ORGANIZATION_NAME),
+        Assert.assertEquals(getString(expectedEntity, Keys.KEY_NAME, Defaults.NEW_ORGANIZATION_NAME),
                 entity.getName());
-        final String prefix = getString(expectedEntity, Keys.PREFIX, Defaults.ORGANIZATION_PREFIX);
+        final String prefix = getString(expectedEntity, Keys.KEY_PREFIX, Defaults.ORGANIZATION_PREFIX);
         Assert.assertEquals((prefix.isEmpty()) ? Defaults.ORGANIZATION_PREFIX : prefix, entity.getPrefix());
 
-        Assert.assertEquals(getEnum(expectedEntity, Keys.PLATFORM_FUNCTION_GROUP,
+        Assert.assertEquals(getEnum(expectedEntity, Keys.KEY_PLATFORM_FUNCTION_GROUP,
                 com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup.class,
                 Defaults.PLATFORM_FUNCTION_GROUP), entity.getFunctionGroup());
-        Assert.assertEquals(getBoolean(expectedEntity, Keys.ENABLED, Defaults.ORGANIZATION_ENABLED),
+        Assert.assertEquals(getBoolean(expectedEntity, Keys.KEY_ENABLED, Defaults.ORGANIZATION_ENABLED),
                 entity.isEnabled());
 
-        String domains = getString(expectedEntity, Keys.DOMAINS, Defaults.DOMAINS);
+        String domains = getString(expectedEntity, Keys.KEY_DOMAINS, Defaults.DOMAINS);
         if (domains.isEmpty()) {
             domains = Defaults.DOMAINS;
         }

@@ -67,12 +67,12 @@ public class SetDataSystemIdentifierBuilder {
     }
 
     public SetDataSystemIdentifierBuilder withSettings(final Map<String, String> settings) {
-        if (!settings.containsKey(Keys.NUMBER_OF_SYSTEMS)) {
+        if (!settings.containsKey(Keys.KEY_NUMBER_OF_SYSTEMS)) {
             throw new AssertionError(
                     "The Step DataTable must contain the number of systems for key \""
-                            + Keys.NUMBER_OF_SYSTEMS + "\" when creating a set data request.");
+                            + Keys.KEY_NUMBER_OF_SYSTEMS + "\" when creating a set data request.");
         }
-        final int numberOfSystems = Integer.parseInt(settings.get(Keys.NUMBER_OF_SYSTEMS));
+        final int numberOfSystems = Integer.parseInt(settings.get(Keys.KEY_NUMBER_OF_SYSTEMS));
         for (int i = 1; i <= numberOfSystems; i++) {
             this.systems.add(this.withSettings(settings, i).build());
         }
@@ -81,8 +81,8 @@ public class SetDataSystemIdentifierBuilder {
     }
 
     private SetDataSystemIdentifierBuilder withSettings(final Map<String, String> settings, final int index) {
-        this.withId(SettingsHelper.getIntegerValue(settings, Keys.SYSTEM_ID, index));
-        this.withType(SettingsHelper.getStringValue(settings, Keys.SYSTEM_TYPE, index));
+        this.withId(SettingsHelper.getIntegerValue(settings, Keys.KEY_SYSTEM_ID, index));
+        this.withType(SettingsHelper.getStringValue(settings, Keys.KEY_SYSTEM_TYPE, index));
         this.withSetPoints(new SetPointBuilder().withSettings(settings, index).buildList());
         this.withProfiles(new ProfileBuilder().withSettings(settings, index).buildList());
 

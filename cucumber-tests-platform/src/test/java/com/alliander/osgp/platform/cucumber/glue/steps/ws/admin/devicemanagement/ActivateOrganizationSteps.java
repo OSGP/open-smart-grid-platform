@@ -39,12 +39,12 @@ public class ActivateOrganizationSteps extends StepsBase {
 
         ActivateOrganisationRequest request = new ActivateOrganisationRequest();
         request.setOrganisationIdentification(
-                getString(requestSettings, Keys.ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION));
+                getString(requestSettings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION));
 
         try {
-            ScenarioContext.Current().put(Keys.RESPONSE, client.activateOrganization(request));
+            ScenarioContext.Current().put(Keys.KEY_RESPONSE, client.activateOrganization(request));
         } catch (SoapFaultClientException ex) {
-            ScenarioContext.Current().put(Keys.RESPONSE, ex);
+            ScenarioContext.Current().put(Keys.KEY_RESPONSE, ex);
         }
     }
 
@@ -55,6 +55,6 @@ public class ActivateOrganizationSteps extends StepsBase {
      */
     @Then("^the activate organization response is successful$")
     public void theActivateOrganizationResponseIsSuccessful() throws Throwable {
-        Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof ActivateOrganisationResponse);
+        Assert.assertTrue(ScenarioContext.Current().get(Keys.KEY_RESPONSE) instanceof ActivateOrganisationResponse);
     }
 }

@@ -26,21 +26,21 @@ public class GetDataRequestBuilder {
 
     public static GetDataRequest fromParameterMap(final Map<String, String> requestParameters) {
         final GetDataRequest getDataRequest = new GetDataRequest();
-        getDataRequest.setDeviceIdentification(requestParameters.get(Keys.DEVICE_IDENTIFICATION));
+        getDataRequest.setDeviceIdentification(requestParameters.get(Keys.KEY_DEVICE_IDENTIFICATION));
         addSystemFilters(requestParameters, getDataRequest);
         return getDataRequest;
     }
 
     public static GetDataAsyncRequest fromParameterMapAsync(final Map<String, String> requestParameters) {
-        final String correlationUid = (String) ScenarioContext.Current().get(Keys.CORRELATION_UID);
+        final String correlationUid = (String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID);
         if (correlationUid == null) {
             throw new AssertionError("ScenarioContext must contain the correlation UID for key \""
-                    + Keys.CORRELATION_UID + "\" before creating an async request.");
+                    + Keys.KEY_CORRELATION_UID + "\" before creating an async request.");
         }
-        final String deviceIdentification = requestParameters.get(Keys.DEVICE_IDENTIFICATION);
+        final String deviceIdentification = requestParameters.get(Keys.KEY_DEVICE_IDENTIFICATION);
         if (deviceIdentification == null) {
             throw new AssertionError("The Step DataTable must contain the device identification for key \""
-                    + Keys.DEVICE_IDENTIFICATION + "\" when creating an async request.");
+                    + Keys.KEY_DEVICE_IDENTIFICATION + "\" when creating an async request.");
         }
         final GetDataAsyncRequest getDataAsyncRequest = new GetDataAsyncRequest();
         final AsyncRequest asyncRequest = new AsyncRequest();
@@ -53,11 +53,11 @@ public class GetDataRequestBuilder {
     private static void addSystemFilters(final Map<String, String> requestParameters,
             final GetDataRequest getDataRequest) {
 
-        if (!requestParameters.containsKey(Keys.NUMBER_OF_SYSTEMS)) {
+        if (!requestParameters.containsKey(Keys.KEY_NUMBER_OF_SYSTEMS)) {
             throw new AssertionError("The Step DataTable must contain the number of system filters for key \""
-                    + Keys.NUMBER_OF_SYSTEMS + "\" when creating a get data request.");
+                    + Keys.KEY_NUMBER_OF_SYSTEMS + "\" when creating a get data request.");
         }
-        final int numberOfSystems = Integer.parseInt(requestParameters.get(Keys.NUMBER_OF_SYSTEMS));
+        final int numberOfSystems = Integer.parseInt(requestParameters.get(Keys.KEY_NUMBER_OF_SYSTEMS));
 
         final List<SystemFilter> systemFilters = getDataRequest.getSystem();
         for (int i = 0; i < numberOfSystems; i++) {
@@ -70,8 +70,8 @@ public class GetDataRequestBuilder {
 
         final String indexPostfix = "_" + (systemIndex + 1);
         final SystemFilter systemFilter = new SystemFilter();
-        systemFilter.setId(Integer.parseInt(requestParameters.get(Keys.SYSTEM_ID.concat(indexPostfix))));
-        systemFilter.setType(requestParameters.get(Keys.SYSTEM_TYPE.concat(indexPostfix)));
+        systemFilter.setId(Integer.parseInt(requestParameters.get(Keys.KEY_SYSTEM_ID.concat(indexPostfix))));
+        systemFilter.setType(requestParameters.get(Keys.KEY_SYSTEM_TYPE.concat(indexPostfix)));
         addMeasurementFilters(requestParameters, systemFilter, systemIndex, indexPostfix);
         systemFilters.add(systemFilter);
     }
@@ -79,10 +79,10 @@ public class GetDataRequestBuilder {
     private static void addMeasurementFilters(final Map<String, String> requestParameters,
             final SystemFilter systemFilter, final int systemIndex, final String indexPostfix) {
 
-        if (!requestParameters.containsKey(Keys.NUMBER_OF_MEASUREMENTS.concat(indexPostfix))) {
+        if (!requestParameters.containsKey(Keys.KEY_NUMBER_OF_MEASUREMENTS.concat(indexPostfix))) {
             return;
         }
-        final int numberOfMeasurements = Integer.parseInt(requestParameters.get(Keys.NUMBER_OF_MEASUREMENTS
+        final int numberOfMeasurements = Integer.parseInt(requestParameters.get(Keys.KEY_NUMBER_OF_MEASUREMENTS
                 .concat(indexPostfix)));
 
         final List<MeasurementFilter> measurementFilters = systemFilter.getMeasurementFilter();
@@ -96,11 +96,11 @@ public class GetDataRequestBuilder {
 
         final String indexPostfix = "_" + (systemIndex + 1) + "_" + (measurementIndex + 1);
         final MeasurementFilter measurementFilter = new MeasurementFilter();
-        if (requestParameters.containsKey(Keys.MEASUREMENT_FILTER_ID.concat(indexPostfix))) {
+        if (requestParameters.containsKey(Keys.KEY_MEASUREMENT_FILTER_ID.concat(indexPostfix))) {
             measurementFilter.setId(
-                    Integer.parseInt(requestParameters.get(Keys.MEASUREMENT_FILTER_ID.concat(indexPostfix))));
+                    Integer.parseInt(requestParameters.get(Keys.KEY_MEASUREMENT_FILTER_ID.concat(indexPostfix))));
         }
-        measurementFilter.setNode(requestParameters.get(Keys.MEASUREMENT_FILTER_NODE.concat(indexPostfix)));
+        measurementFilter.setNode(requestParameters.get(Keys.KEY_MEASUREMENT_FILTER_NODE.concat(indexPostfix)));
         measurementFilters.add(measurementFilter);
     }
 }

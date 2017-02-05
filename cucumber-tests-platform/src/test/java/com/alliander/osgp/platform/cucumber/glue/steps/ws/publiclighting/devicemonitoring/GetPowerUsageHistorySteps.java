@@ -74,7 +74,7 @@ public class GetPowerUsageHistorySteps {
 
         final GetPowerUsageHistoryRequest request = new GetPowerUsageHistoryRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
 
         final TimePeriod tp = new TimePeriod();
         tp.setStartTime(DatatypeFactory.newInstance()
@@ -89,9 +89,9 @@ public class GetPowerUsageHistorySteps {
                 getEnum(requestParameters, Keys.HISTORY_TERM_TYPE, HistoryTermType.class, Defaults.HISTORY_TERM_TYPE));
 
         try {
-            ScenarioContext.Current().put(Keys.RESPONSE, this.client.getPowerUsageHistory(request));
+            ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.getPowerUsageHistory(request));
         } catch (final SoapFaultClientException ex) {
-            ScenarioContext.Current().put(Keys.RESPONSE, ex);
+            ScenarioContext.Current().put(Keys.KEY_RESPONSE, ex);
         }
     }
 
@@ -99,7 +99,7 @@ public class GetPowerUsageHistorySteps {
     public void receivingAGetPowerUsageHistoryRequestAsAnUnknownOrganization(
             final Map<String, String> requestParameters) throws Throwable {
         // Force the request being sent to the platform as a given organization.
-        ScenarioContext.Current().put(Keys.ORGANIZATION_IDENTIFICATION, "unknown-organization");
+        ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
 
         this.receivingAGetPowerUsageHistoryRequest(requestParameters);
     }
@@ -118,19 +118,19 @@ public class GetPowerUsageHistorySteps {
             throws Throwable {
 
         final GetPowerUsageHistoryAsyncResponse response = (GetPowerUsageHistoryAsyncResponse) ScenarioContext.Current()
-                .get(Keys.RESPONSE);
+                .get(Keys.KEY_RESPONSE);
 
         Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
-        Assert.assertEquals(getString(expectedResponseData, Keys.DEVICE_IDENTIFICATION),
+        Assert.assertEquals(getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION),
                 response.getAsyncResponse().getDeviceId());
 
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.
         saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
-                getString(expectedResponseData, Keys.ORGANIZATION_IDENTIFICATION,
+                getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
                         Defaults.ORGANIZATION_IDENTIFICATION));
 
-        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.CORRELATION_UID) + "]");
+        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
     }
 
     @Then("^the get power usage history response contains soap fault$")
@@ -151,7 +151,7 @@ public class GetPowerUsageHistorySteps {
         final GetPowerUsageHistoryAsyncRequest request = new GetPowerUsageHistoryAsyncRequest();
         final AsyncRequest asyncRequest = new AsyncRequest();
         asyncRequest.setDeviceId(deviceIdentification);
-        asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.CORRELATION_UID));
+        asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
         request.setAsyncRequest(asyncRequest);
 
         GetPowerUsageHistoryResponse response = null;
@@ -169,9 +169,9 @@ public class GetPowerUsageHistorySteps {
             success = true;
         }
 
-        Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.STATUS)),
+        Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.KEY_STATUS)),
                 response.getResult());
-        final String expectedDescription = expectedResult.get(Keys.DESCRIPTION);
+        final String expectedDescription = expectedResult.get(Keys.KEY_DESCRIPTION);
         if (!expectedDescription.isEmpty()) {
             Assert.assertEquals(expectedDescription, response.getDescription());
         }

@@ -61,12 +61,12 @@ public class SetRebootSteps extends StepsBase {
     public void receivingASetRebootRequest(final Map<String, String> requestParameters) throws Throwable {
         final SetRebootRequest request = new SetRebootRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
 
         try {
-            ScenarioContext.Current().put(Keys.RESPONSE, this.client.setReboot(request));
+            ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.setReboot(request));
         } catch (final SoapFaultClientException ex) {
-            ScenarioContext.Current().put(Keys.RESPONSE, ex);
+            ScenarioContext.Current().put(Keys.KEY_RESPONSE, ex);
         }
     }
 
@@ -74,7 +74,7 @@ public class SetRebootSteps extends StepsBase {
     public void receivingASetRebootRequestByAnUnknownOrganization(final Map<String, String> requestParameters)
             throws Throwable {
         // Force the request being send to the platform as a given organization.
-        ScenarioContext.Current().put(Keys.ORGANIZATION_IDENTIFICATION, "unknown-organization");
+        ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
 
         this.receivingASetRebootRequest(requestParameters);
     }
@@ -90,20 +90,20 @@ public class SetRebootSteps extends StepsBase {
      */
     @Then("^the set reboot async response contains$")
     public void theSetRebootAsyncResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
-        final SetRebootAsyncResponse response = (SetRebootAsyncResponse) ScenarioContext.Current().get(Keys.RESPONSE);
+        final SetRebootAsyncResponse response = (SetRebootAsyncResponse) ScenarioContext.Current().get(Keys.KEY_RESPONSE);
 
         Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
-        Assert.assertEquals(getString(expectedResponseData, Keys.DEVICE_IDENTIFICATION),
+        Assert.assertEquals(getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION),
                 response.getAsyncResponse().getDeviceId());
 
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.
         saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
 
-                getString(expectedResponseData, Keys.ORGANIZATION_IDENTIFICATION,
+                getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
                         Defaults.ORGANIZATION_IDENTIFICATION));
 
-        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.CORRELATION_UID) + "]");
+        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
     }
 
     @Then("^the platform buffers a set reboot response message for device \"([^\"]*)\"$")
@@ -112,7 +112,7 @@ public class SetRebootSteps extends StepsBase {
         final SetRebootAsyncRequest request = new SetRebootAsyncRequest();
         final AsyncRequest asyncRequest = new AsyncRequest();
         asyncRequest.setDeviceId(deviceIdentification);
-        asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.CORRELATION_UID));
+        asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
         request.setAsyncRequest(asyncRequest);
 
         boolean success = false;
@@ -128,7 +128,7 @@ public class SetRebootSteps extends StepsBase {
             try {
                 final SetRebootResponse response = this.client.getSetRebootResponse(request);
 
-                Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.RESULT)),
+                Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.KEY_RESULT)),
                         response.getResult());
 
                 success = true;
@@ -141,8 +141,8 @@ public class SetRebootSteps extends StepsBase {
     @Then("^the set reboot async response contains a soap fault$")
     public void theSetRebootAsyncResponseContainsASoapFault(final Map<String, String> expectedResult) {
         final SoapFaultClientException response = (SoapFaultClientException) ScenarioContext.Current()
-                .get(Keys.RESPONSE);
+                .get(Keys.KEY_RESPONSE);
 
-        Assert.assertEquals(expectedResult.get(Keys.MESSAGE), response.getMessage());
+        Assert.assertEquals(expectedResult.get(Keys.KEY_MESSAGE), response.getMessage());
     }
 }

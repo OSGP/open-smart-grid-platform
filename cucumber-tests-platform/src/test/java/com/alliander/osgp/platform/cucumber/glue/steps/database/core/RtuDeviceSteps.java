@@ -33,7 +33,7 @@ public class RtuDeviceSteps extends BaseDeviceSteps {
     @Transactional("txMgrCore")
     public RtuDevice anRtuDevice(final Map<String, String> settings) throws Throwable {
 
-        final String deviceIdentification = getString(settings, Keys.DEVICE_IDENTIFICATION);
+        final String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION);
         final RtuDevice rtuDevice = new RtuDevice(deviceIdentification);
         this.rtuDeviceRespository.save(rtuDevice);
 

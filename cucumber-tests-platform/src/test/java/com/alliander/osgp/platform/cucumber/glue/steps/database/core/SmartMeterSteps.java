@@ -57,9 +57,9 @@ public class SmartMeterSteps extends BaseDeviceSteps {
     	
     	smartMeter.setSupplier(getString(settings, Keys.SUPPLIER, Defaults.SUPPLIER));
     	
-        if (settings.containsKey(Keys.GATEWAY_DEVICE_ID)) {
-            smartMeter.setChannel(getShort(settings, Keys.CHANNEL, Defaults.CHANNEL));
-            final Device smartEMeter = this.deviceRepository.findByDeviceIdentification(settings.get(Keys.GATEWAY_DEVICE_ID));
+        if (settings.containsKey(Keys.KEY_GATEWAY_DEVICE_ID)) {
+            smartMeter.setChannel(getShort(settings, Keys.KEY_CHANNEL, Defaults.CHANNEL));
+            final Device smartEMeter = this.deviceRepository.findByDeviceIdentification(settings.get(Keys.KEY_GATEWAY_DEVICE_ID));
             smartMeter.updateGatewayDevice(smartEMeter);
         }
     	

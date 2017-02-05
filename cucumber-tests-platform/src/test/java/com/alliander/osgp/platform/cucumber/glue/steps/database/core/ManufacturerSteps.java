@@ -44,7 +44,7 @@ public class ManufacturerSteps extends StepsBase {
 
         Manufacturer entity = new Manufacturer(
                 getString(settings, Keys.MANUFACTURER_ID, Defaults.MANUFACTURER_ID),
-                getString(settings, Keys.NAME, Defaults.MANUFACTURER_NAME), 
+                getString(settings, Keys.KEY_NAME, Defaults.MANUFACTURER_NAME), 
                 getBoolean(settings, Keys.USE_PREFIX, Defaults.MANUFACTURER_USE_PREFIX));
 
         repo.save(entity);

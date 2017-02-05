@@ -52,9 +52,9 @@ public class CreateDeviceSteps extends StepsBase {
         request.setDevice(device);
 
         try {
-            ScenarioContext.Current().put(Keys.RESPONSE, this.client.addDevice(request));
+            ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.addDevice(request));
         } catch (final SoapFaultClientException ex) {
-            ScenarioContext.Current().put(Keys.RESPONSE, ex);
+            ScenarioContext.Current().put(Keys.KEY_RESPONSE, ex);
         }
     }
 
@@ -67,9 +67,9 @@ public class CreateDeviceSteps extends StepsBase {
         request.setDevice(device);
 
         try {
-            ScenarioContext.Current().put(Keys.RESPONSE, this.client.addDevice(request, "unknown-organization"));
+            ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.addDevice(request, "unknown-organization"));
         } catch (final SoapFaultClientException ex) {
-            ScenarioContext.Current().put(Keys.RESPONSE, ex);
+            ScenarioContext.Current().put(Keys.KEY_RESPONSE, ex);
         }
     }
 
@@ -81,14 +81,14 @@ public class CreateDeviceSteps extends StepsBase {
      */
     @Then("^the add device response is successful$")
     public void theAddDeviceResponseIsSuccessful() throws Throwable {
-        Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof AddDeviceResponse);
+        Assert.assertTrue(ScenarioContext.Current().get(Keys.KEY_RESPONSE) instanceof AddDeviceResponse);
     }
 
     @When("^receiving an update device request")
     public void receivingAnUpdateDeviceRequest(final Map<String, String> settings) throws Throwable {
         final UpdateDeviceRequest request = new UpdateDeviceRequest();
 
-        String deviceIdentification = getString(settings, Keys.DEVICE_IDENTIFICATION,
+        String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION,
                 Defaults.DEVICE_IDENTIFICATION);
         // Note: The regular expression below matches at spaces between two
         // quotation marks("), this check is used for a test with a
@@ -101,41 +101,41 @@ public class CreateDeviceSteps extends StepsBase {
         request.setUpdatedDevice(device);
 
         try {
-            ScenarioContext.Current().put(Keys.RESPONSE, this.client.updateDevice(request));
+            ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.updateDevice(request));
         } catch (final SoapFaultClientException ex) {
-            ScenarioContext.Current().put(Keys.RESPONSE, ex);
+            ScenarioContext.Current().put(Keys.KEY_RESPONSE, ex);
         }
     }
 
     private Device createDevice(final Map<String, String> settings) {
 
         final Device device = new Device();
-        device.setAlias(getString(settings, Keys.ALIAS, Defaults.ALIAS));
-        device.setContainerCity(getString(settings, Keys.CITY, Defaults.CONTAINER_CITY));
+        device.setAlias(getString(settings, Keys.KEY_ALIAS, Defaults.ALIAS));
+        device.setContainerCity(getString(settings, Keys.KEY_CITY, Defaults.CONTAINER_CITY));
         device.setContainerMunicipality(
-                getString(settings, Keys.MUNICIPALITY, Defaults.CONTAINER_MUNICIPALITY));
-        device.setContainerNumber(getString(settings, Keys.NUMBER, Defaults.CONTAINER_NUMBER));
-        device.setContainerPostalCode(getString(settings, Keys.POSTCODE, Defaults.CONTAINER_POSTALCODE));
-        device.setContainerStreet(getString(settings, Keys.STREET, Defaults.CONTAINER_STREET));
+                getString(settings, Keys.KEY_MUNICIPALITY, Defaults.CONTAINER_MUNICIPALITY));
+        device.setContainerNumber(getString(settings, Keys.KEY_NUMBER, Defaults.CONTAINER_NUMBER));
+        device.setContainerPostalCode(getString(settings, Keys.KEY_POSTCODE, Defaults.CONTAINER_POSTALCODE));
+        device.setContainerStreet(getString(settings, Keys.KEY_STREET, Defaults.CONTAINER_STREET));
         device.setDeviceIdentification(
-                getString(settings, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
         final DeviceModel deviceModel = new DeviceModel();
         deviceModel.setDescription(
-                getString(settings, Keys.DEVICE_MODEL_DESCRIPTION, Defaults.DEVICE_MODEL_DESCRIPTION));
+                getString(settings, Keys.KEY_DEVICE_MODEL_DESCRIPTION, Defaults.DEVICE_MODEL_DESCRIPTION));
         deviceModel.setManufacturer(
-                getString(settings, Keys.DEVICE_MODEL_MANUFACTURER, Defaults.DEVICE_MODEL_MANUFACTURER));
+                getString(settings, Keys.KEY_DEVICE_MODEL_MANUFACTURER, Defaults.DEVICE_MODEL_MANUFACTURER));
         deviceModel
-                .setMetered(getBoolean(settings, Keys.DEVICE_MODEL_METERED, Defaults.DEVICE_MODEL_METERED));
+                .setMetered(getBoolean(settings, Keys.KEY_DEVICE_MODEL_METERED, Defaults.DEVICE_MODEL_METERED));
         deviceModel.setModelCode(
-                getString(settings, Keys.DEVICE_MODEL_MODELCODE, Defaults.DEVICE_MODEL_MODEL_CODE));
+                getString(settings, Keys.KEY_DEVICE_MODEL_MODELCODE, Defaults.DEVICE_MODEL_MODEL_CODE));
         device.setDeviceModel(deviceModel);
-        device.setDeviceUid(getString(settings, Keys.DEVICE_UID, OslpDeviceSteps.DEFAULT_DEVICE_UID));
-        device.setGpsLatitude(getFloat(settings, Keys.LATITUDE, Defaults.LATITUDE));
-        device.setGpsLongitude(getFloat(settings, Keys.LONGITUDE, Defaults.LONGITUDE));
-        device.setHasSchedule(getBoolean(settings, Keys.HAS_SCHEDULE, Defaults.HASSCHEDULE));
-        device.setOwner(getString(settings, Keys.OWNER, Defaults.OWNER));
-        device.setPublicKeyPresent(getBoolean(settings, Keys.PUBLICKEYPRESENT, Defaults.PUBLICKEYPRESENT));
-        device.setActivated(getBoolean(settings, Keys.ACTIVATED, Defaults.ACTIVATED));
+        device.setDeviceUid(getString(settings, Keys.KEY_DEVICE_UID, OslpDeviceSteps.DEFAULT_DEVICE_UID));
+        device.setGpsLatitude(getFloat(settings, Keys.KEY_LATITUDE, Defaults.LATITUDE));
+        device.setGpsLongitude(getFloat(settings, Keys.KEY_LONGITUDE, Defaults.LONGITUDE));
+        device.setHasSchedule(getBoolean(settings, Keys.KEY_HAS_SCHEDULE, Defaults.HASSCHEDULE));
+        device.setOwner(getString(settings, Keys.KEY_OWNER, Defaults.OWNER));
+        device.setPublicKeyPresent(getBoolean(settings, Keys.KEY_PUBLICKEYPRESENT, Defaults.PUBLICKEYPRESENT));
+        device.setActivated(getBoolean(settings, Keys.KEY_ACTIVATED, Defaults.ACTIVATED));
 
         return device;
     }
@@ -148,7 +148,7 @@ public class CreateDeviceSteps extends StepsBase {
      */
     @Then("^the update device response is successfull$")
     public void theUpdateDeviceResponseIsSuccessfull() throws Throwable {
-        Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof UpdateDeviceResponse);
+        Assert.assertTrue(ScenarioContext.Current().get(Keys.KEY_RESPONSE) instanceof UpdateDeviceResponse);
     }
 
     /**
@@ -160,7 +160,7 @@ public class CreateDeviceSteps extends StepsBase {
      */
     @Then("^the add device response contains$")
     public void theAddDeviceResponseContains(final Map<String, String> expectedResult) throws Throwable {
-        Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof AddDeviceResponse);
+        Assert.assertTrue(ScenarioContext.Current().get(Keys.KEY_RESPONSE) instanceof AddDeviceResponse);
     }
 
     @Then("^the add device response contains soap fault$")
@@ -170,7 +170,7 @@ public class CreateDeviceSteps extends StepsBase {
 
     @Then("^the update device response contains$")
     public void theUpdateDeviceResponseContains(final Map<String, String> expectedResult) throws Throwable {
-        Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof UpdateDeviceResponse);
+        Assert.assertTrue(ScenarioContext.Current().get(Keys.KEY_RESPONSE) instanceof UpdateDeviceResponse);
     }
 
     /**

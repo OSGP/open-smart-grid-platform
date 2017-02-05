@@ -64,10 +64,10 @@ public class DeviceModelSteps extends StepsBase {
         Assert.assertEquals(getString(expectedEntity, Keys.MANUFACTURER_ID, Defaults.MANUFACTURER_ID),
                 entity.getManufacturerId().getManufacturerId());
         Assert.assertEquals(
-                getString(expectedEntity, Keys.DEVICE_MODEL_DESCRIPTION, Defaults.DEVICE_MODEL_DESCRIPTION),
+                getString(expectedEntity, Keys.KEY_DEVICE_MODEL_DESCRIPTION, Defaults.DEVICE_MODEL_DESCRIPTION),
                 entity.getDescription());
         Assert.assertEquals(
-                getBoolean(expectedEntity, Keys.DEVICE_MODEL_METERED, Defaults.DEVICE_MODEL_METERED),
+                getBoolean(expectedEntity, Keys.KEY_DEVICE_MODEL_METERED, Defaults.DEVICE_MODEL_METERED),
                 entity.isMetered());
     }
 
@@ -82,15 +82,15 @@ public class DeviceModelSteps extends StepsBase {
         final Manufacturer manufacturer = this.manufacturerRepo
                 .findByName(getString(settings, "ManufacturerName", Defaults.MANUFACTURER_NAME));
 
-        final String description = getString(settings, Keys.DESCRIPTION, Defaults.DEVICE_MODEL_DESCRIPTION);
+        final String description = getString(settings, Keys.KEY_DESCRIPTION, Defaults.DEVICE_MODEL_DESCRIPTION);
 
         // Create the new device model.
         final DeviceModel entity = new DeviceModel(manufacturer,
-                getString(settings, Keys.DEVICE_MODEL_MODELCODE, Defaults.DEVICE_MODEL_MODEL_CODE),
-                description, getBoolean(settings, Keys.DEVICE_MODEL_FILESTORAGE, Defaults.FILESTORAGE));
+                getString(settings, Keys.KEY_DEVICE_MODEL_MODELCODE, Defaults.DEVICE_MODEL_MODEL_CODE),
+                description, getBoolean(settings, Keys.KEY_DEVICE_MODEL_FILESTORAGE, Defaults.FILESTORAGE));
 
         entity.updateData(description,
-                getBoolean(settings, Keys.DEVICE_MODEL_METERED, Defaults.DEVICE_MODEL_METERED));
+                getBoolean(settings, Keys.KEY_DEVICE_MODEL_METERED, Defaults.DEVICE_MODEL_METERED));
         entity.setVersion(getLong(settings, "Version"));
 
         this.repo.save(entity);

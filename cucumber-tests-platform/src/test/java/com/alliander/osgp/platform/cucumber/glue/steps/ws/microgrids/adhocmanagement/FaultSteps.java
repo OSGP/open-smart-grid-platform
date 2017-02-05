@@ -34,9 +34,9 @@ public class FaultSteps extends StepsBase {
     @Then("^a SOAP fault should be returned$")
     public void aSoapFaultShouldBeReturned(final Map<String, String> responseParameters) throws Throwable {
 
-        final String correlationUid = (String) ScenarioContext.Current().get(Keys.CORRELATION_UID);
+        final String correlationUid = (String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID);
         final Map<String, String> extendedParameters = SettingsHelper.addDefault(responseParameters,
-                Keys.CORRELATION_UID, correlationUid);
+                Keys.KEY_CORRELATION_UID, correlationUid);
 
         final GetDataAsyncRequest getDataAsyncRequest = GetDataRequestBuilder.fromParameterMapAsync(extendedParameters);
 
@@ -44,7 +44,7 @@ public class FaultSteps extends StepsBase {
             final GetDataResponse response = this.client.getData(getDataAsyncRequest);
             fail("Expected a SOAP fault, but got a GetDataResponse with result " + response.getResult().value() + ".");
         } catch (final SoapFaultClientException e) {
-			ScenarioContext.Current().put(Keys.RESPONSE, e);
+			ScenarioContext.Current().put(Keys.KEY_RESPONSE, e);
         }
         
         GenericResponseSteps.verifySoapFault(responseParameters);

@@ -64,8 +64,8 @@ public class GetDataSteps extends StepsBase {
         final GetDataRequest getDataRequest = GetDataRequestBuilder.fromParameterMap(requestParameters);
         final GetDataAsyncResponse response = this.client.getDataAsync(getDataRequest);
 
-        ScenarioContext.Current().put(Keys.CORRELATION_UID, response.getAsyncResponse().getCorrelationUid());
-        ScenarioContext.Current().put(Keys.DEVICE_IDENTIFICATION, response.getAsyncResponse().getDeviceId());
+        ScenarioContext.Current().put(Keys.KEY_CORRELATION_UID, response.getAsyncResponse().getCorrelationUid());
+        ScenarioContext.Current().put(Keys.KEY_DEVICE_IDENTIFICATION, response.getAsyncResponse().getDeviceId());
     }
 
     @Then("^the get data response should be returned$")
@@ -73,8 +73,8 @@ public class GetDataSteps extends StepsBase {
 
         GetDataAsyncRequest request = new GetDataAsyncRequest();
         AsyncRequest asyncRequest = new AsyncRequest();
-        asyncRequest.setDeviceId((String)ScenarioContext.Current().get(Keys.DEVICE_IDENTIFICATION));
-        asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.CORRELATION_UID));
+        asyncRequest.setDeviceId((String)ScenarioContext.Current().get(Keys.KEY_DEVICE_IDENTIFICATION));
+        asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
         request.setAsyncRequest(asyncRequest);
         
         GetDataResponse response = null;
@@ -97,15 +97,15 @@ public class GetDataSteps extends StepsBase {
             }
         }
         
-        final String expectedResult = responseParameters.get(Keys.RESULT);
+        final String expectedResult = responseParameters.get(Keys.KEY_RESULT);
         assertNotNull("Result", response.getResult());
         assertEquals("Result", expectedResult, response.getResult().name());
 
-        if (!responseParameters.containsKey(Keys.NUMBER_OF_SYSTEMS)) {
+        if (!responseParameters.containsKey(Keys.KEY_NUMBER_OF_SYSTEMS)) {
             throw new AssertionError("The Step DataTable must contain the expected number of systems with key \""
-                    + Keys.NUMBER_OF_SYSTEMS + "\" when confirming a returned get data response.");
+                    + Keys.KEY_NUMBER_OF_SYSTEMS + "\" when confirming a returned get data response.");
         }
-        final int expectedNumberOfSystems = Integer.parseInt(responseParameters.get(Keys.NUMBER_OF_SYSTEMS));
+        final int expectedNumberOfSystems = Integer.parseInt(responseParameters.get(Keys.KEY_NUMBER_OF_SYSTEMS));
 
         final List<GetDataSystemIdentifier> systemIdentifiers = response.getSystem();
         assertEquals("Number of Systems", expectedNumberOfSystems, systemIdentifiers.size());
@@ -124,17 +124,17 @@ public class GetDataSteps extends StepsBase {
 
         final GetDataSystemIdentifier systemIdentifier = systemIdentifiers.get(systemIndex);
 
-        if (responseParameters.containsKey(Keys.SYSTEM_TYPE.concat(indexPostfix))) {
-            final String expectedType = responseParameters.get(Keys.SYSTEM_TYPE.concat(indexPostfix));
+        if (responseParameters.containsKey(Keys.KEY_SYSTEM_TYPE.concat(indexPostfix))) {
+            final String expectedType = responseParameters.get(Keys.KEY_SYSTEM_TYPE.concat(indexPostfix));
             assertEquals(systemDescription + " type", expectedType, systemIdentifier.getType());
         }
 
-        if (responseParameters.containsKey(Keys.NUMBER_OF_MEASUREMENTS.concat(indexPostfix))) {
+        if (responseParameters.containsKey(Keys.KEY_NUMBER_OF_MEASUREMENTS.concat(indexPostfix))) {
             this.assertMeasurements(responseParameters, systemIdentifier.getMeasurement(), numberOfSystems,
                     systemIndex, systemDescription, indexPostfix);
         }
 
-        if (responseParameters.containsKey(Keys.NUMBER_OF_PROFILES.concat(indexPostfix))) {
+        if (responseParameters.containsKey(Keys.KEY_NUMBER_OF_PROFILES.concat(indexPostfix))) {
             this.assertProfiles(responseParameters, systemIdentifier.getProfile(), numberOfSystems, systemIndex,
                     systemDescription, indexPostfix);
         }
@@ -144,7 +144,7 @@ public class GetDataSteps extends StepsBase {
             final int numberOfSystems, final int systemIndex, final String systemDescription, final String indexPostfix) {
 
         final int expectedNumberOfMeasurements = Integer.parseInt(responseParameters
-                .get(Keys.NUMBER_OF_MEASUREMENTS.concat(indexPostfix)));
+                .get(Keys.KEY_NUMBER_OF_MEASUREMENTS.concat(indexPostfix)));
         assertEquals(systemDescription + " number of Measurements", expectedNumberOfMeasurements, measurements.size());
         for (int i = 0; i < expectedNumberOfMeasurements; i++) {
             this.assertMeasurementResponse(responseParameters, numberOfSystems, systemIndex, systemDescription,
@@ -164,20 +164,20 @@ public class GetDataSteps extends StepsBase {
         final Measurement measurement = measurements.get(measurementIndex);
 
         final Integer expectedId = Integer
-                .valueOf(responseParameters.get(Keys.MEASUREMENT_ID.concat(indexPostfix)));
+                .valueOf(responseParameters.get(Keys.KEY_MEASUREMENT_ID.concat(indexPostfix)));
         assertEquals(measurementDescription + " id", expectedId, measurement.getId());
 
-        final String expectedNode = responseParameters.get(Keys.MEASUREMENT_NODE.concat(indexPostfix));
+        final String expectedNode = responseParameters.get(Keys.KEY_MEASUREMENT_NODE.concat(indexPostfix));
         assertEquals(measurementDescription + " node", expectedNode, measurement.getNode());
 
-        final int expectedQualifier = Integer.parseInt(responseParameters.get(Keys.MEASUREMENT_QUALIFIER
+        final int expectedQualifier = Integer.parseInt(responseParameters.get(Keys.KEY_MEASUREMENT_QUALIFIER
                 .concat(indexPostfix)));
         assertEquals(measurementDescription + " Qualifier", expectedQualifier, measurement.getQualifier());
 
         assertNotNull(measurementDescription + " Time", measurement.getTime());
         assertTimeFormat(measurement.getTime());
 
-        final double expectedValue = Double.parseDouble(responseParameters.get(Keys.MEASUREMENT_VALUE
+        final double expectedValue = Double.parseDouble(responseParameters.get(Keys.KEY_MEASUREMENT_VALUE
                 .concat(indexPostfix)));
         assertEquals(measurementDescription + " Value", expectedValue, measurement.getValue(),
                 DELTA_FOR_MEASUREMENT_VALUE);
@@ -186,7 +186,7 @@ public class GetDataSteps extends StepsBase {
     private void assertProfiles(final Map<String, String> responseParameters, final List<Profile> profiles,
             final int numberOfSystems, final int systemIndex, final String systemDescription, final String indexPostfix) {
 
-        final int expectedNumberOfProfiles = Integer.parseInt(responseParameters.get(Keys.NUMBER_OF_PROFILES
+        final int expectedNumberOfProfiles = Integer.parseInt(responseParameters.get(Keys.KEY_NUMBER_OF_PROFILES
                 .concat(indexPostfix)));
         assertEquals(systemDescription + " number of Profiles", expectedNumberOfProfiles, profiles.size());
         for (int i = 0; i < expectedNumberOfProfiles; i++) {

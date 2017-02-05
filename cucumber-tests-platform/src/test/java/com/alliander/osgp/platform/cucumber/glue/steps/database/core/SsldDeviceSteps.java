@@ -65,18 +65,18 @@ public class SsldDeviceSteps extends BaseDeviceSteps {
 
     private Ssld createAnSsldDevice(final Map<String, String> settings) throws Throwable {
         // Set the required stuff
-        final String deviceIdentification = getString(settings, Keys.DEVICE_IDENTIFICATION);
+        final String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION);
         Ssld ssld = new Ssld(deviceIdentification);
 
-        ssld.setPublicKeyPresent(getBoolean(settings, Keys.PUBLICKEYPRESENT, Defaults.PUBLICKEYPRESENT));
-        ssld.setHasSchedule(getBoolean(settings, Keys.HAS_SCHEDULE, Defaults.HASSCHEDULE));
+        ssld.setPublicKeyPresent(getBoolean(settings, Keys.KEY_PUBLICKEYPRESENT, Defaults.PUBLICKEYPRESENT));
+        ssld.setHasSchedule(getBoolean(settings, Keys.KEY_HAS_SCHEDULE, Defaults.HASSCHEDULE));
 
-        if (settings.containsKey(Keys.INTERNALID) || settings.containsKey(Keys.EXTERNALID)
-                || settings.containsKey(Keys.RELAY_TYPE)) {
+        if (settings.containsKey(Keys.KEY_INTERNALID) || settings.containsKey(Keys.KEY_EXTERNALID)
+                || settings.containsKey(Keys.KEY_RELAY_TYPE)) {
             final List<DeviceOutputSetting> dosList = new ArrayList<>();
-            final int internalId = getInteger(settings, Keys.INTERNALID, Defaults.INTERNALID),
-                    externalId = getInteger(settings, Keys.EXTERNALID, Defaults.EXTERNALID);
-            final RelayType relayType = getEnum(settings, Keys.RELAY_TYPE, RelayType.class, RelayType.LIGHT);
+            final int internalId = getInteger(settings, Keys.KEY_INTERNALID, Defaults.INTERNALID),
+                    externalId = getInteger(settings, Keys.KEY_EXTERNALID, Defaults.EXTERNALID);
+            final RelayType relayType = getEnum(settings, Keys.KEY_RELAY_TYPE, RelayType.class, RelayType.LIGHT);
 
             if (relayType != null) {
                 dosList.add(new DeviceOutputSetting(internalId, externalId, relayType));

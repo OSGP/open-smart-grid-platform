@@ -57,12 +57,12 @@ public class ProfileBuilder {
     }
 
     public ProfileBuilder withSettings(final Map<String, String> settings, final int systemIndex) {
-        if (!SettingsHelper.hasKey(settings, Keys.NUMBER_OF_PROFILES, systemIndex)) {
+        if (!SettingsHelper.hasKey(settings, Keys.KEY_NUMBER_OF_PROFILES, systemIndex)) {
             throw new AssertionError("The Step DataTable must contain the number of profiles for key \""
-                    + SettingsHelper.makeKey(Keys.NUMBER_OF_PROFILES, systemIndex)
+                    + SettingsHelper.makeKey(Keys.KEY_NUMBER_OF_PROFILES, systemIndex)
                     + "\" when creating a set data request.");
         }
-        final int numberOfProfiles = SettingsHelper.getIntegerValue(settings, Keys.NUMBER_OF_PROFILES, systemIndex);
+        final int numberOfProfiles = SettingsHelper.getIntegerValue(settings, Keys.KEY_NUMBER_OF_PROFILES, systemIndex);
         for (int i = 1; i <= numberOfProfiles; i++) {
             this.profiles.add(this.withSettings(settings, systemIndex, i).build());
         }
@@ -72,8 +72,8 @@ public class ProfileBuilder {
 
     private ProfileBuilder withSettings(final Map<String, String> settings, final int systemIndex, final int index) {
         final int[] indexes = { systemIndex, index };
-        this.withId(SettingsHelper.getIntegerValue(settings, Keys.PROFILE_ID, indexes));
-        this.withNode(SettingsHelper.getStringValue(settings, Keys.PROFILE_NODE, indexes));
+        this.withId(SettingsHelper.getIntegerValue(settings, Keys.KEY_PROFILE_ID, indexes));
+        this.withNode(SettingsHelper.getStringValue(settings, Keys.KEY_PROFILE_NODE, indexes));
         this.withProfileEntries(new ProfileEntryBuilder().withSettings(settings, systemIndex, index).buildList());
 
         return this;

@@ -72,11 +72,11 @@ public class SetConfigurationSteps {
     public void receivingASetConfigurationRequest(final Map<String, String> requestParameters) throws Throwable {
         final SetConfigurationRequest request = new SetConfigurationRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
 
         final Configuration config = new Configuration();
 
-        final LightType lightType = getEnum(requestParameters, Keys.LIGHTTYPE, LightType.class);
+        final LightType lightType = getEnum(requestParameters, Keys.KEY_LIGHTTYPE, LightType.class);
         config.setLightType(lightType);
 
         // if (lightType != null && !lightType.toString().isEmpty()) {
@@ -87,7 +87,7 @@ public class SetConfigurationSteps {
         // }
         // }
 
-        final LinkType preferredLinkType = getEnum(requestParameters, Keys.PREFERRED_LINKTYPE, LinkType.class);
+        final LinkType preferredLinkType = getEnum(requestParameters, Keys.KEY_PREFERRED_LINKTYPE, LinkType.class);
         // if (preferredLinkType != null) {
         config.setPreferredLinkType(preferredLinkType);
         // }
@@ -125,9 +125,9 @@ public class SetConfigurationSteps {
         request.setConfiguration(config);
 
         try {
-            ScenarioContext.Current().put(Keys.RESPONSE, this.client.setConfiguration(request));
+            ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.setConfiguration(request));
         } catch (final SoapFaultClientException ex) {
-            ScenarioContext.Current().put(Keys.RESPONSE, ex);
+            ScenarioContext.Current().put(Keys.KEY_RESPONSE, ex);
         }
     }
 
@@ -204,19 +204,19 @@ public class SetConfigurationSteps {
     @Then("^the set configuration async response contains$")
     public void theSetConfigurationResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
         final SetConfigurationAsyncResponse response = (SetConfigurationAsyncResponse) ScenarioContext.Current()
-                .get(Keys.RESPONSE);
+                .get(Keys.KEY_RESPONSE);
 
         Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
-        Assert.assertEquals(getString(expectedResponseData, Keys.DEVICE_IDENTIFICATION),
+        Assert.assertEquals(getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION),
                 response.getAsyncResponse().getDeviceId());
 
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.
         saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
-                getString(expectedResponseData, Keys.ORGANIZATION_IDENTIFICATION,
+                getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
                         Defaults.ORGANIZATION_IDENTIFICATION));
 
-        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.CORRELATION_UID) + "]");
+        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
     }
 
     /**
@@ -238,7 +238,7 @@ public class SetConfigurationSteps {
         final SetConfigurationAsyncRequest request = new SetConfigurationAsyncRequest();
         final AsyncRequest asyncRequest = new AsyncRequest();
         asyncRequest.setDeviceId(deviceIdentification);
-        asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.CORRELATION_UID));
+        asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
         request.setAsyncRequest(asyncRequest);
 
         boolean success = false;
@@ -253,8 +253,8 @@ public class SetConfigurationSteps {
 
             final SetConfigurationResponse response = this.client.getSetConfiguration(request);
 
-            if (!expectedResponseData.containsKey(Keys.RESULT)
-                    || getEnum(expectedResponseData, Keys.RESULT, OsgpResultType.class) != response.getResult()) {
+            if (!expectedResponseData.containsKey(Keys.KEY_RESULT)
+                    || getEnum(expectedResponseData, Keys.KEY_RESULT, OsgpResultType.class) != response.getResult()) {
                 continue;
             }
 
@@ -269,7 +269,7 @@ public class SetConfigurationSteps {
             this.thePlatformBufferesASetConfigurationResponseMessageForDevice(deviceIdentification,
                     expectedResponseData);
         } catch (final SoapFaultClientException ex) {
-            Assert.assertEquals(getString(expectedResponseData, Keys.MESSAGE), ex.getMessage());
+            Assert.assertEquals(getString(expectedResponseData, Keys.KEY_MESSAGE), ex.getMessage());
         }
     }
 }

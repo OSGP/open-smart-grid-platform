@@ -75,16 +75,16 @@ public class UpdateFirmware extends SmartMeteringStepsBase {
 
     @Given("^the installation file of version \"([^\"]*)\" is available$")
     public void theInstallationFileOfVersionIsAvailable(final String version) throws Throwable {
-        PROPERTIES_MAP.put(Keys.FIRMWARE_IDENTIFICATION, version);
+        PROPERTIES_MAP.put(Keys.KEY_FIRMWARE_IDENTIFICATION, version);
     }
 
     @When("^the request for a firmware upgrade is received$")
     public void theRequestForAFirmwareUpgradeIsReceived() throws Throwable {
-        final Object obj = ScenarioContext.Current().get(Keys.ORGANIZATION_IDENTIFICATION);
+        final Object obj = ScenarioContext.Current().get(Keys.KEY_ORGANIZATION_IDENTIFICATION);
         final String organisationIdentification = obj == null ? Defaults.ORGANIZATION_IDENTIFICATION : obj
                 .toString();
-        PROPERTIES_MAP.put(Keys.DEVICE_IDENTIFICATION_E_LABEL, organisationIdentification);
-        PROPERTIES_MAP.put(Keys.ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION);
+        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION_E_LABEL, organisationIdentification);
+        PROPERTIES_MAP.put(Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION);
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }
@@ -92,7 +92,7 @@ public class UpdateFirmware extends SmartMeteringStepsBase {
     @Then("^firmware should be updated$")
     public void firmwareShouldBeUpdated() throws Throwable {
         PROPERTIES_MAP
-        .put(Keys.CORRELATION_UID, ScenarioContext.Current().get(Keys.CORRELATION_UID).toString());
+        .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, TEST_CASE_XML, TEST_SUITE_XML);
 
@@ -128,13 +128,13 @@ public class UpdateFirmware extends SmartMeteringStepsBase {
 
     @Given("^the installation file of version \"([^\"]*)\" is not available$")
     public void theInstallationFileOfVersionIsNotAvailable(final String version) throws Throwable {
-        PROPERTIES_MAP.put(Keys.FIRMWARE_IDENTIFICATION, version);
+        PROPERTIES_MAP.put(Keys.KEY_FIRMWARE_IDENTIFICATION, version);
     }
 
     @Then("^the message \"([^\"]*)\" should be given$")
     public void theMessageShouldBeGiven(final String message) throws Throwable {
         PROPERTIES_MAP
-        .put(Keys.CORRELATION_UID, ScenarioContext.Current().get(Keys.CORRELATION_UID).toString());
+        .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, TEST_CASE_XML, TEST_SUITE_XML);
 

@@ -49,12 +49,12 @@ public class DeviceAuthorizationSteps extends StepsBase {
     public void aDeviceAuthorization(final Map<String, String> settings) throws Throwable {
 
     	final Device device = this.deviceRepository.findByDeviceIdentification(
-    			getString(settings, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+    			getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
 
     	final Organisation organization = this.organizationRepository.findByOrganisationIdentification(
-    			getString(settings, Keys.ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION));
+    			getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION));
 
-    	final DeviceFunctionGroup functionGroup = getEnum(settings, Keys.DEVICEFUNCTIONGROUP, DeviceFunctionGroup.class, DeviceFunctionGroup.OWNER);
+    	final DeviceFunctionGroup functionGroup = getEnum(settings, Keys.KEY_DEVICEFUNCTIONGROUP, DeviceFunctionGroup.class, DeviceFunctionGroup.OWNER);
 
         final DeviceAuthorization authorization = device.addAuthorization(organization, functionGroup);
 

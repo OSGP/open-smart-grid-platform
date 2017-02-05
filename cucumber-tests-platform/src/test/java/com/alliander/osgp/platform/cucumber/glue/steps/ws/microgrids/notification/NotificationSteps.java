@@ -49,15 +49,15 @@ public class NotificationSteps extends StepsBase {
 
         final Notification notification = this.mockNotificationService.getNotification();
         if (notification != null) {
-            ScenarioContext.Current().put(Keys.CORRELATION_UID, notification.getCorrelationUid());
+            ScenarioContext.Current().put(Keys.KEY_CORRELATION_UID, notification.getCorrelationUid());
 
             // Organisation Identification is always needed to retrieve a
             // response.
-            ScenarioContext.Current().put(Keys.ORGANIZATION_IDENTIFICATION,
+            ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION,
                     Defaults.ORGANIZATION_IDENTIFICATION);
 
             // Username is always needed to retrieve a response.
-            ScenarioContext.Current().put(Keys.USER_NAME, Defaults.USER_NAME);
+            ScenarioContext.Current().put(Keys.KEY_USER_NAME, Defaults.USER_NAME);
         } else {
             Assert.fail("Did not receive a notification within the timeout limit.");
         }

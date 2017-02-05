@@ -51,30 +51,30 @@ public class CreateOrganizationSteps extends StepsBase {
         final Organisation organization = new Organisation();
 
         // Required fields
-        organization.setName(getString(requestSettings, Keys.NAME, Defaults.ORGANIZATION_NAME));
-        organization.setOrganisationIdentification(getString(requestSettings, Keys.ORGANIZATION_IDENTIFICATION,
+        organization.setName(getString(requestSettings, Keys.KEY_NAME, Defaults.ORGANIZATION_NAME));
+        organization.setOrganisationIdentification(getString(requestSettings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
                 Defaults.ORGANIZATION_IDENTIFICATION));
-        organization.setPrefix(getString(requestSettings, Keys.PREFIX, Defaults.ORGANIZATION_PREFIX));
+        organization.setPrefix(getString(requestSettings, Keys.KEY_PREFIX, Defaults.ORGANIZATION_PREFIX));
 
-        final PlatformFunctionGroup platformFunctionGroup = getEnum(requestSettings, Keys.PLATFORM_FUNCTION_GROUP,
+        final PlatformFunctionGroup platformFunctionGroup = getEnum(requestSettings, Keys.KEY_PLATFORM_FUNCTION_GROUP,
                 PlatformFunctionGroup.class, Defaults.NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP);
         organization.setFunctionGroup(platformFunctionGroup);
 
-        for (final String domain : getString(requestSettings, Keys.DOMAINS, Defaults.DOMAINS).split(";")) {
+        for (final String domain : getString(requestSettings, Keys.KEY_DOMAINS, Defaults.DOMAINS).split(";")) {
             organization.getDomains().add(Enum.valueOf(PlatformDomain.class, domain));
         }
 
         // Optional fields
-        if (requestSettings.containsKey(Keys.ENABLED) && !requestSettings.get(Keys.ENABLED).isEmpty()) {
-            organization.setEnabled(getBoolean(requestSettings, Keys.ENABLED));
+        if (requestSettings.containsKey(Keys.KEY_ENABLED) && !requestSettings.get(Keys.KEY_ENABLED).isEmpty()) {
+            organization.setEnabled(getBoolean(requestSettings, Keys.KEY_ENABLED));
         }
 
         request.setOrganisation(organization);
 
         try {
-            ScenarioContext.Current().put(Keys.RESPONSE, this.client.createOrganization(request));
+            ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.createOrganization(request));
         } catch (final SoapFaultClientException e) {
-            ScenarioContext.Current().put(Keys.RESPONSE, e);
+            ScenarioContext.Current().put(Keys.KEY_RESPONSE, e);
         }
     }
 
@@ -88,7 +88,7 @@ public class CreateOrganizationSteps extends StepsBase {
 
         // Force WSTF to use a different organization to send the requests with.
         // (Cerificate is used from the certificates directory).
-        ScenarioContext.Current().put(Keys.ORGANIZATION_IDENTIFICATION, "unknown-organization");
+        ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
 
         this.receivingACreateOrganizationRequest(requestSettings);
     }
@@ -100,7 +100,7 @@ public class CreateOrganizationSteps extends StepsBase {
      */
     @Then("^the create organization response is successful$")
     public void theCreateOrganizationResponseIsSuccessful() throws Throwable {
-        Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof CreateOrganisationResponse);
+        Assert.assertTrue(ScenarioContext.Current().get(Keys.KEY_RESPONSE) instanceof CreateOrganisationResponse);
     }
 
     /**

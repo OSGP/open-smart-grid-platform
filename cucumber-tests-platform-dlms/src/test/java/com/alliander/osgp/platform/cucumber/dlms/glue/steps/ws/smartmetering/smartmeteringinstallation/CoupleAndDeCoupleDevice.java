@@ -59,7 +59,7 @@ public class CoupleAndDeCoupleDevice extends AbstractSmartMeteringSteps {
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
 
         final CoupleMbusDeviceRequest request = new ObjectFactory().createCoupleMbusDeviceRequest();
-        request.setDeviceIdentification((String) ScenarioContext.Current().get(Keys.DEVICE_IDENTIFICATION));
+        request.setDeviceIdentification((String) ScenarioContext.Current().get(Keys.KEY_DEVICE_IDENTIFICATION));
         request.setMbusDeviceIdentification(gasMeter);
         request.setChannel(channel);
 
@@ -127,7 +127,7 @@ public class CoupleAndDeCoupleDevice extends AbstractSmartMeteringSteps {
             final Short channel, final String soapExceptionMessage) throws WebServiceSecurityException,
     GeneralSecurityException, IOException {
         final CoupleMbusDeviceRequest request = new ObjectFactory().createCoupleMbusDeviceRequest();
-        request.setDeviceIdentification((String) ScenarioContext.Current().get(Keys.DEVICE_IDENTIFICATION));
+        request.setDeviceIdentification((String) ScenarioContext.Current().get(Keys.KEY_DEVICE_IDENTIFICATION));
         request.setMbusDeviceIdentification(gasMeter);
         request.setChannel(channel);
 
@@ -146,7 +146,7 @@ public class CoupleAndDeCoupleDevice extends AbstractSmartMeteringSteps {
     GeneralSecurityException, IOException {
 
         final DeCoupleMbusDeviceRequest request = new ObjectFactory().createDeCoupleMbusDeviceRequest();
-        request.setDeviceIdentification((String) ScenarioContext.Current().get(Keys.DEVICE_IDENTIFICATION));
+        request.setDeviceIdentification((String) ScenarioContext.Current().get(Keys.KEY_DEVICE_IDENTIFICATION));
         request.setMbusDeviceIdentification(gasMeter);
         final DeCoupleMbusDeviceAsyncResponse response = (DeCoupleMbusDeviceAsyncResponse) this.smartMeteringInstallationManagementWstf
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName()).marshalSendAndReceive(request);
@@ -172,8 +172,8 @@ public class CoupleAndDeCoupleDevice extends AbstractSmartMeteringSteps {
     GeneralSecurityException, IOException {
 
         final CoupleMbusDeviceAsyncRequest request = new ObjectFactory().createCoupleMbusDeviceAsyncRequest();
-        request.setCorrelationUid((String) ScenarioContext.Current().get(Keys.CORRELATION_UID));
-        request.setDeviceIdentification((String) ScenarioContext.Current().get(Keys.DEVICE_IDENTIFICATION));
+        request.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
+        request.setDeviceIdentification((String) ScenarioContext.Current().get(Keys.KEY_DEVICE_IDENTIFICATION));
 
         final OsgpResponsePoller<CoupleMbusDeviceAsyncRequest, CoupleMbusDeviceResponse> responsePoller = this
                 .createCoupleMbusResponsePoller();
@@ -190,8 +190,8 @@ public class CoupleAndDeCoupleDevice extends AbstractSmartMeteringSteps {
             throws WebServiceSecurityException, InterruptedException, GeneralSecurityException, IOException {
 
         final CoupleMbusDeviceAsyncRequest request = new ObjectFactory().createCoupleMbusDeviceAsyncRequest();
-        request.setCorrelationUid((String) ScenarioContext.Current().get(Keys.CORRELATION_UID));
-        request.setDeviceIdentification((String) ScenarioContext.Current().get(Keys.DEVICE_IDENTIFICATION));
+        request.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
+        request.setDeviceIdentification((String) ScenarioContext.Current().get(Keys.KEY_DEVICE_IDENTIFICATION));
 
         final OsgpResponsePoller<CoupleMbusDeviceAsyncRequest, CoupleMbusDeviceResponse> responsePoller = this
                 .createCoupleMbusResponsePoller();
@@ -209,8 +209,8 @@ public class CoupleAndDeCoupleDevice extends AbstractSmartMeteringSteps {
             throws WebServiceSecurityException, InterruptedException, GeneralSecurityException, IOException {
 
         final DeCoupleMbusDeviceAsyncRequest request = new ObjectFactory().createDeCoupleMbusDeviceAsyncRequest();
-        request.setCorrelationUid((String) ScenarioContext.Current().get(Keys.CORRELATION_UID));
-        request.setDeviceIdentification((String) ScenarioContext.Current().get(Keys.DEVICE_IDENTIFICATION));
+        request.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
+        request.setDeviceIdentification((String) ScenarioContext.Current().get(Keys.KEY_DEVICE_IDENTIFICATION));
 
         final OsgpResponsePoller<DeCoupleMbusDeviceAsyncRequest, DeCoupleMbusDeviceResponse> responsePoller = this
                 .createDeCoupleResponsePoller();
@@ -229,8 +229,8 @@ public class CoupleAndDeCoupleDevice extends AbstractSmartMeteringSteps {
     InterruptedException, GeneralSecurityException, IOException {
 
         final DeCoupleMbusDeviceAsyncRequest request = new ObjectFactory().createDeCoupleMbusDeviceAsyncRequest();
-        request.setCorrelationUid((String) ScenarioContext.Current().get(Keys.CORRELATION_UID));
-        request.setDeviceIdentification((String) ScenarioContext.Current().get(Keys.DEVICE_IDENTIFICATION));
+        request.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
+        request.setDeviceIdentification((String) ScenarioContext.Current().get(Keys.KEY_DEVICE_IDENTIFICATION));
 
         final OsgpResponsePoller<DeCoupleMbusDeviceAsyncRequest, DeCoupleMbusDeviceResponse> responsePoller = this
                 .createDeCoupleResponsePoller();

@@ -46,13 +46,13 @@ public class RemoveOrganizationSteps extends StepsBase {
     public void receivingARemoveOrganizationRequest(final Map<String, String> requestSettings) throws Throwable {
 
         final RemoveOrganisationRequest request = new RemoveOrganisationRequest();
-        request.setOrganisationIdentification(getString(requestSettings, Keys.ORGANIZATION_IDENTIFICATION,
+        request.setOrganisationIdentification(getString(requestSettings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
                 Defaults.ORGANIZATION_IDENTIFICATION));
 
         try {
-            ScenarioContext.Current().put(Keys.RESPONSE, this.client.removeOrganization(request));
+            ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.removeOrganization(request));
         } catch (final SoapFaultClientException e) {
-            ScenarioContext.Current().put(Keys.RESPONSE, e);
+            ScenarioContext.Current().put(Keys.KEY_RESPONSE, e);
         }
     }
 
@@ -63,7 +63,7 @@ public class RemoveOrganizationSteps extends StepsBase {
      */
     @Then("^the remove organization response is successful$")
     public void theRemoveOrganizationResponseIsSuccessful() throws Throwable {
-        Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof RemoveOrganisationResponse);
+        Assert.assertTrue(ScenarioContext.Current().get(Keys.KEY_RESPONSE) instanceof RemoveOrganisationResponse);
     }
 
     /**

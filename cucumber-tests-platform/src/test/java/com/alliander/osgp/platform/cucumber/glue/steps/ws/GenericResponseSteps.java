@@ -43,7 +43,7 @@ public abstract class GenericResponseSteps extends StepsBase {
      */
     public static void verifySoapFault(final Map<String, String> expectedResult) {
         final SoapFaultClientException soapFault = (SoapFaultClientException) ScenarioContext.Current()
-                .get(Keys.RESPONSE);
+                .get(Keys.KEY_RESPONSE);
 
         final QName qNameFaultCode = soapFault.getFaultCode();
         faultCode = qNameFaultCode.getPrefix() + ":" + qNameFaultCode.getLocalPart();
@@ -56,11 +56,11 @@ public abstract class GenericResponseSteps extends StepsBase {
 
     private static void assertFaultDetails(final Map<String, String> expected, final Object actualObj) {
 
-        if (expected.containsKey(Keys.FAULTCODE)) {
-            assertEquals(getString(expected, Keys.FAULTCODE), faultCode);
+        if (expected.containsKey(Keys.KEY_FAULTCODE)) {
+            assertEquals(getString(expected, Keys.KEY_FAULTCODE), faultCode);
         }
-        if (expected.containsKey(Keys.FAULTSTRING)) {
-            assertEquals(getString(expected, Keys.FAULTSTRING), faultString);
+        if (expected.containsKey(Keys.KEY_FAULTSTRING)) {
+            assertEquals(getString(expected, Keys.KEY_FAULTSTRING), faultString);
         }
 
         if (actualObj instanceof EnumMap) {

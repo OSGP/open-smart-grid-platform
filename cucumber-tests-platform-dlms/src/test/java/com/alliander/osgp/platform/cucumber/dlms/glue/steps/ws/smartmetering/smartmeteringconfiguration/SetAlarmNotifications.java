@@ -31,11 +31,11 @@ public class SetAlarmNotifications extends SmartMeteringStepsBase {
 
     @When("^the set alarm notifications request is received$")
     public void theSetAlarmNotificationsRequestIsReceived(final Map<String, String> settings) throws Throwable {
-        PROPERTIES_MAP.put(Keys.DEVICE_IDENTIFICATION,
-                getString(settings, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
+                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
         PROPERTIES_MAP
-                .put(Keys.ORGANIZATION_IDENTIFICATION,
-                        getString(settings, Keys.ORGANIZATION_IDENTIFICATION,
+                .put(Keys.KEY_ORGANIZATION_IDENTIFICATION,
+                        getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
                                 Defaults.ORGANIZATION_IDENTIFICATION));
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
@@ -44,10 +44,10 @@ public class SetAlarmNotifications extends SmartMeteringStepsBase {
     @Then("^the specified alarm notifications should be set on the device$")
     public void theSpecifiedAlarmNotificationsShouldBeSetOnTheDevice(final Map<String, String> settings)
             throws Throwable {
-        PROPERTIES_MAP.put(Keys.DEVICE_IDENTIFICATION,
-                getString(settings, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
+                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
         PROPERTIES_MAP
-                .put(Keys.CORRELATION_UID, ScenarioContext.Current().get(Keys.CORRELATION_UID).toString());
+                .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_GETRESPONSE_REQUEST, TEST_CASE_XML,
                 TEST_SUITE_XML);

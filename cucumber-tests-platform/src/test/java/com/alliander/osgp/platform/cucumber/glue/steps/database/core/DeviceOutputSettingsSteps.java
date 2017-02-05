@@ -40,16 +40,16 @@ public class DeviceOutputSettingsSteps extends StepsBase {
     @Given("^a device output setting$")
     public void aDeviceOutputSetting(final Map<String, String> settings) throws Throwable {
         
-        String deviceIdentification = getString(settings, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION);
+        String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION);
         
         Ssld device = this.ssldRepository.findByDeviceIdentification(deviceIdentification);
         
         List<DeviceOutputSetting> outputSettings = new ArrayList<DeviceOutputSetting>();
         DeviceOutputSetting deviceOutputSetting = new DeviceOutputSetting(
-                getInteger(settings, Keys.INTERNALID, Defaults.DEVICE_OUTPUT_SETTING_INTERNALID), 
-                getInteger(settings, Keys.EXTERNALID, Defaults.DEVICE_OUTPUT_SETTING_EXTERNALID), 
-                getEnum(settings, Keys.RELAY_TYPE, RelayType.class, Defaults.DEVICE_OUTPUT_SETTING_RELAY_TYPE),
-                getString(settings, Keys.ALIAS, Defaults.DEVICE_OUTPUT_SETTING_ALIAS));
+                getInteger(settings, Keys.KEY_INTERNALID, Defaults.DEVICE_OUTPUT_SETTING_INTERNALID), 
+                getInteger(settings, Keys.KEY_EXTERNALID, Defaults.DEVICE_OUTPUT_SETTING_EXTERNALID), 
+                getEnum(settings, Keys.KEY_RELAY_TYPE, RelayType.class, Defaults.DEVICE_OUTPUT_SETTING_RELAY_TYPE),
+                getString(settings, Keys.KEY_ALIAS, Defaults.DEVICE_OUTPUT_SETTING_ALIAS));
         outputSettings.add(deviceOutputSetting);
         device.updateOutputSettings(outputSettings);
         
@@ -58,11 +58,11 @@ public class DeviceOutputSettingsSteps extends StepsBase {
     
     @Given("^device output settings for lightvalues$")
     public void deviceOutputSettingsForLightValues(final Map<String, String> settings) throws Throwable {
-        String deviceIdentification = getString(settings, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION);
+        String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION);
         
         Ssld device = this.ssldRepository.findByDeviceIdentification(deviceIdentification);
         
-        String[] lightValues = getString(settings, Keys.LIGHTVALUES, Defaults.DEVICE_IDENTIFICATION).split(Keys.SEPARATOR_SEMICOLON);
+        String[] lightValues = getString(settings, Keys.KEY_LIGHTVALUES, Defaults.DEVICE_IDENTIFICATION).split(Keys.SEPARATOR_SEMICOLON);
         
         String[] deviceOutputSettings = getString(settings, Keys.DEVICE_OUTPUT_SETTINGS, "").split(Keys.SEPARATOR_SEMICOLON);
         

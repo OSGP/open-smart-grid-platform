@@ -72,12 +72,12 @@ public class GetConfigurationSteps {
     public void receivingAGetConfigurationRequest(final Map<String, String> requestParameters) throws Throwable {
         final GetConfigurationRequest request = new GetConfigurationRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
 
         try {
-            ScenarioContext.Current().put(Keys.RESPONSE, this.client.getConfiguration(request));
+            ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.getConfiguration(request));
         } catch (final SoapFaultClientException ex) {
-            ScenarioContext.Current().put(Keys.RESPONSE, ex);
+            ScenarioContext.Current().put(Keys.KEY_RESPONSE, ex);
         }
     }
 
@@ -93,19 +93,19 @@ public class GetConfigurationSteps {
     @Then("^the get configuration async response contains$")
     public void theGetConfigurationResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
         final GetConfigurationAsyncResponse response = (GetConfigurationAsyncResponse) ScenarioContext.Current()
-                .get(Keys.RESPONSE);
+                .get(Keys.KEY_RESPONSE);
 
         Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
-        Assert.assertEquals(getString(expectedResponseData, Keys.DEVICE_IDENTIFICATION),
+        Assert.assertEquals(getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION),
                 response.getAsyncResponse().getDeviceId());
 
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.
         saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
-                getString(expectedResponseData, Keys.ORGANIZATION_IDENTIFICATION,
+                getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
                         Defaults.ORGANIZATION_IDENTIFICATION));
 
-        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.CORRELATION_UID) + "]");
+        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
     }
 
     /**
@@ -127,7 +127,7 @@ public class GetConfigurationSteps {
         final GetConfigurationAsyncRequest request = new GetConfigurationAsyncRequest();
         final AsyncRequest asyncRequest = new AsyncRequest();
         asyncRequest.setDeviceId(deviceIdentification);
-        asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.CORRELATION_UID));
+        asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
         request.setAsyncRequest(asyncRequest);
 
         GetConfigurationResponse response = null;
@@ -144,8 +144,8 @@ public class GetConfigurationSteps {
 
             response = this.client.getGetConfiguration(request);
 
-            if (!expectedResponseData.containsKey(Keys.RESULT)
-                    || getEnum(expectedResponseData, Keys.RESULT, OsgpResultType.class) != response.getResult()) {
+            if (!expectedResponseData.containsKey(Keys.KEY_RESULT)
+                    || getEnum(expectedResponseData, Keys.KEY_RESULT, OsgpResultType.class) != response.getResult()) {
                 continue;
             }
 
@@ -158,9 +158,9 @@ public class GetConfigurationSteps {
             Assert.assertNotNull(configuration);
         }
 
-        if (expectedResponseData.containsKey(Keys.LIGHTTYPE)
-                && !expectedResponseData.get(Keys.LIGHTTYPE).isEmpty() && configuration.getLightType() != null) {
-            Assert.assertEquals(getEnum(expectedResponseData, Keys.LIGHTTYPE, LightType.class),
+        if (expectedResponseData.containsKey(Keys.KEY_LIGHTTYPE)
+                && !expectedResponseData.get(Keys.KEY_LIGHTTYPE).isEmpty() && configuration.getLightType() != null) {
+            Assert.assertEquals(getEnum(expectedResponseData, Keys.KEY_LIGHTTYPE, LightType.class),
                     configuration.getLightType());
         }
 
@@ -199,10 +199,10 @@ public class GetConfigurationSteps {
                         Assert.assertEquals(Integer.parseInt(rcMapArrayElements[0]), relayMapList.get(i).getIndex());
                         Assert.assertEquals(Integer.parseInt(rcMapArrayElements[1]), relayMapList.get(i).getAddress());
 
-                        if (expectedResponseData.containsKey(Keys.RELAY_TYPE)
-                                && !expectedResponseData.get(Keys.RELAY_TYPE).isEmpty()
+                        if (expectedResponseData.containsKey(Keys.KEY_RELAY_TYPE)
+                                && !expectedResponseData.get(Keys.KEY_RELAY_TYPE).isEmpty()
                                 && relayMapList.get(i).getRelayType() != null) {
-                            Assert.assertEquals(getEnum(expectedResponseData, Keys.RELAY_TYPE, RelayType.class),
+                            Assert.assertEquals(getEnum(expectedResponseData, Keys.KEY_RELAY_TYPE, RelayType.class),
                                     relayMapList.get(i).getRelayType());
                         }
                     }
@@ -214,10 +214,10 @@ public class GetConfigurationSteps {
         //// test this?
         // configuration.getRelayLinking();
 
-        if (expectedResponseData.containsKey(Keys.PREFERRED_LINKTYPE)
-                && !expectedResponseData.get(Keys.PREFERRED_LINKTYPE).isEmpty()
+        if (expectedResponseData.containsKey(Keys.KEY_PREFERRED_LINKTYPE)
+                && !expectedResponseData.get(Keys.KEY_PREFERRED_LINKTYPE).isEmpty()
                 && configuration.getPreferredLinkType() != null) {
-            Assert.assertEquals(getEnum(expectedResponseData, Keys.PREFERRED_LINKTYPE, LinkType.class),
+            Assert.assertEquals(getEnum(expectedResponseData, Keys.KEY_PREFERRED_LINKTYPE, LinkType.class),
                     configuration.getPreferredLinkType());
         }
 
@@ -268,7 +268,7 @@ public class GetConfigurationSteps {
             this.thePlatformBufferesAGetConfigurationResponseMessageForDevice(deviceIdentification,
                     expectedResponseData);
         } catch (final SoapFaultClientException ex) {
-            Assert.assertEquals(getString(expectedResponseData, Keys.MESSAGE), ex.getMessage());
+            Assert.assertEquals(getString(expectedResponseData, Keys.KEY_MESSAGE), ex.getMessage());
         }
     }
 }

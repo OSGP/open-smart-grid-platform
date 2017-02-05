@@ -263,7 +263,7 @@ public class Helpers {
 
         // Validate the correlation-id starts with correct organization
         Assert.isTrue(correlationUid.startsWith(organizationIdentification));
-        ScenarioContext.Current().put(Keys.CORRELATION_UID, correlationUid);
+        ScenarioContext.Current().put(Keys.KEY_CORRELATION_UID, correlationUid);
     }
 
     /**

@@ -46,24 +46,24 @@ public class GetDebugInformation extends SmartMeteringStepsBase {
     @Given("^there is debug information logged for the device$")
     public void thereIsDebugInformationLoggedForTheDevice() throws Throwable {
         final DeviceLogItem item = this.deviceLogItemBuilder.withDeviceIdentification(
-                ScenarioContext.Current().get(Keys.DEVICE_IDENTIFICATION).toString()).build();
+                ScenarioContext.Current().get(Keys.KEY_DEVICE_IDENTIFICATION).toString()).build();
 
         this.logItemRepository.save(item);
     }
 
     @When("^the get debug information request is received$")
     public void theGetDebugInformationRequestIsReceived(final Map<String, String> requestData) throws Throwable {
-        PROPERTIES_MAP.put(Keys.DEVICE_IDENTIFICATION,
-                getString(requestData, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
-        PROPERTIES_MAP.put(Keys.PAGE, getString(requestData, Keys.PAGE, Defaults.PAGE.toString()));
+        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
+                getString(requestData, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+        PROPERTIES_MAP.put(Keys.KEY_PAGE, getString(requestData, Keys.KEY_PAGE, Defaults.PAGE.toString()));
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }
 
     @Then("^the device debug information should be in the response message$")
     public void theDeviceDebugInformationShouldBeInTheResponseMessage() throws Throwable {
-        PROPERTIES_MAP.put(Keys.DEVICE_IDENTIFICATION, ScenarioContext.Current()
-                .get(Keys.DEVICE_IDENTIFICATION).toString());
+        PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION, ScenarioContext.Current()
+                .get(Keys.KEY_DEVICE_IDENTIFICATION).toString());
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE, TEST_CASE_XML, TEST_SUITE_XML);
 

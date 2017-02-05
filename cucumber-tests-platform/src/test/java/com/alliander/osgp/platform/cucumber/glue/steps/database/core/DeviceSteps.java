@@ -123,7 +123,7 @@ public class DeviceSteps extends BaseDeviceSteps {
             LoggerFactory.getLogger(DeviceSteps.class).info("Sleeping ls " + count);
 
             // Wait for next try to retrieve a response
-            device = this.deviceRepository.findByDeviceIdentification(settings.get(Keys.DEVICE_IDENTIFICATION));
+            device = this.deviceRepository.findByDeviceIdentification(settings.get(Keys.KEY_DEVICE_IDENTIFICATION));
             if (device == null) {
                 continue;
             }

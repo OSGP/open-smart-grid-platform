@@ -42,12 +42,12 @@ public class RemoveDeviceSteps extends StepsBase {
     public void receivingARemoveDeviceRequest(final Map<String, String> requestSettings) throws Throwable {
         final RemoveDeviceRequest request = new RemoveDeviceRequest();
         request.setDeviceIdentification(
-                getString(requestSettings, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(requestSettings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
 
         try {
-            ScenarioContext.Current().put(Keys.RESPONSE, this.client.removeDevice(request));
+            ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.removeDevice(request));
         } catch (final SoapFaultClientException ex) {
-            ScenarioContext.Current().put(Keys.RESPONSE, ex);
+            ScenarioContext.Current().put(Keys.KEY_RESPONSE, ex);
         }
     }
 
@@ -60,6 +60,6 @@ public class RemoveDeviceSteps extends StepsBase {
      */
     @Then("^the remove device response is successful$")
     public void theRemoveDeviceResponseIsSuccessful() throws Throwable {
-        Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof RemoveDeviceResponse);
+        Assert.assertTrue(ScenarioContext.Current().get(Keys.KEY_RESPONSE) instanceof RemoveDeviceResponse);
     }
 }

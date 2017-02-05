@@ -71,12 +71,12 @@ public class SetPointBuilder {
     }
 
     public SetPointBuilder withSettings(final Map<String, String> settings, final int systemIndex) {
-        if (!SettingsHelper.hasKey(settings, Keys.NUMBER_OF_SET_POINTS, systemIndex)) {
+        if (!SettingsHelper.hasKey(settings, Keys.KEY_NUMBER_OF_SET_POINTS, systemIndex)) {
             throw new AssertionError("The Step DataTable must contain the number of set points for key \""
-                    + SettingsHelper.makeKey(Keys.NUMBER_OF_SET_POINTS, systemIndex)
+                    + SettingsHelper.makeKey(Keys.KEY_NUMBER_OF_SET_POINTS, systemIndex)
                     + "\" when creating a set data request.");
         }
-        final int numberOfSetPoints = SettingsHelper.getIntegerValue(settings, Keys.NUMBER_OF_SET_POINTS,
+        final int numberOfSetPoints = SettingsHelper.getIntegerValue(settings, Keys.KEY_NUMBER_OF_SET_POINTS,
                 systemIndex);
         for (int i = 1; i <= numberOfSetPoints; i++) {
             this.setPoints.add(this.withSettings(settings, systemIndex, i).build());
@@ -88,12 +88,12 @@ public class SetPointBuilder {
     private SetPointBuilder withSettings(final Map<String, String> settings, final int systemIndex, final int index) {
         final int[] indexes = { systemIndex, index };
         this.withStartTime(
-                SettingsHelper.getXmlGregorianCalendarValue(settings, Keys.SETPOINT_START_TIME, indexes));
+                SettingsHelper.getXmlGregorianCalendarValue(settings, Keys.KEY_SETPOINT_START_TIME, indexes));
         this.withEndTime(
-                SettingsHelper.getXmlGregorianCalendarValue(settings, Keys.SETPOINT_END_TIME, indexes));
-        this.withId(SettingsHelper.getIntegerValue(settings, Keys.SETPOINT_ID, indexes));
-        this.withNode(SettingsHelper.getStringValue(settings, Keys.SETPOINT_NODE, indexes));
-        this.withValue(SettingsHelper.getDoubleValue(settings, Keys.SETPOINT_VALUE, indexes));
+                SettingsHelper.getXmlGregorianCalendarValue(settings, Keys.KEY_SETPOINT_END_TIME, indexes));
+        this.withId(SettingsHelper.getIntegerValue(settings, Keys.KEY_SETPOINT_ID, indexes));
+        this.withNode(SettingsHelper.getStringValue(settings, Keys.KEY_SETPOINT_NODE, indexes));
+        this.withValue(SettingsHelper.getDoubleValue(settings, Keys.KEY_SETPOINT_VALUE, indexes));
 
         return this;
     }

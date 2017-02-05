@@ -36,16 +36,16 @@ public class FindRecentDeviceSteps extends StepsBase {
         final FindRecentDevicesRequest request = new FindRecentDevicesRequest();
 
         try {
-            ScenarioContext.Current().put(Keys.RESPONSE, this.client.findRecentDevices(request));
+            ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.findRecentDevices(request));
         } catch (final SoapFaultClientException ex) {
-            ScenarioContext.Current().put(Keys.RESPONSE, ex);
+            ScenarioContext.Current().put(Keys.KEY_RESPONSE, ex);
         }
     }
 
     @Then("the find recent devices response contains \"([^\"]*)\" devices?")
     public void theFindRecentDevicesResponseContains(final Integer numberOfDevices) {
         final FindRecentDevicesResponse response = (FindRecentDevicesResponse) ScenarioContext.Current()
-                .get(Keys.RESPONSE);
+                .get(Keys.KEY_RESPONSE);
 
         final List<Device> devices = response.getDevices();
         Assert.assertEquals((int) numberOfDevices, (devices != null) ? devices.size() : 0);
@@ -55,7 +55,7 @@ public class FindRecentDeviceSteps extends StepsBase {
     public void theFindRecentDevicesResponseContainsAtIndex(final Integer index,
             final Map<String, String> expectedDevice) throws Throwable {
         final FindRecentDevicesResponse response = (FindRecentDevicesResponse) ScenarioContext.Current()
-                .get(Keys.RESPONSE);
+                .get(Keys.KEY_RESPONSE);
 
         final Device device = response.getDevices().get(index - 1);
         Assert.assertNotNull(device);

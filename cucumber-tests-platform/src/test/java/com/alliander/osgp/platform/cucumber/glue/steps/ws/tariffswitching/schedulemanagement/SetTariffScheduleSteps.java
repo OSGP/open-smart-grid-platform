@@ -96,7 +96,7 @@ public class SetTariffScheduleSteps {
 
         final SetScheduleRequest request = new SetScheduleRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, Keys.DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
         if (requestParameters.containsKey(Keys.SCHEDULE_SCHEDULEDTIME)) {
             request.setScheduledTime(DatatypeFactory.newInstance()
                     .newXMLGregorianCalendar(((requestParameters.get(Keys.SCHEDULE_SCHEDULEDTIME).isEmpty())
@@ -123,9 +123,9 @@ public class SetTariffScheduleSteps {
         }
 
         try {
-            ScenarioContext.Current().put(Keys.RESPONSE, this.client.setSchedule(request));
+            ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.setSchedule(request));
         } catch (final SoapFaultClientException ex) {
-            ScenarioContext.Current().put(Keys.RESPONSE, ex);
+            ScenarioContext.Current().put(Keys.KEY_RESPONSE, ex);
         }
     }
 
@@ -160,7 +160,7 @@ public class SetTariffScheduleSteps {
     public void receivingASetTariffScheduleRequestByAnUnknownOrganization(final Map<String, String> requestParameters)
             throws Throwable {
         // Force the request being send to the platform as a given organization.
-        ScenarioContext.Current().put(Keys.ORGANIZATION_IDENTIFICATION, "unknown-organization");
+        ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
 
         this.receivingASetTariffScheduleRequest(requestParameters);
     }
@@ -178,19 +178,19 @@ public class SetTariffScheduleSteps {
     public void theSetTariffScheduleAsyncResponseContains(final Map<String, String> expectedResponseData)
             throws Throwable {
         final SetScheduleAsyncResponse response = (SetScheduleAsyncResponse) ScenarioContext.Current()
-                .get(Keys.RESPONSE);
+                .get(Keys.KEY_RESPONSE);
 
         Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
-        Assert.assertEquals(getString(expectedResponseData, Keys.DEVICE_IDENTIFICATION),
+        Assert.assertEquals(getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION),
                 response.getAsyncResponse().getDeviceId());
 
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.
         saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
-                getString(expectedResponseData, Keys.ORGANIZATION_IDENTIFICATION,
+                getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
                         Defaults.ORGANIZATION_IDENTIFICATION));
 
-        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.CORRELATION_UID) + "]");
+        LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
     }
 
     @Then("^the set tariff schedule response contains soap fault$")
@@ -204,7 +204,7 @@ public class SetTariffScheduleSteps {
         final SetScheduleAsyncRequest request = new SetScheduleAsyncRequest();
         final AsyncRequest asyncRequest = new AsyncRequest();
         asyncRequest.setDeviceId(deviceIdentification);
-        asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.CORRELATION_UID));
+        asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
         request.setAsyncRequest(asyncRequest);
 
         boolean success = false;
@@ -219,12 +219,12 @@ public class SetTariffScheduleSteps {
 
             final SetScheduleResponse response = this.client.getSetSchedule(request);
 
-            if (getEnum(expectedResult, Keys.RESULT, OsgpResultType.class) != response.getResult()) {
+            if (getEnum(expectedResult, Keys.KEY_RESULT, OsgpResultType.class) != response.getResult()) {
                 continue;
             }
 
-            if (expectedResult.containsKey(Keys.DESCRIPTION)
-                    && !getString(expectedResult, Keys.DESCRIPTION).equals(response.getDescription())) {
+            if (expectedResult.containsKey(Keys.KEY_DESCRIPTION)
+                    && !getString(expectedResult, Keys.KEY_DESCRIPTION).equals(response.getDescription())) {
                 continue;
             }
 
@@ -238,7 +238,7 @@ public class SetTariffScheduleSteps {
         try {
             this.thePlatformBuffersASetTariffScheduleResponseMessageForDevice(deviceIdentification, expectedResult);
         } catch (final SoapFaultClientException ex) {
-            Assert.assertEquals(getString(expectedResult, Keys.MESSAGE), ex.getMessage());
+            Assert.assertEquals(getString(expectedResult, Keys.KEY_MESSAGE), ex.getMessage());
         }
     }
 }
