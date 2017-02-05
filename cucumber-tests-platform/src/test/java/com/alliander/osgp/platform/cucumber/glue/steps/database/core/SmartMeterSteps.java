@@ -42,7 +42,7 @@ public class SmartMeterSteps extends BaseDeviceSteps {
     @Transactional("txMgrCore")
     public Device aSmartMeter(final Map<String, String> settings) {
         
-        final String deviceIdentification = getString(settings, "DeviceIdentification", Defaults.DEVICE_IDENTIFICATION); 
+        final String deviceIdentification = getString(settings, "DeviceIdentification", Defaults.DEFAULT_DEVICE_IDENTIFICATION); 
     	SmartMeter smartMeter = new SmartMeter(
     	        deviceIdentification,
         		getString(settings, "Alias", Defaults.ALIAS),

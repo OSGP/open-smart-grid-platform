@@ -109,7 +109,7 @@ public class AuthorizePlatformFunctions {
 
         final Organisation organisation = new Organisation();
         organisation.setName(Defaults.ORGANIZATION_NAME);
-        organisation.setOrganisationIdentification(Defaults.ORGANIZATION_IDENTIFICATION);
+        organisation.setOrganisationIdentification(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
         organisation.setFunctionGroup(
                 getEnum(requestParameters, Keys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class));
         organisation.setPrefix(Defaults.ORGANIZATION_PREFIX);
@@ -130,7 +130,7 @@ public class AuthorizePlatformFunctions {
         final FindMessageLogsRequest request = new FindMessageLogsRequest();
 
         request.setDeviceIdentification(
-                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.adminDeviceManagementClient.findMessageLogs(request));
     }
@@ -145,9 +145,9 @@ public class AuthorizePlatformFunctions {
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final SetOwnerRequest request = new SetOwnerRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
         request.setOrganisationIdentification(getString(requestParameters, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                Defaults.ORGANIZATION_IDENTIFICATION));
+                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
         ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.adminDeviceManagementClient.setOwner(request));
     }
@@ -156,7 +156,7 @@ public class AuthorizePlatformFunctions {
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final UpdateKeyRequest request = new UpdateKeyRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
         request.setProtocolInfoId(Defaults.PROTOCOL_INFO_ID);
         request.setPublicKey(Defaults.PUBLIC_KEY);
 
@@ -167,7 +167,7 @@ public class AuthorizePlatformFunctions {
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final RevokeKeyRequest request = new RevokeKeyRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.adminDeviceManagementClient.getRevokeKeyResponse(request));
     }

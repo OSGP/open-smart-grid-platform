@@ -50,7 +50,7 @@ public class ChangeOrganizationSteps extends StepsBase {
         final ChangeOrganisationRequest request = new ChangeOrganisationRequest();
 
         request.setOrganisationIdentification(getString(requestSettings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                Defaults.ORGANIZATION_IDENTIFICATION));
+                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
         request.setNewOrganisationName(
                 getString(requestSettings, Keys.KEY_NAME, Defaults.NEW_ORGANIZATION_NAME));

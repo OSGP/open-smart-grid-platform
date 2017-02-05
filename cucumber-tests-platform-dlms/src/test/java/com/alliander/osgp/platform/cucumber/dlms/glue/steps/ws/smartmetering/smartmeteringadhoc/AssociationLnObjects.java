@@ -40,7 +40,7 @@ public class AssociationLnObjects extends SmartMeteringStepsBase {
     @When("^receiving a retrieve association LN objectlist request$")
     public void receivingARetrieveAssociationLNObjectlistRequest(final Map<String, String> settings) throws Throwable {
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }
@@ -48,7 +48,7 @@ public class AssociationLnObjects extends SmartMeteringStepsBase {
     @Then("^the objectlist should be returned$")
     public void theObjectlistShouldBeReturned(final Map<String, String> settings) throws Throwable {
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
         PROPERTIES_MAP
                 .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
 

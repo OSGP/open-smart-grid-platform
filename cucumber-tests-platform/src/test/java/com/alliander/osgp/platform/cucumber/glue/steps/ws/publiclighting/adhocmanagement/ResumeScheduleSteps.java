@@ -106,7 +106,7 @@ public class ResumeScheduleSteps {
         // further use.
         saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
                 getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                        Defaults.ORGANIZATION_IDENTIFICATION));
+                        Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
         LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
     }

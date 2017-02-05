@@ -89,7 +89,7 @@ public class CreateDeviceSteps extends StepsBase {
         final UpdateDeviceRequest request = new UpdateDeviceRequest();
 
         String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION,
-                Defaults.DEVICE_IDENTIFICATION);
+                Defaults.DEFAULT_DEVICE_IDENTIFICATION);
         // Note: The regular expression below matches at spaces between two
         // quotation marks("), this check is used for a test with a
         // DeviceIdentification with only spaces
@@ -118,16 +118,16 @@ public class CreateDeviceSteps extends StepsBase {
         device.setContainerPostalCode(getString(settings, Keys.KEY_POSTCODE, Defaults.CONTAINER_POSTALCODE));
         device.setContainerStreet(getString(settings, Keys.KEY_STREET, Defaults.CONTAINER_STREET));
         device.setDeviceIdentification(
-                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
         final DeviceModel deviceModel = new DeviceModel();
         deviceModel.setDescription(
-                getString(settings, Keys.KEY_DEVICE_MODEL_DESCRIPTION, Defaults.DEVICE_MODEL_DESCRIPTION));
+                getString(settings, Keys.KEY_DEVICE_MODEL_DESCRIPTION, Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION));
         deviceModel.setManufacturer(
                 getString(settings, Keys.KEY_DEVICE_MODEL_MANUFACTURER, Defaults.DEVICE_MODEL_MANUFACTURER));
         deviceModel
                 .setMetered(getBoolean(settings, Keys.KEY_DEVICE_MODEL_METERED, Defaults.DEVICE_MODEL_METERED));
         deviceModel.setModelCode(
-                getString(settings, Keys.KEY_DEVICE_MODEL_MODELCODE, Defaults.DEVICE_MODEL_MODEL_CODE));
+                getString(settings, Keys.KEY_DEVICE_MODEL_MODELCODE, Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
         device.setDeviceModel(deviceModel);
         device.setDeviceUid(getString(settings, Keys.KEY_DEVICE_UID, OslpDeviceSteps.DEFAULT_DEVICE_UID));
         device.setGpsLatitude(getFloat(settings, Keys.KEY_LATITUDE, Defaults.LATITUDE));

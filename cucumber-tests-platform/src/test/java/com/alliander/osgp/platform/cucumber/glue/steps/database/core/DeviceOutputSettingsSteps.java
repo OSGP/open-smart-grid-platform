@@ -40,7 +40,7 @@ public class DeviceOutputSettingsSteps extends StepsBase {
     @Given("^a device output setting$")
     public void aDeviceOutputSetting(final Map<String, String> settings) throws Throwable {
         
-        String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION);
+        String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION);
         
         Ssld device = this.ssldRepository.findByDeviceIdentification(deviceIdentification);
         
@@ -58,11 +58,11 @@ public class DeviceOutputSettingsSteps extends StepsBase {
     
     @Given("^device output settings for lightvalues$")
     public void deviceOutputSettingsForLightValues(final Map<String, String> settings) throws Throwable {
-        String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION);
+        String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION);
         
         Ssld device = this.ssldRepository.findByDeviceIdentification(deviceIdentification);
         
-        String[] lightValues = getString(settings, Keys.KEY_LIGHTVALUES, Defaults.DEVICE_IDENTIFICATION).split(Keys.SEPARATOR_SEMICOLON);
+        String[] lightValues = getString(settings, Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_DEVICE_IDENTIFICATION).split(Keys.SEPARATOR_SEMICOLON);
         
         String[] deviceOutputSettings = getString(settings, Keys.DEVICE_OUTPUT_SETTINGS, "").split(Keys.SEPARATOR_SEMICOLON);
         

@@ -72,7 +72,7 @@ public class GetConfigurationSteps {
     public void receivingAGetConfigurationRequest(final Map<String, String> requestParameters) throws Throwable {
         final GetConfigurationRequest request = new GetConfigurationRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         try {
             ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.getConfiguration(request));
@@ -103,7 +103,7 @@ public class GetConfigurationSteps {
         // further use.
         saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
                 getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                        Defaults.ORGANIZATION_IDENTIFICATION));
+                        Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
         LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
     }

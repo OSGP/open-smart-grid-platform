@@ -197,7 +197,7 @@ public class AuthorizeDeviceFunctions {
             throws WebServiceSecurityException, GeneralSecurityException, IOException, OperationNotSupportedException {
         final FindDeviceAuthorisationsRequest findDeviceAuthorisationsRequest = new FindDeviceAuthorisationsRequest();
         findDeviceAuthorisationsRequest.setDeviceIdentification(
-                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         final FindDeviceAuthorisationsResponse response = this.adminDeviceManagementClient
                 .findDeviceAuthorisations(findDeviceAuthorisationsRequest);
@@ -218,7 +218,7 @@ public class AuthorizeDeviceFunctions {
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final StartDeviceTestRequest request = new StartDeviceTestRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.coreDeviceInstallationClient.startDeviceTest(request));
     }
@@ -227,7 +227,7 @@ public class AuthorizeDeviceFunctions {
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final StopDeviceTestRequest request = new StopDeviceTestRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.coreDeviceInstallationClient.stopDeviceTest(request));
     }
@@ -236,7 +236,7 @@ public class AuthorizeDeviceFunctions {
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final SetLightRequest request = new SetLightRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
         ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.publicLightingAdHocManagementClient.setLight(request));
     }
 
@@ -245,7 +245,7 @@ public class AuthorizeDeviceFunctions {
         // Note: This GetStatusRequest is from PublicLighting AdhocManagement
         final GetStatusRequest request = new GetStatusRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.publicLightingAdHocManagementClient.getStatus(request));
     }
@@ -254,7 +254,7 @@ public class AuthorizeDeviceFunctions {
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final FindDeviceAuthorisationsRequest request = new FindDeviceAuthorisationsRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         ScenarioContext.Current().put(Keys.KEY_RESPONSE,
                 this.adminDeviceManagementClient.findDeviceAuthorisations(request));
@@ -264,7 +264,7 @@ public class AuthorizeDeviceFunctions {
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final SetEventNotificationsRequest request = new SetEventNotificationsRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.coreDeviceManagementClient.setEventNotifications(request));
     }
@@ -273,7 +273,7 @@ public class AuthorizeDeviceFunctions {
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final FindEventsRequest request = new FindEventsRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.coreDeviceManagementClient.findEventsResponse(request));
     }
@@ -282,7 +282,7 @@ public class AuthorizeDeviceFunctions {
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final UpdateFirmwareRequest request = new UpdateFirmwareRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
         request.setFirmwareIdentification(
                 getString(requestParameters, Keys.KEY_FIRMWARE_IDENTIFICATION, Defaults.FIRMWARE_IDENTIFICATION));
 
@@ -293,7 +293,7 @@ public class AuthorizeDeviceFunctions {
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final GetFirmwareVersionRequest request = new GetFirmwareVersionRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.coreFirmwareManagementClient.getFirmwareVersion(request));
     }
@@ -302,7 +302,7 @@ public class AuthorizeDeviceFunctions {
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final com.alliander.osgp.adapter.ws.schema.publiclighting.schedulemanagement.SetScheduleRequest request = new com.alliander.osgp.adapter.ws.schema.publiclighting.schedulemanagement.SetScheduleRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.publicLightingScheduleManagementClient.setSchedule(request));
     }
@@ -311,7 +311,7 @@ public class AuthorizeDeviceFunctions {
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final com.alliander.osgp.adapter.ws.schema.tariffswitching.schedulemanagement.SetScheduleRequest request = new com.alliander.osgp.adapter.ws.schema.tariffswitching.schedulemanagement.SetScheduleRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.tariffSwitchingScheduleManagementClient.setSchedule(request));
     }
@@ -320,7 +320,7 @@ public class AuthorizeDeviceFunctions {
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final SetConfigurationRequest request = new SetConfigurationRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         final Configuration config = new Configuration();
 
@@ -340,7 +340,7 @@ public class AuthorizeDeviceFunctions {
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final GetConfigurationRequest request = new GetConfigurationRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.coreConfigurationManagementClient.getConfiguration(request));
     }
@@ -349,7 +349,7 @@ public class AuthorizeDeviceFunctions {
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final RemoveDeviceRequest request = new RemoveDeviceRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.adminDeviceManagementClient.removeDevice(request));
     }
@@ -358,7 +358,7 @@ public class AuthorizeDeviceFunctions {
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final GetActualPowerUsageRequest request = new GetActualPowerUsageRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         ScenarioContext.Current().put(Keys.KEY_RESPONSE,
                 this.publicLightingDeviceMonitoringClient.getActualPowerUsage(request));
@@ -368,7 +368,7 @@ public class AuthorizeDeviceFunctions {
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final GetPowerUsageHistoryRequest request = new GetPowerUsageHistoryRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         ScenarioContext.Current().put(Keys.KEY_RESPONSE,
                 this.publicLightingDeviceMonitoringClient.getPowerUsageHistory(request));
@@ -378,7 +378,7 @@ public class AuthorizeDeviceFunctions {
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final ResumeScheduleRequest request = new ResumeScheduleRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.publicLightingAdHocManagementClient.resumeSchedule(request));
     }
@@ -387,7 +387,7 @@ public class AuthorizeDeviceFunctions {
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final SetRebootRequest request = new SetRebootRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.coreAdHocManagementClient.setReboot(request));
     }
@@ -396,7 +396,7 @@ public class AuthorizeDeviceFunctions {
             throws WebServiceSecurityException, GeneralSecurityException, IOException, DatatypeConfigurationException {
         final SetTransitionRequest request = new SetTransitionRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.publicLightingAdHocManagementClient.setTransition(request));
     }

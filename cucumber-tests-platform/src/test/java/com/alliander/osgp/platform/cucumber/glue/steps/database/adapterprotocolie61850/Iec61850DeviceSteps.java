@@ -65,7 +65,7 @@ public class Iec61850DeviceSteps extends StepsBase {
     @Given("^an rtu iec61850 device$")
     public void anRtuIec61850Device(final Map<String, String> settings) throws Throwable {
 
-        ScenarioContext.Current().put(Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION);
+        ScenarioContext.Current().put(Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION);
         final Map<String, String> rtuSettings = SettingsHelper.addAsDefaults(settings, RTU_DEFAULT_SETTINGS);
         rtuSettings.put(Keys.KEY_NETWORKADDRESS, this.iec61850MockServerConfig.iec61850MockNetworkAddress());
         rtuSettings.put(Keys.KEY_NETWORKADDRESS, this.iec61850MockServerConfig.iec61850MockNetworkAddress());
@@ -82,7 +82,7 @@ public class Iec61850DeviceSteps extends StepsBase {
          * settings will be used from the application to connect to the device.
          */
         final Iec61850Device iec61850Device = new Iec61850Device(
-                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
         iec61850Device.setIcdFilename(this.iec61850MockServerConfig.iec61850MockIcdFilename());
         iec61850Device.setPort(this.iec61850MockServerConfig.iec61850MockPort());
 

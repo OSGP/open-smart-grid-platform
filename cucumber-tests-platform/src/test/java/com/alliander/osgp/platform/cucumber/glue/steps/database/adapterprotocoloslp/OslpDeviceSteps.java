@@ -45,7 +45,7 @@ public class OslpDeviceSteps extends StepsBase {
         
         // Now create the OSLP device in the OSLP database
         final String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION,
-                Defaults.DEVICE_IDENTIFICATION);
+                Defaults.DEFAULT_DEVICE_IDENTIFICATION);
         final OslpDevice device = new OslpDevice(getString(settings, Keys.KEY_DEVICE_UID, DEFAULT_DEVICE_UID),
                 deviceIdentification, getString(settings, Keys.KEY_DEVICE_TYPE, Defaults.DEVICE_TYPE));
         device.setSequenceNumber(0);

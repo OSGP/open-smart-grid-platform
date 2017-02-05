@@ -34,7 +34,7 @@ public class AddDevice extends SmartMeteringStepsBase {
     @When("^receiving an smartmetering add device request$")
     public void receiving_an_smartmetering_add_device_request(final Map<String, String> setings) throws Throwable {
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
-                getString(setings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(setings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
         PROPERTIES_MAP
                 .put(Keys.KEY_DEVICE_TYPE, getString(setings, Keys.KEY_DEVICE_TYPE, Defaults.DEVICE_TYPE));
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_COMMUNICATIONMETHOD, setings.get(Keys.KEY_DEVICE_COMMUNICATIONMETHOD));
@@ -57,13 +57,13 @@ public class AddDevice extends SmartMeteringStepsBase {
                         this.response,
                         PATH_DEVICE_IDENTIFICATION,
                         getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                                Defaults.ORGANIZATION_IDENTIFICATION));
+                                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
         this.runXpathResult.assertNotNull(this.response, PATH_CORRELATION_UID);
 
         // Save the returned CorrelationUid in the Scenario related context for
         // further use.
         saveCorrelationUidInScenarioContext(this.runXpathResult.getValue(this.response, PATH_CORRELATION_UID),
-                getString(settings, "OrganizationIdentification", Defaults.ORGANIZATION_IDENTIFICATION));
+                getString(settings, "OrganizationIdentification", Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
     }
 
     @Then("^receiving an get add device response request$")

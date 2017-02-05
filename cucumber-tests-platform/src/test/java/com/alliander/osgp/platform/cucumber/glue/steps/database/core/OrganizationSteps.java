@@ -48,12 +48,12 @@ public class OrganizationSteps extends StepsBase {
     public void anOrganization(final Map<String, String> settings) throws Throwable {
 
         final String organizationIdentification = getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                Defaults.ORGANIZATION_IDENTIFICATION);
+                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
         final Organisation entity = new Organisation(
                 (organizationIdentification.isEmpty()) ? Defaults.NEW_ORGANIZATION_IDENTIFICATION
                         : organizationIdentification,
                 getString(settings, Keys.KEY_NAME, Defaults.ORGANIZATION_NAME), 
-                getString(settings, Keys.KEY_PREFIX, Defaults.PREFIX),
+                getString(settings, Keys.KEY_PREFIX, Defaults.DEFAULT_PREFIX),
                 getEnum(settings, Keys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class,
                         Defaults.PLATFORM_FUNCTION_GROUP));
 

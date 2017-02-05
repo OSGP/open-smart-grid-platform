@@ -56,7 +56,7 @@ public class GetFirmwareVersionSteps extends StepsBase {
     public void receivingAGetFirmwareVersionRequest(final Map<String, String> requestParameters) throws Throwable {
 
     	GetFirmwareVersionRequest request = new GetFirmwareVersionRequest();
-    	request.setDeviceIdentification(getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+    	request.setDeviceIdentification(getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
     	
     	try {
     		ScenarioContext.Current().put(Keys.KEY_RESPONSE, client.getFirmwareVersion(request));
@@ -81,7 +81,7 @@ public class GetFirmwareVersionSteps extends StepsBase {
 
         // Save the returned CorrelationUid in the Scenario related context for further use.
         saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
-                getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION));
+                getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
         LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
     }

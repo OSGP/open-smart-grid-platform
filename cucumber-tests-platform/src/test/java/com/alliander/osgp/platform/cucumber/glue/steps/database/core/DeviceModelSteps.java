@@ -59,12 +59,12 @@ public class DeviceModelSteps extends StepsBase {
     public void theEntityDeviceModelExists(final Map<String, String> expectedEntity) throws Throwable {
 
         final DeviceModel entity = this.repo
-                .findByModelCode(getString(expectedEntity, "ModelCode", Defaults.DEVICE_MODEL_MODEL_CODE));
+                .findByModelCode(getString(expectedEntity, "ModelCode", Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
 
-        Assert.assertEquals(getString(expectedEntity, Keys.MANUFACTURER_ID, Defaults.MANUFACTURER_ID),
+        Assert.assertEquals(getString(expectedEntity, Keys.MANUFACTURER_ID, Defaults.DEFAULT_MANUFACTURER_ID),
                 entity.getManufacturerId().getManufacturerId());
         Assert.assertEquals(
-                getString(expectedEntity, Keys.KEY_DEVICE_MODEL_DESCRIPTION, Defaults.DEVICE_MODEL_DESCRIPTION),
+                getString(expectedEntity, Keys.KEY_DEVICE_MODEL_DESCRIPTION, Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION),
                 entity.getDescription());
         Assert.assertEquals(
                 getBoolean(expectedEntity, Keys.KEY_DEVICE_MODEL_METERED, Defaults.DEVICE_MODEL_METERED),
@@ -80,13 +80,13 @@ public class DeviceModelSteps extends StepsBase {
     public DeviceModel insertDeviceModel(Map<String, String> settings) {
         // Get the given manufacturer (or the default).
         final Manufacturer manufacturer = this.manufacturerRepo
-                .findByName(getString(settings, "ManufacturerName", Defaults.MANUFACTURER_NAME));
+                .findByName(getString(settings, "ManufacturerName", Defaults.DEFAULT_MANUFACTURER_NAME));
 
-        final String description = getString(settings, Keys.KEY_DESCRIPTION, Defaults.DEVICE_MODEL_DESCRIPTION);
+        final String description = getString(settings, Keys.KEY_DESCRIPTION, Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION);
 
         // Create the new device model.
         final DeviceModel entity = new DeviceModel(manufacturer,
-                getString(settings, Keys.KEY_DEVICE_MODEL_MODELCODE, Defaults.DEVICE_MODEL_MODEL_CODE),
+                getString(settings, Keys.KEY_DEVICE_MODEL_MODELCODE, Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE),
                 description, getBoolean(settings, Keys.KEY_DEVICE_MODEL_FILESTORAGE, Defaults.FILESTORAGE));
 
         entity.updateData(description,

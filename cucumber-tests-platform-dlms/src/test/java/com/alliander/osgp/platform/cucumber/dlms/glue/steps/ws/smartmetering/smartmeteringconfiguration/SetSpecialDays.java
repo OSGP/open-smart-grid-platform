@@ -32,11 +32,11 @@ public class SetSpecialDays extends SmartMeteringStepsBase {
     @When("^the set special days request is received$")
     public void theSetSpecialDaysRequestIsReceived(final Map<String, String> settings) throws Throwable {
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
         PROPERTIES_MAP
                 .put(Keys.KEY_ORGANIZATION_IDENTIFICATION,
                         getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                                Defaults.ORGANIZATION_IDENTIFICATION));
+                                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }
@@ -44,7 +44,7 @@ public class SetSpecialDays extends SmartMeteringStepsBase {
     @Then("^the special days should be set on the device$")
     public void theSpecialDaysShouldBeSetOnTheDevice(final Map<String, String> settings) throws Throwable {
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
         PROPERTIES_MAP
                 .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
 

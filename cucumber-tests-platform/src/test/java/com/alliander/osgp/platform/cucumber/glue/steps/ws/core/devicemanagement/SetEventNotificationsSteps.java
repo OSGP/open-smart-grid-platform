@@ -59,7 +59,7 @@ public class SetEventNotificationsSteps extends StepsBase {
     public void receivingASetEventNotificationMessageRequest(final Map<String, String> requestParameters) throws Throwable
     {
     	SetEventNotificationsRequest request = new SetEventNotificationsRequest();
-    	request.setDeviceIdentification(getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+    	request.setDeviceIdentification(getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
     	for (String event : getString(requestParameters, Keys.KEY_EVENT).split(",")){
         	request.getEventNotifications().add(Enum.valueOf(EventNotificationType.class, event.trim()));
     	}
@@ -87,7 +87,7 @@ public class SetEventNotificationsSteps extends StepsBase {
 
         // Save the returned CorrelationUid in the Scenario related context for further use.
         saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
-                getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION));
+                getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
         LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
     }

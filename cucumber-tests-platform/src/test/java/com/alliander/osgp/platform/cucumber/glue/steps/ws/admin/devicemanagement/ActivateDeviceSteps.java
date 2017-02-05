@@ -42,7 +42,7 @@ public class ActivateDeviceSteps extends StepsBase {
 
         final ActivateDeviceRequest request = new ActivateDeviceRequest();
         request.setDeviceIdentification(
-                getString(requestSettings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(requestSettings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         try {
             ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.activateDevice(request));

@@ -57,7 +57,7 @@ public class StartDeviceSteps extends StepsBase {
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final StartDeviceTestRequest request = new StartDeviceTestRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         try {
             ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.startDeviceTest(request));
@@ -84,7 +84,7 @@ public class StartDeviceSteps extends StepsBase {
         // further use.
         saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
                 getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                        Defaults.ORGANIZATION_IDENTIFICATION));
+                        Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
     }
 
     @Then("^the start device response contains soap fault$")

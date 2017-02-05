@@ -93,10 +93,10 @@ public class DatabaseSteps {
     @Transactional
     private void insertDefaultData() {
         if (this.organisationRepository
-                .findByOrganisationIdentification(Defaults.ORGANIZATION_IDENTIFICATION) == null) {
+                .findByOrganisationIdentification(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION) == null) {
             // Create test organization used within the tests.
-            final Organisation testOrg = new Organisation(Defaults.ORGANIZATION_IDENTIFICATION,
-                    Defaults.ORGANIZATION_DESCRIPTION, Defaults.PREFIX, PlatformFunctionGroup.ADMIN);
+            final Organisation testOrg = new Organisation(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION,
+                    Defaults.DEFAULT_ORGANIZATION_DESCRIPTION, Defaults.DEFAULT_PREFIX, PlatformFunctionGroup.ADMIN);
             testOrg.addDomain(PlatformDomain.COMMON);
             testOrg.addDomain(PlatformDomain.PUBLIC_LIGHTING);
             testOrg.addDomain(PlatformDomain.TARIFF_SWITCHING);
@@ -106,13 +106,13 @@ public class DatabaseSteps {
         }
 
         // Create default test manufacturer
-        final Manufacturer manufacturer = new Manufacturer(Defaults.MANUFACTURER_ID,
-                Defaults.MANUFACTURER_NAME, false);
+        final Manufacturer manufacturer = new Manufacturer(Defaults.DEFAULT_MANUFACTURER_ID,
+                Defaults.DEFAULT_MANUFACTURER_NAME, false);
         this.manufacturerRepository.save(manufacturer);
 
         // Create the default test model
-        DeviceModel deviceModel = new DeviceModel(manufacturer, Defaults.DEVICE_MODEL_MODEL_CODE,
-                Defaults.DEVICE_MODEL_DESCRIPTION, true);
+        DeviceModel deviceModel = new DeviceModel(manufacturer, Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE,
+                Defaults.DEFAULT_DEVICE_MODEL_DESCRIPTION, true);
         deviceModel = this.deviceModelRepository.save(deviceModel);
     }
 

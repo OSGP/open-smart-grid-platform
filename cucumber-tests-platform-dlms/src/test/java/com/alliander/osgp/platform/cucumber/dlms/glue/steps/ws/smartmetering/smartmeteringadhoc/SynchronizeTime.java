@@ -39,7 +39,7 @@ public class SynchronizeTime extends SmartMeteringStepsBase {
     @When("^receiving a get synchronize time request$")
     public void receivingAGetSynchronizeTimeRequest(final Map<String, String> settings) throws Throwable {
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         /*
          * Setup of deviation and DST information, that will make
@@ -71,7 +71,7 @@ public class SynchronizeTime extends SmartMeteringStepsBase {
     @Then("^the date and time is synchronized on the device$")
     public void theDateAndTimeIsSynchronizedOnTheDevice(final Map<String, String> settings) throws Throwable {
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
         PROPERTIES_MAP
                 .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
 

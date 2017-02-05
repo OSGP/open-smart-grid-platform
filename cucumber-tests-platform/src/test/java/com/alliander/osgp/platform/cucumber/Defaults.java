@@ -24,22 +24,22 @@ import com.alliander.osgp.oslp.Oslp.Status;
 public class Defaults {
 
     // Values
-    public static final String ORGANIZATION_DESCRIPTION = "Test Organization";
-    public static final String ORGANIZATION_IDENTIFICATION = "test-org";
-	public static final String ORGANIZATION_DOMAINS = "COMMON;PUBLIC_LIGHTING;TARIFF_SWITCHING";
-    public static final String USER_NAME = "Cucumber";
-    public static final String PREFIX = "MAA";
-    public static final String MANUFACTURER_ID = "Test";
-	public static final String MANUFACTURER_CODE = "Test";
-    public static final String MANUFACTURER_NAME = "Test Manufacturer";
-    public static final Boolean MANUFACTURER_USE_PREFIX = false;
-    public static final String DEVICE_MODEL_MODEL_CODE = "Test";
-	public static final String DEVICE_MODEL_NAME = "Test Model";
-    public static final String DEVICE_MODEL_DESCRIPTION = "Test Model";
-    public static final String DEVICE_IDENTIFICATION = "TD01";
-    public static final String SMART_METER_DEVICE_IDENTIFICATION = "TEST1024000000001";
-    public static final String SMART_METER_GAS_DEVICE_IDENTIFICATION = "TESTG102400000001";
-	public static final DateTime TECHNICAL_INSTALLATION_DATE = DateTime.now().minusDays(1);
+    public static final String DEFAULT_ORGANIZATION_DESCRIPTION = "Test Organization";
+    public static final String DEFAULT_ORGANIZATION_IDENTIFICATION = "test-org";
+	public static final String DEFAULT_ORGANIZATION_DOMAINS = "COMMON;PUBLIC_LIGHTING;TARIFF_SWITCHING";
+    public static final String DEFAULT_USER_NAME = "Cucumber";
+    public static final String DEFAULT_PREFIX = "MAA";
+    public static final String DEFAULT_MANUFACTURER_ID = "Test";
+	public static final String DEFAULT_MANUFACTURER_CODE = "Test";
+    public static final String DEFAULT_MANUFACTURER_NAME = "Test Manufacturer";
+    public static final Boolean DEFAULT_MANUFACTURER_USE_PREFIX = false;
+    public static final String DEFAULT_DEVICE_MODEL_MODEL_CODE = "Test";
+	public static final String DEFAULT_DEVICE_MODEL_NAME = "Test Model";
+    public static final String DEFAULT_DEVICE_MODEL_DESCRIPTION = "Test Model";
+    public static final String DEFAULT_DEVICE_IDENTIFICATION = "TD01";
+    public static final String DEFAULT_SMART_METER_DEVICE_IDENTIFICATION = "TEST1024000000001";
+    public static final String DEFAULT_SMART_METER_GAS_DEVICE_IDENTIFICATION = "TESTG102400000001";
+	public static final DateTime DEFAULT_TECHNICAL_INSTALLATION_DATE = DateTime.now().minusDays(1);
 
     public static final Boolean DEVICE_MODEL_METERED = true;
 

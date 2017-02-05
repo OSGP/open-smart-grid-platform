@@ -97,7 +97,7 @@ public class SetLightScheduleSteps {
 
         final SetScheduleRequest request = new SetScheduleRequest();
         request.setDeviceIdentification(
-                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
         if (requestParameters.containsKey(Keys.SCHEDULE_SCHEDULEDTIME)) {
             request.setScheduledTime(DatatypeFactory.newInstance()
                     .newXMLGregorianCalendar(((requestParameters.get(Keys.SCHEDULE_SCHEDULEDTIME).isEmpty())
@@ -200,7 +200,7 @@ public class SetLightScheduleSteps {
         // further use.
         saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
                 getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                        Defaults.ORGANIZATION_IDENTIFICATION));
+                        Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
         LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
     }

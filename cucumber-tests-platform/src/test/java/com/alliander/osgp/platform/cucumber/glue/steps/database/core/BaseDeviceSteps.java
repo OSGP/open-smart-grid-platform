@@ -84,7 +84,7 @@ public abstract class BaseDeviceSteps extends StepsBase {
         }
 
         final DeviceModel deviceModel = this.deviceModelRepository
-                .findByModelCode(getString(settings, Keys.KEY_DEVICE_MODEL, Defaults.DEVICE_MODEL_MODEL_CODE));
+                .findByModelCode(getString(settings, Keys.KEY_DEVICE_MODEL, Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
         device.setDeviceModel(deviceModel);
 
         device.updateProtocol(this.protocolInfoRepository.findByProtocolAndProtocolVersion(
@@ -101,10 +101,10 @@ public abstract class BaseDeviceSteps extends StepsBase {
 
         device.setVersion(getLong(settings, Keys.KEY_VERSION));
         device.setActive(getBoolean(settings, Keys.KEY_ACTIVE, Defaults.ACTIVE));
-        if (getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION)
+        if (getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION)
                 .toLowerCase() != "null") {
             device.addOrganisation(
-                    getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION));
+                    getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
         }
         device.updateMetaData(getString(settings, Keys.KEY_ALIAS, Defaults.ALIAS),
                 getString(settings, Keys.KEY_CITY, Defaults.CONTAINER_CITY),
@@ -118,10 +118,10 @@ public abstract class BaseDeviceSteps extends StepsBase {
         device.setActivated(getBoolean(settings, Keys.KEY_IS_ACTIVATED, Defaults.IS_ACTIVATED));
         device = this.deviceRepository.save(device);
 
-        if (getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION)
+        if (getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION)
                 .toLowerCase() != "null") {
             final Organisation organization = this.organizationRepository.findByOrganisationIdentification(
-                    getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION));
+                    getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
             final DeviceFunctionGroup functionGroup = getEnum(settings, Keys.KEY_DEVICEFUNCTIONGROUP,
                     DeviceFunctionGroup.class, DeviceFunctionGroup.OWNER);
             final DeviceAuthorization authorization = device.addAuthorization(organization, functionGroup);

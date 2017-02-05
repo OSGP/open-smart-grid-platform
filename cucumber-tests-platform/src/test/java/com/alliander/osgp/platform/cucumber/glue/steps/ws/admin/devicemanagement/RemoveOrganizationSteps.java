@@ -47,7 +47,7 @@ public class RemoveOrganizationSteps extends StepsBase {
 
         final RemoveOrganisationRequest request = new RemoveOrganisationRequest();
         request.setOrganisationIdentification(getString(requestSettings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                Defaults.ORGANIZATION_IDENTIFICATION));
+                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
         try {
             ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.removeOrganization(request));

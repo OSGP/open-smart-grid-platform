@@ -65,7 +65,7 @@ public class DlmsDeviceSteps extends StepsBase {
 
     private DlmsDevice insertCommonDlms(final Map<String, String> settings) {
         final String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION,
-                Defaults.DEVICE_IDENTIFICATION);
+                Defaults.DEFAULT_DEVICE_IDENTIFICATION);
         final DlmsDevice dlmsDevice = new DlmsDevice(deviceIdentification);
         dlmsDevice.setInDebugMode(getBoolean(settings, Keys.KEY_INDEBUGMODE, Defaults.INDEBUGMODE));
         dlmsDevice.setCommunicationMethod(

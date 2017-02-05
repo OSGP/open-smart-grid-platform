@@ -44,7 +44,7 @@ public class GetStatusSteps extends StepsBase {
     public void receivingADeviceInstallationGetStatusRequest(final Map<String, String> settings) throws Throwable {
         final GetStatusRequest request = new GetStatusRequest();
         
-        request.setDeviceIdentification(getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+        request.setDeviceIdentification(getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         try {
             ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.getStatus(request));
@@ -72,7 +72,7 @@ public class GetStatusSteps extends StepsBase {
        // further use.
        saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
                getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                       Defaults.ORGANIZATION_IDENTIFICATION));
+                       Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
    }
 
    /**

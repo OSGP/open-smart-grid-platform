@@ -43,9 +43,9 @@ public class ManufacturerSteps extends StepsBase {
     public void aManufacturer(final Map<String, String> settings) throws Throwable {
 
         Manufacturer entity = new Manufacturer(
-                getString(settings, Keys.MANUFACTURER_ID, Defaults.MANUFACTURER_ID),
-                getString(settings, Keys.KEY_NAME, Defaults.MANUFACTURER_NAME), 
-                getBoolean(settings, Keys.USE_PREFIX, Defaults.MANUFACTURER_USE_PREFIX));
+                getString(settings, Keys.MANUFACTURER_ID, Defaults.DEFAULT_MANUFACTURER_ID),
+                getString(settings, Keys.KEY_NAME, Defaults.DEFAULT_MANUFACTURER_NAME), 
+                getBoolean(settings, Keys.USE_PREFIX, Defaults.DEFAULT_MANUFACTURER_USE_PREFIX));
 
         repo.save(entity);
     }
@@ -59,11 +59,11 @@ public class ManufacturerSteps extends StepsBase {
     @Then("^the entity manufacturer exists$")
     public void theEntityManufacturerExists(final Map<String, String> expectedEntity) throws Throwable {
         // TODO: Wait until the stuff is created.
-        Manufacturer entity = repo.findByName(getString(expectedEntity, "Name", Defaults.MANUFACTURER_NAME));
+        Manufacturer entity = repo.findByName(getString(expectedEntity, "Name", Defaults.DEFAULT_MANUFACTURER_NAME));
 
-        Assert.assertEquals(getString(expectedEntity, "ManufacturerId", Defaults.MANUFACTURER_ID),
+        Assert.assertEquals(getString(expectedEntity, "ManufacturerId", Defaults.DEFAULT_MANUFACTURER_ID),
                 entity.getManufacturerId());
-        Assert.assertEquals(getBoolean(expectedEntity, "UsesPrefix", Defaults.MANUFACTURER_USE_PREFIX),
+        Assert.assertEquals(getBoolean(expectedEntity, "UsesPrefix", Defaults.DEFAULT_MANUFACTURER_USE_PREFIX),
                 entity.isUsePrefix());
     }
 }

@@ -49,7 +49,7 @@ public class RevokeKeySteps extends StepsBase {
         // TODO: Change to Revoke Key
         final RevokeKeyRequest request = new RevokeKeyRequest();
         request.setDeviceIdentification(
-                getString(requestSettings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(requestSettings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         try {
             ScenarioContext.Current().put(Keys.KEY_RESPONSE, this.client.getRevokeKeyResponse(request));

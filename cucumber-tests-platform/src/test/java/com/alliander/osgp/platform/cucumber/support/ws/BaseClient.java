@@ -17,10 +17,10 @@ import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 public abstract class BaseClient {
 
     protected String getOrganizationIdentification() {
-    	return (String) ScenarioContext.Current().get(Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION);
+    	return (String) ScenarioContext.Current().get(Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
     }
     
     protected String getUserName() {
-        return (String) ScenarioContext.Current().get(Keys.KEY_USER_NAME, Defaults.USER_NAME);
+        return (String) ScenarioContext.Current().get(Keys.KEY_USER_NAME, Defaults.DEFAULT_USER_NAME);
     }
 }

@@ -43,11 +43,11 @@ public class PeriodicMeterReadsGas extends SmartMeteringStepsBase {
             throws Throwable {
 
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
         PROPERTIES_MAP
                 .put(Keys.KEY_ORGANIZATION_IDENTIFICATION,
                         getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                                Defaults.ORGANIZATION_IDENTIFICATION));
+                                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
         PROPERTIES_MAP.put(PERIOD_TYPE_LABEL, getString(settings, Keys.KEY_PERIOD_TYPE, Defaults.PERIOD_TYPE));
         PROPERTIES_MAP.put(BEGIN_DATE_LABEL, getString(settings, Keys.KEY_BEGIN_DATE, Defaults.BEGIN_DATE));
         PROPERTIES_MAP.put(END_DATE_LABEL, getString(settings, Keys.KEY_END_DATE, Defaults.END_DATE));
@@ -59,7 +59,7 @@ public class PeriodicMeterReadsGas extends SmartMeteringStepsBase {
     public void theMeterReadsResultShouldBeReturned(final String periodType, final Map<String, String> settings)
             throws Throwable {
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
         PROPERTIES_MAP
                 .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
 

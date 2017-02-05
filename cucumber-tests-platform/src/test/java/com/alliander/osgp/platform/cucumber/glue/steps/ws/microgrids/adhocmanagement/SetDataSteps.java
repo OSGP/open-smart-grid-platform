@@ -39,9 +39,9 @@ public class SetDataSteps extends StepsBase {
     @When("^a set data request is received$")
     public void aSetDataRequestIsReceived(final Map<String, String> requestParameters) throws Throwable {
         final String organizationIdentification = (String) ScenarioContext.Current()
-                .get(Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION);
+                .get(Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
         ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, organizationIdentification);
-        final String userName = (String) ScenarioContext.Current().get(Keys.KEY_USER_NAME, Defaults.USER_NAME);
+        final String userName = (String) ScenarioContext.Current().get(Keys.KEY_USER_NAME, Defaults.DEFAULT_USER_NAME);
         ScenarioContext.Current().put(Keys.KEY_USER_NAME, userName);
 
         final SetDataRequest setDataRequest = SetDataRequestBuilder.fromParameterMap(requestParameters);

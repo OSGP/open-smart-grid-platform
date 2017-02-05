@@ -39,7 +39,7 @@ public class ActivateOrganizationSteps extends StepsBase {
 
         ActivateOrganisationRequest request = new ActivateOrganisationRequest();
         request.setOrganisationIdentification(
-                getString(requestSettings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION));
+                getString(requestSettings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
         try {
             ScenarioContext.Current().put(Keys.KEY_RESPONSE, client.activateOrganization(request));

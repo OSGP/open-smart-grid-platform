@@ -66,7 +66,7 @@ public class SetLightSteps {
 
 		SetLightRequest request = new SetLightRequest();
 		request.setDeviceIdentification(
-				getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+				getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 		LightValue lightValue = new LightValue();
 		lightValue.setIndex(getInteger(requestParameters, Keys.KEY_INDEX, Defaults.INDEX));
 		if (requestParameters.containsKey(Keys.KEY_DIMVALUE)
@@ -89,7 +89,7 @@ public class SetLightSteps {
 			throws Throwable {
 		SetLightRequest request = new SetLightRequest();
 		request.setDeviceIdentification(
-				getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+				getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
 		for (int i = 0; i < nofValidLightValues; i++) {
 			LightValue lightValue = new LightValue();
@@ -119,7 +119,7 @@ public class SetLightSteps {
 			final Map<String, String> requestParameters) throws Throwable {
 		SetLightRequest request = new SetLightRequest();
 		request.setDeviceIdentification(
-				getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEVICE_IDENTIFICATION));
+				getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
 		for (int i = 0; i < nofLightValues; i++) {
 			LightValue lightValue = new LightValue();
@@ -158,7 +158,7 @@ public class SetLightSteps {
 		// further use.
 		saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
 				getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-						Defaults.ORGANIZATION_IDENTIFICATION));
+						Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
 		LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
 	}

@@ -15,9 +15,9 @@ import com.alliander.osgp.platform.cucumber.Defaults;
 @Component
 public class DeviceLogItemBuilder {
 
-    private String deviceIdentification = Defaults.DEVICE_IDENTIFICATION;
+    private String deviceIdentification = Defaults.DEFAULT_DEVICE_IDENTIFICATION;
 
-    private String organisationIdentification = Defaults.ORGANIZATION_IDENTIFICATION;
+    private String organisationIdentification = Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION;
 
     private boolean incoming = true;
 

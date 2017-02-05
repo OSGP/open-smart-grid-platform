@@ -44,7 +44,7 @@ public abstract class AbstractFindEventsReads extends SmartMeteringStepsBase {
 
     public void receivingAFindStandardEventsRequest(final Map<String, String> requestData) throws Throwable {
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
-                getString(requestData, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION));
+                getString(requestData, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST + this.getEventLogCategory(),
                 TEST_CASE_XML, TEST_SUITE_XML);
@@ -52,7 +52,7 @@ public abstract class AbstractFindEventsReads extends SmartMeteringStepsBase {
 
     public void eventsShouldBeReturned(final Map<String, String> settings) throws Throwable {
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
-                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.ORGANIZATION_IDENTIFICATION));
+                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
         PROPERTIES_MAP
                 .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
 
