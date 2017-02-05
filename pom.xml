@@ -93,8 +93,8 @@
     <module>Platform/osgp-logging</module>
 
     <!-- Automatic tests project -->
-    <module>automatictests-platform</module>
-    <module>automatictests-platform-dlms</module>
+    <module>cucumber-tests-platform</module>
+    <module>cucumber-tests-platform-dlms</module>
 
     <!-- Fitnesse Acceptance Test Project (Obsolete, but in here because not 
       all tests are moved to the cucumber projects -->

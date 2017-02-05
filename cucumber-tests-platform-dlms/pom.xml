@@ -1,4 +1,4 @@
-<!-- Copyright 2016 Smart Society Services B.V. Licensed under the Apache
+<!-- Copyright 2016 Smart Society Services B.V. Licensed under the Apache 
   License, Version 2.0 (the "License"); you may not use this file except in 
   compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -6,9 +6,9 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.alliander</groupId>
-  <artifactId>automatictests-platform</artifactId>
+  <artifactId>cucumber-tests-platform-dlms</artifactId>
   <packaging>jar</packaging>
-  <name>automatictests-platform</name>
+  <name>cucumber-tests-platform-dlms</name>
 
   <parent>
     <groupId>com.alliander.osgp</groupId>
@@ -29,6 +29,10 @@
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.smartbear.soapui</groupId>
+      <artifactId>soapui-maven-plugin</artifactId>
     </dependency>
     <dependency>
       <groupId>jgoodies</groupId>
@@ -91,11 +95,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.hibernate.javax.persistence</groupId>
-      <artifactId>hibernate-jpa-2.0-api</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
       <scope>provided</scope>
@@ -103,58 +102,12 @@
 
     <!-- OSGP -->
     <dependency>
-      <groupId>org.osgp</groupId>
-      <artifactId>osgp-protocol-adapter-dlms</artifactId>
-      <classifier>classes</classifier>
+      <groupId>com.alliander.osgp</groupId>
+      <artifactId>osgp-dto</artifactId>
     </dependency>
     <dependency>
       <groupId>com.alliander.osgp</groupId>
-      <artifactId>osgp-protocol-adapter-oslp</artifactId>
-      <classifier>classes</classifier>
-    </dependency>
-    <dependency>
-      <groupId>com.alliander.osgp</groupId>
-      <artifactId>osgp-protocol-adapter-iec61850</artifactId>
-      <classifier>classes</classifier>
-    </dependency>
-
-    <dependency>
-      <groupId>com.alliander.osgp</groupId>
-      <artifactId>osgp-domain-microgrids</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.alliander.osgp</groupId>
-      <artifactId>osgp-adapter-domain-microgrids</artifactId>
-      <classifier>classes</classifier>
-    </dependency>
-    <dependency>
-      <groupId>com.alliander.osgp</groupId>
-      <artifactId>osgp-adapter-ws-admin</artifactId>
-      <classifier>classes</classifier>
-    </dependency>
-    <dependency>
-      <groupId>com.alliander.osgp</groupId>
-      <artifactId>osgp-adapter-ws-core</artifactId>
-      <classifier>classes</classifier>
-    </dependency>
-    <dependency>
-      <groupId>com.alliander.osgp</groupId>
-      <artifactId>osgp-adapter-ws-shared-db</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.alliander.osgp</groupId>
-      <artifactId>osgp-adapter-ws-microgrids</artifactId>
-      <classifier>classes</classifier>
-    </dependency>
-    <dependency>
-      <groupId>com.alliander.osgp</groupId>
-      <artifactId>osgp-adapter-ws-publiclighting</artifactId>
-      <classifier>classes</classifier>
-    </dependency>
-    <dependency>
-      <groupId>com.alliander.osgp</groupId>
-      <artifactId>osgp-adapter-ws-tariffswitching</artifactId>
-      <classifier>classes</classifier>
+      <artifactId>shared</artifactId>
     </dependency>
     <dependency>
       <groupId>com.alliander.osgp</groupId>
@@ -162,25 +115,13 @@
       <classifier>classes</classifier>
     </dependency>
 
+    <!-- Automatic tests platform -->
     <dependency>
-      <groupId>com.alliander.osgp</groupId>
-      <artifactId>osgp-protocol-simulator-iec61850</artifactId>
+      <groupId>com.alliander</groupId>
+      <artifactId>cucumber-tests-platform</artifactId>
+      <type>test-jar</type>
     </dependency>
 
-    <dependency>
-      <groupId>com.alliander.osgp</groupId>
-      <artifactId>osgp-domain-logging</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>com.alliander.osgp</groupId>
-      <artifactId>oslp</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>com.sun.net.httpserver</groupId>
-      <artifactId>http</artifactId>
-    </dependency>
   </dependencies>
 
   <build>
@@ -192,6 +133,10 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>com.smartbear.soapui</groupId>
+        <artifactId>soapui-maven-plugin</artifactId>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
