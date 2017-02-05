@@ -108,12 +108,12 @@ public class AuthorizePlatformFunctions {
         final CreateOrganisationRequest request = new CreateOrganisationRequest();
 
         final Organisation organisation = new Organisation();
-        organisation.setName(Defaults.ORGANIZATION_NAME);
+        organisation.setName(Defaults.DEFAULT_ORGANIZATION_NAME);
         organisation.setOrganisationIdentification(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
         organisation.setFunctionGroup(
                 getEnum(requestParameters, Keys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class));
-        organisation.setPrefix(Defaults.ORGANIZATION_PREFIX);
-        organisation.setEnabled(Defaults.ORGANIZATION_ENABLED);
+        organisation.setPrefix(Defaults.DEFAULT_ORGANIZATION_PREFIX);
+        organisation.setEnabled(Defaults.DEFAULT_ORGANIZATION_ENABLED);
         request.setOrganisation(organisation);
 
         ScenarioContext.Current().put(Keys.RESPONSE, this.adminDeviceManagementClient.createOrganization(request));
@@ -158,7 +158,7 @@ public class AuthorizePlatformFunctions {
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
         request.setProtocolInfoId(Defaults.DEFAULT_PROTOCOL_INFO_ID);
-        request.setPublicKey(Defaults.PUBLIC_KEY);
+        request.setPublicKey(Defaults.DEFAULT_PUBLIC_KEY);
 
         ScenarioContext.Current().put(Keys.RESPONSE, this.adminDeviceManagementClient.getUpdateKeyResponse(request));
     }

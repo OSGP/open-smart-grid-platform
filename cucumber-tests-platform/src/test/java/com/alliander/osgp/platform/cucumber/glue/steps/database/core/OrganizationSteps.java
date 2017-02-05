@@ -52,13 +52,13 @@ public class OrganizationSteps extends StepsBase {
         final Organisation entity = new Organisation(
                 (organizationIdentification.isEmpty()) ? Defaults.DEFAULT_NEW_ORGANIZATION_IDENTIFICATION
                         : organizationIdentification,
-                getString(settings, Keys.KEY_NAME, Defaults.ORGANIZATION_NAME), 
+                getString(settings, Keys.KEY_NAME, Defaults.DEFAULT_ORGANIZATION_NAME), 
                 getString(settings, Keys.KEY_PREFIX, Defaults.DEFAULT_PREFIX),
                 getEnum(settings, Keys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class,
                         Defaults.PLATFORM_FUNCTION_GROUP));
 
         // Add all the mandatory stuff.
-        String domains = Defaults.DOMAINS;
+        String domains = Defaults.DEFAULT_DOMAINS;
         if (settings.containsKey(Keys.KEY_DOMAINS) && !settings.get(Keys.KEY_DOMAINS).isEmpty()) {
             domains = settings.get(Keys.KEY_DOMAINS);
         } 
@@ -66,7 +66,7 @@ public class OrganizationSteps extends StepsBase {
             entity.addDomain(Enum.valueOf(PlatformDomain.class, domain));
         }
     
-        entity.setIsEnabled(getBoolean(settings, Keys.KEY_ENABLED, Defaults.ORGANIZATION_ENABLED));
+        entity.setIsEnabled(getBoolean(settings, Keys.KEY_ENABLED, Defaults.DEFAULT_ORGANIZATION_ENABLED));
 
         // TODO: Add all the optional stuff
         this.repo.save(entity);
@@ -119,18 +119,18 @@ public class OrganizationSteps extends StepsBase {
 
         Assert.assertEquals(getString(expectedEntity, Keys.KEY_NAME, Defaults.DEFAULT_NEW_ORGANIZATION_NAME),
                 entity.getName());
-        final String prefix = getString(expectedEntity, Keys.KEY_PREFIX, Defaults.ORGANIZATION_PREFIX);
-        Assert.assertEquals((prefix.isEmpty()) ? Defaults.ORGANIZATION_PREFIX : prefix, entity.getPrefix());
+        final String prefix = getString(expectedEntity, Keys.KEY_PREFIX, Defaults.DEFAULT_ORGANIZATION_PREFIX);
+        Assert.assertEquals((prefix.isEmpty()) ? Defaults.DEFAULT_ORGANIZATION_PREFIX : prefix, entity.getPrefix());
 
         Assert.assertEquals(getEnum(expectedEntity, Keys.KEY_PLATFORM_FUNCTION_GROUP,
                 com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup.class,
                 Defaults.PLATFORM_FUNCTION_GROUP), entity.getFunctionGroup());
-        Assert.assertEquals(getBoolean(expectedEntity, Keys.KEY_ENABLED, Defaults.ORGANIZATION_ENABLED),
+        Assert.assertEquals(getBoolean(expectedEntity, Keys.KEY_ENABLED, Defaults.DEFAULT_ORGANIZATION_ENABLED),
                 entity.isEnabled());
 
-        String domains = getString(expectedEntity, Keys.KEY_DOMAINS, Defaults.DOMAINS);
+        String domains = getString(expectedEntity, Keys.KEY_DOMAINS, Defaults.DEFAULT_DOMAINS);
         if (domains.isEmpty()) {
-            domains = Defaults.DOMAINS;
+            domains = Defaults.DEFAULT_DOMAINS;
         }
         final List<String> expectedDomains = Arrays.asList(domains.split(";"));
         Assert.assertEquals(expectedDomains.size(), entity.getDomains().size());

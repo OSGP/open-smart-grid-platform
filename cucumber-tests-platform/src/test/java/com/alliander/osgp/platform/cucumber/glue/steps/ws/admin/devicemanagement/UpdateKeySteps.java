@@ -51,7 +51,7 @@ public class UpdateKeySteps extends StepsBase {
         final UpdateKeyRequest request = new UpdateKeyRequest();
         request.setDeviceIdentification(
                 getString(requestSettings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-        request.setPublicKey(getString(requestSettings, Keys.KEY_PUBLIC_KEY, Defaults.PUBLIC_KEY));
+        request.setPublicKey(getString(requestSettings, Keys.KEY_PUBLIC_KEY, Defaults.DEFAULT_PUBLIC_KEY));
         request.setProtocolInfoId(
                 getLong(requestSettings, Keys.KEY_PROTOCOL_INFO_ID, Defaults.DEFAULT_PROTOCOL_INFO_ID));
 

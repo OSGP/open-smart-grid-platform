@@ -132,9 +132,9 @@ public class CreateDeviceSteps extends StepsBase {
         device.setDeviceUid(getString(settings, Keys.KEY_DEVICE_UID, OslpDeviceSteps.DEFAULT_DEVICE_UID));
         device.setGpsLatitude(getFloat(settings, Keys.KEY_LATITUDE, Defaults.DEFAULT_LATITUDE));
         device.setGpsLongitude(getFloat(settings, Keys.KEY_LONGITUDE, Defaults.DEFAULT_LONGITUDE));
-        device.setHasSchedule(getBoolean(settings, Keys.KEY_HAS_SCHEDULE, Defaults.HASSCHEDULE));
+        device.setHasSchedule(getBoolean(settings, Keys.KEY_HAS_SCHEDULE, Defaults.DEFAULT_HASSCHEDULE));
         device.setOwner(getString(settings, Keys.KEY_OWNER, Defaults.DEFAULT_OWNER));
-        device.setPublicKeyPresent(getBoolean(settings, Keys.KEY_PUBLICKEYPRESENT, Defaults.PUBLICKEYPRESENT));
+        device.setPublicKeyPresent(getBoolean(settings, Keys.KEY_PUBLICKEYPRESENT, Defaults.DEFAULT_PUBLICKEYPRESENT));
         device.setActivated(getBoolean(settings, Keys.KEY_ACTIVATED, Defaults.DEFAULT_ACTIVATED));
 
         return device;

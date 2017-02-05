@@ -68,8 +68,8 @@ public class SsldDeviceSteps extends BaseDeviceSteps {
         final String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION);
         Ssld ssld = new Ssld(deviceIdentification);
 
-        ssld.setPublicKeyPresent(getBoolean(settings, Keys.KEY_PUBLICKEYPRESENT, Defaults.PUBLICKEYPRESENT));
-        ssld.setHasSchedule(getBoolean(settings, Keys.KEY_HAS_SCHEDULE, Defaults.HASSCHEDULE));
+        ssld.setPublicKeyPresent(getBoolean(settings, Keys.KEY_PUBLICKEYPRESENT, Defaults.DEFAULT_PUBLICKEYPRESENT));
+        ssld.setHasSchedule(getBoolean(settings, Keys.KEY_HAS_SCHEDULE, Defaults.DEFAULT_HASSCHEDULE));
 
         if (settings.containsKey(Keys.KEY_INTERNALID) || settings.containsKey(Keys.KEY_EXTERNALID)
                 || settings.containsKey(Keys.KEY_RELAY_TYPE)) {

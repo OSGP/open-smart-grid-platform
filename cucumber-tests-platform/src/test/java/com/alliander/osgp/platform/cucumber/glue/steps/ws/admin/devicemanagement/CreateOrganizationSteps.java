@@ -51,16 +51,16 @@ public class CreateOrganizationSteps extends StepsBase {
         final Organisation organization = new Organisation();
 
         // Required fields
-        organization.setName(getString(requestSettings, Keys.KEY_NAME, Defaults.ORGANIZATION_NAME));
+        organization.setName(getString(requestSettings, Keys.KEY_NAME, Defaults.DEFAULT_ORGANIZATION_NAME));
         organization.setOrganisationIdentification(getString(requestSettings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
                 Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
-        organization.setPrefix(getString(requestSettings, Keys.KEY_PREFIX, Defaults.ORGANIZATION_PREFIX));
+        organization.setPrefix(getString(requestSettings, Keys.KEY_PREFIX, Defaults.DEFAULT_ORGANIZATION_PREFIX));
 
         final PlatformFunctionGroup platformFunctionGroup = getEnum(requestSettings, Keys.KEY_PLATFORM_FUNCTION_GROUP,
                 PlatformFunctionGroup.class, Defaults.DEFAULT_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP);
         organization.setFunctionGroup(platformFunctionGroup);
 
-        for (final String domain : getString(requestSettings, Keys.KEY_DOMAINS, Defaults.DOMAINS).split(";")) {
+        for (final String domain : getString(requestSettings, Keys.KEY_DOMAINS, Defaults.DEFAULT_DOMAINS).split(";")) {
             organization.getDomains().add(Enum.valueOf(PlatformDomain.class, domain));
         }
 

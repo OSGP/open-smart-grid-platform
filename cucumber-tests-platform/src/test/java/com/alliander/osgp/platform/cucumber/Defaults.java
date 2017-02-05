@@ -71,28 +71,28 @@ public class Defaults {
     // Expected values
     public static final String EXPECTED_RESULT_OK = "OK";
 
-    public static final Boolean HASSCHEDULE = false;
+    public static final Boolean DEFAULT_HASSCHEDULE = false;
 
-    public static final Boolean PUBLICKEYPRESENT = true;
-    public static final String PUBLIC_KEY = "123456abcdef";
+    public static final Boolean DEFAULT_PUBLICKEYPRESENT = true;
+    public static final String DEFAULT_PUBLIC_KEY = "123456abcdef";
 
-    public static final String PERIOD_TYPE = "INTERVAL";
-    public static final String BEGIN_DATE = "";
-    public static final String END_DATE = "";
-    public static final Boolean INDEBUGMODE = false;
+    public static final String DEFAULT_PERIOD_TYPE = "INTERVAL";
+    public static final String DEFAULT_BEGIN_DATE = "";
+    public static final String DEFAULT_END_DATE = "";
+    public static final Boolean DEFAULT_INDEBUGMODE = false;
     public static final Boolean EVENTS_NODELIST_EXPECTED = false;
 
     // Types
     public static final String SMART_METER_E = "SMART_METER_E";
     public static final String SMART_METER_G = "SMART_METER_G";
-    public static final int PAGE_SIZE = 25;
-    public static final Boolean USE_PAGES = true;
-    public static final Boolean ORGANIZATION_ENABLED = true;
-    public static final String ORGANIZATION_NAME = "Test organization";
-    public static final String ORGANIZATION_PREFIX = "cgi";
+    public static final int DEFAULT_PAGE_SIZE = 25;
+    public static final Boolean DEFAULT_USE_PAGES = true;
+    public static final Boolean DEFAULT_ORGANIZATION_ENABLED = true;
+    public static final String DEFAULT_ORGANIZATION_NAME = "Test organization";
+    public static final String DEFAULT_ORGANIZATION_PREFIX = "cgi";
 
     public static final com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup PLATFORM_FUNCTION_GROUP = com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup.ADMIN;
-    public static final String DOMAINS = "COMMON;PUBLIC_LIGHTING;TARIFF_SWITCHING";
+    public static final String DEFAULT_DOMAINS = "COMMON;PUBLIC_LIGHTING;TARIFF_SWITCHING";
     public static final String DEFAULT_NEW_ORGANIZATION_NAME = "New Organization";
     public static final String DEFAULT_NEW_ORGANIZATION_IDENTIFICATION = "NewOrganization";
     public static final com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup DEFAULT_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP = com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup.ADMIN;

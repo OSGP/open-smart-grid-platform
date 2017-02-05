@@ -67,7 +67,7 @@ public class DlmsDeviceSteps extends StepsBase {
         final String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION,
                 Defaults.DEFAULT_DEVICE_IDENTIFICATION);
         final DlmsDevice dlmsDevice = new DlmsDevice(deviceIdentification);
-        dlmsDevice.setInDebugMode(getBoolean(settings, Keys.KEY_INDEBUGMODE, Defaults.INDEBUGMODE));
+        dlmsDevice.setInDebugMode(getBoolean(settings, Keys.KEY_INDEBUGMODE, Defaults.DEFAULT_INDEBUGMODE));
         dlmsDevice.setCommunicationMethod(
                 getString(settings, Keys.KEY_COMM_METHOD, Defaults.DLMS_DEFAULT_COMMUNICATION_METHOD));
         dlmsDevice.setIpAddressIsStatic(

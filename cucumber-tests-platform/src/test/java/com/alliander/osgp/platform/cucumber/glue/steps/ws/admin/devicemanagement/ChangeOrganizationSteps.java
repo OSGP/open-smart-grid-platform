@@ -63,7 +63,7 @@ public class ChangeOrganizationSteps extends StepsBase {
                         Defaults.DEFAULT_NEW_ORGANIZATION_PLATFORMFUNCTIONGROUP));
 
         request.getNewOrganisationPlatformDomains().clear();
-        for (final String platformDomain : getString(requestSettings, Keys.KEY_DOMAINS, Defaults.DOMAINS)
+        for (final String platformDomain : getString(requestSettings, Keys.KEY_DOMAINS, Defaults.DEFAULT_DOMAINS)
                 .split(";")) {
             request.getNewOrganisationPlatformDomains().add(Enum.valueOf(PlatformDomain.class, platformDomain));
         }
