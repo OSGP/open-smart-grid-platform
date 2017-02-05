@@ -110,13 +110,13 @@ public class CreateDeviceSteps extends StepsBase {
     private Device createDevice(final Map<String, String> settings) {
 
         final Device device = new Device();
-        device.setAlias(getString(settings, Keys.KEY_ALIAS, Defaults.ALIAS));
-        device.setContainerCity(getString(settings, Keys.KEY_CITY, Defaults.CONTAINER_CITY));
+        device.setAlias(getString(settings, Keys.KEY_ALIAS, Defaults.DEFAULT_ALIAS));
+        device.setContainerCity(getString(settings, Keys.KEY_CITY, Defaults.DEFAULT_CONTAINER_CITY));
         device.setContainerMunicipality(
-                getString(settings, Keys.KEY_MUNICIPALITY, Defaults.CONTAINER_MUNICIPALITY));
-        device.setContainerNumber(getString(settings, Keys.KEY_NUMBER, Defaults.CONTAINER_NUMBER));
-        device.setContainerPostalCode(getString(settings, Keys.KEY_POSTCODE, Defaults.CONTAINER_POSTALCODE));
-        device.setContainerStreet(getString(settings, Keys.KEY_STREET, Defaults.CONTAINER_STREET));
+                getString(settings, Keys.KEY_MUNICIPALITY, Defaults.DEFAULT_CONTAINER_MUNICIPALITY));
+        device.setContainerNumber(getString(settings, Keys.KEY_NUMBER, Defaults.DEFAULT_CONTAINER_NUMBER));
+        device.setContainerPostalCode(getString(settings, Keys.KEY_POSTCODE, Defaults.DEFAULT_CONTAINER_POSTALCODE));
+        device.setContainerStreet(getString(settings, Keys.KEY_STREET, Defaults.DEFAULT_CONTAINER_STREET));
         device.setDeviceIdentification(
                 getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
         final DeviceModel deviceModel = new DeviceModel();
@@ -130,8 +130,8 @@ public class CreateDeviceSteps extends StepsBase {
                 getString(settings, Keys.KEY_DEVICE_MODEL_MODELCODE, Defaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
         device.setDeviceModel(deviceModel);
         device.setDeviceUid(getString(settings, Keys.KEY_DEVICE_UID, OslpDeviceSteps.DEFAULT_DEVICE_UID));
-        device.setGpsLatitude(getFloat(settings, Keys.KEY_LATITUDE, Defaults.LATITUDE));
-        device.setGpsLongitude(getFloat(settings, Keys.KEY_LONGITUDE, Defaults.LONGITUDE));
+        device.setGpsLatitude(getFloat(settings, Keys.KEY_LATITUDE, Defaults.DEFAULT_LATITUDE));
+        device.setGpsLongitude(getFloat(settings, Keys.KEY_LONGITUDE, Defaults.DEFAULT_LONGITUDE));
         device.setHasSchedule(getBoolean(settings, Keys.KEY_HAS_SCHEDULE, Defaults.HASSCHEDULE));
         device.setOwner(getString(settings, Keys.KEY_OWNER, Defaults.DEFAULT_OWNER));
         device.setPublicKeyPresent(getBoolean(settings, Keys.KEY_PUBLICKEYPRESENT, Defaults.PUBLICKEYPRESENT));

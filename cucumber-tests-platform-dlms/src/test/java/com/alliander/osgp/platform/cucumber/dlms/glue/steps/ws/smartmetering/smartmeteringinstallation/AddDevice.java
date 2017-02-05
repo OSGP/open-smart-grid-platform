@@ -36,7 +36,7 @@ public class AddDevice extends SmartMeteringStepsBase {
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
                 getString(setings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
         PROPERTIES_MAP
-                .put(Keys.KEY_DEVICE_TYPE, getString(setings, Keys.KEY_DEVICE_TYPE, Defaults.DEVICE_TYPE));
+                .put(Keys.KEY_DEVICE_TYPE, getString(setings, Keys.KEY_DEVICE_TYPE, Defaults.DEFAULT_DEVICE_TYPE));
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_COMMUNICATIONMETHOD, setings.get(Keys.KEY_DEVICE_COMMUNICATIONMETHOD));
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_COMMUNICATIONPROVIDER, setings.get(Keys.KEY_DEVICE_COMMUNICATIONPROVIDER));
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_ICCID, setings.get(Keys.KEY_DEVICE_ICCID));

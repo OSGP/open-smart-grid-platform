@@ -50,23 +50,23 @@ public class Defaults {
     public static final Boolean DLMS_DEFAULT_HSL5_ACTIVE = true;
     public static final String DLMS_DEFAULT_DEVICE_TYPE = "SMART_METER_E";
 
-    public static final String DEVICE_TYPE = "OSLP";
-    public static final String PROTOCOL = "OSLP";
-    public static final String PROTOCOL_VERSION = "1.0";
-    public static final Long PROTOCOL_INFO_ID = new java.util.Random().nextLong();
-    public static final Long DEVICE_ID = new java.util.Random().nextLong();
-    public static final Boolean IS_ACTIVATED = true;
-    public static final Boolean ACTIVE = true;
-    public static final String ALIAS = "";
-    public static final String CONTAINER_CITY = "";
-    public static final String CONTAINER_POSTALCODE = "";
-    public static final String CONTAINER_STREET = "";
-    public static final String CONTAINER_NUMBER = "";
-    public static final String CONTAINER_MUNICIPALITY = "";
-    public static final Float LATITUDE = new Float(0);
-    public static final Float LONGITUDE = new Float(0);
-    public static final Short CHANNEL = new Short((short) 1);
-    public static final Short PAGE = 0;
+    public static final String DEFAULT_DEVICE_TYPE = "OSLP";
+    public static final String DEFAULT_PROTOCOL = "OSLP";
+    public static final String DEFAULT_PROTOCOL_VERSION = "1.0";
+    public static final Long DEFAULT_PROTOCOL_INFO_ID = new java.util.Random().nextLong();
+    public static final Long DEFAULT_DEVICE_ID = new java.util.Random().nextLong();
+    public static final Boolean DEFAULT_IS_ACTIVATED = true;
+    public static final Boolean DEFAULT_ACTIVE = true;
+    public static final String DEFAULT_ALIAS = "";
+    public static final String DEFAULT_CONTAINER_CITY = "";
+    public static final String DEFAULT_CONTAINER_POSTALCODE = "";
+    public static final String DEFAULT_CONTAINER_STREET = "";
+    public static final String DEFAULT_CONTAINER_NUMBER = "";
+    public static final String DEFAULT_CONTAINER_MUNICIPALITY = "";
+    public static final Float DEFAULT_LATITUDE = new Float(0);
+    public static final Float DEFAULT_LONGITUDE = new Float(0);
+    public static final Short DEFAULT_CHANNEL = new Short((short) 1);
+    public static final Short DEFAULT_PAGE = 0;
 
     // Expected values
     public static final String EXPECTED_RESULT_OK = "OK";

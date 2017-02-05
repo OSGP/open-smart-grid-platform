@@ -88,8 +88,8 @@ public abstract class BaseDeviceSteps extends StepsBase {
         device.setDeviceModel(deviceModel);
 
         device.updateProtocol(this.protocolInfoRepository.findByProtocolAndProtocolVersion(
-                getString(settings, Keys.KEY_PROTOCOL, Defaults.PROTOCOL),
-                getString(settings, Keys.KEY_PROTOCOL_VERSION, Defaults.PROTOCOL_VERSION)));
+                getString(settings, Keys.KEY_PROTOCOL, Defaults.DEFAULT_PROTOCOL),
+                getString(settings, Keys.KEY_PROTOCOL_VERSION, Defaults.DEFAULT_PROTOCOL_VERSION)));
 
         InetAddress inetAddress;
         try {
@@ -97,25 +97,25 @@ public abstract class BaseDeviceSteps extends StepsBase {
         } catch (final UnknownHostException e) {
             inetAddress = InetAddress.getLoopbackAddress();
         }
-        device.updateRegistrationData(inetAddress, getString(settings, Keys.KEY_DEVICE_TYPE, Defaults.DEVICE_TYPE));
+        device.updateRegistrationData(inetAddress, getString(settings, Keys.KEY_DEVICE_TYPE, Defaults.DEFAULT_DEVICE_TYPE));
 
         device.setVersion(getLong(settings, Keys.KEY_VERSION));
-        device.setActive(getBoolean(settings, Keys.KEY_ACTIVE, Defaults.ACTIVE));
+        device.setActive(getBoolean(settings, Keys.KEY_ACTIVE, Defaults.DEFAULT_ACTIVE));
         if (getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION)
                 .toLowerCase() != "null") {
             device.addOrganisation(
                     getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
         }
-        device.updateMetaData(getString(settings, Keys.KEY_ALIAS, Defaults.ALIAS),
-                getString(settings, Keys.KEY_CITY, Defaults.CONTAINER_CITY),
-                getString(settings, Keys.KEY_POSTCODE, Defaults.CONTAINER_POSTALCODE),
-                getString(settings, Keys.KEY_STREET, Defaults.CONTAINER_STREET),
-                getString(settings, Keys.KEY_NUMBER, Defaults.CONTAINER_NUMBER),
-                getString(settings, Keys.KEY_MUNICIPALITY, Defaults.CONTAINER_MUNICIPALITY),
-                getFloat(settings, Keys.KEY_LATITUDE, Defaults.LATITUDE),
-                getFloat(settings, Keys.KEY_LONGITUDE, Defaults.LONGITUDE));
+        device.updateMetaData(getString(settings, Keys.KEY_ALIAS, Defaults.DEFAULT_ALIAS),
+                getString(settings, Keys.KEY_CITY, Defaults.DEFAULT_CONTAINER_CITY),
+                getString(settings, Keys.KEY_POSTCODE, Defaults.DEFAULT_CONTAINER_POSTALCODE),
+                getString(settings, Keys.KEY_STREET, Defaults.DEFAULT_CONTAINER_STREET),
+                getString(settings, Keys.KEY_NUMBER, Defaults.DEFAULT_CONTAINER_NUMBER),
+                getString(settings, Keys.KEY_MUNICIPALITY, Defaults.DEFAULT_CONTAINER_MUNICIPALITY),
+                getFloat(settings, Keys.KEY_LATITUDE, Defaults.DEFAULT_LATITUDE),
+                getFloat(settings, Keys.KEY_LONGITUDE, Defaults.DEFAULT_LONGITUDE));
 
-        device.setActivated(getBoolean(settings, Keys.KEY_IS_ACTIVATED, Defaults.IS_ACTIVATED));
+        device.setActivated(getBoolean(settings, Keys.KEY_IS_ACTIVATED, Defaults.DEFAULT_IS_ACTIVATED));
         device = this.deviceRepository.save(device);
 
         if (getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION)

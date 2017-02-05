@@ -157,7 +157,7 @@ public class AuthorizePlatformFunctions {
         final UpdateKeyRequest request = new UpdateKeyRequest();
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-        request.setProtocolInfoId(Defaults.PROTOCOL_INFO_ID);
+        request.setProtocolInfoId(Defaults.DEFAULT_PROTOCOL_INFO_ID);
         request.setPublicKey(Defaults.PUBLIC_KEY);
 
         ScenarioContext.Current().put(Keys.RESPONSE, this.adminDeviceManagementClient.getUpdateKeyResponse(request));
