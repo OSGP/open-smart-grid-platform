@@ -19,7 +19,7 @@ import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.repositories.ManufacturerRepository;
 import com.alliander.osgp.platform.cucumber.Defaults;
 import com.alliander.osgp.platform.cucumber.Keys;
-import com.alliander.osgp.platform.cucumber.StepsBase;
+import com.alliander.osgp.platform.cucumber.GlueBase;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -27,7 +27,7 @@ import cucumber.api.java.en.Then;
 /**
  * The manufacturer related steps.
  */
-public class ManufacturerSteps extends StepsBase {
+public class ManufacturerSteps extends GlueBase {
 
     @Autowired
     private ManufacturerRepository repo;

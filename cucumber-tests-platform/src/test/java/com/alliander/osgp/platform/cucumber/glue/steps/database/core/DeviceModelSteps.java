@@ -22,12 +22,12 @@ import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.ManufacturerRepository;
 import com.alliander.osgp.platform.cucumber.Defaults;
 import com.alliander.osgp.platform.cucumber.Keys;
-import com.alliander.osgp.platform.cucumber.StepsBase;
+import com.alliander.osgp.platform.cucumber.GlueBase;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
-public class DeviceModelSteps extends StepsBase {
+public class DeviceModelSteps extends GlueBase {
 
     @Autowired
     private DeviceModelRepository repo;

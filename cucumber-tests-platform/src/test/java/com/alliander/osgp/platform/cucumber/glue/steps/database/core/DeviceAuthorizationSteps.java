@@ -23,11 +23,11 @@ import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.platform.cucumber.Defaults;
 import com.alliander.osgp.platform.cucumber.Keys;
-import com.alliander.osgp.platform.cucumber.StepsBase;
+import com.alliander.osgp.platform.cucumber.GlueBase;
 
 import cucumber.api.java.en.Given;
 
-public class DeviceAuthorizationSteps extends StepsBase {
+public class DeviceAuthorizationSteps extends GlueBase {
     
     @Autowired
     private DeviceRepository deviceRepository;

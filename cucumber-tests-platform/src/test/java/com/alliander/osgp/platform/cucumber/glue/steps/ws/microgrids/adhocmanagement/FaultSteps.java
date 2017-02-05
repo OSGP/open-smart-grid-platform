@@ -17,7 +17,7 @@ import org.springframework.ws.soap.client.SoapFaultClientException;
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataResponse;
 import com.alliander.osgp.platform.cucumber.Keys;
-import com.alliander.osgp.platform.cucumber.StepsBase;
+import com.alliander.osgp.platform.cucumber.GlueBase;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.glue.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.platform.cucumber.helpers.SettingsHelper;
@@ -26,7 +26,7 @@ import com.alliander.osgp.platform.cucumber.support.ws.microgrids.adhocmanagemen
 
 import cucumber.api.java.en.Then;
 
-public class FaultSteps extends StepsBase {
+public class FaultSteps extends GlueBase {
 
     @Autowired
     private AdHocManagementClient client;

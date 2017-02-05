@@ -24,7 +24,7 @@ import com.alliander.osgp.domain.core.valueobjects.PlatformDomain;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
 import com.alliander.osgp.platform.cucumber.Defaults;
 import com.alliander.osgp.platform.cucumber.Keys;
-import com.alliander.osgp.platform.cucumber.StepsBase;
+import com.alliander.osgp.platform.cucumber.GlueBase;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -32,7 +32,7 @@ import cucumber.api.java.en.Then;
 /**
  * Class with all the organization steps
  */
-public class OrganizationSteps extends StepsBase {
+public class OrganizationSteps extends GlueBase {
 
     @Autowired
     private OrganisationRepository repo;

@@ -22,7 +22,7 @@ import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataRe
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetDataResponse;
 import com.alliander.osgp.platform.cucumber.Defaults;
 import com.alliander.osgp.platform.cucumber.Keys;
-import com.alliander.osgp.platform.cucumber.StepsBase;
+import com.alliander.osgp.platform.cucumber.GlueBase;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.helpers.SettingsHelper;
 import com.alliander.osgp.platform.cucumber.support.ws.microgrids.adhocmanagement.AdHocManagementClient;
@@ -31,7 +31,7 @@ import com.alliander.osgp.platform.cucumber.support.ws.microgrids.adhocmanagemen
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class SetDataSteps extends StepsBase {
+public class SetDataSteps extends GlueBase {
 
     @Autowired
     private AdHocManagementClient client;

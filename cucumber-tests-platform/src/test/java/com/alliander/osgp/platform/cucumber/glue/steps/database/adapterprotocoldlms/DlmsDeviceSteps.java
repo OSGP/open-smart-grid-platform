@@ -25,9 +25,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.platform.cucumber.Defaults;
 import com.alliander.osgp.platform.cucumber.Keys;
-import com.alliander.osgp.platform.cucumber.StepsBase;
+import com.alliander.osgp.platform.cucumber.GlueBase;
 
-public class DlmsDeviceSteps extends StepsBase {
+public class DlmsDeviceSteps extends GlueBase {
 
     private static final SecurityKeyType E_METER_SECURITY_KEYTYPES[] = new SecurityKeyType[]
             {SecurityKeyType.E_METER_ENCRYPTION, SecurityKeyType.E_METER_MASTER, SecurityKeyType.E_METER_AUTHENTICATION};

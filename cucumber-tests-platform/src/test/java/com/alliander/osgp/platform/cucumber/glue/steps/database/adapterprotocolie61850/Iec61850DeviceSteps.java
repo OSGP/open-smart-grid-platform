@@ -20,7 +20,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.domain.entities.Iec61850Devi
 import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
 import com.alliander.osgp.platform.cucumber.Defaults;
 import com.alliander.osgp.platform.cucumber.Keys;
-import com.alliander.osgp.platform.cucumber.StepsBase;
+import com.alliander.osgp.platform.cucumber.GlueBase;
 import com.alliander.osgp.platform.cucumber.config.Iec61850MockServerConfig;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.glue.steps.database.core.RtuDeviceSteps;
@@ -31,7 +31,7 @@ import cucumber.api.java.en.Given;
 /**
  * IEC61850 specific device steps.
  */
-public class Iec61850DeviceSteps extends StepsBase {
+public class Iec61850DeviceSteps extends GlueBase {
 
     private static final String DEFAULT_DEVICE_TYPE = "RTU";
     private static final String DEFAULT_PROTOCOL = "IEC61850";

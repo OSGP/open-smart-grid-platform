@@ -26,7 +26,7 @@ import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StopDeviceTe
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StopDeviceTestResponse;
 import com.alliander.osgp.platform.cucumber.Defaults;
 import com.alliander.osgp.platform.cucumber.Keys;
-import com.alliander.osgp.platform.cucumber.StepsBase;
+import com.alliander.osgp.platform.cucumber.GlueBase;
 import com.alliander.osgp.platform.cucumber.config.CoreDeviceConfiguration;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.glue.steps.ws.GenericResponseSteps;
@@ -35,7 +35,7 @@ import com.alliander.osgp.platform.cucumber.support.ws.core.CoreDeviceInstallati
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class StopDeviceSteps extends StepsBase {
+public class StopDeviceSteps extends GlueBase {
 
     @Autowired
     private CoreDeviceConfiguration configuration;

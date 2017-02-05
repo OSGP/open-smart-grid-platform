@@ -19,7 +19,7 @@ import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ActivateOrgan
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ActivateOrganisationResponse;
 import com.alliander.osgp.platform.cucumber.Defaults;
 import com.alliander.osgp.platform.cucumber.Keys;
-import com.alliander.osgp.platform.cucumber.StepsBase;
+import com.alliander.osgp.platform.cucumber.GlueBase;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.support.ws.admin.AdminDeviceManagementClient;
 
@@ -29,7 +29,7 @@ import cucumber.api.java.en.When;
 /**
  * Class with all the activate organization steps.
  */
-public class ActivateOrganizationSteps extends StepsBase {
+public class ActivateOrganizationSteps extends GlueBase {
 
     @Autowired
     private AdminDeviceManagementClient client;

@@ -32,7 +32,7 @@ import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.Measureme
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.Profile;
 import com.alliander.osgp.adapter.ws.schema.microgrids.common.AsyncRequest;
 import com.alliander.osgp.platform.cucumber.Keys;
-import com.alliander.osgp.platform.cucumber.StepsBase;
+import com.alliander.osgp.platform.cucumber.GlueBase;
 import com.alliander.osgp.platform.cucumber.config.CoreDeviceConfiguration;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.support.ws.microgrids.adhocmanagement.AdHocManagementClient;
@@ -42,7 +42,7 @@ import cucumber.api.PendingException;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class GetDataSteps extends StepsBase {
+public class GetDataSteps extends GlueBase {
 
     @Autowired
     private CoreDeviceConfiguration configuration;

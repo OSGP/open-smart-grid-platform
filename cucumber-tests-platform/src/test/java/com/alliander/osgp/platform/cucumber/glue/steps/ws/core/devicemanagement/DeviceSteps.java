@@ -15,9 +15,9 @@ import org.junit.Assert;
 
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device;
 import com.alliander.osgp.platform.cucumber.Keys;
-import com.alliander.osgp.platform.cucumber.StepsBase;
+import com.alliander.osgp.platform.cucumber.GlueBase;
 
-public class DeviceSteps extends StepsBase {
+public class DeviceSteps extends GlueBase {
 
 	public static void checkDevice(final Map<String, String> expectedDevice, final Device actualDevice) {
     	if (expectedDevice.containsKey(Keys.KEY_DEVICE_IDENTIFICATION)) {

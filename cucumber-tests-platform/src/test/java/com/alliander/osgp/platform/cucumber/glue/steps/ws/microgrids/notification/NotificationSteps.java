@@ -15,14 +15,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alliander.osgp.adapter.ws.schema.microgrids.notification.Notification;
 import com.alliander.osgp.platform.cucumber.Defaults;
 import com.alliander.osgp.platform.cucumber.Keys;
-import com.alliander.osgp.platform.cucumber.StepsBase;
+import com.alliander.osgp.platform.cucumber.GlueBase;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.support.ws.microgrids.NotificationService;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class NotificationSteps extends StepsBase {
+public class NotificationSteps extends GlueBase {
 
     private int WAIT_FOR_NEXT_NOTIFICATION_CHECK = 1000;
     private int MAX_WAIT_FOR_NOTIFICATION = 1200000;

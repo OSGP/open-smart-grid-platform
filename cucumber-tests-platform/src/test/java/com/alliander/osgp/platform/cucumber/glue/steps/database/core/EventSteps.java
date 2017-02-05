@@ -22,11 +22,11 @@ import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.EventRepository;
 import com.alliander.osgp.domain.core.valueobjects.EventType;
 import com.alliander.osgp.platform.cucumber.Keys;
-import com.alliander.osgp.platform.cucumber.StepsBase;
+import com.alliander.osgp.platform.cucumber.GlueBase;
 
 import cucumber.api.java.en.Then;
 
-public class EventSteps extends StepsBase {
+public class EventSteps extends GlueBase {
 
     @Autowired
     private EventRepository eventRepository;

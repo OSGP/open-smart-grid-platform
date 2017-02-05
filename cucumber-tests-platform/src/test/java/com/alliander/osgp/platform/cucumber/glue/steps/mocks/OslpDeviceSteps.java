@@ -52,7 +52,7 @@ import com.alliander.osgp.oslp.Oslp.TriggerType;
 import com.alliander.osgp.oslp.Oslp.Weekday;
 import com.alliander.osgp.platform.cucumber.Defaults;
 import com.alliander.osgp.platform.cucumber.Keys;
-import com.alliander.osgp.platform.cucumber.StepsBase;
+import com.alliander.osgp.platform.cucumber.GlueBase;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.mocks.oslpdevice.DeviceSimulatorException;
 import com.alliander.osgp.platform.cucumber.mocks.oslpdevice.MockOslpServer;
@@ -67,7 +67,7 @@ import cucumber.api.java.en.When;
  * Class which holds all the OSLP device mock steps in order to let the device
  * mock behave correctly for the automatic test.
  */
-public class OslpDeviceSteps extends StepsBase {
+public class OslpDeviceSteps extends GlueBase {
 
 	@Autowired
 	private MockOslpServer oslpMockServer;

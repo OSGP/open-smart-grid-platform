@@ -21,7 +21,7 @@ import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.DeactivateDev
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.DeactivateDeviceResponse;
 import com.alliander.osgp.platform.cucumber.Defaults;
 import com.alliander.osgp.platform.cucumber.Keys;
-import com.alliander.osgp.platform.cucumber.StepsBase;
+import com.alliander.osgp.platform.cucumber.GlueBase;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.glue.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.platform.cucumber.support.ws.admin.AdminDeviceManagementClient;
@@ -29,7 +29,7 @@ import com.alliander.osgp.platform.cucumber.support.ws.admin.AdminDeviceManageme
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class DeactivateDeviceSteps extends StepsBase {
+public class DeactivateDeviceSteps extends GlueBase {
 
     @Autowired
     private AdminDeviceManagementClient client;

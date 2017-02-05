@@ -21,7 +21,7 @@ import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.Device;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.FindDevicesWhichHaveNoOwnerRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.FindDevicesWhichHaveNoOwnerResponse;
 import com.alliander.osgp.platform.cucumber.Keys;
-import com.alliander.osgp.platform.cucumber.StepsBase;
+import com.alliander.osgp.platform.cucumber.GlueBase;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.support.ws.admin.AdminDeviceManagementClient;
 
@@ -31,7 +31,7 @@ import cucumber.api.java.en.When;
 /**
  * Class with all the remove organization requests steps
  */
-public class FindDevicesWithoutOwner extends StepsBase {
+public class FindDevicesWithoutOwner extends GlueBase {
 
     @Autowired
     private AdminDeviceManagementClient client;

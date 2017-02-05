@@ -17,7 +17,7 @@ import com.alliander.osgp.adapter.protocol.oslp.domain.entities.OslpDevice;
 import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRepository;
 import com.alliander.osgp.platform.cucumber.Defaults;
 import com.alliander.osgp.platform.cucumber.Keys;
-import com.alliander.osgp.platform.cucumber.StepsBase;
+import com.alliander.osgp.platform.cucumber.GlueBase;
 import com.alliander.osgp.platform.cucumber.glue.steps.database.core.SsldDeviceSteps;
 
 import cucumber.api.java.en.Given;
@@ -25,7 +25,7 @@ import cucumber.api.java.en.Given;
 /**
  * OSLP device specific steps.
  */
-public class OslpDeviceSteps extends StepsBase {
+public class OslpDeviceSteps extends GlueBase {
 
     public static final String DEFAULT_DEVICE_UID = "dGVzdDEyMzQ1Njc4";
     private static final String DEVICE_PUBLIC_KEY = "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEFhUImXFJdqmputquVAc2CPdnn9Ju"

@@ -19,11 +19,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
-import com.alliander.osgp.platform.cucumber.StepsBase;
+import com.alliander.osgp.platform.cucumber.GlueBase;
 
 import cucumber.api.java.en.Then;
 
-public class DeviceLogItemSteps extends StepsBase {
+public class DeviceLogItemSteps extends GlueBase {
 
     @Autowired
     private DeviceLogItemRepository deviceLogItemRepository;

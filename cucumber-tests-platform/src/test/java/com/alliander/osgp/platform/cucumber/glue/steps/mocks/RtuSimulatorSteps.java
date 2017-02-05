@@ -11,13 +11,13 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alliander.osgp.platform.cucumber.StepsBase;
+import com.alliander.osgp.platform.cucumber.GlueBase;
 import com.alliander.osgp.platform.cucumber.mocks.iec61850.Iec61850MockServer;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
-public class RtuSimulatorSteps extends StepsBase {
+public class RtuSimulatorSteps extends GlueBase {
 
 	private static final int NUMBER_OF_INPUTS_FOR_MOCK_VALUE = 3;
 	private static final int INDEX_LOGICAL_DEVICE_NAME = 0;

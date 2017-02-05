@@ -19,7 +19,7 @@ import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.RemoveOrganis
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.RemoveOrganisationResponse;
 import com.alliander.osgp.platform.cucumber.Defaults;
 import com.alliander.osgp.platform.cucumber.Keys;
-import com.alliander.osgp.platform.cucumber.StepsBase;
+import com.alliander.osgp.platform.cucumber.GlueBase;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.glue.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.platform.cucumber.support.ws.admin.AdminDeviceManagementClient;
@@ -30,7 +30,7 @@ import cucumber.api.java.en.When;
 /**
  * Class with all the remove organization requests steps
  */
-public class RemoveOrganizationSteps extends StepsBase {
+public class RemoveOrganizationSteps extends GlueBase {
 
     @Autowired
     private AdminDeviceManagementClient client;

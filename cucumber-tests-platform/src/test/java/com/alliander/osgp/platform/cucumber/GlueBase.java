@@ -13,6 +13,6 @@ import org.springframework.test.context.ContextConfiguration;
  * Stepsbase which tells which ApplicationContext to use.
  */
 @ContextConfiguration(classes=ApplicationContext.class)
-public abstract class StepsBase {
+public abstract class GlueBase {
 
 }

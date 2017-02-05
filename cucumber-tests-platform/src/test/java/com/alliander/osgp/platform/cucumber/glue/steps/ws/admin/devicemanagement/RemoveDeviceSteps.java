@@ -19,14 +19,14 @@ import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.RemoveDeviceR
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.RemoveDeviceResponse;
 import com.alliander.osgp.platform.cucumber.Defaults;
 import com.alliander.osgp.platform.cucumber.Keys;
-import com.alliander.osgp.platform.cucumber.StepsBase;
+import com.alliander.osgp.platform.cucumber.GlueBase;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.support.ws.admin.AdminDeviceManagementClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class RemoveDeviceSteps extends StepsBase {
+public class RemoveDeviceSteps extends GlueBase {
 
     @Autowired
     private AdminDeviceManagementClient client;

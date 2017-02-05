@@ -25,14 +25,14 @@ import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindDevicesReq
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindDevicesResponse;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FirmwareModuleFilterType;
 import com.alliander.osgp.platform.cucumber.Keys;
-import com.alliander.osgp.platform.cucumber.StepsBase;
+import com.alliander.osgp.platform.cucumber.GlueBase;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.support.ws.core.CoreDeviceManagementClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class FindDeviceSteps extends StepsBase {
+public class FindDeviceSteps extends GlueBase {
 
     @Autowired
     private CoreDeviceManagementClient client;

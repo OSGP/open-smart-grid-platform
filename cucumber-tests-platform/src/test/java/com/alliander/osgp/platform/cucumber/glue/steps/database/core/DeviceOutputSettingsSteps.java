@@ -23,11 +23,11 @@ import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.RelayType;
 import com.alliander.osgp.platform.cucumber.Defaults;
 import com.alliander.osgp.platform.cucumber.Keys;
-import com.alliander.osgp.platform.cucumber.StepsBase;
+import com.alliander.osgp.platform.cucumber.GlueBase;
 
 import cucumber.api.java.en.Given;
 
-public class DeviceOutputSettingsSteps extends StepsBase {
+public class DeviceOutputSettingsSteps extends GlueBase {
 
     @Autowired
     private SsldRepository ssldRepository;

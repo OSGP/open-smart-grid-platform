@@ -10,7 +10,7 @@ package com.alliander.osgp.platform.cucumber.dlms.glue.hooks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import com.alliander.osgp.platform.cucumber.StepsBase;
+import com.alliander.osgp.platform.cucumber.GlueBase;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.dlms.hooks.database.DlmsDatabaseSteps;
 import com.alliander.osgp.platform.cucumber.dlms.support.ServiceEndpoint;
@@ -21,7 +21,7 @@ import cucumber.api.java.Before;
 /**
  * Class with all the scenario hooks when each scenario runs.
  */
-public class ScenarioHooks extends StepsBase {
+public class ScenarioHooks extends GlueBase {
 
     @Autowired
     private DlmsDatabaseSteps dlmsDatabaseSteps;

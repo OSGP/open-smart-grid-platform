@@ -22,7 +22,7 @@ import javax.xml.namespace.QName;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.alliander.osgp.platform.cucumber.Keys;
-import com.alliander.osgp.platform.cucumber.StepsBase;
+import com.alliander.osgp.platform.cucumber.GlueBase;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.support.ws.FaultDetailElement;
 import com.alliander.osgp.platform.cucumber.support.ws.SoapFaultHelper;
@@ -30,7 +30,7 @@ import com.alliander.osgp.platform.cucumber.support.ws.SoapFaultHelper;
 /**
  * Class with generic web service response steps.
  */
-public abstract class GenericResponseSteps extends StepsBase {
+public abstract class GenericResponseSteps extends GlueBase {
 
     private static String faultCode;
     private static String faultString;
