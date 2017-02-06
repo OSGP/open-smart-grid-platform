@@ -9,6 +9,7 @@
 package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.Date;
@@ -81,10 +82,10 @@ public class InstallationMapperTest {
         assertEquals(smartMeteringDevice.getCommunicationProvider(), smartMeteringDeviceDto.getCommunicationProvider());
         assertEquals(smartMeteringDevice.getICCId(), smartMeteringDeviceDto.getICCId());
         assertEquals(smartMeteringDevice.getDSMRVersion(), smartMeteringDeviceDto.getDSMRVersion());
-        assertEquals(smartMeteringDevice.getMasterKey(), smartMeteringDeviceDto.getMasterKey());
-        assertEquals(smartMeteringDevice.getGlobalEncryptionUnicastKey(),
+        assertArrayEquals(smartMeteringDevice.getMasterKey(), smartMeteringDeviceDto.getMasterKey());
+        assertArrayEquals(smartMeteringDevice.getGlobalEncryptionUnicastKey(),
                 smartMeteringDeviceDto.getGlobalEncryptionUnicastKey());
-        assertEquals(smartMeteringDevice.getAuthenticationKey(), smartMeteringDeviceDto.getAuthenticationKey());
+        assertArrayEquals(smartMeteringDevice.getAuthenticationKey(), smartMeteringDeviceDto.getAuthenticationKey());
         assertEquals(smartMeteringDevice.getSupplier(), smartMeteringDeviceDto.getSupplier());
         assertEquals(smartMeteringDevice.isHLS3Active(), smartMeteringDeviceDto.isHLS3Active());
         assertEquals(smartMeteringDevice.isHLS4Active(), smartMeteringDeviceDto.isHLS4Active());

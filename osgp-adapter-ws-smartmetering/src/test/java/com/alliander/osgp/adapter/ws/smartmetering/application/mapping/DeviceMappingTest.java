@@ -9,6 +9,7 @@
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.Date;
@@ -149,9 +150,9 @@ public class DeviceMappingTest {
         assertEquals(IS_ACTIVE, device.isHLS3Active());
         assertEquals(IS_ACTIVE, device.isHLS4Active());
         assertEquals(IS_ACTIVE, device.isHLS5Active());
-        assertEquals(KEY, device.getMasterKey());
-        assertEquals(KEY, device.getGlobalEncryptionUnicastKey());
-        assertEquals(KEY, device.getAuthenticationKey());
+        assertArrayEquals(KEY, device.getMasterKey());
+        assertArrayEquals(KEY, device.getGlobalEncryptionUnicastKey());
+        assertArrayEquals(KEY, device.getAuthenticationKey());
 
         // convert a Date object to a joda DateTime object, because the
         // getYear/getMonth and getDay methods in Date are deprecated and give
@@ -179,9 +180,9 @@ public class DeviceMappingTest {
         assertEquals(IS_ACTIVE, smartMeteringDevice.isHLS3Active());
         assertEquals(IS_ACTIVE, smartMeteringDevice.isHLS4Active());
         assertEquals(IS_ACTIVE, smartMeteringDevice.isHLS5Active());
-        assertEquals(KEY, smartMeteringDevice.getMasterKey());
-        assertEquals(KEY, smartMeteringDevice.getGlobalEncryptionUnicastKey());
-        assertEquals(KEY, smartMeteringDevice.getAuthenticationKey());
+        assertArrayEquals(KEY, smartMeteringDevice.getMasterKey());
+        assertArrayEquals(KEY, smartMeteringDevice.getGlobalEncryptionUnicastKey());
+        assertArrayEquals(KEY, smartMeteringDevice.getAuthenticationKey());
 
         // convert a Date object to a joda DateTime object, because the
         // getYear/getMonth and getDay methods in Date are deprecated and give
