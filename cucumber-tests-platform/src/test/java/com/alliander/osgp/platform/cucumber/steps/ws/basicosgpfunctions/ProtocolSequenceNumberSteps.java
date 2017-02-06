@@ -10,9 +10,17 @@ package com.alliander.osgp.platform.cucumber.steps.ws.basicosgpfunctions;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getInteger;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.alliander.osgp.adapter.ws.schema.core.common.AsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StartDeviceTestAsyncRequest;
@@ -30,7 +38,7 @@ import cucumber.api.java.en.When;
 /**
  * Class with all the AuthorizeDeviceFunctions steps
  */
-public class ProtocolSequenceNumber {
+public class ProtocolSequenceNumberSteps {
 
     @Autowired
     private StartDeviceSteps startDeviceTestSteps;
@@ -56,11 +64,13 @@ public class ProtocolSequenceNumber {
             final Map<String, String> requestParameters) throws Throwable {
 
         final int currSequenceNumber = getInteger(requestParameters, "CurrentSequenceNumber"),
-                newSequenceNumber = getInteger(requestParameters, "NewSequenceNumber"),
-                sequenceWindow = getInteger(requestParameters, "SequenceWindow");
+                newSequenceNumber = getInteger(requestParameters, "NewSequenceNumber");
 
-        // TODO: Check how to check if the SequenceNumber has a to high value
-        ScenarioContext.Current().put("NumberToAddToSequenceNumber", newSequenceNumber - currSequenceNumber);
+        this.changeSequenceWindow(getString(requestParameters, "SequenceWindow", "6"));
+
+        // TODO: Find out how to check if the SequenceNumber has a to high value
+        ScenarioContext.Current().put("NumberToAddAsCurrentSequenceNumber", currSequenceNumber);
+        ScenarioContext.Current().put("NumberToAddAsNextSequenceNumber", newSequenceNumber);
 
         this.oslpDeviceSteps.theDeviceReturnsAStartDeviceResponseOverOSLP("OK");
         this.startDeviceTestSteps.receivingAStartDeviceTestRequest(requestParameters);
@@ -83,10 +93,42 @@ public class ProtocolSequenceNumber {
         // requestParameters);
     }
 
+    private void changeSequenceWindow(final String sequenceWindow) throws IOException {
+        final String fileName = "/home/dev/Sources/OSGP/Integration-Tests/cucumber-tests-platform/src/test/resources/cucumber-platform.properties",
+                tempFileName = fileName.replace("properties", "temp");
+
+        if (Integer.parseInt(sequenceWindow) < 0) {
+            throw new ArithmeticException("SequenceWindow can't be negative.");
+        } else if (Integer.parseInt(sequenceWindow) != 6) {
+
+            try (final PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(tempFileName)));
+                    final FileReader fileReader = new FileReader(fileName);
+                    final BufferedReader br = new BufferedReader(fileReader)) {
+                String line;
+
+                while ((line = br.readLine()) != null) {
+                    if (line.contains("oslp.sequence.number.window")) {
+                        line = line.replace(line.substring(line.indexOf("=") + 1), sequenceWindow);
+                    }
+                    // Always write the line, whether you changed it or not.
+                    writer.println(line);
+                }
+            }
+
+            final File realName = new File(fileName), tempRealName = new File(fileName + ".txt");
+
+            realName.renameTo(tempRealName);
+            // realName.delete();
+            new File(tempFileName).renameTo(realName);
+
+            ScenarioContext.Current().put("CurrentSequenceWindow", sequenceWindow);
+        }
+    }
+
     @Then("^the confirm response contains$")
     public void anExistingOsgpDeviceWithSequenceNumber(final Map<String, String> expectedResponse) {
         final Object response = ScenarioContext.Current().get(Keys.RESPONSE);
-        System.out.println(response);
+        System.out.println(!(response instanceof SoapFaultClientException));
 
         // Assert.assertEquals(getBoolean(expectedResponse, "IsUpdated"),
         // ScenarioContext.Current().get("IsUpdated"));
