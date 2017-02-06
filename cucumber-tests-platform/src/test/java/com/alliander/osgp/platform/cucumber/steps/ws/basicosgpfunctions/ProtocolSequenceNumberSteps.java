@@ -49,16 +49,6 @@ public class ProtocolSequenceNumberSteps {
     @Autowired
     private CoreDeviceInstallationClient client;
 
-    @Autowired
-    private MockOslpServer mockOslpServer;
-
-    // When receiving a confirm request
-    // | CurrentSequenceNumber | <CurrentSequenceNumber> |
-    // | NewSequenceNumber | <NewSequenceNumber> |
-    // | SequenceWindow | <SequenceWindow> |
-    // Then the confirm response contains
-    // | IsUpdated | <IsUpdated> |
-
     @When("^receiving a confirm request$")
     public void aValidConfirmDeviceRegistrationOslpMessageWithSequenceNumber(
             final Map<String, String> requestParameters) throws Throwable {
