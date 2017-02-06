@@ -14,20 +14,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import com.alliander.osgp.platform.cucumber.support.ws.WebServiceSecurityException;
-import com.alliander.osgp.platform.cucumber.support.ws.WebServiceTemplateFactory;
+import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
+import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 public class OsgpResponsePoller<AsyncRequest, Response> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OsgpResponsePoller.class);
 
-    private final WebServiceTemplateFactory webserviceTemplateFactory;
+    private final DefaultWebServiceTemplateFactory webserviceTemplateFactory;
     private final String organizationIdentification;
     private final String username;
     private final int maxWaitTimeForResponse;
     private final int sleepTime;
 
-    public OsgpResponsePoller(final WebServiceTemplateFactory webserviceTemplateFactory,
+    public OsgpResponsePoller(final DefaultWebServiceTemplateFactory webserviceTemplateFactory,
             final String organizationIdentification, final String username, final int maxWaitTimeForResponse,
             final int sleepTime) {
         this.webserviceTemplateFactory = webserviceTemplateFactory;
@@ -52,7 +52,7 @@ public class OsgpResponsePoller<AsyncRequest, Response> {
      * @throws GeneralSecurityException
      */
     public Response start(final AsyncRequest request) throws InterruptedException, WebServiceSecurityException,
-            GeneralSecurityException, IOException {
+    GeneralSecurityException, IOException {
 
         int timeSlept = 0;
 
@@ -77,7 +77,7 @@ public class OsgpResponsePoller<AsyncRequest, Response> {
     }
 
     private Response pollWsResponse(final AsyncRequest request) throws WebServiceSecurityException,
-            GeneralSecurityException, IOException {
+    GeneralSecurityException, IOException {
         @SuppressWarnings("unchecked")
         final Response response = (Response) this.webserviceTemplateFactory.getTemplate(
                 this.organizationIdentification, this.username).marshalSendAndReceive(request);

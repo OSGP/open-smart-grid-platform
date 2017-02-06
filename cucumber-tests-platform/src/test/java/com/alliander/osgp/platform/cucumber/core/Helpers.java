@@ -182,13 +182,13 @@ public class Helpers {
 
     /**
      * Get a date time object based on the settings if the key exists.
-     * 
+     *
      * @param settings
      *            The settings
      * @param key
      *            The key in the settings for the date time.
      * @param defaultDate
-     *              The default date to return.
+     *            The default date to return.
      * @return The date time.
      */
     public static DateTime getDate(final Map<String, String> settings, final String key, final DateTime defaultDate) {
@@ -198,7 +198,7 @@ public class Helpers {
 
         return DateTime.parse(settings.get(key));
     }
-    
+
     /**
      * Get a float object based on the settings if the key exists.
      *
@@ -237,7 +237,7 @@ public class Helpers {
 
     public static <E extends Enum<E>> E getEnum(final Map<String, String> settings, final String key,
             final Class<E> enumType) {
-        if (settings.get(key).isEmpty()) {
+        if (!settings.containsKey(key) || settings.get(key).isEmpty()) {
             return null;
         }
 

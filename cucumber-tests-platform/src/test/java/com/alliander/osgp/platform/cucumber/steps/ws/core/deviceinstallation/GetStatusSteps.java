@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.platform.cucumber.steps.ws.core.deviceinstallation;
 
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getEnum;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.saveCorrelationUidInScenarioContext;
 
@@ -35,15 +36,16 @@ public class GetStatusSteps {
 
     @Autowired
     private CoreDeviceConfiguration configuration;
-    
+
     @Autowired
     private CoreDeviceInstallationClient client;
 
     @When("receiving a device installation get status request")
     public void receivingADeviceInstallationGetStatusRequest(final Map<String, String> settings) throws Throwable {
         final GetStatusRequest request = new GetStatusRequest();
-        
-        request.setDeviceIdentification(getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+
+        request.setDeviceIdentification(
+                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         try {
             ScenarioContext.Current().put(Keys.RESPONSE, this.client.getStatus(request));
@@ -51,62 +53,59 @@ public class GetStatusSteps {
             ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
     }
+
     /**
-    *
-    * @param expectedResponseData
-    * @throws Throwable
-    */
-   @Then("the device installation get status async response contains")
-   public void theDeviceInstallationGetStatusAsyncResponseContains(final Map<String, String> expectedResponseData)
-           throws Throwable {
-       final GetStatusAsyncResponse response = (GetStatusAsyncResponse) ScenarioContext.Current()
-               .get(Keys.RESPONSE);
+     *
+     * @param expectedResponseData
+     * @throws Throwable
+     */
+    @Then("the device installation get status async response contains")
+    public void theDeviceInstallationGetStatusAsyncResponseContains(final Map<String, String> expectedResponseData)
+            throws Throwable {
+        final GetStatusAsyncResponse response = (GetStatusAsyncResponse) ScenarioContext.Current().get(Keys.RESPONSE);
 
-       Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
-       Assert.assertEquals(getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION),
-               response.getAsyncResponse().getDeviceId());
+        Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
+        Assert.assertEquals(getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION),
+                response.getAsyncResponse().getDeviceId());
 
-       // Save the returned CorrelationUid in the Scenario related context for
-       // further use.
-       saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
-               getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                       Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
-   }
+        // Save the returned CorrelationUid in the Scenario related context for
+        // further use.
+        saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
+                getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
+                        Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+    }
 
-   /**
-    *
-    * @param deviceIdentification
-    * @throws Throwable
-    */
-   @Then("the platform buffers a device installation get status response message for device \"([^\"]*)\"")
-   public void thePlatformBuffersADeviceInstallationGetStatusResponseMessageForDevice(final String deviceIdentification, final Map<String, String> expectedResult) throws Throwable
-   {
-       GetStatusAsyncRequest request = new GetStatusAsyncRequest();
-       AsyncRequest asyncRequest = new AsyncRequest();
-       asyncRequest.setDeviceId(deviceIdentification);
-       asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
-       request.setAsyncRequest(asyncRequest);
-       
-       boolean success = false;
-       int count = 0;
-       while (!success) {
-           if (count > configuration.getTimeout()) {
-               Assert.fail("Timeout");
-           }
-           
-           count++;
-           Thread.sleep(1000);
+    /**
+     *
+     * @param deviceIdentification
+     * @throws Throwable
+     */
+    @Then("the platform buffers a device installation get status response message for device \"([^\"]*)\"")
+    public void thePlatformBuffersADeviceInstallationGetStatusResponseMessageForDevice(
+            final String deviceIdentification, final Map<String, String> expectedResult) throws Throwable {
+        final GetStatusAsyncRequest request = new GetStatusAsyncRequest();
+        final AsyncRequest asyncRequest = new AsyncRequest();
+        asyncRequest.setDeviceId(deviceIdentification);
+        asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
+        request.setAsyncRequest(asyncRequest);
 
-           try {
-               GetStatusResponse response = client.getStatusResponse(request);
-               
-               Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.KEY_RESULT)), response.getResult());
-               
-               success = true; 
-           }
-           catch(Exception ex) {
-               // Do nothing
-           }
-       }
-   }
+        boolean success = false;
+        int count = 0;
+        while (!success) {
+            if (count > this.configuration.getTimeout()) {
+                Assert.fail("Timeout");
+            }
+
+            count++;
+            Thread.sleep(1000);
+
+            final GetStatusResponse response = this.client.getStatusResponse(request);
+
+            if (getEnum(expectedResult, Keys.KEY_RESULT, OsgpResultType.class) != response.getResult()) {
+                continue;
+            }
+
+            success = true;
+        }
+    }
 }

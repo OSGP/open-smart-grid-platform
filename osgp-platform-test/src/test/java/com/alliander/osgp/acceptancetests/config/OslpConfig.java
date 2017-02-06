@@ -40,7 +40,6 @@ import com.alliander.osgp.adapter.protocol.oslp.infra.networking.OslpChannelHand
 import com.alliander.osgp.adapter.protocol.oslp.infra.networking.OslpSecurityHandler;
 import com.alliander.osgp.oslp.OslpDecoder;
 import com.alliander.osgp.oslp.OslpEncoder;
-import com.alliander.osgp.oslp.OslpUtils;
 import com.alliander.osgp.shared.application.config.PagingSettings;
 import com.alliander.osgp.shared.security.CertificateHelper;
 
@@ -141,11 +140,6 @@ public class OslpConfig {
     @Bean
     public Channel channelMock() {
         return mock(Channel.class);
-    }
-
-    @Bean
-    public OslpUtils oslpUtils() {
-        return new OslpUtils();
     }
 
     @Bean(destroyMethod = "releaseExternalResources")
