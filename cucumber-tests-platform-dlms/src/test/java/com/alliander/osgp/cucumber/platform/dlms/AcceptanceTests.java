@@ -18,8 +18,8 @@ import cucumber.api.junit.Cucumber;
         features = "src/test/resources/features", 
         tags = { "~@Skip" }, 
         glue = {
-                "classpath:com.alliander.osgp.platform.cucumber.glue",
-                "classpath:com.alliander.osgp.platform.cucumber.dlms.glue"
+                "classpath:com.alliander.osgp.cucumber.platform.glue",
+                "classpath:com.alliander.osgp.cucumber.platform.dlms.glue"
                 }, 
         plugin = { "pretty",
                 "html:target/output/Cucumber-report", 
