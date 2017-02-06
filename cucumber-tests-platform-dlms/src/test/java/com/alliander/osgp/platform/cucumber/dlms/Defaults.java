@@ -18,7 +18,7 @@ import com.alliander.osgp.domain.core.entities.DeviceModel;
  * Defaults specific for the dlms related data. Note: Keep in mind that generic
  * defaults should be specified in the cucumber-tests-platform project.
  */
-public class Defaults {
+public class Defaults extends com.alliander.osgp.platform.cucumber.Defaults {
 
     public static final String DEVICE_IDENTIFICATION = null;
     public static final Long VERSION = 0L;
@@ -69,6 +69,8 @@ public class Defaults {
     public static final DeviceModel DEVICE_MODEL = null;
     public static final Date TECHNICAL_INSTALLATION_DATE = new Date();
     public static final boolean IS_ACTIVE = true;
+	public static final String SMART_METER_GAS_DEVICE_IDENTIFICATION = null;
+	public static final String SMART_METER_DEVICE_IDENTIFICATION = null;
 
     static {
         InetAddress localhost;

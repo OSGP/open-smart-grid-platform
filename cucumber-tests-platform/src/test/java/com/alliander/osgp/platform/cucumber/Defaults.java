@@ -152,4 +152,9 @@ public class Defaults {
     public static final String DEFAULT_FIRMWARE_IDENTIFICATION = "";
 	public static final Boolean DEFAULT_FILESTORAGE = true;
 	public static final String DEFAULT_SUPPLIER = "Kaifa";
+	public static final String MANUFACTURER_CODE = "Test";
+	public static final String MANUFACTURER_NAME = "Test";
+	public static final boolean MANUFACTURER_USE_PREFIX = false;
+	public static final String DEVICE_MODEL_NAME = "Testmodel";
+	public static final String DEVICE_MODEL_MODEL_CODE = "Test";
 }
