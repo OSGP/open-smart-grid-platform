@@ -3,7 +3,6 @@ Feature: Connection security
   I want to communicate with devices at different levels of security
   So the transferred data is as secure as possible
 
-@Skip
   Scenario: Communicate with LLS1 encryption
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -11,8 +10,8 @@ Feature: Connection security
       | Hls3active           | false             |
       | Hls4active           | false             |
       | Hls5active           | false             |
-      | UseSn                | true              |
-      | UseHdlc              | true              |
+      | UseSn                | false              |
+      | UseHdlc              | false              |
       | Lls1active           | true              |
       | Port                 | 1025              |
     When the get actual meter reads request is received
