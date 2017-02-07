@@ -97,6 +97,12 @@ public class WebServiceConfig extends AbstractConfig {
     @Value("${application.name}")
     private String applicationName;
 
+    @Value("${apache.client.max.connections.per.route}")
+    private int maxConnectionsPerRoute;
+
+    @Value("${apache.client.max.connections.total}")
+    private int maxConnectionsTotal;
+
     private static final String ORGANISATION_IDENTIFICATION_HEADER = "OrganisationIdentification";
     private static final String ORGANISATION_IDENTIFICATION_CONTEXT = ORGANISATION_IDENTIFICATION_HEADER;
 
@@ -145,6 +151,7 @@ public class WebServiceConfig extends AbstractConfig {
                 .setKeyStoreType(this.webserviceKeystoreType).setKeyStoreLocation(this.webserviceKeystoreLocation)
                 .setKeyStorePassword(this.webserviceKeystorePassword)
                 .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName(this.applicationName)
+                .setMaxConnectionsPerRoute(this.maxConnectionsPerRoute).setMaxConnectionsTotal(this.maxConnectionsTotal)
                 .build();
     }
 
