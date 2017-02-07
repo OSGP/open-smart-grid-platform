@@ -335,6 +335,7 @@
       <xsd:length value="6" />
     </xsd:restriction>
   </xsd:simpleType>
+
   <xsd:complexType name="ObisCodeValues">
     <xsd:sequence>
       <xsd:element name="a" type="xsd:unsignedByte" />
@@ -345,4 +346,24 @@
       <xsd:element name="f" type="xsd:unsignedByte" />
     </xsd:sequence>
   </xsd:complexType>
+  
+ <xsd:complexType name="CaptureObject">
+      <xsd:sequence>
+	      <xsd:element type="xsd:long" name="ClassId" />
+	      <xsd:element type="xsd:integer" name="Version" />
+	      <xsd:element type="xsd:integer" name="Attribute" />
+	      <xsd:element type="tns:ObisCodeValues" name="ObisCode" />
+      </xsd:sequence>
+  </xsd:complexType>
+
+ <xsd:complexType name="ProfileEntry">
+   <xsd:choice>
+      <xsd:element name="StringValue" type="xsd:string"/>
+      <xsd:element name="DateValue" type="xsd:dateTime"/>
+      <xsd:element name="FloatValue" type="xsd:decimal"/>
+      <xsd:element name="LongValue" type="xsd:long"/>
+    </xsd:choice>
+  </xsd:complexType>
+  
+  
 </xsd:schema>

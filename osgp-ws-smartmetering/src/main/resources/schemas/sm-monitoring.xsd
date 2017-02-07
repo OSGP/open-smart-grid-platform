@@ -453,14 +453,31 @@
     </xsd:simpleContent>
   </xsd:complexType>
 
- <!-- load-profile -->
+ <!-- ProfileGenericData -->
+
   <xsd:element name="ProfileGenericDataRequest">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="tns:PeriodicReadsRequest"></xsd:extension>
+        <xsd:extension base="tns:ProfileGenericDataRequestData">
+          <xsd:sequence>
+            <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+          </xsd:sequence>
+        </xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
+ 
+ <xsd:complexType name="ProfileGenericDataRequestData">
+      <xsd:complexContent>
+      <xsd:extension base="common:Query">
+        <xsd:sequence>
+      	  <xsd:element name="ObisCode" type="common:ObisCodeValues" />
+		  <xsd:element name="BeginDate" type="xsd:dateTime" />
+          <xsd:element name="EndDate" type="xsd:dateTime" />
+        </xsd:sequence>
+      </xsd:extension>
+      </xsd:complexContent>
+  </xsd:complexType>
 
   <xsd:element name="ProfileGenericDataAsyncResponse">
     <xsd:complexType>
@@ -481,13 +498,15 @@
   <xsd:element name="ProfileGenericDataResponse">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="PeriodType" type="tns:PeriodType" />
-        <xsd:element name="PeriodicMeterReads" type="tns:PeriodicMeterReads"
-          minOccurs="0" maxOccurs="unbounded" />
+        <xsd:element name="LogicalName" type="common:ObisCodeValues" />
+        <xsd:element name="CaptureObjects" type="common:CaptureObject" minOccurs="0" maxOccurs="unbounded" />
+        <xsd:element name="ProfileEntries" type="common:ProfileEntry" minOccurs="0" maxOccurs="unbounded" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
 
+
+  <!-- this one is used in bundle !? 
   <xsd:complexType name="ProfileGenericDataResponseData">
     <xsd:complexContent>
       <xsd:extension base="common:Response">
@@ -499,5 +518,6 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
-
+ -->
+ 
 </xsd:schema>

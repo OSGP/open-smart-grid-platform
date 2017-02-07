@@ -7,28 +7,34 @@
  */
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ProfileGenericDataResponseDto extends ActionResponseDto {
 
     private static final long serialVersionUID = -156966569210717654L;
 
-    private final List<ProfileGenericDataResponseItemDto> items;
-    private final PeriodTypeDto periodType;
+    private final ObisCodeValuesDto logicalName;
+    private final List<CaptureObjectDto> captureObject;
+    private final List<ProfileEntryDto> profileEntries;
 
-    public ProfileGenericDataResponseDto(final PeriodTypeDto periodType,
-            final List<ProfileGenericDataResponseItemDto> responseItems) {
-        this.items = new ArrayList<ProfileGenericDataResponseItemDto>(responseItems);
-        this.periodType = periodType;
+    public ProfileGenericDataResponseDto(ObisCodeValuesDto logicalName, List<CaptureObjectDto> captureObject,
+            List<ProfileEntryDto> profileEntries) {
+        super();
+        this.logicalName = logicalName;
+        this.captureObject = captureObject;
+        this.profileEntries = profileEntries;
     }
 
-    public List<ProfileGenericDataResponseItemDto> getItems() {
-        return new ArrayList<ProfileGenericDataResponseItemDto>(this.items);
+    public ObisCodeValuesDto getLogicalName() {
+        return this.logicalName;
     }
 
-    public PeriodTypeDto getPeriodType() {
-        return this.periodType;
+    public List<CaptureObjectDto> getCaptureObject() {
+        return this.captureObject;
+    }
+
+    public List<ProfileEntryDto> getProfileEntries() {
+        return this.profileEntries;
     }
 
 }
