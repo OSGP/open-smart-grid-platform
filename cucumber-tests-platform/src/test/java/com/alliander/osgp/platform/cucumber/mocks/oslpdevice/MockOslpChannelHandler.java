@@ -38,7 +38,6 @@ import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMes
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.Oslp.Message;
 import com.alliander.osgp.oslp.OslpEnvelope;
-import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 
 public class MockOslpChannelHandler extends SimpleChannelHandler {
 
@@ -50,7 +49,6 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
     private final String oslpSignature;
     private final String oslpSignatureProvider;
     private final int connectionTimeout;
-    private final int sequenceNumberWindow;
     private final Integer sequenceNumberMaximum;
     private final Long responseDelayTime;
     private final Long reponseDelayRandomRange;
@@ -141,7 +139,6 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         this.oslpSignature = oslpSignature;
         this.oslpSignatureProvider = oslpSignatureProvider;
         this.connectionTimeout = connectionTimeout;
-        this.sequenceNumberWindow = sequenceNumberWindow;
         this.sequenceNumberMaximum = sequenceNumberMaximum;
         this.responseDelayTime = responseDelayTime;
         this.reponseDelayRandomRange = reponseDelayRandomRange;
@@ -441,55 +438,9 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
     }
 
     private int doGetNextSequence() {
-        int sequenceNumberValue = 1;
-        final int currSequenceNumberValue = 0;
-        // final String numberToAddAsCurrentSequenceNumber =
-        // ScenarioContext.Current()
-        // .get("NumberToAddAsCurrentSequenceNumber").toString(),
-        // sequenceWindow =
-        // ScenarioContext.Current().get("CurrentSequenceWindow").toString();
-
-        // final int sequenceNumberWindow;
-        // final Object currSequenceWindow =
-        // ScenarioContext.Current().get("CurrentSequenceWindow");
-        // if (currSequenceWindow != null) {
-        // sequenceNumberWindow = (Integer) currSequenceWindow;
-        // } else {
-        // sequenceNumberWindow = this.sequenceNumberWindow;
-        // }
-        //
-        // if (numberToAddAsCurrentSequenceNumber != null &&
-        // !numberToAddAsCurrentSequenceNumber.isEmpty()
-        // && numberToAddAsNextSequenceNumber != null &&
-        // !numberToAddAsNextSequenceNumber.isEmpty()
-        // && sequenceWindow != null && !sequenceWindow.isEmpty()) {
-        // if (Integer.parseInt(numberToAddAsNextSequenceNumber)
-        // - Integer.parseInt(numberToAddAsCurrentSequenceNumber) >
-        // sequenceNumberWindow) {
-        // throw new ArithmeticException(
-        // "Difference between current sequence number and next sequence number
-        // is higher that the sequence window.");
-        // }
-        // }
-
-        if (ScenarioContext.Current().get("NumberToAddAsCurrentSequenceNumber") != null) {
-            final String numberToAddAsNextSequenceNumber = ScenarioContext.Current()
-                    .get("NumberToAddAsCurrentSequenceNumber").toString();
-            if (!numberToAddAsNextSequenceNumber.isEmpty()) {
-                sequenceNumberValue = Integer.parseInt(numberToAddAsNextSequenceNumber) - this.sequenceNumber;
-                if (sequenceNumberValue < 0) {
-                    sequenceNumberValue = this.sequenceNumberMaximum + sequenceNumberValue;
-                }
-            }
-        }
-        int next = this.sequenceNumber + sequenceNumberValue;
+        int next = this.sequenceNumber + 1;
         if (next > SEQUENCE_NUMBER_MAXIMUM) {
-            final int sequenceNumberMaximumCross = next - SEQUENCE_NUMBER_MAXIMUM;
-            if (sequenceNumberMaximumCross > 1) {
-                next = sequenceNumberMaximumCross - 1;
-            } else {
-                next = 0;
-            }
+            next = 0;
         }
 
         return next;
