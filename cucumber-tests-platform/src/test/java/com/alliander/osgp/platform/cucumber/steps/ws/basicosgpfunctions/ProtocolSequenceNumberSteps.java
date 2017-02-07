@@ -25,7 +25,6 @@ import org.springframework.ws.soap.client.SoapFaultClientException;
 import com.alliander.osgp.adapter.ws.schema.core.common.AsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StartDeviceTestAsyncRequest;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
-import com.alliander.osgp.platform.cucumber.mocks.oslpdevice.MockOslpServer;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.cucumber.steps.mocks.OslpDeviceSteps;
@@ -56,7 +55,8 @@ public class ProtocolSequenceNumberSteps {
         final int currSequenceNumber = getInteger(requestParameters, "CurrentSequenceNumber"),
                 newSequenceNumber = getInteger(requestParameters, "NewSequenceNumber");
 
-        this.changeSequenceWindow(getString(requestParameters, "SequenceWindow", "6"));
+        // this.changeSequenceWindow(getString(requestParameters,
+        // "SequenceWindow", "6"));
 
         // TODO: Find out how to check if the SequenceNumber has a to high value
         ScenarioContext.Current().put("NumberToAddAsCurrentSequenceNumber", currSequenceNumber);
