@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.application.services;
 
+import ma.glasnost.orika.MapperFactory;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +27,15 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataQuery;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponseVo;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequestVo;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQueryDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGasResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ObisCodeValuesDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadGasResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
@@ -68,6 +72,9 @@ public class MonitoringService {
 
     @Autowired
     private WebServiceResponseMessageSender webServiceResponseMessageSender;
+
+    @Autowired
+    private MapperFactory mapperFactory;
 
     public MonitoringService() {
         // Parameterless constructor required for transactions...
@@ -122,7 +129,7 @@ public class MonitoringService {
                             .getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                             smartMeter.getIpAddress(), this.monitoringMapper.map(periodicMeterReadsValueQuery,
                                     PeriodicMeterReadsRequestDto.class)), deviceMessageMetadata.getMessageType(),
-                    deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+                                    deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
         }
     }
 
@@ -145,7 +152,7 @@ public class MonitoringService {
                         .getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(), result,
                         exception, this.monitoringMapper.map(periodMeterReadsValueDTO,
                                 PeriodicMeterReadsContainer.class), deviceMessageMetadata.getMessagePriority()),
-                deviceMessageMetadata.getMessageType());
+                                deviceMessageMetadata.getMessageType());
     }
 
     public void handlePeriodicMeterReadsresponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -165,12 +172,12 @@ public class MonitoringService {
                         .getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(), result,
                         exception, this.monitoringMapper.map(periodMeterReadsValueDTO,
                                 PeriodicMeterReadsContainerGas.class), deviceMessageMetadata.getMessagePriority()),
-                deviceMessageMetadata.getMessageType());
+                                deviceMessageMetadata.getMessageType());
     }
 
     public void requestActualMeterReads(final DeviceMessageMetadata deviceMessageMetadata,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsQuery actualMeterReadsQuery)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.info("requestActualMeterReads for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
@@ -197,7 +204,8 @@ public class MonitoringService {
                  * For now throw a FunctionalException, based on the same
                  * reasoning as with the channel a couple of lines up. As soon
                  * as we have scenario's with direct communication with gas
-                 * meters this will have to be changed.
+                 * meters this will have to be changed. @Autowired private
+                 * MapperFactory mapperFactory;
                  */
                 throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
                         ComponentType.DOMAIN_SMART_METERING, new AssertionError(
@@ -207,8 +215,8 @@ public class MonitoringService {
                     new RequestMessage(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata
                             .getOrganisationIdentification(), gatewayDevice.getDeviceIdentification(), gatewayDevice
                             .getIpAddress(), new ActualMeterReadsQueryDto(
-                            ChannelDto.fromNumber(smartMeter.getChannel()))), deviceMessageMetadata.getMessageType(),
-                    deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+                                    ChannelDto.fromNumber(smartMeter.getChannel()))), deviceMessageMetadata.getMessageType(),
+                                    deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
         } else {
             this.osgpCoreRequestMessageSender.send(
                     new RequestMessage(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata
@@ -294,7 +302,7 @@ public class MonitoringService {
     }
 
     public void requestProfileGenericData(final DeviceMessageMetadata deviceMessageMetadata,
-            final ProfileGenericDataQuery profileGenericDataQuery) throws FunctionalException {
+            final ProfileGenericDataRequestVo request) throws FunctionalException {
 
         LOGGER.info("requestProfileGenericData for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
@@ -302,11 +310,17 @@ public class MonitoringService {
         final SmartMeter smartMeter = this.domainHelperService.findSmartMeter(deviceMessageMetadata
                 .getDeviceIdentification());
 
-        this.osgpCoreRequestMessageSender.send(
-                new RequestMessage(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata
-                        .getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(), smartMeter
-                        .getIpAddress(), this.monitoringMapper.map(profileGenericDataQuery,
-                        ProfileGenericDataRequestDto.class)), deviceMessageMetadata.getMessageType(),
+        final ObisCodeValuesDto obisCodeDto = this.mapperFactory.getMapperFacade().map(request.getObisCode(),
+                ObisCodeValuesDto.class);
+
+        final ProfileGenericDataRequestDto requestDto = new ProfileGenericDataRequestDto(obisCodeDto,
+                request.getBeginDate(), request.getEndDate());
+
+        final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                smartMeter.getIpAddress(), requestDto);
+
+        this.osgpCoreRequestMessageSender.send(requestMessage, deviceMessageMetadata.getMessageType(),
                 deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
     }
 
@@ -322,14 +336,14 @@ public class MonitoringService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        Object obj = this.monitoringMapper.map(profileGenericDataResponseDto, ProfileGenericDataResponseDto.class);
+        ProfileGenericDataResponseVo responseVo = this.monitoringMapper.map(profileGenericDataResponseDto,
+                ProfileGenericDataResponseVo.class);
 
-        this.webServiceResponseMessageSender.send(
-                new ResponseMessage(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata
-                        .getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(), result,
-                        exception, this.monitoringMapper.map(profileGenericDataResponseDto,
-                                ProfileGenericDataResponseDto.class), deviceMessageMetadata.getMessagePriority()),
-                deviceMessageMetadata.getMessageType());
+        this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                result, exception, responseVo, deviceMessageMetadata.getMessagePriority()), deviceMessageMetadata
+                .getMessageType());
+
     }
 
 }

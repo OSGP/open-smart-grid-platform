@@ -15,6 +15,9 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.services.Moni
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataResponseDto;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -38,16 +41,19 @@ public class ProfileGenericDataResponseMessageProcessor extends OsgpCoreResponse
 
     @Override
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
-            final ResponseMessage responseMessage, final OsgpException osgpException) {
+            final ResponseMessage responseMessage, final OsgpException osgpException) throws FunctionalException {
 
         if (responseMessage.getDataObject() instanceof ProfileGenericDataResponseDto) {
+
             final ProfileGenericDataResponseDto profileGenericDataResponseDto = (ProfileGenericDataResponseDto) responseMessage
                     .getDataObject();
 
             this.monitoringService.handleProfileGenericDataResponse(deviceMessageMetadata, responseMessage.getResult(),
                     osgpException, profileGenericDataResponseDto);
         } else {
-            System.err.println("TODO");
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+                    ComponentType.DOMAIN_SMART_METERING, new OsgpException(ComponentType.DOMAIN_SMART_METERING,
+                            "DataObject for response message should be of type ProfileGenericDataResponseDto"));
         }
     }
 }

@@ -8,90 +8,37 @@
 
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.GregorianCalendar;
-
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-
-import org.junit.Before;
 import org.junit.Test;
 
-import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodType;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequestData;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataQuery;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ObisCodeValues;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataRequest;
 
 public class ProfileGenericDataRequestMappingTest {
 
-    private XMLGregorianCalendar xmlCalendar;
-    private MonitoringMapper monitoringMapper = new MonitoringMapper();
-    private static final PeriodType PERIODTYPE = PeriodType.DAILY;
+    private final MonitoringMapper mapper = new MonitoringMapper();
 
-    /**
-     * Needed to initialize a XMLGregorianCalendar object.
-     */
-    @Before
-    public void init() {
-        try {
-            this.xmlCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar());
-        } catch (final DatatypeConfigurationException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Tests if a NullPointerException is thrown when a PeriodicReadsRequest -
-     * with a PeriodicReadsRequestData that is null - is mapped.
-     */
-    @Test(expected = NullPointerException.class)
-    public void testWithNullPeriodicReadsRequestData() {
-
-        // build test data
-        final PeriodicReadsRequest periodicReadsRequest = new PeriodicReadsRequest();
-        periodicReadsRequest.setPeriodicReadsRequestData(null);
-
-        // actual mapping
-        this.monitoringMapper.map(periodicReadsRequest, ProfileGenericDataQuery.class);
-
-    }
-
-    /**
-     * Tests if a PeriodicReadsRequest object is mapped successfully when it is
-     * completely initialized.
-     */
     @Test
-    public void testCompletePeriodicReadsRequestMapping() {
+    public void test() {
+        final ProfileGenericDataRequest req1 = this.makeRequest();
+        final Object obj1 = this.mapper.map(req1,
+                com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequestVo.class);
+        assertTrue((obj1 != null)
+                && (obj1 instanceof com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequestVo));
 
-        // build test data
-        final PeriodicReadsRequestData periodicReadsRequestData = new PeriodicReadsRequestData();
-        periodicReadsRequestData.setBeginDate(this.xmlCalendar);
-        periodicReadsRequestData.setEndDate(this.xmlCalendar);
-        periodicReadsRequestData.setPeriodType(PERIODTYPE);
-        final PeriodicReadsRequest periodicReadsRequest = new PeriodicReadsRequest();
-        periodicReadsRequest.setPeriodicReadsRequestData(periodicReadsRequestData);
+        final Object obj2 = this.mapper.map(obj1, ProfileGenericDataRequest.class);
+        assertTrue((obj2 != null) && (obj2 instanceof ProfileGenericDataRequest));
+        final ProfileGenericDataRequest req2 = (ProfileGenericDataRequest) obj2;
+        assertTrue(req1.getDeviceIdentification().equals(req2.getDeviceIdentification()));
+    }
 
-        // actual mapping
-        final ProfileGenericDataQuery periodicMeterReadsQuery = this.monitoringMapper.map(periodicReadsRequest,
-                ProfileGenericDataQuery.class);
-
-        // check mapping
-        assertNotNull(periodicMeterReadsQuery);
-        assertNotNull(periodicMeterReadsQuery.getDeviceIdentification());
-        assertNotNull(periodicMeterReadsQuery.getPeriodType());
-        assertNotNull(periodicMeterReadsQuery.getBeginDate());
-        assertNotNull(periodicMeterReadsQuery.getEndDate());
-
-        assertEquals(PERIODTYPE.name(), periodicMeterReadsQuery.getPeriodType().name());
-        assertFalse(periodicMeterReadsQuery.isMbusDevice());
-        assertTrue(periodicMeterReadsQuery.getDeviceIdentification().isEmpty());
-        // For more information on the mapping of Date to XmlGregorianCalendar
-        // objects, refer to the DateMappingTest
-
+    private ProfileGenericDataRequest makeRequest() {
+        final ProfileGenericDataRequest result = new ProfileGenericDataRequest();
+        final ObisCodeValues obiscode = new ObisCodeValues();
+        obiscode.setA((short) 1);
+        result.setObisCode(obiscode);
+        result.setDeviceIdentification("12345");
+        return result;
     }
 }

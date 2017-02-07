@@ -20,8 +20,8 @@ public class MonitoringMapper extends ConfigurableMapper {
     public void configure(final MapperFactory mapperFactory) {
 
         mapperFactory
-                .classMap(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AmrProfileStatusCode.class,
-                        AmrProfileStatusCode.class).field("amrProfileStatusCodeFlag", "amrProfileStatusCodeFlags")
+        .classMap(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AmrProfileStatusCode.class,
+                AmrProfileStatusCode.class).field("amrProfileStatusCodeFlag", "amrProfileStatusCodeFlags")
                 .byDefault().register();
 
         // Converter is needed because of instanceOf check to set boolean
@@ -45,8 +45,8 @@ public class MonitoringMapper extends ConfigurableMapper {
         // This converter is needed because it contains logic.
         mapperFactory.getConverterFactory().registerConverter(new PeriodicReadsRequestGasQueryConverter());
 
-        // This converter is needed because it contains logic.
-        mapperFactory.getConverterFactory().registerConverter(new ProfileGenericDataRequestConverter());
+        mapperFactory.getConverterFactory().registerConverter(new ObisCodeValuesConverter());
+
     }
 
 }

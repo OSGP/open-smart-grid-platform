@@ -43,6 +43,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetSpecialDaysR
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SynchronizeTimeRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.UpdateFirmwareRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Action;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataRequest;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.AdhocMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.ConfigurationMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.ManagementMapper;
@@ -59,6 +60,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetConfiguratio
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetFirmwareVersionRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGasRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequestDataVo;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetAlarmNotificationsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequestData;
@@ -183,6 +185,7 @@ public class ActionMapperService {
                 com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SpecificAttributeValueRequestData.class,
                 this.adhocMapper);
         CLASS_TO_MAPPER_MAP.put(GetSpecificAttributeValueRequest.class, this.adhocMapper);
+        CLASS_TO_MAPPER_MAP.put(ProfileGenericDataRequest.class, this.monitoringMapper);
     }
 
     /**
@@ -270,6 +273,7 @@ public class ActionMapperService {
         CLASS_MAP.put(SetKeysRequest.class, SetKeysRequestData.class);
         CLASS_MAP.put(GetAssociationLnObjectsRequest.class, GetAssociationLnObjectsRequestData.class);
         CLASS_MAP.put(GetSpecificAttributeValueRequest.class, SpecificAttributeValueRequestData.class);
+        CLASS_MAP.put(ProfileGenericDataRequest.class, ProfileGenericDataRequestDataVo.class);
     }
 
     public List<ActionRequest> mapAllActions(final List<? extends Action> actionList) throws FunctionalException {
