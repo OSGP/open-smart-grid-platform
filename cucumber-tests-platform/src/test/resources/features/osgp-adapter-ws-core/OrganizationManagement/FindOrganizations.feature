@@ -11,5 +11,3 @@ Feature: OrganizationManagement Finding Organizations
       | OrganizationName           | Test Organization                        |
       | Domains                    | COMMON;PUBLIC_LIGHTING;TARIFF_SWITCHING; |
       | Prefix                     | MAA                                      |
-  #
-  #Scenario: Operator of a municipality organisation can query municipality organisation on the platform

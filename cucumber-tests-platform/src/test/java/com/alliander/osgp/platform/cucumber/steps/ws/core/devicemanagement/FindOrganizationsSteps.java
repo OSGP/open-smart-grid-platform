@@ -73,17 +73,19 @@ public class FindOrganizationsSteps {
      * @throws Throwable
      */
     @Then("^the get all organizations response contains at index \"([^\"]*)\"$")
-    public void theGetAllOrganizationsResponseContainsAtIndex(final Map<String, String> expectedResult) {
+    public void theGetAllOrganizationsResponseContainsAtIndex(final Integer expectedIndex,
+            final Map<String, String> expectedResult) {
         final FindAllOrganisationsResponse response = ((FindAllOrganisationsResponse) ScenarioContext.Current()
                 .get(Keys.RESPONSE));
 
-        final Organisation organisation = response.getOrganisations().get(0);
+        final Organisation organisation = response.getOrganisations().get(expectedIndex - 1);
         Assert.assertEquals(getString(expectedResult, Keys.KEY_ORGANIZATION_IDENTIFICATION,
                 Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION), organisation.getOrganisationIdentification());
         Assert.assertEquals(getString(expectedResult, Keys.KEY_ORGANIZATION_NAME, Defaults.DEFAULT_ORGANIZATION_NAME),
                 organisation.getName());
-        Assert.assertEquals(getString(expectedResult, Keys.KEY_DOMAINS, Defaults.DEFAULT_DOMAINS),
-                organisation.getDomains());
+        final String domains = getString(expectedResult, Keys.KEY_DOMAINS, Defaults.DEFAULT_DOMAINS);
+        Assert.assertEquals("[" + domains.substring(0, domains.length() - 1).replaceAll(";", ", ") + "]",
+                organisation.getDomains().toString());
         Assert.assertEquals(getString(expectedResult, Keys.KEY_PREFIX, Defaults.DEFAULT_PREFIX),
                 organisation.getPrefix());
     }
