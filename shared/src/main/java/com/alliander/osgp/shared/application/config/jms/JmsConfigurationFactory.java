@@ -16,7 +16,6 @@ import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
@@ -38,7 +37,7 @@ public class JmsConfigurationFactory {
 
     private final Environment environment;
 
-    private final ObjectFactory<PooledConnectionFactory> pooledConnectionFactoryProvider;
+    private final PooledConnectionFactory pooledConnectionFactory;
         
 
     private final RedeliveryPolicyMap redeliveryPolicyMap;
@@ -52,10 +51,10 @@ public class JmsConfigurationFactory {
      * @param redeliveryPolicyMap
      *            Created redelivery policy will be added to this map.
      */
-    public JmsConfigurationFactory(final Environment environment, final ObjectFactory<PooledConnectionFactory> pooledConnectionFactoryProvider,
+    public JmsConfigurationFactory(final Environment environment, final PooledConnectionFactory pooledConnectionFactory,
             final RedeliveryPolicyMap redeliveryPolicyMap) {
         this.environment = environment;
-        this.pooledConnectionFactoryProvider = pooledConnectionFactoryProvider;
+        this.pooledConnectionFactory = pooledConnectionFactory;
         this.redeliveryPolicyMap = redeliveryPolicyMap;
     }
 
@@ -162,7 +161,7 @@ public class JmsConfigurationFactory {
             jmsTemplate.setExplicitQosEnabled(this.property(PROPERTY_EXPLICIT_QOS_ENABLED, boolean.class));
             jmsTemplate.setTimeToLive(this.property(PROPERTY_TIME_TO_LIVE, long.class));
             jmsTemplate.setDeliveryPersistent(this.property(PROPERTY_DELIVERY_PERSISTENT, boolean.class));
-            jmsTemplate.setConnectionFactory(JmsConfigurationFactory.this.pooledConnectionFactoryProvider.getObject());
+            jmsTemplate.setConnectionFactory(JmsConfigurationFactory.this.pooledConnectionFactory);
             return jmsTemplate;
         }
 
@@ -205,7 +204,7 @@ public class JmsConfigurationFactory {
                 final MessageListener messageListener, final int concConsumers, final int maxConcConsumers) {
 
             final DefaultMessageListenerContainer defaultMessageListenerContainer = new DefaultMessageListenerContainer();
-            defaultMessageListenerContainer.setConnectionFactory(JmsConfigurationFactory.this.pooledConnectionFactoryProvider.getObject());
+            defaultMessageListenerContainer.setConnectionFactory(JmsConfigurationFactory.this.pooledConnectionFactory);
             defaultMessageListenerContainer.setDestination(destination);
             defaultMessageListenerContainer.setMessageListener(messageListener);
             defaultMessageListenerContainer.setConcurrentConsumers(concConsumers);
