@@ -50,7 +50,7 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
 
     protected ActiveMQConnectionFactory connectionFactory() {
         final ActiveMQPrefetchPolicy activeMQPrefetchPolicy = new ActiveMQPrefetchPolicy();
-        activeMQPrefetchPolicy.setQueuePrefetch(queuePrefetch);
+        activeMQPrefetchPolicy.setQueuePrefetch(this.queuePrefetch);
         
         final ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory();
         activeMQConnectionFactory.setRedeliveryPolicyMap(this.redeliveryPolicyMap());
