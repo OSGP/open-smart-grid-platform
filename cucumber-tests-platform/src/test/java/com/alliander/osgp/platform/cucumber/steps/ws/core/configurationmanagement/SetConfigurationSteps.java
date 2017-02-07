@@ -79,18 +79,13 @@ public class SetConfigurationSteps {
         final LightType lightType = getEnum(requestParameters, Keys.KEY_LIGHTTYPE, LightType.class);
         config.setLightType(lightType);
 
-        // if (lightType != null && !lightType.toString().isEmpty()) {
-        // if (lightType == LightType.DALI) {
         this.addFilledDaliConfigurationToConfiguration(requestParameters, config);
-        // } else if (lightType == LightType.RELAY) {
+
         this.addFilledRelayConfigurationToConfiguration(requestParameters, config);
-        // }
-        // }
 
         final LinkType preferredLinkType = getEnum(requestParameters, Keys.KEY_PREFERRED_LINKTYPE, LinkType.class);
-        // if (preferredLinkType != null) {
+
         config.setPreferredLinkType(preferredLinkType);
-        // }
 
         // Note: This piece of code has been made because there are multiple
         // enumerations with the name MeterType, but not all of them has all
@@ -105,9 +100,7 @@ public class SetConfigurationSteps {
             meterType = getEnum(requestParameters, Keys.METER_TYPE, MeterType.class);
         }
 
-        // if (meterType != null) {
         config.setMeterType(meterType);
-        // }
 
         config.setShortTermHistoryIntervalMinutes(
 
@@ -129,9 +122,6 @@ public class SetConfigurationSteps {
         } catch (final SoapFaultClientException ex) {
             ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
-
-        final Object response = ScenarioContext.Current().get(Keys.RESPONSE);
-        System.out.println(response);
     }
 
     private void addFilledDaliConfigurationToConfiguration(final Map<String, String> requestParameters,
