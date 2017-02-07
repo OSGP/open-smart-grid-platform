@@ -20,21 +20,21 @@ Feature: BasicOsgpFunctions Protocol Sequence Number
   #Then the device should contain an expected - incremented - sequence number
   #
   #	@Skip
-  @OslpMockServer
-  Scenario Outline: Confirm device registration using different sequence numbers and sequence windows
-    Given an oslp device
-      | DeviceIdentification | TEST1024000000001 |
-    When receiving a confirm request
-      | DeviceIdentification  | TEST1024000000001       |
-      | CurrentSequenceNumber | <CurrentSequenceNumber> |
-      | NewSequenceNumber     | <NewSequenceNumber>     |
-      | SequenceWindow        | <SequenceWindow>        |
-    Then the confirm response contains
-      | IsUpdated | <IsUpdated> |
-
-    Examples: 
-      | CurrentSequenceNumber | NewSequenceNumber | SequenceWindow | IsUpdated |
-      |                     1 |                20 |              6 | true      |
+  #@OslpMockServer
+  #Scenario Outline: Confirm device registration using different sequence numbers and sequence windows
+    #Given an oslp device
+      #| DeviceIdentification | TEST1024000000001 |
+    #When receiving a confirm request
+      #| DeviceIdentification  | TEST1024000000001       |
+      #| CurrentSequenceNumber | <CurrentSequenceNumber> |
+      #| NewSequenceNumber     | <NewSequenceNumber>     |
+      #| SequenceWindow        | <SequenceWindow>        |
+    #Then the confirm response contains
+      #| IsUpdated | <IsUpdated> |
+#
+    #Examples: 
+      #| CurrentSequenceNumber | NewSequenceNumber | SequenceWindow | IsUpdated |
+      #|                     1 |                20 |              6 | true      |
       #|                     1 |                 2 |              6 | true      |
       #|                     1 |                 7 |              6 | true      |
       #|                     1 |                 8 |              6 | false     |
