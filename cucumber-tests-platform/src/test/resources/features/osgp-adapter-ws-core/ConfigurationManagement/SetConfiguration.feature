@@ -112,10 +112,11 @@ Feature: CoreConfigurationManagement SetConfiguration
       | LongInterval         | <LongInterval>      |
       | IntervalType         | <IntervalType>      |
     Then the set configuration async response contains soap fault
-      | Code         |                                               401 |
-      | Message      | VALIDATION_ERROR                                  |
-      | Component    | WS_CORE                                           |
-      | InnerMessage | Validation Exception, violations: <InnerMessage>; |
+      | Code           |                                                           401 |
+      | Message        | VALIDATION_ERROR                                              |
+      | Component      | WS_CORE                                                       |
+      | InnerException | com.alliander.osgp.domain.core.exceptions.ValidationException |
+      | InnerMessage   | Validation Exception, violations: <InnerMessage>;             |
 
     Examples: 
       | LightType       | DcLights | DcMap | RcType          | RcMap | ShortInterval | PreferredLinkType | MeterType | LongInterval | IntervalType | InnerMessage                                                                                                                                                                                                      |
