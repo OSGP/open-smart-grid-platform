@@ -9,10 +9,14 @@ package com.alliander.osgp.platform.dlms.cucumber.steps.database.device;
 
 import static com.alliander.osgp.platform.cucumber.steps.Defaults.SMART_METER_E;
 import static com.alliander.osgp.platform.cucumber.steps.Defaults.SMART_METER_G;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.Map;
 
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
+import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +40,7 @@ import com.alliander.osgp.platform.dlms.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.dlms.cucumber.steps.Keys;
 
 import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
 
 /**
  * DLMS device specific steps.
@@ -70,6 +75,49 @@ public class DlmsDeviceSteps {
         this.createDeviceAuthorisationInCoreDatabase(device);
 
         this.createDlmsDeviceInProtocolAdapterDatabase(inputSettings);
+    }
+
+    @Then("^the dlms device with id \"([^\"]*)\" exists$")
+    public void theDlmsDeviceWithIdExists(final String deviceIdentification) throws Throwable {
+
+        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+        assertNotNull("DLMS device with identification " + deviceIdentification + " in core database", device);
+
+        final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
+        assertNotNull("DLMS device with identification " + deviceIdentification + " in protocol database", dlmsDevice);
+    }
+
+    @Then("^the stored keys are not equal to the received keys$")
+    public void theStoredKeysAreNotEqualToTheReceivedKeys() throws Throwable {
+        final String keyDeviceIdentification = Keys.DEVICE_IDENTIFICATION;
+        final String deviceIdentification = (String) ScenarioContext.Current().get(keyDeviceIdentification);
+        assertNotNull("Device identification must be in the scenario context for key " + keyDeviceIdentification,
+                deviceIdentification);
+
+        final String deviceDescription = "DLMS device with identification " + deviceIdentification;
+        final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
+        assertNotNull(deviceDescription + " must be in the protocol database", dlmsDevice);
+
+        final SecurityKey masterKey = dlmsDevice.getValidSecurityKey(SecurityKeyType.E_METER_MASTER);
+        assertNotNull("Master key for " + deviceDescription + " must be stored", masterKey);
+
+        final String receivedMasterKey = (String) ScenarioContext.Current().get(Keys.KEY_DEVICE_MASTERKEY);
+        assertNotEquals("Stored master key for " + deviceDescription + " must be different from received key",
+                receivedMasterKey, masterKey.getKey());
+        final SecurityKey authenticationKey = dlmsDevice.getValidSecurityKey(SecurityKeyType.E_METER_AUTHENTICATION);
+        assertNotNull("Authentication key for " + deviceDescription, authenticationKey);
+
+        final String receivedAuthenticationKey = (String) ScenarioContext.Current()
+                .get(Keys.KEY_DEVICE_AUTHENTICATIONKEY);
+        assertNotEquals("Stored authentication key for " + deviceDescription + " must be different from received key",
+                receivedAuthenticationKey, authenticationKey.getKey());
+
+        final SecurityKey encryptionKey = dlmsDevice.getValidSecurityKey(SecurityKeyType.E_METER_ENCRYPTION);
+        assertNotNull("Encryption key for " + deviceDescription, encryptionKey);
+
+        final String receivedEncryptionKey = (String) ScenarioContext.Current().get(Keys.KEY_DEVICE_AUTHENTICATIONKEY);
+        assertNotEquals("Stored encryption key for " + deviceDescription + " must be different from received key",
+                receivedEncryptionKey, encryptionKey.getKey());
     }
 
     private void setScenarioContextForDevice(final Map<String, String> inputSettings, final Device device) {

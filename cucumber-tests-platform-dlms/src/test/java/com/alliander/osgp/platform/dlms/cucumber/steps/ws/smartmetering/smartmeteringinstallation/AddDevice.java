@@ -46,6 +46,14 @@ public class AddDevice extends SmartMeteringStepsBase {
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_HLS4ACTIVE, setings.get(Keys.KEY_DEVICE_HLS4ACTIVE));
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_HLS5ACTIVE, setings.get(Keys.KEY_DEVICE_HLS5ACTIVE));
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_MASTERKEY, setings.get(Keys.KEY_DEVICE_MASTERKEY));
+        PROPERTIES_MAP.put(Keys.KEY_DEVICE_AUTHENTICATIONKEY, setings.get(Keys.KEY_DEVICE_AUTHENTICATIONKEY));
+        PROPERTIES_MAP.put(Keys.KEY_DEVICE_ENCRYPTIONKEY, setings.get(Keys.KEY_DEVICE_ENCRYPTIONKEY));
+
+        ScenarioContext.Current().put(Keys.KEY_DEVICE_IDENTIFICATION, setings.get(Keys.KEY_DEVICE_IDENTIFICATION));
+        ScenarioContext.Current().put(Keys.KEY_DEVICE_MASTERKEY, setings.get(Keys.KEY_DEVICE_MASTERKEY));
+        ScenarioContext.Current().put(Keys.KEY_DEVICE_AUTHENTICATIONKEY,
+                setings.get(Keys.KEY_DEVICE_AUTHENTICATIONKEY));
+        ScenarioContext.Current().put(Keys.KEY_DEVICE_ENCRYPTIONKEY, setings.get(Keys.KEY_DEVICE_ENCRYPTIONKEY));
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_REQUEST, TEST_CASE_XML, TEST_SUITE_XML);
     }

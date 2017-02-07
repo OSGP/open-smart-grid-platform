@@ -13573,11 +13573,11 @@ declare namespace SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/';
             <!--Optional:-->
             <ns1:HLS5_active>false</ns1:HLS5_active>
             <!--Optional:-->
-            <ns1:Master_key>true</ns1:Master_key>
+            <ns1:Master_key>${=testCase.getPropertyValue( "Master_key" )}</ns1:Master_key>
             <!--Optional:-->
-            <ns1:Global_encryption_unicast_key>?</ns1:Global_encryption_unicast_key>
+            <ns1:Global_encryption_unicast_key>${=testCase.getPropertyValue( "Encryption_key" )}</ns1:Global_encryption_unicast_key>
             <!--Optional:-->
-            <ns1:Authentication_key>?</ns1:Authentication_key>
+            <ns1:Authentication_key>${=testCase.getPropertyValue( "Authentication_key" )}</ns1:Authentication_key>
             <ns1:Delivery_date>2016-05-11T00:00:00.000Z</ns1:Delivery_date>
          </ns1:Device>
       </ns1:AddDeviceRequest>
