@@ -36,7 +36,7 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultWebServiceTemplateFactory.class);
 
-    private Map<String, WebServiceTemplate> webServiceTemplates;
+    private final Map<String, WebServiceTemplate> webServiceTemplates;
     private final Lock lock = new ReentrantLock();
 
     private static final String ORGANISATION_IDENTIFICATION_HEADER = "OrganisationIdentification";
@@ -55,6 +55,8 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
     private String keyStorePassword;
     private KeyStoreFactoryBean trustStoreFactory;
     private String applicationName;
+    private int maxConnectionsPerRoute;
+    private int maxConnectionsTotal;
 
     private DefaultWebServiceTemplateFactory() {
         this.webServiceTemplates = new HashMap<>();
@@ -66,8 +68,8 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
     }
 
     @Override
-    public WebServiceTemplate getTemplate(final String organisationIdentification, final String userName, final URL targetUri)
-            throws WebServiceSecurityException {
+    public WebServiceTemplate getTemplate(final String organisationIdentification, final String userName,
+            final URL targetUri) throws WebServiceSecurityException {
         this.targetUri = targetUri.toString();
         return this.getTemplate(organisationIdentification, userName, this.applicationName);
     }
@@ -81,6 +83,8 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
         private String keyStoreLocation;
         private String keyStorePassword;
         private KeyStoreFactoryBean trustStoreFactory;
+        private int maxConnectionsPerRoute = 2;
+        private int maxConnectionsTotal = 20;
 
         public Builder setApplicationName(final String applicationName) {
             this.applicationName = applicationName;
@@ -122,16 +126,28 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
             return this;
         }
 
+        public Builder setMaxConnectionsPerRoute(final int maxConnectionsPerRoute) {
+            this.maxConnectionsPerRoute = maxConnectionsPerRoute;
+            return this;
+        }
+
+        public Builder setMaxConnectionsTotal(final int maxConnectionsTotal) {
+            this.maxConnectionsTotal = maxConnectionsTotal;
+            return this;
+        }
+
         public DefaultWebServiceTemplateFactory build() {
             final DefaultWebServiceTemplateFactory webServiceTemplateFactory = new DefaultWebServiceTemplateFactory();
-            webServiceTemplateFactory.setMarshaller(this.marshaller);
-            webServiceTemplateFactory.setMessageFactory(this.messageFactory);
-            webServiceTemplateFactory.setTargetUri(this.targetUri);
-            webServiceTemplateFactory.setKeyStoreType(this.keyStoreType);
-            webServiceTemplateFactory.setKeyStoreLocation(this.keyStoreLocation);
-            webServiceTemplateFactory.setKeyStorePassword(this.keyStorePassword);
-            webServiceTemplateFactory.setTrustStoreFactory(this.trustStoreFactory);
-            webServiceTemplateFactory.setApplicationName(this.applicationName);
+            webServiceTemplateFactory.marshaller = this.marshaller;
+            webServiceTemplateFactory.messageFactory = this.messageFactory;
+            webServiceTemplateFactory.targetUri = this.targetUri;
+            webServiceTemplateFactory.keyStoreType = this.keyStoreType;
+            webServiceTemplateFactory.keyStoreLocation = this.keyStoreLocation;
+            webServiceTemplateFactory.keyStorePassword = this.keyStorePassword;
+            webServiceTemplateFactory.trustStoreFactory = this.trustStoreFactory;
+            webServiceTemplateFactory.applicationName = this.applicationName;
+            webServiceTemplateFactory.maxConnectionsPerRoute = this.maxConnectionsPerRoute;
+            webServiceTemplateFactory.maxConnectionsTotal = this.maxConnectionsTotal;
             return webServiceTemplateFactory;
         }
     }
@@ -155,9 +171,11 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
             this.lock.lock();
 
             // Create new webservice template, if not yet available for
-            // a combination of organisation, username, applicationName and targetUri
-            final String url =  (this.targetUri == null) ? "" : "-" + this.targetUri;
-            final String key = organisationIdentification.concat("-").concat(userName).concat(applicationName).concat(url);
+            // a combination of organisation, username, applicationName and
+            // targetUri
+            final String url = (this.targetUri == null) ? "" : "-" + this.targetUri;
+            final String key = organisationIdentification.concat("-").concat(userName).concat(applicationName)
+                    .concat(url);
 
             if (!this.webServiceTemplates.containsKey(key)) {
                 this.webServiceTemplates.put(key,
@@ -211,7 +229,7 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
         keyStoreFactory.afterPropertiesSet();
 
         final KeyStore keyStore = keyStoreFactory.getObject();
-        if (keyStore == null || keyStore.size() == 0) {
+        if ((keyStore == null) || (keyStore.size() == 0)) {
             throw new KeyStoreException("Key store is empty");
         }
 
@@ -226,43 +244,14 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
                 SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
         clientbuilder.setSSLSocketFactory(connectionFactory);
 
+        clientbuilder.setMaxConnPerRoute(this.maxConnectionsPerRoute);
+        clientbuilder.setMaxConnTotal(this.maxConnectionsTotal);
+
         // Add intercepter to prevent issue with duplicate headers.
         // See also:
         // http://forum.spring.io/forum/spring-projects/web-services/118857-spring-ws-2-1-4-0-httpclient-proxy-content-length-header-already-present
         clientbuilder.addInterceptorFirst(new HttpComponentsMessageSender.RemoveSoapHeadersInterceptor());
 
         return new HttpComponentsMessageSender(clientbuilder.build());
-    }
-
-    private void setApplicationName(final String applicationName) {
-        this.applicationName = applicationName;
-    }
-
-    private void setMarshaller(final Jaxb2Marshaller marshaller) {
-        this.marshaller = marshaller;
-    }
-
-    private void setMessageFactory(final SaajSoapMessageFactory messageFactory) {
-        this.messageFactory = messageFactory;
-    }
-
-    private void setKeyStoreType(final String keyStoreType) {
-        this.keyStoreType = keyStoreType;
-    }
-
-    private void setKeyStoreLocation(final String keyStoreLocation) {
-        this.keyStoreLocation = keyStoreLocation;
-    }
-
-    private void setKeyStorePassword(final String keyStorePassword) {
-        this.keyStorePassword = keyStorePassword;
-    }
-
-    private void setTrustStoreFactory(final KeyStoreFactoryBean trustStoreFactory) {
-        this.trustStoreFactory = trustStoreFactory;
-    }
-
-    private void setTargetUri(final String targetUri) {
-        this.targetUri = targetUri;
     }
 }
