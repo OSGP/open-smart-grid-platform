@@ -157,4 +157,7 @@ public class Defaults {
 	public static final boolean MANUFACTURER_USE_PREFIX = false;
 	public static final String DEVICE_MODEL_NAME = "Testmodel";
 	public static final String DEVICE_MODEL_MODEL_CODE = "Test";
+	public static final String PHONENUMBER = "+31 43 1234567";
+	public static final DateTime EXPIRYDATECONTRACT = DateTime.now().plusWeeks(1);
+	public static final String EMAIL = "someone@somewhere.nl";
 }

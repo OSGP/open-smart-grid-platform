@@ -227,4 +227,8 @@ public class Keys {
 	public static final String USE_PREFIX = "UsePrefix";
 	public static final String SUPPLIER = "Supplier";
 	public static final String PLATFORMDOMAINS = "PlatformDomains";
+	public static final String ORGANIZATION_NAME = "Name";
+	public static final String EXPIRYDATECONTRACT = "ExpiryDateContract";
+	public static final String EMAIL = "Email";
+	public static final String PHONENUMBER = "PhoneNumber";
 }
