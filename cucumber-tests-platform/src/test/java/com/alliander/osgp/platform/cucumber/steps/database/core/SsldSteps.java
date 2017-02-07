@@ -38,18 +38,16 @@ public class SsldSteps {
      * @throws Throwable
      */
     @Given("^a ssl device$")
-    public Ssld aSsldDevice(final Map<String, String> settings) throws Throwable {
+    public void aSsldDevice(final Map<String, String> settings) throws Throwable {
 
         // Set the required stuff
         final String deviceIdentification = settings.get("DeviceIdentification");
-        Ssld ssld = new Ssld(deviceIdentification);
+        final Ssld ssld = new Ssld(deviceIdentification);
 
         ssld.setPublicKeyPresent(getBoolean(settings, "PublicKeyPresent", Defaults.DEFAULT_PUBLICKEYPRESENT));
 
-        ssld = this.ssldRepository.save(ssld);
+        this.ssldRepository.save(ssld);
 
         this.deviceSteps.updateDevice(deviceIdentification, settings);
-
-        return ssld;
     }
 }
