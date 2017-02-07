@@ -159,7 +159,6 @@ Feature: CoreDeviceInstallation Device Creating
     Then the add device response contains soap fault
       | FaultCode      | SOAP-ENV:Server                                                  |
       | FaultString    | UNKNOWN_ORGANISATION                                             |
-      | InnerException | com.alliander.osgp.domain.core.exceptions.UnknownEntityException |
       | InnerMessage   | Organisation with id "unknown-organization" could not be found.  |
 
   Scenario: Adding a device which already exists

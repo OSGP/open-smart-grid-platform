@@ -25,7 +25,7 @@ public class SsldSteps {
 
     @Autowired
     private SsldRepository ssldRepository;
-    
+
     @Autowired
     private DeviceSteps deviceSteps;
 
@@ -34,19 +34,22 @@ public class SsldSteps {
      *
      * @param settings
      *            The settings for the device to be used.
+     * @return
      * @throws Throwable
      */
     @Given("^a ssl device$")
-    public void aSslDevice(final Map<String, String> settings) throws Throwable {
-        
+    public Ssld aSsldDevice(final Map<String, String> settings) throws Throwable {
+
         // Set the required stuff
         final String deviceIdentification = settings.get("DeviceIdentification");
-        final Ssld ssld = new Ssld(deviceIdentification);
-        
+        Ssld ssld = new Ssld(deviceIdentification);
+
         ssld.setPublicKeyPresent(getBoolean(settings, "PublicKeyPresent", Defaults.DEFAULT_PUBLICKEYPRESENT));
-        
-        this.ssldRepository.save(ssld);
-        
-        deviceSteps.updateDevice(deviceIdentification, settings);
+
+        ssld = this.ssldRepository.save(ssld);
+
+        this.deviceSteps.updateDevice(deviceIdentification, settings);
+
+        return ssld;
     }
 }

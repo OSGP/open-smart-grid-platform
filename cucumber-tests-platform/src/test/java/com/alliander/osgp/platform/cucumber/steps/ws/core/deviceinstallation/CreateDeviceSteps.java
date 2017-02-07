@@ -43,15 +43,18 @@ public class CreateDeviceSteps {
     @Autowired
     private CoreDeviceInstallationClient client;
 
-    @When("^receiving an add device request$")
-    public void receivingAnAddDeviceRequest(final Map<String, String> settings) throws Throwable {
-
+    private AddDeviceRequest getAddDeviceRequest(final Map<String, String> settings) {
         final AddDeviceRequest request = new AddDeviceRequest();
         final Device device = this.createDevice(settings);
         request.setDevice(device);
+        return request;
+    }
+
+    @When("^receiving an add device request$")
+    public void receivingAnAddDeviceRequest(final Map<String, String> settings) throws Throwable {
 
         try {
-            ScenarioContext.Current().put(Keys.RESPONSE, this.client.addDevice(request));
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.addDevice(this.getAddDeviceRequest(settings)));
         } catch (final SoapFaultClientException ex) {
             ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
@@ -61,15 +64,18 @@ public class CreateDeviceSteps {
     public void receivingAnAddDeviceRequestWithAnUnknownOrganization(final Map<String, String> settings)
             throws Throwable {
 
-        final AddDeviceRequest request = new AddDeviceRequest();
-        final Device device = this.createDevice(settings);
-        request.setDevice(device);
-
         try {
-            ScenarioContext.Current().put(Keys.RESPONSE, this.client.addDevice(request, "unknown-organization"));
+            ScenarioContext.Current().put(Keys.RESPONSE,
+                    this.client.addDevice(this.getAddDeviceRequest(settings), "unknown-organization"));
         } catch (final SoapFaultClientException ex) {
             ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
+    }
+
+    @When("^receiving an add device request with an empty organization$")
+    public void receivingAnAddDeviceRequestWithAnEmptyOrganization(final Map<String, String> settings)
+            throws Throwable {
+        this.receivingAnAddDeviceRequest(settings);
     }
 
     /**
