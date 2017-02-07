@@ -72,12 +72,6 @@ public class CreateDeviceSteps {
         }
     }
 
-    @When("^receiving an add device request with an empty organization$")
-    public void receivingAnAddDeviceRequestWithAnEmptyOrganization(final Map<String, String> settings)
-            throws Throwable {
-        this.receivingAnAddDeviceRequest(settings);
-    }
-
     /**
      * Verify the response of a add device request.
      *
