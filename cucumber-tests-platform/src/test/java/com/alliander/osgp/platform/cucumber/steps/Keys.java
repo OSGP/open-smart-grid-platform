@@ -22,6 +22,7 @@ public class Keys {
     public static final String KEY_VERSION = "Version";
     public static final String KEY_ACTIVE = "Active";
     public static final String KEY_ORGANIZATION = "Organization";
+    public static final String KEY_ORGANIZATION_NAME = "OrganizationName";
     public static final String KEY_ALIAS = "alias";
     public static final String KEY_CITY = "containerCity";
     public static final String KEY_POSTCODE = "containerPostalCode";
