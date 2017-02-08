@@ -2,4 +2,3 @@
 	path = Shared
 	url = https://github.com/OSGP/Shared.git
 	branch = OC-258_Migrate_microgrids_functionality_to_new_message_processing_solution
-
