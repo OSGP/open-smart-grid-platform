@@ -20,6 +20,7 @@ import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.RemoveDeviceR
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
+import com.alliander.osgp.platform.cucumber.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.platform.cucumber.support.ws.admin.AdminDeviceManagementClient;
 
 import cucumber.api.java.en.Then;
@@ -60,5 +61,17 @@ public class RemoveDeviceSteps {
     @Then("^the remove device response is successful$")
     public void theRemoveDeviceResponseIsSuccessful() throws Throwable {
         Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof RemoveDeviceResponse);
+    }
+
+    /**
+     * The check for the response from the Platform.
+     *
+     * @param expectedResponseData
+     *            The table with the expected fields in the response.
+     * @throws Throwable
+     */
+    @Then("^the remove device response contains soap fault$")
+    public void theRemoveDeviceResponseContainsSoapFault(final Map<String, String> expectedResult) throws Throwable {
+        GenericResponseSteps.verifySoapFault(expectedResult);
     }
 }

@@ -3,8 +3,6 @@ Feature: AdminDeviceManagement Device Removal
   I want to be able to perform DeviceManagement operations on a device
   In order to ...
 
-  #  This test doesn't work because the backend doesn't remove the device.
-  @Skip
   Scenario Outline: Remove A Device
     Given a device
       | DeviceIdentification | <DeviceIdentification> |
@@ -16,3 +14,5 @@ Feature: AdminDeviceManagement Device Removal
     Examples: 
       | DeviceIdentification |
       | TEST1024000000001    |
+      #
+      # Note: Unauthorized test with a 'DeviceFunctionGroup' other than 'OWNER'
