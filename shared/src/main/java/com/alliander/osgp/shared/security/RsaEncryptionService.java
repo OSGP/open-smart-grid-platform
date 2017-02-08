@@ -81,9 +81,9 @@ public class RsaEncryptionService {
     private static final String PUBLIC_KEY_MUST_BE_CONFIGURED_FOR_ENCRYPTION = "Public key must be configured for encryption";
     private static final String PRIVATE_KEY_MUST_BE_CONFIGURED_FOR_DECRYPTION = "Private key must be configured for decryption";
 
-    @Value("${encryption.rsa.private.key.path}")
+    @Value("${encryption.rsa.private.key.path:#{null}}")
     private String rsaPrivateKeyPath;
-    @Value("${encryption.rsa.public.key.path}")
+    @Value("${encryption.rsa.public.key.path:#{null}}")
     private String rsaPublicKeyPath;
 
     private KeyPair keyPair;
