@@ -10,19 +10,20 @@ Feature: BasicOsgpFunctions Protocol Sequence Number
       | DeviceIdentification | TEST1024000000001 |
     When receiving a confirm request
       | DeviceIdentification | TEST1024000000001    |
-      | NextSequenceNumber   | <NextSequenceNumber> |
+      | AddNumberToSequenceNumber   | <AddNumberToSequenceNumber> |
     Then the confirm response contains
-      | IsUpdated | <IsUpdated> |
+      | AddNumberToSequenceNumber | <AddNumberToSequenceNumber> |
+      | IsUpdated          | <IsUpdated>          |
 
+		# Note: In the file 'DeviceRegistrationService' is a check which doesn't accept numbers below the '0'. When this happens the result is always false.
     Examples: 
-      | NextSequenceNumber | IsUpdated |
+      | AddNumberToSequenceNumber | IsUpdated |
       #|                 -6 | true      |
       #|                 -3 | true      |
-      #|                  0 | true      |
-      #|                  3 | true      |
-      #|                  6 | true      |
-      #|                 -7 | false     |
-      #|                -10 | false     |
-      #|                  7 | false     |
-      #|                 10 | false     |
-      |                 20 | false     |
+      |                  3 | true      |
+      |                  6 | true      |
+      |                -10 | false     |
+      |                 -7 | false     |
+      |                  0 | false     |
+      |                  7 | false     |
+      |                 10 | false     |

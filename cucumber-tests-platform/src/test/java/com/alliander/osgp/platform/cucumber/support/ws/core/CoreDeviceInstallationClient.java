@@ -81,7 +81,6 @@ public class CoreDeviceInstallationClient extends BaseClient {
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
-
         return (StartDeviceTestResponse) wst.marshalSendAndReceive(request);
     }
 

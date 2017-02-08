@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.platform.cucumber.steps.ws.basicosgpfunctions;
 
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getBoolean;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getInteger;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 
@@ -48,7 +49,7 @@ public class ProtocolSequenceNumberSteps {
             final Map<String, String> requestParameters) throws Throwable {
 
         ScenarioContext.Current().put("NumberToAddAsNextSequenceNumber",
-                getInteger(requestParameters, "NextSequenceNumber"));
+                getInteger(requestParameters, "AddNumberToSequenceNumber"));
 
         this.oslpDeviceSteps.theDeviceReturnsAStartDeviceResponseOverOSLP("OK");
         this.startDeviceTestSteps.receivingAStartDeviceTestRequest(requestParameters);
@@ -63,17 +64,21 @@ public class ProtocolSequenceNumberSteps {
         asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
         request.setAsyncRequest(asyncRequest);
 
-        final StartDeviceTestResponse response = this.client.getStartDeviceTestResponse(request);
-        System.out.println(response);
+        try {
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.getStartDeviceTestResponse(request));
+        } catch (final SoapFaultClientException ex) {
+            ScenarioContext.Current().put(Keys.RESPONSE, ex);
+        }
     }
 
     @Then("^the confirm response contains$")
     public void anExistingOsgpDeviceWithSequenceNumber(final Map<String, String> expectedResponse) {
         final Object response = ScenarioContext.Current().get(Keys.RESPONSE);
 
-        Assert.assertTrue(!(response instanceof SoapFaultClientException));
-
-        // Assert.assertEquals(getBoolean(expectedResponse, "IsUpdated"),
-        // ScenarioContext.Current().get("IsUpdated"));
+        final String nextSequenceNumber = getString(expectedResponse, "AddNumberToSequenceNumber");
+        Assert.assertEquals(nextSequenceNumber + ": " + getBoolean(expectedResponse, "IsUpdated"),
+                nextSequenceNumber + ": "
+                        + ((response instanceof StartDeviceTestResponse) && ((StartDeviceTestResponse) response)
+                                .getResult().toString().equals(Defaults.EXPECTED_RESULT_OK)));
     }
 }
