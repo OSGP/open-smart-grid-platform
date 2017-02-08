@@ -34,81 +34,75 @@ import cucumber.api.java.en.When;
 
 public class GetStatusSteps extends GlueBase {
 
-    @Autowired
-    private CoreDeviceConfiguration configuration;
+	@Autowired
+	private CoreDeviceInstallationClient client;
 
-    @Autowired
-    private CoreDeviceInstallationClient client;
+	@Autowired
+	private CoreDeviceConfiguration configuration;
 
-    @When("receiving a device installation get status request")
-    public void receivingADeviceInstallationGetStatusRequest(final Map<String, String> settings) throws Throwable {
-        final GetStatusRequest request = new GetStatusRequest();
-        
-        request.setDeviceIdentification(getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+	@When("receiving a device installation get status request")
+	public void receivingADeviceInstallationGetStatusRequest(final Map<String, String> settings) throws Throwable {
+		final GetStatusRequest request = new GetStatusRequest();
 
-        try {
-            ScenarioContext.Current().put(Keys.RESPONSE, this.client.getStatus(request));
-        } catch (final SoapFaultClientException ex) {
-            ScenarioContext.Current().put(Keys.RESPONSE, ex);
-        }
-    }
+		request.setDeviceIdentification(
+				getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-    /**
-    *
-    * @param expectedResponseData
-    * @throws Throwable
-    */
-   @Then("the device installation get status async response contains")
-   public void theDeviceInstallationGetStatusAsyncResponseContains(final Map<String, String> expectedResponseData)
-           throws Throwable {
-       final GetStatusAsyncResponse response = (GetStatusAsyncResponse) ScenarioContext.Current()
-               .get(Keys.RESPONSE);
+		try {
+			ScenarioContext.Current().put(Keys.RESPONSE, this.client.getStatus(request));
+		} catch (final SoapFaultClientException ex) {
+			ScenarioContext.Current().put(Keys.RESPONSE, ex);
+		}
+	}
 
-       Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
-       Assert.assertEquals(getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION),
-               response.getAsyncResponse().getDeviceId());
+	@Then("the device installation get status async response contains")
+	public void theDeviceInstallationGetStatusAsyncResponseContains(final Map<String, String> expectedResponseData)
+			throws Throwable {
+		final GetStatusAsyncResponse response = (GetStatusAsyncResponse) ScenarioContext.Current().get(Keys.RESPONSE);
 
-       // Save the returned CorrelationUid in the Scenario related context for
-       // further use.
-       saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
-               getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
-                       Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
-   }
+		Assert.assertNotNull(response.getAsyncResponse().getCorrelationUid());
+		Assert.assertEquals(getString(expectedResponseData, Keys.KEY_DEVICE_IDENTIFICATION),
+				response.getAsyncResponse().getDeviceId());
 
-   /**
-    *
-    * @param deviceIdentification
-    * @throws Throwable
-    */
-   @Then("the platform buffers a device installation get status response message for device \"([^\"]*)\"")
-   public void thePlatformBuffersADeviceInstallationGetStatusResponseMessageForDevice(final String deviceIdentification, final Map<String, String> expectedResult) throws Throwable
-   {
-       GetStatusAsyncRequest request = new GetStatusAsyncRequest();
-       AsyncRequest asyncRequest = new AsyncRequest();
-       asyncRequest.setDeviceId(deviceIdentification);
-       asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
-       request.setAsyncRequest(asyncRequest);
-       
-       boolean success = false;
-       int count = 0;
-       while (!success) {
-           if (count > configuration.getTimeout()) {
-               Assert.fail("Timeout");
-           }
-           
-           count++;
-           Thread.sleep(1000);
+		saveCorrelationUidInScenarioContext(response.getAsyncResponse().getCorrelationUid(),
+				getString(expectedResponseData, Keys.KEY_ORGANIZATION_IDENTIFICATION,
+						Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+	}
 
-           try {
-               GetStatusResponse response = client.getStatusResponse(request);
-               
-               Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.KEY_RESULT)), response.getResult());
-               
-               success = true; 
-           }
-           catch(Exception ex) {
-               // Do nothing
-           }
-       }
-   }
+	/**
+	 *
+	 * @param deviceIdentification
+	 * @throws Throwable
+	 */
+	@Then("the platform buffers a device installation get status response message for device \"([^\"]*)\"")
+	public void thePlatformBuffersADeviceInstallationGetStatusResponseMessageForDevice(
+			final String deviceIdentification, final Map<String, String> expectedResult) throws Throwable {
+		final GetStatusAsyncRequest request = new GetStatusAsyncRequest();
+		final AsyncRequest asyncRequest = new AsyncRequest();
+		asyncRequest.setDeviceId(deviceIdentification);
+		asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
+		request.setAsyncRequest(asyncRequest);
+
+		GetStatusResponse response = null;
+		boolean success = false;
+		int count = 0;
+		while (!success) {
+			if (count > this.configuration.getTimeout()) {
+				Assert.fail("Timeout");
+			}
+
+			count++;
+			Thread.sleep(1000);
+
+			try {
+				response = this.client.getStatusResponse(request);
+
+				success = true;
+			} catch (final Exception ex) {
+				// Do nothing
+			}
+		}
+
+		Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.KEY_RESULT)),
+				response.getResult());
+	}
 }

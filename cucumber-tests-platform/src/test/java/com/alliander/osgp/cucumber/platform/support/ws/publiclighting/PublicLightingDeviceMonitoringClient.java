@@ -29,35 +29,35 @@ import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 @Component
 public class PublicLightingDeviceMonitoringClient extends BaseClient {
 
-    @Autowired
-    private DefaultWebServiceTemplateFactory publicLightingDeviceMonitoringWstf;
+	@Autowired
+	private DefaultWebServiceTemplateFactory publicLightingDeviceMonitoringWstf;
 
-    public GetActualPowerUsageAsyncResponse getActualPowerUsage(final GetActualPowerUsageRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        final WebServiceTemplate webServiceTemplate = this.publicLightingDeviceMonitoringWstf
-                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
-        return (GetActualPowerUsageAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
-    }
+	public GetActualPowerUsageAsyncResponse getActualPowerUsage(final GetActualPowerUsageRequest request)
+			throws WebServiceSecurityException, GeneralSecurityException, IOException {
+		final WebServiceTemplate webServiceTemplate = this.publicLightingDeviceMonitoringWstf
+				.getTemplate(this.getOrganizationIdentification(), this.getUserName());
+		return (GetActualPowerUsageAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
+	}
 
-    public GetActualPowerUsageResponse getGetActualPowerUsageResponse(final GetActualPowerUsageAsyncRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        final WebServiceTemplate webServiceTemplate = this.publicLightingDeviceMonitoringWstf
-                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
-        return (GetActualPowerUsageResponse) webServiceTemplate.marshalSendAndReceive(request);
-    }
+	public GetActualPowerUsageResponse getGetActualPowerUsageResponse(final GetActualPowerUsageAsyncRequest request)
+			throws WebServiceSecurityException, GeneralSecurityException, IOException {
+		final WebServiceTemplate webServiceTemplate = this.publicLightingDeviceMonitoringWstf
+				.getTemplate(this.getOrganizationIdentification(), this.getUserName());
+		return (GetActualPowerUsageResponse) webServiceTemplate.marshalSendAndReceive(request);
+	}
 
-    public GetPowerUsageHistoryAsyncResponse getPowerUsageHistory(final GetPowerUsageHistoryRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        final WebServiceTemplate webServiceTemplate = this.publicLightingDeviceMonitoringWstf
-                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
-        return (GetPowerUsageHistoryAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
-    }
+	public GetPowerUsageHistoryResponse getGetPowerUsageHistoryResponse(final GetPowerUsageHistoryAsyncRequest request)
+			throws WebServiceSecurityException, GeneralSecurityException, IOException {
+		final WebServiceTemplate webServiceTemplate = this.publicLightingDeviceMonitoringWstf
+				.getTemplate(this.getOrganizationIdentification(), this.getUserName());
+		return (GetPowerUsageHistoryResponse) webServiceTemplate.marshalSendAndReceive(request);
+	}
 
-    public GetPowerUsageHistoryResponse getGetPowerUsageHistoryResponse(final GetPowerUsageHistoryAsyncRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        final WebServiceTemplate webServiceTemplate = this.publicLightingDeviceMonitoringWstf
-                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
-        return (GetPowerUsageHistoryResponse) webServiceTemplate.marshalSendAndReceive(request);
-    }
+	public GetPowerUsageHistoryAsyncResponse getPowerUsageHistory(final GetPowerUsageHistoryRequest request)
+			throws WebServiceSecurityException, GeneralSecurityException, IOException {
+		final WebServiceTemplate webServiceTemplate = this.publicLightingDeviceMonitoringWstf
+				.getTemplate(this.getOrganizationIdentification(), this.getUserName());
+		return (GetPowerUsageHistoryAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
+	}
 
 }

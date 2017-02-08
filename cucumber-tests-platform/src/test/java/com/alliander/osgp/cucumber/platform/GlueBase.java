@@ -10,9 +10,9 @@ package com.alliander.osgp.cucumber.platform;
 import org.springframework.test.context.ContextConfiguration;
 
 /**
- * Stepsbase which tells which ApplicationContext to use.
+ * Glue base which tells which ApplicationContext to use.
  */
-@ContextConfiguration(classes=ApplicationContext.class)
+@ContextConfiguration(classes = ApplicationContext.class)
 public abstract class GlueBase {
 
 }

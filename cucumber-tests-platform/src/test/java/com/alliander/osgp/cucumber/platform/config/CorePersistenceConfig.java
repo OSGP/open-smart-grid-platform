@@ -24,69 +24,67 @@ import com.alliander.osgp.domain.microgrids.repositories.RtuDeviceRepository;
 
 @Configuration
 @EnableJpaRepositories(entityManagerFactoryRef = "entityMgrCore", transactionManagerRef = "txMgrCore", basePackageClasses = {
-        DeviceRepository.class, RtuDeviceRepository.class })
+		DeviceRepository.class, RtuDeviceRepository.class })
 public class CorePersistenceConfig extends ApplicationPersistenceConfiguration {
 
-    @Value("${osgpcoredbs.url}")
-    private String databaseUrl;
+	@Value("${osgpcoredbs.url}")
+	private String databaseUrl;
 
-    @Value("${entitymanager.packages.to.scan.core}")
-    private String entitymanagerPackagesToScan;
+	@Value("${entitymanager.packages.to.scan.core}")
+	private String entitymanagerPackagesToScan;
 
-    public CorePersistenceConfig() {
-    }
+	public CorePersistenceConfig() {
+	}
 
-    @Override
-    protected String getDatabaseUrl() {
-        return this.databaseUrl;
-    }
+	/**
+	 * Method for creating the Data Source.
+	 *
+	 * @return DataSource
+	 */
+	@Primary
+	@Bean(name = "dsCore")
+	public DataSource dataSource() {
+		return this.makeDataSource();
+	}
 
-    @Override
-    protected String getEntitymanagerPackagesToScan() {
-        return this.entitymanagerPackagesToScan;
-    }
+	/**
+	 * Method for creating the Entity Manager Factory Bean.
+	 *
+	 * @return LocalContainerEntityManagerFactoryBean
+	 * @throws ClassNotFoundException
+	 *             when class not found
+	 */
+	@Primary
+	@Bean(name = "entityMgrCore")
+	public LocalContainerEntityManagerFactoryBean entityMgrCore(@Qualifier("dsCore") final DataSource dataSource)
+			throws ClassNotFoundException {
 
-    /**
-     * Method for creating the Data Source.
-     *
-     * @return DataSource
-     */
-    @Primary
-    @Bean(name = "dsCore")
-    public DataSource dataSource() {
-        return this.makeDataSource();
-    }
+		return this.makeEntityManager("OSGP_CUCUMBER_CORE", dataSource);
+	}
 
-    /**
-     * Method for creating the Entity Manager Factory Bean.
-     *
-     * @return LocalContainerEntityManagerFactoryBean
-     * @throws ClassNotFoundException
-     *             when class not found
-     */
-    @Primary
-    @Bean(name = "entityMgrCore")
-    public LocalContainerEntityManagerFactoryBean entityMgrCore(@Qualifier("dsCore") final DataSource dataSource)
-            throws ClassNotFoundException {
+	@Override
+	protected String getDatabaseUrl() {
+		return this.databaseUrl;
+	}
 
-        return this.makeEntityManager("OSGP_CUCUMBER_CORE", dataSource);
-    }
+	@Override
+	protected String getEntitymanagerPackagesToScan() {
+		return this.entitymanagerPackagesToScan;
+	}
 
-    /**
-     * Method for creating the Transaction Manager.
-     *
-     * @param EntityManagerFactory
-     *            entityManagerFactory The entity manager factory to create.
-     * @return JpaTransactionManager
-     * @throws ClassNotFoundException
-     *             when class not found
-     */
-    @Primary
-    @Bean(name = "txMgrCore")
-    public JpaTransactionManager txMgrCore(@Qualifier("entityMgrCore") final EntityManagerFactory entityManagerFactory)
-            throws ClassNotFoundException {
+	/**
+	 * Method for creating the Transaction Manager.
+	 *
+	 * @return JpaTransactionManager
+	 * @throws ClassNotFoundException
+	 *             when class not found
+	 */
+	@Primary
+	@Bean(name = "txMgrCore")
+	public JpaTransactionManager txMgrCore(@Qualifier("entityMgrCore") final EntityManagerFactory entityManagerFactory)
+			throws ClassNotFoundException {
 
-        return new JpaTransactionManager(entityManagerFactory);
-    }
+		return new JpaTransactionManager(entityManagerFactory);
+	}
 
 }

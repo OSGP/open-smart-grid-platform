@@ -206,7 +206,7 @@ public class AuthorizeDeviceFunctions {
 
         final DeviceAuthorisation deviceAuthorisation = response.getDeviceAuthorisations().get(0);
         deviceAuthorisation
-        	.setFunctionGroup(getEnum(requestParameters, Keys.KEY_DEVICEFUNCTIONGROUP, DeviceFunctionGroup.class));
+        	.setFunctionGroup(getEnum(requestParameters, Keys.KEY_DEVICE_FUNCTION_GROUP, DeviceFunctionGroup.class));
 
         updateDeviceAuthorisationsRequest.getDeviceAuthorisations().add(deviceAuthorisation);
 

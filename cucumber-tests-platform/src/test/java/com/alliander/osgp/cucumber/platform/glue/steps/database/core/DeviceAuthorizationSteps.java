@@ -54,7 +54,7 @@ public class DeviceAuthorizationSteps extends GlueBase {
     	final Organisation organization = this.organizationRepository.findByOrganisationIdentification(
     			getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
-    	final DeviceFunctionGroup functionGroup = getEnum(settings, Keys.KEY_DEVICEFUNCTIONGROUP, DeviceFunctionGroup.class, DeviceFunctionGroup.OWNER);
+    	final DeviceFunctionGroup functionGroup = getEnum(settings, Keys.KEY_DEVICE_FUNCTION_GROUP, DeviceFunctionGroup.class, DeviceFunctionGroup.OWNER);
 
         final DeviceAuthorization authorization = device.addAuthorization(organization, functionGroup);
 

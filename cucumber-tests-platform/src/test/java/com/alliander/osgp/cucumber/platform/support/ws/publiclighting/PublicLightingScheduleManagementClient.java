@@ -25,22 +25,22 @@ import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 @Component
 public class PublicLightingScheduleManagementClient extends BaseClient {
 
-    @Autowired
-    private DefaultWebServiceTemplateFactory publicLightingScheduleManagementWstf;
+	@Autowired
+	private DefaultWebServiceTemplateFactory publicLightingScheduleManagementWstf;
 
-    public SetScheduleAsyncResponse setSchedule(final SetScheduleRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        final WebServiceTemplate webServiceTemplate = this.publicLightingScheduleManagementWstf
-                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
+	public SetScheduleResponse getSetSchedule(final SetScheduleAsyncRequest request)
+			throws WebServiceSecurityException, GeneralSecurityException, IOException {
+		final WebServiceTemplate webServiceTemplate = this.publicLightingScheduleManagementWstf
+				.getTemplate(this.getOrganizationIdentification(), this.getUserName());
 
-        return (SetScheduleAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
-    }
+		return (SetScheduleResponse) webServiceTemplate.marshalSendAndReceive(request);
+	}
 
-    public SetScheduleResponse getSetSchedule(final SetScheduleAsyncRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        final WebServiceTemplate webServiceTemplate = this.publicLightingScheduleManagementWstf
-                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
+	public SetScheduleAsyncResponse setSchedule(final SetScheduleRequest request)
+			throws WebServiceSecurityException, GeneralSecurityException, IOException {
+		final WebServiceTemplate webServiceTemplate = this.publicLightingScheduleManagementWstf
+				.getTemplate(this.getOrganizationIdentification(), this.getUserName());
 
-        return (SetScheduleResponse) webServiceTemplate.marshalSendAndReceive(request);
-    }
+		return (SetScheduleAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
+	}
 }

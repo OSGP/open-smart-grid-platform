@@ -4,7 +4,7 @@ Feature: CoreDeviceManagement Set Event Notifications
   So that ...
 
   @OslpMockServer
-  Scenario Outline: Set Event Notifications
+  Scenario Outline: Set event notifications
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
     And the device returns a set event notification "OK" over OSLP

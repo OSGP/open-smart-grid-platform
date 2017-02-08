@@ -19,7 +19,7 @@ Feature: AdminDeviceManagement Device Activation
     Then the activate device response contains soap fault
       | Message | UNKNOWN_DEVICE |
 
-  Scenario: Create An Organization As An Unauthorized Organization
+  Scenario: Create an organization as an unauthorized organization
     When receiving an activate device request as an unauthorized organization
       | DeviceIdentification | TEST1024000000001 |
     Then the activate device response contains soap fault

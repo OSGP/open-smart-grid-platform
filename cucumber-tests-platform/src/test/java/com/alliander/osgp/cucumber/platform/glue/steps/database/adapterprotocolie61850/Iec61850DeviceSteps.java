@@ -33,59 +33,58 @@ import cucumber.api.java.en.Given;
  */
 public class Iec61850DeviceSteps extends GlueBase {
 
-    private static final String DEFAULT_DEVICE_TYPE = "RTU";
-    private static final String DEFAULT_PROTOCOL = "IEC61850";
-    private static final String DEFAULT_PROTOCOL_VERSION = "1.0";
+	private static final String DEFAULT_DEVICE_TYPE = "RTU";
+	private static final String DEFAULT_PROTOCOL = "IEC61850";
+	private static final String DEFAULT_PROTOCOL_VERSION = "1.0";
 
-    private static final Map<String, String> RTU_DEFAULT_SETTINGS = Collections
-            .unmodifiableMap(new HashMap<String, String>() {
-                private static final long serialVersionUID = 1L;
-                {
-                    this.put(Keys.KEY_DEVICE_TYPE, DEFAULT_DEVICE_TYPE);
-                    this.put(Keys.KEY_PROTOCOL, DEFAULT_PROTOCOL);
-                    this.put(Keys.KEY_PROTOCOL_VERSION, DEFAULT_PROTOCOL_VERSION);
-                }
-            });
+	private static final Map<String, String> RTU_DEFAULT_SETTINGS = Collections
+			.unmodifiableMap(new HashMap<String, String>() {
+				private static final long serialVersionUID = 1L;
+				{
+					this.put(Keys.KEY_DEVICE_TYPE, DEFAULT_DEVICE_TYPE);
+					this.put(Keys.KEY_PROTOCOL, DEFAULT_PROTOCOL);
+					this.put(Keys.KEY_PROTOCOL_VERSION, DEFAULT_PROTOCOL_VERSION);
+				}
+			});
 
-    @Autowired
-    private Iec61850MockServerConfig iec61850MockServerConfig;
+	@Autowired
+	private Iec61850DeviceRepository iec61850DeviceRespository;
 
-    @Autowired
-    private Iec61850DeviceRepository iec61850DeviceRespository;
+	@Autowired
+	private Iec61850MockServerConfig iec61850MockServerConfig;
 
-    @Autowired
-    private RtuDeviceSteps rtuDeviceSteps;
+	@Autowired
+	private RtuDeviceSteps rtuDeviceSteps;
 
-    /**
-     * Creates an IEC61850 device.
-     * 
-     * @param settings
-     * @throws Throwable
-     */
-    @Given("^an rtu iec61850 device$")
-    public void anRtuIec61850Device(final Map<String, String> settings) throws Throwable {
+	/**
+	 * Creates an IEC61850 device.
+	 * 
+	 * @param settings
+	 * @throws Throwable
+	 */
+	@Given("^an rtu iec61850 device$")
+	public void anRtuIec61850Device(final Map<String, String> settings) throws Throwable {
 
-        ScenarioContext.Current().put(Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION);
-        final Map<String, String> rtuSettings = SettingsHelper.addAsDefaults(settings, RTU_DEFAULT_SETTINGS);
-        rtuSettings.put(Keys.KEY_NETWORKADDRESS, this.iec61850MockServerConfig.iec61850MockNetworkAddress());
-        rtuSettings.put(Keys.KEY_NETWORKADDRESS, this.iec61850MockServerConfig.iec61850MockNetworkAddress());
-        this.rtuDeviceSteps.anRtuDevice(rtuSettings);
+		ScenarioContext.Current().put(Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION);
+		final Map<String, String> rtuSettings = SettingsHelper.addAsDefaults(settings, RTU_DEFAULT_SETTINGS);
+		rtuSettings.put(Keys.KEY_NETWORKADDRESS, this.iec61850MockServerConfig.iec61850MockNetworkAddress());
+		this.rtuDeviceSteps.anRtuDevice(rtuSettings);
 
-        createIec61850Device(rtuSettings);
-    }
+		this.createIec61850Device(rtuSettings);
+	}
 
-    @Transactional("txMgrIec61850")
-    private void createIec61850Device(final Map<String, String> settings) {
+	@Transactional("txMgrIec61850")
+	private void createIec61850Device(final Map<String, String> settings) {
 
-        /*
-         * Make sure an ICD filename and port corresponding to the mock server
-         * settings will be used from the application to connect to the device.
-         */
-        final Iec61850Device iec61850Device = new Iec61850Device(
-                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-        iec61850Device.setIcdFilename(this.iec61850MockServerConfig.iec61850MockIcdFilename());
-        iec61850Device.setPort(this.iec61850MockServerConfig.iec61850MockPort());
+		/*
+		 * Make sure an ICD filename and port corresponding to the mock server
+		 * settings will be used from the application to connect to the device.
+		 */
+		final Iec61850Device iec61850Device = new Iec61850Device(
+				getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+		iec61850Device.setIcdFilename(this.iec61850MockServerConfig.iec61850MockIcdFilename());
+		iec61850Device.setPort(this.iec61850MockServerConfig.iec61850MockPort());
 
-        this.iec61850DeviceRespository.save(iec61850Device);
-    }
+		this.iec61850DeviceRespository.save(iec61850Device);
+	}
 }

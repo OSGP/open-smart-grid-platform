@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 import com.alliander.osgp.cucumber.platform.GlueBase;
 import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
-import com.alliander.osgp.cucumber.platform.dlms.hooks.database.DlmsDatabaseSteps;
+import com.alliander.osgp.cucumber.platform.dlms.database.DlmsDatabase;
 import com.alliander.osgp.cucumber.platform.dlms.support.ServiceEndpoint;
 
 import cucumber.api.java.After;
@@ -23,46 +23,46 @@ import cucumber.api.java.Before;
  */
 public class ScenarioHooks extends GlueBase {
 
-    @Autowired
-    private DlmsDatabaseSteps dlmsDatabaseSteps;
+	@Value("${alarm.notifications.host}")
+	private String alarmNotificationsHost;
 
-    @Autowired
-    private ServiceEndpoint serviceEndpoint;
+	@Value("${alarm.notifications.port}")
+	private int alarmNotificationsPort;
 
-    @Value("${service.endpoint.host}")
-    private String serviceEndpointHost;
+	@Autowired
+	private DlmsDatabase dlmsDatabaseSteps;
 
-    @Value("${alarm.notifications.host}")
-    private String alarmNotificationsHost;
+	@Autowired
+	private ServiceEndpoint serviceEndpoint;
 
-    @Value("${alarm.notifications.port}")
-    private int alarmNotificationsPort;
+	@Value("${service.endpoint.host}")
+	private String serviceEndpointHost;
 
-    /**
-     * Executed before each scenario.
-     *
-     * Remove all stuff from the database before each test. Each test should
-     * stand on its own. Therefore you should guarantee that the scenario is
-     * complete.
-     */
-    @Before
-    public void beforeScenario() {
-        this.dlmsDatabaseSteps.prepareDatabaseForScenario();
-        this.prepareServiceEndpoint();
-    }
+	/**
+	 * Executed after each scenario.
+	 */
+	@After
+	public void afterScenario() {
+		// Destroy scenario context as the scenario is finished.
+		ScenarioContext.context = null;
+	}
 
-    private void prepareServiceEndpoint() {
-        this.serviceEndpoint.setServiceEndpoint(this.serviceEndpointHost);
-        this.serviceEndpoint.setAlarmNotificationsHost(this.alarmNotificationsHost);
-        this.serviceEndpoint.setAlarmNotificationsPort(this.alarmNotificationsPort);
-    }
+	/**
+	 * Executed before each scenario.
+	 *
+	 * Remove all stuff from the database before each test. Each test should
+	 * stand on its own. Therefore you should guarantee that the scenario is
+	 * complete.
+	 */
+	@Before
+	public void beforeScenario() {
+		this.dlmsDatabaseSteps.prepareDatabaseForScenario();
+		this.prepareServiceEndpoint();
+	}
 
-    /**
-     * Executed after each scenario.
-     */
-    @After
-    public void afterScenario() {
-        // Destroy scenario context as the scenario is finished.
-        ScenarioContext.context = null;
-    }
+	private void prepareServiceEndpoint() {
+		this.serviceEndpoint.setServiceEndpoint(this.serviceEndpointHost);
+		this.serviceEndpoint.setAlarmNotificationsHost(this.alarmNotificationsHost);
+		this.serviceEndpoint.setAlarmNotificationsPort(this.alarmNotificationsPort);
+	}
 }
