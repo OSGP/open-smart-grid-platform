@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.cucumber.platform.hooks.database;
+package com.alliander.osgp.cucumber.platform.database;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -35,7 +35,7 @@ import com.alliander.osgp.domain.microgrids.repositories.RtuDeviceRepository;
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 
 @Component
-public class DatabaseSteps {
+public class CoreDatabase {
 
     @Autowired
     private OrganisationRepository organisationRepository;
