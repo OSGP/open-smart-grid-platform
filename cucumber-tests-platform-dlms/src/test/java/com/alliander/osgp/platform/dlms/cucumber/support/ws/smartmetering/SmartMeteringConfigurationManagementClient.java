@@ -9,14 +9,36 @@ package com.alliander.osgp.platform.dlms.cucumber.support.ws.smartmetering;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.ws.client.core.WebServiceTemplate;
 
-import com.alliander.osgp.platform.cucumber.support.ws.BaseClient;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusResponse;
+import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Component
-public class SmartMeteringConfigurationManagementClient extends BaseClient {
+public class SmartMeteringConfigurationManagementClient extends SmartMeteringBaseClient {
 
     @Autowired
     private DefaultWebServiceTemplateFactory smartMeteringConfigurationManagementWstf;
 
+    public GetAdministrativeStatusAsyncResponse getAdministrativeStatus(final GetAdministrativeStatusRequest request)
+            throws WebServiceSecurityException {
+        final WebServiceTemplate webServiceTemplate = this.smartMeteringConfigurationManagementWstf
+                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
+        return (GetAdministrativeStatusAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
+    }
+
+    public GetAdministrativeStatusResponse retrieveGetAdministrativeStatusResponse(
+            final GetAdministrativeStatusAsyncRequest asyncRequest) throws WebServiceSecurityException {
+
+        final String correlationUid = asyncRequest.getCorrelationUid();
+        this.waitForDlmsResponseData(correlationUid);
+
+        final WebServiceTemplate webServiceTemplate = this.smartMeteringConfigurationManagementWstf
+                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
+        return (GetAdministrativeStatusResponse) webServiceTemplate.marshalSendAndReceive(asyncRequest);
+    }
 }

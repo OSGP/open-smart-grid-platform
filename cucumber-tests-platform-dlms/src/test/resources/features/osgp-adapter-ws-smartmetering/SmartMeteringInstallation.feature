@@ -23,8 +23,7 @@ Feature: SmartMetering Installation
       | DeviceIdentification | E0026000059790003 |
     And the get add device request response should be ok
     And the dlms device with id "E0026000059790003" exists
-    # TODO device needs to be activated before requests can be performed
-    #    And a request to the device can be performed
+    And a request to the device can be performed after activation
     And the stored keys are not equal to the received keys
 
   Scenario: Couple G-meter "TESTG102400000001" to E-meter "TEST1024000000001" on free MBUS channel 1  
