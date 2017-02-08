@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.shared.application.config.jms;
 
+import javax.jms.Message;
 import javax.jms.MessageListener;
 
 import org.apache.activemq.RedeliveryPolicy;
@@ -19,14 +20,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
+import org.springframework.jms.listener.SessionAwareMessageListener;
 
 /**
- * Factory object for creating and initialzing JMS configuration objects with
+ * Factory object for creating and initializing JMS configuration objects with
  * properties from the Environment.
- * 
+ *
  * A {@link JmsConfiguration} will be returned containing the created instances.
  * This class can be used to retrieve the instances and expose them as Beans.
- * 
+ *
  * Properties are located by their prefix. If a property is not found, a default
  * prefix will be tried.
  *
@@ -42,7 +44,7 @@ public class JmsConfigurationFactory {
     private final RedeliveryPolicyMap redeliveryPolicyMap;
 
     /**
-     * 
+     *
      * @param environment
      *            Environment to retrieve the properties from.
      * @param pooledConnectionFactory
@@ -59,18 +61,18 @@ public class JmsConfigurationFactory {
 
     /**
      * Initialize configuration.
-     * 
+     *
      * @param propertyPrefix
      *            Prefix for all properties.
      * @return JmsConfiguration containing created objects.
      */
     public JmsConfiguration initializeConfiguration(final String propertyPrefix) {
-        return new JmsConfigurationCreator(propertyPrefix).create();
+        return new JmsConfigurationCreator<>(propertyPrefix).create();
     }
 
     /**
      * Initialize configuration.
-     * 
+     *
      * @param propertyPrefix
      *            Prefix for all properties.
      * @param messageListener
@@ -79,10 +81,15 @@ public class JmsConfigurationFactory {
      */
     public JmsConfiguration initializeConfiguration(final String propertyPrefix,
             final MessageListener messageListener) {
-        return new JmsConfigurationCreator(propertyPrefix, messageListener).create();
+        return new JmsConfigurationCreator<>(propertyPrefix, messageListener).create();
     }
 
-    private class JmsConfigurationCreator {
+    public JmsConfiguration initializeConfigurationWithoutJmsTemplate(final String propertyPrefix,
+            final SessionAwareMessageListener<Message> messageListener) {
+        return new JmsConfigurationCreator<>(propertyPrefix, messageListener).createWithoutJmsTemplate();
+    }
+
+    private class JmsConfigurationCreator<V> {
 
         private static final String PROPERTY_MAX_CONCURRENT_CONSUMERS = "max.concurrent.consumers";
         private static final String PROPERTY_CONCURRENT_CONSUMERS = "concurrent.consumers";
@@ -103,9 +110,9 @@ public class JmsConfigurationFactory {
 
         private final ActiveMQDestination destinationQueue;
 
-        private final MessageListener messageListener;
+        private final V messageListener;
 
-        public JmsConfigurationCreator(final String propertyPrefix, final MessageListener messageListener) {
+        public JmsConfigurationCreator(final String propertyPrefix, final V messageListener) {
             this.propertyPrefix = propertyPrefix;
             this.destinationQueue = new ActiveMQQueue(this.property(PROPERTY_QUEUE, String.class));
             this.messageListener = messageListener;
@@ -115,9 +122,21 @@ public class JmsConfigurationFactory {
             this(propertyPrefix, null);
         }
 
+        public JmsConfiguration createWithoutJmsTemplate() {
+            final JmsConfiguration configuration = new JmsConfiguration();
+            configuration.setRedeliveryPolicy(this.redeliveryPolicy());
+            if (this.messageListener != null) {
+                configuration.setMessageListenerContainer(this.messageListenerContainer());
+            }
+            return configuration;
+
+        }
+
         public JmsConfiguration create() {
             final JmsConfiguration configuration = new JmsConfiguration();
-            configuration.setJmsTemplate(this.jmsTemplate());
+            if (this.messageListener == null) {
+                configuration.setJmsTemplate(this.jmsTemplate());
+            }
             configuration.setRedeliveryPolicy(this.redeliveryPolicy());
             if (this.messageListener != null) {
                 configuration.setMessageListenerContainer(this.messageListenerContainer());
@@ -200,7 +219,7 @@ public class JmsConfigurationFactory {
         }
 
         private DefaultMessageListenerContainer defaultMessageListenerContainer(final ActiveMQDestination destination,
-                final MessageListener messageListener, final int concConsumers, final int maxConcConsumers) {
+                final V messageListener, final int concConsumers, final int maxConcConsumers) {
 
             final DefaultMessageListenerContainer defaultMessageListenerContainer = new DefaultMessageListenerContainer();
             defaultMessageListenerContainer.setConnectionFactory(JmsConfigurationFactory.this.pooledConnectionFactory);
