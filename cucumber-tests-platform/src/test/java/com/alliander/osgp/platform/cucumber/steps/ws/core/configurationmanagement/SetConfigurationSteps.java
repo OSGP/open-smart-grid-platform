@@ -86,9 +86,9 @@ public class SetConfigurationSteps {
         this.addFilledRelayConfigurationToConfiguration(requestParameters, config);
         // }
         // }
+
         final LinkType preferredLinkType = getEnum(requestParameters, Keys.KEY_PREFERRED_LINKTYPE, LinkType.class);
         // if (preferredLinkType != null) {
-
         config.setPreferredLinkType(preferredLinkType);
         // }
 
