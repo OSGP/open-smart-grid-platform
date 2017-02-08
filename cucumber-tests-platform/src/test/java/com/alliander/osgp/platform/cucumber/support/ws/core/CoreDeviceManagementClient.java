@@ -78,4 +78,12 @@ public class CoreDeviceManagementClient extends BaseClient {
                 this.getUserName());
         return (FindAllOrganisationsResponse) wst.marshalSendAndReceive(request);
     }
+
+    public FindAllOrganisationsResponse findAllOrganizations(final String organizationIdentification,
+            final FindAllOrganisationsRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(organizationIdentification,
+                this.getUserName());
+        return (FindAllOrganisationsResponse) wst.marshalSendAndReceive(request);
+    }
 }

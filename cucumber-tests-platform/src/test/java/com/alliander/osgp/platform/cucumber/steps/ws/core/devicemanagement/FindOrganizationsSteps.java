@@ -23,6 +23,7 @@ import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Organisation;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
+import com.alliander.osgp.platform.cucumber.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.platform.cucumber.support.ws.core.CoreDeviceManagementClient;
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 
@@ -45,8 +46,10 @@ public class FindOrganizationsSteps {
      * @throws Throwable
      */
     @When("^receiving a get all organizations request$")
-    public void receivingGetAllOrganizationsRequest()
+    public void receivingGetAllOrganizationsRequest(final Map<String, String> settings)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, getString(settings,
+                Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
         try {
             ScenarioContext.Current().put(Keys.RESPONSE,
                     this.client.findAllOrganizations(new FindAllOrganisationsRequest()));
@@ -59,13 +62,42 @@ public class FindOrganizationsSteps {
 
     /**
      *
+     * @throws IOException
+     * @throws GeneralSecurityException
+     * @throws WebServiceSecurityException
      * @throws Throwable
      */
-    @Then("^the get all organizations response contains \"([^\"]*)\" organization$")
+    @When("^receiving an own unknown organization request$")
+    public void receivingAnOwnUnknownOrganizationRequest(final Map<String, String> settings)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, getString(settings,
+                Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+        try {
+            ScenarioContext.Current().put(Keys.RESPONSE,
+                    this.client.findAllOrganizations(new FindAllOrganisationsRequest()));
+        } catch (final SoapFaultClientException e) {
+            ScenarioContext.Current().put(Keys.RESPONSE, e);
+        }
+    }
+
+    /**
+     *
+     * @throws Throwable
+     */
+    @Then("^the get all organizations response contains \"([^\"]*)\" organizations?$")
     public void theGetAllOrganizationsResponseContainsOrganization(final Integer expectedCount) {
         final FindAllOrganisationsResponse response = ((FindAllOrganisationsResponse) ScenarioContext.Current()
                 .get(Keys.RESPONSE));
         Assert.assertEquals((int) expectedCount, response.getOrganisations().size());
+    }
+
+    /**
+     *
+     * @throws Throwable
+     */
+    @Then("^the get own unknown organization response contains soap fault$")
+    public void theGetOwnUnknownOrganizationResponseContainsSoapFault(final Map<String, String> expectedResult) {
+        GenericResponseSteps.verifySoapFault(expectedResult);
     }
 
     /**
@@ -90,4 +122,3 @@ public class FindOrganizationsSteps {
                 organisation.getPrefix());
     }
 }
-
