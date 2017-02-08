@@ -38,6 +38,7 @@ public class JmsConfigurationFactory {
     private final Environment environment;
 
     private final PooledConnectionFactory pooledConnectionFactory;
+        
 
     private final RedeliveryPolicyMap redeliveryPolicyMap;
 
