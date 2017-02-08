@@ -16,11 +16,15 @@ import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
+import com.alliander.osgp.adapter.ws.schema.core.common.AsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StartDeviceTestAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StartDeviceTestResponse;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.cucumber.steps.mocks.OslpDeviceSteps;
 import com.alliander.osgp.platform.cucumber.steps.ws.core.deviceinstallation.StartDeviceSteps;
+import com.alliander.osgp.platform.cucumber.support.ws.core.CoreDeviceInstallationClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -36,6 +40,9 @@ public class ProtocolSequenceNumberSteps {
     @Autowired
     private OslpDeviceSteps oslpDeviceSteps;
 
+    @Autowired
+    private CoreDeviceInstallationClient client;
+
     @When("^receiving a confirm request$")
     public void aValidConfirmDeviceRegistrationOslpMessageWithSequenceNumber(
             final Map<String, String> requestParameters) throws Throwable {
@@ -45,25 +52,19 @@ public class ProtocolSequenceNumberSteps {
 
         this.oslpDeviceSteps.theDeviceReturnsAStartDeviceResponseOverOSLP("OK");
         this.startDeviceTestSteps.receivingAStartDeviceTestRequest(requestParameters);
+        this.startDeviceTestSteps.theStartDeviceAsyncResponseContains(requestParameters);
         this.oslpDeviceSteps.aStartDeviceOSLPMessageIsSentToDevice(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        // final StartDeviceTestAsyncRequest request = new
-        // StartDeviceTestAsyncRequest();
-        // final AsyncRequest asyncRequest = new AsyncRequest();
-        // asyncRequest.setDeviceId(
-        // getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION,
-        // Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-        // asyncRequest.setCorrelationUid((String)
-        // ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
-        // request.setAsyncRequest(asyncRequest);
-        //
-        // this.client.getStartDeviceTestResponse(request);
+        final StartDeviceTestAsyncRequest request = new StartDeviceTestAsyncRequest();
+        final AsyncRequest asyncRequest = new AsyncRequest();
+        asyncRequest.setDeviceId(
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+        asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
+        request.setAsyncRequest(asyncRequest);
 
-        // this.startDeviceTestSteps.thePlatformBuffersAStartDeviceResponseMessageForDevice(
-        // getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION,
-        // Defaults.DEFAULT_DEVICE_IDENTIFICATION),
-        // requestParameters);
+        final StartDeviceTestResponse response = this.client.getStartDeviceTestResponse(request);
+        System.out.println(response);
     }
 
     @Then("^the confirm response contains$")

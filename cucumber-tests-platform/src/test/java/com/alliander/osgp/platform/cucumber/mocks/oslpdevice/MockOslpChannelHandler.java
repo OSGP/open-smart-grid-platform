@@ -218,13 +218,17 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
                 final byte[] deviceId = message.getDeviceId();
 
                 // Build the OslpEnvelope with the incremented sequence number.
+                // final OslpEnvelope.Builder responseBuilder = new
+                // OslpEnvelope.Builder()
+                // .withSignature(this.oslpSignature).withProvider(this.oslpSignatureProvider)
+                // .withPrimaryKey(this.privateKey).withDeviceId(deviceId).withSequenceNumber(sequenceNumber);
                 final OslpEnvelope.Builder responseBuilder = new OslpEnvelope.Builder()
                         .withSignature(this.oslpSignature).withProvider(this.oslpSignatureProvider)
-                        .withPrimaryKey(this.privateKey).withDeviceId(deviceId).withSequenceNumber(sequenceNumber);
-
+                        .withPrimaryKey(this.privateKey).withDeviceId(deviceId);
                 // Pass the incremented sequence number to the handleRequest()
                 // function for checking.
                 responseBuilder.withPayloadMessage(this.handleRequest(message, number));
+                responseBuilder.withSequenceNumber(this.convertIntegerToByteArray(this.sequenceNumber));
                 final OslpEnvelope response = responseBuilder.build();
 
                 LOGGER.info("sending OSLP response with sequence number: {}",
@@ -442,44 +446,12 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
 
     private int doGetNextSequence() {
         int sequenceNumberValue = 1;
-        final int currSequenceNumberValue = 0;
-        // final String numberToAddAsCurrentSequenceNumber =
-        // ScenarioContext.Current()
-        // .get("NumberToAddAsCurrentSequenceNumber").toString(),
-        // sequenceWindow =
-        // ScenarioContext.Current().get("CurrentSequenceWindow").toString();
 
-        // final int sequenceNumberWindow;
-        // final Object currSequenceWindow =
-        // ScenarioContext.Current().get("CurrentSequenceWindow");
-        // if (currSequenceWindow != null) {
-        // sequenceNumberWindow = (Integer) currSequenceWindow;
-        // } else {
-        // sequenceNumberWindow = this.sequenceNumberWindow;
-        // }
-        //
-        // if (numberToAddAsCurrentSequenceNumber != null &&
-        // !numberToAddAsCurrentSequenceNumber.isEmpty()
-        // && numberToAddAsNextSequenceNumber != null &&
-        // !numberToAddAsNextSequenceNumber.isEmpty()
-        // && sequenceWindow != null && !sequenceWindow.isEmpty()) {
-        // if (Integer.parseInt(numberToAddAsNextSequenceNumber)
-        // - Integer.parseInt(numberToAddAsCurrentSequenceNumber) >
-        // sequenceNumberWindow) {
-        // throw new ArithmeticException(
-        // "Difference between current sequence number and next sequence number
-        // is higher that the sequence window.");
-        // }
-        // }
-
-        if (ScenarioContext.Current().get("NumberToAddAsCurrentSequenceNumber") != null) {
+        if (ScenarioContext.Current().get("NumberToAddAsNextSequenceNumber") != null) {
             final String numberToAddAsNextSequenceNumber = ScenarioContext.Current()
-                    .get("NumberToAddAsCurrentSequenceNumber").toString();
+                    .get("NumberToAddAsNextSequenceNumber").toString();
             if (!numberToAddAsNextSequenceNumber.isEmpty()) {
-                sequenceNumberValue = Integer.parseInt(numberToAddAsNextSequenceNumber) - this.sequenceNumber;
-                if (sequenceNumberValue < 0) {
-                    sequenceNumberValue = this.sequenceNumberMaximum + sequenceNumberValue;
-                }
+                sequenceNumberValue = Integer.parseInt(numberToAddAsNextSequenceNumber);
             }
         }
         int next = this.sequenceNumber + sequenceNumberValue;
