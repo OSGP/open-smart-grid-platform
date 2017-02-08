@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.shared.application.config;
 
+import org.apache.activemq.ActiveMQPrefetchPolicy;
 import org.apache.activemq.broker.region.policy.RedeliveryPolicyMap;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.apache.activemq.spring.ActiveMQConnectionFactory;
@@ -26,6 +27,12 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
     @Value("${jms.activemq.connection.pool.size:10}")
     protected int connectionPoolSize;
 
+    @Value("${jms.activemq.connection.pool.max.active.sessions:500}")
+    protected int maximumActiveSessionPerConnection;
+    
+    @Value("${jms.activemq.connection.queue.prefetch:1000}")
+    protected int queuePrefetch;
+    
     @Bean
     protected JmsConfigurationFactory jmsConfigurationFactory(final PooledConnectionFactory pooledConnectionFactory,
             final RedeliveryPolicyMap redeliveryPolicyMap) {
@@ -37,14 +44,19 @@ public abstract class AbstractMessagingConfig extends AbstractConfig {
         final PooledConnectionFactory pooledConnectionFactory = new PooledConnectionFactory();
         pooledConnectionFactory.setConnectionFactory(this.connectionFactory());
         pooledConnectionFactory.setMaxConnections(this.connectionPoolSize);
+        pooledConnectionFactory.setMaximumActiveSessionPerConnection(this.maximumActiveSessionPerConnection);
         return pooledConnectionFactory;
     }
 
     protected ActiveMQConnectionFactory connectionFactory() {
+        final ActiveMQPrefetchPolicy activeMQPrefetchPolicy = new ActiveMQPrefetchPolicy();
+        activeMQPrefetchPolicy.setQueuePrefetch(this.queuePrefetch);
+        
         final ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory();
         activeMQConnectionFactory.setRedeliveryPolicyMap(this.redeliveryPolicyMap());
         activeMQConnectionFactory.setBrokerURL(this.aciveMqBroker);
         activeMQConnectionFactory.setNonBlockingRedelivery(true);
+        activeMQConnectionFactory.setPrefetchPolicy(activeMQPrefetchPolicy);
         return activeMQConnectionFactory;
     }
 
