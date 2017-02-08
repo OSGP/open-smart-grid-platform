@@ -22,27 +22,39 @@ Feature: FirmwareManagement GetFirmware
     Then the update firmware response contains
       | Result | OK |
 
-  Scenario Outline: Update firmware with an unknown devicemodel
+  Scenario: Update firmware with an unknown devicemodel
     Given a device
       | DeviceIdentification | TEST1024000000001 |
     And a firmware
-      | DeviceIdentification | TEST1024000000001 |
-      | FirmwareFilename         | Firmware  |
-      | FirmwarePushToNewDevices | true      |
-      | Manufacturer             | Test      |
-      | ModelCode                | TestModel |
-      | Description              |           |
+      | DeviceIdentification     | TEST1024000000001 |
+      | FirmwareFilename         | Firmware          |
+      | FirmwarePushToNewDevices | true              |
+      | Manufacturer             | Test              |
+      | ModelCode                | TestModel         |
+      | Description              |                   |
     When receiving an update firmware request
-      | ModelCode | <ModelCode> |
+      | ModelCode | unknown |
     Then the update firmware response contains soap fault
-      | FaultCode    | SOAP-ENV:Server                                       |
-      | FaultString  | UNKNOWN_DEVICEMODEL                                   |
-      | InnerMessage | DeviceModel with id "<ModelCode>" could not be found. |
+      | FaultCode    | SOAP-ENV:Server                                   |
+      | FaultString  | UNKNOWN_DEVICEMODEL                               |
+      | InnerMessage | DeviceModel with id "unknown" could not be found. |
 
-    Examples: 
-      | ModelCode |
-      |           |
-      | unknown   |
+  Scenario: Update firmware with an empty devicemodel
+    Given a device
+      | DeviceIdentification | TEST1024000000001 |
+    And a firmware
+      | DeviceIdentification     | TEST1024000000001 |
+      | FirmwareFilename         | Firmware          |
+      | FirmwarePushToNewDevices | true              |
+      | Manufacturer             | Test              |
+      | ModelCode                | TestModel         |
+      | Description              |                   |
+    When receiving an update firmware request
+      | ModelCode |  |
+    Then the update firmware response contains soap fault
+      | FaultCode    | SOAP-ENV:Server                            |
+      | FaultString  | UNKNOWN_DEVICEMODEL                        |
+      | InnerMessage | DeviceModel with id "" could not be found. |
 
   Scenario: Update the firmware for an unknown firmware
     When receiving an update firmware request
