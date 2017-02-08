@@ -2,10 +2,9 @@ Feature: PublicLightingAdhocManagement Set Reboot
   As OSGP
   I want to asynchronously handle set reboot requests
   In order to reboot devices As a platform
-  NOTE: Authorisation is tested in Basic OSGP Functions - PBI119
 
   @OslpMockServer
-  Scenario: Set Reboot
+  Scenario: Set reboot
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
     And the device returns a set reboot response "OK" over OSLP

@@ -1,5 +1,5 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -374,9 +374,6 @@ public class OslpDeviceSteps extends GlueBase {
 		Oslp.Status oslpStatus = Status.OK;
 
 		switch (result) {
-		case "OK":
-			oslpStatus = Status.OK;
-			break;
 		case "FAILURE":
 			oslpStatus = Status.FAILURE;
 			break;
@@ -384,6 +381,9 @@ public class OslpDeviceSteps extends GlueBase {
 			oslpStatus = Status.REJECTED;
 			break;
 		// TODO: Implement other possible status
+		default:
+			oslpStatus = Status.OK;
+			break;
 		}
 
 		this.oslpMockServer.mockSetScheduleResponse(type, oslpStatus);
@@ -530,15 +530,15 @@ public class OslpDeviceSteps extends GlueBase {
 		Oslp.Status oslpStatus = Status.OK;
 
 		switch (getString(requestParameters, Keys.KEY_STATUS)) {
-		case "OK":
-			oslpStatus = Status.OK;
-			break;
 		case "FAILURE":
 			oslpStatus = Status.FAILURE;
 			break;
 		case "REJECTED":
 			oslpStatus = Status.REJECTED;
 			// TODO: Implement other possible status
+		default:
+			oslpStatus = Status.OK;
+			break;
 		}
 
 		// Note: This piece of code has been made because there are multiple
@@ -741,7 +741,7 @@ public class OslpDeviceSteps extends GlueBase {
 		Oslp.Status oslpStatus = Status.OK;
 
 		switch (result) {
-		case "OK":
+		default:
 			oslpStatus = Status.OK;
 			// TODO: Implement other possible status
 		}
@@ -772,9 +772,9 @@ public class OslpDeviceSteps extends GlueBase {
 		Oslp.Status oslpStatus = Status.OK;
 
 		switch (result) {
-		case "OK":
+		// TODO: Implement other possible status
+		default:
 			oslpStatus = Status.OK;
-			// TODO: Implement other possible status
 		}
 
 		this.oslpMockServer.mockSetTransitionResponse(oslpStatus);
@@ -790,9 +790,9 @@ public class OslpDeviceSteps extends GlueBase {
 		Oslp.Status oslpStatus = Status.OK;
 
 		switch (result) {
-		case "OK":
+		// TODO: Implement other possible status
+		default:
 			oslpStatus = Status.OK;
-			// TODO: Implement other possible status
 		}
 		// TODO: Make Mock method
 		this.oslpMockServer.mockStartDeviceResponse(oslpStatus);
@@ -809,9 +809,9 @@ public class OslpDeviceSteps extends GlueBase {
 		Oslp.Status oslpStatus = Status.OK;
 
 		switch (result) {
-		case "OK":
+		// TODO: Implement other possible status
+		default:
 			oslpStatus = Status.OK;
-			// TODO: Implement other possible status
 		}
 		// TODO: Check if ByteString.EMPTY must be something else
 		this.oslpMockServer.mockStopDeviceResponse(ByteString.EMPTY, oslpStatus);
