@@ -84,8 +84,13 @@ public class JmsConfigurationFactory {
         return new JmsConfigurationCreator<>(propertyPrefix, messageListener).create();
     }
 
-    public JmsConfiguration initializeConfigurationWithoutJmsTemplate(final String propertyPrefix,
+    public JmsConfiguration initializeReceiveConfiguration(final String propertyPrefix,
             final SessionAwareMessageListener<Message> messageListener) {
+        return new JmsConfigurationCreator<>(propertyPrefix, messageListener).createReceiveConfiguration();
+    }
+
+    public JmsConfiguration initializeReceiveConfiguration(final String propertyPrefix,
+            final MessageListener messageListener) {
         return new JmsConfigurationCreator<>(propertyPrefix, messageListener).createReceiveConfiguration();
     }
 
@@ -121,15 +126,11 @@ public class JmsConfigurationFactory {
         public JmsConfigurationCreator(final String propertyPrefix) {
             this(propertyPrefix, null);
         }
-        
-        public JmsConfiguration createSendConfiguration(){
-            final JmsConfiguration configuration = new JmsConfiguration();
-            configuration.setJmsTemplate(this.jmsTemplate());
-            configuration.setRedeliveryPolicy(this.redeliveryPolicy());
-            return configuration;
-        }
-        
-        
+
+        /**
+         * Create a JmsConfiguration with only a redeliveryPolicy and
+         * MessageListenerContainer and no JmsTemplate.
+         */
         public JmsConfiguration createReceiveConfiguration() {
             final JmsConfiguration configuration = new JmsConfiguration();
             configuration.setRedeliveryPolicy(this.redeliveryPolicy());
