@@ -21,8 +21,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import javax.persistence.Transient;
-
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -33,6 +31,7 @@ import org.jboss.netty.channel.SimpleChannelHandler;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.annotation.Transient;
 
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.oslp.Oslp;
@@ -193,41 +192,39 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
             } else if (!this.mockResponses.isEmpty()) {
                 LOGGER.info("Received OSLP Request: {}", message.getPayloadMessage().toString().split(" ")[0]);
 
-                // // Sequence number logic
-                // byte[] sequenceNumber = message.getSequenceNumber();
-                // Integer number = -1;
-                // if (!(message.getPayloadMessage().hasRegisterDeviceRequest()
-                // ||
-                // message.getPayloadMessage().hasConfirmRegisterDeviceRequest()))
-                // {
-                // // Convert byte array to integer
-                // number = this.convertByteArrayToInteger(sequenceNumber);
-                //
-                // // Wrap the number back to 0 if the limit is reached or
-                // // increment
-                // if (number >= this.sequenceNumberMaximum) {
-                // number = 0;
-                // } else {
-                // number += 1;
-                // }
-                //
-                // // Convert integer back to byte array
-                // sequenceNumber = this.convertIntegerToByteArray(number);
-                // }
+                // Sequence number logic
+                byte[] sequenceNumber = message.getSequenceNumber();
+                Integer number = -1;
+                if (!(message.getPayloadMessage().hasRegisterDeviceRequest()
+                        || message.getPayloadMessage().hasConfirmRegisterDeviceRequest())) {
+                    // Convert byte array to integer
+                    number = this.convertByteArrayToInteger(sequenceNumber);
 
-                // Note: Talk about this change with Martijn
-                final byte[] sequenceNumber = this.convertIntegerToByteArray(this.doGetNextSequence());
+                    // Wrap the number back to 0 if the limit is reached or
+                    // increment
+                    if (number >= this.sequenceNumberMaximum) {
+                        number = 0;
+                    } else {
+                        number += 1;
+                    }
+
+                    // Convert integer back to byte array
+                    sequenceNumber = this.convertIntegerToByteArray(number);
+                }
 
                 final byte[] deviceId = message.getDeviceId();
 
-                // Build the OslpEnvelope with the incremented sequence number.
+                // Build the OslpEnvelope
                 final OslpEnvelope.Builder responseBuilder = new OslpEnvelope.Builder()
                         .withSignature(this.oslpSignature).withProvider(this.oslpSignatureProvider)
-                        .withPrimaryKey(this.privateKey).withDeviceId(deviceId).withSequenceNumber(sequenceNumber);
+                        .withPrimaryKey(this.privateKey).withDeviceId(deviceId);
 
                 // Pass the incremented sequence number to the handleRequest()
                 // function for checking.
-                responseBuilder.withPayloadMessage(this.handleRequest(message, this.sequenceNumber));
+                responseBuilder.withPayloadMessage(this.handleRequest(message));
+                // Add the new sequence number to the OslpEnvelope
+                responseBuilder.withSequenceNumber(this.convertIntegerToByteArray(this.sequenceNumber));
+
                 final OslpEnvelope response = responseBuilder.build();
 
                 LOGGER.info("sending OSLP response with sequence number: {}",
@@ -346,15 +343,22 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         }
     }
 
+    // Note: This method is for other classes which are executing this method
+    // WITH a sequencenumber
     public Oslp.Message handleRequest(final OslpEnvelope message, final int sequenceNumber)
+            throws DeviceSimulatorException, IOException, ParseException {
+        return this.handleRequest(message);
+    }
+
+    public Oslp.Message handleRequest(final OslpEnvelope message)
             throws DeviceSimulatorException, IOException, ParseException {
         final Oslp.Message request = message.getPayloadMessage();
 
         // Create response message
         Oslp.Message response = null;
 
-        // // Calculate expected sequence number
-        // this.sequenceNumber = this.doGetNextSequence();
+        // Calculate expected sequence number
+        this.sequenceNumber = this.doGetNextSequence();
 
         // If responseDelayTime (and optional responseDelayRandomRange) are set,
         // sleep for a little while

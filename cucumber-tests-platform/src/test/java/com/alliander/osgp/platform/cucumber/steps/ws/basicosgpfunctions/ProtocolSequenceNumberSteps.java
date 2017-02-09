@@ -11,6 +11,8 @@ import static com.alliander.osgp.platform.cucumber.core.Helpers.getBoolean;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getInteger;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -19,13 +21,16 @@ import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.alliander.osgp.adapter.ws.schema.core.common.AsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StartDeviceTestAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StartDeviceTestRequest;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StartDeviceTestResponse;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.cucumber.steps.mocks.OslpDeviceSteps;
+import com.alliander.osgp.platform.cucumber.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.platform.cucumber.steps.ws.core.deviceinstallation.StartDeviceSteps;
 import com.alliander.osgp.platform.cucumber.support.ws.core.CoreDeviceInstallationClient;
+import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -45,8 +50,7 @@ public class ProtocolSequenceNumberSteps {
     private CoreDeviceInstallationClient client;
 
     @When("^receiving a confirm request$")
-    public void aValidConfirmDeviceRegistrationOslpMessageWithSequenceNumber(
-            final Map<String, String> requestParameters) throws Throwable {
+    public void receivingAConfirmRequest(final Map<String, String> requestParameters) throws Throwable {
 
         ScenarioContext.Current().put("NumberToAddAsNextSequenceNumber",
                 getInteger(requestParameters, "AddNumberToSequenceNumber"));
@@ -71,14 +75,39 @@ public class ProtocolSequenceNumberSteps {
         }
     }
 
-    @Then("^the confirm response contains$")
-    public void anExistingOsgpDeviceWithSequenceNumber(final Map<String, String> expectedResponse) {
-        final Object response = ScenarioContext.Current().get(Keys.RESPONSE);
+    @When("^receiving a confirm request for unknown device$")
+    public void receivingAConfirmRequestForUnknownDevice(final Map<String, String> requestParameters) throws Throwable {
 
-        final String nextSequenceNumber = getString(expectedResponse, "AddNumberToSequenceNumber");
-        Assert.assertEquals(nextSequenceNumber + ": " + getBoolean(expectedResponse, "IsUpdated"),
-                nextSequenceNumber + ": "
-                        + ((response instanceof StartDeviceTestResponse) && ((StartDeviceTestResponse) response)
-                                .getResult().toString().equals(Defaults.EXPECTED_RESULT_OK)));
+        this.createAndSendRequest(requestParameters, "unknown-organisation");
+    }
+
+    @When("^receiving a confirm request with empty device identification$")
+    public void receivingAConfirmRequestWithEmptyDeviceIdentification(final Map<String, String> requestParameters)
+            throws Throwable {
+        this.createAndSendRequest(requestParameters, "test-org");
+    }
+
+    private void createAndSendRequest(final Map<String, String> requestParameters, final String certificateName)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final StartDeviceTestRequest request = new StartDeviceTestRequest();
+        request.setDeviceIdentification(
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+
+        try {
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.startDeviceTest(request, certificateName));
+        } catch (final SoapFaultClientException ex) {
+            ScenarioContext.Current().put(Keys.RESPONSE, ex);
+        }
+    }
+
+    @Then("^the confirm response contains$")
+    public void theConfirmResponseContains(final Map<String, String> expectedResponse) {
+        Assert.assertEquals(getBoolean(expectedResponse, "IsUpdated"),
+                (ScenarioContext.Current().get(Keys.RESPONSE) instanceof StartDeviceTestResponse));
+    }
+
+    @Then("^the confirm response contains soap fault$")
+    public void theConfirmResponseContainsSoapFault(final Map<String, String> expectedResponse) {
+        GenericResponseSteps.verifySoapFault(expectedResponse);
     }
 }
