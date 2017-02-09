@@ -48,7 +48,7 @@ public class MessagingConfig extends AbstractMessagingConfig {
     // === JMS SETTINGS IEC61850 REQUESTS ===
     @Bean
     public JmsConfiguration iec61850RequestJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfigurationWithoutJmsTemplate("jms.iec61850.requests",
+        return jmsConfigurationFactory.initializeReceiveConfiguration("jms.iec61850.requests",
                 this.iec61850RequestsMessageListener);
     }
 
@@ -136,7 +136,7 @@ public class MessagingConfig extends AbstractMessagingConfig {
 
     @Bean
     public JmsConfiguration osgpResponseJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.osgp.responses",
+        return jmsConfigurationFactory.initializeReceiveConfiguration("jms.osgp.responses",
                 this.osgpResponseMessageListener());
     }
 
