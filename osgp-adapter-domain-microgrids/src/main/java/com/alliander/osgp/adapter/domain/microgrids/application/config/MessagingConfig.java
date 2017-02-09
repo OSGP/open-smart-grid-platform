@@ -49,7 +49,7 @@ public class MessagingConfig extends AbstractMessagingConfig {
 
     @Bean
     public JmsConfiguration incomingWebServiceJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.incoming.ws.requests",
+        return jmsConfigurationFactory.initializeReceiveConfiguration("jms.incoming.ws.requests",
                 this.incomingWebServiceRequestMessageListener);
     }
 
@@ -97,7 +97,7 @@ public class MessagingConfig extends AbstractMessagingConfig {
     @Bean
     public JmsConfiguration incomingOsgpCoreResponsesJmsConfiguration(
             final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.incoming.osgp.core.responses",
+        return jmsConfigurationFactory.initializeReceiveConfiguration("jms.incoming.osgp.core.responses",
                 this.incomingOsgpCoreResponseMessageListener);
     }
 
@@ -113,7 +113,7 @@ public class MessagingConfig extends AbstractMessagingConfig {
     @Bean
     public JmsConfiguration incomingOsgpCoreRequestsJmsConfiguration(
             final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.incoming.osgp.core.requests",
+        return jmsConfigurationFactory.initializeReceiveConfiguration("jms.incoming.osgp.core.requests",
                 this.incomingOsgpCoreRequestMessageListener);
     }
 
