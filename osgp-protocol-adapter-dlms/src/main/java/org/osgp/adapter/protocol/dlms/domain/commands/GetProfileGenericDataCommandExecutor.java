@@ -138,6 +138,11 @@ AbstractCommandExecutor<ProfileGenericDataRequestDto, ProfileGenericDataResponse
 
     private List<AttributeAddress> getScalerUnits(List<GetResult> captureObjects) {
         List<AttributeAddress> scalerUnits = new ArrayList<AttributeAddress>();
+        
+        for (GetResult getResult : captureObjects) {
+            getResult.getResultData();
+        }
+        
         return scalerUnits;
     }
 
