@@ -11,8 +11,6 @@ import static com.alliander.osgp.platform.cucumber.core.Helpers.getBoolean;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getInteger;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -30,7 +28,6 @@ import com.alliander.osgp.platform.cucumber.steps.mocks.OslpDeviceSteps;
 import com.alliander.osgp.platform.cucumber.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.platform.cucumber.steps.ws.core.deviceinstallation.StartDeviceSteps;
 import com.alliander.osgp.platform.cucumber.support.ws.core.CoreDeviceInstallationClient;
-import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -77,24 +74,19 @@ public class ProtocolSequenceNumberSteps {
 
     @When("^receiving a confirm request for unknown device$")
     public void receivingAConfirmRequestForUnknownDevice(final Map<String, String> requestParameters) throws Throwable {
-
-        this.createAndSendRequest(requestParameters, "unknown-organisation");
+        ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organisation");
+        this.receivingAConfirmRequestWithEmptyDeviceIdentification(requestParameters);
     }
 
     @When("^receiving a confirm request with empty device identification$")
     public void receivingAConfirmRequestWithEmptyDeviceIdentification(final Map<String, String> requestParameters)
             throws Throwable {
-        this.createAndSendRequest(requestParameters, "test-org");
-    }
-
-    private void createAndSendRequest(final Map<String, String> requestParameters, final String certificateName)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final StartDeviceTestRequest request = new StartDeviceTestRequest();
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         try {
-            ScenarioContext.Current().put(Keys.RESPONSE, this.client.startDeviceTest(request, certificateName));
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.startDeviceTest(request));
         } catch (final SoapFaultClientException ex) {
             ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
