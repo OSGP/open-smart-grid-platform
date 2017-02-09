@@ -87,11 +87,6 @@ public class RemoveDeviceSteps {
         this.receivingARemoveDeviceRequest(requestParameters);
     }
 
-    private void createAndSendRequest(final Map<String, String> requestParameters, final String certificateName)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
-
-    }
-
     /**
      * The check for the response from the Platform.
      *
