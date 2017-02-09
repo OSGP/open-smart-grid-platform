@@ -40,7 +40,6 @@ public class JmsConfigurationFactory {
     private final Environment environment;
 
     private final PooledConnectionFactory pooledConnectionFactory;
-        
 
     private final RedeliveryPolicyMap redeliveryPolicyMap;
 
@@ -87,7 +86,7 @@ public class JmsConfigurationFactory {
 
     public JmsConfiguration initializeConfigurationWithoutJmsTemplate(final String propertyPrefix,
             final SessionAwareMessageListener<Message> messageListener) {
-        return new JmsConfigurationCreator<>(propertyPrefix, messageListener).createWithoutJmsTemplate();
+        return new JmsConfigurationCreator<>(propertyPrefix, messageListener).createReceiveConfiguration();
     }
 
     private class JmsConfigurationCreator<V> {
@@ -122,8 +121,16 @@ public class JmsConfigurationFactory {
         public JmsConfigurationCreator(final String propertyPrefix) {
             this(propertyPrefix, null);
         }
-
-        public JmsConfiguration createWithoutJmsTemplate() {
+        
+        public JmsConfiguration createSendConfiguration(){
+            final JmsConfiguration configuration = new JmsConfiguration();
+            configuration.setJmsTemplate(this.jmsTemplate());
+            configuration.setRedeliveryPolicy(this.redeliveryPolicy());
+            return configuration;
+        }
+        
+        
+        public JmsConfiguration createReceiveConfiguration() {
             final JmsConfiguration configuration = new JmsConfiguration();
             configuration.setRedeliveryPolicy(this.redeliveryPolicy());
             if (this.messageListener != null) {
@@ -135,9 +142,7 @@ public class JmsConfigurationFactory {
 
         public JmsConfiguration create() {
             final JmsConfiguration configuration = new JmsConfiguration();
-            if (this.messageListener == null) {
-                configuration.setJmsTemplate(this.jmsTemplate());
-            }
+            configuration.setJmsTemplate(this.jmsTemplate());
             configuration.setRedeliveryPolicy(this.redeliveryPolicy());
             if (this.messageListener != null) {
                 configuration.setMessageListenerContainer(this.messageListenerContainer());
