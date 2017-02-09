@@ -9,19 +9,18 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-
-import javax.xml.datatype.XMLGregorianCalendar;
+import java.util.Date;
 
 public class ProfileEntryVo implements Serializable {
 
     private static final long serialVersionUID = 991045734132231709L;
 
     private final String stringValue;
-    private final XMLGregorianCalendar dateValue;
+    private final Date dateValue;
     private final BigDecimal floatValue;
     private final Long longValue;
 
-    public ProfileEntryVo(String stringValue, XMLGregorianCalendar dateValue, BigDecimal floatValue, Long longValue) {
+    public ProfileEntryVo(String stringValue, Date dateValue, BigDecimal floatValue, Long longValue) {
         super();
         this.stringValue = stringValue;
         this.dateValue = dateValue;
@@ -33,7 +32,7 @@ public class ProfileEntryVo implements Serializable {
         return this.stringValue;
     }
 
-    public XMLGregorianCalendar getDateValue() {
+    public Date getDateValue() {
         return this.dateValue;
     }
 
@@ -43,6 +42,18 @@ public class ProfileEntryVo implements Serializable {
 
     public Long getLongValue() {
         return this.longValue;
+    }
+
+    public Object getValue() {
+        if (this.stringValue != null) {
+            return this.stringValue;
+        } else if (this.dateValue != null) {
+            return this.dateValue;
+        } else if (this.longValue != null) {
+            return this.longValue;
+        } else {
+            return this.floatValue;
+        }
     }
 
 }

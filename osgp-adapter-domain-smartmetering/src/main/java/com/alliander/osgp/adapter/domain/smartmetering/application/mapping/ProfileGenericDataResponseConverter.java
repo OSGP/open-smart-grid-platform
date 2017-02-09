@@ -7,21 +7,24 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
 
-import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
 import ma.glasnost.orika.metadata.Type;
 
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.CaptureObjectVo;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.CaptureObjectItemVo;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ObisCodeValues;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryVo;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryItemVo;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponseVo;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CaptureObjectItemDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileEntryItemDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataResponseDto;
 
 public class ProfileGenericDataResponseConverter extends
-        CustomConverter<ProfileGenericDataResponseDto, ProfileGenericDataResponseVo> {
+CustomConverter<ProfileGenericDataResponseDto, ProfileGenericDataResponseVo> {
 
     private MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
 
@@ -32,8 +35,20 @@ public class ProfileGenericDataResponseConverter extends
         final ObisCodeValues obisCode = this.mapperFactory.getMapperFacade().map(source.getLogicalName(),
                 ObisCodeValues.class);
 
-        return new ProfileGenericDataResponseVo(obisCode, new ArrayList<CaptureObjectVo>(),
-                new ArrayList<ProfileEntryVo>());
+        List<CaptureObjectItemVo> captureObjectItemDtoList = source.getCaptureObject().stream()
+                .map(dto -> this.map(dto)).collect(Collectors.toList());
+        List<ProfileEntryItemVo> profileEntryItemDtoList = source.getProfileEntries().stream()
+                .map(dto -> this.map(dto)).collect(Collectors.toList());
+
+        return new ProfileGenericDataResponseVo(obisCode, captureObjectItemDtoList, profileEntryItemDtoList);
+    }
+
+    private CaptureObjectItemVo map(CaptureObjectItemDto dto) {
+        return this.mapperFactory.getMapperFacade().map(dto, CaptureObjectItemVo.class);
+    }
+
+    private ProfileEntryItemVo map(ProfileEntryItemDto dto) {
+        return this.mapperFactory.getMapperFacade().map(dto, ProfileEntryItemVo.class);
     }
 
 }

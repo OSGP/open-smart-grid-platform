@@ -113,7 +113,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
                     this.monitoringMapper.map(scheduleTime, Long.class));
 
             response = request instanceof PeriodicMeterReadsRequest ? new PeriodicMeterReadsAsyncResponse()
-            : new PeriodicMeterReadsGasAsyncResponse();
+                    : new PeriodicMeterReadsGasAsyncResponse();
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
             this.responseUrlService.saveResponseUrlIfNeeded(correlationUid, responseUrl);
@@ -228,9 +228,9 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
                     this.monitoringMapper.map(scheduleTime, Long.class));
 
             asyncResponse = gas ? new com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFactory()
-            .createActualMeterReadsGasAsyncResponse()
-            : new com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFactory()
-            .createActualMeterReadsAsyncResponse();
+                    .createActualMeterReadsGasAsyncResponse()
+                    : new com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFactory()
+                            .createActualMeterReadsAsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
             asyncResponse.setDeviceIdentification(deviceIdentification);
             this.responseUrlService.saveResponseUrlIfNeeded(correlationUid, responseUrl);
@@ -434,9 +434,6 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
             this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the periodic meter reads");
 
-            // response =
-            // this.monitoringMapper.map(meterResponseData.getMessageData(),
-            // com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataResponse.class);
             response = this.monitoringMapper.map(meterResponseData.getMessageData(), ProfileGenericDataResponse.class);
 
         } catch (final Exception e) {

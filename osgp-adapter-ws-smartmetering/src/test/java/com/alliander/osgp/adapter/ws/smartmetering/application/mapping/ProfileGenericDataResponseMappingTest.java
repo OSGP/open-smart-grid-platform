@@ -9,13 +9,16 @@
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataResponse;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.CaptureObjectItemVo;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CaptureObjectVo;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ObisCodeValues;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryItemVo;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryVo;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponseVo;
 
@@ -31,10 +34,28 @@ public class ProfileGenericDataResponseMappingTest {
     }
 
     private ProfileGenericDataResponseVo makeValueObject() {
-        final ObisCodeValues obisCode = new ObisCodeValues((byte) 1, (byte) 1, (byte) 1, (byte) 1, (byte) 1, (byte) 1);
-        ProfileGenericDataResponseVo result = new ProfileGenericDataResponseVo(obisCode,
-                new ArrayList<CaptureObjectVo>(), new ArrayList<ProfileEntryVo>());
+        List<CaptureObjectItemVo> captureObjects = new ArrayList<CaptureObjectItemVo>();
+        captureObjects.add(this.makeCaptureObjectVo());
+        List<ProfileEntryItemVo> profileEntries = new ArrayList<ProfileEntryItemVo>();
+        profileEntries.add(this.makeProfileEntryVo());
+        profileEntries.add(this.makeProfileEntryVo());
+        ProfileGenericDataResponseVo result = new ProfileGenericDataResponseVo(this.makeObisCode(), captureObjects,
+                profileEntries);
         return result;
+    }
+
+    private ObisCodeValues makeObisCode() {
+        return new ObisCodeValues((byte) 1, (byte) 1, (byte) 1, (byte) 1, (byte) 1, (byte) 1);
+    }
+
+    private CaptureObjectItemVo makeCaptureObjectVo() {
+        return new CaptureObjectItemVo(new CaptureObjectVo(10L, this.makeObisCode(), 10, 1, "kwu"));
+    }
+
+    private ProfileEntryItemVo makeProfileEntryVo() {
+        List<ProfileEntryVo> entriesVo = new ArrayList<ProfileEntryVo>();
+        entriesVo.add(new ProfileEntryVo("test", null, null, null));
+        return new ProfileEntryItemVo(entriesVo);
     }
 
 }

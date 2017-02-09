@@ -22,12 +22,17 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.CaptureObjectItemVo;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CaptureObjectVo;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ObisCodeValues;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryItemVo;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryVo;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponseVo;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CaptureObjectDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CaptureObjectItemDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ObisCodeValuesDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileEntryDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileEntryItemDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataResponseDto;
 
 public class ProfileGenericDataResponseMappingTest {
@@ -53,23 +58,57 @@ public class ProfileGenericDataResponseMappingTest {
         Assert.assertTrue(result != null && result instanceof ProfileEntryVo);
     }
 
-    private ProfileGenericDataResponseDto makeDto() {
-        final List<CaptureObjectDto> captureObjects = new ArrayList<CaptureObjectDto>();
-        captureObjects.add(this.captureObjectDto());
+    @Test
+    public void test4() {
+        final CaptureObjectItemVo result = this.mapper.map(this.captureObjectItemDto(), CaptureObjectItemVo.class);
+        Assert.assertTrue(result != null && result instanceof CaptureObjectItemVo);
+    }
 
-        final List<ProfileEntryDto> profileEntries = new ArrayList<ProfileEntryDto>();
-        profileEntries.add(this.profileEntryDtoDate());
-        profileEntries.add(this.profileEntryDtoString());
-        profileEntries.add(this.profileEntryDtoLong());
-        profileEntries.add(this.profileEntryDtoDouble());
+    @Test
+    public void test5() {
+        final ProfileEntryItemVo result = this.mapper.map(this.profileEntryItemDto(), ProfileEntryItemVo.class);
+        Assert.assertTrue(result != null && result instanceof ProfileEntryItemVo);
+    }
+
+    @Test
+    public void test6() {
+        final ObisCodeValues result = this.mapper.map(this.obisCodeDto(), ObisCodeValues.class);
+        Assert.assertTrue(result != null && result instanceof ObisCodeValues);
+    }
+
+    private ProfileGenericDataResponseDto makeDto() {
+        final List<CaptureObjectItemDto> captureObjects = new ArrayList<CaptureObjectItemDto>();
+        captureObjects.add(new CaptureObjectItemDto(this.captureObjectDto()));
+        final List<ProfileEntryItemDto> profileEntries = this.makeProfileEntryItemDtos();
 
         ProfileGenericDataResponseDto dto = new ProfileGenericDataResponseDto(this.obisCodeDto(), captureObjects,
                 profileEntries);
         return dto;
     }
 
+    private List<ProfileEntryItemDto> makeProfileEntryItemDtos() {
+        List<ProfileEntryItemDto> result = new ArrayList<ProfileEntryItemDto>();
+        result.add(this.profileEntryItemDto());
+        return result;
+    }
+
+    private ProfileEntryDto makeProfileEntryDto() {
+        ProfileEntryDto result = new ProfileEntryDto("test");
+        return result;
+    }
+
+    private CaptureObjectItemDto captureObjectItemDto() {
+        return new CaptureObjectItemDto(new CaptureObjectDto(10L, this.obisCodeDto(), 2, 0, "kwu"));
+    }
+
     private CaptureObjectDto captureObjectDto() {
-        return new CaptureObjectDto(10L, this.obisCodeDto(), 2, 0);
+        return new CaptureObjectDto(10L, this.obisCodeDto(), 2, 0, "kwu");
+    }
+
+    private ProfileEntryItemDto profileEntryItemDto() {
+        List<ProfileEntryDto> entriesDto = new ArrayList<ProfileEntryDto>();
+        entriesDto.add(this.makeProfileEntryDto());
+        return new ProfileEntryItemDto(entriesDto);
     }
 
     private ProfileEntryDto profileEntryDtoDouble() {
@@ -81,7 +120,7 @@ public class ProfileGenericDataResponseMappingTest {
     }
 
     private ProfileEntryDto profileEntryDtoDate() {
-        return new ProfileEntryDto(this.createXMLGregorianCalendar(new Date()));
+        return new ProfileEntryDto(new Date());
     }
 
     private ProfileEntryDto profileEntryDtoString() {

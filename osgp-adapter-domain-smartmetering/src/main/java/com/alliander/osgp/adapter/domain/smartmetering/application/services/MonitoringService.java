@@ -27,8 +27,8 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponseVo;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequestVo;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponseVo;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQueryDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterResponseDto;
@@ -144,8 +144,6 @@ public class MonitoringService {
             LOGGER.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
             result = ResponseMessageResultType.NOT_OK;
         }
-
-        Object obj = this.monitoringMapper.map(periodMeterReadsValueDTO, PeriodicMeterReadsContainer.class);
 
         this.webServiceResponseMessageSender.send(
                 new ResponseMessage(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata
@@ -313,8 +311,8 @@ public class MonitoringService {
         final ObisCodeValuesDto obisCodeDto = this.mapperFactory.getMapperFacade().map(request.getObisCode(),
                 ObisCodeValuesDto.class);
 
-        final ProfileGenericDataRequestDto requestDto = new ProfileGenericDataRequestDto(obisCodeDto,
-                request.getBeginDate(), request.getEndDate());
+        final ProfileGenericDataRequestDto requestDto = new ProfileGenericDataRequestDto(
+                request.getDeviceIdentification(), obisCodeDto, request.getBeginDate(), request.getEndDate());
 
         final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),

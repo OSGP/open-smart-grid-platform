@@ -17,12 +17,14 @@ public class CaptureObjectVo implements Serializable {
     private final ObisCodeValues logicalName;
     private final int attribute;
     private final int version;
+    private final String unit;
 
-    public CaptureObjectVo(long classId, ObisCodeValues logicalName, int attribute, int version) {
+    public CaptureObjectVo(long classId, ObisCodeValues logicalName, int attribute, int version, String unit) {
         this.classId = classId;
         this.logicalName = logicalName;
         this.attribute = attribute;
         this.version = version;
+        this.unit = unit;
     }
 
     public long getClassId() {
@@ -40,4 +42,9 @@ public class CaptureObjectVo implements Serializable {
     public int getVersion() {
         return this.version;
     }
+
+    public String getUnit() {
+        return this.unit;
+    }
+
 }

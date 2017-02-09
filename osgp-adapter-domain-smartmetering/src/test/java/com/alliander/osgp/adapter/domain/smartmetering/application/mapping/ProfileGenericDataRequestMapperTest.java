@@ -9,7 +9,8 @@ package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
 
 import static org.junit.Assert.assertTrue;
 
-import org.joda.time.DateTime;
+import java.util.Date;
+
 import org.junit.Test;
 
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ObisCodeValues;
@@ -29,7 +30,7 @@ public class ProfileGenericDataRequestMapperTest {
 
     private ProfileGenericDataRequestVo makeRequest() {
         final ObisCodeValues obiscode = new ObisCodeValues((byte) 2, (byte) 3, (byte) 4, (byte) 5, (byte) 6, (byte) 7);
-        return new ProfileGenericDataRequestVo(obiscode, new DateTime(), new DateTime(), "TEST10240000001");
+        return new ProfileGenericDataRequestVo(obiscode, new Date(), new Date(), "TEST10240000001");
     }
 
 }

@@ -9,7 +9,7 @@
  */
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
-import org.joda.time.DateTime;
+import java.util.Date;
 
 public class ProfileGenericDataRequestVo extends ProfileGenericDataRequestDataVo {
 
@@ -17,7 +17,7 @@ public class ProfileGenericDataRequestVo extends ProfileGenericDataRequestDataVo
 
     private final String deviceIdentification;
 
-    public ProfileGenericDataRequestVo(ObisCodeValues obisCode, DateTime beginDate, DateTime endDate,
+    public ProfileGenericDataRequestVo(ObisCodeValues obisCode, Date beginDate, Date endDate,
             final String deviceIdentification) {
         super(obisCode, beginDate, endDate);
         this.deviceIdentification = deviceIdentification;

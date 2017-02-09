@@ -10,8 +10,7 @@
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
-
-import org.joda.time.DateTime;
+import java.util.Date;
 
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -21,10 +20,10 @@ public class ProfileGenericDataRequestDataVo implements Serializable, ActionRequ
     private static final long serialVersionUID = 2732162650167261497L;
 
     private final ObisCodeValues obisCode;
-    private final DateTime beginDate;
-    private final DateTime endDate;
+    private final Date beginDate;
+    private final Date endDate;
 
-    public ProfileGenericDataRequestDataVo(ObisCodeValues obisCode, DateTime beginDate, DateTime endDate) {
+    public ProfileGenericDataRequestDataVo(ObisCodeValues obisCode, Date beginDate, Date endDate) {
         super();
         this.obisCode = obisCode;
         this.beginDate = beginDate;
@@ -35,11 +34,11 @@ public class ProfileGenericDataRequestDataVo implements Serializable, ActionRequ
         return this.obisCode;
     }
 
-    public DateTime getBeginDate() {
+    public Date getBeginDate() {
         return this.beginDate;
     }
 
-    public DateTime getEndDate() {
+    public Date getEndDate() {
         return this.endDate;
     }
 
