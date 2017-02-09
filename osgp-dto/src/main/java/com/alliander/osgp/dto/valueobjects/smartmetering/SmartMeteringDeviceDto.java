@@ -26,11 +26,11 @@ public class SmartMeteringDeviceDto implements Serializable {
 
     private String dsmrVersion;
 
-    private String masterKey;
+    private byte[] masterKey;
 
-    private String globalEncryptionUnicastKey;
+    private byte[] globalEncryptionUnicastKey;
 
-    private String authenticationKey;
+    private byte[] authenticationKey;
 
     private String supplier;
 
@@ -82,27 +82,27 @@ public class SmartMeteringDeviceDto implements Serializable {
         this.dsmrVersion = dsmrVersion;
     }
 
-    public String getMasterKey() {
+    public byte[] getMasterKey() {
         return this.masterKey;
     }
 
-    public void setMasterKey(final String masterKey) {
+    public void setMasterKey(final byte[] masterKey) {
         this.masterKey = masterKey;
     }
 
-    public String getGlobalEncryptionUnicastKey() {
+    public byte[] getGlobalEncryptionUnicastKey() {
         return this.globalEncryptionUnicastKey;
     }
 
-    public void setGlobalEncryptionUnicastKey(final String globalEncryptionUnicastKey) {
+    public void setGlobalEncryptionUnicastKey(final byte[] globalEncryptionUnicastKey) {
         this.globalEncryptionUnicastKey = globalEncryptionUnicastKey;
     }
 
-    public String getAuthenticationKey() {
+    public byte[] getAuthenticationKey() {
         return this.authenticationKey;
     }
 
-    public void setAuthenticationKey(final String authenticationKey) {
+    public void setAuthenticationKey(final byte[] authenticationKey) {
         this.authenticationKey = authenticationKey;
     }
 
