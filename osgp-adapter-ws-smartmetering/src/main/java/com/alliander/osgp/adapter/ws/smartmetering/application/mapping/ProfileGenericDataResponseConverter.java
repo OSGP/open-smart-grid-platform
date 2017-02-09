@@ -37,14 +37,14 @@ public class ProfileGenericDataResponseConverter extends
         ProfileGenericDataResponse result = new ProfileGenericDataResponse();
 
         final ObisCodeValues obisCode = this.map(source.getLogicalName());
-        List<CaptureObjectItem> list1 = source.getCaptureObjects().stream().map(obj -> this.map(obj))
+        List<CaptureObjectItem> captureObjectItemList = source.getCaptureObjects().stream().map(obj -> this.map(obj))
                 .collect(Collectors.toList());
-        List<ProfileEntryItem> list2 = source.getProfileEntries().stream().map(obj -> this.map(obj))
+        List<ProfileEntryItem> profileEntryItemList = source.getProfileEntries().stream().map(obj -> this.map(obj))
                 .collect(Collectors.toList());
 
         result.setLogicalName(obisCode);
-        result.getCaptureObjects().addAll(list1);
-        result.getProfileEntries().addAll(list2);
+        result.getCaptureObjects().addAll(captureObjectItemList);
+        result.getProfileEntries().addAll(profileEntryItemList);
         return result;
     }
 
@@ -59,16 +59,16 @@ public class ProfileGenericDataResponseConverter extends
         targetCaptureObject.setAttribute(BigInteger.valueOf(sourceCaptureObjectVo.getAttribute()));
         targetCaptureObject.setClassId(sourceCaptureObjectVo.getClassId());
         targetCaptureObject.setObisCode(this.map(sourceCaptureObjectVo.getLogicalName()));
-        targetCaptureObject.setVersion((BigInteger.valueOf(sourceCaptureObjectVo.getVersion())));
+        targetCaptureObject.setVersion(BigInteger.valueOf(sourceCaptureObjectVo.getVersion()));
         OsgpUnitType unitType = this.mapUnitType(sourceCaptureObjectVo.getUnit());
         targetCaptureObject.setUnit(unitType);
         result.setCaptureObject(targetCaptureObject);
         return result;
     }
 
+    // TODO add more types OsgpUnitType, that correspond with sourceType
     private OsgpUnitType mapUnitType(String sourceType) {
-        OsgpUnitType unitType = OsgpUnitType.KWH;
-        return unitType;
+        return OsgpUnitType.KWH;
     }
 
     private ProfileEntryItem map(final ProfileEntryItemVo source) {
