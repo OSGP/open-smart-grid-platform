@@ -419,7 +419,7 @@ public class MockOslpServer {
 
         if (relayData != null && !relayData.isEmpty()) {
             for (final String data : relayData.split(Keys.SEPARATOR_SEMICOLON)) {
-                final String[] dataParts = data.split(Keys.SEPARATOR);
+                final String[] dataParts = data.split(Keys.SEPARATOR_COMMA);
 
                 final RelayData r = RelayData.newBuilder()
                         .setIndex(OslpUtils.integerToByteString(Integer.parseInt(dataParts[0])))
@@ -469,7 +469,7 @@ public class MockOslpServer {
 
         if (relayData != null && !relayData.isEmpty()) {
             for (final String data : relayData.split(Keys.SEPARATOR_SEMICOLON)) {
-                final String[] dataParts = data.split(Keys.SEPARATOR);
+                final String[] dataParts = data.split(Keys.SEPARATOR_COMMA);
 
                 final RelayData r = RelayData.newBuilder()
                         .setIndex(OslpUtils.integerToByteString(Integer.parseInt(dataParts[0])))

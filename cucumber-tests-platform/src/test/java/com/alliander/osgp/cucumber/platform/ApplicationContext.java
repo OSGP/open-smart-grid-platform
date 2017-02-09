@@ -13,8 +13,6 @@ import org.springframework.context.annotation.FilterType;
 import com.alliander.osgp.cucumber.platform.config.ws.microgrids.MicrogridsNotificationWebServiceConfig;
 
 @ComponentScan(basePackages = {
-		"com.alliander.osgp.cucumber" }, 
-	excludeFilters = @ComponentScan.Filter(value = MicrogridsNotificationWebServiceConfig.class, type = FilterType.ASSIGNABLE_TYPE)
-)
+        "com.alliander.osgp.cucumber" }, excludeFilters = @ComponentScan.Filter(value = MicrogridsNotificationWebServiceConfig.class, type = FilterType.ASSIGNABLE_TYPE))
 public class ApplicationContext {
 }

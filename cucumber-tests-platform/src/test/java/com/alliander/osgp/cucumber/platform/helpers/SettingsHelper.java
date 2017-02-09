@@ -1,3 +1,10 @@
+/**
+ * Copyright 2017 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.cucumber.platform.helpers;
 
 import java.util.HashMap;
@@ -20,10 +27,6 @@ import cucumber.api.DataTable;
  * keys from a String based map.
  */
 public class SettingsHelper {
-
-    private SettingsHelper() {
-        // Utility class, keep constructor private.
-    }
 
     /**
      * Mixes in default mappings to an existing Map of key-value pairs.
@@ -88,25 +91,13 @@ public class SettingsHelper {
         return result;
     }
 
-    public static String makeKey(final String keyPrefix, final int... indexes) {
-        if (indexes == null || indexes.length == 0) {
-            return keyPrefix;
-        }
-        final StringBuilder sb = new StringBuilder(keyPrefix);
-        for (final int index : indexes) {
-            sb.append('_').append(index);
-        }
-        return sb.toString();
-    }
-
-    public static boolean hasKey(final Map<String, String> settings, final String keyPrefix, final int... indexes) {
-        return settings.containsKey(makeKey(keyPrefix, indexes));
-    }
-
-    public static String getStringValue(final Map<String, String> settings, final String keyPrefix,
+    public static Double getDoubleValue(final Map<String, String> settings, final String keyPrefix,
             final int... indexes) {
-        final String key = makeKey(keyPrefix, indexes);
-        return settings.get(key);
+        final String stringValue = getStringValue(settings, keyPrefix, indexes);
+        if (stringValue == null) {
+            return null;
+        }
+        return Double.valueOf(stringValue);
     }
 
     public static Integer getIntegerValue(final Map<String, String> settings, final String keyPrefix,
@@ -118,13 +109,10 @@ public class SettingsHelper {
         return Integer.valueOf(stringValue);
     }
 
-    public static Double getDoubleValue(final Map<String, String> settings, final String keyPrefix,
+    public static String getStringValue(final Map<String, String> settings, final String keyPrefix,
             final int... indexes) {
-        final String stringValue = getStringValue(settings, keyPrefix, indexes);
-        if (stringValue == null) {
-            return null;
-        }
-        return Double.valueOf(stringValue);
+        final String key = makeKey(keyPrefix, indexes);
+        return settings.get(key);
     }
 
     public static XMLGregorianCalendar getXmlGregorianCalendarValue(final Map<String, String> settings,
@@ -134,5 +122,24 @@ public class SettingsHelper {
             return null;
         }
         return XmlGregorianCalendarInputParser.parse(stringValue);
+    }
+
+    public static boolean hasKey(final Map<String, String> settings, final String keyPrefix, final int... indexes) {
+        return settings.containsKey(makeKey(keyPrefix, indexes));
+    }
+
+    public static String makeKey(final String keyPrefix, final int... indexes) {
+        if (indexes == null || indexes.length == 0) {
+            return keyPrefix;
+        }
+        final StringBuilder sb = new StringBuilder(keyPrefix);
+        for (final int index : indexes) {
+            sb.append('_').append(index);
+        }
+        return sb.toString();
+    }
+
+    private SettingsHelper() {
+        // Utility class, keep constructor private.
     }
 }

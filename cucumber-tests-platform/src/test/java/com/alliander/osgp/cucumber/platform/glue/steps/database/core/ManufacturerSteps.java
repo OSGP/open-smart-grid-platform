@@ -34,7 +34,7 @@ public class ManufacturerSteps extends GlueBase {
 
     /**
      * Generic method which adds a manufacturer using the settings.
-     * 
+     *
      * @param settings
      *            The settings for the manufacturer to be used.
      * @throws Throwable
@@ -42,24 +42,25 @@ public class ManufacturerSteps extends GlueBase {
     @Given("^a manufacturer")
     public void aManufacturer(final Map<String, String> settings) throws Throwable {
 
-        Manufacturer entity = new Manufacturer(
+        final Manufacturer entity = new Manufacturer(
                 getString(settings, Keys.MANUFACTURER_ID, Defaults.DEFAULT_MANUFACTURER_ID),
-                getString(settings, Keys.KEY_NAME, Defaults.DEFAULT_MANUFACTURER_NAME), 
+                getString(settings, Keys.KEY_NAME, Defaults.DEFAULT_MANUFACTURER_NAME),
                 getBoolean(settings, Keys.USE_PREFIX, Defaults.DEFAULT_MANUFACTURER_USE_PREFIX));
 
-        repo.save(entity);
+        this.repo.save(entity);
     }
 
     /**
      * Verify whether the entity is created as expected.
-     * 
+     *
      * @param expectedEntity
      * @throws Throwable
      */
     @Then("^the entity manufacturer exists$")
     public void theEntityManufacturerExists(final Map<String, String> expectedEntity) throws Throwable {
         // TODO: Wait until the stuff is created.
-        Manufacturer entity = repo.findByName(getString(expectedEntity, "Name", Defaults.DEFAULT_MANUFACTURER_NAME));
+        final Manufacturer entity = this.repo
+                .findByName(getString(expectedEntity, "Name", Defaults.DEFAULT_MANUFACTURER_NAME));
 
         Assert.assertEquals(getString(expectedEntity, "ManufacturerId", Defaults.DEFAULT_MANUFACTURER_ID),
                 entity.getManufacturerId());

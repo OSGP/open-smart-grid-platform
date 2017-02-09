@@ -138,15 +138,15 @@ public class GetStatusSteps {
        			Assert.assertEquals(getEnum(expectedResult, Keys.KEY_LIGHTTYPE, LightType.class), deviceStatus.getLightType());
        			
        			if (expectedResult.containsKey(Keys.KEY_EVENTNOTIFICATIONTYPES) && !expectedResult.get(Keys.KEY_EVENTNOTIFICATIONTYPES).isEmpty()) {
-           			Assert.assertEquals(getString(expectedResult,  Keys.KEY_EVENTNOTIFICATIONS, Defaults.DEFAULT_EVENTNOTIFICATIONS).split(Keys.SEPARATOR).length, deviceStatus.getEventNotifications().size());
-           			for (String eventNotification : getString(expectedResult,  Keys.KEY_EVENTNOTIFICATIONS, Defaults.DEFAULT_EVENTNOTIFICATIONS).split(Keys.SEPARATOR)) {
+           			Assert.assertEquals(getString(expectedResult,  Keys.KEY_EVENTNOTIFICATIONS, Defaults.DEFAULT_EVENTNOTIFICATIONS).split(Keys.SEPARATOR_COMMA).length, deviceStatus.getEventNotifications().size());
+           			for (String eventNotification : getString(expectedResult,  Keys.KEY_EVENTNOTIFICATIONS, Defaults.DEFAULT_EVENTNOTIFICATIONS).split(Keys.SEPARATOR_COMMA)) {
                			Assert.assertTrue(deviceStatus.getEventNotifications().contains(Enum.valueOf(EventNotificationType.class, eventNotification)));
            			}
        			}
        			
        			if (expectedResult.containsKey(Keys.KEY_LIGHTVALUES) && !expectedResult.get(Keys.KEY_LIGHTVALUES).isEmpty()) {
-               		Assert.assertEquals(getString(expectedResult,  Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES).split(Keys.SEPARATOR).length, deviceStatus.getLightValues().size());
-	           		for (String lightValues : getString(expectedResult, Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES).split(Keys.SEPARATOR)) {
+               		Assert.assertEquals(getString(expectedResult,  Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES).split(Keys.SEPARATOR_COMMA).length, deviceStatus.getLightValues().size());
+	           		for (String lightValues : getString(expectedResult, Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES).split(Keys.SEPARATOR_COMMA)) {
 	           			
 	       				String[] parts = lightValues.split(Keys.SEPARATOR_SEMICOLON);
 	       				Integer index = Integer.parseInt(parts[0]);

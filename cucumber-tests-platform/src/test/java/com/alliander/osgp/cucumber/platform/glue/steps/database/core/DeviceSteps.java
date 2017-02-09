@@ -34,69 +34,24 @@ public class DeviceSteps extends BaseDeviceSteps {
     private CoreDeviceConfiguration configuration;
 
     @Autowired
+    private DeviceAuthorizationRepository deviceAuthorizationRepository;
+
+    @Autowired
     private DeviceRepository deviceRepository;
 
     @Autowired
     private SmartMeterRepository smartMeterRepository;
 
     @Autowired
-    private DeviceAuthorizationRepository deviceAuthorizationRepository;
-
-    @Autowired
     private SsldRepository ssldRepository;
 
-    @Then("^the device with device identification \"([^\"]*)\" should be active$")
-    public void theDeviceWithDeviceIdentificationShouldBeActive(final String deviceIdentification) throws Throwable {
+    @Then("^the channel of device \"([^\"]*)\" is cleared$")
+    public void theChannelOfDeviceIsCleared(final String gmeter) {
+        final SmartMeter gSmartmeter = this.smartMeterRepository.findByDeviceIdentification(gmeter);
 
-        boolean success = false;
-        int count = 0;
-        while (!success) {
-            if (count > this.configuration.getTimeout()) {
-                Assert.fail("Failed");
-            }
+        Assert.assertNotNull(gSmartmeter);
 
-            // Wait for next try to retrieve a response
-            count++;
-            Thread.sleep(1000);
-
-            final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-
-            if (device == null) {
-                continue;
-            }
-
-            Assert.assertTrue(device.isActive());
-
-            success = true;
-        }
-    }
-
-    /**
-     *
-     * @param deviceIdentification
-     * @throws Throwable
-     */
-    @Then("^the device with device identification \"([^\"]*)\" should be inactive$")
-    public void theDeviceWithDeviceIdentificationShouldBeInActive(final String deviceIdentification) throws Throwable {
-        boolean success = false;
-        int count = 0;
-        while (!success) {
-            if (count > this.configuration.getTimeout()) {
-                Assert.fail("Failed");
-            }
-
-            // Wait for next try to retrieve a response
-            count++;
-            Thread.sleep(1000);
-
-            final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-            if (device == null)
-                continue;
-
-            Assert.assertFalse(device.isActive());
-
-            success = true;
-        }
+        Assert.assertNull(gSmartmeter.getChannel());
     }
 
     /**
@@ -107,7 +62,7 @@ public class DeviceSteps extends BaseDeviceSteps {
     @And("^the device exists")
     public void theDeviceExists(final Map<String, String> settings) throws Throwable {
         Device device = null;
-        
+
         boolean success = false;
         int count = 0;
         while (!success) {
@@ -178,6 +133,76 @@ public class DeviceSteps extends BaseDeviceSteps {
     }
 
     /**
+     * Checks whether the device does not exist in the database.
+     *
+     * @param deviceIdentification
+     * @throws Throwable
+     */
+    @Then("^the device with id \"([^\"]*)\" does not exists$")
+    public void theDeviceShouldBeRemoved(final String deviceIdentification) throws Throwable {
+        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+        final List<DeviceAuthorization> devAuths = this.deviceAuthorizationRepository.findByDevice(device);
+
+        Assert.assertNotNull(device);
+        Assert.assertTrue(devAuths.size() == 0);
+    }
+
+    @Then("^the device with device identification \"([^\"]*)\" should be active$")
+    public void theDeviceWithDeviceIdentificationShouldBeActive(final String deviceIdentification) throws Throwable {
+
+        boolean success = false;
+        int count = 0;
+        while (!success) {
+            if (count > this.configuration.getTimeout()) {
+                Assert.fail("Failed");
+            }
+
+            // Wait for next try to retrieve a response
+            count++;
+            Thread.sleep(1000);
+
+            final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+
+            if (device == null) {
+                continue;
+            }
+
+            Assert.assertTrue(device.isActive());
+
+            success = true;
+        }
+    }
+
+    /**
+     *
+     * @param deviceIdentification
+     * @throws Throwable
+     */
+    @Then("^the device with device identification \"([^\"]*)\" should be inactive$")
+    public void theDeviceWithDeviceIdentificationShouldBeInActive(final String deviceIdentification) throws Throwable {
+        boolean success = false;
+        int count = 0;
+        while (!success) {
+            if (count > this.configuration.getTimeout()) {
+                Assert.fail("Failed");
+            }
+
+            // Wait for next try to retrieve a response
+            count++;
+            Thread.sleep(1000);
+
+            final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+            if (device == null) {
+                continue;
+            }
+
+            Assert.assertFalse(device.isActive());
+
+            success = true;
+        }
+    }
+
+    /**
      * Checks whether the device exists in the database..
      *
      * @param deviceIdentification
@@ -192,19 +217,15 @@ public class DeviceSteps extends BaseDeviceSteps {
         Assert.assertTrue(devAuths.size() > 0);
     }
 
-    /**
-     * Checks whether the device does not exist in the database.
-     *
-     * @param deviceIdentification
-     * @throws Throwable
-     */
-    @Then("^the device with id \"([^\"]*)\" does not exists$")
-    public void theDeviceShouldBeRemoved(final String deviceIdentification) throws Throwable {
-        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-        final List<DeviceAuthorization> devAuths = this.deviceAuthorizationRepository.findByDevice(device);
+    @Then("^the G-meter \"([^\"]*)\" is DeCoupled from device \"([^\"]*)\"$")
+    public void theGMeterIsDecoupledFromDevice(final String gmeter, final String emeter) {
+        final SmartMeter gSmartmeter = this.smartMeterRepository.findByDeviceIdentification(gmeter);
+        final Device eDevice = this.deviceRepository.findByDeviceIdentification(emeter);
 
-        Assert.assertNotNull(device);
-        Assert.assertTrue(devAuths.size() == 0);
+        Assert.assertNotNull(eDevice);
+        Assert.assertNotNull(gSmartmeter);
+
+        Assert.assertNull(gSmartmeter.getGatewayDevice());
     }
 
     @Then("^the mbus device \"([^\"]*)\" is coupled to device \"([^\"]*)\" on MBUS channel (\\d+)$")
@@ -230,26 +251,6 @@ public class DeviceSteps extends BaseDeviceSteps {
         Assert.assertNotNull(gSmartmeter);
 
         Assert.assertNotEquals(gSmartmeter.getGatewayDevice(), eDevice);
-    }
-
-    @Then("^the G-meter \"([^\"]*)\" is DeCoupled from device \"([^\"]*)\"$")
-    public void theGMeterIsDecoupledFromDevice(final String gmeter, final String emeter) {
-        final SmartMeter gSmartmeter = this.smartMeterRepository.findByDeviceIdentification(gmeter);
-        final Device eDevice = this.deviceRepository.findByDeviceIdentification(emeter);
-
-        Assert.assertNotNull(eDevice);
-        Assert.assertNotNull(gSmartmeter);
-
-        Assert.assertNull(gSmartmeter.getGatewayDevice());
-    }
-
-    @Then("^the channel of device \"([^\"]*)\" is cleared$")
-    public void theChannelOfDeviceIsCleared(final String gmeter) {
-        final SmartMeter gSmartmeter = this.smartMeterRepository.findByDeviceIdentification(gmeter);
-
-        Assert.assertNotNull(gSmartmeter);
-
-        Assert.assertNull(gSmartmeter.getChannel());
     }
 
 }

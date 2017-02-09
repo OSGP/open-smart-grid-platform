@@ -10,7 +10,7 @@
 package com.alliander.osgp.cucumber;
 
 /**
- * This class is needed for others to resolve the correct package name. 
+ * This class is needed for others to resolve the correct package name.
  */
 public class CucumberTests {
 

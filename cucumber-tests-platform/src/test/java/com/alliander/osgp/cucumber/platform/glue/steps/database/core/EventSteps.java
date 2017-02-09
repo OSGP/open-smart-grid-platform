@@ -29,10 +29,10 @@ import cucumber.api.java.en.Then;
 public class EventSteps extends GlueBase {
 
     @Autowired
-    private EventRepository eventRepository;
+    private DeviceRepository deviceRepository;
 
     @Autowired
-    private DeviceRepository deviceRepository;
+    private EventRepository eventRepository;
 
     @Then("^the event is stored$")
     public void theEventIsStored(final Map<String, String> expectedEntity) throws Throwable {
@@ -42,9 +42,8 @@ public class EventSteps extends GlueBase {
 
         final List<Event> events = this.eventRepository.findByDevice(device);
 
-        
         boolean found = false;
-        for (Event event : events) {
+        for (final Event event : events) {
             if (event.getDescription() == getString(expectedEntity, Keys.KEY_DESCRIPTION)
                     && event.getEventType() == getEnum(expectedEntity, Keys.KEY_EVENT, EventType.class)) {
                 found = true;

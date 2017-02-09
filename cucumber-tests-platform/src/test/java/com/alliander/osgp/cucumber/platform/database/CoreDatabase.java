@@ -38,10 +38,13 @@ import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 public class CoreDatabase {
 
     @Autowired
-    private OrganisationRepository organisationRepository;
+    private DeviceAuthorizationRepository deviceAuthorizationRepository;
 
     @Autowired
-    private ManufacturerRepository manufacturerRepository;
+    private DeviceFirmwareRepository deviceFirmwareRepository;
+
+    @Autowired
+    private DeviceLogItemRepository deviceLogItemRepository;
 
     @Autowired
     private DeviceModelRepository deviceModelRepository;
@@ -50,40 +53,37 @@ public class CoreDatabase {
     private DeviceRepository deviceRepository;
 
     @Autowired
-    private SmartMeterRepository smartMeterRepository;
-
-    @Autowired
-    private DeviceAuthorizationRepository deviceAuthorizationRepository;
-
-    @Autowired
-    private Iec61850DeviceRepository iec61850DeviceRepository;
-
-    @Autowired
-    private OslpDeviceRepository oslpDeviceRepository;
-
-    @Autowired
-    private DeviceLogItemRepository deviceLogItemRepository;
-
-    @Autowired
-    private ScheduledTaskRepository scheduledTaskRepository;
+    private EventRepository eventRepository;
 
     @Autowired
     private FirmwareRepository firmwareRepository;
 
     @Autowired
-    private DeviceFirmwareRepository deviceFirmwareRepository;
+    private Iec61850DeviceRepository iec61850DeviceRepository;
 
     @Autowired
-    private EventRepository eventRepository;
+    private ManufacturerRepository manufacturerRepository;
 
     @Autowired
-    private SsldRepository ssldRepository;
+    private OrganisationRepository organisationRepository;
+
+    @Autowired
+    private OslpDeviceRepository oslpDeviceRepository;
 
     @Autowired
     private RtuDeviceRepository rtuDeviceRepository;
 
     @Autowired
     private RtuResponseDataRepository rtuResponseDataRepository;
+
+    @Autowired
+    private ScheduledTaskRepository scheduledTaskRepository;
+
+    @Autowired
+    private SmartMeterRepository smartMeterRepository;
+
+    @Autowired
+    private SsldRepository ssldRepository;
 
     /**
      * This method is used to create default data not directly related to the

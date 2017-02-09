@@ -27,44 +27,44 @@ import cucumber.api.java.en.Given;
 
 public class SmartMeterSteps extends BaseDeviceSteps {
 
-	@Autowired
-	private DeviceRepository deviceRepository;
+    @Autowired
+    private DeviceRepository deviceRepository;
 
-	@Autowired
-	private SmartMeterRepository smartMeterRepository;
+    @Autowired
+    private SmartMeterRepository smartMeterRepository;
 
-	/**
-	 * Given a smart meter exists.
-	 *
-	 * @param settings
-	 */
-	@Given("^a smart meter$")
-	@Transactional("txMgrCore")
-	public Device aSmartMeter(final Map<String, String> settings) {
+    /**
+     * Given a smart meter exists.
+     *
+     * @param settings
+     */
+    @Given("^a smart meter$")
+    @Transactional("txMgrCore")
+    public Device aSmartMeter(final Map<String, String> settings) {
 
-		final String deviceIdentification = getString(settings, "DeviceIdentification",
-				Defaults.DEFAULT_DEVICE_IDENTIFICATION);
-		final SmartMeter smartMeter = new SmartMeter(deviceIdentification,
-				getString(settings, "Alias", Defaults.DEFAULT_ALIAS),
-				getString(settings, "ContainerCity", Defaults.DEFAULT_CONTAINER_CITY),
-				getString(settings, "ContainerPostalCode", Defaults.DEFAULT_CONTAINER_POSTALCODE),
-				getString(settings, "ContainerStreet", Defaults.DEFAULT_CONTAINER_STREET),
-				getString(settings, "ContainerNumber", Defaults.DEFAULT_CONTAINER_NUMBER),
-				getString(settings, "ContainerMunicipality", Defaults.DEFAULT_CONTAINER_MUNICIPALITY),
-				getFloat(settings, "GPSLatitude", Defaults.DEFAULT_LATITUDE),
-				getFloat(settings, "GPSLongitude", Defaults.DEFAULT_LONGITUDE));
+        final String deviceIdentification = getString(settings, "DeviceIdentification",
+                Defaults.DEFAULT_DEVICE_IDENTIFICATION);
+        final SmartMeter smartMeter = new SmartMeter(deviceIdentification,
+                getString(settings, "Alias", Defaults.DEFAULT_ALIAS),
+                getString(settings, "ContainerCity", Defaults.DEFAULT_CONTAINER_CITY),
+                getString(settings, "ContainerPostalCode", Defaults.DEFAULT_CONTAINER_POSTALCODE),
+                getString(settings, "ContainerStreet", Defaults.DEFAULT_CONTAINER_STREET),
+                getString(settings, "ContainerNumber", Defaults.DEFAULT_CONTAINER_NUMBER),
+                getString(settings, "ContainerMunicipality", Defaults.DEFAULT_CONTAINER_MUNICIPALITY),
+                getFloat(settings, "GPSLatitude", Defaults.DEFAULT_LATITUDE),
+                getFloat(settings, "GPSLongitude", Defaults.DEFAULT_LONGITUDE));
 
-		smartMeter.setSupplier(getString(settings, Keys.SUPPLIER, Defaults.DEFAULT_SUPPLIER));
+        smartMeter.setSupplier(getString(settings, Keys.SUPPLIER, Defaults.DEFAULT_SUPPLIER));
 
-		if (settings.containsKey(Keys.KEY_GATEWAY_DEVICE_ID)) {
-			smartMeter.setChannel(getShort(settings, Keys.KEY_CHANNEL, Defaults.DEFAULT_CHANNEL));
-			final Device smartEMeter = this.deviceRepository
-					.findByDeviceIdentification(settings.get(Keys.KEY_GATEWAY_DEVICE_ID));
-			smartMeter.updateGatewayDevice(smartEMeter);
-		}
+        if (settings.containsKey(Keys.KEY_GATEWAY_DEVICE_ID)) {
+            smartMeter.setChannel(getShort(settings, Keys.KEY_CHANNEL, Defaults.DEFAULT_CHANNEL));
+            final Device smartEMeter = this.deviceRepository
+                    .findByDeviceIdentification(settings.get(Keys.KEY_GATEWAY_DEVICE_ID));
+            smartMeter.updateGatewayDevice(smartEMeter);
+        }
 
-		this.smartMeterRepository.save(smartMeter);
+        this.smartMeterRepository.save(smartMeter);
 
-		return this.updateDevice(deviceIdentification, settings);
-	}
+        return this.updateDevice(deviceIdentification, settings);
+    }
 }

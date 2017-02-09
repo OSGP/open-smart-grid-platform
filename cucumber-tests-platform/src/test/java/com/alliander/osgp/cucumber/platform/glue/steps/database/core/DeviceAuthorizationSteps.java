@@ -28,15 +28,15 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import cucumber.api.java.en.Given;
 
 public class DeviceAuthorizationSteps extends GlueBase {
-    
+
+    @Autowired
+    private DeviceAuthorizationRepository deviceAuthorizationRepository;
+
     @Autowired
     private DeviceRepository deviceRepository;
 
     @Autowired
     private OrganisationRepository organizationRepository;
-
-    @Autowired
-    private DeviceAuthorizationRepository deviceAuthorizationRepository;
 
     /**
      * Generic method which adds a device authorization using the settings.
@@ -48,13 +48,14 @@ public class DeviceAuthorizationSteps extends GlueBase {
     @Given("^a device authorization$")
     public void aDeviceAuthorization(final Map<String, String> settings) throws Throwable {
 
-    	final Device device = this.deviceRepository.findByDeviceIdentification(
-    			getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+        final Device device = this.deviceRepository.findByDeviceIdentification(
+                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-    	final Organisation organization = this.organizationRepository.findByOrganisationIdentification(
-    			getString(settings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+        final Organisation organization = this.organizationRepository.findByOrganisationIdentification(getString(
+                settings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
-    	final DeviceFunctionGroup functionGroup = getEnum(settings, Keys.KEY_DEVICE_FUNCTION_GROUP, DeviceFunctionGroup.class, DeviceFunctionGroup.OWNER);
+        final DeviceFunctionGroup functionGroup = getEnum(settings, Keys.KEY_DEVICE_FUNCTION_GROUP,
+                DeviceFunctionGroup.class, DeviceFunctionGroup.OWNER);
 
         final DeviceAuthorization authorization = device.addAuthorization(organization, functionGroup);
 

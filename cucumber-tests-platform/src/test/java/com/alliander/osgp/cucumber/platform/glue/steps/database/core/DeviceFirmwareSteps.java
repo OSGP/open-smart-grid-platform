@@ -27,12 +27,12 @@ import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import cucumber.api.java.en.Given;
 
 public class DeviceFirmwareSteps extends GlueBase {
-    
-    @Autowired
-    private DeviceRepository deviceRepository;
 
     @Autowired
     private WritableDeviceFirmwareRepository deviceFirmwareRepository;
+
+    @Autowired
+    private DeviceRepository deviceRepository;
 
     @Autowired
     private WritableFirmwareRepository firmwareRepository;

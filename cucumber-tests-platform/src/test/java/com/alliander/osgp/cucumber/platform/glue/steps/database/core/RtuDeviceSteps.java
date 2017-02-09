@@ -26,20 +26,20 @@ import cucumber.api.java.en.Given;
  */
 public class RtuDeviceSteps extends BaseDeviceSteps {
 
-	@Autowired
-	private RtuDeviceRepository rtuDeviceRespository;
+    @Autowired
+    private RtuDeviceRepository rtuDeviceRespository;
 
-	@Given("^an rtu device$")
-	@Transactional("txMgrCore")
-	public RtuDevice anRtuDevice(final Map<String, String> settings) throws Throwable {
+    @Given("^an rtu device$")
+    @Transactional("txMgrCore")
+    public RtuDevice anRtuDevice(final Map<String, String> settings) throws Throwable {
 
-		final String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION);
-		final RtuDevice rtuDevice = new RtuDevice(deviceIdentification);
-		this.rtuDeviceRespository.save(rtuDevice);
+        final String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION);
+        final RtuDevice rtuDevice = new RtuDevice(deviceIdentification);
+        this.rtuDeviceRespository.save(rtuDevice);
 
-		Device device = this.rtuDeviceRespository.findByDeviceIdentification(deviceIdentification);
-		device = this.updateDevice(device, settings);
+        Device device = this.rtuDeviceRespository.findByDeviceIdentification(deviceIdentification);
+        device = this.updateDevice(device, settings);
 
-		return this.rtuDeviceRespository.findByDeviceIdentification(deviceIdentification);
-	}
+        return this.rtuDeviceRespository.findByDeviceIdentification(deviceIdentification);
+    }
 }
