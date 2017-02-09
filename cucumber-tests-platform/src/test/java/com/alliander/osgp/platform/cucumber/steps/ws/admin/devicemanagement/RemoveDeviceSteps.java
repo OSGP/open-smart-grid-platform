@@ -9,6 +9,8 @@ package com.alliander.osgp.platform.cucumber.steps.ws.admin.devicemanagement;
 
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -22,6 +24,7 @@ import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.platform.cucumber.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.platform.cucumber.support.ws.admin.AdminDeviceManagementClient;
+import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -36,19 +39,57 @@ public class RemoveDeviceSteps {
      *
      * @param requestParameters
      *            An list with request parameters for the request.
+     * @throws IOException
+     * @throws GeneralSecurityException
+     * @throws WebServiceSecurityException
      * @throws Throwable
      */
     @When("^receiving a remove device request$")
-    public void receivingARemoveDeviceRequest(final Map<String, String> requestSettings) throws Throwable {
+    public void receivingARemoveDeviceRequest(final Map<String, String> requestParameters)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final RemoveDeviceRequest request = new RemoveDeviceRequest();
         request.setDeviceIdentification(
-                getString(requestSettings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         try {
             ScenarioContext.Current().put(Keys.RESPONSE, this.client.removeDevice(request));
         } catch (final SoapFaultClientException ex) {
             ScenarioContext.Current().put(Keys.RESPONSE, ex);
+            GenericResponseSteps.verifySoapFault(requestParameters);
         }
+    }
+
+    /**
+     * Send a remove device request to the Platform.
+     *
+     * @param requestParameters
+     *            An list with request parameters for the request.
+     * @throws Throwable
+     */
+    @When("^receiving a remove device request with unknown device identification$")
+    public void receivingARemoveDeviceRequestWithUnknownDeviceIdentification(
+            final Map<String, String> requestParameters) throws Throwable {
+        ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
+
+        this.receivingARemoveDeviceRequest(requestParameters);
+    }
+
+    /**
+     * Send a remove device request to the Platform.
+     *
+     * @param requestParameters
+     *            An list with request parameters for the request.
+     * @throws Throwable
+     */
+    @When("^receiving a remove device request with empty device identification$")
+    public void receivingARemoveDeviceRequestWithEmptyDeviceIdentification(final Map<String, String> requestParameters)
+            throws Throwable {
+        this.receivingARemoveDeviceRequest(requestParameters);
+    }
+
+    private void createAndSendRequest(final Map<String, String> requestParameters, final String certificateName)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+
     }
 
     /**
