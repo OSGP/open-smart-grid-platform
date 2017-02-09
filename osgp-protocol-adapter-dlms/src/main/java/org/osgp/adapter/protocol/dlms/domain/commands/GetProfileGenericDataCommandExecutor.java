@@ -7,10 +7,11 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.AttributeAddress;
@@ -27,15 +28,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCodeDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlagDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CaptureObjectDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CaptureObjectItemDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValueDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ObisCodeValuesDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodTypeDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileEntryDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileEntryItemDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataResponseItemDto;
 
 @Component()
 public class GetProfileGenericDataCommandExecutor extends
@@ -43,76 +44,63 @@ AbstractCommandExecutor<ProfileGenericDataRequestDto, ProfileGenericDataResponse
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetProfileGenericDataCommandExecutor.class);
 
-    private static final int CLASS_ID_PROFILE_GENERIC = 7;
-    private static final ObisCode OBIS_CODE_INTERVAL_BILLING = new ObisCode("1.0.99.1.0.255");
-    private static final ObisCode OBIS_CODE_DAILY_BILLING = new ObisCode("1.0.99.2.0.255");
-    private static final ObisCode OBIS_CODE_MONTHLY_BILLING = new ObisCode("0.0.98.1.0.255");
-    private static final byte ATTRIBUTE_ID_BUFFER = 2;
-    private static final byte ATTRIBUTE_ID_SCALER_UNIT = 3;
-    private static final ObisCode OBIS_CODE_INTERVAL_IMPORT_SCALER_UNIT = new ObisCode("1.0.1.8.0.255");
-    private static final ObisCode OBIS_CODE_INTERVAL_EXPORT_SCALER_UNIT = new ObisCode("1.0.2.8.0.255");
-    private static final ObisCode OBIS_CODE_MONTHLY_DAILY_IMPORT_RATE_1_SCALER_UNIT = new ObisCode("1.0.1.8.1.255");
-    private static final ObisCode OBIS_CODE_MONTHLY_DAILY_IMPORT_RATE_2_SCALER_UNIT = new ObisCode("1.0.1.8.2.255");
-    private static final ObisCode OBIS_CODE_MONTHLY_DAILY_EXPORT_RATE_1_SCALER_UNIT = new ObisCode("1.0.2.8.1.255");
-    private static final ObisCode OBIS_CODE_MONTHLY_DAILY_EXPORT_RATE_2_SCALER_UNIT = new ObisCode("1.0.2.8.2.255");
-    private static final int RESULT_INDEX_IMPORT = 1;
-    private static final int RESULT_INDEX_IMPORT_2_OR_EXPORT = 2;
-    private static final int RESULT_INDEX_EXPORT = 3;
-    private static final int RESULT_INDEX_EXPORT_2 = 4;
-
-    private static final int CLASS_ID_REGISTER = 3;
-
-    private static final byte[] OBIS_BYTES_ACTIVE_ENERGY_IMPORT_RATE_1 = new byte[] { 1, 0, 1, 8, 1, (byte) 255 };
-    private static final byte[] OBIS_BYTES_ACTIVE_ENERGY_IMPORT_RATE_2 = new byte[] { 1, 0, 1, 8, 2, (byte) 255 };
-    private static final byte[] OBIS_BYTES_ACTIVE_ENERGY_EXPORT_RATE_1 = new byte[] { 1, 0, 2, 8, 1, (byte) 255 };
-    private static final byte[] OBIS_BYTES_ACTIVE_ENERGY_EXPORT_RATE_2 = new byte[] { 1, 0, 2, 8, 2, (byte) 255 };
-    private static final byte ATTRIBUTE_ID_VALUE = 2;
-
+    // private static final int BUFFER_INDEX_CLOCK = 0;
     private static final int ACCESS_SELECTOR_RANGE_DESCRIPTOR = 1;
-
-    private static final int BUFFER_INDEX_CLOCK = 0;
-    private static final int BUFFER_INDEX_AMR_STATUS = 1;
-    private static final int BUFFER_INDEX_A_POS_RATE_1 = 2;
-    private static final int BUFFER_INDEX_A_POS_RATE_2 = 3;
-    private static final int BUFFER_INDEX_A_NEG_RATE_1 = 4;
-    private static final int BUFFER_INDEX_A_NEG_RATE_2 = 5;
-    private static final int BUFFER_INDEX_A_POS = 2;
-    private static final int BUFFER_INDEX_A_NEG = 3;
+    private static final int CLASS_ID_PROFILE_GENERIC = 7;
+    private static final byte ATTRIBUTE_ID_BUFFER = 2;
+    private static final byte ATTRIBUTE_ID_CAPTURE_OBJECTS = 3;
+    private static final byte ATTRIBUTE_ID_SCALER_UNIT = 3;
 
     @Autowired
     private DlmsHelperService dlmsHelperService;
-
-    @Autowired
-    private AmrProfileStatusCodeHelperService amrProfileStatusCodeHelperService;
 
     public GetProfileGenericDataCommandExecutor() {
         super(ProfileGenericDataRequestDto.class);
     }
 
     @Override
-    public ProfileGenericDataRequestDto fromBundleRequestInput(final ActionRequestDto bundleInput)
-            throws ProtocolAdapterException {
-
-        this.checkActionRequestType(bundleInput);
-        final ProfileGenericDataRequestDto periodicMeterReadsRequestDataDto = (ProfileGenericDataRequestDto) bundleInput;
-
-        return new ProfileGenericDataRequestDto(periodicMeterReadsRequestDataDto.getPeriodType(),
-                periodicMeterReadsRequestDataDto.getBeginDate(), periodicMeterReadsRequestDataDto.getEndDate());
-    }
-
-    @Override
     public ProfileGenericDataResponseDto execute(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final ProfileGenericDataRequestDto periodicMeterReadsRequest) throws ProtocolAdapterException {
+            final ProfileGenericDataRequestDto profileGenericDataRequestDto) throws ProtocolAdapterException {
 
-        final PeriodTypeDto periodType = periodicMeterReadsRequest.getPeriodType();
-        final DateTime beginDateTime = new DateTime(periodicMeterReadsRequest.getBeginDate());
-        final DateTime endDateTime = new DateTime(periodicMeterReadsRequest.getEndDate());
+        final DateTime beginDateTime = new DateTime(profileGenericDataRequestDto.getBeginDate());
+        final DateTime endDateTime = new DateTime(profileGenericDataRequestDto.getEndDate());
+        final ObisCode obisCode = this.makeObisCode(profileGenericDataRequestDto);
 
-        final AttributeAddress[] profileBufferAndScalerUnit = this.getProfileBufferAndScalerUnit(periodType,
+        // Retrieve capture objects
+        AttributeAddress captureObjectsAttributeAddress = new AttributeAddress(CLASS_ID_PROFILE_GENERIC, obisCode,
+                ATTRIBUTE_ID_CAPTURE_OBJECTS);
+        List<GetResult> captureObjects = this.dlmsHelperService.getAndCheck(conn, device,
+                "retrieve profile generic capture objects", captureObjectsAttributeAddress);
+
+        // Determine for which capture objects to retrieve the scaler units
+        // Look in Blue Book, capture objects of type register (class id 3?, and
+        // demand register (class id 5?) are candidates
+        // Get scalar units addresses
+        List<AttributeAddress> scalerUnitAddresses = this.getScalerUnits(captureObjects);
+
+        // Retrieve the scaler units
+        List<GetResult> scalerUnits = new ArrayList<>();
+        for (AttributeAddress scalerUnitAttributeAddress : scalerUnitAddresses) {
+            scalerUnits.addAll(this.dlmsHelperService.getAndCheck(conn, device,
+                    "retrieve scaler unit for capture object", scalerUnitAttributeAddress));
+        }
+
+        // Retrieve the buffer
+        final SelectiveAccessDescription access = this.getSelectiveAccessDescription(beginDateTime, endDateTime,
+                device.isSelectiveAccessSupported());
+        AttributeAddress bufferAttributeAddress = new AttributeAddress(CLASS_ID_PROFILE_GENERIC, obisCode,
+                ATTRIBUTE_ID_BUFFER, access);
+        List<GetResult> buffer = this.dlmsHelperService.getAndCheck(conn, device, "retrieve profile generic buffer",
+                bufferAttributeAddress);
+
+        // Process data
+        // Add units to capture objects
+        // Calculate the proper values in the buffer using the scaler
+
+        final AttributeAddress[] profileBufferAndScalerUnit = this.getProfileBufferAndScalerUnit(obisCode,
                 beginDateTime, endDateTime, device.isSelectiveAccessSupported());
 
-        LOGGER.debug("Retrieving current billing period and profiles for period type: {}, from: {}, to: {}",
-                periodType, beginDateTime, endDateTime);
+        LOGGER.debug("Retrieving profile generic data for interval, from: {}, to: {}", beginDateTime, endDateTime);
 
         /*
          * workaround for a problem when using with_list and retrieving a
@@ -122,208 +110,57 @@ AbstractCommandExecutor<ProfileGenericDataRequestDto, ProfileGenericDataResponse
         for (final AttributeAddress address : profileBufferAndScalerUnit) {
 
             conn.getDlmsMessageListener().setDescription(
-                    "GetProfileGenericData " + periodType + " from " + beginDateTime + " until " + endDateTime
-                    + ", retrieve attribute: " + JdlmsObjectToStringUtil.describeAttributes(address));
+                    "GetProfileGenericData " + PeriodTypeDto.INTERVAL + " from " + beginDateTime + " until "
+                            + endDateTime + ", retrieve attribute: "
+                            + JdlmsObjectToStringUtil.describeAttributes(address));
 
-            getResultList.addAll(this.dlmsHelperService.getAndCheck(conn, device, "retrieve periodic meter reads for "
-                    + periodType, address));
+            getResultList.addAll(this.dlmsHelperService.getAndCheck(conn, device, "retrieve profile generic data for "
+                    + PeriodTypeDto.INTERVAL, address));
         }
 
         final DataObject resultData = this.dlmsHelperService.readDataObject(getResultList.get(0),
-                "Periodic E-Meter Reads");
+                "Profile Generic Data");
         final List<DataObject> bufferedObjectsList = resultData.getValue();
 
-        final List<ProfileGenericDataResponseItemDto> periodicMeterReads = new ArrayList<>();
+        final List<CaptureObjectDto> captureObjectsDto = new ArrayList<>();
         for (final DataObject bufferedObject : bufferedObjectsList) {
             final List<DataObject> bufferedObjects = bufferedObject.getValue();
             try {
-                periodicMeterReads.add(this.processNextProfileGenericData(periodType, beginDateTime, endDateTime,
-                        bufferedObjects, getResultList));
+                captureObjectsDto.add(this.processNextProfileGenericData(PeriodTypeDto.INTERVAL, beginDateTime,
+                        endDateTime, bufferedObjects, getResultList));
             } catch (final BufferedDateTimeValidationException e) {
                 LOGGER.warn(e.getMessage(), e);
             }
         }
 
-        return new ProfileGenericDataResponseDto(periodType, periodicMeterReads);
+        return this.makeTestResult(profileGenericDataRequestDto);
     }
 
-    private ProfileGenericDataResponseItemDto processNextProfileGenericData(final PeriodTypeDto periodType,
-            final DateTime beginDateTime, final DateTime endDateTime, final List<DataObject> bufferedObjects,
-            final List<GetResult> results) throws ProtocolAdapterException, BufferedDateTimeValidationException {
-
-        final CosemDateTimeDto cosemDateTime = this.dlmsHelperService.readDateTime(
-                bufferedObjects.get(BUFFER_INDEX_CLOCK), "Clock from " + periodType + " buffer");
-        final DateTime bufferedDateTime = cosemDateTime == null ? null : cosemDateTime.asDateTime();
-
-        this.validateBufferedDateTime(bufferedDateTime, cosemDateTime, beginDateTime, endDateTime);
-
-        LOGGER.debug("Processing profile (" + periodType + ") objects captured at: {}", cosemDateTime);
-
-        switch (periodType) {
-        case INTERVAL:
-            return this.getNextProfileGenericDataForInterval(bufferedObjects, bufferedDateTime, results);
-        case DAILY:
-            return this.getNextProfileGenericDataForDaily(bufferedObjects, bufferedDateTime, results);
-        case MONTHLY:
-            return this.getNextProfileGenericDataForMonthly(bufferedObjects, bufferedDateTime, results);
-        default:
-            throw new AssertionError("Unknown PeriodType: " + periodType);
-        }
+    private List<AttributeAddress> getScalerUnits(List<GetResult> captureObjects) {
+        List<AttributeAddress> scalerUnits = new ArrayList<AttributeAddress>();
+        return scalerUnits;
     }
 
-    private ProfileGenericDataResponseItemDto getNextProfileGenericDataForInterval(
-            final List<DataObject> bufferedObjects, final DateTime bufferedDateTime, final List<GetResult> results)
-                    throws ProtocolAdapterException {
+    private AttributeAddress[] getProfileBufferAndScalerUnit(final ObisCode obisCode, final DateTime beginDateTime,
+            final DateTime endDateTime, final boolean isSelectingValuesSupported) throws ProtocolAdapterException {
 
-        final AmrProfileStatusCodeDto amrProfileStatusCode = this.readAmrProfileStatusCode(bufferedObjects
-                .get(BUFFER_INDEX_AMR_STATUS));
-
-        final DlmsMeterValueDto positiveActiveEnergy = this.dlmsHelperService.getScaledMeterValue(
-                bufferedObjects.get(BUFFER_INDEX_A_POS), results.get(RESULT_INDEX_IMPORT).getResultData(),
-                "positiveActiveEnergy");
-        final DlmsMeterValueDto negativeActiveEnergy = this.dlmsHelperService.getScaledMeterValue(
-                bufferedObjects.get(BUFFER_INDEX_A_NEG), results.get(RESULT_INDEX_IMPORT_2_OR_EXPORT).getResultData(),
-                "negativeActiveEnergy");
-
-        return new ProfileGenericDataResponseItemDto(bufferedDateTime.toDate(), positiveActiveEnergy,
-                negativeActiveEnergy, amrProfileStatusCode);
-    }
-
-    private ProfileGenericDataResponseItemDto getNextProfileGenericDataForDaily(final List<DataObject> bufferedObjects,
-            final DateTime bufferedDateTime, final List<GetResult> results) throws ProtocolAdapterException {
-
-        final AmrProfileStatusCodeDto amrProfileStatusCode = this.readAmrProfileStatusCode(bufferedObjects
-                .get(BUFFER_INDEX_AMR_STATUS));
-
-        final DlmsMeterValueDto positiveActiveEnergyTariff1 = this.dlmsHelperService.getScaledMeterValue(
-                bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_1), results.get(RESULT_INDEX_IMPORT).getResultData(),
-                "positiveActiveEnergyTariff1");
-        final DlmsMeterValueDto positiveActiveEnergyTariff2 = this.dlmsHelperService.getScaledMeterValue(
-                bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_2), results.get(RESULT_INDEX_IMPORT_2_OR_EXPORT)
-                .getResultData(), "positiveActiveEnergyTariff2");
-        final DlmsMeterValueDto negativeActiveEnergyTariff1 = this.dlmsHelperService.getScaledMeterValue(
-                bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_1), results.get(RESULT_INDEX_EXPORT).getResultData(),
-                "negativeActiveEnergyTariff1");
-        final DlmsMeterValueDto negativeActiveEnergyTariff2 = this.dlmsHelperService.getScaledMeterValue(
-                bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_2), results.get(RESULT_INDEX_EXPORT_2).getResultData(),
-                "negativeActiveEnergyTariff2");
-
-        return new ProfileGenericDataResponseItemDto(bufferedDateTime.toDate(), positiveActiveEnergyTariff1,
-                positiveActiveEnergyTariff2, negativeActiveEnergyTariff1, negativeActiveEnergyTariff2,
-                amrProfileStatusCode);
-    }
-
-    /**
-     * Reads AmrProfileStatusCode from DataObject holding a bitvalue in a
-     * numeric datatype.
-     *
-     * @param amrProfileStatusData
-     *            AMR profile register value.
-     * @return AmrProfileStatusCode object holding status enum values.
-     * @throws ProtocolAdapterException
-     *             on invalid register data.
-     */
-    private AmrProfileStatusCodeDto readAmrProfileStatusCode(final DataObject amrProfileStatusData)
-            throws ProtocolAdapterException {
-
-        if (!amrProfileStatusData.isNumber()) {
-            throw new ProtocolAdapterException("Could not read AMR profile register data. Invalid data type.");
-        }
-
-        final Set<AmrProfileStatusCodeFlagDto> flags = this.amrProfileStatusCodeHelperService
-                .toAmrProfileStatusCodeFlags((Number) amrProfileStatusData.getValue());
-        return new AmrProfileStatusCodeDto(flags);
-    }
-
-    private ProfileGenericDataResponseItemDto getNextProfileGenericDataForMonthly(
-            final List<DataObject> bufferedObjects, final DateTime bufferedDateTime, final List<GetResult> results)
-                    throws ProtocolAdapterException {
-
-        /*
-         * Buffer indexes minus one, since Monthly captured objects don't
-         * include the AMR Profile status.
-         */
-        final DlmsMeterValueDto positiveActiveEnergyTariff1 = this.dlmsHelperService.getScaledMeterValue(
-                bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_1 - 1), results.get(RESULT_INDEX_IMPORT).getResultData(),
-                "positiveActiveEnergyTariff1");
-        final DlmsMeterValueDto positiveActiveEnergyTariff2 = this.dlmsHelperService.getScaledMeterValue(
-                bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_2 - 1), results.get(RESULT_INDEX_IMPORT_2_OR_EXPORT)
-                .getResultData(), "positiveActiveEnergyTariff2");
-        final DlmsMeterValueDto negativeActiveEnergyTariff1 = this.dlmsHelperService.getScaledMeterValue(
-                bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_1 - 1), results.get(RESULT_INDEX_EXPORT).getResultData(),
-                "negativeActiveEnergyTariff1");
-        final DlmsMeterValueDto negativeActiveEnergyTariff2 = this.dlmsHelperService.getScaledMeterValue(
-                bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_2 - 1), results.get(RESULT_INDEX_EXPORT_2).getResultData(),
-                "negativeActiveEnergyTariff2");
-
-        return new ProfileGenericDataResponseItemDto(bufferedDateTime.toDate(), positiveActiveEnergyTariff1,
-                positiveActiveEnergyTariff2, negativeActiveEnergyTariff1, negativeActiveEnergyTariff2);
-    }
-
-    private AttributeAddress[] getProfileBufferAndScalerUnit(final PeriodTypeDto periodType,
-            final DateTime beginDateTime, final DateTime endDateTime, final boolean isSelectingValuesSupported)
-                    throws ProtocolAdapterException {
-
-        final SelectiveAccessDescription access = this.getSelectiveAccessDescription(periodType, beginDateTime,
-                endDateTime, isSelectingValuesSupported);
+        final SelectiveAccessDescription access = this.getSelectiveAccessDescription(beginDateTime, endDateTime,
+                isSelectingValuesSupported);
 
         final List<AttributeAddress> profileBuffer = new ArrayList<>();
-        switch (periodType) {
-        case INTERVAL:
-            profileBuffer.add(new AttributeAddress(CLASS_ID_PROFILE_GENERIC, OBIS_CODE_INTERVAL_BILLING,
-                    ATTRIBUTE_ID_BUFFER, access));
-            break;
-        case DAILY:
-            profileBuffer.add(new AttributeAddress(CLASS_ID_PROFILE_GENERIC, OBIS_CODE_DAILY_BILLING,
-                    ATTRIBUTE_ID_BUFFER, access));
-            break;
-        case MONTHLY:
-            profileBuffer.add(new AttributeAddress(CLASS_ID_PROFILE_GENERIC, OBIS_CODE_MONTHLY_BILLING,
-                    ATTRIBUTE_ID_BUFFER, access));
-            break;
-        default:
-            throw new ProtocolAdapterException(String.format("periodtype %s not supported", periodType));
-        }
-        profileBuffer.addAll(this.getScalerUnit(periodType));
+        profileBuffer.add(new AttributeAddress(CLASS_ID_PROFILE_GENERIC, obisCode, ATTRIBUTE_ID_BUFFER, access));
+        profileBuffer.addAll(this.createScalerUnitForInterval(obisCode));
         return profileBuffer.toArray(new AttributeAddress[profileBuffer.size()]);
     }
 
-    private List<AttributeAddress> getScalerUnit(final PeriodTypeDto periodType) throws ProtocolAdapterException {
-        switch (periodType) {
-        case INTERVAL:
-            return this.createScalerUnitForInterval();
-        case DAILY:
-        case MONTHLY:
-            return this.createScalerUnitForMonth();
-        default:
-            throw new ProtocolAdapterException(String.format("periodtype %s not supported", periodType));
-        }
-    }
-
-    private List<AttributeAddress> createScalerUnitForInterval() {
+    private List<AttributeAddress> createScalerUnitForInterval(final ObisCode obisCode) {
         final List<AttributeAddress> scalerUnit = new ArrayList<>();
-        scalerUnit.add(new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_INTERVAL_IMPORT_SCALER_UNIT,
-                ATTRIBUTE_ID_SCALER_UNIT));
-        scalerUnit.add(new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_INTERVAL_EXPORT_SCALER_UNIT,
-                ATTRIBUTE_ID_SCALER_UNIT));
+        scalerUnit.add(new AttributeAddress(CLASS_ID_PROFILE_GENERIC, obisCode, ATTRIBUTE_ID_SCALER_UNIT));
         return scalerUnit;
     }
 
-    private List<AttributeAddress> createScalerUnitForMonth() {
-        final List<AttributeAddress> scalerUnit = new ArrayList<>();
-        scalerUnit.add(new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_MONTHLY_DAILY_IMPORT_RATE_1_SCALER_UNIT,
-                ATTRIBUTE_ID_SCALER_UNIT));
-        scalerUnit.add(new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_MONTHLY_DAILY_IMPORT_RATE_2_SCALER_UNIT,
-                ATTRIBUTE_ID_SCALER_UNIT));
-        scalerUnit.add(new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_MONTHLY_DAILY_EXPORT_RATE_1_SCALER_UNIT,
-                ATTRIBUTE_ID_SCALER_UNIT));
-        scalerUnit.add(new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_MONTHLY_DAILY_EXPORT_RATE_2_SCALER_UNIT,
-                ATTRIBUTE_ID_SCALER_UNIT));
-        return scalerUnit;
-    }
-
-    private SelectiveAccessDescription getSelectiveAccessDescription(final PeriodTypeDto periodType,
-            final DateTime beginDateTime, final DateTime endDateTime, final boolean isSelectingValuesSupported) {
+    private SelectiveAccessDescription getSelectiveAccessDescription(final DateTime beginDateTime,
+            final DateTime endDateTime, final boolean isSelectingValuesSupported) {
 
         final int accessSelector = ACCESS_SELECTOR_RANGE_DESCRIPTOR;
 
@@ -343,9 +180,6 @@ AbstractCommandExecutor<ProfileGenericDataRequestDto, ProfileGenericDataResponse
          * to retrieve from the buffer.
          */
         final List<DataObject> objectDefinitions = new ArrayList<>();
-        if (isSelectingValuesSupported) {
-            this.addSelectedValues(periodType, objectDefinitions);
-        }
         final DataObject selectedValues = DataObject.newArrayData(objectDefinitions);
 
         final DataObject accessParameter = DataObject.newStructureData(Arrays.asList(clockDefinition, fromValue,
@@ -354,114 +188,60 @@ AbstractCommandExecutor<ProfileGenericDataRequestDto, ProfileGenericDataResponse
         return new SelectiveAccessDescription(accessSelector, accessParameter);
     }
 
-    private void addSelectedValues(final PeriodTypeDto periodType, final List<DataObject> objectDefinitions) {
-
-        switch (periodType) {
-        case INTERVAL:
-            // empty objectDefinitions is ok, since all values are applicable,
-            // hence selective access is not applicable
-            break;
-        case DAILY:
-            this.addSelectedValuesForDaily(objectDefinitions);
-            break;
-        case MONTHLY:
-            this.addSelectedValuesForMonthly(objectDefinitions);
-            break;
-        default:
-            throw new AssertionError("Unknown PeriodType: " + periodType);
-        }
+    // TODO JRB tijdelijke hack om flow te testen: weghalen <!--------
+    private ProfileGenericDataResponseDto makeTestResult(final ProfileGenericDataRequestDto profileGenericDataRequestDto) {
+        final ObisCodeValuesDto logicalName = profileGenericDataRequestDto.getObisCode();
+        final List<CaptureObjectItemDto> captureObjects = new ArrayList<CaptureObjectItemDto>();
+        captureObjects.add(new CaptureObjectItemDto(new CaptureObjectDto(7L, logicalName, 3, 0, "kwu")));
+        final List<ProfileEntryItemDto> profileEntries = new ArrayList<ProfileEntryItemDto>();
+        profileEntries.add(this.makeProfileEntryItemDto());
+        profileEntries.add(this.makeProfileEntryItemDto());
+        return new ProfileGenericDataResponseDto(logicalName, captureObjects, profileEntries);
     }
 
-    private void addSelectedValuesForDaily(final List<DataObject> objectDefinitions) {
-        /*-
-         * Available objects in the profile buffer (1-0:99.2.0.255):
-         * {8,0-0:1.0.0.255,2,0}    -  clock
-         * {1,0-0:96.10.2.255,2,0}  -  AMR profile status
-         * {3,1-0:1.8.1.255,2,0}    -  Active energy import (+A) rate 1
-         * {3,1-0:1.8.2.255,2,0}    -  Active energy import (+A) rate 2
-         * {3,1-0:2.8.1.255,2,0}    -  Active energy export (-A) rate 1
-         * {3,1-0:2.8.2.255,2,0}    -  Active energy export (-A) rate 2
-         *
-         * Objects not retrieved with E meter readings:
-         * {4,0-1.24.2.1.255,2,0}  -  M-Bus Master Value 1 Channel 1
-         * {4,0-1.24.2.1.255,5,0}  -  M-Bus Master Value 1 Channel 1 Capture time
-         * {4,0-2.24.2.1.255,2,0}  -  M-Bus Master Value 1 Channel 2
-         * {4,0-2.24.2.1.255,5,0}  -  M-Bus Master Value 1 Channel 2 Capture time
-         * {4,0-3.24.2.1.255,2,0}  -  M-Bus Master Value 1 Channel 3
-         * {4,0-3.24.2.1.255,5,0}  -  M-Bus Master Value 1 Channel 3 Capture time
-         * {4,0-4.24.2.1.255,2,0}  -  M-Bus Master Value 1 Channel 4
-         * {4,0-4.24.2.1.255,5,0}  -  M-Bus Master Value 1 Channel 4 Capture time
-         */
-
-        objectDefinitions.add(this.dlmsHelperService.getClockDefinition());
-
-        objectDefinitions.add(this.dlmsHelperService.getAMRProfileDefinition());
-
-        this.addActiveEnergyImportRate1(objectDefinitions);
-        this.addActiveEnergyImportRate2(objectDefinitions);
-
-        this.addActiveEnergyExportRate1(objectDefinitions);
-        this.addActiveEnergyExportRate2(objectDefinitions);
+    private ProfileEntryItemDto makeProfileEntryItemDto() {
+        List<ProfileEntryDto> entriesDto = new ArrayList<ProfileEntryDto>();
+        entriesDto.add(new ProfileEntryDto("test"));
+        entriesDto.add(new ProfileEntryDto(BigDecimal.valueOf(10.5)));
+        entriesDto.add(new ProfileEntryDto(205L));
+        entriesDto.add(new ProfileEntryDto(new Date()));
+        return new ProfileEntryItemDto(entriesDto);
     }
 
-    private void addSelectedValuesForMonthly(final List<DataObject> objectDefinitions) {
-        /*-
-         * Available objects in the profile buffer (0-0:98.1.0.255):
-         * {8,0-0:1.0.0.255,2,0}    -  clock
-         * {3,1-0:1.8.1.255,2,0}    -  Active energy import (+A) rate 1
-         * {3,1-0:1.8.2.255,2,0}    -  Active energy import (+A) rate 2
-         * {3,1-0:2.8.1.255,2,0}    -  Active energy export (-A) rate 1
-         * {3,1-0:2.8.2.255,2,0}    -  Active energy export (-A) rate 2
-         *
-         * Objects not retrieved with E meter readings:
-         * {4,0-1.24.2.1.255,2,0}  -  M-Bus Master Value 1 Channel 1
-         * {4,0-1.24.2.1.255,5,0}  -  M-Bus Master Value 1 Channel 1 Capture time
-         * {4,0-2.24.2.1.255,2,0}  -  M-Bus Master Value 1 Channel 2
-         * {4,0-2.24.2.1.255,5,0}  -  M-Bus Master Value 1 Channel 2 Capture time
-         * {4,0-3.24.2.1.255,2,0}  -  M-Bus Master Value 1 Channel 3
-         * {4,0-3.24.2.1.255,5,0}  -  M-Bus Master Value 1 Channel 3 Capture time
-         * {4,0-4.24.2.1.255,2,0}  -  M-Bus Master Value 1 Channel 4
-         * {4,0-4.24.2.1.255,5,0}  -  M-Bus Master Value 1 Channel 4 Capture time
-         */
-
-        objectDefinitions.add(this.dlmsHelperService.getClockDefinition());
-
-        this.addActiveEnergyImportRate1(objectDefinitions);
-        this.addActiveEnergyImportRate2(objectDefinitions);
-
-        this.addActiveEnergyExportRate1(objectDefinitions);
-        this.addActiveEnergyExportRate2(objectDefinitions);
+    private ObisCode makeObisCode(final ProfileGenericDataRequestDto profileGenericDataRequestDto) {
+        final ObisCodeValuesDto obisCodeValues = profileGenericDataRequestDto.getObisCode();
+        final byte[] obisCodeBytes = { obisCodeValues.getA(), obisCodeValues.getB(), obisCodeValues.getC(),
+                obisCodeValues.getD(), obisCodeValues.getE(), obisCodeValues.getF() };
+        return new ObisCode(obisCodeBytes);
     }
 
-    private void addActiveEnergyImportRate1(final List<DataObject> objectDefinitions) {
-        // {3,1-0:1.8.1.255,2,0} - Active energy import (+A) rate 1
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_REGISTER),
-                DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_IMPORT_RATE_1),
-                DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
+    // -------->
+
+    private CaptureObjectDto processNextProfileGenericData(final PeriodTypeDto periodType,
+            final DateTime beginDateTime, final DateTime endDateTime, final List<DataObject> bufferedObjects,
+            final List<GetResult> results) throws ProtocolAdapterException, BufferedDateTimeValidationException {
+
+        final CosemDateTimeDto cosemDateTime = this.dlmsHelperService.readDateTime(bufferedObjects.get(1),
+                "Clock from " + periodType + " buffer");
+        final DateTime bufferedDateTime = cosemDateTime == null ? null : cosemDateTime.asDateTime();
+
+        this.validateBufferedDateTime(bufferedDateTime, cosemDateTime, beginDateTime, endDateTime);
+
+        LOGGER.debug("Processing profile (" + periodType + ") objects captured at: {}", cosemDateTime);
+
+        return this.getNextProfileGenericDataForInterval(bufferedObjects, bufferedDateTime, results);
     }
 
-    private void addActiveEnergyImportRate2(final List<DataObject> objectDefinitions) {
-        // {3,1-0:1.8.2.255,2,0} - Active energy import (+A) rate 2
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_REGISTER),
-                DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_IMPORT_RATE_2),
-                DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
+    private CaptureObjectDto getNextProfileGenericDataForInterval(final List<DataObject> bufferedObjects,
+            final DateTime bufferedDateTime, final List<GetResult> results) throws ProtocolAdapterException {
+
+        // final DlmsMeterValueDto positiveActiveEnergy =
+        // this.dlmsHelperService.getScaledMeterValue(
+        // bufferedObjects.get(BUFFER_INDEX_A_POS),
+        // results.get(RESULT_INDEX_IMPORT).getResultData(),
+        // "positiveActiveEnergy");
+
+        return null;
     }
 
-    private void addActiveEnergyExportRate1(final List<DataObject> objectDefinitions) {
-        // {3,1-0:2.8.1.255,2,0} - Active energy export (-A) rate 1
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_REGISTER),
-                DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_EXPORT_RATE_1),
-                DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
-    }
-
-    private void addActiveEnergyExportRate2(final List<DataObject> objectDefinitions) {
-        // {3,1-0:2.8.2.255,2,0} - Active energy export (-A) rate 2
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_REGISTER),
-                DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_EXPORT_RATE_2),
-                DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
-    }
 }
