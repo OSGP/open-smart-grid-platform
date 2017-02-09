@@ -9,15 +9,14 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-
-import javax.xml.datatype.XMLGregorianCalendar;
+import java.util.Date;
 
 public class ProfileEntryDto implements Serializable {
 
     private static final long serialVersionUID = 2123390296585369209L;
 
     private final String stringValue;
-    private final XMLGregorianCalendar dateValue;
+    private final Date dateValue;
     private final BigDecimal floatValue;
     private final Long longValue;
 
@@ -25,7 +24,7 @@ public class ProfileEntryDto implements Serializable {
         this(stringValue, null, null, null);
     }
 
-    public ProfileEntryDto(XMLGregorianCalendar dateValue) {
+    public ProfileEntryDto(Date dateValue) {
         this(null, dateValue, null, null);
     }
 
@@ -37,7 +36,7 @@ public class ProfileEntryDto implements Serializable {
         this(null, null, null, longValue);
     }
 
-    public ProfileEntryDto(String stringValue, XMLGregorianCalendar dateValue, BigDecimal floatValue, Long longValue) {
+    public ProfileEntryDto(String stringValue, Date dateValue, BigDecimal floatValue, Long longValue) {
         super();
         this.stringValue = stringValue;
         this.dateValue = dateValue;
@@ -49,7 +48,7 @@ public class ProfileEntryDto implements Serializable {
         return this.stringValue;
     }
 
-    public XMLGregorianCalendar getDateValue() {
+    public Date getDateValue() {
         return this.dateValue;
     }
 

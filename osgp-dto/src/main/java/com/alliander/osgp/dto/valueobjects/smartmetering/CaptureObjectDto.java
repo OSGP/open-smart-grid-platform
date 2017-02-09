@@ -17,13 +17,15 @@ public class CaptureObjectDto implements Serializable {
     private final ObisCodeValuesDto logicalName;
     private final int attribute;
     private final int version;
+    private final String unit;
 
-    public CaptureObjectDto(long classId, ObisCodeValuesDto logicalName, int attribute, int version) {
+    public CaptureObjectDto(long classId, ObisCodeValuesDto logicalName, int attribute, int version, String unit) {
         super();
         this.classId = classId;
         this.logicalName = logicalName;
         this.attribute = attribute;
         this.version = version;
+        this.unit = unit;
     }
 
     public long getClassId() {
@@ -40,6 +42,10 @@ public class CaptureObjectDto implements Serializable {
 
     public int getVersion() {
         return this.version;
+    }
+
+    public String getUnit() {
+        return this.unit;
     }
 
 }
