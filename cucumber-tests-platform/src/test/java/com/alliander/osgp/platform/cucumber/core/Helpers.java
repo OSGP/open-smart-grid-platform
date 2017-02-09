@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.util.Assert;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
@@ -264,6 +265,22 @@ public class Helpers {
         // Validate the correlation-id starts with correct organization
         Assert.isTrue(correlationUid.startsWith(organizationIdentification));
         ScenarioContext.Current().put(Keys.KEY_CORRELATION_UID, correlationUid);
+    }
+
+    /**
+     * Check the correlationUid in the response and save it in the current
+     * scenarioContext.
+     *
+     * @param response
+     *            The response to find the correlationUid in.
+     * @param organizationIdentification
+     *            The organizationIdentifier used. Default test-org will be
+     *            used.
+     * @throws Throwable
+     */
+    public static void saveAsyncResponse(final AsyncResponse asyncResponse) throws Throwable {
+        ScenarioContext.Current().put(Keys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
+        ScenarioContext.Current().put(Keys.KEY_DEVICE_IDENTIFICATION, asyncResponse.getDeviceIdentification());
     }
 
     /**

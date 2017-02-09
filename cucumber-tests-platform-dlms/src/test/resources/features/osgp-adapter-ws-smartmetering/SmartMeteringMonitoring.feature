@@ -64,6 +64,14 @@ Feature: SmartMetering Monitoring
   Scenario: Get the profile generic data from a device
     When the get profile generic data request is received
       | DeviceIdentification | TEST1024000000001 |
+      | ObisCodeA            |                 1 |
+      | ObisCodeB            |                 0 |
+      | ObisCodeC            |                99 |
+      | ObisCodeD            |                 1 |
+      | ObisCodeE            |                 0 |
+      | ObisCodeF            |               255 |
+      | beginDate						| 2017-01-01 |
+      | endDate							| 2017-01-10 |
     Then the profile generic data result should be returned
       | DeviceIdentification | TEST1024000000001 |
     

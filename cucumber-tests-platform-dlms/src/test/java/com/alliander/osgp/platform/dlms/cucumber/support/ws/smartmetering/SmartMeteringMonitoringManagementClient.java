@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataResponse;
 import com.alliander.osgp.platform.cucumber.support.ws.BaseClient;
@@ -26,7 +28,12 @@ public class SmartMeteringMonitoringManagementClient extends BaseClient {
     @Autowired
     private WebServiceTemplateFactory smartMeteringMonitoringManagementWstf;
 
-    public ProfileGenericDataResponse requestProfileGenericData(final ProfileGenericDataRequest request)
+    public ProfileGenericDataAsyncResponse requestProfileGenericData(final ProfileGenericDataRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        return (ProfileGenericDataAsyncResponse) this.getTemplate().marshalSendAndReceive(request);
+    }
+
+    public ProfileGenericDataResponse getProfileGenericDataResponse(final ProfileGenericDataAsyncRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         return (ProfileGenericDataResponse) this.getTemplate().marshalSendAndReceive(request);
     }
