@@ -15,6 +15,10 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdmin
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysResponse;
 import com.alliander.osgp.platform.dlms.cucumber.support.ws.smartmetering.SmartMeteringBaseClient;
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
@@ -41,5 +45,22 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
         final WebServiceTemplate webServiceTemplate = this.smartMeteringConfigurationManagementWstf
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (GetAdministrativeStatusResponse) webServiceTemplate.marshalSendAndReceive(asyncRequest);
+    }
+
+    public ReplaceKeysAsyncResponse replaceKeys(final ReplaceKeysRequest request) throws WebServiceSecurityException {
+        final WebServiceTemplate webServiceTemplate = this.smartMeteringConfigurationManagementWstf
+                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
+        return (ReplaceKeysAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
+    }
+
+    public ReplaceKeysResponse getReplaceKeysResponse(final ReplaceKeysAsyncRequest asyncRequest)
+            throws WebServiceSecurityException {
+
+        final String correlationUid = asyncRequest.getCorrelationUid();
+        this.waitForDlmsResponseData(correlationUid);
+
+        final WebServiceTemplate webServiceTemplate = this.smartMeteringConfigurationManagementWstf
+                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
+        return (ReplaceKeysResponse) webServiceTemplate.marshalSendAndReceive(asyncRequest);
     }
 }

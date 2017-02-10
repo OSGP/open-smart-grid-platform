@@ -52,15 +52,15 @@ public class AddDeviceSteps extends AbstractSmartMeteringSteps {
     private SmartMeteringInstallationClient smartMeteringInstallationClient;
 
     @When("^receiving a smartmetering add device request$")
-    public void receivingASmartmeteringAddDeviceRequest(final Map<String, String> setings) throws Throwable {
-        final String deviceIdentification = setings.get(Keys.KEY_DEVICE_IDENTIFICATION);
+    public void receivingASmartmeteringAddDeviceRequest(final Map<String, String> settings) throws Throwable {
+        final String deviceIdentification = settings.get(Keys.KEY_DEVICE_IDENTIFICATION);
         ScenarioContext.Current().put(Keys.KEY_DEVICE_IDENTIFICATION, deviceIdentification);
-        ScenarioContext.Current().put(Keys.KEY_DEVICE_MASTERKEY, setings.get(Keys.KEY_DEVICE_MASTERKEY));
+        ScenarioContext.Current().put(Keys.KEY_DEVICE_MASTERKEY, settings.get(Keys.KEY_DEVICE_MASTERKEY));
         ScenarioContext.Current().put(Keys.KEY_DEVICE_AUTHENTICATIONKEY,
-                setings.get(Keys.KEY_DEVICE_AUTHENTICATIONKEY));
-        ScenarioContext.Current().put(Keys.KEY_DEVICE_ENCRYPTIONKEY, setings.get(Keys.KEY_DEVICE_ENCRYPTIONKEY));
+                settings.get(Keys.KEY_DEVICE_AUTHENTICATIONKEY));
+        ScenarioContext.Current().put(Keys.KEY_DEVICE_ENCRYPTIONKEY, settings.get(Keys.KEY_DEVICE_ENCRYPTIONKEY));
 
-        final AddDeviceRequest request = AddDeviceRequestBuilder.fromParameterMap(setings);
+        final AddDeviceRequest request = AddDeviceRequestBuilder.fromParameterMap(settings);
         final AddDeviceAsyncResponse asyncResponse = this.smartMeteringInstallationClient.addDevice(request);
 
         ScenarioContext.Current().put(Keys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());

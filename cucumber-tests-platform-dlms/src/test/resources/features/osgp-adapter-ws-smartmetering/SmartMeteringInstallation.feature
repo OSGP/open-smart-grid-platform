@@ -24,7 +24,6 @@ Feature: SmartMetering Installation
     And a request to the device can be performed after activation
     And the stored keys are not equal to the received keys
 
-@RunThis
   Scenario: Add a new device with incorrectly encrypted keys
     When receiving a smartmetering add device request
       | DeviceIdentification  | TEST1024000000001                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |

@@ -9,10 +9,13 @@ package com.alliander.osgp.platform.dlms.cucumber.steps.database.device;
 
 import static com.alliander.osgp.platform.cucumber.steps.Defaults.SMART_METER_E;
 import static com.alliander.osgp.platform.cucumber.steps.Defaults.SMART_METER_G;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
+import java.util.List;
 import java.util.Map;
 
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -96,6 +99,49 @@ public class DlmsDeviceSteps {
 
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
         assertNull("DLMS device with identification " + deviceIdentification + " in core database", device);
+    }
+
+    @Then("^the new keys are stored in the osgp_adapter_protocol_dlms database security_key table$")
+    public void theNewKeysAreStoredInTheOsgpAdapterProtocolDlmsDatabaseSecurityKeyTable() throws Throwable {
+        final String keyDeviceIdentification = Keys.DEVICE_IDENTIFICATION;
+        final String deviceIdentification = (String) ScenarioContext.Current().get(keyDeviceIdentification);
+        assertNotNull("Device identification must be in the scenario context for key " + keyDeviceIdentification,
+                deviceIdentification);
+
+        final String deviceDescription = "DLMS device with identification " + deviceIdentification;
+        final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
+        assertNotNull(deviceDescription + " must be in the protocol database", dlmsDevice);
+
+        final List<SecurityKey> securityKeys = dlmsDevice.getSecurityKeys();
+
+        /*
+         * If the new keys are stored, the device should have some no longer
+         * valid keys. There should be 1 master key and more than one
+         * authentication and encryption keys.
+         */
+        int numberOfMasterKeys = 0;
+        int numberOfAuthenticationKeys = 0;
+        int numberOfEncryptionKeys = 0;
+
+        for (final SecurityKey securityKey : securityKeys) {
+            switch (securityKey.getSecurityKeyType()) {
+            case E_METER_MASTER:
+                numberOfMasterKeys += 1;
+                break;
+            case E_METER_AUTHENTICATION:
+                numberOfAuthenticationKeys += 1;
+                break;
+            case E_METER_ENCRYPTION:
+                numberOfEncryptionKeys += 1;
+                break;
+            default:
+                // other keys are not counted
+            }
+        }
+
+        assertEquals("Number of master keys", 1, numberOfMasterKeys);
+        assertTrue("Number of authentication keys > 1", numberOfAuthenticationKeys > 1);
+        assertTrue("Number of encryption keys > 1", numberOfEncryptionKeys > 1);
     }
 
     @Then("^the stored keys are not equal to the received keys$")
