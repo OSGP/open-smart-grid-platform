@@ -122,6 +122,7 @@ Feature: CoreConfigurationManagement SetConfiguration
       | Code           |                                                           401 |
       | Message        | VALIDATION_ERROR                                              |
       | Component      | WS_CORE                                                       |
+      | InnerException | com.alliander.osgp.domain.core.exceptions.ValidationException |
       | InnerMessage   | Validation Exception, violations: <InnerMessage>;             |
 
     Examples: 
