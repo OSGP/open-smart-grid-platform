@@ -3,24 +3,25 @@ Feature: AdminDeviceManagement Device Removal
   I want to be able to perform DeviceManagement operations on a device
   In order to ...
 
-  # Note: This scenario doesn't work yet
-  #Scenario Outline: Remove a device
-  #Given a device
-  #| DeviceIdentification | <DeviceIdentification> |
-  #When receiving a remove device request
-  #| DeviceIdentification | <DeviceIdentification> |
-  #Then the remove device response is successful
-  #And the device with id "<DeviceIdentification>" does not exists
-  #
-  #Examples:
-  #| DeviceIdentification |
-  #| TEST1024000000001    |
-  #| TEST1024000000002    |
-  #| TEST1024000000003    |
-  #| TEST1024000000004    |
-  #| TEST1024000000005    |
-  #| TEST1024000000006    |
-  #
+  # Note: There is a bug in the code so that removing a device isn't possible. The bug is reported with FLEX-2035.
+  @Skip
+  Scenario Outline: Remove a device
+    Given a device
+      | DeviceIdentification | <DeviceIdentification> |
+    When receiving a remove device request
+      | DeviceIdentification | <DeviceIdentification> |
+    Then the remove device response is successful
+    And the device with id "<DeviceIdentification>" does not exists
+
+    Examples: 
+      | DeviceIdentification |
+      | TEST1024000000001    |
+      | TEST1024000000002    |
+      | TEST1024000000003    |
+      | TEST1024000000004    |
+      | TEST1024000000005    |
+      | TEST1024000000006    |
+
   Scenario: Remove a device when not authorized
     Given a device
       | DeviceIdentification | TEST1024000000001 |
