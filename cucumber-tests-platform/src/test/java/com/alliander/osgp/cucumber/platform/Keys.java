@@ -60,6 +60,7 @@ public class Keys {
     public static final String KEY_ACTIVE = "Active";
     public static final String KEY_ACTUAL_LINKTYPE = "ActualLinkType";
 
+    public static final String KEY_ORGANIZATION_NAME = "OrganizationName";
     public static final String KEY_ALIAS = "alias";
     public static final String KEY_BEGIN_DATE = "BeginDate";
 

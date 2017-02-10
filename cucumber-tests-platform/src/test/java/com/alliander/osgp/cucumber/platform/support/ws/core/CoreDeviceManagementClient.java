@@ -16,6 +16,8 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.SetOwnerRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.SetOwnerResponse;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindAllOrganisationsRequest;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindAllOrganisationsResponse;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindDevicesRequest;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindDevicesResponse;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindEventsRequest;
@@ -68,5 +70,20 @@ public class CoreDeviceManagementClient extends BaseClient {
         final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
         return (SetOwnerResponse) wst.marshalSendAndReceive(request);
+    }
+
+    public FindAllOrganisationsResponse findAllOrganizations(final FindAllOrganisationsRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
+        return (FindAllOrganisationsResponse) wst.marshalSendAndReceive(request);
+    }
+
+    public FindAllOrganisationsResponse findAllOrganizations(final String organizationIdentification,
+            final FindAllOrganisationsRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final WebServiceTemplate wst = this.coreDeviceManagementWstf.getTemplate(organizationIdentification,
+                this.getUserName());
+        return (FindAllOrganisationsResponse) wst.marshalSendAndReceive(request);
     }
 }
