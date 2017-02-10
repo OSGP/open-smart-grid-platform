@@ -49,7 +49,7 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 /**
- * Class with all the firmware requests steps
+ * Class with all the get configuration requests steps
  */
 public class GetConfigurationSteps {
     @Autowired

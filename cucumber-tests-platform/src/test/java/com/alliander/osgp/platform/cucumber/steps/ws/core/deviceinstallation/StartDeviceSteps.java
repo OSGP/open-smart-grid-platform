@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.platform.cucumber.steps.ws.core.deviceinstallation;
 
+import static com.alliander.osgp.platform.cucumber.core.Helpers.getEnum;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.saveCorrelationUidInScenarioContext;
 
@@ -96,7 +97,7 @@ public class StartDeviceSteps {
      * @param deviceIdentification
      * @throws InterruptedException
      */
-    @Then("the platform buffers a start device response message for device \"([^\"]*)\"")
+    @Then("^the platform buffers a start device response message for device \"([^\"]*)\"$")
     public void thePlatformBuffersAStartDeviceResponseMessageForDevice(final String deviceIdentification,
             final Map<String, String> expectedResult) throws InterruptedException {
         final StartDeviceTestAsyncRequest request = new StartDeviceTestAsyncRequest();
@@ -118,8 +119,9 @@ public class StartDeviceSteps {
             try {
                 final StartDeviceTestResponse response = this.client.getStartDeviceTestResponse(request);
 
-                Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.KEY_RESULT)),
-                        response.getResult());
+                if (getEnum(expectedResult, Keys.KEY_RESULT, OsgpResultType.class) != response.getResult()) {
+                    continue;
+                }
 
                 success = true;
             } catch (final Exception ex) {

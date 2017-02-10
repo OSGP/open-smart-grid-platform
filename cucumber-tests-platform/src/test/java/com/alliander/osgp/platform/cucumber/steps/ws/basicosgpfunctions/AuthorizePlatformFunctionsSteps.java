@@ -44,12 +44,12 @@ import cucumber.api.java.en.When;
 /**
  * Class with all the AuthorizeDeviceFunctions steps
  */
-public class AuthorizePlatformFunctions {
+public class AuthorizePlatformFunctionsSteps {
 
     @Autowired
     private AdminDeviceManagementClient adminDeviceManagementClient;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AuthorizePlatformFunctions.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthorizePlatformFunctionsSteps.class);
 
     private PlatformFunction platformFunction;
     private Throwable throwable;

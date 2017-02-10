@@ -67,7 +67,7 @@ import cucumber.api.java.en.When;
 /**
  * Class with all the AuthorizeDeviceFunctions steps
  */
-public class AuthorizeDeviceFunctions {
+public class AuthorizeDeviceFunctionsSteps {
 
     @Autowired
     private AdminDeviceManagementClient adminDeviceManagementClient;
@@ -99,7 +99,7 @@ public class AuthorizeDeviceFunctions {
     @Autowired
     private TariffSwitchingScheduleManagementClient tariffSwitchingScheduleManagementClient;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AuthorizeDeviceFunctions.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthorizeDeviceFunctionsSteps.class);
 
     private DeviceFunction deviceFunction;
     private Throwable throwable;
