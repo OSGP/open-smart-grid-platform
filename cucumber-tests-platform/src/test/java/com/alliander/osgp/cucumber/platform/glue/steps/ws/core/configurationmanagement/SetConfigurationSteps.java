@@ -145,32 +145,37 @@ public class SetConfigurationSteps {
         final LinkType preferredLinkType = getEnum(requestParameters, Keys.KEY_PREFERRED_LINKTYPE, LinkType.class);
         config.setPreferredLinkType(preferredLinkType);
 
-        // Note: This piece of code has been made because there are multiple
-        // enumerations with the name MeterType, but not all of them has all
-        // values the same. Some with underscore and some without.
-        MeterType meterType = null;
-        final String sMeterType = getString(requestParameters, Keys.METER_TYPE);
-        if (sMeterType != null && !sMeterType.contains("_")
-                && sMeterType.equals(MeterType.P_1.toString().replace("_", ""))) {
-            final String[] sMeterTypeArray = sMeterType.toString().split("");
-            meterType = MeterType.valueOf(sMeterTypeArray[0] + "_" + sMeterTypeArray[1]);
-        } else {
-            meterType = getEnum(requestParameters, Keys.METER_TYPE, MeterType.class);
+        if (requestParameters.containsKey(Keys.METER_TYPE) && !requestParameters.get(Keys.METER_TYPE).isEmpty()) {
+            // Note: This piece of code has been made because there are multiple
+            // enumerations with the name MeterType, but not all of them has all
+            // values the same. Some with underscore and some without.
+            MeterType meterType = null;
+            final String sMeterType = getString(requestParameters, Keys.METER_TYPE);
+            if (sMeterType != null && !sMeterType.contains("_")
+                    && sMeterType.equals(MeterType.P_1.toString().replace("_", ""))) {
+                final String[] sMeterTypeArray = sMeterType.toString().split("");
+                meterType = MeterType.valueOf(sMeterTypeArray[0] + "_" + sMeterTypeArray[1]);
+            } else {
+                meterType = getEnum(requestParameters, Keys.METER_TYPE, MeterType.class);
+            }
+
+            config.setMeterType(meterType);
+        }
+        if (requestParameters.containsKey(Keys.SHORT_INTERVAL)
+                && !requestParameters.get(Keys.SHORT_INTERVAL).isEmpty()) {
+            config.setShortTermHistoryIntervalMinutes(
+                    getInteger(requestParameters, Keys.SHORT_INTERVAL, Defaults.SHORT_INTERVAL));
         }
 
-        config.setMeterType(meterType);
-
-        config.setShortTermHistoryIntervalMinutes(
-
-                getInteger(requestParameters, Keys.SHORT_INTERVAL, Defaults.SHORT_INTERVAL));
-
-        final LongTermIntervalType intervalType = getEnum(requestParameters, Keys.INTERVAL_TYPE,
-                LongTermIntervalType.class, Defaults.INTERVAL_TYPE);
-
-        if (intervalType != null) {
-            config.setLongTermHistoryInterval(
-                    getInteger(requestParameters, Keys.LONG_INTERVAL, Defaults.LONG_INTERVAL));
-            config.setLongTermHistoryIntervalType(intervalType);
+        if (requestParameters.containsKey(Keys.INTERVAL_TYPE) && !requestParameters.get(Keys.INTERVAL_TYPE).isEmpty()) {
+            final LongTermIntervalType intervalType = getEnum(requestParameters, Keys.INTERVAL_TYPE,
+                    LongTermIntervalType.class, Defaults.INTERVAL_TYPE);
+            if (requestParameters.containsKey(Keys.LONG_INTERVAL)
+                    && !requestParameters.get(Keys.LONG_INTERVAL).isEmpty()) {
+                config.setLongTermHistoryInterval(
+                        getInteger(requestParameters, Keys.LONG_INTERVAL, Defaults.LONG_INTERVAL));
+                config.setLongTermHistoryIntervalType(intervalType);
+            }
         }
 
         request.setConfiguration(config);
