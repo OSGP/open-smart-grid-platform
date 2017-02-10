@@ -1,5 +1,5 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -7,74 +7,19 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.factories;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.TcpConnectionBuilder;
-import org.openmuc.jdlms.settings.client.ReferencingMethod;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
-import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
-import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
-public class DlmsConnector {
+public abstract class DlmsConnector {
+    static final int DLMS_PUBLIC_CLIENT_ID = 16;
 
-    private static final int DLMS_PUBLIC_CLIENT_ID = 16;
-
-    protected final int responseTimeout;
-
-    protected final int logicalDeviceAddress;
-
-    protected final int clientAccessPoint;
-
-    public DlmsConnector(final int responseTimeout, final int logicalDeviceAddress) {
-        this.responseTimeout = responseTimeout;
-        this.logicalDeviceAddress = logicalDeviceAddress;
-        this.clientAccessPoint = DLMS_PUBLIC_CLIENT_ID;
-    }
-
-    public DlmsConnection connect(final DlmsDevice device, final DlmsMessageListener dlmsMessageListener)
-            throws TechnicalException {
-
-        // Make sure neither device or device.getIpAddress() is null.
-        this.checkDevice(device);
-        this.checkIpAddress(device);
-
-        // Setup connection to device
-        TcpConnectionBuilder tcpConnectionBuilder;
-        try {
-
-            tcpConnectionBuilder = new TcpConnectionBuilder(InetAddress.getByName(device.getIpAddress()))
-                    .setResponseTimeout(this.responseTimeout).setLogicalDeviceId(this.logicalDeviceAddress)
-                    .setClientId(this.clientAccessPoint)
-                    .setReferencingMethod(device.isUseSn() ? ReferencingMethod.SHORT : ReferencingMethod.LOGICAL);
-
-            if (device.isUseHdlc()) {
-                tcpConnectionBuilder.useHdlc();
-            }
-        } catch (final UnknownHostException e) {
-            throw new ConnectionException(e);
-        }
-
-        this.setOptionalValues(device, tcpConnectionBuilder);
-
-        if (device.isInDebugMode()) {
-            tcpConnectionBuilder.setRawMessageListener(dlmsMessageListener);
-        }
-
-        try {
-            return tcpConnectionBuilder.build();
-        } catch (final IOException e) {
-            throw new ConnectionException(e);
-        }
-    }
-
+    public abstract DlmsConnection connect(final DlmsDevice device, final DlmsMessageListener dlmsMessageListener) throws TechnicalException;
+    
     protected void checkDevice(final DlmsDevice device) {
         if (device == null) {
             throw new IllegalStateException("Can not connect because no device is set.");
@@ -102,25 +47,4 @@ public class DlmsConnector {
         }
 
     }
-
-    /**
-     * Get the valid securityKey of a given type for the device.
-     *
-     * @param securityKeyType
-     * @return SecurityKey
-     * @throws TechnicalException
-     *             when there is no valid key of the given type.
-     */
-    protected SecurityKey getSecurityKey(final DlmsDevice device, final SecurityKeyType securityKeyType)
-            throws TechnicalException {
-        final SecurityKey securityKey = device.getValidSecurityKey(securityKeyType);
-        if (securityKey == null) {
-            throw new TechnicalException(ComponentType.PROTOCOL_DLMS,
-                    String.format("There is no valid key for device '%s' of type '%s'.",
-                            device.getDeviceIdentification(), securityKeyType.name()));
-        }
-
-        return securityKey;
-    }
-
 }

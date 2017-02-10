@@ -29,6 +29,7 @@ import org.osgp.adapter.protocol.dlms.application.threads.RecoverKeyProcess;
 import org.osgp.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnector;
 import org.osgp.adapter.protocol.dlms.domain.factories.Hls5Connector;
+import org.osgp.adapter.protocol.dlms.domain.factories.Lls0Connector;
 import org.osgp.adapter.protocol.dlms.domain.factories.Lls1Connector;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -139,9 +140,9 @@ public class DlmsConfig extends AbstractConfig {
 
     @Bean
     @Autowired
-    public Lls1Connector lls1Connector(@Value("${jdlms.lls1.response_timeout}") final int responseTimeout,
+    public Lls1Connector lls1Connector(@Value("${jdlms.lls1.response.timeout}") final int responseTimeout,
             @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress,
-            @Value("${jdlms.lls1.client_access_point}") final int clientAccessPoint) {
+            @Value("${jdlms.lls1.client.access.point}") final int clientAccessPoint) {
         LOGGER.info("responseTimeout: {}, logicalDeviceAddress: {}, clientAccessPoint: {}", responseTimeout,
                 logicalDeviceAddress, clientAccessPoint);
         return new Lls1Connector(responseTimeout, logicalDeviceAddress, clientAccessPoint);
@@ -151,7 +152,7 @@ public class DlmsConfig extends AbstractConfig {
     @Autowired
     public DlmsConnector publicConnector(@Value("${jdlms.response_timeout}") final int responseTimeout,
             @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress) {
-        return new DlmsConnector(responseTimeout, logicalDeviceAddress);
+        return new Lls0Connector(responseTimeout, logicalDeviceAddress);
     }
 
     @Bean

@@ -8,7 +8,6 @@
 package org.osgp.adapter.protocol.dlms.domain.factories;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.apache.commons.codec.DecoderException;
@@ -33,11 +32,9 @@ import com.alliander.osgp.shared.exceptionhandling.EncrypterException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.security.EncryptionService;
 
-public class Hls5Connector extends DlmsConnector {
+public class Hls5Connector extends SecureDlmsConnector {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Hls5Connector.class);
-
-    private final int clientAccessPoint;
 
     private final RecoverKeyProcessInitiator recoverKeyProcessInitiator;
 
@@ -46,9 +43,8 @@ public class Hls5Connector extends DlmsConnector {
 
     public Hls5Connector(final RecoverKeyProcessInitiator recoverKeyProcessInitiator, final int responseTimeout,
             final int logicalDeviceAddress, final int clientAccessPoint) {
-        super(responseTimeout, logicalDeviceAddress);
+        super(responseTimeout, logicalDeviceAddress, clientAccessPoint);
         this.recoverKeyProcessInitiator = recoverKeyProcessInitiator;
-        this.clientAccessPoint = clientAccessPoint;
     }
 
     @Override
@@ -79,36 +75,9 @@ public class Hls5Connector extends DlmsConnector {
         }
     }
 
-    /**
-     * Create a connection with the device.
-     *
-     * @return The connection.
-     * @throws IOException
-     *             When there are problems in connecting to or communicating
-     *             with the device.
-     * @throws TechnicalException
-     *             When there are problems reading the security and
-     *             authorisation keys.
-     */
-    private DlmsConnection createConnection(final DlmsDevice device, final DlmsMessageListener dlmsMessageListener)
-            throws IOException, TechnicalException {
 
-        // Setup connection to device
-        final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(
-                InetAddress.getByName(device.getIpAddress())).setResponseTimeout(this.responseTimeout)
-                        .setLogicalDeviceId(this.logicalDeviceAddress);
-
-        this.setSecurity(device, tcpConnectionBuilder);
-        this.setOptionalValues(device, tcpConnectionBuilder);
-
-        if (device.isInDebugMode()) {
-            tcpConnectionBuilder.setRawMessageListener(dlmsMessageListener);
-        }
-
-        return tcpConnectionBuilder.build();
-    }
-
-    private void setSecurity(final DlmsDevice device, final TcpConnectionBuilder tcpConnectionBuilder)
+    @Override
+    protected void setSecurity(final DlmsDevice device, final TcpConnectionBuilder tcpConnectionBuilder)
             throws TechnicalException {
         final SecurityKey validAuthenticationKey = this.getSecurityKey(device, SecurityKeyType.E_METER_AUTHENTICATION);
         final SecurityKey validEncryptionKey = this.getSecurityKey(device, SecurityKeyType.E_METER_ENCRYPTION);

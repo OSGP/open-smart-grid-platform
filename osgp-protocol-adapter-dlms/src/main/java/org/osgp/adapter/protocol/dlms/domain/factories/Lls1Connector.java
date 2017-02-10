@@ -8,7 +8,6 @@
 package org.osgp.adapter.protocol.dlms.domain.factories;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.apache.commons.codec.DecoderException;
@@ -17,7 +16,6 @@ import org.openmuc.jdlms.AuthenticationMechanism;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.SecuritySuite;
 import org.openmuc.jdlms.TcpConnectionBuilder;
-import org.openmuc.jdlms.settings.client.ReferencingMethod;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
@@ -32,18 +30,15 @@ import com.alliander.osgp.shared.exceptionhandling.EncrypterException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.security.EncryptionService;
 
-public class Lls1Connector extends DlmsConnector {
+public class Lls1Connector extends SecureDlmsConnector {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Lls1Connector.class);
 
     @Autowired
     private EncryptionService encryptionService;
 
-    private final int clientAccessPoint;
-
     public Lls1Connector(final int responseTimeout, final int logicalDeviceAddress, final int clientAccessPoint) {
-        super(responseTimeout, logicalDeviceAddress);
-        this.clientAccessPoint = clientAccessPoint;
+        super(responseTimeout, logicalDeviceAddress, clientAccessPoint);
     }
 
     @Override
@@ -64,48 +59,15 @@ public class Lls1Connector extends DlmsConnector {
         } catch (final IOException e) {
             throw new ConnectionException(e);
         } catch (final EncrypterException e) {
-            LOGGER.error("decryption on security keys went wrong for device: {}", device.getDeviceIdentification(), e);
+            LOGGER.error("decryption of security keys failed for device: {}", device.getDeviceIdentification(), e);
             throw new TechnicalException(ComponentType.PROTOCOL_DLMS,
-                    "decryption on security keys went wrong for device: " + device.getDeviceIdentification());
+                    "decryption of security keys failed for device: " + device.getDeviceIdentification());
         }
     }
 
-    /**
-     * Create a connection with the device.
-     *
-     * @return The connection.
-     * @throws IOException
-     *             When there are problems in connecting to or communicating
-     *             with the device.
-     * @throws TechnicalException
-     *             When there are problems reading the security and
-     *             authorisation keys.
-     */
-    private DlmsConnection createConnection(final DlmsDevice device, final DlmsMessageListener dlmsMessageListener)
-            throws IOException, TechnicalException {
 
-        // Setup connection to device
-        final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(
-                InetAddress.getByName(device.getIpAddress())).setResponseTimeout(this.responseTimeout)
-                        .setLogicalDeviceId(this.logicalDeviceAddress);
-        tcpConnectionBuilder.setClientId(this.clientAccessPoint)
-                .setReferencingMethod(device.isUseSn() ? ReferencingMethod.SHORT : ReferencingMethod.LOGICAL);
-
-        if (device.isUseHdlc()) {
-            tcpConnectionBuilder.useHdlc();
-        }
-
-        this.setSecurity(device, tcpConnectionBuilder);
-        this.setOptionalValues(device, tcpConnectionBuilder);
-
-        if (device.isInDebugMode()) {
-            tcpConnectionBuilder.setRawMessageListener(dlmsMessageListener);
-        }
-
-        return tcpConnectionBuilder.build();
-    }
-
-    private void setSecurity(final DlmsDevice device, final TcpConnectionBuilder tcpConnectionBuilder)
+    @Override
+    protected void setSecurity(final DlmsDevice device, final TcpConnectionBuilder tcpConnectionBuilder)
             throws TechnicalException {
 
         final SecurityKey validPassword = this.getSecurityKey(device, SecurityKeyType.PASSWORD);
