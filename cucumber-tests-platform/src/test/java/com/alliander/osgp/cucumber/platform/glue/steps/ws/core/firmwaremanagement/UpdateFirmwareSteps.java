@@ -40,16 +40,13 @@ import cucumber.api.java.en.When;
  * Class with all the firmware requests steps
  */
 public class UpdateFirmwareSteps {
-    private static final Logger LOGGER = LoggerFactory.getLogger(UpdateFirmwareSteps.class);
-
-    @Autowired
-    private CoreFirmwareManagementClient client;
-
     @Autowired
     private CoreDeviceConfiguration configuration;
 
     @Autowired
-    private DeviceRepository deviceRepo;
+    private CoreFirmwareManagementClient client;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(UpdateFirmwareSteps.class);
 
     /**
      * Sends a Update Firmware request to the platform for a given device
@@ -63,18 +60,8 @@ public class UpdateFirmwareSteps {
     @Autowired
     private FirmwareRepository firmwareRepo;
 
-    private Firmware createAndGetFirmware(final long firmwareId, final Map<String, String> requestParameters) {
-        final Firmware firmware = new Firmware();
-        firmware.setId((int) firmwareId);
-        firmware.setFilename(getString(requestParameters, Keys.FIRMWARE_FILENAME, ""));
-        firmware.setDescription(getString(requestParameters, Keys.FIRMWARE_DESCRIPTION, ""));
-        firmware.setPushToNewDevices(
-                getBoolean(requestParameters, Keys.FIRMWARE_PUSH_TO_NEW_DEVICES, Defaults.FIRMWARE_PUSH_TO_NEW_DEVICE));
-        firmware.setFirmwareModuleData(new FirmwareModuleData());
-        firmware.setManufacturer(getString(requestParameters, Keys.MANUFACTURER_NAME, "Test"));
-        firmware.setModelCode(getString(requestParameters, Keys.KEY_DEVICE_MODEL_MODELCODE, "TestModel"));
-        return firmware;
-    }
+    @Autowired
+    private DeviceRepository deviceRepo;
 
     @When("^receiving an update firmware request$")
     public void receivingAnUpdateFirmwareRequest(final Map<String, String> requestParameters) throws Throwable {
@@ -95,6 +82,19 @@ public class UpdateFirmwareSteps {
         } catch (final SoapFaultClientException ex) {
             ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
+    }
+
+    private Firmware createAndGetFirmware(final long firmwareId, final Map<String, String> requestParameters) {
+        final Firmware firmware = new Firmware();
+        firmware.setId((int) firmwareId);
+        firmware.setFilename(getString(requestParameters, Keys.FIRMWARE_FILENAME, ""));
+        firmware.setDescription(getString(requestParameters, Keys.FIRMWARE_DESCRIPTION, ""));
+        firmware.setPushToNewDevices(
+                getBoolean(requestParameters, Keys.FIRMWARE_PUSH_TO_NEW_DEVICES, Defaults.FIRMWARE_PUSH_TO_NEW_DEVICE));
+        firmware.setFirmwareModuleData(new FirmwareModuleData());
+        firmware.setManufacturer(getString(requestParameters, Keys.MANUFACTURER_NAME, "Test"));
+        firmware.setModelCode(getString(requestParameters, Keys.KEY_DEVICE_MODEL_MODELCODE, "TestModel"));
+        return firmware;
     }
 
     @Then("^the update firmware response contains$")

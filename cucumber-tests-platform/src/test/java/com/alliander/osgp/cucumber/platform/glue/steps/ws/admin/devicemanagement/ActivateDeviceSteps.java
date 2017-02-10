@@ -50,10 +50,11 @@ public class ActivateDeviceSteps extends GlueBase {
             ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
     }
-    
+
     @When("^receiving an activate device request as an unauthorized organization$")
-    public void receivingAnActivateDeviceRequestAsAnUnauthorizedOrganization(final Map<String, String> requestSettings) throws Throwable {
-        
+    public void receivingAnActivateDeviceRequestAsAnUnauthorizedOrganization(final Map<String, String> requestSettings)
+            throws Throwable {
+
         // Force WSTF to use a different organization to send the requests with.
         // (Certificate is used from the certificates directory).
         ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");

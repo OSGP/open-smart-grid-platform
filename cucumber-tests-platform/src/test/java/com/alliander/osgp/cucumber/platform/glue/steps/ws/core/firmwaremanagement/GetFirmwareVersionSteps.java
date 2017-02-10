@@ -41,13 +41,13 @@ import cucumber.api.java.en.Then;
  * Class with all the firmware requests steps
  */
 public class GetFirmwareVersionSteps {
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetFirmwareVersionSteps.class);
+    @Autowired
+    private CoreDeviceConfiguration configuration;
 
     @Autowired
     private CoreFirmwareManagementClient client;
 
-    @Autowired
-    private CoreDeviceConfiguration configuration;
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetFirmwareVersionSteps.class);
 
     /**
      * Sends a Get Firmware Version request to the platform for a given device
@@ -98,12 +98,6 @@ public class GetFirmwareVersionSteps {
         LOGGER.info("Got CorrelationUid: [" + ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID) + "]");
     }
 
-    @Then("^the get firmware version response contains soap fault$")
-    public void theGetFirmwareVersionResponseContainsSoapFault(final Map<String, String> expectedResponseData)
-            throws Throwable {
-        GenericResponseSteps.verifySoapFault(expectedResponseData);
-    }
-
     @Then("^the platform buffers a get firmware version response message for device \"([^\"]*)\"$")
     public void thePlatformBuffersAGetFirmwareVersionResponseMessage(final String deviceIdentification,
             final Map<String, String> expectedResponseData) throws Throwable {
@@ -145,5 +139,11 @@ public class GetFirmwareVersionSteps {
                         fwv.getFirmwareModuleType());
             }
         }
+    }
+
+    @Then("^the get firmware version response contains soap fault$")
+    public void theGetFirmwareVersionResponseContainsSoapFault(final Map<String, String> expectedResponseData)
+            throws Throwable {
+        GenericResponseSteps.verifySoapFault(expectedResponseData);
     }
 }

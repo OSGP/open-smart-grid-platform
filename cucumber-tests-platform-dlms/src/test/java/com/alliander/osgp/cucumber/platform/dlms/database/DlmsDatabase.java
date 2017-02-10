@@ -21,34 +21,34 @@ import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResp
 @Component
 public class DlmsDatabase {
 
-	@Autowired
-	private DlmsDeviceRepository dlmsDeviceRepo;
+    @Autowired
+    private DlmsDeviceRepository dlmsDeviceRepo;
 
-	@Autowired
-	private DlmsSecurityKeyRepository dlmsDSecurityKeyRepo;
+    @Autowired
+    private DlmsSecurityKeyRepository dlmsDSecurityKeyRepo;
 
-	@Autowired
-	private MeterResponseDataRepository meterResponseDataRepo;
+    @Autowired
+    private MeterResponseDataRepository meterResponseDataRepo;
 
-	/**
-	 * This method is used to create default data not directly related to the
-	 * specific tests. For example: A default dlms gateway device.
-	 */
-	private void insertDefaultData() {
-		// TODO insert here default devices.
-	}
+    /**
+     * This method is used to create default data not directly related to the
+     * specific tests. For example: A default dlms gateway device.
+     */
+    private void insertDefaultData() {
+        // TODO insert here default devices.
+    }
 
-	/**
-	 * Before each scenario dlms related stuff needs to be removed.
-	 */
-	@Transactional(transactionManager = "txMgrCore")
-	public void prepareDatabaseForScenario() {
+    /**
+     * Before each scenario dlms related stuff needs to be removed.
+     */
+    @Transactional(transactionManager = "txMgrCore")
+    public void prepareDatabaseForScenario() {
 
-		this.dlmsDSecurityKeyRepo.deleteAllInBatch();
-		this.dlmsDeviceRepo.deleteAllInBatch();
-		this.meterResponseDataRepo.deleteAllInBatch();
+        this.dlmsDSecurityKeyRepo.deleteAllInBatch();
+        this.dlmsDeviceRepo.deleteAllInBatch();
+        this.meterResponseDataRepo.deleteAllInBatch();
 
-		this.insertDefaultData();
-	}
+        this.insertDefaultData();
+    }
 
 }

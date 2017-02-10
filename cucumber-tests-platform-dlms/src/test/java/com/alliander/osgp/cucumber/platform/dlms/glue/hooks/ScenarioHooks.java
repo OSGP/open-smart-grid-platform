@@ -23,46 +23,46 @@ import cucumber.api.java.Before;
  */
 public class ScenarioHooks extends GlueBase {
 
-	@Value("${alarm.notifications.host}")
-	private String alarmNotificationsHost;
+    @Value("${alarm.notifications.host}")
+    private String alarmNotificationsHost;
 
-	@Value("${alarm.notifications.port}")
-	private int alarmNotificationsPort;
+    @Value("${alarm.notifications.port}")
+    private int alarmNotificationsPort;
 
-	@Autowired
-	private DlmsDatabase dlmsDatabaseSteps;
+    @Autowired
+    private DlmsDatabase dlmsDatabaseSteps;
 
-	@Autowired
-	private ServiceEndpoint serviceEndpoint;
+    @Autowired
+    private ServiceEndpoint serviceEndpoint;
 
-	@Value("${service.endpoint.host}")
-	private String serviceEndpointHost;
+    @Value("${service.endpoint.host}")
+    private String serviceEndpointHost;
 
-	/**
-	 * Executed after each scenario.
-	 */
-	@After
-	public void afterScenario() {
-		// Destroy scenario context as the scenario is finished.
-		ScenarioContext.context = null;
-	}
+    /**
+     * Executed after each scenario.
+     */
+    @After
+    public void afterScenario() {
+        // Destroy scenario context as the scenario is finished.
+        ScenarioContext.context = null;
+    }
 
-	/**
-	 * Executed before each scenario.
-	 *
-	 * Remove all stuff from the database before each test. Each test should
-	 * stand on its own. Therefore you should guarantee that the scenario is
-	 * complete.
-	 */
-	@Before
-	public void beforeScenario() {
-		this.dlmsDatabaseSteps.prepareDatabaseForScenario();
-		this.prepareServiceEndpoint();
-	}
+    /**
+     * Executed before each scenario.
+     *
+     * Remove all stuff from the database before each test. Each test should
+     * stand on its own. Therefore you should guarantee that the scenario is
+     * complete.
+     */
+    @Before
+    public void beforeScenario() {
+        this.dlmsDatabaseSteps.prepareDatabaseForScenario();
+        this.prepareServiceEndpoint();
+    }
 
-	private void prepareServiceEndpoint() {
-		this.serviceEndpoint.setServiceEndpoint(this.serviceEndpointHost);
-		this.serviceEndpoint.setAlarmNotificationsHost(this.alarmNotificationsHost);
-		this.serviceEndpoint.setAlarmNotificationsPort(this.alarmNotificationsPort);
-	}
+    private void prepareServiceEndpoint() {
+        this.serviceEndpoint.setServiceEndpoint(this.serviceEndpointHost);
+        this.serviceEndpoint.setAlarmNotificationsHost(this.alarmNotificationsHost);
+        this.serviceEndpoint.setAlarmNotificationsPort(this.alarmNotificationsPort);
+    }
 }

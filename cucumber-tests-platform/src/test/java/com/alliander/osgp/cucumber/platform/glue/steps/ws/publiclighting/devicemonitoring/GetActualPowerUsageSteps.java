@@ -194,7 +194,8 @@ public class GetActualPowerUsageSteps {
                         (getDate(expectedResult, Keys.RECORD_TIME)).toDateTime(DateTimeZone.UTC).toGregorianCalendar()),
                 data.getRecordTime());
 
-        Assert.assertEquals((int) getInteger(expectedResult, Keys.TOTAL_LIGHTING_HOURS, Defaults.DEFAULT_TOTAL_LIGHTING_HOURS),
+        Assert.assertEquals(
+                (int) getInteger(expectedResult, Keys.TOTAL_LIGHTING_HOURS, Defaults.DEFAULT_TOTAL_LIGHTING_HOURS),
                 data.getPsldData().getTotalLightingHours());
         Assert.assertEquals((int) getInteger(expectedResult, Keys.ACTUAL_CURRENT1, Defaults.DEFAULT_ACTUAL_CURRENT1),
                 data.getSsldData().getActualCurrent1());

@@ -33,7 +33,7 @@ import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 /**
  * Super class for SOAP UI runner implementations. Each Runner will be called
  * from a subclass.
- * 
+ *
  * @deprecated use a WebServiceFactoryTemplate instead.
  */
 @Deprecated
@@ -131,11 +131,11 @@ public abstract class SoapUiRunner {
 
         this.testCase = this.wsdlProjectFactory.createWsdlTestCase(testSuiteXml, testCaseXml);
         this.assertRequest(testCaseNameRequest, testCaseXml, testSuiteXml);
-        
+
         final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase, propertiesMap,
                 testCaseNameRequest);
         final TestStepResult runTestStepByNameResult = runTestStepByName.getRunTestStepByName();
-        
+
         Assert.assertEquals(testStepStatus, runTestStepByNameResult.getStatus());
 
         final WsdlTestCaseRunner wsdlTestCaseRunner = runTestStepByName.getResults();
@@ -143,8 +143,9 @@ public abstract class SoapUiRunner {
         this.request = messageExchange.getRequestContent();
 
         this.response = messageExchange.getResponseContent();
-        
-        LOGGER.debug("Got response for request [{} => {} => {}] : [{}]", testSuiteXml, testCaseXml, testCaseNameRequest, this.response);
+
+        LOGGER.debug("Got response for request [{} => {} => {}] : [{}]", testSuiteXml, testCaseXml, testCaseNameRequest,
+                this.response);
     }
 
     /**
@@ -157,12 +158,12 @@ public abstract class SoapUiRunner {
      */
     private void assertRequest(final String testCaseNameRequest, final String testCaseXml, final String testSuiteXml) {
         final WsdlTestCase wsdlTestcase = (WsdlTestCase) this.testCase;
-        
+
         final String xml = wsdlTestcase.getConfig().toString();
-    	final boolean flag1 = xml.indexOf(testCaseNameRequest) > 0;
+        final boolean flag1 = xml.indexOf(testCaseNameRequest) > 0;
         final boolean flag2 = xml.indexOf(testCaseXml) > 0;
         final boolean flag3 = xml.indexOf(testSuiteXml) > 0;
-        
+
         if (!flag1 || !flag2 || !flag3) {
             // this.LOGGER.error(String.format(ERRMSG, xml, testSuiteXml,
             // testCaseXml, testCaseNameRequest));
@@ -171,7 +172,7 @@ public abstract class SoapUiRunner {
 
     /**
      * Wait for a response.
-     * 
+     *
      * @note In order to get the actual response from the device of the original
      *       request to the platform, we need to poll for it.
      * @param propertiesMap
@@ -194,7 +195,8 @@ public abstract class SoapUiRunner {
             count++;
             Thread.sleep(1000);
 
-            this.requestRunner(testStepStatus, propertiesMap, testCaseResultNameRequest, testCaseResultReqXml, testSuiteXml);            
+            this.requestRunner(testStepStatus, propertiesMap, testCaseResultNameRequest, testCaseResultReqXml,
+                    testSuiteXml);
         } while (!this.runXpathResult.assertXpath(this.response, PATH_RESULT, "OK"));
     }
 }

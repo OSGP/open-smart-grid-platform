@@ -85,8 +85,8 @@ public class GetPowerUsageHistorySteps {
                         .toDateTime(DateTimeZone.UTC).toGregorianCalendar()));
         request.setTimePeriod(tp);
 
-        request.setHistoryTermType(
-                getEnum(requestParameters, Keys.HISTORY_TERM_TYPE, HistoryTermType.class, Defaults.DEFAULT_HISTORY_TERM_TYPE));
+        request.setHistoryTermType(getEnum(requestParameters, Keys.HISTORY_TERM_TYPE, HistoryTermType.class,
+                Defaults.DEFAULT_HISTORY_TERM_TYPE));
 
         try {
             ScenarioContext.Current().put(Keys.RESPONSE, this.client.getPowerUsageHistory(request));

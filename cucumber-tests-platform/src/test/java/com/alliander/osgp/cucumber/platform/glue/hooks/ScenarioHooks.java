@@ -21,35 +21,35 @@ import cucumber.api.java.Before;
  */
 public class ScenarioHooks extends GlueBase {
 
-	@Autowired
-	private CoreDatabase databaseSteps;
+    @Autowired
+    private CoreDatabase databaseSteps;
 
-	/**
-	 * Executed after each scenario.
-	 *
-	 * Order 99999 ensures this will be run as one of the first hooks after the
-	 * scenario.
-	 */
-	@After(order = 99999)
-	public void afterScenario() {
-		// Destroy scenario context as the scenario is finished.
-		ScenarioContext.context = null;
-	}
+    /**
+     * Executed after each scenario.
+     *
+     * Order 99999 ensures this will be run as one of the first hooks after the
+     * scenario.
+     */
+    @After(order = 99999)
+    public void afterScenario() {
+        // Destroy scenario context as the scenario is finished.
+        ScenarioContext.context = null;
+    }
 
-	/**
-	 * Executed before each scenario.
-	 *
-	 * Remove all stuff from the database before each test. Each test should
-	 * stand on its own. Therefore you should guarantee that the scenario is
-	 * complete.
-	 *
-	 * Order 0 ensures this will be run as first hook.
-	 */
-	@Before(order = 0)
-	public void beforeScenario() {
-		this.databaseSteps.prepareDatabaseForScenario();
+    /**
+     * Executed before each scenario.
+     *
+     * Remove all stuff from the database before each test. Each test should
+     * stand on its own. Therefore you should guarantee that the scenario is
+     * complete.
+     *
+     * Order 0 ensures this will be run as first hook.
+     */
+    @Before(order = 0)
+    public void beforeScenario() {
+        this.databaseSteps.prepareDatabaseForScenario();
 
-		// Make sure that the scenario context is clean before each test.
-		ScenarioContext.context = null;
-	}
+        // Make sure that the scenario context is clean before each test.
+        ScenarioContext.context = null;
+    }
 }

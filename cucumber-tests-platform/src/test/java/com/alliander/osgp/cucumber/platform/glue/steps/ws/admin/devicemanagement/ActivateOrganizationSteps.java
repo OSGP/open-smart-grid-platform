@@ -37,20 +37,20 @@ public class ActivateOrganizationSteps extends GlueBase {
     @When("^receiving an activate organization request$")
     public void receivingAnActivateOrganizationRequest(final Map<String, String> requestSettings) throws Throwable {
 
-        ActivateOrganisationRequest request = new ActivateOrganisationRequest();
-        request.setOrganisationIdentification(
-                getString(requestSettings, Keys.KEY_ORGANIZATION_IDENTIFICATION, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+        final ActivateOrganisationRequest request = new ActivateOrganisationRequest();
+        request.setOrganisationIdentification(getString(requestSettings, Keys.KEY_ORGANIZATION_IDENTIFICATION,
+                Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
         try {
-            ScenarioContext.Current().put(Keys.RESPONSE, client.activateOrganization(request));
-        } catch (SoapFaultClientException ex) {
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.activateOrganization(request));
+        } catch (final SoapFaultClientException ex) {
             ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
     }
 
     /**
      * Verify that the activate organization response is successful.
-     * 
+     *
      * @throws Throwable
      */
     @Then("^the activate organization response is successful$")
