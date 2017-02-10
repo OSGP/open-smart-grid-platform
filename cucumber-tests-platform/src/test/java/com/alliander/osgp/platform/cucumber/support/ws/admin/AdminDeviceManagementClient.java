@@ -44,6 +44,7 @@ import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.UpdateKeyRequ
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.UpdateKeyResponse;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindAllOrganisationsRequest;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindAllOrganisationsResponse;
+import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.support.ws.BaseClient;
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
@@ -84,7 +85,12 @@ public class AdminDeviceManagementClient extends BaseClient {
 
     public RemoveDeviceResponse removeDevice(final RemoveDeviceRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
+        return this.removeDevice(request, Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
+    }
+
+    public RemoveDeviceResponse removeDevice(final RemoveDeviceRequest request, final String organizationIdentification)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(organizationIdentification,
                 this.getUserName());
         return (RemoveDeviceResponse) wst.marshalSendAndReceive(request);
     }
@@ -147,7 +153,7 @@ public class AdminDeviceManagementClient extends BaseClient {
 
     public UpdateDeviceAuthorisationsResponse updateDeviceAuthorisations(
             final UpdateDeviceAuthorisationsRequest request)
-                    throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
         return (UpdateDeviceAuthorisationsResponse) wst.marshalSendAndReceive(request);
