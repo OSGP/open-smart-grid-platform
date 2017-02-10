@@ -236,7 +236,26 @@ public class OslpDeviceSteps {
      */
     @Given("^the device returns firmware version \"([^\"]*)\" over OSLP$")
     public void theDeviceReturnsFirmwareVersionOverOSLP(final String firmwareVersion) {
-        this.oslpMockServer.mockFirmwareResponse(firmwareVersion);
+        this.oslpMockServer.mockGetFirmwareVersionResponse(firmwareVersion);
+    }
+
+    /**
+     * Setup method to set the firmware which should be returned by the mock.
+     *
+     * @param firmwareVersion
+     *            The firmware to respond.
+     */
+    @Given("^the device returns update firmware response \"([^\"]*)\" over OSLP$")
+    public void theDeviceReturnsUpdateFirmwareResponseOverOSLP(final String result) {
+        Oslp.Status oslpStatus = Status.OK;
+
+        switch (result) {
+        case "OK":
+            oslpStatus = Status.OK;
+            // TODO: Implement other possible status
+        }
+
+        this.oslpMockServer.mockUpdateFirmwareResponse(oslpStatus);
     }
 
     /**
@@ -489,6 +508,20 @@ public class OslpDeviceSteps {
         // TODO: Check actual message for the correct firmware(s).
         @SuppressWarnings("unused")
         final GetFirmwareVersionRequest getFirmwareVersionRequest = message.getGetFirmwareVersionRequest();
+    }
+
+    /**
+     * Verify that a get firmware version OSLP message is sent to the device.
+     *
+     * @param deviceIdentification
+     *            The device identification expected in the message to the
+     *            device.
+     */
+    @Then("^an update firmware OSLP message is sent to device \"([^\"]*)\"$")
+    public void anUpdateFirmwareOSLPMessageIsSentToDevice(final String deviceIdentification) {
+        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.UPDATE_FIRMWARE);
+        Assert.assertNotNull(message);
+        Assert.assertTrue(message.hasUpdateFirmwareRequest());
     }
 
     /**

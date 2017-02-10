@@ -56,8 +56,8 @@ public class DeviceModelBuilder implements CucumberBuilder<DeviceModel> {
     @Override
     public DeviceModelBuilder withSettings(final Map<String, String> inputSettings) {
 
-        if (inputSettings.containsKey(Keys.DEVICEMODEL_MODELCOE)) {
-            this.withModelCode(inputSettings.get(Keys.DEVICEMODEL_MODELCOE));
+        if (inputSettings.containsKey(Keys.DEVICEMODEL_MODELCODE)) {
+            this.withModelCode(inputSettings.get(Keys.DEVICEMODEL_MODELCODE));
         }
 
         if (inputSettings.containsKey(Keys.DEVICEMODEL_DESCRIPTION)) {
