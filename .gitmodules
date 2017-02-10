@@ -1,5 +1,4 @@
 [submodule "Shared"]
 	path = Shared
 	url = https://github.com/OSGP/Shared.git
-	branch = SLIM-811-Encrypted_Key_Webservice_Interface
-
+	branch = SLIM-850-Improve-security-of-device-keys
