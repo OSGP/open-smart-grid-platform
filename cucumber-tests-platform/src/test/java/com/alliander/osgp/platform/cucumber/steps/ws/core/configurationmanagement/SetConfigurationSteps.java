@@ -129,9 +129,6 @@ public class SetConfigurationSteps {
         } catch (final SoapFaultClientException ex) {
             ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
-
-        final Object response = ScenarioContext.Current().get(Keys.RESPONSE);
-        System.out.println(response);
     }
 
     private void addFilledDaliConfigurationToConfiguration(final Map<String, String> requestParameters,
