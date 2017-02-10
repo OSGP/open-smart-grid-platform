@@ -37,6 +37,7 @@ import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMes
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.Oslp.Message;
 import com.alliander.osgp.oslp.OslpEnvelope;
+import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 
 public class MockOslpChannelHandler extends SimpleChannelHandler {
 
