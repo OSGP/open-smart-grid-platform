@@ -27,6 +27,7 @@ import com.alliander.osgp.cucumber.platform.Defaults;
 import com.alliander.osgp.cucumber.platform.Keys;
 import com.alliander.osgp.cucumber.platform.config.CoreDeviceConfiguration;
 import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
+import com.alliander.osgp.cucumber.platform.glue.steps.mocks.OslpDeviceSteps;
 import com.alliander.osgp.cucumber.platform.glue.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.cucumber.platform.glue.steps.ws.core.deviceinstallation.StartDeviceSteps;
 import com.alliander.osgp.cucumber.platform.support.ws.core.CoreDeviceInstallationClient;
