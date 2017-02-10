@@ -51,6 +51,7 @@ import com.alliander.osgp.oslp.Oslp.SetTransitionRequest;
 import com.alliander.osgp.oslp.Oslp.Status;
 import com.alliander.osgp.oslp.Oslp.TransitionType;
 import com.alliander.osgp.oslp.Oslp.TriggerType;
+import com.alliander.osgp.oslp.Oslp.UpdateFirmwareRequest;
 import com.alliander.osgp.oslp.Oslp.Weekday;
 import com.alliander.osgp.oslp.OslpUtils;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
@@ -80,17 +81,8 @@ public class OslpDeviceSteps {
      */
     @Given("^the device returns a set light response \"([^\"]*)\" over OSLP$")
     public void theDeviceReturnsASetLightOverOSLP(final String result) {
-        Oslp.Status oslpStatus = Status.OK;
-
-        switch (result) {
-        case "OK":
-            oslpStatus = Status.OK;
-            // TODO: Implement other possible status
-        }
-
-        this.oslpMockServer.mockSetLightResponse(oslpStatus);
+        this.oslpMockServer.mockSetLightResponse(this.checkAndGetOslpStatus(result));
     }
-    // the device returns configuration status "OK" over OSLP
 
     /**
      * Setup method to set the configuration status which should be returned by
@@ -99,22 +91,9 @@ public class OslpDeviceSteps {
      * @param status
      *            The status to respond.
      */
-    @Given("^the device returns a get configuration status over OSLP$")
-    public void theDeviceReturnsAGetConfigurationStatusOverOSLP(final Map<String, String> requestParameters) {
-        Oslp.Status oslpStatus = Status.OK;
-
-        switch (getString(requestParameters, Keys.KEY_STATUS)) {
-        case "OK":
-            oslpStatus = Status.OK;
-            break;
-        case "FAILURE":
-            oslpStatus = Status.FAILURE;
-            break;
-        case "REJECTED":
-            oslpStatus = Status.REJECTED;
-            // TODO: Implement other possible status
-        }
-
+    @Given("^the device returns a get configuration status \"([^\"]*)\" over OSLP$")
+    public void theDeviceReturnsAGetConfigurationStatusOverOSLP(final String result,
+            final Map<String, String> requestParameters) {
         // Note: This piece of code has been made because there are multiple
         // enumerations with the name MeterType, but not all of them has all
         // values the same. Some with underscore and some without.
@@ -127,7 +106,7 @@ public class OslpDeviceSteps {
             meterType = getEnum(requestParameters, Keys.METER_TYPE, MeterType.class);
         }
 
-        this.oslpMockServer.mockGetConfigurationResponse(oslpStatus,
+        this.oslpMockServer.mockGetConfigurationResponse(this.checkAndGetOslpStatus(result),
                 getEnum(requestParameters, Keys.KEY_LIGHTTYPE, LightType.class),
                 getString(requestParameters, Keys.DC_LIGHTS, Defaults.DC_LIGHTS),
                 getString(requestParameters, Keys.DC_MAP), getEnum(requestParameters, Keys.RC_TYPE, RelayType.class),
@@ -145,23 +124,9 @@ public class OslpDeviceSteps {
      * @param status
      *            The status to respond.
      */
-    @Given("^the device returns a set configuration status over OSLP$")
-    public void theDeviceReturnsASetConfigurationStatusOverOSLP(final Map<String, String> requestParameters) {
-        Oslp.Status oslpStatus = Status.OK;
-
-        switch (getString(requestParameters, Keys.KEY_STATUS)) {
-        case "OK":
-            oslpStatus = Status.OK;
-            break;
-        case "FAILURE":
-            oslpStatus = Status.FAILURE;
-            break;
-        case "REJECTED":
-            oslpStatus = Status.REJECTED;
-            // TODO: Implement other possible status
-        }
-
-        this.oslpMockServer.mockSetConfigurationResponse(oslpStatus);
+    @Given("^the device returns a set configuration status \"([^\"]*)\" over OSLP$")
+    public void theDeviceReturnsASetConfigurationStatusOverOSLP(final String result) {
+        this.oslpMockServer.mockSetConfigurationResponse(this.checkAndGetOslpStatus(result));
     }
 
     /**
@@ -171,8 +136,9 @@ public class OslpDeviceSteps {
      * @param requestParameters
      *            The data to respond.
      */
-    @Given("^the device returns a get actual power usage response over OSLP$")
-    public void theDeviceReturnsAGetActualPowerUsageOverOSLP(final Map<String, String> responseData) {
+    @Given("^the device returns a get actual power usage response \"([^\"]*)\" over OSLP$")
+    public void theDeviceReturnsAGetActualPowerUsageOverOSLP(final String result,
+            final Map<String, String> responseData) {
 
         // Note: This piece of code has been made because there are multiple
         // enumerations with the name MeterType, but not all of them has all
@@ -186,7 +152,7 @@ public class OslpDeviceSteps {
             meterType = getEnum(responseData, Keys.METER_TYPE, MeterType.class);
         }
 
-        this.oslpMockServer.mockGetActualPowerUsageResponse(getEnum(responseData, Keys.KEY_STATUS, Status.class),
+        this.oslpMockServer.mockGetActualPowerUsageResponse(this.checkAndGetOslpStatus(result),
                 getInteger(responseData, Keys.ACTUAL_CONSUMED_POWER, null), meterType,
                 getDate(responseData, Keys.RECORD_TIME).toDateTime(DateTimeZone.UTC).toString("yyyyMMddHHmmss"),
                 getInteger(responseData, Keys.TOTAL_CONSUMED_ENERGY, null),
@@ -208,9 +174,10 @@ public class OslpDeviceSteps {
      *
      * @param requestParameters
      */
-    @Given("^the device returns a get power usage history response over OSLP$")
-    public void theDeviceReturnsAGetPowerUsageHistoryOverOSLP(final Map<String, String> requestParameters) {
-        this.oslpMockServer.mockGetPowerUsageHistoryResponse(getEnum(requestParameters, Keys.KEY_STATUS, Status.class),
+    @Given("^the device returns a get power usage history response \"([^\"]*)\" over OSLP$")
+    public void theDeviceReturnsAGetPowerUsageHistoryOverOSLP(final String result,
+            final Map<String, String> requestParameters) {
+        this.oslpMockServer.mockGetPowerUsageHistoryResponse(this.checkAndGetOslpStatus(result),
                 getString(requestParameters, Keys.RECORD_TIME), getInteger(requestParameters, Keys.KEY_INDEX),
                 getInteger(requestParameters, Keys.ACTUAL_CONSUMED_POWER, null),
                 getEnum(requestParameters, Keys.METER_TYPE, MeterType.class),
@@ -247,15 +214,7 @@ public class OslpDeviceSteps {
      */
     @Given("^the device returns update firmware response \"([^\"]*)\" over OSLP$")
     public void theDeviceReturnsUpdateFirmwareResponseOverOSLP(final String result) {
-        Oslp.Status oslpStatus = Status.OK;
-
-        switch (result) {
-        case "OK":
-            oslpStatus = Status.OK;
-            // TODO: Implement other possible status
-        }
-
-        this.oslpMockServer.mockUpdateFirmwareResponse(oslpStatus);
+        this.oslpMockServer.mockUpdateFirmwareResponse(this.checkAndGetOslpStatus(result));
     }
 
     /**
@@ -264,18 +223,9 @@ public class OslpDeviceSteps {
      *
      * @param result
      */
-
     @Given("^the device returns a set event notification \"([^\"]*)\" over OSLP$")
     public void theDeviceReturnsASetEventNotificationOverOSLP(final String result) {
-        Oslp.Status oslpStatus = Status.OK;
-
-        switch (result) {
-        case "OK":
-            oslpStatus = Status.OK;
-            // TODO: Implement other possible status
-        }
-
-        this.oslpMockServer.mockSetEventNotificationResponse(oslpStatus);
+        this.oslpMockServer.mockSetEventNotificationResponse(this.checkAndGetOslpStatus(result));
     }
 
     /**
@@ -285,15 +235,7 @@ public class OslpDeviceSteps {
      */
     @Given("^the device returns a start device response \"([^\"]*)\" over OSLP$")
     public void theDeviceReturnsAStartDeviceResponseOverOSLP(final String result) {
-        Oslp.Status oslpStatus = Status.OK;
-
-        switch (result) {
-        case "OK":
-            oslpStatus = Status.OK;
-            // TODO: Implement other possible status
-        }
-        // TODO: Make Mock method
-        this.oslpMockServer.mockStartDeviceResponse(oslpStatus);
+        this.oslpMockServer.mockStartDeviceResponse(this.checkAndGetOslpStatus(result));
     }
 
     /**
@@ -303,15 +245,8 @@ public class OslpDeviceSteps {
      */
     @Given("^the device returns a stop device response \"([^\"]*)\" over OSLP$")
     public void theDeviceReturnsAStopDeviceResponseOverOSLP(final String result) {
-        Oslp.Status oslpStatus = Status.OK;
-
-        switch (result) {
-        case "OK":
-            oslpStatus = Status.OK;
-            // TODO: Implement other possible status
-        }
         // TODO: Check if ByteString.EMPTY must be something else
-        this.oslpMockServer.mockStopDeviceResponse(ByteString.EMPTY, oslpStatus);
+        this.oslpMockServer.mockStopDeviceResponse(ByteString.EMPTY, this.checkAndGetOslpStatus(result));
     }
 
     /**
@@ -358,7 +293,7 @@ public class OslpDeviceSteps {
                         Defaults.DEFAULT_PREFERRED_LINKTYPE),
                 getEnum(requestParameters, Keys.KEY_ACTUAL_LINKTYPE, LinkType.class, Defaults.DEFAULT_ACTUAL_LINKTYPE),
                 getEnum(requestParameters, Keys.KEY_LIGHTTYPE, LightType.class, Defaults.DEFAULT_LIGHTTYPE),
-                eventNotificationTypes, Oslp.Status.valueOf(result), lightValues);
+                eventNotificationTypes, this.checkAndGetOslpStatus(result), lightValues);
     }
 
     /**
@@ -367,17 +302,8 @@ public class OslpDeviceSteps {
      * @param result
      */
     @Given("^the device returns a resume schedule response \"([^\"]*)\" over OSLP$")
-
     public void theDeviceReturnsAResumeScheduleResponseOverOSLP(final String result) {
-        Oslp.Status oslpStatus = Status.OK;
-
-        switch (result) {
-        case "OK":
-            oslpStatus = Status.OK;
-            // TODO: Implement other possible status
-        }
-        //
-        this.oslpMockServer.mockResumeScheduleResponse(oslpStatus);
+        this.oslpMockServer.mockResumeScheduleResponse(this.checkAndGetOslpStatus(result));
     }
 
     /**
@@ -388,15 +314,7 @@ public class OslpDeviceSteps {
      */
     @Given("^the device returns a set reboot response \"([^\"]*)\" over OSLP$")
     public void theDeviceReturnsASetRebootResponseOverOSLP(final String result) {
-        Oslp.Status oslpStatus = Status.OK;
-
-        switch (result) {
-        case "OK":
-            oslpStatus = Status.OK;
-            // TODO: Implement other possible status
-        }
-
-        this.oslpMockServer.mockSetRebootResponse(oslpStatus);
+        this.oslpMockServer.mockSetRebootResponse(this.checkAndGetOslpStatus(result));
     }
 
     /**
@@ -406,15 +324,7 @@ public class OslpDeviceSteps {
      */
     @Given("^the device returns a set transition response \"([^\"]*)\" over OSLP$")
     public void theDeviceReturnsASetTransitionResponseOverOSLP(final String result) {
-        Oslp.Status oslpStatus = Status.OK;
-
-        switch (result) {
-        case "OK":
-            oslpStatus = Status.OK;
-            // TODO: Implement other possible status
-        }
-
-        this.oslpMockServer.mockSetTransitionResponse(oslpStatus);
+        this.oslpMockServer.mockSetTransitionResponse(this.checkAndGetOslpStatus(result));
     }
 
     /**
@@ -424,19 +334,16 @@ public class OslpDeviceSteps {
      */
     @Given("^the device returns a set light schedule response \"([^\"]*)\" over OSLP$")
     public void theDeviceReturnsASetLightScheduleResponseOverOSLP(final String result) {
-
         this.callMockSetScheduleResponse(result, DeviceRequestMessageType.SET_LIGHT_SCHEDULE);
     }
 
     @Given("^the device returns a set tariff schedule response \"([^\"]*)\" over OSLP$")
     public void theDeviceReturnsASetTariffScheduleResponseOverOSLP(final String result) {
-
         this.callMockSetScheduleResponse(result, DeviceRequestMessageType.SET_TARIFF_SCHEDULE);
     }
 
     @Given("^the device returns a set reverse tariff schedule response \"([^\"]*)\" over OSLP$")
     public void theDeviceReturnsASetReverseTariffScheduleResponseOverOSLP(final String result) {
-
         this.theDeviceReturnsASetTariffScheduleResponseOverOSLP(result);
     }
 
@@ -446,12 +353,13 @@ public class OslpDeviceSteps {
      * @param result
      */
     private void callMockSetScheduleResponse(final String result, final DeviceRequestMessageType type) {
+        this.oslpMockServer.mockSetScheduleResponse(type, this.checkAndGetOslpStatus(result));
+    }
+
+    private Oslp.Status checkAndGetOslpStatus(final String status) {
         Oslp.Status oslpStatus = Status.OK;
 
-        switch (result) {
-        case "OK":
-            oslpStatus = Status.OK;
-            break;
+        switch (status) {
         case "FAILURE":
             oslpStatus = Status.FAILURE;
             break;
@@ -461,7 +369,7 @@ public class OslpDeviceSteps {
         // TODO: Implement other possible status
         }
 
-        this.oslpMockServer.mockSetScheduleResponse(type, oslpStatus);
+        return oslpStatus;
     }
 
     /**
@@ -517,11 +425,15 @@ public class OslpDeviceSteps {
      *            The device identification expected in the message to the
      *            device.
      */
-    @Then("^an update firmware OSLP message is sent to device \"([^\"]*)\"$")
+    @Then("^an update firmware OSLP message is sent to the device$")
     public void anUpdateFirmwareOSLPMessageIsSentToDevice(final String deviceIdentification) {
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.UPDATE_FIRMWARE);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasUpdateFirmwareRequest());
+
+        // TODO: Check actual message for the correct firmware.
+        @SuppressWarnings("unused")
+        final UpdateFirmwareRequest updateFirmwareRequest = message.getUpdateFirmwareRequest();
     }
 
     /**

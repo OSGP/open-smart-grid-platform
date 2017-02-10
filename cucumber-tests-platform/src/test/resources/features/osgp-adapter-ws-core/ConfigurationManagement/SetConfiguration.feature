@@ -7,8 +7,7 @@ Feature: CoreConfigurationManagement SetConfiguration
   Scenario Outline: Set configuration of a device
     Given an oslp device
       | DeviceIdentification | TEST1024000000001 |
-    And the device returns a set configuration status over OSLP
-      | Status | OK |
+    And the device returns a set configuration status "OK" over OSLP
     When receiving a set configuration request
       | DeviceIdentification | TEST1024000000001   |
       | LightType            | <LightType>         |
