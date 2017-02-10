@@ -7,8 +7,7 @@ Feature: PublicLightingDeviceMonitoring Get Power Usage History
   Scenario Outline: Get power usage history
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
-    And the device returns a get power usage history response over OSLP
-      | Status              | OK                    |
+    And the device returns a get power usage history response "OK" over OSLP
       | RecordTime          | <RecordTime>          |
       | Index               | <Index>               |
       | MeterType           | <MeterType>           |

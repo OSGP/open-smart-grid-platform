@@ -39,7 +39,7 @@ import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.SetConf
 import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.SetConfigurationResponse;
 import com.alliander.osgp.cucumber.platform.Defaults;
 import com.alliander.osgp.cucumber.platform.Keys;
-import com.alliander.osgp.cucumber.platform.config.CoreDeviceConfiguration;
+import com.alliander.osgp.cucumber.platform.config.PlatformApplicationConfiguration;
 import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.glue.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.cucumber.platform.support.ws.core.CoreConfigurationManagementClient;
@@ -54,10 +54,10 @@ public class SetConfigurationSteps {
     private static final Logger LOGGER = LoggerFactory.getLogger(SetConfigurationSteps.class);
 
     @Autowired
-    private CoreConfigurationManagementClient client;
+    private PlatformApplicationConfiguration configuration;
 
     @Autowired
-    private CoreDeviceConfiguration configuration;
+    private CoreConfigurationManagementClient client;
 
     private void addFilledDaliConfigurationToConfiguration(final Map<String, String> requestParameters,
             final Configuration config) {

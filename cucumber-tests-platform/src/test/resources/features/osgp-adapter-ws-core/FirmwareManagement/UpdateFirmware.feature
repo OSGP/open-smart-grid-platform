@@ -22,7 +22,7 @@ Feature: FirmwareManagement update firmware
     Then the update firmware response contains
       | Result | OK |
 
-  Scenario: Update firmware with an unknown devicemodel
+  Scenario Outline: Update firmware with an unknown or empty devicemodel
     Given a device
       | DeviceIdentification | TEST1024000000001 |
     And a firmware
@@ -39,22 +39,10 @@ Feature: FirmwareManagement update firmware
       | FaultString  | UNKNOWN_DEVICEMODEL                               |
       | InnerMessage | DeviceModel with id "unknown" could not be found. |
 
-  Scenario: Update firmware with an empty devicemodel
-    Given a device
-      | DeviceIdentification | TEST1024000000001 |
-    And a firmware
-      | DeviceIdentification     | TEST1024000000001 |
-      | FirmwareFilename         | Firmware          |
-      | FirmwarePushToNewDevices | true              |
-      | Manufacturer             | Test              |
-      | ModelCode                | TestModel         |
-      | Description              |                   |
-    When receiving an update firmware request
-      | ModelCode |  |
-    Then the update firmware response contains soap fault
-      | FaultCode    | SOAP-ENV:Server                            |
-      | FaultString  | UNKNOWN_DEVICEMODEL                        |
-      | InnerMessage | DeviceModel with id "" could not be found. |
+    Examples: 
+      | ModelCode |
+      | unknown   |
+      |           |
 
   Scenario: Update the firmware for an unknown firmware
     When receiving an update firmware request

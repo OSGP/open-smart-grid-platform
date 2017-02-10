@@ -166,4 +166,5 @@ public class Defaults {
 
     public static final String FIRMWARE_IDENTIFICATION = "F01";
     public static final Boolean FIRMWARE_PUSH_TO_NEW_DEVICE = false;
+    public static final String DC_LIGHTS = "";
 }

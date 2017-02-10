@@ -12,6 +12,7 @@ import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
 
 import java.util.Map;
 
+import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.cucumber.platform.Defaults;
@@ -20,6 +21,7 @@ import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceFirmware;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Firmware;
+import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.repositories.DeviceFirmwareRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
@@ -95,11 +97,10 @@ public class FirmwareSteps {
         // TODO: Wait until the stuff is created.
         final Firmware entity = this.firmwareRepo.findByFilename(getString(expectedEntity, Keys.FIRMWARE_FILENAME));
 
-        // Assert.assertEquals(getString(expectedEntity, "ManufacturerId",
-        // Defaults.DEFAULT_MANUFACTURER_ID),
-        // entity.getManufacturerId());
-        // Assert.assertEquals(getBoolean(expectedEntity, "UsesPrefix",
-        // Defaults.DEFAULT_MANUFACTURER_USE_PREFIX),
-        // entity.isUsePrefix());
+        final Manufacturer manufacturer = entity.getDeviceModel().getManufacturerId();
+        Assert.assertEquals(getString(expectedEntity, "ManufacturerId", Defaults.DEFAULT_MANUFACTURER_ID),
+                manufacturer);
+        Assert.assertEquals(getBoolean(expectedEntity, "UsesPrefix", Defaults.DEFAULT_MANUFACTURER_USE_PREFIX),
+                manufacturer.isUsePrefix());
     }
 }
