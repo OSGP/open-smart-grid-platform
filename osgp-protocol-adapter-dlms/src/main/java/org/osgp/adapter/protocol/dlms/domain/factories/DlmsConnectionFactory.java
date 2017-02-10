@@ -33,8 +33,8 @@ public class DlmsConnectionFactory {
     private Provider<DlmsConnector> lls1ConnectorProvider;
 
     @Autowired
-    @Qualifier("publicConnector")
-    private Provider<DlmsConnector> publicConnectorProvider;
+    @Qualifier("lls0Connector")
+    private Provider<DlmsConnector> lls0ConnectorProvider;
 
     /**
      * Returns an open connection using the appropriate security settings for
@@ -64,7 +64,7 @@ public class DlmsConnectionFactory {
         } else if (device.isLls1Active()) {
             connector = this.lls1ConnectorProvider.get();
         } else if (device.communicateUnencrypted()) {
-            connector = this.publicConnectorProvider.get();
+            connector = this.lls0ConnectorProvider.get();
         } else {
             throw new UnsupportedOperationException(
                     "Only HLS 5, LLS 1 and public (LLS 0) connections are currently supported");

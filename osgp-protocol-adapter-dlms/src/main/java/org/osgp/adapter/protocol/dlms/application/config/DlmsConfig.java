@@ -150,7 +150,7 @@ public class DlmsConfig extends AbstractConfig {
 
     @Bean
     @Autowired
-    public DlmsConnector publicConnector(@Value("${jdlms.response_timeout}") final int responseTimeout,
+    public DlmsConnector lls0Connector(@Value("${jdlms.response_timeout}") final int responseTimeout,
             @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress) {
         return new Lls0Connector(responseTimeout, logicalDeviceAddress);
     }

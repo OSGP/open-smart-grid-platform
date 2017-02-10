@@ -110,8 +110,8 @@ public class DlmsDevice extends AbstractEntity {
     @Override
     public String toString() {
         return String.format(
-                "DlmsDevice[deviceId=%s, hls3=%b, hls4=%b, hls5=%b, ipAddress=%s, port=%s, logicalId=%s, clientId=%s]",
-                this.deviceIdentification, this.hls3Active, this.hls4Active, this.hls5Active, this.ipAddress, this.port,
+                "DlmsDevice[deviceId=%s, lls1=%b, hls3=%b, hls4=%b, hls5=%b, ipAddress=%s, port=%s, logicalId=%s, clientId=%s]",
+                this.deviceIdentification, this.lls1Active, this.hls3Active, this.hls4Active, this.hls5Active, this.ipAddress, this.port,
                 this.logicalId, this.clientId);
     }
 
