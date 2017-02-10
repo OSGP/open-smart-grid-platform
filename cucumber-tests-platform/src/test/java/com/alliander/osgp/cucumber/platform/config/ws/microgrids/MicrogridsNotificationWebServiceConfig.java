@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.cucumber.platform.config.ws.microgrids;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.remoting.support.SimpleHttpServerFactoryBean;
 import org.springframework.ws.server.EndpointAdapter;
 import org.springframework.ws.server.EndpointMapping;
+import org.springframework.ws.server.SmartEndpointInterceptor;
 import org.springframework.ws.server.endpoint.adapter.DefaultMethodEndpointAdapter;
 import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadMethodProcessor;
 import org.springframework.ws.server.endpoint.adapter.method.MethodArgumentResolver;
@@ -26,6 +28,7 @@ import org.springframework.ws.server.endpoint.adapter.method.MethodReturnValueHa
 import org.springframework.ws.server.endpoint.mapping.PayloadRootAnnotationMethodEndpointMapping;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.soap.server.SoapMessageDispatcher;
+import org.springframework.ws.soap.server.endpoint.interceptor.PayloadRootSmartSoapEndpointInterceptor;
 import org.springframework.ws.transport.http.WebServiceMessageReceiverHttpHandler;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.AnnotationMethodArgumentResolver;
@@ -38,7 +41,6 @@ import com.sun.net.httpserver.HttpHandler;
 public class MicrogridsNotificationWebServiceConfig extends BaseWebServiceConfig {
 
     private static final String ORGANISATION_IDENTIFICATION_HEADER = "OrganisationIdentification";
-    private static final String ORGANISATION_IDENTIFICATION_CONTEXT = ORGANISATION_IDENTIFICATION_HEADER;
 
     @Value("${jaxb2.marshaller.context.path.microgrids.notification}")
     private String contextPathMicrogridsNotification;
@@ -49,30 +51,17 @@ public class MicrogridsNotificationWebServiceConfig extends BaseWebServiceConfig
     @Value("${web.service.notification.port}")
     private int notificationsPort;
 
-    /**
-     * Method for creating the Marshaller for Microgrids notification.
-     *
-     * @return Jaxb2Marshaller
-     */
     @Bean
-    public Jaxb2Marshaller microgridsNotificationMarshaller() {
-        final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+    public SmartEndpointInterceptor addSmartEndpointInterceptor() {
+        try {
+            final PayloadRootSmartSoapEndpointInterceptor smartInterceptor = new PayloadRootSmartSoapEndpointInterceptor(
+                    organisationIdentificationInterceptor, "namespace1", null);
 
-        marshaller.setContextPath(this.contextPathMicrogridsNotification);
+            return smartInterceptor;
+        } catch (final IOException ioe) {
 
-        return marshaller;
-    }
-
-    /**
-     * Method for creating the Marshalling Payload Method Processor for
-     * Microgrids notification.
-     *
-     * @return MarshallingPayloadMethodProcessor
-     */
-    @Bean
-    public MarshallingPayloadMethodProcessor microgridsNotificationMarshallingPayloadMethodProcessor() {
-        return new MarshallingPayloadMethodProcessor(this.microgridsNotificationMarshaller(),
-                this.microgridsNotificationMarshaller());
+        }
+        return null;
     }
 
     @Bean
@@ -81,7 +70,7 @@ public class MicrogridsNotificationWebServiceConfig extends BaseWebServiceConfig
 
         final List<MethodArgumentResolver> methodArgumentResolvers = new ArrayList<>();
         methodArgumentResolvers.add(this.microgridsNotificationMarshallingPayloadMethodProcessor());
-        methodArgumentResolvers.add(new AnnotationMethodArgumentResolver(ORGANISATION_IDENTIFICATION_CONTEXT,
+        methodArgumentResolvers.add(new AnnotationMethodArgumentResolver(ORGANISATION_IDENTIFICATION_HEADER,
                 OrganisationIdentification.class));
         defaultMethodEndpointAdapter.setMethodArgumentResolvers(methodArgumentResolvers);
 
@@ -90,12 +79,6 @@ public class MicrogridsNotificationWebServiceConfig extends BaseWebServiceConfig
         defaultMethodEndpointAdapter.setMethodReturnValueHandlers(methodReturnValueHandlers);
 
         return defaultMethodEndpointAdapter;
-    }
-
-    @Bean
-    public SoapHeaderEndpointInterceptor organisationIdentificationInterceptor() {
-        return new SoapHeaderEndpointInterceptor(ORGANISATION_IDENTIFICATION_HEADER,
-                ORGANISATION_IDENTIFICATION_CONTEXT);
     }
 
     @Bean
@@ -124,6 +107,38 @@ public class MicrogridsNotificationWebServiceConfig extends BaseWebServiceConfig
         httpServer.setPort(this.notificationsPort);
 
         return httpServer;
+    }
+
+    /**
+     * Method for creating the Marshaller for Microgrids notification.
+     *
+     * @return Jaxb2Marshaller
+     */
+    @Bean
+    public Jaxb2Marshaller microgridsNotificationMarshaller() {
+        final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+
+        marshaller.setContextPath(this.contextPathMicrogridsNotification);
+
+        return marshaller;
+    }
+
+    /**
+     * Method for creating the Marshalling Payload Method Processor for
+     * Microgrids notification.
+     *
+     * @return MarshallingPayloadMethodProcessor
+     */
+    @Bean
+    public MarshallingPayloadMethodProcessor microgridsNotificationMarshallingPayloadMethodProcessor() {
+        return new MarshallingPayloadMethodProcessor(this.microgridsNotificationMarshaller(),
+                this.microgridsNotificationMarshaller());
+    }
+
+    @Bean
+    public SoapHeaderEndpointInterceptor organisationIdentificationInterceptor() {
+        return new SoapHeaderEndpointInterceptor(ORGANISATION_IDENTIFICATION_HEADER,
+                ORGANISATION_IDENTIFICATION_HEADER);
     }
 
 }

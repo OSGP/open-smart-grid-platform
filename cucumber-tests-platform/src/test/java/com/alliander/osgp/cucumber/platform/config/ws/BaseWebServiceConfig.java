@@ -1,7 +1,7 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -10,11 +10,13 @@ package com.alliander.osgp.cucumber.platform.config.ws;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.ws.config.annotation.EnableWs;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.soap.security.support.KeyStoreFactoryBean;
 
 import com.alliander.osgp.shared.application.config.AbstractConfig;
 
+@EnableWs
 public abstract class BaseWebServiceConfig extends AbstractConfig {
 
     @Value("${application.name}")
@@ -22,6 +24,15 @@ public abstract class BaseWebServiceConfig extends AbstractConfig {
 
     @Value("${base.uri}")
     protected String baseUri;
+
+    @Value("${web.service.keystore.basepath}")
+    protected String webserviceKeystoreLocation;
+
+    @Value("${web.service.keystore.password}")
+    protected String webserviceKeystorePassword;
+
+    @Value("${web.service.keystore.type}")
+    protected String webserviceKeystoreType;
 
     @Value("${web.service.truststore.location}")
     private String webserviceTruststoreLocation;
@@ -32,14 +43,9 @@ public abstract class BaseWebServiceConfig extends AbstractConfig {
     @Value("${web.service.truststore.type}")
     private String webserviceTruststoreType;
 
-    @Value("${web.service.keystore.basepath}")
-    protected String webserviceKeystoreLocation;
-
-    @Value("${web.service.keystore.password}")
-    protected String webserviceKeystorePassword;
-
-    @Value("${web.service.keystore.type}")
-    protected String webserviceKeystoreType;
+    public String getApplicationName() {
+        return this.applicationName;
+    }
 
     @Bean
     public SaajSoapMessageFactory messageFactory() {
@@ -52,11 +58,7 @@ public abstract class BaseWebServiceConfig extends AbstractConfig {
         factory.setType(this.webserviceTruststoreType);
         factory.setLocation(new FileSystemResource(this.webserviceTruststoreLocation));
         factory.setPassword(this.webserviceTruststorePassword);
-        
+
         return factory;
-    }
-    
-    public String getApplicationName() {
-        return this.applicationName;
     }
 }
