@@ -21,8 +21,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import javax.persistence.Transient;
-
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -33,11 +31,13 @@ import org.jboss.netty.channel.SimpleChannelHandler;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.annotation.Transient;
 
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.Oslp.Message;
 import com.alliander.osgp.oslp.OslpEnvelope;
+import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 
 public class MockOslpChannelHandler extends SimpleChannelHandler {
 
@@ -214,14 +214,17 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
 
                 final byte[] deviceId = message.getDeviceId();
 
-                // Build the OslpEnvelope with the incremented sequence number.
+                // Build the OslpEnvelope
                 final OslpEnvelope.Builder responseBuilder = new OslpEnvelope.Builder()
                         .withSignature(this.oslpSignature).withProvider(this.oslpSignatureProvider)
-                        .withPrimaryKey(this.privateKey).withDeviceId(deviceId).withSequenceNumber(sequenceNumber);
+                        .withPrimaryKey(this.privateKey).withDeviceId(deviceId);
 
                 // Pass the incremented sequence number to the handleRequest()
                 // function for checking.
-                responseBuilder.withPayloadMessage(this.handleRequest(message, number));
+                responseBuilder.withPayloadMessage(this.handleRequest(message));
+                // Add the new sequence number to the OslpEnvelope
+                responseBuilder.withSequenceNumber(this.convertIntegerToByteArray(this.sequenceNumber));
+
                 final OslpEnvelope response = responseBuilder.build();
 
                 LOGGER.info("sending OSLP response with sequence number: {}",
@@ -340,7 +343,14 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         }
     }
 
+    // Note: This method is for other classes which are executing this method
+    // WITH a sequencenumber
     public Oslp.Message handleRequest(final OslpEnvelope message, final int sequenceNumber)
+            throws DeviceSimulatorException, IOException, ParseException {
+        return this.handleRequest(message);
+    }
+
+    public Oslp.Message handleRequest(final OslpEnvelope message)
             throws DeviceSimulatorException, IOException, ParseException {
         final Oslp.Message request = message.getPayloadMessage();
 
@@ -363,6 +373,9 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         if (request.hasGetFirmwareVersionRequest()
                 && this.mockResponses.containsKey(DeviceRequestMessageType.GET_FIRMWARE_VERSION)) {
             response = this.processRequest(DeviceRequestMessageType.GET_FIRMWARE_VERSION, request);
+        } else if (request.hasUpdateFirmwareRequest()
+                && this.mockResponses.containsKey(DeviceRequestMessageType.UPDATE_FIRMWARE)) {
+            response = this.processRequest(DeviceRequestMessageType.UPDATE_FIRMWARE, request);
         } else if (request.hasSetLightRequest() && this.mockResponses.containsKey(DeviceRequestMessageType.SET_LIGHT)) {
             response = this.processRequest(DeviceRequestMessageType.SET_LIGHT, request);
         } else if (request.hasSetEventNotificationsRequest()
@@ -438,12 +451,29 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
     }
 
     private int doGetNextSequence() {
-        int next = this.sequenceNumber + 1;
+        int sequenceNumberValue = 1;
+
+        if (ScenarioContext.Current().get("NumberToAddAsNextSequenceNumber") != null) {
+            final String numberToAddAsNextSequenceNumber = ScenarioContext.Current()
+                    .get("NumberToAddAsNextSequenceNumber").toString();
+            if (!numberToAddAsNextSequenceNumber.isEmpty()) {
+                sequenceNumberValue = Integer.parseInt(numberToAddAsNextSequenceNumber);
+            }
+        }
+        int next = this.sequenceNumber + sequenceNumberValue;
         if (next > SEQUENCE_NUMBER_MAXIMUM) {
-            next = 0;
+            final int sequenceNumberMaximumCross = next - SEQUENCE_NUMBER_MAXIMUM;
+            if (sequenceNumberMaximumCross >= 1) {
+                next = sequenceNumberMaximumCross - 1;
+            }
+        } else if (next < 0) {
+            final int sequenceNumberMaximumCross = next * -1;
+            if (sequenceNumberMaximumCross >= 1) {
+                next = SEQUENCE_NUMBER_MAXIMUM - sequenceNumberMaximumCross + 1;
+            }
         }
 
-        return next;
+        return this.sequenceNumber = next;
     }
 
     private byte[] convertIntegerToByteArray(final Integer value) {
