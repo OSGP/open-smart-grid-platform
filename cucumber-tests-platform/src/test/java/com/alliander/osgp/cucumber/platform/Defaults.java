@@ -160,7 +160,7 @@ public class Defaults {
     public static final boolean MANUFACTURER_USE_PREFIX = false;
     public static final String PHONENUMBER = "+31 43 1234567";
     public static final com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup PLATFORM_FUNCTION_GROUP = com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup.ADMIN;
-    public static final Integer SHORT_INTERVAL = 0;
+    public static final Integer SHORT_INTERVAL = 15;
     public static final String SMART_METER_E = "SMART_METER_E";
     public static final String SMART_METER_G = "SMART_METER_G";
 

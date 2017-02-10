@@ -359,17 +359,6 @@ public class OslpDeviceSteps extends GlueBase {
         Assert.assertTrue(message.hasStopSelfTestRequest());
     }
 
-    /**
-     * <<<<<<<
-     * HEAD:cucumber-tests-platform/src/test/java/com/alliander/osgp/cucumber/platform/glue/steps/mocks/OslpDeviceSteps.java
-     * Setup method to get a status which should be returned by the mock.
-     * ======= Verify that a get firmware version OSLP message is sent to the
-     * device.
-     *
-     * @param deviceIdentification
-     *            The device identification expected in the message to the
-     *            device.
-     */
     @Then("^an update firmware OSLP message is sent to device \"([^\"]*)\"$")
     public void anUpdateFirmwareOSLPMessageIsSentToDevice(final String deviceIdentification) {
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.UPDATE_FIRMWARE);
@@ -378,26 +367,12 @@ public class OslpDeviceSteps extends GlueBase {
     }
 
     /**
-     * Verify that a set light OSLP message is sent to the device. >>>>>>>
-     * a10fba3ef4a5484a24039f505b20cd9a18beab01:cucumber-tests-platform/src/test/java/com/alliander/osgp/platform/cucumber/steps/mocks/OslpDeviceSteps.java
-     *
+     * Verify that a set light OSLP message is sent to the device.
+     * 
      * @param result
      */
     private void callMockSetScheduleResponse(final String result, final DeviceRequestMessageType type) {
-        Oslp.Status oslpStatus = Status.OK;
-
-        switch (result) {
-        case "FAILURE":
-            oslpStatus = Status.FAILURE;
-            break;
-        case "REJECTED":
-            oslpStatus = Status.REJECTED;
-            break;
-        // TODO: Implement other possible status
-        default:
-            oslpStatus = Status.OK;
-            break;
-        }
+        final Status oslpStatus = Status.valueOf(result);
 
         this.oslpMockServer.mockSetScheduleResponse(type, oslpStatus);
     }
@@ -540,19 +515,7 @@ public class OslpDeviceSteps extends GlueBase {
      */
     @Given("^the device returns a get configuration status over OSLP$")
     public void theDeviceReturnsAGetConfigurationStatusOverOSLP(final Map<String, String> requestParameters) {
-        Oslp.Status oslpStatus = Status.OK;
-
-        switch (getString(requestParameters, Keys.KEY_STATUS)) {
-        case "FAILURE":
-            oslpStatus = Status.FAILURE;
-            break;
-        case "REJECTED":
-            oslpStatus = Status.REJECTED;
-            // TODO: Implement other possible status
-        default:
-            oslpStatus = Status.OK;
-            break;
-        }
+        final Oslp.Status oslpStatus = getEnum(requestParameters, Keys.KEY_STATUS, Oslp.Status.class, Status.OK);
 
         // Note: This piece of code has been made because there are multiple
         // enumerations with the name MeterType, but not all of them has all
@@ -658,13 +621,7 @@ public class OslpDeviceSteps extends GlueBase {
 
     @Given("^the device returns a set event notification \"([^\"]*)\" over OSLP$")
     public void theDeviceReturnsAnEventNotificationOverOSLP(final String result) {
-        Oslp.Status oslpStatus = Status.OK;
-
-        switch (result) {
-        default:
-            oslpStatus = Status.OK;
-            // TODO: Implement other possible status
-        }
+        final Status oslpStatus = Status.valueOf(result);
 
         this.oslpMockServer.mockSetEventNotificationResponse(oslpStatus);
     }
@@ -677,14 +634,8 @@ public class OslpDeviceSteps extends GlueBase {
     @Given("^the device returns a resume schedule response \"([^\"]*)\" over OSLP$")
 
     public void theDeviceReturnsAResumeScheduleResponseOverOSLP(final String result) {
-        Oslp.Status oslpStatus = Status.OK;
+        final Status oslpStatus = Status.valueOf(result);
 
-        switch (result) {
-        default:
-            oslpStatus = Status.OK;
-            // TODO: Implement other possible status
-        }
-        //
         this.oslpMockServer.mockResumeScheduleResponse(oslpStatus);
     }
 
@@ -697,19 +648,7 @@ public class OslpDeviceSteps extends GlueBase {
      */
     @Given("^the device returns a set configuration status over OSLP$")
     public void theDeviceReturnsASetConfigurationStatusOverOSLP(final Map<String, String> requestParameters) {
-        Oslp.Status oslpStatus = Status.OK;
-
-        switch (getString(requestParameters, Keys.KEY_STATUS)) {
-        case "FAILURE":
-            oslpStatus = Status.FAILURE;
-            break;
-        case "REJECTED":
-            oslpStatus = Status.REJECTED;
-            // TODO: Implement other possible status
-        default:
-            oslpStatus = Status.OK;
-            break;
-        }
+        final Status oslpStatus = getEnum(requestParameters, Keys.KEY_STATUS, Status.class, Status.OK);
 
         this.oslpMockServer.mockSetConfigurationResponse(oslpStatus);
     }
@@ -721,13 +660,7 @@ public class OslpDeviceSteps extends GlueBase {
      */
     @Given("^the device returns a set light response \"([^\"]*)\" over OSLP$")
     public void theDeviceReturnsASetLightOverOSLP(final String result) {
-        Oslp.Status oslpStatus = Status.OK;
-
-        switch (result) {
-        default:
-            oslpStatus = Status.OK;
-            // TODO: Implement other possible status
-        }
+        final Status oslpStatus = Status.valueOf(result);
 
         this.oslpMockServer.mockSetLightResponse(oslpStatus);
     }
@@ -751,13 +684,7 @@ public class OslpDeviceSteps extends GlueBase {
      */
     @Given("^the device returns a set reboot response \"([^\"]*)\" over OSLP$")
     public void theDeviceReturnsASetRebootResponseOverOSLP(final String result) {
-        Oslp.Status oslpStatus = Status.OK;
-
-        switch (result) {
-        default:
-            oslpStatus = Status.OK;
-            // TODO: Implement other possible status
-        }
+        final Status oslpStatus = Status.valueOf(result);
 
         this.oslpMockServer.mockSetRebootResponse(oslpStatus);
     }
@@ -782,13 +709,7 @@ public class OslpDeviceSteps extends GlueBase {
      */
     @Given("^the device returns a set transition response \"([^\"]*)\" over OSLP$")
     public void theDeviceReturnsASetTransitionResponseOverOSLP(final String result) {
-        Oslp.Status oslpStatus = Status.OK;
-
-        switch (result) {
-        // TODO: Implement other possible status
-        default:
-            oslpStatus = Status.OK;
-        }
+        final Status oslpStatus = Status.valueOf(result);
 
         this.oslpMockServer.mockSetTransitionResponse(oslpStatus);
     }
@@ -800,13 +721,8 @@ public class OslpDeviceSteps extends GlueBase {
      */
     @Given("^the device returns a start device response \"([^\"]*)\" over OSLP$")
     public void theDeviceReturnsAStartDeviceResponseOverOSLP(final String result) {
-        Oslp.Status oslpStatus = Status.OK;
+        final Status oslpStatus = Status.valueOf(result);
 
-        switch (result) {
-        // TODO: Implement other possible status
-        default:
-            oslpStatus = Status.OK;
-        }
         // TODO: Make Mock method
         this.oslpMockServer.mockStartDeviceResponse(oslpStatus);
     }
@@ -819,13 +735,8 @@ public class OslpDeviceSteps extends GlueBase {
      */
     @Given("^the device returns a stop device response \"([^\"]*)\" over OSLP$")
     public void theDeviceReturnsAStopDeviceResponseOverOSLP(final String result) {
-        Oslp.Status oslpStatus = Status.OK;
+        final Status oslpStatus = Status.valueOf(result);
 
-        switch (result) {
-        // TODO: Implement other possible status
-        default:
-            oslpStatus = Status.OK;
-        }
         // TODO: Check if ByteString.EMPTY must be something else
         this.oslpMockServer.mockStopDeviceResponse(ByteString.EMPTY, oslpStatus);
     }
@@ -849,13 +760,7 @@ public class OslpDeviceSteps extends GlueBase {
      */
     @Given("^the device returns update firmware response \"([^\"]*)\" over OSLP$")
     public void theDeviceReturnsUpdateFirmwareResponseOverOSLP(final String result) {
-        Oslp.Status oslpStatus = Status.OK;
-
-        switch (result) {
-        case "OK":
-            oslpStatus = Status.OK;
-            // TODO: Implement other possible status
-        }
+        final Status oslpStatus = Status.valueOf(result);
 
         this.oslpMockServer.mockUpdateFirmwareResponse(oslpStatus);
     }
