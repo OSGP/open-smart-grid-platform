@@ -41,8 +41,11 @@ public class Defaults {
     public static final Boolean DLMS_DEFAULT_IP_ADDRESS_IS_STATIC = true;
     public static final long DLMS_DEFAULT_PORT = 1024L;
     public static final long DLMS_DEFAULT_LOGICAL_ID = 1L;
+    public static final Boolean DLMS_DEFAULT_HSL3_ACTIVE = false;
+    public static final Boolean DLMS_DEFAULT_HSL4_ACTIVE = false;
     public static final Boolean DLMS_DEFAULT_HSL5_ACTIVE = true;
     public static final String DLMS_DEFAULT_DEVICE_TYPE = "SMART_METER_E";
+    public static final String DLMS_DEFAULT_DEVICE_DELIVERY_DATE = "2016-05-11T00:00:00.000Z";
 
     public static final String DEFAULT_DEVICE_TYPE = "OSLP";
     public static final String DEFAULT_PROTOCOL = "OSLP";

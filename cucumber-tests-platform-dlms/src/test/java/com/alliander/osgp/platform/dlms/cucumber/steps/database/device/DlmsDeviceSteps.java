@@ -11,6 +11,7 @@ import static com.alliander.osgp.platform.cucumber.steps.Defaults.SMART_METER_E;
 import static com.alliander.osgp.platform.cucumber.steps.Defaults.SMART_METER_G;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.Map;
 
@@ -77,14 +78,24 @@ public class DlmsDeviceSteps {
         this.createDlmsDeviceInProtocolAdapterDatabase(inputSettings);
     }
 
-    @Then("^the dlms device with id \"([^\"]*)\" exists$")
-    public void theDlmsDeviceWithIdExists(final String deviceIdentification) throws Throwable {
+    @Then("^the dlms device with identification \"([^\"]*)\" exists$")
+    public void theDlmsDeviceWithIdentificationExists(final String deviceIdentification) throws Throwable {
 
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
         assertNotNull("DLMS device with identification " + deviceIdentification + " in core database", device);
 
         final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
         assertNotNull("DLMS device with identification " + deviceIdentification + " in protocol database", dlmsDevice);
+    }
+
+    @Then("^the dlms device with identification \"([^\"]*)\" does not exist$")
+    public void theDlmsDeviceWithIdentificationDoesNotExist(final String deviceIdentification) throws Throwable {
+
+        final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
+        assertNull("DLMS device with identification " + deviceIdentification + " in protocol database", dlmsDevice);
+
+        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+        assertNull("DLMS device with identification " + deviceIdentification + " in core database", device);
     }
 
     @Then("^the stored keys are not equal to the received keys$")

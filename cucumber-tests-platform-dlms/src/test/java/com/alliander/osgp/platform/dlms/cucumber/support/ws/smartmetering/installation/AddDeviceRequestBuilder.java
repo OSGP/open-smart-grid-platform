@@ -1,0 +1,98 @@
+/**
+ * Copyright 2017 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
+package com.alliander.osgp.platform.dlms.cucumber.support.ws.smartmetering.installation;
+
+import java.util.Map;
+
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
+
+import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.Device;
+import com.alliander.osgp.platform.cucumber.core.Helpers;
+import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
+import com.alliander.osgp.platform.cucumber.helpers.SettingsHelper;
+import com.alliander.osgp.platform.cucumber.steps.Defaults;
+import com.alliander.osgp.platform.cucumber.steps.Keys;
+
+public class AddDeviceRequestBuilder {
+
+    private AddDeviceRequestBuilder() {
+        // Private constructor for utility class.
+    }
+
+    public static AddDeviceRequest fromParameterMap(final Map<String, String> requestParameters) {
+
+        final Map<String, String> settings = SettingsHelper.addDefault(requestParameters, Keys.KEY_DEVICE_DELIVERY_DATE,
+                Defaults.DLMS_DEFAULT_DEVICE_DELIVERY_DATE);
+
+        final AddDeviceRequest addDeviceRequest = new AddDeviceRequest();
+        final Device device = new Device();
+        device.setDeviceIdentification(
+                Helpers.getString(settings, Keys.KEY_DEVICE_IDENTIFICATION,
+                        Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+        device.setDeviceType(Helpers.getString(settings, Keys.KEY_DEVICE_TYPE, Defaults.DEFAULT_DEVICE_TYPE));
+
+        device.setCommunicationMethod(settings.get(Keys.KEY_DEVICE_COMMUNICATIONMETHOD));
+        device.setCommunicationProvider(settings.get(Keys.KEY_DEVICE_COMMUNICATIONPROVIDER));
+        device.setICCId(settings.get(Keys.KEY_DEVICE_ICCID));
+
+        device.setDSMRVersion(settings.get(Keys.KEY_DEVICE_DSMRVERSION));
+        device.setSupplier(settings.get(Keys.KEY_DEVICE_SUPPLIER));
+
+        device.setHLS3Active(Boolean.valueOf(
+                Helpers.getBoolean(settings, Keys.KEY_DEVICE_HLS3ACTIVE, Defaults.DLMS_DEFAULT_HSL3_ACTIVE)));
+        device.setHLS4Active(Boolean.valueOf(
+                Helpers.getBoolean(settings, Keys.KEY_DEVICE_HLS4ACTIVE, Defaults.DLMS_DEFAULT_HSL4_ACTIVE)));
+        device.setHLS5Active(Boolean.valueOf(
+                Helpers.getBoolean(settings, Keys.KEY_DEVICE_HLS5ACTIVE, Defaults.DLMS_DEFAULT_HSL5_ACTIVE)));
+
+        device.setMasterKey(
+                hexDecodeDeviceKey(settings.get(Keys.KEY_DEVICE_MASTERKEY), Keys.KEY_DEVICE_MASTERKEY));
+        device.setAuthenticationKey(hexDecodeDeviceKey(settings.get(Keys.KEY_DEVICE_AUTHENTICATIONKEY),
+                Keys.KEY_DEVICE_AUTHENTICATIONKEY));
+        device.setGlobalEncryptionUnicastKey(
+                hexDecodeDeviceKey(settings.get(Keys.KEY_DEVICE_ENCRYPTIONKEY), Keys.KEY_DEVICE_ENCRYPTIONKEY));
+
+        device.setDeliveryDate(
+                SettingsHelper.getXmlGregorianCalendarValue(settings, Keys.KEY_DEVICE_DELIVERY_DATE));
+
+        addDeviceRequest.setDevice(device);
+
+        return addDeviceRequest;
+    }
+
+    private static byte[] hexDecodeDeviceKey(final String hexString, final String keyType) {
+        if (hexString == null) {
+            return null;
+        }
+        try {
+            return Hex.decodeHex(hexString.toCharArray());
+        } catch (final DecoderException e) {
+            throw new AssertionError("Key value \"" + hexString + "\" for \"" + keyType + "\" is not hex binary", e);
+        }
+    }
+
+    public static AddDeviceAsyncRequest fromParameterMapAsync(final Map<String, String> requestParameters) {
+        final String correlationUid = (String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID);
+        if (correlationUid == null) {
+            throw new AssertionError("ScenarioContext must contain the correlation UID for key \""
+                    + Keys.KEY_CORRELATION_UID + "\" before creating an async request.");
+        }
+        final String deviceIdentification = requestParameters.get(Keys.KEY_DEVICE_IDENTIFICATION);
+        if (deviceIdentification == null) {
+            throw new AssertionError("The Step DataTable must contain the device identification for key \""
+                    + Keys.KEY_DEVICE_IDENTIFICATION + "\" when creating an async request.");
+        }
+        final AddDeviceAsyncRequest addDeviceAsyncRequest = new AddDeviceAsyncRequest();
+        addDeviceAsyncRequest.setCorrelationUid(correlationUid);
+        addDeviceAsyncRequest.setDeviceIdentification(deviceIdentification);
+        return addDeviceAsyncRequest;
+    }
+}
