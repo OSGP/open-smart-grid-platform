@@ -30,7 +30,7 @@ public class DeviceAuthorization extends AbstractEntity {
 
     @ManyToOne()
     @JoinColumn()
-    @Cascade(value = { CascadeType.ALL })
+    @Cascade(value = { CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.SAVE_UPDATE })
     private Device device;
 
     @ManyToOne()
