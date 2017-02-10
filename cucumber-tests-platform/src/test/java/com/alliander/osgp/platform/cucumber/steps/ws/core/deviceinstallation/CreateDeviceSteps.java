@@ -43,18 +43,14 @@ public class CreateDeviceSteps {
     @Autowired
     private CoreDeviceInstallationClient client;
 
-    private AddDeviceRequest getAddDeviceRequest(final Map<String, String> settings) {
+    @When("^receiving an add device request$")
+    public void receivingAnAddDeviceRequest(final Map<String, String> settings) throws Throwable {
         final AddDeviceRequest request = new AddDeviceRequest();
         final Device device = this.createDevice(settings);
         request.setDevice(device);
-        return request;
-    }
-
-    @When("^receiving an add device request$")
-    public void receivingAnAddDeviceRequest(final Map<String, String> settings) throws Throwable {
 
         try {
-            ScenarioContext.Current().put(Keys.RESPONSE, this.client.addDevice(this.getAddDeviceRequest(settings)));
+            ScenarioContext.Current().put(Keys.RESPONSE, this.client.addDevice(request));
         } catch (final SoapFaultClientException ex) {
             ScenarioContext.Current().put(Keys.RESPONSE, ex);
         }
@@ -63,13 +59,8 @@ public class CreateDeviceSteps {
     @When("^receiving an add device request with an unknown organization$")
     public void receivingAnAddDeviceRequestWithAnUnknownOrganization(final Map<String, String> settings)
             throws Throwable {
-
-        try {
-            ScenarioContext.Current().put(Keys.RESPONSE,
-                    this.client.addDevice(this.getAddDeviceRequest(settings), "unknown-organization"));
-        } catch (final SoapFaultClientException ex) {
-            ScenarioContext.Current().put(Keys.RESPONSE, ex);
-        }
+        ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
+        this.receivingAnAddDeviceRequest(settings);
     }
 
     /**
