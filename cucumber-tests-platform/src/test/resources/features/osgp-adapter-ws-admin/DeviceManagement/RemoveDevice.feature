@@ -3,7 +3,7 @@ Feature: AdminDeviceManagement Device Removal
   I want to be able to perform DeviceManagement operations on a device
   In order to ...
 
-  # Note: There is a bug in the code so that removing a device isn't possible. The bug is reported with FLEX-2035.
+  # Note: There is a bug in the code so that removing a device isn't possible. The bug is reported in FLEX-2035.
   @Skip
   Scenario Outline: Remove a device
     Given a device
