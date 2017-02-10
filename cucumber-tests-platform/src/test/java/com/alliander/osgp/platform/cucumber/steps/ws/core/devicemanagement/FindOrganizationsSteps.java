@@ -56,8 +56,6 @@ public class FindOrganizationsSteps {
         } catch (final SoapFaultClientException e) {
             ScenarioContext.Current().put(Keys.RESPONSE, e);
         }
-        final Object obj = ScenarioContext.Current().get(Keys.RESPONSE);
-        System.out.println(obj);
     }
 
     /**
