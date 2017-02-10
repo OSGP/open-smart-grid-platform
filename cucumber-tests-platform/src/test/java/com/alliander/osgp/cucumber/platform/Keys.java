@@ -235,4 +235,9 @@ public class Keys {
     public static final String UNTIL_DATE = "UntilDate";
     public static final String USE_PREFIX = "UsePrefix";
     public static final String USERNAME = "Username";
+
+    public static final String CURRENT_SEQUENCE_NUMBER = "CurrentSequenceNumber";
+    public static final String SEQUENCE_WINDOW = "SequenceWindow";
+    public static final String NEW_SEQUENCE_NUMBER = "NewSequenceNumber";
+
 }

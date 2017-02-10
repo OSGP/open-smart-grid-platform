@@ -153,8 +153,6 @@ public class Defaults {
     public static final Boolean EVENTS_NODELIST_EXPECTED = false;
     public static final String EXPECTED_RESULT_OK = "OK";
     public static final DateTime EXPIRYDATECONTRACT = DateTime.now().plusWeeks(1);
-    public static final String FIRMWARE_IDENTIFICATION = "Test";
-    public static final Boolean FIRMWARE_PUSH_TO_NEW_DEVICE = false;
     public static final LongTermIntervalType INTERVAL_TYPE = LongTermIntervalType.DAYS;
     public static final Integer LONG_INTERVAL = 0;
     public static final String MANUFACTURER_CODE = "Test";
@@ -165,4 +163,7 @@ public class Defaults {
     public static final Integer SHORT_INTERVAL = 0;
     public static final String SMART_METER_E = "SMART_METER_E";
     public static final String SMART_METER_G = "SMART_METER_G";
+
+    public static final String FIRMWARE_IDENTIFICATION = "F01";
+    public static final Boolean FIRMWARE_PUSH_TO_NEW_DEVICE = false;
 }

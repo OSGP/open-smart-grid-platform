@@ -151,18 +151,17 @@ public class AdminDeviceManagementClient extends BaseClient {
         return (RemoveOrganisationResponse) wst.marshalSendAndReceive(request);
     }
 
-    public SetOwnerResponse setOwner(final SetOwnerRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
-                this.getUserName());
-        return (SetOwnerResponse) wst.marshalSendAndReceive(request);
-    }
-
     public UpdateDeviceAuthorisationsResponse updateDeviceAuthorisations(
             final UpdateDeviceAuthorisationsRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
         return (UpdateDeviceAuthorisationsResponse) wst.marshalSendAndReceive(request);
+    }
+
+    public SetOwnerResponse setOwner(final SetOwnerRequest request) throws WebServiceSecurityException {
+        final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
+        return (SetOwnerResponse) wst.marshalSendAndReceive(request);
     }
 }

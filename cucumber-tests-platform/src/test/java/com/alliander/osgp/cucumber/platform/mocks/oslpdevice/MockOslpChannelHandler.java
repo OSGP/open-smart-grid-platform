@@ -168,46 +168,6 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         super.channelUnbound(ctx, e);
     }
 
-    private Integer convertByteArrayToInteger(final byte[] array) {
-        // See: platform.service.SequenceNumberUtils
-        final Integer value = (array[0] & 0xFF) << 8 | (array[1] & 0xFF);
-        return value;
-    }
-
-    private byte[] convertIntegerToByteArray(final Integer value) {
-        // See: platform.service.SequenceNumberUtils
-        final byte[] bytes = new byte[2];
-        bytes[0] = (byte) (value >>> 8);
-        bytes[1] = (byte) (value >>> 0);
-        return bytes;
-    }
-
-    private int doGetNextSequence() {
-        int sequenceNumberValue = 1;
-
-        if (ScenarioContext.Current().get("NumberToAddAsNextSequenceNumber") != null) {
-            final String numberToAddAsNextSequenceNumber = ScenarioContext.Current()
-                    .get("NumberToAddAsNextSequenceNumber").toString();
-            if (!numberToAddAsNextSequenceNumber.isEmpty()) {
-                sequenceNumberValue = Integer.parseInt(numberToAddAsNextSequenceNumber);
-            }
-        }
-        int next = this.sequenceNumber + sequenceNumberValue;
-        if (next > SEQUENCE_NUMBER_MAXIMUM) {
-            final int sequenceNumberMaximumCross = next - SEQUENCE_NUMBER_MAXIMUM;
-            if (sequenceNumberMaximumCross >= 1) {
-                next = sequenceNumberMaximumCross - 1;
-            }
-        } else if (next < 0) {
-            final int sequenceNumberMaximumCross = next * -1;
-            if (sequenceNumberMaximumCross >= 1) {
-                next = SEQUENCE_NUMBER_MAXIMUM - sequenceNumberMaximumCross + 1;
-            }
-        }
-
-        return this.sequenceNumber = next;
-    }
-
     @Override
     public void exceptionCaught(final ChannelHandlerContext ctx, final ExceptionEvent e) {
         if (this.isConnectionReset(e.getCause())) {
@@ -225,100 +185,6 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
 
     public Integer getSequenceNumber() {
         return this.sequenceNumber;
-    }
-
-    public Oslp.Message handleRequest(final OslpEnvelope message)
-            throws DeviceSimulatorException, IOException, ParseException {
-        final Oslp.Message request = message.getPayloadMessage();
-
-        // Create response message
-        Oslp.Message response = null;
-
-        // Calculate expected sequence number
-        this.sequenceNumber = this.doGetNextSequence();
-
-        // If responseDelayTime (and optional responseDelayRandomRange) are set,
-        // sleep for a little while
-        if (this.responseDelayTime != null && this.reponseDelayRandomRange == null) {
-            this.sleep(this.responseDelayTime);
-        } else if (this.responseDelayTime != null && this.reponseDelayRandomRange != null) {
-            final Long randomDelay = (long) (this.reponseDelayRandomRange * this.random.nextDouble());
-            this.sleep(this.responseDelayTime + randomDelay);
-        }
-
-        // Handle requests
-        if (request.hasGetFirmwareVersionRequest()
-                && this.mockResponses.containsKey(DeviceRequestMessageType.GET_FIRMWARE_VERSION)) {
-            response = this.processRequest(DeviceRequestMessageType.GET_FIRMWARE_VERSION, request);
-        } else if (request.hasUpdateFirmwareRequest()
-                && this.mockResponses.containsKey(DeviceRequestMessageType.UPDATE_FIRMWARE)) {
-            response = this.processRequest(DeviceRequestMessageType.UPDATE_FIRMWARE, request);
-        } else if (request.hasSetLightRequest() && this.mockResponses.containsKey(DeviceRequestMessageType.SET_LIGHT)) {
-            response = this.processRequest(DeviceRequestMessageType.SET_LIGHT, request);
-        } else if (request.hasSetEventNotificationsRequest()
-                && this.mockResponses.containsKey(DeviceRequestMessageType.SET_EVENT_NOTIFICATIONS)) {
-            response = this.processRequest(DeviceRequestMessageType.SET_EVENT_NOTIFICATIONS, request);
-        } else if (request.hasStartSelfTestRequest()
-                && this.mockResponses.containsKey(DeviceRequestMessageType.START_SELF_TEST)) {
-            response = this.processRequest(DeviceRequestMessageType.START_SELF_TEST, request);
-        } else if (request.hasStopSelfTestRequest()
-                && this.mockResponses.containsKey(DeviceRequestMessageType.STOP_SELF_TEST)) {
-            response = this.processRequest(DeviceRequestMessageType.STOP_SELF_TEST, request);
-        } else if (request.hasGetStatusRequest()
-                && this.mockResponses.containsKey(DeviceRequestMessageType.GET_STATUS)) {
-            response = this.processRequest(DeviceRequestMessageType.GET_STATUS, request);
-        } else if (request.hasGetStatusRequest()
-                && this.mockResponses.containsKey(DeviceRequestMessageType.GET_LIGHT_STATUS)) {
-            response = this.processRequest(DeviceRequestMessageType.GET_LIGHT_STATUS, request);
-        } else if (request.hasResumeScheduleRequest()
-                && this.mockResponses.containsKey(DeviceRequestMessageType.RESUME_SCHEDULE)) {
-            response = this.processRequest(DeviceRequestMessageType.RESUME_SCHEDULE, request);
-        } else if (request.hasSetRebootRequest()
-                && this.mockResponses.containsKey(DeviceRequestMessageType.SET_REBOOT)) {
-            response = this.processRequest(DeviceRequestMessageType.SET_REBOOT, request);
-        } else if (request.hasSetTransitionRequest()
-                && this.mockResponses.containsKey(DeviceRequestMessageType.SET_TRANSITION)) {
-            response = this.processRequest(DeviceRequestMessageType.SET_TRANSITION, request);
-        } else if (request.hasSetDeviceVerificationKeyRequest()
-                && this.mockResponses.containsKey(DeviceRequestMessageType.UPDATE_KEY)) {
-            response = this.processRequest(DeviceRequestMessageType.UPDATE_KEY, request);
-        } else if (request.hasGetActualPowerUsageRequest()
-                && this.mockResponses.containsKey(DeviceRequestMessageType.GET_ACTUAL_POWER_USAGE)) {
-            response = this.processRequest(DeviceRequestMessageType.GET_ACTUAL_POWER_USAGE, request);
-        } else if (request.hasGetPowerUsageHistoryRequest()
-                && this.mockResponses.containsKey(DeviceRequestMessageType.GET_POWER_USAGE_HISTORY)) {
-            response = this.processRequest(DeviceRequestMessageType.GET_POWER_USAGE_HISTORY, request);
-        } else if (request.hasSetScheduleRequest()) {
-            if (this.mockResponses.containsKey(DeviceRequestMessageType.SET_LIGHT_SCHEDULE)) {
-                response = this.processRequest(DeviceRequestMessageType.SET_LIGHT_SCHEDULE, request);
-            } else if (this.mockResponses.containsKey(DeviceRequestMessageType.SET_TARIFF_SCHEDULE)) {
-                response = this.processRequest(DeviceRequestMessageType.SET_TARIFF_SCHEDULE, request);
-            }
-        } else if (request.hasGetConfigurationRequest()
-                && this.mockResponses.containsKey(DeviceRequestMessageType.GET_CONFIGURATION)) {
-            response = this.processRequest(DeviceRequestMessageType.GET_CONFIGURATION, request);
-        } else if (request.hasSetConfigurationRequest()
-                && this.mockResponses.containsKey(DeviceRequestMessageType.SET_CONFIGURATION)) {
-            response = this.processRequest(DeviceRequestMessageType.SET_CONFIGURATION, request);
-        }
-        // TODO: Implement further requests.
-        else {
-            // Handle errors by logging
-            LOGGER.error("Did not expect request, ignoring: " + request.toString());
-        }
-
-        // Write log entry for response
-        LOGGER.info("Mock Request: " + request);
-        LOGGER.info("Mock Response: " + response);
-
-        return response;
-    }
-
-    // Note: This method is for other classes which are executing this method
-    // WITH a sequencenumber
-    public Oslp.Message handleRequest(final OslpEnvelope message, final int sequenceNumber)
-            throws DeviceSimulatorException, IOException, ParseException {
-        return this.handleRequest(message);
     }
 
     /**
@@ -417,19 +283,6 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         }
     }
 
-    private Oslp.Message processRequest(final DeviceRequestMessageType type, final Oslp.Message request) {
-        Oslp.Message response = null;
-
-        LOGGER.info("Processing [{}] ...", type.name());
-        LOGGER.info("Received [{}] ...", request);
-
-        this.receivedRequests.put(type, request);
-        response = this.mockResponses.get(type);
-        this.mockResponses.remove(type);
-
-        return response;
-    }
-
     public OslpEnvelope send(final InetSocketAddress address, final OslpEnvelope request,
             final String deviceIdentification) throws IOException, DeviceSimulatorException {
         LOGGER.info("Sending OSLP request: {}", request.getPayloadMessage());
@@ -488,5 +341,152 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         } catch (final InterruptedException e) {
             LOGGER.info("InterruptedException", e);
         }
+    }
+
+    // Note: This method is for other classes which are executing this method
+    // WITH a sequencenumber
+    public Oslp.Message handleRequest(final OslpEnvelope message, final int sequenceNumber)
+            throws DeviceSimulatorException, IOException, ParseException {
+        return this.handleRequest(message);
+    }
+
+    public Oslp.Message handleRequest(final OslpEnvelope message)
+            throws DeviceSimulatorException, IOException, ParseException {
+        final Oslp.Message request = message.getPayloadMessage();
+
+        // Create response message
+        Oslp.Message response = null;
+
+        // Calculate expected sequence number
+        this.sequenceNumber = this.doGetNextSequence();
+
+        // If responseDelayTime (and optional responseDelayRandomRange) are set,
+        // sleep for a little while
+        if (this.responseDelayTime != null && this.reponseDelayRandomRange == null) {
+            this.sleep(this.responseDelayTime);
+        } else if (this.responseDelayTime != null && this.reponseDelayRandomRange != null) {
+            final Long randomDelay = (long) (this.reponseDelayRandomRange * this.random.nextDouble());
+            this.sleep(this.responseDelayTime + randomDelay);
+        }
+
+        // Handle requests
+        if (request.hasGetFirmwareVersionRequest()
+                && this.mockResponses.containsKey(DeviceRequestMessageType.GET_FIRMWARE_VERSION)) {
+            response = this.processRequest(DeviceRequestMessageType.GET_FIRMWARE_VERSION, request);
+        } else if (request.hasUpdateFirmwareRequest()
+                && this.mockResponses.containsKey(DeviceRequestMessageType.UPDATE_FIRMWARE)) {
+            response = this.processRequest(DeviceRequestMessageType.UPDATE_FIRMWARE, request);
+        } else if (request.hasSetLightRequest() && this.mockResponses.containsKey(DeviceRequestMessageType.SET_LIGHT)) {
+            response = this.processRequest(DeviceRequestMessageType.SET_LIGHT, request);
+        } else if (request.hasSetEventNotificationsRequest()
+                && this.mockResponses.containsKey(DeviceRequestMessageType.SET_EVENT_NOTIFICATIONS)) {
+            response = this.processRequest(DeviceRequestMessageType.SET_EVENT_NOTIFICATIONS, request);
+        } else if (request.hasStartSelfTestRequest()
+                && this.mockResponses.containsKey(DeviceRequestMessageType.START_SELF_TEST)) {
+            response = this.processRequest(DeviceRequestMessageType.START_SELF_TEST, request);
+        } else if (request.hasStopSelfTestRequest()
+                && this.mockResponses.containsKey(DeviceRequestMessageType.STOP_SELF_TEST)) {
+            response = this.processRequest(DeviceRequestMessageType.STOP_SELF_TEST, request);
+        } else if (request.hasGetStatusRequest()
+                && this.mockResponses.containsKey(DeviceRequestMessageType.GET_STATUS)) {
+            response = this.processRequest(DeviceRequestMessageType.GET_STATUS, request);
+        } else if (request.hasGetStatusRequest()
+                && this.mockResponses.containsKey(DeviceRequestMessageType.GET_LIGHT_STATUS)) {
+            response = this.processRequest(DeviceRequestMessageType.GET_LIGHT_STATUS, request);
+        } else if (request.hasResumeScheduleRequest()
+                && this.mockResponses.containsKey(DeviceRequestMessageType.RESUME_SCHEDULE)) {
+            response = this.processRequest(DeviceRequestMessageType.RESUME_SCHEDULE, request);
+        } else if (request.hasSetRebootRequest()
+                && this.mockResponses.containsKey(DeviceRequestMessageType.SET_REBOOT)) {
+            response = this.processRequest(DeviceRequestMessageType.SET_REBOOT, request);
+        } else if (request.hasSetTransitionRequest()
+                && this.mockResponses.containsKey(DeviceRequestMessageType.SET_TRANSITION)) {
+            response = this.processRequest(DeviceRequestMessageType.SET_TRANSITION, request);
+        } else if (request.hasSetDeviceVerificationKeyRequest()
+                && this.mockResponses.containsKey(DeviceRequestMessageType.UPDATE_KEY)) {
+            response = this.processRequest(DeviceRequestMessageType.UPDATE_KEY, request);
+        } else if (request.hasGetActualPowerUsageRequest()
+                && this.mockResponses.containsKey(DeviceRequestMessageType.GET_ACTUAL_POWER_USAGE)) {
+            response = this.processRequest(DeviceRequestMessageType.GET_ACTUAL_POWER_USAGE, request);
+        } else if (request.hasGetPowerUsageHistoryRequest()
+                && this.mockResponses.containsKey(DeviceRequestMessageType.GET_POWER_USAGE_HISTORY)) {
+            response = this.processRequest(DeviceRequestMessageType.GET_POWER_USAGE_HISTORY, request);
+        } else if (request.hasSetScheduleRequest()) {
+            if (this.mockResponses.containsKey(DeviceRequestMessageType.SET_LIGHT_SCHEDULE)) {
+                response = this.processRequest(DeviceRequestMessageType.SET_LIGHT_SCHEDULE, request);
+            } else if (this.mockResponses.containsKey(DeviceRequestMessageType.SET_TARIFF_SCHEDULE)) {
+                response = this.processRequest(DeviceRequestMessageType.SET_TARIFF_SCHEDULE, request);
+            }
+        } else if (request.hasGetConfigurationRequest()
+                && this.mockResponses.containsKey(DeviceRequestMessageType.GET_CONFIGURATION)) {
+            response = this.processRequest(DeviceRequestMessageType.GET_CONFIGURATION, request);
+        } else if (request.hasSetConfigurationRequest()
+                && this.mockResponses.containsKey(DeviceRequestMessageType.SET_CONFIGURATION)) {
+            response = this.processRequest(DeviceRequestMessageType.SET_CONFIGURATION, request);
+        }
+        // TODO: Implement further requests.
+        else {
+            // Handle errors by logging
+            LOGGER.error("Did not expect request, ignoring: " + request.toString());
+        }
+
+        // Write log entry for response
+        LOGGER.info("Mock Request: " + request);
+        LOGGER.info("Mock Response: " + response);
+
+        return response;
+    }
+
+    private Oslp.Message processRequest(final DeviceRequestMessageType type, final Oslp.Message request) {
+        Oslp.Message response = null;
+
+        LOGGER.info("Processing [{}] ...", type.name());
+        LOGGER.info("Received [{}] ...", request);
+
+        this.receivedRequests.put(type, request);
+        response = this.mockResponses.get(type);
+        this.mockResponses.remove(type);
+
+        return response;
+    }
+
+    private int doGetNextSequence() {
+        int sequenceNumberValue = 1;
+
+        if (ScenarioContext.Current().get("NumberToAddAsNextSequenceNumber") != null) {
+            final String numberToAddAsNextSequenceNumber = ScenarioContext.Current()
+                    .get("NumberToAddAsNextSequenceNumber").toString();
+            if (!numberToAddAsNextSequenceNumber.isEmpty()) {
+                sequenceNumberValue = Integer.parseInt(numberToAddAsNextSequenceNumber);
+            }
+        }
+        int next = this.sequenceNumber + sequenceNumberValue;
+        if (next > SEQUENCE_NUMBER_MAXIMUM) {
+            final int sequenceNumberMaximumCross = next - SEQUENCE_NUMBER_MAXIMUM;
+            if (sequenceNumberMaximumCross >= 1) {
+                next = sequenceNumberMaximumCross - 1;
+            }
+        } else if (next < 0) {
+            final int sequenceNumberMaximumCross = next * -1;
+            if (sequenceNumberMaximumCross >= 1) {
+                next = SEQUENCE_NUMBER_MAXIMUM - sequenceNumberMaximumCross + 1;
+            }
+        }
+
+        return this.sequenceNumber = next;
+    }
+
+    private byte[] convertIntegerToByteArray(final Integer value) {
+        // See: platform.service.SequenceNumberUtils
+        final byte[] bytes = new byte[2];
+        bytes[0] = (byte) (value >>> 8);
+        bytes[1] = (byte) (value >>> 0);
+        return bytes;
+    }
+
+    private Integer convertByteArrayToInteger(final byte[] array) {
+        // See: platform.service.SequenceNumberUtils
+        final Integer value = (array[0] & 0xFF) << 8 | (array[1] & 0xFF);
+        return value;
     }
 }

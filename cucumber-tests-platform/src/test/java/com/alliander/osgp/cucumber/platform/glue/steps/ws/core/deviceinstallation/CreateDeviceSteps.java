@@ -46,7 +46,6 @@ public class CreateDeviceSteps extends GlueBase {
 
     @When("^receiving an add device request$")
     public void receivingAnAddDeviceRequest(final Map<String, String> settings) throws Throwable {
-
         final AddDeviceRequest request = new AddDeviceRequest();
         final Device device = this.createDevice(settings);
         request.setDevice(device);
@@ -61,7 +60,6 @@ public class CreateDeviceSteps extends GlueBase {
     @When("^receiving an add device request with an unknown organization$")
     public void receivingAnAddDeviceRequestWithAnUnknownOrganization(final Map<String, String> settings)
             throws Throwable {
-
         final AddDeviceRequest request = new AddDeviceRequest();
         final Device device = this.createDevice(settings);
         request.setDevice(device);

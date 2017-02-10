@@ -24,6 +24,7 @@ import com.alliander.osgp.cucumber.platform.Defaults;
 import com.alliander.osgp.cucumber.platform.GlueBase;
 import com.alliander.osgp.cucumber.platform.Keys;
 import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
+import com.alliander.osgp.cucumber.platform.glue.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.cucumber.platform.support.ws.admin.AdminDeviceManagementClient;
 
 import cucumber.api.java.en.Then;
@@ -81,9 +82,6 @@ public class UpdateKeySteps extends GlueBase {
      */
     @Then("^the update key response contains soap fault$")
     public void the_update_key_response_contains_soap_fault(final Map<String, String> expectedResult) throws Throwable {
-        Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof SoapFaultClientException);
-        final SoapFaultClientException response = (SoapFaultClientException) ScenarioContext.Current()
-                .get(Keys.RESPONSE);
-        Assert.assertEquals(getString(expectedResult, Keys.KEY_MESSAGE), response.getMessage());
+        GenericResponseSteps.verifySoapFault(expectedResult);
     }
 }

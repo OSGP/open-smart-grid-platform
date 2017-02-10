@@ -165,13 +165,6 @@ public class OslpDeviceSteps extends GlueBase {
      *            The device identification expected in the message to the
      *            device.
      */
-    @Then("^an update firmware OSLP message is sent to device \"([^\"]*)\"$")
-    public void anUpdateFirmwareOSLPMessageIsSentToDevice(final String deviceIdentification) {
-        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.UPDATE_FIRMWARE);
-        Assert.assertNotNull(message);
-        Assert.assertTrue(message.hasUpdateFirmwareRequest());
-    }
-
     @Then("^an update key OSLP message is sent to device \"([^\"]*)\"$")
     public void anUpdateKeyOSLPMessageIsSentToDevice(final String deviceIdentification) {
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.UPDATE_KEY);
@@ -354,7 +347,26 @@ public class OslpDeviceSteps extends GlueBase {
     }
 
     /**
+     * <<<<<<<
+     * HEAD:cucumber-tests-platform/src/test/java/com/alliander/osgp/cucumber/platform/glue/steps/mocks/OslpDeviceSteps.java
      * Setup method to get a status which should be returned by the mock.
+     * ======= Verify that a get firmware version OSLP message is sent to the
+     * device.
+     *
+     * @param deviceIdentification
+     *            The device identification expected in the message to the
+     *            device.
+     */
+    @Then("^an update firmware OSLP message is sent to device \"([^\"]*)\"$")
+    public void anUpdateFirmwareOSLPMessageIsSentToDevice(final String deviceIdentification) {
+        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.UPDATE_FIRMWARE);
+        Assert.assertNotNull(message);
+        Assert.assertTrue(message.hasUpdateFirmwareRequest());
+    }
+
+    /**
+     * Verify that a set light OSLP message is sent to the device. >>>>>>>
+     * a10fba3ef4a5484a24039f505b20cd9a18beab01:cucumber-tests-platform/src/test/java/com/alliander/osgp/platform/cucumber/steps/mocks/OslpDeviceSteps.java
      *
      * @param result
      */

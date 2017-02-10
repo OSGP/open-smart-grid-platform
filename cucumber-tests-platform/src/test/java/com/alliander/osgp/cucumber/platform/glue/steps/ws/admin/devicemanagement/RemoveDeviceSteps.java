@@ -67,9 +67,11 @@ public class RemoveDeviceSteps extends GlueBase {
      *            An list with request parameters for the request.
      * @throws Throwable
      */
-    @When("^receiving a remove device request with empty device identification$")
-    public void receivingARemoveDeviceRequestWithEmptyDeviceIdentification(final Map<String, String> requestParameters)
-            throws Throwable {
+    @When("^receiving a remove device request with unknown device identification$")
+    public void receivingARemoveDeviceRequestWithUnknownDeviceIdentification(
+            final Map<String, String> requestParameters) throws Throwable {
+        ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
+
         this.receivingARemoveDeviceRequest(requestParameters);
     }
 
@@ -80,24 +82,10 @@ public class RemoveDeviceSteps extends GlueBase {
      *            An list with request parameters for the request.
      * @throws Throwable
      */
-    @When("^receiving a remove device request with unknown device identification$")
-    public void receivingARemoveDeviceRequestWithUnknownDeviceIdentification(
-            final Map<String, String> requestParameters) throws Throwable {
-        ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
-
+    @When("^receiving a remove device request with empty device identification$")
+    public void receivingARemoveDeviceRequestWithEmptyDeviceIdentification(final Map<String, String> requestParameters)
+            throws Throwable {
         this.receivingARemoveDeviceRequest(requestParameters);
-    }
-
-    /**
-     * The check for the response from the Platform.
-     *
-     * @param expectedResponseData
-     *            The table with the expected fields in the response.
-     * @throws Throwable
-     */
-    @Then("^the remove device response contains soap fault$")
-    public void theRemoveDeviceResponseContainsSoapFault(final Map<String, String> expectedResult) throws Throwable {
-        GenericResponseSteps.verifySoapFault(expectedResult);
     }
 
     /**
@@ -110,5 +98,17 @@ public class RemoveDeviceSteps extends GlueBase {
     @Then("^the remove device response is successful$")
     public void theRemoveDeviceResponseIsSuccessful() throws Throwable {
         Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof RemoveDeviceResponse);
+    }
+
+    /**
+     * The check for the response from the Platform.
+     *
+     * @param expectedResponseData
+     *            The table with the expected fields in the response.
+     * @throws Throwable
+     */
+    @Then("^the remove device response contains soap fault$")
+    public void theRemoveDeviceResponseContainsSoapFault(final Map<String, String> expectedResult) throws Throwable {
+        GenericResponseSteps.verifySoapFault(expectedResult);
     }
 }
