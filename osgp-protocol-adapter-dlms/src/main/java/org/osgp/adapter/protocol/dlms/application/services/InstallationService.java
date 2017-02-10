@@ -16,8 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
-import com.alliander.osgp.shared.security.EncryptionService;
-import com.alliander.osgp.shared.security.RsaEncryptionService;
 
 @Service(value = "dlmsInstallationService")
 public class InstallationService {
@@ -29,10 +27,7 @@ public class InstallationService {
     private InstallationMapper installationMapper;
 
     @Autowired
-    private EncryptionService encryptionService;
-
-    @Autowired
-    private RsaEncryptionService rsaEncryptionService;
+    private ReEncryptionService reEncryptionService;
 
     // === ADD METER ===
     public void addMeter(final SmartMeteringDeviceDto smartMeteringDevice) throws ProtocolAdapterException {
@@ -48,42 +43,24 @@ public class InstallationService {
     }
 
     private void reEncryptMasterKey(final SmartMeteringDeviceDto smartMeteringDevice) throws ProtocolAdapterException {
-        final byte[] reEncryptedMasterKey = this.reEncryptKey(smartMeteringDevice.getMasterKey(),
+        final byte[] reEncryptedMasterKey = this.reEncryptionService.reEncryptKey(smartMeteringDevice.getMasterKey(),
                 SecurityKeyType.E_METER_MASTER);
         smartMeteringDevice.setMasterKey(reEncryptedMasterKey);
     }
 
     private void reEncryptAuthenticationKey(final SmartMeteringDeviceDto smartMeteringDevice)
             throws ProtocolAdapterException {
-        final byte[] reEncryptedAuthenticationKey = this.reEncryptKey(smartMeteringDevice.getAuthenticationKey(),
+        final byte[] reEncryptedAuthenticationKey = this.reEncryptionService.reEncryptKey(
+                smartMeteringDevice.getAuthenticationKey(),
                 SecurityKeyType.E_METER_AUTHENTICATION);
         smartMeteringDevice.setAuthenticationKey(reEncryptedAuthenticationKey);
     }
 
     private void reEncryptEncryptionKey(final SmartMeteringDeviceDto smartMeteringDevice)
             throws ProtocolAdapterException {
-        final byte[] reEncryptedEncryptionKey = this.reEncryptKey(smartMeteringDevice.getGlobalEncryptionUnicastKey(),
+        final byte[] reEncryptedEncryptionKey = this.reEncryptionService
+                .reEncryptKey(smartMeteringDevice.getGlobalEncryptionUnicastKey(),
                 SecurityKeyType.E_METER_ENCRYPTION);
         smartMeteringDevice.setGlobalEncryptionUnicastKey(reEncryptedEncryptionKey);
-    }
-
-    private byte[] reEncryptKey(final byte[] asymmetricEncryptedKey, final SecurityKeyType keyType)
-            throws ProtocolAdapterException {
-
-        if (asymmetricEncryptedKey == null) {
-            return null;
-        }
-
-        try {
-            /*
-             * Replace the asymmetric encryption for which the public key is
-             * shared with web service callers by a faster symmetric encryption
-             * for use inside the protocol adapter only.
-             */
-            final byte[] decryptedKeyBytes = this.rsaEncryptionService.decrypt(asymmetricEncryptedKey);
-            return this.encryptionService.encrypt(decryptedKeyBytes);
-        } catch (final Exception e) {
-            throw new ProtocolAdapterException("Error processing " + keyType + " key", e);
-        }
     }
 }
