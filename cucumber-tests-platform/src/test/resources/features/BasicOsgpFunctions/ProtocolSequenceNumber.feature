@@ -7,10 +7,16 @@ Feature: BasicOsgpFunctions Protocol Sequence Number
   Scenario Outline: Confirm device registration using number to add to the currernt sequence number
     Given an oslp device
       | DeviceIdentification | TEST1024000000001 |
-    When receiving a confirm request
+    And the device returns a start device response "OK" over OSLP
+    When receiving a start device test request
+      | DeviceIdentification | TEST1024000000001 |
+    And receiving a confirm request
       | DeviceIdentification      | TEST1024000000001           |
       | AddNumberToSequenceNumber | <AddNumberToSequenceNumber> |
-    Then the confirm response contains
+    Then the start device async response contains
+      | DeviceIdentification | TEST1024000000001 |
+    And a start device OSLP message is sent to device "TEST1024000000001"
+    And the platform buffers a protocol sequence number response message for device "TEST1024000000001"
       | IsUpdated | <IsUpdated> |
 
     # Note: In the file 'DeviceRegistrationService' is a check which doesn't accept numbers below and equal to '0'. When this happens the result is always false.
@@ -28,7 +34,7 @@ Feature: BasicOsgpFunctions Protocol Sequence Number
       |                         0 | false     |
       |                         7 | false     |
       |                        10 | false     |
-
+  
   Scenario: Confirm device registration for unknown device
     When receiving a confirm request for unknown device
       | DeviceIdentification      | unknown |

@@ -11,6 +11,8 @@ import static com.alliander.osgp.platform.cucumber.core.Helpers.getBoolean;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getInteger;
 import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -21,6 +23,7 @@ import com.alliander.osgp.adapter.ws.schema.core.common.AsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StartDeviceTestAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StartDeviceTestRequest;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StartDeviceTestResponse;
+import com.alliander.osgp.platform.cucumber.config.CoreDeviceConfiguration;
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
@@ -28,6 +31,7 @@ import com.alliander.osgp.platform.cucumber.steps.mocks.OslpDeviceSteps;
 import com.alliander.osgp.platform.cucumber.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.platform.cucumber.steps.ws.core.deviceinstallation.StartDeviceSteps;
 import com.alliander.osgp.platform.cucumber.support.ws.core.CoreDeviceInstallationClient;
+import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -46,35 +50,18 @@ public class ProtocolSequenceNumberSteps {
     @Autowired
     private CoreDeviceInstallationClient client;
 
+    @Autowired
+    private CoreDeviceConfiguration configuration;
+
     @When("^receiving a confirm request$")
     public void receivingAConfirmRequest(final Map<String, String> requestParameters) throws Throwable {
 
         ScenarioContext.Current().put("NumberToAddAsNextSequenceNumber",
                 getInteger(requestParameters, "AddNumberToSequenceNumber"));
-
-        this.oslpDeviceSteps.theDeviceReturnsAStartDeviceResponseOverOSLP("OK");
-        this.startDeviceTestSteps.receivingAStartDeviceTestRequest(requestParameters);
-        this.startDeviceTestSteps.theStartDeviceAsyncResponseContains(requestParameters);
-        this.oslpDeviceSteps.aStartDeviceOSLPMessageIsSentToDevice(
-                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-
-        final StartDeviceTestAsyncRequest request = new StartDeviceTestAsyncRequest();
-        final AsyncRequest asyncRequest = new AsyncRequest();
-        asyncRequest.setDeviceId(
-                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-        asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
-        request.setAsyncRequest(asyncRequest);
-
-        try {
-            ScenarioContext.Current().put(Keys.RESPONSE, this.client.getStartDeviceTestResponse(request));
-        } catch (final SoapFaultClientException ex) {
-            ScenarioContext.Current().put(Keys.RESPONSE, ex);
-        }
     }
 
     @When("^receiving a confirm request for unknown device$")
     public void receivingAConfirmRequestForUnknownDevice(final Map<String, String> requestParameters) throws Throwable {
-        ScenarioContext.Current().put(Keys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organisation");
         this.receivingAConfirmRequestWithEmptyDeviceIdentification(requestParameters);
     }
 
@@ -92,14 +79,38 @@ public class ProtocolSequenceNumberSteps {
         }
     }
 
-    @Then("^the confirm response contains$")
-    public void theConfirmResponseContains(final Map<String, String> expectedResponse) {
-        Assert.assertEquals(getBoolean(expectedResponse, "IsUpdated"),
-                (ScenarioContext.Current().get(Keys.RESPONSE) instanceof StartDeviceTestResponse));
-    }
-
     @Then("^the confirm response contains soap fault$")
     public void theConfirmResponseContainsSoapFault(final Map<String, String> expectedResponse) {
         GenericResponseSteps.verifySoapFault(expectedResponse);
+    }
+
+    /**
+     *
+     * @param deviceIdentification
+     * @param expectedResult
+     * @throws InterruptedException
+     * @throws WebServiceSecurityException
+     * @throws GeneralSecurityException
+     * @throws IOException
+     */
+    @Then("^the platform buffers a protocol sequence number response message for device \"([^\"]*)\"$")
+    public void thePlatformBuffersAStartDeviceResponseMessageForDevice(final String deviceIdentification,
+            final Map<String, String> expectedResult)
+            throws InterruptedException, WebServiceSecurityException, GeneralSecurityException, IOException {
+
+        final StartDeviceTestAsyncRequest request = new StartDeviceTestAsyncRequest();
+        final AsyncRequest asyncRequest = new AsyncRequest();
+        asyncRequest.setDeviceId(deviceIdentification);
+        asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
+        request.setAsyncRequest(asyncRequest);
+
+        Object response = null;
+        try {
+            response = this.client.getStartDeviceTestResponse(request);
+        } catch (final SoapFaultClientException ex) {
+            response = ex;
+        }
+
+        Assert.assertEquals(getBoolean(expectedResult, "IsUpdated"), response instanceof StartDeviceTestResponse);
     }
 }
