@@ -7,9 +7,6 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAttributeValuesResponse;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAttributeValuesResponseDto;
 
@@ -18,8 +15,6 @@ import ma.glasnost.orika.metadata.Type;
 
 public class GetAttributeValuesResponseConverter
         extends CustomConverter<GetAttributeValuesResponseDto, GetAttributeValuesResponse> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetAttributeValuesResponseConverter.class);
 
     @Override
     public GetAttributeValuesResponse convert(final GetAttributeValuesResponseDto source,
