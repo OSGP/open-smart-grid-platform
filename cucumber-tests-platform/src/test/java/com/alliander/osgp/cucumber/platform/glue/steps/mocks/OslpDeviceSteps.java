@@ -707,21 +707,6 @@ public class OslpDeviceSteps extends GlueBase {
     }
 
     /**
-     * Setup method to set the event notification which should be returned by
-     * the mock.
-     *
-     * @param firmwareVersion
-     *            The event notification to respond.
-     */
-
-    @Given("^the device returns a set event notification \"([^\"]*)\" over OSLP$")
-    public void theDeviceReturnsAnEventNotificationOverOSLP(final String result) {
-        final Status oslpStatus = Status.valueOf(result);
-
-        this.oslpMockServer.mockSetEventNotificationResponse(oslpStatus);
-    }
-
-    /**
      * Setup method to set the configuration status which should be returned by
      * the mock.
      *
