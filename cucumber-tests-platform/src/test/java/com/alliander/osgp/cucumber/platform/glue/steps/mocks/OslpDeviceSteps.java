@@ -37,6 +37,11 @@ import com.alliander.osgp.oslp.Oslp.Event;
 import com.alliander.osgp.oslp.Oslp.EventNotification;
 import com.alliander.osgp.oslp.Oslp.EventNotificationRequest;
 import com.alliander.osgp.oslp.Oslp.EventNotificationResponse;
+import com.alliander.osgp.oslp.Oslp.GetActualPowerUsageRequest;
+import com.alliander.osgp.oslp.Oslp.GetConfigurationRequest;
+import com.alliander.osgp.oslp.Oslp.GetFirmwareVersionRequest;
+import com.alliander.osgp.oslp.Oslp.GetPowerUsageHistoryRequest;
+import com.alliander.osgp.oslp.Oslp.GetStatusRequest;
 import com.alliander.osgp.oslp.Oslp.LightType;
 import com.alliander.osgp.oslp.Oslp.LightValue;
 import com.alliander.osgp.oslp.Oslp.LinkType;
@@ -48,6 +53,7 @@ import com.alliander.osgp.oslp.Oslp.ResumeScheduleRequest;
 import com.alliander.osgp.oslp.Oslp.Schedule;
 import com.alliander.osgp.oslp.Oslp.SetConfigurationRequest;
 import com.alliander.osgp.oslp.Oslp.SetEventNotificationsRequest;
+import com.alliander.osgp.oslp.Oslp.SetLightRequest;
 import com.alliander.osgp.oslp.Oslp.SetScheduleRequest;
 import com.alliander.osgp.oslp.Oslp.SetTransitionRequest;
 import com.alliander.osgp.oslp.Oslp.Status;
@@ -57,6 +63,7 @@ import com.alliander.osgp.oslp.Oslp.Weekday;
 import com.alliander.osgp.oslp.OslpUtils;
 import com.google.protobuf.ByteString;
 
+import cucumber.api.DataTable;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -261,11 +268,11 @@ public class OslpDeviceSteps extends GlueBase {
         final List<LightValue> lightValues = new ArrayList<>();
         if (!getString(requestParameters, Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES).isEmpty()
                 && getString(requestParameters, Keys.KEY_LIGHTVALUES, Defaults.DEFAULT_LIGHTVALUES)
-                        .split(Keys.SEPARATOR_COMMA).length > 0) {
+                        .split(Keys.SEPARATOR_SEMICOLON).length > 0) {
 
             for (final String lightValueString : getString(requestParameters, Keys.KEY_LIGHTVALUES,
-                    Defaults.DEFAULT_LIGHTVALUES).split(Keys.SEPARATOR_COMMA)) {
-                final String[] parts = lightValueString.split(Keys.SEPARATOR_SEMICOLON);
+                    Defaults.DEFAULT_LIGHTVALUES).split(Keys.SEPARATOR_SEMICOLON)) {
+                final String[] parts = lightValueString.split(Keys.SEPARATOR_COMMA);
 
                 final LightValue lightValue = LightValue.newBuilder()
                         .setIndex(OslpUtils.integerToByteString(Integer.parseInt(parts[0])))
@@ -478,6 +485,65 @@ public class OslpDeviceSteps extends GlueBase {
             // Assert.assertEquals(expectedResult.get(Keys.TIME),
             // request.getTime());
         }
+    }
+
+    @Then("^a get configuration OSLP message is sent to device \"([^\"]*)\"$")
+    public void aGetConfigurationOSLPMessageIsSentToDevice(final String arg1) throws Throwable {
+        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.GET_CONFIGURATION);
+        Assert.assertNotNull(message);
+        Assert.assertTrue(message.hasGetConfigurationRequest());
+
+        @SuppressWarnings("unused")
+        final GetConfigurationRequest request = message.getGetConfigurationRequest();
+    }
+
+    @Then("^a get status OSLP message is sent to device \"([^\"]*)\"$")
+    public void aGetStatusOSLPMessageIsSentToDevice(final String arg1) throws Throwable {
+        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.GET_STATUS);
+        Assert.assertNotNull(message);
+        Assert.assertTrue(message.hasGetStatusRequest());
+
+        @SuppressWarnings("unused")
+        final GetStatusRequest request = message.getGetStatusRequest();
+    }
+
+    @Then("^a get firmware version OSLP message is sent to device \"([^\"]*)\"$")
+    public void aGetFirmwareVersionOSLPMessageIsSentToDevice(final String arg1) throws Throwable {
+        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.GET_FIRMWARE_VERSION);
+        Assert.assertNotNull(message);
+        Assert.assertTrue(message.hasGetFirmwareVersionRequest());
+
+        @SuppressWarnings("unused")
+        final GetFirmwareVersionRequest request = message.getGetFirmwareVersionRequest();
+    }
+
+    @Then("^a set light OSLP message with \"([^\"]*)\" lightvalues is sent to the device$")
+    public void aSetLightOSLPMessageWithLightvaluesIsSentToTheDevice(final String arg1) throws Throwable {
+        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.SET_LIGHT);
+        Assert.assertNotNull(message);
+        Assert.assertTrue(message.hasSetLightRequest());
+
+        final SetLightRequest request = message.getSetLightRequest();
+    }
+
+    @Then("^a get actual power usage OSLP message is sent to the device$")
+    public void aGetActualPowerUsageOSLPMessageIsSentToTheDevice() throws Throwable {
+        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.GET_ACTUAL_POWER_USAGE);
+        Assert.assertNotNull(message);
+        Assert.assertTrue(message.hasGetActualPowerUsageRequest());
+
+        @SuppressWarnings("unused")
+        final GetActualPowerUsageRequest request = message.getGetActualPowerUsageRequest();
+    }
+
+    @Then("^a get power usage history OSLP message is sent to the device$")
+    public void aGetPowerUsageHistoryOSLPMessageIsSentToTheDevice(final DataTable arg1) throws Throwable {
+        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.GET_POWER_USAGE_HISTORY);
+        Assert.assertNotNull(message);
+        Assert.assertTrue(message.hasGetPowerUsageHistoryRequest());
+
+        @SuppressWarnings("unused")
+        final GetPowerUsageHistoryRequest request = message.getGetPowerUsageHistoryRequest();
     }
 
     /**
