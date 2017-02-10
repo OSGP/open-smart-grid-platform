@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.cucumber.platform.glue.steps.ws.core.deviceinstallation;
 
+import static com.alliander.osgp.cucumber.platform.core.Helpers.getEnum;
 import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
 import static com.alliander.osgp.cucumber.platform.core.Helpers.saveCorrelationUidInScenarioContext;
 
@@ -39,10 +40,10 @@ import cucumber.api.java.en.When;
 public class StartDeviceSteps extends GlueBase {
 
     @Autowired
-    private CoreDeviceConfiguration configuration;
+    private CoreDeviceInstallationClient client;
 
     @Autowired
-    private CoreDeviceInstallationClient client;
+    private CoreDeviceConfiguration configuration;
 
     /**
      *
@@ -63,6 +64,44 @@ public class StartDeviceSteps extends GlueBase {
             ScenarioContext.Current().put(Keys.RESPONSE, this.client.startDeviceTest(request));
         } catch (final SoapFaultClientException ex) {
             ScenarioContext.Current().put(Keys.RESPONSE, ex);
+        }
+    }
+
+    /**
+     *
+     * @param deviceIdentification
+     * @throws InterruptedException
+     */
+    @Then("^the platform buffers a start device response message for device \"([^\"]*)\"$")
+    public void thePlatformBuffersAStartDeviceResponseMessageForDevice(final String deviceIdentification,
+            final Map<String, String> expectedResult) throws InterruptedException {
+        final StartDeviceTestAsyncRequest request = new StartDeviceTestAsyncRequest();
+        final AsyncRequest asyncRequest = new AsyncRequest();
+        asyncRequest.setDeviceId(deviceIdentification);
+        asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
+        request.setAsyncRequest(asyncRequest);
+
+        boolean success = false;
+        int count = 0;
+        while (!success) {
+            if (count > this.configuration.getTimeout()) {
+                Assert.fail("Timeout");
+            }
+
+            count++;
+            Thread.sleep(1000);
+
+            try {
+                final StartDeviceTestResponse response = this.client.getStartDeviceTestResponse(request);
+
+                if (getEnum(expectedResult, Keys.KEY_RESULT, OsgpResultType.class) != response.getResult()) {
+                    continue;
+                }
+
+                success = true;
+            } catch (final Exception ex) {
+                // Do nothing
+            }
         }
     }
 
@@ -90,42 +129,5 @@ public class StartDeviceSteps extends GlueBase {
     @Then("^the start device response contains soap fault$")
     public void theStartDeviceResponseContainsSoapFault(final Map<String, String> expectedResult) {
         GenericResponseSteps.verifySoapFault(expectedResult);
-    }
-
-    /**
-     *
-     * @param deviceIdentification
-     * @throws InterruptedException
-     */
-    @Then("the platform buffers a start device response message for device \"([^\"]*)\"")
-    public void thePlatformBuffersAStartDeviceResponseMessageForDevice(final String deviceIdentification,
-            final Map<String, String> expectedResult) throws InterruptedException {
-        final StartDeviceTestAsyncRequest request = new StartDeviceTestAsyncRequest();
-        final AsyncRequest asyncRequest = new AsyncRequest();
-        asyncRequest.setDeviceId(deviceIdentification);
-        asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
-        request.setAsyncRequest(asyncRequest);
-
-        boolean success = false;
-        int count = 0;
-        while (!success) {
-            if (count > this.configuration.getTimeout()) {
-                Assert.fail("Timeout");
-            }
-
-            count++;
-            Thread.sleep(1000);
-
-            try {
-                final StartDeviceTestResponse response = this.client.getStartDeviceTestResponse(request);
-
-                Assert.assertEquals(Enum.valueOf(OsgpResultType.class, expectedResult.get(Keys.KEY_RESULT)),
-                        response.getResult());
-
-                success = true;
-            } catch (final Exception ex) {
-                // Do nothing
-            }
-        }
     }
 }

@@ -44,15 +44,53 @@ import cucumber.api.java.en.When;
 /**
  * Class with all the AuthorizeDeviceFunctions steps
  */
-public class AuthorizePlatformFunctions {
+public class AuthorizePlatformFunctionsSteps {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthorizePlatformFunctionsSteps.class);
 
     @Autowired
     private AdminDeviceManagementClient adminDeviceManagementClient;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AuthorizePlatformFunctions.class);
-
     private PlatformFunction platformFunction;
     private Throwable throwable;
+
+    private void createOrganisation(final Map<String, String> requestParameters)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final CreateOrganisationRequest request = new CreateOrganisationRequest();
+
+        final Organisation organisation = new Organisation();
+        organisation.setName(Defaults.DEFAULT_ORGANIZATION_NAME);
+        organisation.setOrganisationIdentification(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
+        organisation.setFunctionGroup(
+                getEnum(requestParameters, Keys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class));
+        organisation.setPrefix(Defaults.DEFAULT_ORGANIZATION_PREFIX);
+        organisation.setEnabled(Defaults.DEFAULT_ORGANIZATION_ENABLED);
+        request.setOrganisation(organisation);
+
+        ScenarioContext.Current().put(Keys.RESPONSE, this.adminDeviceManagementClient.createOrganization(request));
+    }
+
+    private void getDevicesWithoutOwner(final Map<String, String> requestParameters)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        ScenarioContext.Current().put(Keys.RESPONSE,
+                this.adminDeviceManagementClient.findDevicesWithoutOwner(new FindDevicesWhichHaveNoOwnerRequest()));
+    }
+
+    private void getMessages(final Map<String, String> requestParameters)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final FindMessageLogsRequest request = new FindMessageLogsRequest();
+
+        request.setDeviceIdentification(
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+
+        ScenarioContext.Current().put(Keys.RESPONSE, this.adminDeviceManagementClient.findMessageLogs(request));
+    }
+
+    private void getOrganisations(final Map<String, String> requestParameters)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        ScenarioContext.Current().put(Keys.RESPONSE,
+                this.adminDeviceManagementClient.findAllOrganizations(new FindAllOrganisationsRequest()));
+    }
 
     @When("receiving a platform function request")
     public void receivingADeviceFunctionRequest(final Map<String, String> requestParameters)
@@ -92,53 +130,13 @@ public class AuthorizePlatformFunctions {
         }
     }
 
-    @Then("the platform function response is \"([^\"]*)\"")
-    public void theDeviceFunctionResponseIsSuccessful(final Boolean allowed) {
-        final Object response = ScenarioContext.Current().get(Keys.RESPONSE);
-
-        if (allowed) {
-            Assert.assertTrue(!(response instanceof SoapFaultClientException));
-        } else {
-            Assert.assertTrue(this.throwable != null);
-        }
-    }
-
-    private void createOrganisation(final Map<String, String> requestParameters)
+    private void revokeKey(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        final CreateOrganisationRequest request = new CreateOrganisationRequest();
-
-        final Organisation organisation = new Organisation();
-        organisation.setName(Defaults.DEFAULT_ORGANIZATION_NAME);
-        organisation.setOrganisationIdentification(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
-        organisation.setFunctionGroup(
-                getEnum(requestParameters, Keys.KEY_PLATFORM_FUNCTION_GROUP, PlatformFunctionGroup.class));
-        organisation.setPrefix(Defaults.DEFAULT_ORGANIZATION_PREFIX);
-        organisation.setEnabled(Defaults.DEFAULT_ORGANIZATION_ENABLED);
-        request.setOrganisation(organisation);
-
-        ScenarioContext.Current().put(Keys.RESPONSE, this.adminDeviceManagementClient.createOrganization(request));
-    }
-
-    private void getOrganisations(final Map<String, String> requestParameters)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        ScenarioContext.Current().put(Keys.RESPONSE,
-                this.adminDeviceManagementClient.findAllOrganizations(new FindAllOrganisationsRequest()));
-    }
-
-    private void getMessages(final Map<String, String> requestParameters)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        final FindMessageLogsRequest request = new FindMessageLogsRequest();
-
+        final RevokeKeyRequest request = new RevokeKeyRequest();
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.Current().put(Keys.RESPONSE, this.adminDeviceManagementClient.findMessageLogs(request));
-    }
-
-    private void getDevicesWithoutOwner(final Map<String, String> requestParameters)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        ScenarioContext.Current().put(Keys.RESPONSE,
-                this.adminDeviceManagementClient.findDevicesWithoutOwner(new FindDevicesWhichHaveNoOwnerRequest()));
+        ScenarioContext.Current().put(Keys.RESPONSE, this.adminDeviceManagementClient.getRevokeKeyResponse(request));
     }
 
     private void setOwner(final Map<String, String> requestParameters)
@@ -152,6 +150,17 @@ public class AuthorizePlatformFunctions {
         ScenarioContext.Current().put(Keys.RESPONSE, this.adminDeviceManagementClient.setOwner(request));
     }
 
+    @Then("the platform function response is \"([^\"]*)\"")
+    public void theDeviceFunctionResponseIsSuccessful(final Boolean allowed) {
+        final Object response = ScenarioContext.Current().get(Keys.RESPONSE);
+
+        if (allowed) {
+            Assert.assertTrue(!(response instanceof SoapFaultClientException));
+        } else {
+            Assert.assertTrue(this.throwable != null);
+        }
+    }
+
     private void updateKey(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final UpdateKeyRequest request = new UpdateKeyRequest();
@@ -161,14 +170,5 @@ public class AuthorizePlatformFunctions {
         request.setPublicKey(Defaults.DEFAULT_PUBLIC_KEY);
 
         ScenarioContext.Current().put(Keys.RESPONSE, this.adminDeviceManagementClient.getUpdateKeyResponse(request));
-    }
-
-    private void revokeKey(final Map<String, String> requestParameters)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        final RevokeKeyRequest request = new RevokeKeyRequest();
-        request.setDeviceIdentification(
-                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-
-        ScenarioContext.Current().put(Keys.RESPONSE, this.adminDeviceManagementClient.getRevokeKeyResponse(request));
     }
 }

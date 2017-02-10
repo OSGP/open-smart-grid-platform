@@ -10,13 +10,11 @@ package com.alliander.osgp.cucumber.platform.config.ws;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.ws.config.annotation.EnableWs;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.soap.security.support.KeyStoreFactoryBean;
 
 import com.alliander.osgp.shared.application.config.AbstractConfig;
 
-@EnableWs
 public abstract class BaseWebServiceConfig extends AbstractConfig {
 
     @Value("${application.name}")

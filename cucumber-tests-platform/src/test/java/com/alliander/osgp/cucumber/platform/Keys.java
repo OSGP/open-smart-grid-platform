@@ -37,7 +37,7 @@ public class Keys {
     public static final String DEVICEMODEL_DESCRIPTION = "DeviceModelDescription";
     public static final String DEVICEMODEL_FILESTORAGE = "DeviceModelFileStorage";
     public static final String DEVICEMODEL_METERED = "DeviceModelMetered";
-    public static final String DEVICEMODEL_MODELCOE = "DeviceModelmodelCode";
+    public static final String DEVICEMODEL_MODELCODE = "DeviceModelCode";
     public static final String EMAIL = "Email";
     public static final String END_TIME = "EndTime";
     public static final String FAILED_LOGIN_ATTEMP_TIME_STAMP = "FailedLoginAttemptTimeStamp";
@@ -56,17 +56,17 @@ public class Keys {
     public static final String HISTORY_TERM_TYPE = "HistoryTermType";
     public static final String INTERVAL_TYPE = "IntervalType";
     public static final String KEY_ACTIVATED = "Activated";
+
     public static final String KEY_ACTIVE = "Active";
-
     public static final String KEY_ACTUAL_LINKTYPE = "ActualLinkType";
+
     public static final String KEY_ALIAS = "alias";
-
     public static final String KEY_BEGIN_DATE = "BeginDate";
+
     public static final String KEY_CHANNEL = "Channel";
-
     public static final String KEY_CITY = "containerCity";
-    public static final String KEY_COMM_METHOD = "CommunicationMethod";
 
+    public static final String KEY_COMM_METHOD = "CommunicationMethod";
     public static final String KEY_CORRELATION_UID = "CorrelationUid";
     public static final String KEY_DESCRIPTION = "Description";
     public static final String KEY_DEVICE_ACTIVATED = "DeviceActivated";
@@ -79,10 +79,10 @@ public class Keys {
     public static final String KEY_DEVICE_HLS4ACTIVE = "HLS4_active";
     public static final String KEY_DEVICE_HLS5ACTIVE = "HLS5_active";
     public static final String KEY_DEVICE_ICCID = "ICC_id";
+
     public static final String KEY_DEVICE_IDENTIFICATION = "DeviceIdentification";
 
     public static final String KEY_DEVICE_IDENTIFICATION_E_LABEL = "DeviceIdentificationE";
-
     public static final String KEY_DEVICE_IDENTIFICATION_G_LABEL = "DeviceIdentificationG";
     public static final String KEY_DEVICE_MAINTENANCE = "DeviceMaintenance";
     public static final String KEY_DEVICE_MASTERKEY = "Master_key";
@@ -92,8 +92,8 @@ public class Keys {
     public static final String KEY_DEVICE_MODEL_MANUFACTURER = "Manufacturer";
     public static final String KEY_DEVICE_MODEL_METERED = "Metered";
     public static final String KEY_DEVICE_MODEL_MODELCODE = "ModelCode";
-    public static final String KEY_DEVICE_SUPPLIER = "Supplier";
 
+    public static final String KEY_DEVICE_SUPPLIER = "Supplier";
     public static final String KEY_DEVICE_TYPE = "DeviceType";
     public static final String KEY_DEVICE_UID = "DeviceUid";
     public static final String KEY_DIMVALUE = "DimValue";
@@ -148,8 +148,8 @@ public class Keys {
     public static final String KEY_ORGANIZATION_DESCRIPTION = "Description";
     public static final String KEY_ORGANIZATION_IDENTIFICATION = "OrganizationIdentification";
     public static final String KEY_OSLP_RESULT = "OSLPResult";
-    public static final String KEY_OWNER = "Owner";
 
+    public static final String KEY_OWNER = "Owner";
     public static final String KEY_PAGE = "Page";
     public static final String KEY_PAGE_SIZE = "PageSize";
     public static final String KEY_PERIOD_TYPE = "PeriodType";
@@ -160,24 +160,24 @@ public class Keys {
     public static final String KEY_PROFILE_ENTRY_ID = "ProfileEntryId";
     public static final String KEY_PROFILE_ENTRY_TIME = "ProfileEntryTime";
     public static final String KEY_PROFILE_ENTRY_VALUE = "ProfileEntryValue";
-    public static final String KEY_PROFILE_ID = "ProfileId";
 
+    public static final String KEY_PROFILE_ID = "ProfileId";
     public static final String KEY_PROFILE_NODE = "ProfileNode";
     public static final String KEY_PROTOCOL = "Protocol";
-    public static final String KEY_PROTOCOL_INFO_ID = "ProtocolInfoId";
 
+    public static final String KEY_PROTOCOL_INFO_ID = "ProtocolInfoId";
     public static final String KEY_PROTOCOL_VERSION = "ProtocolVersion";
     public static final String KEY_PUBLIC_KEY = "PublicKey";
-    public static final String KEY_PUBLICKEYPRESENT = "PublicKeyPresent";
 
+    public static final String KEY_PUBLICKEYPRESENT = "PublicKeyPresent";
     public static final String KEY_RELAY_TYPE = "RelayType";
     public static final String KEY_RESULT = "Result";
     public static final String KEY_SETPOINT_END_TIME = "SetPointEndTime";
+
     public static final String KEY_SETPOINT_ID = "SetPointId";
-
     public static final String KEY_SETPOINT_NODE = "SetPointNode";
-    public static final String KEY_SETPOINT_START_TIME = "SetPointStartTime";
 
+    public static final String KEY_SETPOINT_START_TIME = "SetPointStartTime";
     public static final String KEY_SETPOINT_VALUE = "SetPointValue";
     public static final String KEY_SORT_DIR = "SortDir";
     public static final String KEY_SORTED_BY = "SortedBy";
@@ -186,13 +186,14 @@ public class Keys {
     public static final String KEY_SYSTEM_ID = "SystemId";
     public static final String KEY_SYSTEM_TYPE = "SystemType";
     public static final String KEY_TECHNICAL_INSTALLATION_DATE = "TechnicalInstallationDate";
-    public static final String KEY_TIME = "Time";
 
+    public static final String KEY_TIME = "Time";
     public static final String KEY_TRANSITION_TYPE = "TransitionType";
     public static final String KEY_USE_PAGE = "UsePage";
     public static final String KEY_USE_PAGES = "UsePages";
     public static final String KEY_USER_NAME = "UserName";
     public static final String KEY_VERSION = "Version";
+    public static final Object LAST_COMMUNCATION_TIME = "LastCommunicationTime";
     public static final String LOGIN_ATTEMPT_COUNT = "LoginAttemptCount";
     public static final String LONG_INTERVAL = "LongInterval";
     public static final String MANUFACTURER_ID = "ManufacturerId";
@@ -210,20 +211,20 @@ public class Keys {
     public static final String SCHEDULE_ACTIONTIME = "ActionTime";
     public static final String SCHEDULE_CURRENTPAGE = "CurrentPages";
     public static final String SCHEDULE_ENDDAY = "EndDay";
+
     public static final String SCHEDULE_LIGHTVALUES = "LightValues";
     public static final String SCHEDULE_PAGESIZE = "PageSize";
-
     public static final String SCHEDULE_SCHEDULEDTIME = "ScheduledTime";
     public static final String SCHEDULE_STARTDAY = "StartDay";
     public static final String SCHEDULE_TARIFFVALUES = "TariffValues";
     public static final String SCHEDULE_TIME = "Time";
     public static final String SCHEDULE_TOTALPAGES = "TotalPages";
+
     public static final String SCHEDULE_TRIGGERTYPE = "TriggerType";
     public static final String SCHEDULE_TRIGGERWINDOW = "TriggerWindow";
 
     public static final String SCHEDULE_WEEKDAY = "WeekDay";
     public static final String SEPARATOR_COMMA = ",";
-
     public static final String SEPARATOR_SEMICOLON = ";";
     public static final String SHORT_INTERVAL = "ShortInterval";
     public static final String START_TIME = "StartTime";

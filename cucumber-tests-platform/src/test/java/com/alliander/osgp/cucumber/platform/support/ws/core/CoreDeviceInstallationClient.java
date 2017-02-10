@@ -44,9 +44,7 @@ public class CoreDeviceInstallationClient extends BaseClient {
 
     public AddDeviceResponse addDevice(final AddDeviceRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(),
-                this.getUserName());
-        return (AddDeviceResponse) wst.marshalSendAndReceive(request);
+        return this.addDevice(request, "test-org");
     }
 
     public AddDeviceResponse addDevice(final AddDeviceRequest request, final String organizationIdentification)
@@ -63,13 +61,6 @@ public class CoreDeviceInstallationClient extends BaseClient {
         return (UpdateDeviceResponse) wst.marshalSendAndReceive(request);
     }
 
-    public StartDeviceTestAsyncResponse startDeviceTest(final StartDeviceTestRequest request)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(),
-                this.getUserName());
-        return (StartDeviceTestAsyncResponse) wst.marshalSendAndReceive(request);
-    }
-
     public FindRecentDevicesResponse findRecentDevices(final FindRecentDevicesRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(),
@@ -77,11 +68,23 @@ public class CoreDeviceInstallationClient extends BaseClient {
         return (FindRecentDevicesResponse) wst.marshalSendAndReceive(request);
     }
 
+    public StartDeviceTestAsyncResponse startDeviceTest(final StartDeviceTestRequest request)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        return this.startDeviceTest(request, "test-org");
+    }
+
+    public StartDeviceTestAsyncResponse startDeviceTest(final StartDeviceTestRequest request,
+            final String organizationIdentification)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
+        return (StartDeviceTestAsyncResponse) wst.marshalSendAndReceive(request);
+    }
+
     public StartDeviceTestResponse getStartDeviceTestResponse(final StartDeviceTestAsyncRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
-
         return (StartDeviceTestResponse) wst.marshalSendAndReceive(request);
     }
 

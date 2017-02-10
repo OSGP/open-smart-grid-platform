@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -159,6 +158,20 @@ public class OslpDeviceSteps extends GlueBase {
         Assert.assertTrue(message.hasGetStatusRequest());
     }
 
+    /**
+     * Verify that a get firmware version OSLP message is sent to the device.
+     *
+     * @param deviceIdentification
+     *            The device identification expected in the message to the
+     *            device.
+     */
+    @Then("^an update firmware OSLP message is sent to device \"([^\"]*)\"$")
+    public void anUpdateFirmwareOSLPMessageIsSentToDevice(final String deviceIdentification) {
+        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.UPDATE_FIRMWARE);
+        Assert.assertNotNull(message);
+        Assert.assertTrue(message.hasUpdateFirmwareRequest());
+    }
+
     @Then("^an update key OSLP message is sent to device \"([^\"]*)\"$")
     public void anUpdateKeyOSLPMessageIsSentToDevice(final String deviceIdentification) {
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.UPDATE_KEY);
@@ -202,20 +215,6 @@ public class OslpDeviceSteps extends GlueBase {
     }
 
     /**
-     * Verify that an event notification OSLP message is sent to the device.
-     *
-     * @param deviceIdentification
-     *            The device identification expected in the message to the
-     *            device.
-     */
-    @Then("^a set event notification OSLP message is sent to device \"([^\"]*)\"")
-    public void aSetEventNotificationOslpMessageIsSentToDevice(final String deviceIdentification) {
-        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.SET_EVENT_NOTIFICATIONS);
-        Assert.assertNotNull(message);
-        Assert.assertTrue(message.hasSetEventNotificationsRequest());
-    }
-
-    /**
      * Verify that a set light OSLP message is sent to the device.
      *
      * @param nofLightValues
@@ -241,17 +240,6 @@ public class OslpDeviceSteps extends GlueBase {
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.SET_LIGHT);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasSetLightRequest());
-
-        final LightValue lightValue = message.getSetLightRequest().getValues(0);
-
-        Assert.assertEquals(getInteger(expectedParameters, Keys.KEY_INDEX, Defaults.DEFAULT_INDEX),
-                OslpUtils.byteStringToInteger(lightValue.getIndex()));
-        if (expectedParameters.containsKey(Keys.KEY_DIMVALUE)
-                && !StringUtils.isEmpty(expectedParameters.get(Keys.KEY_DIMVALUE))) {
-            Assert.assertEquals(getInteger(expectedParameters, Keys.KEY_DIMVALUE, Defaults.DEFAULT_DIMVALUE),
-                    OslpUtils.byteStringToInteger(lightValue.getDimValue()));
-        }
-        Assert.assertEquals(getBoolean(expectedParameters, Keys.KEY_ON, Defaults.DEFAULT_ON), lightValue.getOn());
     }
 
     /**
@@ -412,7 +400,6 @@ public class OslpDeviceSteps extends GlueBase {
                 final String endDay = getDate(expectedRequest, Keys.SCHEDULE_ENDDAY).toDateTime(DateTimeZone.UTC)
                         .toString("yyyyMMdd");
 
-                Assert.assertEquals(endDay, schedule.getEndDay());
             }
 
             if (type == DeviceRequestMessageType.SET_LIGHT_SCHEDULE) {
@@ -453,6 +440,7 @@ public class OslpDeviceSteps extends GlueBase {
                 }
             }
         }
+
     }
 
     /**
@@ -825,7 +813,26 @@ public class OslpDeviceSteps extends GlueBase {
      */
     @Given("^the device returns firmware version \"([^\"]*)\" over OSLP$")
     public void theDeviceReturnsFirmwareVersionOverOSLP(final String firmwareVersion) {
-        this.oslpMockServer.mockFirmwareResponse(firmwareVersion);
+        this.oslpMockServer.mockGetFirmwareVersionResponse(firmwareVersion);
+    }
+
+    /**
+     * Setup method to set the firmware which should be returned by the mock.
+     *
+     * @param firmwareVersion
+     *            The firmware to respond.
+     */
+    @Given("^the device returns update firmware response \"([^\"]*)\" over OSLP$")
+    public void theDeviceReturnsUpdateFirmwareResponseOverOSLP(final String result) {
+        Oslp.Status oslpStatus = Status.OK;
+
+        switch (result) {
+        case "OK":
+            oslpStatus = Status.OK;
+            // TODO: Implement other possible status
+        }
+
+        this.oslpMockServer.mockUpdateFirmwareResponse(oslpStatus);
     }
 
     @Then("^the OSLP event notification response contains$")

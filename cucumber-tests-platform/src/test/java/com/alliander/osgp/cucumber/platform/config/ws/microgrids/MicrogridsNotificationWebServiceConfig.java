@@ -7,7 +7,6 @@
  */
 package com.alliander.osgp.cucumber.platform.config.ws.microgrids;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,9 +17,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.remoting.support.SimpleHttpServerFactoryBean;
+import org.springframework.ws.config.annotation.EnableWs;
+import org.springframework.ws.config.annotation.WsConfigurerAdapter;
 import org.springframework.ws.server.EndpointAdapter;
+import org.springframework.ws.server.EndpointInterceptor;
 import org.springframework.ws.server.EndpointMapping;
-import org.springframework.ws.server.SmartEndpointInterceptor;
 import org.springframework.ws.server.endpoint.adapter.DefaultMethodEndpointAdapter;
 import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadMethodProcessor;
 import org.springframework.ws.server.endpoint.adapter.method.MethodArgumentResolver;
@@ -28,17 +29,16 @@ import org.springframework.ws.server.endpoint.adapter.method.MethodReturnValueHa
 import org.springframework.ws.server.endpoint.mapping.PayloadRootAnnotationMethodEndpointMapping;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.soap.server.SoapMessageDispatcher;
-import org.springframework.ws.soap.server.endpoint.interceptor.PayloadRootSmartSoapEndpointInterceptor;
 import org.springframework.ws.transport.http.WebServiceMessageReceiverHttpHandler;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.AnnotationMethodArgumentResolver;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderEndpointInterceptor;
-import com.alliander.osgp.cucumber.platform.config.ws.BaseWebServiceConfig;
 import com.sun.net.httpserver.HttpHandler;
 
 @Configuration
-public class MicrogridsNotificationWebServiceConfig extends BaseWebServiceConfig {
+@EnableWs
+public class MicrogridsNotificationWebServiceConfig extends WsConfigurerAdapter {
 
     private static final String ORGANISATION_IDENTIFICATION_HEADER = "OrganisationIdentification";
 
@@ -50,19 +50,6 @@ public class MicrogridsNotificationWebServiceConfig extends BaseWebServiceConfig
 
     @Value("${web.service.notification.port}")
     private int notificationsPort;
-
-    @Bean
-    public SmartEndpointInterceptor addSmartEndpointInterceptor() {
-        try {
-            final PayloadRootSmartSoapEndpointInterceptor smartInterceptor = new PayloadRootSmartSoapEndpointInterceptor(
-                    organisationIdentificationInterceptor, "namespace1", null);
-
-            return smartInterceptor;
-        } catch (final IOException ioe) {
-
-        }
-        return null;
-    }
 
     @Bean
     public DefaultMethodEndpointAdapter defaultMethodEndpointAdapter() {
@@ -79,6 +66,12 @@ public class MicrogridsNotificationWebServiceConfig extends BaseWebServiceConfig
         defaultMethodEndpointAdapter.setMethodReturnValueHandlers(methodReturnValueHandlers);
 
         return defaultMethodEndpointAdapter;
+    }
+
+    @Override
+    public void addInterceptors(final List<EndpointInterceptor> interceptors) {
+        interceptors.add(new SoapHeaderEndpointInterceptor(ORGANISATION_IDENTIFICATION_HEADER,
+                ORGANISATION_IDENTIFICATION_HEADER));
     }
 
     @Bean
@@ -134,11 +127,4 @@ public class MicrogridsNotificationWebServiceConfig extends BaseWebServiceConfig
         return new MarshallingPayloadMethodProcessor(this.microgridsNotificationMarshaller(),
                 this.microgridsNotificationMarshaller());
     }
-
-    @Bean
-    public SoapHeaderEndpointInterceptor organisationIdentificationInterceptor() {
-        return new SoapHeaderEndpointInterceptor(ORGANISATION_IDENTIFICATION_HEADER,
-                ORGANISATION_IDENTIFICATION_HEADER);
-    }
-
 }

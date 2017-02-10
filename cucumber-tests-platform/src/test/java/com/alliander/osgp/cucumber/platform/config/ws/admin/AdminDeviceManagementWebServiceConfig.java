@@ -54,8 +54,8 @@ public class AdminDeviceManagementWebServiceConfig extends BaseWebServiceConfig 
     }
 
     /**
-     * Method for creating the Marshalling Payload Method Processor for
-     * Admin DeviceManagement.
+     * Method for creating the Marshalling Payload Method Processor for Admin
+     * DeviceManagement.
      *
      * @return MarshallingPayloadMethodProcessor
      */
