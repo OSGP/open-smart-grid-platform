@@ -43,8 +43,8 @@ public class DeviceModelSteps extends GlueBase {
      * @throws Throwable
      */
     @Given("^a device model")
-    public void aDeviceModel(final Map<String, String> settings) throws Throwable {
-        this.insertDeviceModel(settings);
+    public DeviceModel aDeviceModel(final Map<String, String> settings) throws Throwable {
+        return this.insertDeviceModel(settings);
     }
 
     /**
@@ -77,7 +77,7 @@ public class DeviceModelSteps extends GlueBase {
      * @param settings
      * @return
      */
-    public DeviceModel insertDeviceModel(Map<String, String> settings) {
+    public DeviceModel insertDeviceModel(final Map<String, String> settings) {
         // Get the given manufacturer (or the default).
         final Manufacturer manufacturer = this.manufacturerRepo
                 .findByName(getString(settings, "ManufacturerName", Defaults.DEFAULT_MANUFACTURER_NAME));

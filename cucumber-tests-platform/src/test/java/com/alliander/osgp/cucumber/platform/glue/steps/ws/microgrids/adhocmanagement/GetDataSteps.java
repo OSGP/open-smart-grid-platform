@@ -31,7 +31,6 @@ import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.Measureme
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.Profile;
 import com.alliander.osgp.cucumber.platform.GlueBase;
 import com.alliander.osgp.cucumber.platform.Keys;
-import com.alliander.osgp.cucumber.platform.config.CoreDeviceConfiguration;
 import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.helpers.SettingsHelper;
 import com.alliander.osgp.cucumber.platform.support.ws.microgrids.adhocmanagement.AdHocManagementClient;
@@ -42,9 +41,6 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 public class GetDataSteps extends GlueBase {
-
-    @Autowired
-    private CoreDeviceConfiguration configuration;
 
     /**
      * Delta value for which two measurement values are considered equal if

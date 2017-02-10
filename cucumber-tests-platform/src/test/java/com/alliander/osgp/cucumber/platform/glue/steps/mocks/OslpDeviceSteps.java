@@ -49,6 +49,8 @@ import com.alliander.osgp.oslp.Oslp.MeterType;
 import com.alliander.osgp.oslp.Oslp.RelayType;
 import com.alliander.osgp.oslp.Oslp.ResumeScheduleRequest;
 import com.alliander.osgp.oslp.Oslp.Schedule;
+import com.alliander.osgp.oslp.Oslp.SetConfigurationRequest;
+import com.alliander.osgp.oslp.Oslp.SetEventNotificationsRequest;
 import com.alliander.osgp.oslp.Oslp.SetScheduleRequest;
 import com.alliander.osgp.oslp.Oslp.SetTransitionRequest;
 import com.alliander.osgp.oslp.Oslp.Status;
@@ -205,6 +207,17 @@ public class OslpDeviceSteps extends GlueBase {
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.SET_CONFIGURATION);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasSetConfigurationRequest());
+
+        final SetConfigurationRequest request = message.getSetConfigurationRequest();
+    }
+
+    @Then("^a set event notification OSLP message is sent to device \"([^\"]*)\"$")
+    public void aSetEventNotificationOSLPMessageIsSentToDevice(final String arg1) throws Throwable {
+        final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.SET_EVENT_NOTIFICATIONS);
+        Assert.assertNotNull(message);
+        Assert.assertTrue(message.hasSetEventNotificationsRequest());
+
+        final SetEventNotificationsRequest request = message.getSetEventNotificationsRequest();
     }
 
     /**

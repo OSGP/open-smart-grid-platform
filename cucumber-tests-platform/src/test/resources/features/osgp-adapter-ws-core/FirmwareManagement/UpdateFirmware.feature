@@ -1,4 +1,4 @@
-Feature: FirmwareManagement GetFirmware
+Feature: FirmwareManagement update firmware
   As OSGP 
   I want to manage the firmware of a device
   In order to ...

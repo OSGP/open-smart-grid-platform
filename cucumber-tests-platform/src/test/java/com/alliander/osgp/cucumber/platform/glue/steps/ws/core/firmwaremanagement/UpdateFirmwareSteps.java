@@ -14,8 +14,6 @@ import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
 import java.util.Map;
 
 import org.junit.Assert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
@@ -26,11 +24,11 @@ import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.Firmware;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FirmwareModuleData;
 import com.alliander.osgp.cucumber.platform.Defaults;
 import com.alliander.osgp.cucumber.platform.Keys;
-import com.alliander.osgp.cucumber.platform.config.CoreDeviceConfiguration;
 import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
+import com.alliander.osgp.cucumber.platform.glue.steps.database.core.DeviceModelSteps;
 import com.alliander.osgp.cucumber.platform.glue.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.cucumber.platform.support.ws.core.CoreFirmwareManagementClient;
-import com.alliander.osgp.domain.core.repositories.DeviceRepository;
+import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.FirmwareRepository;
 
 import cucumber.api.java.en.Then;
@@ -40,13 +38,18 @@ import cucumber.api.java.en.When;
  * Class with all the firmware requests steps
  */
 public class UpdateFirmwareSteps {
-    @Autowired
-    private CoreDeviceConfiguration configuration;
 
     @Autowired
     private CoreFirmwareManagementClient client;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UpdateFirmwareSteps.class);
+    @Autowired
+    private DeviceModelRepository deviceModelRepository;
+
+    @Autowired
+    private DeviceModelSteps deviceModelSteps;
+
+    @Autowired
+    private FirmwareRepository firmwareRepo;
 
     /**
      * Sends a Update Firmware request to the platform for a given device
@@ -56,13 +59,6 @@ public class UpdateFirmwareSteps {
      *            The table with the request parameters.
      * @throws Throwable
      */
-
-    @Autowired
-    private FirmwareRepository firmwareRepo;
-
-    @Autowired
-    private DeviceRepository deviceRepo;
-
     @When("^receiving an update firmware request$")
     public void receivingAnUpdateFirmwareRequest(final Map<String, String> requestParameters) throws Throwable {
 
@@ -84,7 +80,8 @@ public class UpdateFirmwareSteps {
         }
     }
 
-    private Firmware createAndGetFirmware(final long firmwareId, final Map<String, String> requestParameters) {
+    private Firmware createAndGetFirmware(final long firmwareId, final Map<String, String> requestParameters)
+            throws Throwable {
         final Firmware firmware = new Firmware();
         firmware.setId((int) firmwareId);
         firmware.setFilename(getString(requestParameters, Keys.FIRMWARE_FILENAME, ""));
@@ -92,8 +89,9 @@ public class UpdateFirmwareSteps {
         firmware.setPushToNewDevices(
                 getBoolean(requestParameters, Keys.FIRMWARE_PUSH_TO_NEW_DEVICES, Defaults.FIRMWARE_PUSH_TO_NEW_DEVICE));
         firmware.setFirmwareModuleData(new FirmwareModuleData());
-        firmware.setManufacturer(getString(requestParameters, Keys.MANUFACTURER_NAME, "Test"));
-        firmware.setModelCode(getString(requestParameters, Keys.KEY_DEVICE_MODEL_MODELCODE, "TestModel"));
+        firmware.setManufacturer(getString(requestParameters, Keys.MANUFACTURER_NAME, Defaults.MANUFACTURER_NAME));
+        firmware.setModelCode(
+                getString(requestParameters, Keys.DEVICEMODEL_MODELCODE, Defaults.DEVICE_MODEL_MODEL_CODE));
         return firmware;
     }
 

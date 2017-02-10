@@ -37,7 +37,7 @@ public class Keys {
     public static final String DEVICEMODEL_DESCRIPTION = "DeviceModelDescription";
     public static final String DEVICEMODEL_FILESTORAGE = "DeviceModelFileStorage";
     public static final String DEVICEMODEL_METERED = "DeviceModelMetered";
-    public static final String DEVICEMODEL_MODELCODE = "DeviceModelCode";
+    public static final String DEVICEMODEL_MODELCODE = "ModelCode";
     public static final String EMAIL = "Email";
     public static final String END_TIME = "EndTime";
     public static final String FAILED_LOGIN_ATTEMP_TIME_STAMP = "FailedLoginAttemptTimeStamp";

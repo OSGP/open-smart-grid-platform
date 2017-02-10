@@ -120,6 +120,7 @@ public abstract class GenericResponseSteps extends GlueBase {
             final Object actual, final int counter) {
 
         final Pattern pattern = Pattern.compile("('.+\\d+:.+')", Pattern.CASE_INSENSITIVE);
+        @SuppressWarnings("unchecked")
         final String actualValue = ((List<String>) actual).get(counter);
         final Matcher matcher = pattern.matcher(actualValue);
         if (matcher.find()) {

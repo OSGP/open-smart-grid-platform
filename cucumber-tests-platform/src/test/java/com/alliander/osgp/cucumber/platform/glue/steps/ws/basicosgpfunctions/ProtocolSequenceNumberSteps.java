@@ -25,11 +25,8 @@ import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StartDeviceT
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StartDeviceTestResponse;
 import com.alliander.osgp.cucumber.platform.Defaults;
 import com.alliander.osgp.cucumber.platform.Keys;
-import com.alliander.osgp.cucumber.platform.config.CoreDeviceConfiguration;
 import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
-import com.alliander.osgp.cucumber.platform.glue.steps.mocks.OslpDeviceSteps;
 import com.alliander.osgp.cucumber.platform.glue.steps.ws.GenericResponseSteps;
-import com.alliander.osgp.cucumber.platform.glue.steps.ws.core.deviceinstallation.StartDeviceSteps;
 import com.alliander.osgp.cucumber.platform.support.ws.core.CoreDeviceInstallationClient;
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 
@@ -42,16 +39,7 @@ import cucumber.api.java.en.When;
 public class ProtocolSequenceNumberSteps {
 
     @Autowired
-    private StartDeviceSteps startDeviceTestSteps;
-
-    @Autowired
-    private OslpDeviceSteps oslpDeviceSteps;
-
-    @Autowired
     private CoreDeviceInstallationClient client;
-
-    @Autowired
-    private CoreDeviceConfiguration configuration;
 
     @When("^receiving a confirm request$")
     public void receivingAConfirmRequest(final Map<String, String> requestParameters) throws Throwable {

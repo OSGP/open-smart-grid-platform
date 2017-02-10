@@ -46,6 +46,9 @@ public class FirmwareSteps {
     @Autowired
     private FirmwareRepository firmwareRepo;
 
+    @Autowired
+    private DeviceModelSteps deviceModelSteps;
+
     /**
      * Generic method which adds a firmware using the settings.
      *
@@ -56,8 +59,10 @@ public class FirmwareSteps {
     @Given("^a firmware")
     public void aFirmware(final Map<String, String> settings) throws Throwable {
 
-        final DeviceModel deviceModel = this.deviceModelRepo
-                .findByModelCode(getString(settings, Keys.DEVICEMODEL_MODELCODE));
+        DeviceModel deviceModel = this.deviceModelRepo.findByModelCode(getString(settings, Keys.DEVICEMODEL_MODELCODE));
+        if (deviceModel == null) {
+            deviceModel = this.deviceModelSteps.aDeviceModel(settings);
+        }
 
         final FirmwareModuleData firmwareModuleData = new FirmwareModuleData(null, null, null, null, null);
 
