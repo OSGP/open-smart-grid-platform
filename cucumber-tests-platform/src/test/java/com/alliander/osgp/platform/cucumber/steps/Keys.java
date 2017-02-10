@@ -169,7 +169,7 @@ public class Keys {
     public static final String DEVICEFIRMWARE_INSTALLED_BY = "DevicefirmwareInstalledBy";
     public static final String DEVICEFIRMWARE_ACTIVE = "DevicefirmwareActive";
 
-    public static final String DEVICEMODEL_MODELCOE = "DeviceModelmodelCode";
+    public static final String DEVICEMODEL_MODELCODE = "DeviceModelmodelCode";
     public static final String DEVICEMODEL_DESCRIPTION = "DeviceModelDescription";
     public static final String DEVICEMODEL_FILESTORAGE = "DeviceModelFileStorage";
     public static final String DEVICEMODEL_METERED = "DeviceModelMetered";
@@ -224,4 +224,8 @@ public class Keys {
     public static final String ALLOWED = "Allowed";
 
     public static final String DELEGATE_FUNCTION_GROUP = "DelegateFunctionGroup";
+
+    public static final String CURRENT_SEQUENCE_NUMBER = "CurrentSequenceNumber";
+    public static final String SEQUENCE_WINDOW = "SequenceWindow";
+    public static final String NEW_SEQUENCE_NUMBER = "NewSequenceNumber";
 }

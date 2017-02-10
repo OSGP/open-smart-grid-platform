@@ -37,7 +37,7 @@ public class SsldSteps {
      * @return
      * @throws Throwable
      */
-    @Given("^a ssl device$")
+    @Given("^a ssld device$")
     public void aSsldDevice(final Map<String, String> settings) throws Throwable {
 
         // Set the required stuff

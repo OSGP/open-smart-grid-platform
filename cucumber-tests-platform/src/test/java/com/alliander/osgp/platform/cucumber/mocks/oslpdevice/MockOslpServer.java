@@ -65,6 +65,7 @@ import com.alliander.osgp.oslp.Oslp.SetTransitionResponse;
 import com.alliander.osgp.oslp.Oslp.SsldData;
 import com.alliander.osgp.oslp.Oslp.StartSelfTestResponse;
 import com.alliander.osgp.oslp.Oslp.StopSelfTestResponse;
+import com.alliander.osgp.oslp.Oslp.UpdateFirmwareResponse;
 import com.alliander.osgp.oslp.OslpDecoder;
 import com.alliander.osgp.oslp.OslpEncoder;
 import com.alliander.osgp.oslp.OslpEnvelope;
@@ -324,10 +325,15 @@ public class MockOslpServer {
                 .build());
     }
 
-    public void mockFirmwareResponse(final String fwVersion) {
+    public void mockGetFirmwareVersionResponse(final String fwVersion) {
         this.mockResponses.put(DeviceRequestMessageType.GET_FIRMWARE_VERSION, Oslp.Message.newBuilder()
                 .setGetFirmwareVersionResponse(GetFirmwareVersionResponse.newBuilder().setFirmwareVersion(fwVersion))
                 .build());
+    }
+
+    public void mockUpdateFirmwareResponse(final Oslp.Status status) {
+        this.mockResponses.put(DeviceRequestMessageType.UPDATE_FIRMWARE, Oslp.Message.newBuilder()
+                .setUpdateFirmwareResponse(UpdateFirmwareResponse.newBuilder().setStatus(status)).build());
     }
 
     public void mockSetLightResponse(final Oslp.Status status) {
