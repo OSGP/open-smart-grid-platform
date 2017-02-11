@@ -12,6 +12,7 @@ import static com.alliander.osgp.cucumber.platform.Defaults.SMART_METER_G;
 
 import java.util.Map;
 
+import org.junit.Assert;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +35,19 @@ import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
+<<<<<<< HEAD:cucumber-tests-platform-dlms/src/test/java/com/alliander/osgp/cucumber/platform/dlms/glue/steps/database/device/DlmsDeviceSteps.java
+=======
+import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
+import com.alliander.osgp.platform.cucumber.steps.database.core.DeviceSteps;
+import com.alliander.osgp.platform.dlms.cucumber.builders.entities.DeviceBuilder;
+import com.alliander.osgp.platform.dlms.cucumber.builders.entities.DlmsDeviceBuilder;
+import com.alliander.osgp.platform.dlms.cucumber.builders.entities.SmartMeterBuilder;
+import com.alliander.osgp.platform.dlms.cucumber.steps.Defaults;
+import com.alliander.osgp.platform.dlms.cucumber.steps.Keys;
+>>>>>>> 277872563974780fd35305d824e23ec4730bf9ae:cucumber-tests-platform-dlms/src/test/java/com/alliander/osgp/platform/dlms/cucumber/steps/database/device/DlmsDeviceSteps.java
 
 import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
 
 /**
  * DLMS device specific steps.
@@ -61,6 +73,9 @@ public class DlmsDeviceSteps {
     @Autowired
     private DeviceAuthorizationRepository deviceAuthorizationRepository;
 
+    @Autowired
+    private DeviceSteps deviceSteps;
+
     @Given("^a dlms device$")
     public void aDlmsDevice(final Map<String, String> inputSettings) throws Throwable {
 
@@ -70,6 +85,25 @@ public class DlmsDeviceSteps {
         this.createDeviceAuthorisationInCoreDatabase(device);
 
         this.createDlmsDeviceInProtocolAdapterDatabase(inputSettings);
+    }
+
+    /**
+     * Checks whether the dlms device exists in the dlms databaes and the core
+     * database.
+     *
+     * @param deviceIdentification
+     *            The deviceidentification
+     * @throws Throwable
+     */
+    @Then("^the dlms device with id \"([^\"]*)\" exists$")
+    public void theDlmsDeviceWithIdExists(final String deviceIdentification) throws Throwable {
+
+        // First validate whether the device exists in the dlms database.
+        final DlmsDevice device = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
+        Assert.assertNotNull(device);
+
+        // Now check whether the device exists in the core database.
+        this.deviceSteps.theDeviceWithIdExists(deviceIdentification);
     }
 
     private void setScenarioContextForDevice(final Map<String, String> inputSettings, final Device device) {
@@ -95,8 +129,8 @@ public class DlmsDeviceSteps {
         }
 
         if (inputSettings.containsKey(Keys.GATEWAY_DEVICE_IDENTIFICATION)) {
-            final Device gatewayDevice = this.deviceRepository.findByDeviceIdentification(inputSettings
-                    .get(Keys.GATEWAY_DEVICE_IDENTIFICATION));
+            final Device gatewayDevice = this.deviceRepository
+                    .findByDeviceIdentification(inputSettings.get(Keys.GATEWAY_DEVICE_IDENTIFICATION));
             device.updateGatewayDevice(gatewayDevice);
             device = this.deviceRepository.save(device);
         }
@@ -105,9 +139,15 @@ public class DlmsDeviceSteps {
 
     private void createDeviceAuthorisationInCoreDatabase(final Device device) {
         final Organisation organisation = this.organisationRepo
+<<<<<<< HEAD:cucumber-tests-platform-dlms/src/test/java/com/alliander/osgp/cucumber/platform/dlms/glue/steps/database/device/DlmsDeviceSteps.java
                 .findByOrganisationIdentification(com.alliander.osgp.cucumber.platform.Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
         final DeviceAuthorization deviceAuthorization = device
                 .addAuthorization(organisation, DeviceFunctionGroup.OWNER);
+=======
+                .findByOrganisationIdentification(Defaults.ORGANISATION_IDENTIFICATION);
+        final DeviceAuthorization deviceAuthorization = device.addAuthorization(organisation,
+                DeviceFunctionGroup.OWNER);
+>>>>>>> 277872563974780fd35305d824e23ec4730bf9ae:cucumber-tests-platform-dlms/src/test/java/com/alliander/osgp/platform/dlms/cucumber/steps/database/device/DlmsDeviceSteps.java
 
         this.deviceAuthorizationRepository.save(deviceAuthorization);
         this.deviceRepository.save(device);
