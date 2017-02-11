@@ -685,6 +685,12 @@ public class OslpDeviceSteps {
         this.oslpMockServer.mockResumeScheduleResponse(Enum.valueOf(Status.class, result));
     }
 
+    @Given("^the device returns a set configuration status over OSLP$")
+    public void theDeviceReturnsASetConfigurationStatusOverOSLP(final Map<String, String> settings) {
+        this.theDeviceReturnsASetConfigurationStatusWithStatusOverOSLP(
+                getEnum(settings, Keys.KEY_STATUS, Status.class).name());
+    }
+
     /**
      * Setup method to set the configuration status which should be returned by
      * the mock.
@@ -693,7 +699,7 @@ public class OslpDeviceSteps {
      *            The status to respond.
      */
     @Given("^the device returns a set configuration status \"([^\"]*)\" over OSLP$")
-    public void theDeviceReturnsASetConfigurationStatusOverOSLP(final String result) {
+    public void theDeviceReturnsASetConfigurationStatusWithStatusOverOSLP(final String result) {
         this.oslpMockServer.mockSetConfigurationResponse(Enum.valueOf(Status.class, result));
     }
 
