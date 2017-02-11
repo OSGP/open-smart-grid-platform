@@ -7,8 +7,7 @@ Feature: CoreConfigurationManagement SetConfiguration
   Scenario Outline: Set configuration of a device
     Given an oslp device
       | DeviceIdentification | TEST1024000000001 |
-    And the device returns a set configuration status over OSLP
-      | Status | OK |
+    And the device returns a set configuration status "OK" over OSLP
     When receiving a set configuration request
       | DeviceIdentification | TEST1024000000001   |
       | LightType            | <LightType>         |
@@ -28,22 +27,29 @@ Feature: CoreConfigurationManagement SetConfiguration
       | Result | OK |
 
     Examples: 
-      | LightType               | DcLights | DcMap   | RcType | RcMap | PreferredLinkType | MeterType | ShortInterval | LongInterval | IntervalType |
-      | RELAY                   |          |         |        |       |                   | AUX       |               |              |              |
-      | RELAY                   |          |         | TARIFF |   1,1 |                   |           |               |              |              |
-      | ONE_TO_TEN_VOLT         |          |         |        |       |                   |           |               |              |              |
-      | ONE_TO_TEN_VOLT_REVERSE |          |         |        |       |                   |           |               |              |              |
-      | DALI                    |        2 | 1,2;2,1 |        |       |                   |           |               |              |              |
-      |                         |          |         |        |       |                   |           |            30 |              |              |
-      |                         |          |         |        |       | GPRS              |           |               |              |              |
-      | DALI                    |          |         |        |       |                   |           |               |              |              |
-      | RELAY                   |          |         | LIGHT  |   1,1 |                   |           |               |              |              |
-      |                         |          |         |        |       |                   |           |               |              |              |
-      |                         |          |         |        |       |                   | P1        |               |              |              |
-      |                         |          |         |        |       |                   |           |               |           10 | DAYS         |
-      |                         |          |         |        |       |                   |           |               |           10 | MONTHS       |
-      | RELAY                   |          |         | LIGHT  |   1,1 | CDMA              | PULSE     |            15 |           30 | DAYS         |
-      | RELAY                   |          |         | LIGHT  |   1,1 | ETHERNET          | P1        |            15 |            1 | DAYS         |
+      | LightType               | DcLights | DcMap   | RcType          | RcMap | PreferredLinkType | MeterType | ShortInterval | LongInterval | IntervalType |
+      | RELAY                   |          |         |                 |       |                   | AUX       |               |              |              |
+      | RELAY                   |          |         | TARIFF          |   1,1 |                   |           |               |              |              |
+      | RELAY                   |          |         | TARIFF_REVERSED |   1,1 |                   | AUX       |               |              |              |
+      | ONE_TO_TEN_VOLT         |          |         |                 |       |                   |           |               |              |              |
+      | ONE_TO_TEN_VOLT_REVERSE |          |         |                 |       |                   |           |               |              |              |
+      | DALI                    |        2 | 1,2;2,1 |                 |       |                   |           |               |              |              |
+      |                         |          |         |                 |       |                   |           |            30 |              |              |
+      |                         |          |         |                 |       | GPRS              |           |               |              |              |
+      | RELAY                   |          |         |                 |       |                   |           |               |              |              |
+      | DALI                    |          |         |                 |       |                   |           |               |              |              |
+      | RELAY                   |          |         | LIGHT           |   1,1 |                   |           |               |              |              |
+      |                         |          |         |                 |       |                   |           |               |              |              |
+      |                         |          |         |                 |       |                   | P1        |               |              |              |
+      |                         |          |         |                 |       |                   |           |               |           10 | DAYS         |
+      |                         |          |         |                 |       |                   |           |               |           10 | MONTHS       |
+      | RELAY                   |          |         | LIGHT           |   1,1 | CDMA              | PULSE     |            15 |           30 | DAYS         |
+      | RELAY                   |          |         | LIGHT           |   1,1 | ETHERNET          | P1        |            15 |            1 | DAYS         |
+      | DALI                    |        2 |     1,1 |                 |       |                   |           |               |              |              |
+      | DALI                    |        1 | 1,1;2,2 |                 |       |                   |           |               |              |              |
+      |                         |        1 |         | LIGHT           |   1,1 |                   |           |               |              |              |
+      | ONE_TO_TEN_VOLT         |        1 |         |                 |       |                   |           |               |              |              |
+      |                         |          |         |                 |       |                   |           |               |           10 |              |
 
   Scenario: Set configuration of an unknown device
     When receiving a set configuration request

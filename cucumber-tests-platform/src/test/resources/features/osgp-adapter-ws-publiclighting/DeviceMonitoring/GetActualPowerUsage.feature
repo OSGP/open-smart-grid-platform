@@ -7,8 +7,7 @@ Feature: PublicLightingDeviceMonitoring Get Actual Power Usage
     Given an oslp device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SSLD              |
-    And the device returns a get actual power usage response over OSLP
-      | Status              | OK                    |
+    And the device returns a get actual power usage response "OK" over OSLP
       | RecordTime          | <RecordTime>          |
       | MeterType           | <MeterType>           |
       | TotalConsumedEnergy | <TotalConsumedEnergy> |
