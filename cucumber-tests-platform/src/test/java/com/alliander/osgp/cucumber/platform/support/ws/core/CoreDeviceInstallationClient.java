@@ -32,6 +32,9 @@ import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StopDeviceTe
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StopDeviceTestResponse;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.UpdateDeviceRequest;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.UpdateDeviceResponse;
+import com.alliander.osgp.cucumber.platform.Defaults;
+import com.alliander.osgp.cucumber.platform.Keys;
+import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.support.ws.BaseClient;
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
@@ -44,7 +47,12 @@ public class CoreDeviceInstallationClient extends BaseClient {
 
     public AddDeviceResponse addDevice(final AddDeviceRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        return this.addDevice(request, "test-org");
+        String organizationIdentification = (String) ScenarioContext.Current()
+                .get(Keys.KEY_ORGANIZATION_IDENTIFICATION);
+        if (organizationIdentification == null) {
+            organizationIdentification = Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION;
+        }
+        return this.addDevice(request, organizationIdentification);
     }
 
     public AddDeviceResponse addDevice(final AddDeviceRequest request, final String organizationIdentification)
