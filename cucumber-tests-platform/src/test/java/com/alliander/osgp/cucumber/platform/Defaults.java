@@ -167,4 +167,6 @@ public class Defaults {
     public static final String FIRMWARE_IDENTIFICATION = "F01";
     public static final Boolean FIRMWARE_PUSH_TO_NEW_DEVICE = false;
     public static final String DC_LIGHTS = "";
+    public static final int FIRMWARE_ID = 0;
+    public static final String FIRMWARE_DESCRIPTION = "Test Firmware";
 }

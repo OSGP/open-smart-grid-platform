@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.DeactivateDeviceRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.DeviceAuthorisation;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.DeviceFunctionGroup;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.FindDeviceAuthorisationsRequest;
@@ -57,10 +58,12 @@ import com.alliander.osgp.cucumber.platform.support.ws.core.CoreFirmwareManageme
 import com.alliander.osgp.cucumber.platform.support.ws.publiclighting.PublicLightingAdHocManagementClient;
 import com.alliander.osgp.cucumber.platform.support.ws.publiclighting.PublicLightingDeviceMonitoringClient;
 import com.alliander.osgp.cucumber.platform.support.ws.publiclighting.PublicLightingScheduleManagementClient;
+import com.alliander.osgp.cucumber.platform.support.ws.tariffswitching.TariffSwitchingAdHocManagementClient;
 import com.alliander.osgp.cucumber.platform.support.ws.tariffswitching.TariffSwitchingScheduleManagementClient;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 
+import cucumber.api.PendingException;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
@@ -97,6 +100,9 @@ public class AuthorizeDeviceFunctionsSteps {
     private PublicLightingScheduleManagementClient publicLightingScheduleManagementClient;
 
     @Autowired
+    private TariffSwitchingAdHocManagementClient tariffSwitchingAdHocManagementClient;
+
+    @Autowired
     private TariffSwitchingScheduleManagementClient tariffSwitchingScheduleManagementClient;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthorizeDeviceFunctionsSteps.class);
@@ -126,8 +132,17 @@ public class AuthorizeDeviceFunctionsSteps {
                 case GET_STATUS:
                     this.getStatus(requestParameters);
                     break;
+                case GET_LIGHT_STATUS:
+                    this.getLightStatus(requestParameters);
+                    break;
+                case GET_TARIFF_STATUS:
+                    this.getTariffStatus(requestParameters);
+                    break;
                 case GET_DEVICE_AUTHORIZATION:
                     this.getDeviceAuthorization(requestParameters);
+                    break;
+                case SET_DEVICE_AUTHORIZATION:
+                    this.setDeviceAuthorization(requestParameters);
                     break;
                 case SET_EVENT_NOTIFICATIONS:
                     this.setEventNotifications(requestParameters);
@@ -170,6 +185,9 @@ public class AuthorizeDeviceFunctionsSteps {
                     break;
                 case SET_TRANSITION:
                     this.setTransition(requestParameters);
+                    break;
+                case DEACTIVATE_DEVICE:
+                    this.deactivateDevice(requestParameters);
                     break;
                 default:
                     throw new OperationNotSupportedException(
@@ -399,5 +417,29 @@ public class AuthorizeDeviceFunctionsSteps {
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
         ScenarioContext.Current().put(Keys.RESPONSE, this.publicLightingAdHocManagementClient.setTransition(request));
+    }
+
+    private void deactivateDevice(final Map<String, String> requestParameters)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final DeactivateDeviceRequest request = new DeactivateDeviceRequest();
+        request.setDeviceIdentification(Defaults.DEFAULT_DEVICE_IDENTIFICATION);
+        ScenarioContext.Current().put(Keys.RESPONSE, this.adminDeviceManagementClient.deactivateDevice(request));
+    }
+
+    private void setDeviceAuthorization(final Map<String, String> requestParameters) {
+        throw new PendingException();
+    }
+
+    private void getTariffStatus(final Map<String, String> requestParameters) throws WebServiceSecurityException {
+        final com.alliander.osgp.adapter.ws.schema.tariffswitching.adhocmanagement.GetStatusRequest request = new com.alliander.osgp.adapter.ws.schema.tariffswitching.adhocmanagement.GetStatusRequest();
+        request.setDeviceIdentification(Defaults.DEFAULT_DEVICE_IDENTIFICATION);
+        ScenarioContext.Current().put(Keys.RESPONSE, this.tariffSwitchingAdHocManagementClient.getStatus(request));
+    }
+
+    private void getLightStatus(final Map<String, String> requestParameters)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final GetStatusRequest request = new GetStatusRequest();
+        request.setDeviceIdentification(Defaults.DEFAULT_DEVICE_IDENTIFICATION);
+        ScenarioContext.Current().put(Keys.RESPONSE, this.publicLightingAdHocManagementClient.getStatus(request));
     }
 }

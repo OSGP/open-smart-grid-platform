@@ -14,12 +14,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.AddDeviceModelRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.AddFirmwareRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.AddFirmwareResponse;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.ChangeDeviceModelRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.ChangeDeviceModelResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.ChangeFirmwareRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.ChangeFirmwareResponse;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllDeviceModelsRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllDeviceModelsResponse;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindFirmwareRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionResponse;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.RemoveDeviceModelRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.RemoveDeviceModelResponse;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.RemoveFirmwareRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.RemoveFirmwareResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareRequest;
@@ -67,5 +79,52 @@ public class CoreFirmwareManagementClient extends BaseClient {
         final WebServiceTemplate wst = this.coreFirmwareManagementWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
         return (ChangeFirmwareResponse) wst.marshalSendAndReceive(request);
+    }
+
+    public RemoveFirmwareResponse removeFirmware(final RemoveFirmwareRequest request)
+            throws WebServiceSecurityException {
+        final WebServiceTemplate wst = this.coreFirmwareManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
+        return (RemoveFirmwareResponse) wst.marshalSendAndReceive(request);
+    }
+
+    public AddFirmwareResponse addFirmware(final AddFirmwareRequest request) throws WebServiceSecurityException {
+        final WebServiceTemplate wst = this.coreFirmwareManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
+        return (AddFirmwareResponse) wst.marshalSendAndReceive(request);
+    }
+
+    public ChangeDeviceModelResponse changeDeviceModel(final ChangeDeviceModelRequest request)
+            throws WebServiceSecurityException {
+        final WebServiceTemplate wst = this.coreFirmwareManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
+        return (ChangeDeviceModelResponse) wst.marshalSendAndReceive(request);
+    }
+
+    public RemoveDeviceModelResponse removeDeviceModel(final RemoveDeviceModelRequest request)
+            throws WebServiceSecurityException {
+        final WebServiceTemplate wst = this.coreFirmwareManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
+        return (RemoveDeviceModelResponse) wst.marshalSendAndReceive(request);
+    }
+
+    public FindAllDeviceModelsResponse findAllDeviceModels(final FindAllDeviceModelsRequest request)
+            throws WebServiceSecurityException {
+        final WebServiceTemplate wst = this.coreFirmwareManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
+        return (FindAllDeviceModelsResponse) wst.marshalSendAndReceive(request);
+    }
+
+    public AddDeviceModelRequest addDeviceModel(final AddDeviceModelRequest request)
+            throws WebServiceSecurityException {
+        final WebServiceTemplate wst = this.coreFirmwareManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
+        return (AddDeviceModelRequest) wst.marshalSendAndReceive(request);
+    }
+
+    public FindFirmwareRequest findFirmware(final FindFirmwareRequest request) throws WebServiceSecurityException {
+        final WebServiceTemplate wst = this.coreFirmwareManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
+        return (FindFirmwareRequest) wst.marshalSendAndReceive(request);
     }
 }

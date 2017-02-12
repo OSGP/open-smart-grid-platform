@@ -30,6 +30,8 @@ import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.FindDevicesWh
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.FindDevicesWhichHaveNoOwnerResponse;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.FindMessageLogsRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.FindMessageLogsResponse;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.GetProtocolInfosRequest;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.GetProtocolInfosResponse;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.RemoveDeviceRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.RemoveDeviceResponse;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.RemoveOrganisationRequest;
@@ -40,10 +42,17 @@ import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.SetOwnerReque
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.SetOwnerResponse;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.UpdateDeviceAuthorisationsRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.UpdateDeviceAuthorisationsResponse;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.UpdateDeviceProtocolRequest;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.UpdateDeviceProtocolResponse;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.UpdateKeyRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.UpdateKeyResponse;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindAllOrganisationsRequest;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindAllOrganisationsResponse;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.AddManufacturerRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.ChangeManufacturerRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllManufacturersRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllManufacturersResponse;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.RemoveManufacturerRequest;
 import com.alliander.osgp.cucumber.platform.Defaults;
 import com.alliander.osgp.cucumber.platform.support.ws.BaseClient;
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
@@ -163,5 +172,47 @@ public class AdminDeviceManagementClient extends BaseClient {
         final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
         return (SetOwnerResponse) wst.marshalSendAndReceive(request);
+    }
+
+    public UpdateDeviceProtocolResponse updateDeviceProtocol(final UpdateDeviceProtocolRequest request)
+            throws WebServiceSecurityException {
+        final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
+        return (UpdateDeviceProtocolResponse) wst.marshalSendAndReceive(request);
+    }
+
+    public GetProtocolInfosResponse getProtocolInfos(final GetProtocolInfosRequest request)
+            throws WebServiceSecurityException {
+        final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
+        return (GetProtocolInfosResponse) wst.marshalSendAndReceive(request);
+    }
+
+    public FindAllManufacturersResponse findAllManufacturers(final FindAllManufacturersRequest request)
+            throws WebServiceSecurityException {
+        final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
+        return (FindAllManufacturersResponse) wst.marshalSendAndReceive(request);
+    }
+
+    public AddManufacturerRequest addManufacturer(final AddManufacturerRequest request)
+            throws WebServiceSecurityException {
+        final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
+        return (AddManufacturerRequest) wst.marshalSendAndReceive(request);
+    }
+
+    public RemoveManufacturerRequest removeManufacturer(final RemoveManufacturerRequest request)
+            throws WebServiceSecurityException {
+        final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
+        return (RemoveManufacturerRequest) wst.marshalSendAndReceive(request);
+    }
+
+    public ChangeManufacturerRequest changeManufacturer(final ChangeManufacturerRequest request)
+            throws WebServiceSecurityException {
+        final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
+        return (ChangeManufacturerRequest) wst.marshalSendAndReceive(request);
     }
 }
