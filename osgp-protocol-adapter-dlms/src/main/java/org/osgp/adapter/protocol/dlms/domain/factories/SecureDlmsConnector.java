@@ -21,27 +21,32 @@ import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
-abstract public class SecureDlmsConnector extends Lls0Connector {
-    
+public abstract class SecureDlmsConnector extends Lls0Connector {
+
     public SecureDlmsConnector(int responseTimeout, int logicalDeviceAddress, int clientAccessPoint) {
         super(responseTimeout, logicalDeviceAddress, clientAccessPoint);
     }
 
     /**
-     * Set the correct security attributes on the tcpConnectionBuilder. 
+     * Set the correct security attributes on the tcpConnectionBuilder.
      * 
-     * @param device The device to connect with. 
-     * @param tcpConnectionBuilder The connection builder instance. 
+     * @param device
+     *            The device to connect with.
+     * @param tcpConnectionBuilder
+     *            The connection builder instance.
      * @throws TechnicalException
      */
-    abstract protected void setSecurity(final DlmsDevice device, final TcpConnectionBuilder tcpConnectionBuilder) throws TechnicalException;
-    
+    protected abstract void setSecurity(final DlmsDevice device, final TcpConnectionBuilder tcpConnectionBuilder)
+            throws TechnicalException;
+
     /**
      * Create a connection with the device.
      *
      *
-     * @param device The device to connect with.
-     * @param dlmsMessageListener Listener to set on the connection. 
+     * @param device
+     *            The device to connect with.
+     * @param dlmsMessageListener
+     *            Listener to set on the connection.
      * @return The connection.
      * @throws IOException
      *             When there are problems in connecting to or communicating
@@ -73,13 +78,15 @@ abstract public class SecureDlmsConnector extends Lls0Connector {
 
         return tcpConnectionBuilder.build();
     }
-    
+
     /**
      * Get the valid securityKey of a given type for the device.
      * 
-     * @param device The device.
-     * @param securityKeyType The type of key to return.
-     * @return SecurityKey 
+     * @param device
+     *            The device.
+     * @param securityKeyType
+     *            The type of key to return.
+     * @return SecurityKey
      * @throws TechnicalException
      *             when there is no valid key of the given type.
      */
