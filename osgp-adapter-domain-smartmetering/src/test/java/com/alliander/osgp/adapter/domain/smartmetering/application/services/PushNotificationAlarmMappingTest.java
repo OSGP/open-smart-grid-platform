@@ -13,10 +13,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.EnumSet;
-
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
 
 import org.junit.Test;
 
@@ -25,9 +23,14 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushNotificatio
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushNotificationAlarmDto;
 
+import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.impl.DefaultMapperFactory;
+
 public class PushNotificationAlarmMappingTest {
 
-    private MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
+    private final MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
+
+    private final byte[] bytes = "some bytes".getBytes();
 
     // Test if mapping a PushNotificationAlarm object succeeds with null
     // variables
@@ -36,16 +39,18 @@ public class PushNotificationAlarmMappingTest {
         // build test data
         final String deviceId = null;
         final EnumSet<AlarmTypeDto> alarms = null;
-        final PushNotificationAlarmDto pushNotificationAlarmDto = new PushNotificationAlarmDto(deviceId, alarms);
+        final PushNotificationAlarmDto pushNotificationAlarmDto = new PushNotificationAlarmDto(deviceId, alarms,
+                this.bytes);
         // actual mapping
-        final PushNotificationAlarm pushNotificationAlarm = this.mapperFactory.getMapperFacade().map(
-                pushNotificationAlarmDto, PushNotificationAlarm.class);
+        final PushNotificationAlarm pushNotificationAlarm = this.mapperFactory.getMapperFacade()
+                .map(pushNotificationAlarmDto, PushNotificationAlarm.class);
         // test mapping
         assertNotNull(pushNotificationAlarm);
         assertNull(pushNotificationAlarm.getDeviceIdentification());
         // the constructor creates an empty EnumSet when passed a null value.
         assertTrue(pushNotificationAlarmDto.getAlarms().isEmpty());
         assertTrue(pushNotificationAlarm.getAlarms().isEmpty());
+        assertTrue(Arrays.equals(pushNotificationAlarm.getBytes(), this.bytes));
     }
 
     // Test if mapping a PushNotificationAlarm object succeeds when the EnumSet
@@ -55,14 +60,16 @@ public class PushNotificationAlarmMappingTest {
         // build test data
         final String deviceId = "device1";
         final EnumSet<AlarmTypeDto> alarms = EnumSet.noneOf(AlarmTypeDto.class);
-        final PushNotificationAlarmDto pushNotificationAlarmDto = new PushNotificationAlarmDto(deviceId, alarms);
+        final PushNotificationAlarmDto pushNotificationAlarmDto = new PushNotificationAlarmDto(deviceId, alarms,
+                this.bytes);
         // actual mapping
-        final PushNotificationAlarm pushNotificationAlarm = this.mapperFactory.getMapperFacade().map(
-                pushNotificationAlarmDto, PushNotificationAlarm.class);
+        final PushNotificationAlarm pushNotificationAlarm = this.mapperFactory.getMapperFacade()
+                .map(pushNotificationAlarmDto, PushNotificationAlarm.class);
         // test mapping
         assertNotNull(pushNotificationAlarm);
         assertEquals(deviceId, pushNotificationAlarm.getDeviceIdentification());
         assertTrue(pushNotificationAlarm.getAlarms().isEmpty());
+        assertTrue(Arrays.equals(pushNotificationAlarm.getBytes(), this.bytes));
     }
 
     // Test if mapping a PushNotificationAlarm object succeeds when the EnumSet
@@ -72,14 +79,16 @@ public class PushNotificationAlarmMappingTest {
         // build test data
         final String deviceId = "device1";
         final EnumSet<AlarmTypeDto> alarms = EnumSet.of(AlarmTypeDto.CLOCK_INVALID);
-        final PushNotificationAlarmDto pushNotificationAlarmDto = new PushNotificationAlarmDto(deviceId, alarms);
+        final PushNotificationAlarmDto pushNotificationAlarmDto = new PushNotificationAlarmDto(deviceId, alarms,
+                this.bytes);
         // actual mapping
-        final PushNotificationAlarm pushNotificationAlarm = this.mapperFactory.getMapperFacade().map(
-                pushNotificationAlarmDto, PushNotificationAlarm.class);
+        final PushNotificationAlarm pushNotificationAlarm = this.mapperFactory.getMapperFacade()
+                .map(pushNotificationAlarmDto, PushNotificationAlarm.class);
         // test mapping
         assertNotNull(pushNotificationAlarm);
         assertEquals(deviceId, pushNotificationAlarm.getDeviceIdentification());
         assertEquals(alarms.size(), pushNotificationAlarm.getAlarms().size());
         assertTrue(pushNotificationAlarm.getAlarms().contains(AlarmType.CLOCK_INVALID));
+        assertTrue(Arrays.equals(pushNotificationAlarm.getBytes(), this.bytes));
     }
 }

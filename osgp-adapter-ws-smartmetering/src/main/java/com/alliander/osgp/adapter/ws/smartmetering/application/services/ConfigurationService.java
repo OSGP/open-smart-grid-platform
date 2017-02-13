@@ -162,7 +162,7 @@ public class ConfigurationService {
      *             is thrown when the correlationId cannot be found in the
      *             database.
      */
-    public MeterResponseData dequeueGetFirmwareResponse(final String correlationUid) throws OsgpException {
+    public MeterResponseData dequeueResponse(final String correlationUid) throws OsgpException {
         return this.meterResponseDataService.dequeue(correlationUid);
     }
 
