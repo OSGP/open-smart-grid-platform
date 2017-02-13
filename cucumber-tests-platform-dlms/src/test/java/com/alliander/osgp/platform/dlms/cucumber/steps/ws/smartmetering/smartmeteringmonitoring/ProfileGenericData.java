@@ -14,6 +14,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Map;
 
 import org.joda.time.DateTime;
+import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ObisCodeValues;
@@ -39,9 +40,9 @@ public class ProfileGenericData extends SmartMeteringStepsBase {
     @When("^the get profile generic data request is received$")
     public void theGetProfileGenericDataRequestIsReceived(final Map<String, String> settings) throws Throwable {
         ProfileGenericDataRequest request = new ProfileGenericDataRequestBuilder()
-                .withDeviceidentification(getString(settings, "DeviceIdentification", "TEST1024000000001"))
-                .withObisCode(this.fillObisCode(settings)).withBeginDate(this.fillDate(settings, "beginDate"))
-                .withEndDate(this.fillDate(settings, "endDate")).build();
+        .withDeviceidentification(getString(settings, "DeviceIdentification", "TEST1024000000001"))
+        .withObisCode(this.fillObisCode(settings)).withBeginDate(this.fillDate(settings, "beginDate"))
+        .withEndDate(this.fillDate(settings, "endDate")).build();
 
         ProfileGenericDataAsyncResponse asyncResponse = this.client.requestProfileGenericData(request);
         assertTrue(asyncResponse != null);
@@ -51,9 +52,11 @@ public class ProfileGenericData extends SmartMeteringStepsBase {
     @Then("^the profile generic data result should be returned$")
     public void theProfileGenericDataResultShouldBeReturned(final Map<String, String> settings) throws Throwable {
         ProfileGenericDataAsyncRequest request = (ProfileGenericDataAsyncRequest) new ProfileGenericDataAsyncRequestBuilder()
-                .fromContext().build();
+        .fromContext().build();
+        this.sleep(3000L);
         ProfileGenericDataResponse response = this.client.getProfileGenericDataResponse(request);
-        assertTrue(response != null);
+        assertTrue(response != null && !response.getCaptureObjects().isEmpty()
+                && !response.getProfileEntries().isEmpty());
     }
 
     private ObisCodeValues fillObisCode(final Map<String, String> settings) {
@@ -64,4 +67,11 @@ public class ProfileGenericData extends SmartMeteringStepsBase {
         return getDate(settings, key, new DateTime());
     }
 
+    private void sleep(final long wait) {
+        try {
+            Thread.sleep(wait);
+        } catch (InterruptedException e) {
+            Assert.fail("response for ProfileGenericData was interupted");
+        }
+    }
 }

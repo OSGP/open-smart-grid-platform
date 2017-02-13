@@ -60,7 +60,6 @@ Feature: SmartMetering Monitoring
       | DeviceIdentification | E9998000014123414 |
     Then the response "Device E9998000014123414 is not active in the platform" will be returned
 
-@TEST
   Scenario: Get the profile generic data from a device
     When the get profile generic data request is received
       | DeviceIdentification | TEST1024000000001 |
@@ -70,7 +69,7 @@ Feature: SmartMetering Monitoring
       | ObisCodeD            |                 1 |
       | ObisCodeE            |                 0 |
       | ObisCodeF            |               255 |
-      | beginDate						| 2017-01-01 |
+      | beginDate						| 2015-01-01 |
       | endDate							| 2017-01-10 |
     Then the profile generic data result should be returned
       | DeviceIdentification | TEST1024000000001 |
