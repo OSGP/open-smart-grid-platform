@@ -9,6 +9,7 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.endpoints;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -813,7 +814,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
                 final PushNotificationAlarm p = (PushNotificationAlarm) meterResponseData.getMessageData();
 
                 response.setDecodedMessage(p.toString());
-                response.setEncodedMessage(p.getBytes().toString());
+                response.setEncodedMessage(Arrays.toString(p.getBytes()));
 
                 final Set<AlarmType> alarmSet = p.getAlarms();
                 for (final AlarmType alarmType : alarmSet) {
