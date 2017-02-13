@@ -67,10 +67,10 @@ public class DlmsChannelHandlerServer extends DlmsChannelHandler {
         this.logMessage(message);
 
         final PushNotificationAlarmDto pushNotificationAlarm = new PushNotificationAlarmDto(deviceIdentification,
-                message.getAlarms());
+                message.getAlarms(), message.toByteArray());
 
-        final RequestMessage requestMessage = new RequestMessage(correlationId, "no-organisation",
-                deviceIdentification, ipAddress, pushNotificationAlarm);
+        final RequestMessage requestMessage = new RequestMessage(correlationId, "no-organisation", deviceIdentification,
+                ipAddress, pushNotificationAlarm);
 
         LOGGER.info("Sending push notification alarm to OSGP with correlation ID: " + correlationId);
         this.osgpRequestMessageSender.send(requestMessage, DeviceFunctionDto.PUSH_NOTIFICATION_ALARM.name());
@@ -82,8 +82,8 @@ public class DlmsChannelHandlerServer extends DlmsChannelHandler {
 
         final PushNotificationSmsDto pushNotificationSms = new PushNotificationSmsDto(deviceIdentification, ipAddress);
 
-        final RequestMessage requestMessage = new RequestMessage(correlationId, "no-organisation",
-                deviceIdentification, ipAddress, pushNotificationSms);
+        final RequestMessage requestMessage = new RequestMessage(correlationId, "no-organisation", deviceIdentification,
+                ipAddress, pushNotificationSms);
 
         LOGGER.info("Sending push notification sms wakeup to OSGP with correlation ID: " + correlationId);
         this.osgpRequestMessageSender.send(requestMessage, DeviceFunctionDto.PUSH_NOTIFICATION_SMS.name());
