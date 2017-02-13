@@ -24,6 +24,7 @@ import com.alliander.osgp.cucumber.platform.dlms.Keys;
 import com.alliander.osgp.cucumber.platform.dlms.builders.entities.DeviceBuilder;
 import com.alliander.osgp.cucumber.platform.dlms.builders.entities.DlmsDeviceBuilder;
 import com.alliander.osgp.cucumber.platform.dlms.builders.entities.SmartMeterBuilder;
+import com.alliander.osgp.cucumber.platform.glue.steps.database.core.DeviceSteps;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.Organisation;
@@ -35,16 +36,6 @@ import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
-<<<<<<< HEAD:cucumber-tests-platform-dlms/src/test/java/com/alliander/osgp/cucumber/platform/dlms/glue/steps/database/device/DlmsDeviceSteps.java
-=======
-import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
-import com.alliander.osgp.platform.cucumber.steps.database.core.DeviceSteps;
-import com.alliander.osgp.platform.dlms.cucumber.builders.entities.DeviceBuilder;
-import com.alliander.osgp.platform.dlms.cucumber.builders.entities.DlmsDeviceBuilder;
-import com.alliander.osgp.platform.dlms.cucumber.builders.entities.SmartMeterBuilder;
-import com.alliander.osgp.platform.dlms.cucumber.steps.Defaults;
-import com.alliander.osgp.platform.dlms.cucumber.steps.Keys;
->>>>>>> 277872563974780fd35305d824e23ec4730bf9ae:cucumber-tests-platform-dlms/src/test/java/com/alliander/osgp/platform/dlms/cucumber/steps/database/device/DlmsDeviceSteps.java
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -138,16 +129,10 @@ public class DlmsDeviceSteps {
     }
 
     private void createDeviceAuthorisationInCoreDatabase(final Device device) {
-        final Organisation organisation = this.organisationRepo
-<<<<<<< HEAD:cucumber-tests-platform-dlms/src/test/java/com/alliander/osgp/cucumber/platform/dlms/glue/steps/database/device/DlmsDeviceSteps.java
-                .findByOrganisationIdentification(com.alliander.osgp.cucumber.platform.Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
-        final DeviceAuthorization deviceAuthorization = device
-                .addAuthorization(organisation, DeviceFunctionGroup.OWNER);
-=======
-                .findByOrganisationIdentification(Defaults.ORGANISATION_IDENTIFICATION);
+        final Organisation organisation = this.organisationRepo.findByOrganisationIdentification(
+                com.alliander.osgp.cucumber.platform.Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
         final DeviceAuthorization deviceAuthorization = device.addAuthorization(organisation,
                 DeviceFunctionGroup.OWNER);
->>>>>>> 277872563974780fd35305d824e23ec4730bf9ae:cucumber-tests-platform-dlms/src/test/java/com/alliander/osgp/platform/dlms/cucumber/steps/database/device/DlmsDeviceSteps.java
 
         this.deviceAuthorizationRepository.save(deviceAuthorization);
         this.deviceRepository.save(device);
