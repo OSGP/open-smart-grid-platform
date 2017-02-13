@@ -27,9 +27,9 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     private boolean hls3active = Defaults.HLS3ACTIVE;
     private boolean hls4active = Defaults.HLS4ACTIVE;
     private boolean hls5active = Defaults.HLS5ACTIVE;
-    private boolean lls1active = Defaults.LLS1ACTIVE;
-    private boolean usesn = Defaults.USE_SN;
-    private boolean usehdlc = Defaults.USE_HDLC;
+    private boolean lls1Active = Defaults.LLS1_ACTIVE;
+    private boolean useSn = Defaults.USE_SN;
+    private boolean useHdlc = Defaults.USE_HDLC;
     private Integer challengeLength = Defaults.CHALLENGE_LENGTH;
     private boolean withListSupported = Defaults.WITH_LIST_SUPPORTED;
     private boolean selectiveAccessSupported = Defaults.SELECTIVE_ACCESS_SUPPORTED;
@@ -92,18 +92,18 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
         return this;
     }
 
-    public DlmsDeviceBuilder setLls1Active(final boolean lls1active) {
-        this.lls1active = lls1active;
+    public DlmsDeviceBuilder setLls1Active(final boolean lls1Active) {
+        this.lls1Active = lls1Active;
         return this;
     }
 
-    public DlmsDeviceBuilder setUsesn(final boolean usesn) {
-        this.usesn = usesn;
+    public DlmsDeviceBuilder setUseSn(final boolean useSn) {
+        this.useSn = useSn;
         return this;
     }
 
-    public DlmsDeviceBuilder setUsehdlc(final boolean usehdlc) {
-        this.usehdlc = usehdlc;
+    public DlmsDeviceBuilder setUseHdlc(final boolean useHdlc) {
+        this.useHdlc = useHdlc;
         return this;
     }
 
@@ -242,10 +242,10 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
             this.setLls1Active(Boolean.parseBoolean(inputSettings.get(Keys.LLS1ACTIVE)));
         }
         if (inputSettings.containsKey(Keys.USE_HDLC)) {
-            this.setUsehdlc(Boolean.parseBoolean(inputSettings.get(Keys.USE_HDLC)));
+            this.setUseHdlc(Boolean.parseBoolean(inputSettings.get(Keys.USE_HDLC)));
         }
         if (inputSettings.containsKey(Keys.USE_SN)) {
-            this.setUsesn(Boolean.parseBoolean(inputSettings.get(Keys.USE_SN)));
+            this.setUseSn(Boolean.parseBoolean(inputSettings.get(Keys.USE_SN)));
         }
         if (inputSettings.containsKey(Keys.CHALLENGE_LENGTH)) {
             this.setChallengeLength(Integer.parseInt(inputSettings.get(Keys.CHALLENGE_LENGTH)));
@@ -286,9 +286,9 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
         dlmsDevice.setHls3Active(this.hls3active);
         dlmsDevice.setHls4Active(this.hls4active);
         dlmsDevice.setHls5Active(this.hls5active);
-        dlmsDevice.setLls1Active(this.lls1active);
-        dlmsDevice.setUseHdlc(this.usehdlc);
-        dlmsDevice.setUseSn(this.usesn);
+        dlmsDevice.setLls1Active(this.lls1Active);
+        dlmsDevice.setUseHdlc(this.useHdlc);
+        dlmsDevice.setUseSn(this.useSn);
         dlmsDevice.setChallengeLength(this.challengeLength);
         dlmsDevice.setWithListSupported(this.withListSupported);
         dlmsDevice.setSelectiveAccessSupported(this.selectiveAccessSupported);

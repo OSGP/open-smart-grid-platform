@@ -26,7 +26,7 @@ public class Defaults {
     public static final boolean HLS3ACTIVE = false;
     public static final boolean HLS4ACTIVE = false;
     public static final boolean HLS5ACTIVE = true;
-    public static final boolean LLS1ACTIVE = false;
+    public static final boolean LLS1_ACTIVE = false;
     public static final boolean USE_HDLC = false;
     public static final boolean USE_SN = false;
     public static final Integer CHALLENGE_LENGTH = null;
