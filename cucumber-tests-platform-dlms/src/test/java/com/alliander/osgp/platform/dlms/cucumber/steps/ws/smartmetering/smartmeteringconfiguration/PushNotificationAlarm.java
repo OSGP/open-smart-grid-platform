@@ -29,8 +29,8 @@ public class PushNotificationAlarm {
     @Autowired
     private ServiceEndpoint serviceEndpoint;
 
-    @When("^an alarm notification is received from a known device$")
-    public void anAlarmNotificationIsReceivedFromAKnownDevice(final Map<String, String> settings) throws Throwable {
+    @When("^an alarm is received from a known device$")
+    public void anAlarmIsReceivedFromAKnownDevice(final Map<String, String> settings) throws Throwable {
         try {
             final String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION,
                     Defaults.DEFAULT_DEVICE_IDENTIFICATION);
