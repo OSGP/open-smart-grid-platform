@@ -7,12 +7,13 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
 
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.ConfigurableMapper;
-
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.FirmwareVersionConverter;
+import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.GetAttributeValuesResponseConverter;
+
+import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.impl.ConfigurableMapper;
 
 @Component(value = "configurationMapper")
 public class ConfigurationMapper extends ConfigurableMapper {
@@ -25,5 +26,6 @@ public class ConfigurationMapper extends ConfigurableMapper {
         mapperFactory.getConverterFactory().registerConverter(new CosemDateTimeConverter(this));
         mapperFactory.getConverterFactory().registerConverter(new AdministrativeStatusResponseConverter());
         mapperFactory.getConverterFactory().registerConverter(new FirmwareVersionConverter());
+        mapperFactory.getConverterFactory().registerConverter(new GetAttributeValuesResponseConverter());
     }
 }
