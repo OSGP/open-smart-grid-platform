@@ -2,8 +2,8 @@ package com.alliander.osgp.platform.dlms.cucumber.builders;
 
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
-import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
-import com.alliander.osgp.platform.cucumber.steps.Keys;
+import com.alliander.osgp.cucumber.platform.Keys;
+import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
 
 public abstract class AbstractAsyncRequestBuilder {
 

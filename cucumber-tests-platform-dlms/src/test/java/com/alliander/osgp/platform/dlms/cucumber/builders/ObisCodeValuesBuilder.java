@@ -1,6 +1,6 @@
 package com.alliander.osgp.platform.dlms.cucumber.builders;
 
-import static com.alliander.osgp.platform.cucumber.core.Helpers.getShort;
+import static com.alliander.osgp.cucumber.platform.core.Helpers.getShort;
 
 import java.util.Map;
 

@@ -5,7 +5,7 @@ Feature: CoreDeviceInstallation Device Registration
 
   @Skip
   Scenario Outline: A Device Performs First Time Registration
-    Given an oslp device
+    Given an ssld oslp device
       | DeviceIdentification       | <DeviceIdentification>       |
       | DeviceUid                  | <DeviceIdentification>       |
       | OrganizationIdentification | <OrganizationIdentification> |
