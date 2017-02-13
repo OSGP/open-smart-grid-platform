@@ -15,11 +15,11 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetKeysR
 import com.alliander.osgp.cucumber.platform.Defaults;
 import com.alliander.osgp.cucumber.platform.Keys;
 import com.alliander.osgp.cucumber.platform.core.Helpers;
-import com.alliander.osgp.cucumber.platform.dlms.support.ws.smartmetering.RequestBuilderHelper;
+import com.alliander.osgp.cucumber.platform.dlms.support.ws.smartmetering.RequestFactoryHelper;
 
-public class ReplaceKeysRequestBuilder {
+public class ReplaceKeysRequestFactory {
 
-    private ReplaceKeysRequestBuilder() {
+    private ReplaceKeysRequestFactory() {
         // Private constructor for utility class.
     }
 
@@ -27,14 +27,14 @@ public class ReplaceKeysRequestBuilder {
         final ReplaceKeysRequest replaceKeysRequest = new ReplaceKeysRequest();
         replaceKeysRequest.setDeviceIdentification(Helpers.getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION,
                 Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-        final SetKeysRequestData setKeysRequestData = SetKeysRequestDataBuilder.fromParameterMap(requestParameters);
+        final SetKeysRequestData setKeysRequestData = SetKeysRequestDataFactory.fromParameterMap(requestParameters);
         replaceKeysRequest.setSetKeysRequestData(setKeysRequestData);
         return replaceKeysRequest;
     }
 
     public static ReplaceKeysAsyncRequest fromParameterMapAsync(final Map<String, String> requestParameters) {
-        final String correlationUid = RequestBuilderHelper.getCorrelationUidFromScenarioContext();
-        final String deviceIdentification = RequestBuilderHelper
+        final String correlationUid = RequestFactoryHelper.getCorrelationUidFromScenarioContext();
+        final String deviceIdentification = RequestFactoryHelper
                 .getDeviceIdentificationFromStepData(requestParameters);
         final ReplaceKeysAsyncRequest replaceKeysAsyncRequest = new ReplaceKeysAsyncRequest();
         replaceKeysAsyncRequest.setCorrelationUid(correlationUid);

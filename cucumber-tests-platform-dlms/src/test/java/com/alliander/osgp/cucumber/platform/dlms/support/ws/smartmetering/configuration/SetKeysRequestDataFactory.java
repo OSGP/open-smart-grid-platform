@@ -11,19 +11,19 @@ import java.util.Map;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetKeysRequestData;
 import com.alliander.osgp.cucumber.platform.Keys;
-import com.alliander.osgp.cucumber.platform.dlms.support.ws.smartmetering.RequestBuilderHelper;
+import com.alliander.osgp.cucumber.platform.dlms.support.ws.smartmetering.RequestFactoryHelper;
 
-public class SetKeysRequestDataBuilder {
+public class SetKeysRequestDataFactory {
 
-    private SetKeysRequestDataBuilder() {
+    private SetKeysRequestDataFactory() {
         // Private constructor for utility class.
     }
 
     public static SetKeysRequestData fromParameterMap(final Map<String, String> requestParameters) {
         final SetKeysRequestData setKeysRequestData = new SetKeysRequestData();
-        setKeysRequestData.setAuthenticationKey(RequestBuilderHelper.hexDecodeDeviceKey(
+        setKeysRequestData.setAuthenticationKey(RequestFactoryHelper.hexDecodeDeviceKey(
                 requestParameters.get(Keys.KEY_DEVICE_AUTHENTICATIONKEY), Keys.KEY_DEVICE_AUTHENTICATIONKEY));
-        setKeysRequestData.setEncryptionKey(RequestBuilderHelper.hexDecodeDeviceKey(
+        setKeysRequestData.setEncryptionKey(RequestFactoryHelper.hexDecodeDeviceKey(
                 requestParameters.get(Keys.KEY_DEVICE_ENCRYPTIONKEY), Keys.KEY_DEVICE_ENCRYPTIONKEY));
         return setKeysRequestData;
     }

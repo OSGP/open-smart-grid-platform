@@ -12,24 +12,24 @@ import java.util.Map;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.Device;
-import com.alliander.osgp.cucumber.platform.dlms.support.ws.smartmetering.RequestBuilderHelper;
+import com.alliander.osgp.cucumber.platform.dlms.support.ws.smartmetering.RequestFactoryHelper;
 
-public class AddDeviceRequestBuilder {
+public class AddDeviceRequestFactory {
 
-    private AddDeviceRequestBuilder() {
+    private AddDeviceRequestFactory() {
         // Private constructor for utility class.
     }
 
     public static AddDeviceRequest fromParameterMap(final Map<String, String> requestParameters) {
         final AddDeviceRequest addDeviceRequest = new AddDeviceRequest();
-        final Device device = DeviceBuilder.fromParameterMap(requestParameters);
+        final Device device = DeviceFactory.fromParameterMap(requestParameters);
         addDeviceRequest.setDevice(device);
         return addDeviceRequest;
     }
 
     public static AddDeviceAsyncRequest fromParameterMapAsync(final Map<String, String> requestParameters) {
-        final String correlationUid = RequestBuilderHelper.getCorrelationUidFromScenarioContext();
-        final String deviceIdentification = RequestBuilderHelper
+        final String correlationUid = RequestFactoryHelper.getCorrelationUidFromScenarioContext();
+        final String deviceIdentification = RequestFactoryHelper
                 .getDeviceIdentificationFromStepData(requestParameters);
         final AddDeviceAsyncRequest addDeviceAsyncRequest = new AddDeviceAsyncRequest();
         addDeviceAsyncRequest.setCorrelationUid(correlationUid);

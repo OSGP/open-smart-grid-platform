@@ -13,12 +13,12 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.Device;
 import com.alliander.osgp.cucumber.platform.Defaults;
 import com.alliander.osgp.cucumber.platform.Keys;
 import com.alliander.osgp.cucumber.platform.core.Helpers;
-import com.alliander.osgp.cucumber.platform.dlms.support.ws.smartmetering.RequestBuilderHelper;
+import com.alliander.osgp.cucumber.platform.dlms.support.ws.smartmetering.RequestFactoryHelper;
 import com.alliander.osgp.cucumber.platform.helpers.SettingsHelper;
 
-public class DeviceBuilder {
+public class DeviceFactory {
 
-    private DeviceBuilder() {
+    private DeviceFactory() {
         // Private constructor for utility class.
     }
 
@@ -48,13 +48,13 @@ public class DeviceBuilder {
                 Helpers.getBoolean(settings, Keys.KEY_DEVICE_HLS5ACTIVE, Defaults.DLMS_DEFAULT_HSL5_ACTIVE)));
 
         device.setMasterKey(
-                RequestBuilderHelper.hexDecodeDeviceKey(settings.get(Keys.KEY_DEVICE_MASTERKEY),
+                RequestFactoryHelper.hexDecodeDeviceKey(settings.get(Keys.KEY_DEVICE_MASTERKEY),
                         Keys.KEY_DEVICE_MASTERKEY));
         device.setAuthenticationKey(
-                RequestBuilderHelper.hexDecodeDeviceKey(settings.get(Keys.KEY_DEVICE_AUTHENTICATIONKEY),
+                RequestFactoryHelper.hexDecodeDeviceKey(settings.get(Keys.KEY_DEVICE_AUTHENTICATIONKEY),
                         Keys.KEY_DEVICE_AUTHENTICATIONKEY));
         device.setGlobalEncryptionUnicastKey(
-                RequestBuilderHelper.hexDecodeDeviceKey(settings.get(Keys.KEY_DEVICE_ENCRYPTIONKEY),
+                RequestFactoryHelper.hexDecodeDeviceKey(settings.get(Keys.KEY_DEVICE_ENCRYPTIONKEY),
                         Keys.KEY_DEVICE_ENCRYPTIONKEY));
 
         device.setDeliveryDate(

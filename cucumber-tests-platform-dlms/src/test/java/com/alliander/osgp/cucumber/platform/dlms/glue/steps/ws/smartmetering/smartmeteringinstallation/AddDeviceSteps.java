@@ -29,7 +29,7 @@ import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.dlms.Defaults;
 import com.alliander.osgp.cucumber.platform.dlms.glue.steps.ws.smartmetering.AbstractSmartMeteringSteps;
 import com.alliander.osgp.cucumber.platform.dlms.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
-import com.alliander.osgp.cucumber.platform.dlms.support.ws.smartmetering.installation.AddDeviceRequestBuilder;
+import com.alliander.osgp.cucumber.platform.dlms.support.ws.smartmetering.installation.AddDeviceRequestFactory;
 import com.alliander.osgp.cucumber.platform.dlms.support.ws.smartmetering.installation.SmartMeteringInstallationClient;
 import com.alliander.osgp.cucumber.platform.helpers.SettingsHelper;
 import com.alliander.osgp.domain.core.entities.Device;
@@ -61,10 +61,10 @@ public class AddDeviceSteps extends AbstractSmartMeteringSteps {
                 settings.get(Keys.KEY_DEVICE_AUTHENTICATIONKEY));
         ScenarioContext.Current().put(Keys.KEY_DEVICE_ENCRYPTIONKEY, settings.get(Keys.KEY_DEVICE_ENCRYPTIONKEY));
 
-        final AddDeviceRequest request = AddDeviceRequestBuilder.fromParameterMap(settings);
+        final AddDeviceRequest request = AddDeviceRequestFactory.fromParameterMap(settings);
         final AddDeviceAsyncResponse asyncResponse = this.smartMeteringInstallationClient.addDevice(request);
 
-        ScenarioContext.Current().put(Keys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
+        this.checkAndSaveCorrelationId(asyncResponse.getCorrelationUid());
 
         assertEquals("Device identification in response", deviceIdentification,
                 asyncResponse.getDeviceIdentification());
@@ -77,7 +77,7 @@ public class AddDeviceSteps extends AbstractSmartMeteringSteps {
         final Map<String, String> extendedParameters = SettingsHelper.addDefault(responseParameters,
                 Keys.KEY_CORRELATION_UID, correlationUid);
 
-        final AddDeviceAsyncRequest addDeviceAsyncRequest = AddDeviceRequestBuilder
+        final AddDeviceAsyncRequest addDeviceAsyncRequest = AddDeviceRequestFactory
                 .fromParameterMapAsync(extendedParameters);
 
         final AddDeviceResponse response = this.smartMeteringInstallationClient

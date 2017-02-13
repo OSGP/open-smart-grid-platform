@@ -21,7 +21,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceK
 import com.alliander.osgp.cucumber.platform.Keys;
 import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.dlms.glue.steps.ws.smartmetering.AbstractSmartMeteringSteps;
-import com.alliander.osgp.cucumber.platform.dlms.support.ws.smartmetering.configuration.ReplaceKeysRequestBuilder;
+import com.alliander.osgp.cucumber.platform.dlms.support.ws.smartmetering.configuration.ReplaceKeysRequestFactory;
 import com.alliander.osgp.cucumber.platform.dlms.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
 import com.alliander.osgp.cucumber.platform.helpers.SettingsHelper;
 
@@ -41,7 +41,7 @@ public class ReplaceKeysSteps extends AbstractSmartMeteringSteps {
                 settings.get(Keys.KEY_DEVICE_AUTHENTICATIONKEY));
         ScenarioContext.Current().put(Keys.KEY_DEVICE_ENCRYPTIONKEY, settings.get(Keys.KEY_DEVICE_ENCRYPTIONKEY));
 
-        final ReplaceKeysRequest request = ReplaceKeysRequestBuilder.fromParameterMap(settings);
+        final ReplaceKeysRequest request = ReplaceKeysRequestFactory.fromParameterMap(settings);
         final ReplaceKeysAsyncResponse asyncResponse = this.smartMeteringConfigurationClient.replaceKeys(request);
 
         ScenarioContext.Current().put(Keys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
@@ -54,7 +54,7 @@ public class ReplaceKeysSteps extends AbstractSmartMeteringSteps {
         final Map<String, String> extendedParameters = SettingsHelper.addDefault(responseParameters,
                 Keys.KEY_CORRELATION_UID, correlationUid);
 
-        final ReplaceKeysAsyncRequest replaceKeysAsyncRequest = ReplaceKeysRequestBuilder
+        final ReplaceKeysAsyncRequest replaceKeysAsyncRequest = ReplaceKeysRequestFactory
                 .fromParameterMapAsync(extendedParameters);
 
         final ReplaceKeysResponse response = this.smartMeteringConfigurationClient

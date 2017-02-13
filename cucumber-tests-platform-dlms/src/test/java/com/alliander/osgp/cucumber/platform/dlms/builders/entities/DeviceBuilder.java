@@ -9,6 +9,7 @@ package com.alliander.osgp.cucumber.platform.dlms.builders.entities;
 
 import java.util.Map;
 
+import com.alliander.osgp.cucumber.platform.core.builders.CucumberBuilder;
 import com.alliander.osgp.domain.core.entities.Device;
 
 public class DeviceBuilder extends BaseDeviceBuilder<DeviceBuilder> implements CucumberBuilder<Device> {
