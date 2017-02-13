@@ -4,8 +4,8 @@ Feature: CoreDeviceInstallation Device Starting
   In order to ...
 
   @OslpMockServer
-  Scenario: Start device
-    Given an oslp device
+  Scenario: Start an ssld device
+    Given an ssld oslp device
       | DeviceIdentification       | TEST1024000000001 |
       | OrganizationIdentification | test-org          |
     And the device returns a start device response "OK" over OSLP
@@ -18,7 +18,7 @@ Feature: CoreDeviceInstallation Device Starting
       | Result | OK |
 
   Scenario Outline: Start device with incorrect parameters
-    Given an oslp device
+    Given an ssld device
       | DeviceIdentification       | TEST1024000000001            |
       | OrganizationIdentification | <OrganizationIdentification> |
       | Status                     | unknown                      |

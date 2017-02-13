@@ -41,10 +41,10 @@
     <module>Shared/osgp-dto</module>
     <module>Shared/osgp-ws-core</module>
     <module>Shared/osgp-ws-admin</module>
+    <module>Shared/osgp-ws-microgrids</module>
     <module>Shared/osgp-ws-publiclighting</module>
     <module>Shared/osgp-ws-tariffswitching</module>
     <module>Shared/osgp-ws-smartmetering</module>
-    <module>Shared/osgp-ws-microgrids</module>
 
     <!-- Protocol-Adapter-IEC61850 -->
     <module>Protocol-Adapter-IEC61850/osgp-iec61850</module>
@@ -92,8 +92,6 @@
     <module>Platform/osgp-core</module>
     <module>Platform/osgp-logging</module>
 
-    <!-- Temporary switched off, since the test servers are not available yet, 
-      only local deployment test (which will fail op build server -->
     <!-- Automatic tests project -->
     <module>cucumber-tests-platform</module>
     <module>cucumber-tests-platform-dlms</module>

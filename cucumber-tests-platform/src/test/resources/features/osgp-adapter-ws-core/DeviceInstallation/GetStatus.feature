@@ -5,11 +5,9 @@ Feature: CoreDeviceInstallation Get Status
 
   @OslpMockServer
   Scenario Outline: Get status of a device
-    Given an oslp device
+    Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
-      | Status               | Active            |
-      | RelayType            | <RelayType>       |
-    And the device returns a get status response over OSLP
+    And the device returns a get status response "OK" over OSLP
       | PreferredLinkType  | <PreferredLinkType>      |
       | ActualLinkType     | <ActualLinkType>         |
       | LightType          | <LightType>              |
@@ -27,5 +25,13 @@ Feature: CoreDeviceInstallation Get Status
       | LightType         | <ExpectedLightType>         |
 
     Examples: 
-      | RelayType | PreferredLinkType | ActualLinkType | LightType  | EventNotificationTypes | LightValues | Result | ExpectedPreferredLinkType | ExpectedActualLinkType | ExpectedLightType |
-      | LIGHT     | LINK_NOT_SET      | LINK_NOT_SET   | LT_NOT_SET |                        | 1;true;100  | OK     |                           |                        |                   |
+      | RelayType | PreferredLinkType | ActualLinkType | LightType               | EventNotificationTypes                                                                             | LightValues | Result | ExpectedPreferredLinkType | ExpectedActualLinkType | ExpectedLightType       |
+      | LIGHT     | LINK_NOT_SET      | LINK_NOT_SET   | LT_NOT_SET              |                                                                                                    | 1,true,100  | OK     |                           |                        |                         |
+      | LIGHT     | CDMA              | GPRS           | DALI                    | DIAG_EVENTS                                                                                        | 1,true,100  | OK     | CDMA                      | GPRS                   | DALI                    |
+      | LIGHT     | CDMA              | GPRS           | DALI                    | COMM_EVENTS                                                                                        | 1,true,100  | OK     | CDMA                      | GPRS                   | DALI                    |
+      | LIGHT     | CDMA              | CDMA           | RELAY                   | HARDWARE_FAILURE                                                                                   | 1,true,100  | OK     | CDMA                      | CDMA                   | RELAY                   |
+      | LIGHT     | CDMA              | CDMA           | RELAY                   | LIGHT_EVENTS,TARIFF_EVENTS                                                                         | 1,true,100  | OK     | CDMA                      | CDMA                   | RELAY                   |
+      | LIGHT     | CDMA              | CDMA           | DALI                    | DIAG_EVENTS,HARDWARE_FAILURE,LIGHT_EVENTS,TARIFF_EVENTS,MONITOR_EVENTS,FIRMWARE_EVENTS,COMM_EVENTS | 1,true,100  | OK     | CDMA                      | CDMA                   | DALI                    |
+      | LIGHT     | CDMA              | ETHERNET       | ONE_TO_TEN_VOLT         |                                                                                                    | 1,true,100  | OK     | CDMA                      | ETHERNET               | ONE_TO_TEN_VOLT         |
+      | LIGHT     | CDMA              | CDMA           | ONE_TO_TEN_VOLT_REVERSE |                                                                                                    | 1,true,100  | OK     | CDMA                      | CDMA                   | ONE_TO_TEN_VOLT_REVERSE |
+      | LIGHT     | CDMA              | CDMA           | DALI                    |                                                                                                    | 1,true,100  | OK     | CDMA                      | CDMA                   | DALI                    |
