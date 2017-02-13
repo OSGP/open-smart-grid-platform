@@ -7,12 +7,11 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -21,7 +20,6 @@ import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
-import org.osgp.adapter.protocol.dlms.exceptions.BufferedDateTimeValidationException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,9 +28,7 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.CaptureObjectDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CaptureObjectItemDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ObisCodeValuesDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileEntryDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileEntryItemDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataRequestDto;
@@ -40,16 +36,20 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataRespo
 
 @Component()
 public class GetProfileGenericDataCommandExecutor extends
-AbstractCommandExecutor<ProfileGenericDataRequestDto, ProfileGenericDataResponseDto> {
+        AbstractCommandExecutor<ProfileGenericDataRequestDto, ProfileGenericDataResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetProfileGenericDataCommandExecutor.class);
 
-    // private static final int BUFFER_INDEX_CLOCK = 0;
     private static final int ACCESS_SELECTOR_RANGE_DESCRIPTOR = 1;
     private static final int CLASS_ID_PROFILE_GENERIC = 7;
     private static final byte ATTRIBUTE_ID_BUFFER = 2;
     private static final byte ATTRIBUTE_ID_CAPTURE_OBJECTS = 3;
     private static final byte ATTRIBUTE_ID_SCALER_UNIT = 3;
+
+    private static final int CLASS_ID_INDEX = 0;
+    private static final int OBIS_CODE_INDEX = 1;
+    private static final int ATTR_INDEX = 2;
+    private static final int VERSION_INDEX = 3;
 
     @Autowired
     private DlmsHelperService dlmsHelperService;
@@ -64,14 +64,23 @@ AbstractCommandExecutor<ProfileGenericDataRequestDto, ProfileGenericDataResponse
 
         final DateTime beginDateTime = new DateTime(profileGenericDataRequestDto.getBeginDate());
         final DateTime endDateTime = new DateTime(profileGenericDataRequestDto.getEndDate());
-        final ObisCode obisCode = this.makeObisCode(profileGenericDataRequestDto);
+        final ObisCode obisCode = this.makeObisCode(profileGenericDataRequestDto.getObisCode());
+        final ObisCodeValuesDto inputObisCodes = profileGenericDataRequestDto.getObisCode();
+
+        LOGGER.debug("Retrieving profile generic data for, from: {}, to: {}", beginDateTime, endDateTime);
 
         // Retrieve capture objects
-        AttributeAddress captureObjectsAttributeAddress = new AttributeAddress(CLASS_ID_PROFILE_GENERIC, obisCode,
-                ATTRIBUTE_ID_CAPTURE_OBJECTS);
-        List<GetResult> captureObjects = this.dlmsHelperService.getAndCheck(conn, device,
-                "retrieve profile generic capture objects", captureObjectsAttributeAddress);
+        List<GetResult> captureObjects = this.retrieveCaptureObjects(conn, device, obisCode);
+        this.retrieveScalarUnits(conn, device, captureObjects);
+        List<GetResult> bufferList = this
+                .retrieveProfileEntryBuffer(conn, device, beginDateTime, endDateTime, obisCode);
 
+        ProfileGenericDataResponseDto responseDto = this.processData(inputObisCodes, captureObjects, bufferList);
+        return responseDto;
+    }
+
+    private void retrieveScalarUnits(DlmsConnectionHolder conn, DlmsDevice device, List<GetResult> captureObjects)
+            throws ProtocolAdapterException {
         // Determine for which capture objects to retrieve the scaler units
         // Look in Blue Book, capture objects of type register (class id 3?, and
         // demand register (class id 5?) are candidates
@@ -84,65 +93,99 @@ AbstractCommandExecutor<ProfileGenericDataRequestDto, ProfileGenericDataResponse
             scalerUnits.addAll(this.dlmsHelperService.getAndCheck(conn, device,
                     "retrieve scaler unit for capture object", scalerUnitAttributeAddress));
         }
+    }
 
-        // Retrieve the buffer
+    private List<GetResult> retrieveCaptureObjects(DlmsConnectionHolder conn, DlmsDevice device, final ObisCode obisCode)
+            throws ProtocolAdapterException {
+        AttributeAddress captureObjectsAttributeAddress = new AttributeAddress(CLASS_ID_PROFILE_GENERIC, obisCode,
+                ATTRIBUTE_ID_CAPTURE_OBJECTS);
+        List<GetResult> captureObjects = this.dlmsHelperService.getAndCheck(conn, device,
+                "retrieve profile generic capture objects", captureObjectsAttributeAddress);
+        return captureObjects;
+    }
+
+    private List<GetResult> retrieveProfileEntryBuffer(DlmsConnectionHolder conn, DlmsDevice device,
+            final DateTime beginDateTime, final DateTime endDateTime, final ObisCode obisCode)
+            throws ProtocolAdapterException {
         final SelectiveAccessDescription access = this.getSelectiveAccessDescription(beginDateTime, endDateTime,
                 device.isSelectiveAccessSupported());
         AttributeAddress bufferAttributeAddress = new AttributeAddress(CLASS_ID_PROFILE_GENERIC, obisCode,
                 ATTRIBUTE_ID_BUFFER, access);
-        List<GetResult> buffer = this.dlmsHelperService.getAndCheck(conn, device, "retrieve profile generic buffer",
-                bufferAttributeAddress);
+        List<GetResult> bufferList = this.dlmsHelperService.getAndCheck(conn, device,
+                "retrieve profile generic buffer", bufferAttributeAddress);
+        return bufferList;
+    }
 
-        // Process data
-        // Add units to capture objects
-        // Calculate the proper values in the buffer using the scaler
+    /*
+     * Process data Add units to capture objects Calculate the proper values in
+     * the buffer using the scaler
+     */
+    private ProfileGenericDataResponseDto processData(final ObisCodeValuesDto obisCode, List<GetResult> captureObjects,
+            List<GetResult> bufferList) throws ProtocolAdapterException {
 
-        final AttributeAddress[] profileBufferAndScalerUnit = this.getProfileBufferAndScalerUnit(obisCode,
-                beginDateTime, endDateTime, device.isSelectiveAccessSupported());
+        List<CaptureObjectItemDto> captureObjectItemDtoList = new ArrayList<>();
+        for (GetResult captureObjectResult : captureObjects) {
+            DataObject dataObject = captureObjectResult.getResultData();
+            final List<DataObject> dataObjectList1 = dataObject.getValue();
+            for (DataObject captureObjectDataObject : dataObjectList1) {
+                captureObjectItemDtoList.add(new CaptureObjectItemDto(this
+                        .makeCaptureObjectDto(captureObjectDataObject)));
+            }
 
-        LOGGER.debug("Retrieving profile generic data for interval, from: {}, to: {}", beginDateTime, endDateTime);
-
-        /*
-         * workaround for a problem when using with_list and retrieving a
-         * profile buffer, this will be returned erroneously.
-         */
-        final List<GetResult> getResultList = new ArrayList<>(profileBufferAndScalerUnit.length);
-        for (final AttributeAddress address : profileBufferAndScalerUnit) {
-
-            conn.getDlmsMessageListener().setDescription(
-                    "GetProfileGenericData " + PeriodTypeDto.INTERVAL + " from " + beginDateTime + " until "
-                            + endDateTime + ", retrieve attribute: "
-                            + JdlmsObjectToStringUtil.describeAttributes(address));
-
-            getResultList.addAll(this.dlmsHelperService.getAndCheck(conn, device, "retrieve profile generic data for "
-                    + PeriodTypeDto.INTERVAL, address));
         }
 
-        final DataObject resultData = this.dlmsHelperService.readDataObject(getResultList.get(0),
-                "Profile Generic Data");
-        final List<DataObject> bufferedObjectsList = resultData.getValue();
-
-        final List<CaptureObjectDto> captureObjectsDto = new ArrayList<>();
-        for (final DataObject bufferedObject : bufferedObjectsList) {
-            final List<DataObject> bufferedObjects = bufferedObject.getValue();
-            try {
-                captureObjectsDto.add(this.processNextProfileGenericData(PeriodTypeDto.INTERVAL, beginDateTime,
-                        endDateTime, bufferedObjects, getResultList));
-            } catch (final BufferedDateTimeValidationException e) {
-                LOGGER.warn(e.getMessage(), e);
+        List<ProfileEntryItemDto> profileEntryItemDtoList = new ArrayList<>();
+        for (GetResult buffer : bufferList) {
+            DataObject dataObject = buffer.getResultData();
+            final List<DataObject> dataObjectList1 = dataObject.getValue();
+            for (DataObject profEntry : dataObjectList1) {
+                profileEntryItemDtoList.add(new ProfileEntryItemDto(this.makeProfileEntryDto(profEntry)));
             }
         }
 
-        return this.makeTestResult(profileGenericDataRequestDto);
+        return new ProfileGenericDataResponseDto(obisCode, captureObjectItemDtoList, profileEntryItemDtoList);
+    }
+
+    private ObisCode makeObisCode(final ObisCodeValuesDto obisCodeValues) {
+        final byte[] obisCodeBytes = { obisCodeValues.getA(), obisCodeValues.getB(), obisCodeValues.getC(),
+                obisCodeValues.getD(), obisCodeValues.getE(), obisCodeValues.getF() };
+        return new ObisCode(obisCodeBytes);
+    }
+
+    private CaptureObjectDto makeCaptureObjectDto(DataObject captureObjectDataObject) throws ProtocolAdapterException {
+        final List<DataObject> dataObjectList = captureObjectDataObject.getValue();
+
+        // final CosemObjectDefinitionDto objectDef =
+        // this.dlmsHelperService.readObjectDefinition(dataObject2, "capture
+        // object");
+        final int classId = this.getNumericValue(dataObjectList.get(CLASS_ID_INDEX));
+        final String logicalName = this.dlmsHelperService.readString(dataObjectList.get(OBIS_CODE_INDEX), "obis-code");
+        final int attribute = this.getIntValue(dataObjectList.get(ATTR_INDEX));
+        final int version = this.getVersion(dataObjectList.get(VERSION_INDEX));
+        return new CaptureObjectDto(classId, logicalName, attribute, version, "Unit");
+    }
+
+    private List<ProfileEntryDto> makeProfileEntryDto(DataObject dataObject) throws ProtocolAdapterException {
+        List<ProfileEntryDto> result = new ArrayList<>();
+
+        final List<DataObject> dataObjectList = dataObject.getValue();
+
+        for (DataObject obj : dataObjectList) {
+            // TODO JRB
+            String dbgInfo = this.dlmsHelperService.getDebugInfo(obj);
+            result.add(new ProfileEntryDto(dbgInfo));
+        }
+
+        return result;
     }
 
     private List<AttributeAddress> getScalerUnits(List<GetResult> captureObjects) {
         List<AttributeAddress> scalerUnits = new ArrayList<AttributeAddress>();
-        
+
         for (GetResult getResult : captureObjects) {
             getResult.getResultData();
         }
-        
+
         return scalerUnits;
     }
 
@@ -193,60 +236,40 @@ AbstractCommandExecutor<ProfileGenericDataRequestDto, ProfileGenericDataResponse
         return new SelectiveAccessDescription(accessSelector, accessParameter);
     }
 
-    // TODO JRB tijdelijke hack om flow te testen: weghalen <!--------
-    private ProfileGenericDataResponseDto makeTestResult(final ProfileGenericDataRequestDto profileGenericDataRequestDto) {
-        final ObisCodeValuesDto logicalName = profileGenericDataRequestDto.getObisCode();
-        final List<CaptureObjectItemDto> captureObjects = new ArrayList<CaptureObjectItemDto>();
-        captureObjects.add(new CaptureObjectItemDto(new CaptureObjectDto(7L, logicalName, 3, 0, "kwu")));
-        final List<ProfileEntryItemDto> profileEntries = new ArrayList<ProfileEntryItemDto>();
-        profileEntries.add(this.makeProfileEntryItemDto());
-        profileEntries.add(this.makeProfileEntryItemDto());
-        return new ProfileGenericDataResponseDto(logicalName, captureObjects, profileEntries);
+    private int getNumericValue(final DataObject dataObject) throws ProtocolAdapterException {
+        if (DataObject.Type.LONG_UNSIGNED != dataObject.getType()) {
+            this.throwUnexpectedTypeProtocolAdapterException();
+        }
+        return ((Number) dataObject.getValue()).intValue();
     }
 
-    private ProfileEntryItemDto makeProfileEntryItemDto() {
-        List<ProfileEntryDto> entriesDto = new ArrayList<ProfileEntryDto>();
-        entriesDto.add(new ProfileEntryDto("test"));
-        entriesDto.add(new ProfileEntryDto(BigDecimal.valueOf(10.5)));
-        entriesDto.add(new ProfileEntryDto(205L));
-        entriesDto.add(new ProfileEntryDto(new Date()));
-        return new ProfileEntryItemDto(entriesDto);
+    private int getIntValue(final DataObject dataObject) throws ProtocolAdapterException {
+        if (DataObject.Type.INTEGER != dataObject.getType()) {
+            this.throwUnexpectedTypeProtocolAdapterException();
+        }
+        return ((Number) dataObject.getValue()).intValue();
     }
 
-    private ObisCode makeObisCode(final ProfileGenericDataRequestDto profileGenericDataRequestDto) {
-        final ObisCodeValuesDto obisCodeValues = profileGenericDataRequestDto.getObisCode();
-        final byte[] obisCodeBytes = { obisCodeValues.getA(), obisCodeValues.getB(), obisCodeValues.getC(),
-                obisCodeValues.getD(), obisCodeValues.getE(), obisCodeValues.getF() };
-        return new ObisCode(obisCodeBytes);
+    private int getVersion(final DataObject dataObject) throws ProtocolAdapterException {
+        if (DataObject.Type.LONG_UNSIGNED != dataObject.getType()) {
+            this.throwUnexpectedTypeProtocolAdapterException();
+        }
+        return ((Number) dataObject.getValue()).intValue();
     }
 
-    // -------->
-
-    private CaptureObjectDto processNextProfileGenericData(final PeriodTypeDto periodType,
-            final DateTime beginDateTime, final DateTime endDateTime, final List<DataObject> bufferedObjects,
-            final List<GetResult> results) throws ProtocolAdapterException, BufferedDateTimeValidationException {
-
-        final CosemDateTimeDto cosemDateTime = this.dlmsHelperService.readDateTime(bufferedObjects.get(1),
-                "Clock from " + periodType + " buffer");
-        final DateTime bufferedDateTime = cosemDateTime == null ? null : cosemDateTime.asDateTime();
-
-        this.validateBufferedDateTime(bufferedDateTime, cosemDateTime, beginDateTime, endDateTime);
-
-        LOGGER.debug("Processing profile (" + periodType + ") objects captured at: {}", cosemDateTime);
-
-        return this.getNextProfileGenericDataForInterval(bufferedObjects, bufferedDateTime, results);
+    private void throwUnexpectedTypeProtocolAdapterException() throws ProtocolAdapterException {
+        throw new ProtocolAdapterException("Unexpected type of element");
     }
 
-    private CaptureObjectDto getNextProfileGenericDataForInterval(final List<DataObject> bufferedObjects,
-            final DateTime bufferedDateTime, final List<GetResult> results) throws ProtocolAdapterException {
+    private ObisCodeValuesDto makeObisCodeValuesDto(final String logicalName) {
+        String strBytes[] = StringUtils.split(logicalName, '.');
+        byte bytes[] = new byte[strBytes.length];
+        for (int i = 0; i < strBytes.length; i++) {
+            String str = strBytes[i];
+            bytes[i] = str.equals("255") ? -1 : Byte.valueOf(strBytes[i]);
+        }
+        return new ObisCodeValuesDto(bytes[0], bytes[1], bytes[2], bytes[3], bytes[4], bytes[5]);
 
-        // final DlmsMeterValueDto positiveActiveEnergy =
-        // this.dlmsHelperService.getScaledMeterValue(
-        // bufferedObjects.get(BUFFER_INDEX_A_POS),
-        // results.get(RESULT_INDEX_IMPORT).getResultData(),
-        // "positiveActiveEnergy");
-
-        return null;
     }
 
 }
