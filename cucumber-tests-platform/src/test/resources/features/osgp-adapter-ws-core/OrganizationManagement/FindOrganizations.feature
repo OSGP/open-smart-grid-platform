@@ -5,32 +5,48 @@ Feature: OrganizationManagement Finding Organizations
 
   Scenario: Get all organizations
     Given an organization
+      | OrganizationIdentification | test-org                                |
+      | Name                       | Test Organization                       |
+      | Domains                    | COMMON;PUBLIC_LIGHTING;TARIFF_SWITCHING |
+      | Prefix                     | MAA                                     |
+    And an organization
       | OrganizationIdentification | LianderNetManagement |
+      | Name                       | An Organization      |
+      | Domains                    | COMMON               |
+      | Prefix                     | Tes                  |
     When receiving a get all organizations request
       | OrganizationIdentification | LianderNetManagement |
     Then the get all organizations response contains "2" organization
     And the get all organizations response contains at index "1"
-      | OrganizationIdentification | test-org                                 |
-      | OrganizationName           | Test Organization                        |
-      | Domains                    | COMMON;PUBLIC_LIGHTING;TARIFF_SWITCHING; |
-      | Prefix                     | MAA                                      |
+      | OrganizationIdentification | test-org                                |
+      | Name                       | Test Organization                       |
+      | Domains                    | COMMON;PUBLIC_LIGHTING;TARIFF_SWITCHING |
+      | Prefix                     | MAA                                     |
     And the get all organizations response contains at index "2"
       | OrganizationIdentification | LianderNetManagement |
-      | OrganizationName           | An Organization      |
-      | Domains                    | COMMON;              |
+      | Name                       | An Organization      |
+      | Domains                    | COMMON               |
       | Prefix                     | Tes                  |
 
   Scenario: Get own organization
     Given an organization
+      | OrganizationIdentification | test-org                                |
+      | Name                       | Test Organization                       |
+      | Domains                    | COMMON;PUBLIC_LIGHTING;TARIFF_SWITCHING |
+      | Prefix                     | MAA                                     |
+    And an organization
       | OrganizationIdentification | TestOrganization |
+      | Name                       | An Organization  |
+      | Domains                    | COMMON           |
+      | Prefix                     | Tes              |
     When receiving a get all organizations request
       | OrganizationIdentification | test-org |
     Then the get all organizations response contains "1" organization
     And the get all organizations response contains at index "1"
-      | OrganizationIdentification | test-org                                 |
-      | OrganizationName           | Test Organization                        |
-      | Domains                    | COMMON;PUBLIC_LIGHTING;TARIFF_SWITCHING; |
-      | Prefix                     | MAA                                      |
+      | OrganizationIdentification | test-org                                |
+      | Name                       | Test Organization                       |
+      | Domains                    | COMMON;PUBLIC_LIGHTING;TARIFF_SWITCHING |
+      | Prefix                     | MAA                                     |
 
   Scenario: Get own unknown organization
     When receiving an own unknown organization request

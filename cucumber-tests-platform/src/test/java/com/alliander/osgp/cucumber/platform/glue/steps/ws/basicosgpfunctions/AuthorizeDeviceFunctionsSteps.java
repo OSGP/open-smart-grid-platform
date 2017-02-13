@@ -260,12 +260,11 @@ public class AuthorizeDeviceFunctionsSteps {
 
     private void getStatus(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        // Note: This GetStatusRequest is from PublicLighting AdhocManagement
-        final GetStatusRequest request = new GetStatusRequest();
+        final com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.GetStatusRequest request = new com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.GetStatusRequest();
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.Current().put(Keys.RESPONSE, this.publicLightingAdHocManagementClient.getStatus(request));
+        ScenarioContext.Current().put(Keys.RESPONSE, this.coreDeviceInstallationClient.getStatus(request));
     }
 
     private void getDeviceAuthorization(final Map<String, String> requestParameters)

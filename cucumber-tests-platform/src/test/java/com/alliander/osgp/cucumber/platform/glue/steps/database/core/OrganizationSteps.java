@@ -11,6 +11,7 @@ import static com.alliander.osgp.cucumber.platform.core.Helpers.getBoolean;
 import static com.alliander.osgp.cucumber.platform.core.Helpers.getEnum;
 import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +68,7 @@ public class OrganizationSteps extends GlueBase {
         }
 
         // Add all the mandatory stuff.
+        entity.setDomains(new ArrayList<>());
         String domains = Defaults.DEFAULT_DOMAINS;
         if (settings.containsKey(Keys.KEY_DOMAINS) && !settings.get(Keys.KEY_DOMAINS).isEmpty()) {
             domains = settings.get(Keys.KEY_DOMAINS);
@@ -77,7 +79,6 @@ public class OrganizationSteps extends GlueBase {
 
         entity.setIsEnabled(getBoolean(settings, Keys.KEY_ENABLED, Defaults.DEFAULT_ORGANIZATION_ENABLED));
 
-        // TODO: Add all the optional stuff
         this.repo.save(entity);
     }
 
