@@ -49,7 +49,7 @@ public class ProfileGenericDataResponseMappingTest {
     }
 
     private CaptureObjectItemVo makeCaptureObjectVo() {
-        return new CaptureObjectItemVo(new CaptureObjectVo(10L, this.makeObisCode(), 10, 1, "kwu"));
+        return new CaptureObjectItemVo(new CaptureObjectVo(10L, "0.0.1.0.0.255", 10, 1, "kwu"));
     }
 
     private ProfileEntryItemVo makeProfileEntryVo() {

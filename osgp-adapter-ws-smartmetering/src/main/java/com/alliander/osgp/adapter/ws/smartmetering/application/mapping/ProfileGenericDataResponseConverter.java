@@ -28,7 +28,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryVo;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponseVo;
 
 public class ProfileGenericDataResponseConverter extends
-        CustomConverter<ProfileGenericDataResponseVo, ProfileGenericDataResponse> {
+CustomConverter<ProfileGenericDataResponseVo, ProfileGenericDataResponse> {
 
     @Override
     public ProfileGenericDataResponse convert(ProfileGenericDataResponseVo source,
@@ -58,7 +58,7 @@ public class ProfileGenericDataResponseConverter extends
         CaptureObjectVo sourceCaptureObjectVo = source.getCaptureObject();
         targetCaptureObject.setAttribute(BigInteger.valueOf(sourceCaptureObjectVo.getAttribute()));
         targetCaptureObject.setClassId(sourceCaptureObjectVo.getClassId());
-        targetCaptureObject.setObisCode(this.map(sourceCaptureObjectVo.getLogicalName()));
+        targetCaptureObject.setLogicalName(sourceCaptureObjectVo.getLogicalName());
         targetCaptureObject.setVersion(BigInteger.valueOf(sourceCaptureObjectVo.getVersion()));
         OsgpUnitType unitType = this.mapUnitType(sourceCaptureObjectVo.getUnit());
         targetCaptureObject.setUnit(unitType);

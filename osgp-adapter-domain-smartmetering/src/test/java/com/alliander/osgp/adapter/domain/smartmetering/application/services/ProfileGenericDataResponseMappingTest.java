@@ -24,7 +24,6 @@ import org.junit.Test;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CaptureObjectItemVo;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CaptureObjectVo;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ObisCodeValues;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryItemVo;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryVo;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponseVo;
@@ -70,12 +69,6 @@ public class ProfileGenericDataResponseMappingTest {
         Assert.assertTrue(result != null && result instanceof ProfileEntryItemVo);
     }
 
-    @Test
-    public void test6() {
-        final ObisCodeValues result = this.mapper.map(this.obisCodeDto(), ObisCodeValues.class);
-        Assert.assertTrue(result != null && result instanceof ObisCodeValues);
-    }
-
     private ProfileGenericDataResponseDto makeDto() {
         final List<CaptureObjectItemDto> captureObjects = new ArrayList<CaptureObjectItemDto>();
         captureObjects.add(new CaptureObjectItemDto(this.captureObjectDto()));
@@ -98,11 +91,11 @@ public class ProfileGenericDataResponseMappingTest {
     }
 
     private CaptureObjectItemDto captureObjectItemDto() {
-        return new CaptureObjectItemDto(new CaptureObjectDto(10L, this.obisCodeDto(), 2, 0, "kwu"));
+        return new CaptureObjectItemDto(new CaptureObjectDto(10L, "0.0.1.0.0.255", 2, 0, "kwu"));
     }
 
     private CaptureObjectDto captureObjectDto() {
-        return new CaptureObjectDto(10L, this.obisCodeDto(), 2, 0, "kwu");
+        return new CaptureObjectDto(10L, "0.0.1.0.0.255", 2, 0, "kwu");
     }
 
     private ProfileEntryItemDto profileEntryItemDto() {
