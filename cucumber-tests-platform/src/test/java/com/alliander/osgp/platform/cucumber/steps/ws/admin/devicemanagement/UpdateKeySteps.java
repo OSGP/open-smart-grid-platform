@@ -23,6 +23,7 @@ import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.UpdateKeyResp
 import com.alliander.osgp.platform.cucumber.core.ScenarioContext;
 import com.alliander.osgp.platform.cucumber.steps.Defaults;
 import com.alliander.osgp.platform.cucumber.steps.Keys;
+import com.alliander.osgp.platform.cucumber.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.platform.cucumber.support.ws.admin.AdminDeviceManagementClient;
 
 import cucumber.api.java.en.Then;
@@ -80,9 +81,6 @@ public class UpdateKeySteps {
      */
     @Then("^the update key response contains soap fault$")
     public void the_update_key_response_contains_soap_fault(final Map<String, String> expectedResult) throws Throwable {
-        Assert.assertTrue(ScenarioContext.Current().get(Keys.RESPONSE) instanceof SoapFaultClientException);
-        final SoapFaultClientException response = (SoapFaultClientException) ScenarioContext.Current()
-                .get(Keys.RESPONSE);
-        Assert.assertEquals(getString(expectedResult, Keys.KEY_MESSAGE), response.getMessage());
+        GenericResponseSteps.verifySoapFault(expectedResult);
     }
 }

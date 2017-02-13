@@ -55,7 +55,7 @@ Feature: CoreConfigurationManagement GetConfiguration
       | RELAY                   |          |         | LIGHT  |       | CDMA              | PULSE     |            15 |           30 | DAYS         |
       | RELAY                   |          |         | LIGHT  |   1,1 | ETHERNET          | P1        |            15 |            1 | DAYS         |
 
-	Scenario: Get configuration data with unknown device
+  Scenario: Get configuration data with unknown device
     And the device returns a get configuration status over OSLP
       | Status            | OK       |
       | LightType         | RELAY    |
