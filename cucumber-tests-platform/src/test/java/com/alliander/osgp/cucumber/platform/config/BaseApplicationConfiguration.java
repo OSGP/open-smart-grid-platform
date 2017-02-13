@@ -28,28 +28,35 @@ import com.alliander.osgp.shared.application.config.AbstractConfig;
 public class BaseApplicationConfiguration extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseApplicationConfiguration.class);
-    
+
     @Value("${timeout}")
     private Integer timeout;
+
+    @Value("${sleeptime}")
+    private Integer sleeptime;
 
     /**
      * Gets the timeout. Either from the configuration (in war or
      * /etc/osp/test/global-cucumber.properties), or from the scenariocontext
      * (for a specific test).
-     * 
+     *
      * @return An integer representing the timeout.
      */
     public Integer getTimeout() {
 
         Integer retval = this.timeout;
-        
+
         // For certain scenario's it is necessary to enlarge the timeout.
         if (ScenarioContext.Current().get(Keys.TIMEOUT) != null) {
             retval = Integer.parseInt(ScenarioContext.Current().get(Keys.TIMEOUT).toString());
         }
-        
+
         LOGGER.debug("Using timeout [{}] seconds in the tests.", retval);
-        
+
         return retval;
+    }
+
+    public Integer getSleepTime() {
+        return this.sleeptime;
     }
 }
