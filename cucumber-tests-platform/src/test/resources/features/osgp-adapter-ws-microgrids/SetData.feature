@@ -4,7 +4,7 @@ Feature: MicroGrids Set Data Service
   so that I am able to guarantee the quality of Microgrid Platform.
 
   Scenario: SetData Service
-    Given an rtu device
+    Given an rtu iec61850 device
       | DeviceIdentification | RTU10001 |
     When a set data request is received
       | DeviceIdentification       | RTU10001            |

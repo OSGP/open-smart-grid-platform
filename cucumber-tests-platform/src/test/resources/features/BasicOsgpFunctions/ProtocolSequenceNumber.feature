@@ -5,7 +5,7 @@ Feature: BasicOsgpFunctions Protocol Sequence Number
 
   @OslpMockServer
   Scenario Outline: Confirm device registration using number to add to the currernt sequence number
-    Given an oslp device
+    Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
     And the device returns a start device response "OK" over OSLP
     When receiving a start device test request
