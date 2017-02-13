@@ -14,12 +14,12 @@ public class CaptureObjectDto implements Serializable {
     private static final long serialVersionUID = 2123390296585369208L;
 
     private final long classId;
-    private final ObisCodeValuesDto logicalName;
+    private final String logicalName;
     private final int attribute;
     private final int version;
     private final String unit;
 
-    public CaptureObjectDto(long classId, ObisCodeValuesDto logicalName, int attribute, int version, String unit) {
+    public CaptureObjectDto(long classId, String logicalName, int attribute, int version, String unit) {
         super();
         this.classId = classId;
         this.logicalName = logicalName;
@@ -32,7 +32,7 @@ public class CaptureObjectDto implements Serializable {
         return this.classId;
     }
 
-    public ObisCodeValuesDto getLogicalName() {
+    public String getLogicalName() {
         return this.logicalName;
     }
 
