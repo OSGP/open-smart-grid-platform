@@ -92,6 +92,17 @@ Feature: SmartMetering Configuration
     And the new keys are stored in the osgp_adapter_protocol_dlms database security_key table
     And the stored keys are not equal to the received keys
 
+  Scenario: Replace keys on a device with incorrectly encrypted keys
+    When the replace keys request is received
+      | DeviceIdentification | TEST1024000000001 |
+      | Master_key            | abcdef0123456789 |
+      | Authentication_key    | def0123456789abc |
+      | Encryption_key        | abc0123456789def |
+    Then the replace keys response should be returned
+      | DeviceIdentification  | TEST1024000000001 |
+      | Result                | NOT_OK            |
+    And the keys are not changed in the osgp_adapter_protocol_dlms database security_key table
+
   Scenario: Get the firmware version from device
     When the get firmware version request is received
       | DeviceIdentification | TEST1024000000001 |

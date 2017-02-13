@@ -144,6 +144,50 @@ public class DlmsDeviceSteps {
         assertTrue("Number of encryption keys > 1", numberOfEncryptionKeys > 1);
     }
 
+    @Then("^the keys are not changed in the osgp_adapter_protocol_dlms database security_key table$")
+    public void theKeysAreNotChangedInTheOsgpAdapterProtocolDlmsDatabaseSecurityKeyTable() throws Throwable {
+        final String keyDeviceIdentification = Keys.DEVICE_IDENTIFICATION;
+        final String deviceIdentification = (String) ScenarioContext.Current().get(keyDeviceIdentification);
+        assertNotNull("Device identification must be in the scenario context for key " + keyDeviceIdentification,
+                deviceIdentification);
+
+        final String deviceDescription = "DLMS device with identification " + deviceIdentification;
+        final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
+        assertNotNull(deviceDescription + " must be in the protocol database", dlmsDevice);
+
+        final List<SecurityKey> securityKeys = dlmsDevice.getSecurityKeys();
+
+        /*
+         * If the keys are not changed, the device should only have valid keys.
+         * There should be 1 master key and one authentication and encryption
+         * key.
+         */
+        int numberOfMasterKeys = 0;
+        int numberOfAuthenticationKeys = 0;
+        int numberOfEncryptionKeys = 0;
+
+        for (final SecurityKey securityKey : securityKeys) {
+            switch (securityKey.getSecurityKeyType()) {
+            case E_METER_MASTER:
+                numberOfMasterKeys += 1;
+                break;
+            case E_METER_AUTHENTICATION:
+                numberOfAuthenticationKeys += 1;
+                break;
+            case E_METER_ENCRYPTION:
+                numberOfEncryptionKeys += 1;
+                break;
+            default:
+                // other keys are not counted
+            }
+            assertNull("security key " + securityKey.getSecurityKeyType() + " valid to date", securityKey.getValidTo());
+        }
+
+        assertEquals("Number of master keys", 1, numberOfMasterKeys);
+        assertEquals("Number of authentication keys", 1, numberOfAuthenticationKeys);
+        assertEquals("Number of encryption keys", 1, numberOfEncryptionKeys);
+    }
+
     @Then("^the stored keys are not equal to the received keys$")
     public void theStoredKeysAreNotEqualToTheReceivedKeys() throws Throwable {
         final String keyDeviceIdentification = Keys.DEVICE_IDENTIFICATION;
