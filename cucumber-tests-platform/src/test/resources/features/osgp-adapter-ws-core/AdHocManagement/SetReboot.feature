@@ -5,8 +5,8 @@ Feature: PublicLightingAdhocManagement Set Reboot
   NOTE: Authorisation is tested in Basic OSGP Functions - PBI119
 
   @OslpMockServer
-  Scenario: Set Reboot
-    Given an oslp device
+  Scenario: Set reboot
+    Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
     And the device returns a set reboot response "OK" over OSLP
     When receiving a set reboot request

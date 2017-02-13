@@ -6,7 +6,7 @@ Feature: PublicLightingAdhocManagement Set Transition
 
   @OslpMockServer
   Scenario Outline: Set Transition
-    Given an oslp device
+    Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
     And the device returns a set transition response "OK" over OSLP
     When receiving a set transition request
@@ -43,7 +43,7 @@ Feature: PublicLightingAdhocManagement Set Transition
       | Message | UNKNOWN_DEVICE |
 
   Scenario Outline: Set Transition with invalid data
-    Given an oslp device
+    Given an ssld device
       | DeviceIdentification | TEST1024000000001 |
     When receiving a set transition request
       | DeviceIdentification | TEST1024000000001 |

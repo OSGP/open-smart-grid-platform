@@ -5,7 +5,7 @@ Feature: PublicLightingAdhocManagement Resume Schedule
 
   @OslpMockServer
   Scenario Outline: Resume Schedule
-    Given an oslp device
+    Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | HasSchedule          | true              |
     And the device returns a resume schedule response "OK" over OSLP
@@ -30,7 +30,7 @@ Feature: PublicLightingAdhocManagement Resume Schedule
 
   @OslpMockServer
   Scenario Outline: Resume Schedule for a device with no has schedule
-    Given an oslp device
+    Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | HasSchedule          | false             |
     When receiving a resume schedule request

@@ -1,4 +1,4 @@
-Feature: FirmwareManagement GetFirmware
+Feature: FirmwareManagement get firmware
   As OSGP 
   I want to manage the firmware of a device
   In order to ...
@@ -6,7 +6,7 @@ Feature: FirmwareManagement GetFirmware
   # Note: All devices return multiple firmwares. How to solve this?
   @OslpMockServer
   Scenario Outline: Get firmware version
-    Given an oslp device
+    Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Status               | Active            |
       | Organization         | TestOrganization  |
@@ -37,7 +37,7 @@ Feature: FirmwareManagement GetFirmware
       | Message   | UNKNOWN_DEVICE  |
 
   Scenario: Get the firmware version for an unregistered device
-    Given an oslp device
+    Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | PublicKeyPresent     | false             |
     When receiving a get firmware version request

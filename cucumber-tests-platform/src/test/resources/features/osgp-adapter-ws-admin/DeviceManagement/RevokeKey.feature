@@ -4,7 +4,7 @@ Feature: AdminDeviceManagement Revoke Key
   In order to ...
 
   Scenario: Revoke Key For Device
-    Given an oslp device
+    Given an ssld device
       | DeviceIdentification | TEST1024000000001 |
     When receiving a revoke key request
       | DeviceIdentification | TEST1024000000001 |
