@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Transient;
 
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
+import com.alliander.osgp.cucumber.platform.Keys;
 import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.Oslp.Message;
@@ -453,9 +454,9 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
     private int doGetNextSequence() {
         int sequenceNumberValue = 1;
 
-        if (ScenarioContext.Current().get("NumberToAddAsNextSequenceNumber") != null) {
+        if (ScenarioContext.Current().get(Keys.NUMBER_TO_ADD_TO_SEQUENCE_NUMBER) != null) {
             final String numberToAddAsNextSequenceNumber = ScenarioContext.Current()
-                    .get("NumberToAddAsNextSequenceNumber").toString();
+                    .get(Keys.NUMBER_TO_ADD_TO_SEQUENCE_NUMBER).toString();
             if (!numberToAddAsNextSequenceNumber.isEmpty()) {
                 sequenceNumberValue = Integer.parseInt(numberToAddAsNextSequenceNumber);
             }
