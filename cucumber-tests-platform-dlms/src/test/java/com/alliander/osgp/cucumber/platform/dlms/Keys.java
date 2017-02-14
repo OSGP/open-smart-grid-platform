@@ -38,6 +38,9 @@ public class Keys extends com.alliander.osgp.cucumber.platform.Keys {
     public static final String HLS3ACTIVE = "Hls3active";
     public static final String HLS4ACTIVE = "Hls4active";
     public static final String HLS5ACTIVE = "Hls5active";
+    public static final String LLS1_ACTIVE = "Lls1active";
+    public static final String USE_HDLC = "UseHdlc";
+    public static final String USE_SN = "UseSn";
     public static final String ICC_ID = "IccId";
     public static final String IN_DEBUG_MODE = "InDebugMode";
     public static final String IN_MAINTENANCE = "InMaintenance";

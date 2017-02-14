@@ -267,14 +267,17 @@ public class DlmsDeviceSteps {
 
     private void createDlmsDeviceInProtocolAdapterDatabase(final Map<String, String> inputSettings) {
         final DlmsDeviceBuilder dlmsDeviceBuilder = new DlmsDeviceBuilder().withSettings(inputSettings);
+
         if (inputSettings.containsKey(Keys.GATEWAY_DEVICE_IDENTIFICATION)) {
-            // MBUS devices dont need these keys.
-            dlmsDeviceBuilder.getEncryptionSecurityKeyBuilder().disable();
-            dlmsDeviceBuilder.getMasterSecurityKeyBuilder().disable();
-            dlmsDeviceBuilder.getAuthenticationSecurityKeyBuilder().disable();
+            dlmsDeviceBuilder.getMbusEncryptionSecurityKeyBuilder().enable();
+            dlmsDeviceBuilder.getMbusMasterSecurityKeyBuilder().enable();
+        } else if (inputSettings.containsKey(Keys.LLS1_ACTIVE) && "true".equals(inputSettings.get(Keys.LLS1_ACTIVE))) {
+            dlmsDeviceBuilder.getPasswordBuilder().enable();
         } else {
-            dlmsDeviceBuilder.getMbusEncryptionSecurityKeyBuilder().disable();
-            dlmsDeviceBuilder.getMbusMasterSecurityKeyBuilder().disable();
+            dlmsDeviceBuilder.getEncryptionSecurityKeyBuilder().enable();
+            dlmsDeviceBuilder.getMasterSecurityKeyBuilder().enable();
+            dlmsDeviceBuilder.getAuthenticationSecurityKeyBuilder().enable();
+
         }
 
         final DlmsDevice dlmsDevice = dlmsDeviceBuilder.build();
