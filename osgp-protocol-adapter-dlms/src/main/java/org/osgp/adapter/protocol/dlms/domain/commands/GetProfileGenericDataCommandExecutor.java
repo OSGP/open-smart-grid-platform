@@ -28,6 +28,7 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.CaptureObjectDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CaptureObjectItemDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValueDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ObisCodeValuesDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileEntryDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileEntryItemDto;
@@ -228,9 +229,17 @@ AbstractCommandExecutor<ProfileGenericDataRequestDto, ProfileGenericDataResponse
     private ProfileEntryDto makeNumericProfileEntryDto(final DataObject dataObject, final ObjectDataInfo dataObjectInfo) {
         try {
             long value = this.dlmsHelperService.readLong(dataObject, "read long");
-            return new ProfileEntryDto(value);
+            if (dataObjectInfo.scalarUnit != null) {
+                DlmsMeterValueDto meterValue = this.dlmsHelperService.getScaledMeterValue(dataObject,
+                        dataObjectInfo.scalarUnit, "getScaledMeterValue");
+                return new ProfileEntryDto(meterValue.getValue());
+            } else {
+                return new ProfileEntryDto(value);
+            }
         } catch (ProtocolAdapterException e) {
-            return null;
+            LOGGER.error("Error creating ProfileEntryDto from " + dataObject + " :" + e.getMessage());
+            final String dbgInfo = this.dlmsHelperService.getDebugInfo(dataObject);
+            return new ProfileEntryDto(dbgInfo);
         }
     }
 
