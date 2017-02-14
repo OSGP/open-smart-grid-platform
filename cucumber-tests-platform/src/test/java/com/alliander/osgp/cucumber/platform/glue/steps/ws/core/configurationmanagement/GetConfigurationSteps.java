@@ -121,15 +121,7 @@ public class GetConfigurationSteps {
     @Then("^the platform buffers a get configuration response message for device \"([^\"]*)\"$")
     public void thePlatformBufferesAGetConfigurationResponseMessageForDevice(final String deviceIdentification,
             final Map<String, String> expectedResponseData) throws Throwable {
-        final GetConfigurationAsyncRequest request = new GetConfigurationAsyncRequest();
-        final AsyncRequest asyncRequest = new AsyncRequest();
-        asyncRequest.setDeviceId(deviceIdentification);
-        asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
-        request.setAsyncRequest(asyncRequest);
-
-        final GetConfigurationResponse response = Wait.ForResult(() -> {
-            return this.client.getGetConfiguration(request);
-        });
+        final GetConfigurationResponse response = this.getResponse(deviceIdentification);
 
         if (expectedResponseData.containsKey(Keys.KEY_RESULT)) {
             Assert.assertEquals(getEnum(expectedResponseData, Keys.KEY_RESULT, OsgpResultType.class),
@@ -137,10 +129,7 @@ public class GetConfigurationSteps {
         }
 
         final Configuration configuration = response.getConfiguration();
-
-        if (configuration == null) {
-            Assert.assertNotNull(configuration);
-        }
+        Assert.assertNotNull(configuration);
 
         if (expectedResponseData.containsKey(Keys.KEY_LIGHTTYPE)
                 && !expectedResponseData.get(Keys.KEY_LIGHTTYPE).isEmpty() && configuration.getLightType() != null) {
@@ -245,12 +234,23 @@ public class GetConfigurationSteps {
         }
     }
 
+    private GetConfigurationResponse getResponse(final String deviceIdentification) throws InterruptedException {
+        final GetConfigurationAsyncRequest request = new GetConfigurationAsyncRequest();
+        final AsyncRequest asyncRequest = new AsyncRequest();
+        asyncRequest.setDeviceId(deviceIdentification);
+        asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
+        request.setAsyncRequest(asyncRequest);
+
+        return Wait.ForResult(() -> {
+            return this.client.getGetConfiguration(request);
+        });
+    }
+
     @Then("^the platform buffers a get configuration response message for device \"([^\"]*)\" contains soap fault$")
     public void thePlatformBufferesAGetConfigurationResponseMessageForDeviceContainsSoapFault(
             final String deviceIdentification, final Map<String, String> expectedResponseData) throws Throwable {
         try {
-            this.thePlatformBufferesAGetConfigurationResponseMessageForDevice(deviceIdentification,
-                    expectedResponseData);
+            this.getResponse(deviceIdentification);
         } catch (final SoapFaultClientException ex) {
             Assert.assertEquals(getString(expectedResponseData, Keys.KEY_MESSAGE), ex.getMessage());
         }
