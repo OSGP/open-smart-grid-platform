@@ -5,7 +5,7 @@ Feature: PublicLightingAdhocManagement Set Light
 
   @OslpMockServer
   Scenario Outline: Receive A Set Light Request With A Single Light Value
-    Given an oslp device
+    Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
     And the device returns a set light response "OK" over OSLP
     When receiving a set light request
@@ -64,7 +64,7 @@ Feature: PublicLightingAdhocManagement Set Light
 
   @OslpMockServer
   Scenario Outline: Receive A Set Light Request With Multiple Light Values
-    Given an oslp device
+    Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | relayType            | LIGHT             |
     And the device returns a set light response "OK" over OSLP

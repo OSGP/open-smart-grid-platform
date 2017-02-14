@@ -5,7 +5,7 @@ Feature: TariffSwitchingScheduleManagement Set Tariff Schedule
 
   @OslpMockServer
   Scenario Outline: Set tariff schedule
-    Given an oslp device
+    Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | RelayType            | TARIFF            |
     And the device returns a set tariff schedule response "OK" over OSLP
@@ -38,7 +38,7 @@ Feature: TariffSwitchingScheduleManagement Set Tariff Schedule
 
   @OslpMockServer
   Scenario: Failed set tariff schedule
-    Given an oslp device
+    Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | RelayType            | TARIFF            |
     And the device returns a set tariff schedule response "FAILURE" over OSLP
@@ -63,7 +63,7 @@ Feature: TariffSwitchingScheduleManagement Set Tariff Schedule
 
   @OslpMockServer
   Scenario: Rejected set tariff schedule
-    Given an oslp device
+    Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | RelayType            | TARIFF            |
     And the device returns a set tariff schedule response "REJECTED" over OSLP
@@ -87,7 +87,7 @@ Feature: TariffSwitchingScheduleManagement Set Tariff Schedule
       | Message | Device reports rejected |
 
   Scenario: Set tariff schedule with invalid schedule
-    Given an oslp device
+    Given an ssld device
       | DeviceIdentification | TEST1024000000001 |
       | RelayType            | TARIFF            |
     When receiving a set tariff schedule request
@@ -106,7 +106,7 @@ Feature: TariffSwitchingScheduleManagement Set Tariff Schedule
   # Note: HasScheduled is set to 'false' because the response type is 'NOT_OK', but should be 'OK'
   @OslpMockServer
   Scenario Outline: Set tariff schedule with 50 schedules # Success
-    Given an oslp device
+    Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | RelayType            | TARIFF            |
     And the device returns a set tariff schedule response "OK" over OSLP
@@ -134,7 +134,7 @@ Feature: TariffSwitchingScheduleManagement Set Tariff Schedule
       | ABSOLUTEDAY | 2016-01-01 | 2016-12-31 | 18:00:00.000 | 0,true       | 2016-12-15    |
 
   Scenario Outline: Set tariff schedule with 51 schedules # Fail
-    Given an oslp device
+    Given an ssld device
       | DeviceIdentification | TEST1024000000001 |
       | RelayType            | TARIFF            |
     When receiving a set tariff schedule request for 51 schedules
