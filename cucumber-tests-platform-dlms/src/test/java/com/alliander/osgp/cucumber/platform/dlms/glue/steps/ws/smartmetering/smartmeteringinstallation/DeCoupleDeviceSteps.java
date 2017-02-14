@@ -12,9 +12,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
@@ -35,8 +33,6 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 public class DeCoupleDeviceSteps extends AbstractSmartMeteringSteps {
-
-    protected static final Map<String, String> PROPERTIES_MAP = new HashMap<>();
 
     @Autowired
     private SmartMeteringInstallationClient smartMeteringInstallationClient;
