@@ -7,7 +7,7 @@
  */
 package com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.smartmeteringconfiguration;
 
-import static com.alliander.osgp.platform.cucumber.core.Helpers.getString;
+import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
 
 import java.util.Map;
 
@@ -15,10 +15,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alliander.osgp.platform.cucumber.steps.Defaults;
-import com.alliander.osgp.platform.cucumber.steps.Keys;
-import com.alliander.osgp.platform.cucumber.support.ServiceEndpoint;
-import com.alliander.osgp.platform.dlms.cucumber.hooks.SimulatePushedAlarmsHooks;
+import com.alliander.osgp.cucumber.platform.Defaults;
+import com.alliander.osgp.cucumber.platform.Keys;
+import com.alliander.osgp.cucumber.platform.dlms.hooks.SimulatePushedAlarmsHooks;
+import com.alliander.osgp.cucumber.platform.dlms.support.ServiceEndpoint;
 
 import cucumber.api.java.en.When;
 
