@@ -18,11 +18,23 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.cucumber.platform.config.PlatformApplicationConfiguration;
 
+/**
+ * Generic class with wait methods.
+ */
 @Component
 public class Wait {
 
+    /**
+     * Platform configuration is needed for timeout settings.
+     */
     private static PlatformApplicationConfiguration configuration;
 
+    /**
+     * Autowire the configuration.
+     *
+     * @param configuration
+     *            The platform configuration.
+     */
     @Autowired
     public Wait(final PlatformApplicationConfiguration configuration) {
         Wait.configuration = configuration;
@@ -39,7 +51,7 @@ public class Wait {
      * @throws InterruptedException
      */
     public static <T> T ForResult(final Callable<T> task) throws InterruptedException {
-        final Logger LOGGER = LoggerFactory.getLogger(Wait.class);
+        final Logger logger = LoggerFactory.getLogger(Wait.class);
 
         T response = null;
         boolean success = false;
@@ -48,22 +60,34 @@ public class Wait {
             if (count / 1000 > configuration.getTimeout()) {
                 Assert.fail("Timeout");
             }
-            LOGGER.info("polling in waitForResult");
+            logger.info("... polling in Wait.ForResult ...");
 
             try {
                 // Call the code to run
                 response = task.call();
+
+                // If we get here set success to true, so make sure that we
+                // stop.
                 success = true;
                 // We have a response, so exit
                 // the while loop immediately
                 break;
             } catch (final Exception ex) {
-                // Do nothing
-                LOGGER.info("exception: " + ex.getMessage());
+                handleException(logger, ex);
             }
             count += configuration.getSleepTime();
             TimeUnit.MILLISECONDS.sleep(configuration.getSleepTime());
         }
         return response;
+    }
+
+    /**
+     * Logs the exception.
+     *
+     * @param logger
+     * @param ex
+     */
+    public static void handleException(final Logger logger, final Exception ex) {
+        logger.error("Caught an exception: [{}], stacktrace [{}]", ex.getMessage(), ex.getStackTrace());
     }
 }

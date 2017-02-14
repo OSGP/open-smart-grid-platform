@@ -105,6 +105,33 @@ public class StartDeviceSteps extends GlueBase {
         }
     }
 
+    @Then("^the platform buffers no start device test response message for device \"([^\"]*)\"$")
+    public void thePlatformBuffersNoStartDeviceTestResponseMessageForDevice(final String deviceIdentification)
+            throws InterruptedException {
+        final StartDeviceTestAsyncRequest request = new StartDeviceTestAsyncRequest();
+        final AsyncRequest asyncRequest = new AsyncRequest();
+        asyncRequest.setDeviceId(deviceIdentification);
+        asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
+        request.setAsyncRequest(asyncRequest);
+
+        int count = 0;
+        while (count / 1000 < this.configuration.getTimeout()) {
+
+            try {
+                final StartDeviceTestResponse response = this.client.getStartDeviceTestResponse(request);
+
+                if (!response.getResult().equals(OsgpResultType.NOT_FOUND)) {
+                    Assert.fail("Received a start device response.");
+                }
+            } catch (final Exception ex) {
+                // Do nothing
+            }
+
+            count += this.configuration.getSleepTime();
+            Thread.sleep(this.configuration.getSleepTime());
+        }
+    }
+
     /**
      *
      * @param expectedResponseData
