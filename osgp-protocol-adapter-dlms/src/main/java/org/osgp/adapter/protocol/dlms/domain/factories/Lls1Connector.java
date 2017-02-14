@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -15,9 +15,7 @@ import org.apache.commons.codec.binary.Hex;
 import org.openmuc.jdlms.AuthenticationMechanism;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.SecuritySuite;
-import org.openmuc.jdlms.SecuritySuite.EncryptionMechanism;
 import org.openmuc.jdlms.TcpConnectionBuilder;
-import org.osgp.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
@@ -32,19 +30,15 @@ import com.alliander.osgp.shared.exceptionhandling.EncrypterException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.security.EncryptionService;
 
-public class Hls5Connector extends SecureDlmsConnector {
+public class Lls1Connector extends SecureDlmsConnector {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Hls5Connector.class);
-
-    private final RecoverKeyProcessInitiator recoverKeyProcessInitiator;
+    private static final Logger LOGGER = LoggerFactory.getLogger(Lls1Connector.class);
 
     @Autowired
     private EncryptionService encryptionService;
 
-    public Hls5Connector(final RecoverKeyProcessInitiator recoverKeyProcessInitiator, final int responseTimeout,
-            final int logicalDeviceAddress, final int clientAccessPoint) {
+    public Lls1Connector(final int responseTimeout, final int logicalDeviceAddress, final int clientAccessPoint) {
         super(responseTimeout, logicalDeviceAddress, clientAccessPoint);
-        this.recoverKeyProcessInitiator = recoverKeyProcessInitiator;
     }
 
     @Override
@@ -63,15 +57,11 @@ public class Hls5Connector extends SecureDlmsConnector {
             throw new TechnicalException(ComponentType.PROTOCOL_DLMS,
                     "The IP address is not found: " + device.getIpAddress());
         } catch (final IOException e) {
-            if (device.hasNewSecurityKey()) {
-                // Queue key recovery process.
-                this.recoverKeyProcessInitiator.initiate(device.getDeviceIdentification(), device.getIpAddress());
-            }
             throw new ConnectionException(e);
         } catch (final EncrypterException e) {
-            LOGGER.error("decryption on security keys went wrong for device: {}", device.getDeviceIdentification(), e);
+            LOGGER.error("decryption of security keys failed for device: {}", device.getDeviceIdentification(), e);
             throw new TechnicalException(ComponentType.PROTOCOL_DLMS,
-                    "decryption on security keys went wrong for device: " + device.getDeviceIdentification());
+                    "decryption of security keys failed for device: " + device.getDeviceIdentification());
         }
     }
 
@@ -79,27 +69,22 @@ public class Hls5Connector extends SecureDlmsConnector {
     @Override
     protected void setSecurity(final DlmsDevice device, final TcpConnectionBuilder tcpConnectionBuilder)
             throws TechnicalException {
-        final SecurityKey validAuthenticationKey = this.getSecurityKey(device, SecurityKeyType.E_METER_AUTHENTICATION);
-        final SecurityKey validEncryptionKey = this.getSecurityKey(device, SecurityKeyType.E_METER_ENCRYPTION);
 
-        // Decode the key from Hexstring to bytes
-        byte[] authenticationKey = null;
-        byte[] encryptionKey = null;
+        final SecurityKey validPassword = this.getSecurityKey(device, SecurityKeyType.PASSWORD);
+
+        // Decode the key final from Hexstring final to bytes
+        byte[] password = null;
         try {
-            authenticationKey = Hex.decodeHex(validAuthenticationKey.getKey().toCharArray());
-            encryptionKey = Hex.decodeHex(validEncryptionKey.getKey().toCharArray());
+            password = Hex.decodeHex(validPassword.getKey().toCharArray());
         } catch (final DecoderException e) {
             throw new EncrypterException(e);
         }
 
         // Decrypt the key, discard ivBytes
-        final byte[] decryptedAuthentication = this.encryptionService.decrypt(authenticationKey);
-        final byte[] decryptedEncryption = this.encryptionService.decrypt(encryptionKey);
+        final byte[] decryptedPassword = this.encryptionService.decrypt(password);
 
-        final SecuritySuite securitySuite = SecuritySuite.builder().setAuthenticationKey(decryptedAuthentication)
-                .setAuthenticationMechanism(AuthenticationMechanism.HLS5_GMAC)
-                .setGlobalUnicastEncryptionKey(decryptedEncryption)
-                .setEncryptionMechanism(EncryptionMechanism.AES_GMC_128).build();
+        final SecuritySuite securitySuite = SecuritySuite.builder()
+                .setAuthenticationMechanism(AuthenticationMechanism.LOW).setPassword(decryptedPassword).build();
 
         tcpConnectionBuilder.setSecuritySuite(securitySuite).setClientId(this.clientAccessPoint);
     }

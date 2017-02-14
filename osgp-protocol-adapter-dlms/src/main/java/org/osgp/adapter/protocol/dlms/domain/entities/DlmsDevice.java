@@ -43,6 +43,9 @@ public class DlmsDevice extends AbstractEntity {
     private String iccId;
 
     @Column
+    private boolean lls1Active = true;
+
+    @Column
     private boolean hls3Active;
 
     @Column
@@ -107,9 +110,9 @@ public class DlmsDevice extends AbstractEntity {
     @Override
     public String toString() {
         return String.format(
-                "DlmsDevice[deviceId=%s, hls3=%b, hls4=%b, hls5=%b, ipAddress=%s, port=%s, logicalId=%s, clientId=%s]",
-                this.deviceIdentification, this.hls3Active, this.hls4Active, this.hls5Active, this.ipAddress,
-                this.port, this.logicalId, this.clientId);
+                "DlmsDevice[deviceId=%s, lls1=%b, hls3=%b, hls4=%b, hls5=%b, ipAddress=%s, port=%s, logicalId=%s, clientId=%s]",
+                this.deviceIdentification, this.lls1Active, this.hls3Active, this.hls4Active, this.hls5Active, this.ipAddress, this.port,
+                this.logicalId, this.clientId);
     }
 
     @Override
@@ -166,6 +169,14 @@ public class DlmsDevice extends AbstractEntity {
 
     public String getIccId() {
         return this.iccId;
+    }
+
+    public boolean isLls1Active() {
+        return this.lls1Active;
+    }
+
+    public void setLls1Active(final boolean lls1Active) {
+        this.lls1Active = lls1Active;
     }
 
     public boolean isHls3Active() {
