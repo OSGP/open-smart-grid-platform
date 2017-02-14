@@ -79,6 +79,10 @@ public class Keys {
     public static final String KEY_DEVICE_HLS3ACTIVE = "HLS3_active";
     public static final String KEY_DEVICE_HLS4ACTIVE = "HLS4_active";
     public static final String KEY_DEVICE_HLS5ACTIVE = "HLS5_active";
+    public static final String KEY_DEVICE_MASTERKEY = "Master_key";
+    public static final String KEY_DEVICE_AUTHENTICATIONKEY = "Authentication_key";
+    public static final String KEY_DEVICE_ENCRYPTIONKEY = "Encryption_key";
+    public static final String KEY_DEVICE_DELIVERY_DATE = "DeliveryDate";
     public static final String KEY_DEVICE_ICCID = "ICC_id";
 
     public static final String KEY_DEVICE_IDENTIFICATION = "DeviceIdentification";
@@ -86,7 +90,6 @@ public class Keys {
     public static final String KEY_DEVICE_IDENTIFICATION_E_LABEL = "DeviceIdentificationE";
     public static final String KEY_DEVICE_IDENTIFICATION_G_LABEL = "DeviceIdentificationG";
     public static final String KEY_DEVICE_MAINTENANCE = "DeviceMaintenance";
-    public static final String KEY_DEVICE_MASTERKEY = "Master_key";
     public static final String KEY_DEVICE_MODEL = "DeviceModel";
     public static final String KEY_DEVICE_MODEL_DESCRIPTION = "Description";
     public static final String KEY_DEVICE_MODEL_FILESTORAGE = "FileStorage";

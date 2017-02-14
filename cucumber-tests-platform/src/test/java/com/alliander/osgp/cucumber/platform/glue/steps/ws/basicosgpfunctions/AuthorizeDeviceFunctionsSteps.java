@@ -16,7 +16,9 @@ import java.util.Map;
 
 import javax.naming.OperationNotSupportedException;
 import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
 
+import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,11 +43,22 @@ import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotifi
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusRequest;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.LightValue;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.ResumeScheduleRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.SetLightRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.SetTransitionRequest;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.TransitionType;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.GetActualPowerUsageRequest;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.GetPowerUsageHistoryRequest;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.HistoryTermType;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.devicemonitoring.TimePeriod;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.schedulemanagement.ActionTimeType;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.schedulemanagement.Schedule;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.schedulemanagement.TriggerType;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.schedulemanagement.WeekDayType;
+import com.alliander.osgp.adapter.ws.schema.publiclighting.schedulemanagement.WindowType;
+import com.alliander.osgp.adapter.ws.schema.tariffswitching.schedulemanagement.TariffSchedule;
+import com.alliander.osgp.adapter.ws.schema.tariffswitching.schedulemanagement.TariffValue;
 import com.alliander.osgp.cucumber.platform.Defaults;
 import com.alliander.osgp.cucumber.platform.Keys;
 import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
@@ -63,7 +76,6 @@ import com.alliander.osgp.cucumber.platform.support.ws.tariffswitching.TariffSwi
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 
-import cucumber.api.PendingException;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
@@ -208,6 +220,10 @@ public class AuthorizeDeviceFunctionsSteps {
             Assert.assertTrue(!(response instanceof SoapFaultClientException));
         } else {
             Assert.assertTrue(this.throwable != null);
+
+            if (!this.throwable.getMessage().equals("METHOD_NOT_ALLOWED_FOR_OWNER")) {
+                Assert.assertEquals("UNAUTHORIZED", this.throwable.getMessage());
+            }
         }
     }
 
@@ -255,17 +271,21 @@ public class AuthorizeDeviceFunctionsSteps {
         final SetLightRequest request = new SetLightRequest();
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+        final LightValue lightValue = new LightValue();
+        lightValue.setIndex(0);
+        lightValue.setDimValue(100);
+        lightValue.setOn(true);
+        request.getLightValue().add(lightValue);
         ScenarioContext.Current().put(Keys.RESPONSE, this.publicLightingAdHocManagementClient.setLight(request));
     }
 
     private void getStatus(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        // Note: This GetStatusRequest is from PublicLighting AdhocManagement
-        final GetStatusRequest request = new GetStatusRequest();
+        final com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.GetStatusRequest request = new com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.GetStatusRequest();
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        ScenarioContext.Current().put(Keys.RESPONSE, this.publicLightingAdHocManagementClient.getStatus(request));
+        ScenarioContext.Current().put(Keys.RESPONSE, this.coreDeviceInstallationClient.getStatus(request));
     }
 
     private void getDeviceAuthorization(final Map<String, String> requestParameters)
@@ -321,7 +341,24 @@ public class AuthorizeDeviceFunctionsSteps {
         final com.alliander.osgp.adapter.ws.schema.publiclighting.schedulemanagement.SetScheduleRequest request = new com.alliander.osgp.adapter.ws.schema.publiclighting.schedulemanagement.SetScheduleRequest();
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-
+        final Schedule schedule = new Schedule();
+        schedule.setActionTime(ActionTimeType.SUNRISE);
+        schedule.setIndex(0);
+        schedule.setWeekDay(WeekDayType.ALL);
+        schedule.setTime(DateTime.now().toString());
+        schedule.setIsEnabled(true);
+        schedule.setMinimumLightsOn(10);
+        final com.alliander.osgp.adapter.ws.schema.publiclighting.schedulemanagement.LightValue lightValue = new com.alliander.osgp.adapter.ws.schema.publiclighting.schedulemanagement.LightValue();
+        lightValue.setDimValue(100);
+        lightValue.setIndex(1);
+        lightValue.setOn(true);
+        schedule.getLightValue().add(lightValue);
+        schedule.setTriggerType(TriggerType.LIGHT_TRIGGER);
+        final WindowType windowType = new WindowType();
+        windowType.setMinutesAfter(0);
+        windowType.setMinutesBefore(0);
+        schedule.setTriggerWindow(windowType);
+        request.getSchedules().add(schedule);
         ScenarioContext.Current().put(Keys.RESPONSE, this.publicLightingScheduleManagementClient.setSchedule(request));
     }
 
@@ -331,6 +368,17 @@ public class AuthorizeDeviceFunctionsSteps {
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
 
+        final TariffSchedule schedule = new TariffSchedule();
+        final TariffValue tariffValue = new TariffValue();
+        tariffValue.setHigh(true);
+        tariffValue.setIndex(1);
+        schedule.getTariffValue().add(tariffValue);
+        schedule.setIndex(0);
+        schedule.setWeekDay(com.alliander.osgp.adapter.ws.schema.tariffswitching.schedulemanagement.WeekDayType.ALL);
+        schedule.setTime(DateTime.now().toString());
+        schedule.setIsEnabled(true);
+        schedule.setMinimumLightsOn(10);
+        request.getSchedules().add(schedule);
         ScenarioContext.Current().put(Keys.RESPONSE, this.tariffSwitchingScheduleManagementClient.setSchedule(request));
     }
 
@@ -346,8 +394,6 @@ public class AuthorizeDeviceFunctionsSteps {
         config.setPreferredLinkType(Defaults.CONFIGURATION_PREFERRED_LINKTYPE);
         config.setMeterType(Defaults.CONFIGURATION_METER_TYPE);
         config.setShortTermHistoryIntervalMinutes(Defaults.SHORT_INTERVAL);
-        config.setLongTermHistoryInterval(Defaults.LONG_INTERVAL);
-        config.setLongTermHistoryIntervalType(Defaults.INTERVAL_TYPE);
 
         request.setConfiguration(config);
 
@@ -383,10 +429,17 @@ public class AuthorizeDeviceFunctionsSteps {
     }
 
     private void getPowerUsageHistory(final Map<String, String> requestParameters)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+            throws WebServiceSecurityException, GeneralSecurityException, IOException, DatatypeConfigurationException {
         final GetPowerUsageHistoryRequest request = new GetPowerUsageHistoryRequest();
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+        final TimePeriod timePeriod = new TimePeriod();
+        timePeriod.setEndTime(
+                DatatypeFactory.newInstance().newXMLGregorianCalendar(DateTime.now().toGregorianCalendar()));
+        timePeriod.setStartTime(
+                DatatypeFactory.newInstance().newXMLGregorianCalendar(DateTime.now().toGregorianCalendar()));
+        request.setTimePeriod(timePeriod);
+        request.setHistoryTermType(HistoryTermType.LONG);
 
         ScenarioContext.Current().put(Keys.RESPONSE,
                 this.publicLightingDeviceMonitoringClient.getPowerUsageHistory(request));
@@ -415,6 +468,7 @@ public class AuthorizeDeviceFunctionsSteps {
         final SetTransitionRequest request = new SetTransitionRequest();
         request.setDeviceIdentification(
                 getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+        request.setTransitionType(TransitionType.DAY_NIGHT);
 
         ScenarioContext.Current().put(Keys.RESPONSE, this.publicLightingAdHocManagementClient.setTransition(request));
     }
@@ -422,24 +476,36 @@ public class AuthorizeDeviceFunctionsSteps {
     private void deactivateDevice(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final DeactivateDeviceRequest request = new DeactivateDeviceRequest();
-        request.setDeviceIdentification(Defaults.DEFAULT_DEVICE_IDENTIFICATION);
+        request.setDeviceIdentification(
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
         ScenarioContext.Current().put(Keys.RESPONSE, this.adminDeviceManagementClient.deactivateDevice(request));
     }
 
-    private void setDeviceAuthorization(final Map<String, String> requestParameters) {
-        throw new PendingException();
+    private void setDeviceAuthorization(final Map<String, String> requestParameters)
+            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+        final UpdateDeviceAuthorisationsRequest request = new UpdateDeviceAuthorisationsRequest();
+        final DeviceAuthorisation deviceAuthorisation = new DeviceAuthorisation();
+        deviceAuthorisation.setDeviceIdentification(
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+        deviceAuthorisation.setOrganisationIdentification(Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
+        deviceAuthorisation.setRevoked(false);
+        request.getDeviceAuthorisations().add(deviceAuthorisation);
+        ScenarioContext.Current().put(Keys.RESPONSE,
+                this.adminDeviceManagementClient.updateDeviceAuthorisations(request));
     }
 
     private void getTariffStatus(final Map<String, String> requestParameters) throws WebServiceSecurityException {
         final com.alliander.osgp.adapter.ws.schema.tariffswitching.adhocmanagement.GetStatusRequest request = new com.alliander.osgp.adapter.ws.schema.tariffswitching.adhocmanagement.GetStatusRequest();
-        request.setDeviceIdentification(Defaults.DEFAULT_DEVICE_IDENTIFICATION);
+        request.setDeviceIdentification(
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
         ScenarioContext.Current().put(Keys.RESPONSE, this.tariffSwitchingAdHocManagementClient.getStatus(request));
     }
 
     private void getLightStatus(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final GetStatusRequest request = new GetStatusRequest();
-        request.setDeviceIdentification(Defaults.DEFAULT_DEVICE_IDENTIFICATION);
+        request.setDeviceIdentification(
+                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
         ScenarioContext.Current().put(Keys.RESPONSE, this.publicLightingAdHocManagementClient.getStatus(request));
     }
 }

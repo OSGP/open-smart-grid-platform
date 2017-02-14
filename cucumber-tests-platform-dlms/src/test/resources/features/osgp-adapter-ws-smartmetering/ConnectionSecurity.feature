@@ -19,7 +19,6 @@ Feature: SmartMetering Connection security
     Then the actual meter reads result should be returned
       | DeviceIdentification | TEST1024000000001 |
 
-
   Scenario: Communicate with HLS5 encryption
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |

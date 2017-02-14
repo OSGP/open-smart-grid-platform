@@ -111,11 +111,10 @@ public class FindOrganizationsSteps {
         final Organisation organisation = response.getOrganisations().get(expectedIndex - 1);
         Assert.assertEquals(getString(expectedResult, Keys.KEY_ORGANIZATION_IDENTIFICATION,
                 Defaults.DEFAULT_ORGANIZATION_IDENTIFICATION), organisation.getOrganisationIdentification());
-        Assert.assertEquals(getString(expectedResult, Keys.KEY_ORGANIZATION_NAME, Defaults.DEFAULT_ORGANIZATION_NAME),
+        Assert.assertEquals(getString(expectedResult, Keys.KEY_NAME, Defaults.DEFAULT_ORGANIZATION_NAME),
                 organisation.getName());
         final String domains = getString(expectedResult, Keys.KEY_DOMAINS, Defaults.DEFAULT_DOMAINS);
-        Assert.assertEquals("[" + domains.substring(0, domains.length() - 1).replaceAll(";", ", ") + "]",
-                organisation.getDomains().toString());
+        Assert.assertEquals("[" + domains.replaceAll(";", ", ") + "]", organisation.getDomains().toString());
         Assert.assertEquals(getString(expectedResult, Keys.KEY_PREFIX, Defaults.DEFAULT_PREFIX),
                 organisation.getPrefix());
     }
