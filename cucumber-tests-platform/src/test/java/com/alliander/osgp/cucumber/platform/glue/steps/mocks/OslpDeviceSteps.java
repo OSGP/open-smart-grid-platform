@@ -639,9 +639,9 @@ public class OslpDeviceSteps {
 
         int eventNotificationTypes = 0;
         if (getString(requestParameters, Keys.KEY_EVENTNOTIFICATIONTYPES, Defaults.DEFAULT_EVENTNOTIFICATIONTYPES)
-                .trim().split(",").length > 0) {
+                .trim().split(Keys.SEPARATOR_COMMA).length > 0) {
             for (final String eventNotificationType : getString(requestParameters, Keys.KEY_EVENTNOTIFICATIONTYPES,
-                    Defaults.DEFAULT_EVENTNOTIFICATIONTYPES).trim().split(",")) {
+                    Defaults.DEFAULT_EVENTNOTIFICATIONTYPES).trim().split(Keys.SEPARATOR_COMMA)) {
                 if (!eventNotificationType.isEmpty()) {
                     eventNotificationTypes = eventNotificationTypes
                             + Enum.valueOf(EventNotificationType.class, eventNotificationType.trim()).ordinal();
