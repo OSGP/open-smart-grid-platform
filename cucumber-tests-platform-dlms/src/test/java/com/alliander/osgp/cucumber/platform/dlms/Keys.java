@@ -13,12 +13,10 @@ package com.alliander.osgp.cucumber.platform.dlms;
  */
 public class Keys extends com.alliander.osgp.cucumber.platform.Keys {
 
-    public static final String ACTIVE_FIRMWARE = "active_firmware";
     public static final String ALIAS = "Alias";
     public static final String CHALLENGE_LENGTH = "ChallengeLength";
     public static final String CHANNEL = "Channel";
     public static final String CLIENT_ID = "ClientId";
-    public static final String COMM_MODULE_ACTIVE_FIRMWARE = "communication_module_active_firmware";
     public static final String COMMUNICATION_METHOD = "CommunicationMethod";
     public static final String COMMUNICATION_PROVIDER = "CommunicationProvider";
     public static final String CONTAINER_CITY = "ContainerCity";
@@ -32,8 +30,6 @@ public class Keys extends com.alliander.osgp.cucumber.platform.Keys {
     public static final String DEVICE_MODEL = "DeviceModel";
     // other
     public static final String DEVICE_TYPE = "DeviceType";
-    // Default keys for security_key
-    public static final String DLMS_DEVICE_ID = "DlmsDeviceId";
     public static final String GAS_DEVICE_IDENTIFICATION = "GasDeviceIdentification";
     public static final String GATEWAY_DEVICE_IDENTIFICATION = "GatewayDeviceIdentification";
 
@@ -51,16 +47,24 @@ public class Keys extends com.alliander.osgp.cucumber.platform.Keys {
     public static final String IS_ACTIVE = "Active";
     public static final String LOGICAL_ID = "LogicalId";
     public static final String MODULE_ACTIVE_FIRMWARE = "module_active_firmware";
-    public static final String NETWORK_ADDRESS = "NetworkAddress";
-    public static final String PORT = "Port";
-    public static final Object PROTOCOL = "Protocol";
-    public static final Object PROTOCOL_VERSION = "ProtocolVersion";
+    public static final String COMM_MODULE_ACTIVE_FIRMWARE = "communication_module_active_firmware";
+    public static final String ACTIVE_FIRMWARE = "active_firmware";
+    public static final String KEY_DEVICE_MASTERKEY = "Master_key";
+    public static final String KEY_DEVICE_AUTHENTICATIONKEY = "Authentication_key";
+    public static final String KEY_DEVICE_ENCRYPTIONKEY = "Encryption_key";
+
+    // Default keys for security_key
+    public static final String DLMS_DEVICE_ID = "DlmsDeviceId";
     public static final String SECURITY_KEY_A = "SecurityKeyAuthentication";
     public static final String SECURITY_KEY_E = "SecurityKeyEncryption";
     public static final String SECURITY_KEY_M = "SecurityKeyMaster";
     public static final String SECURITY_TYPE_A = "SecurityKeyTypeAuthentication";
     public static final String SECURITY_TYPE_E = "SecurityKeyTypeEncryption";
     public static final String SECURITY_TYPE_M = "SecurityKeyTypeMaster";
+    public static final String NETWORK_ADDRESS = "NetworkAddress";
+    public static final String PORT = "Port";
+    public static final Object PROTOCOL = "Protocol";
+    public static final Object PROTOCOL_VERSION = "ProtocolVersion";
     public static final String SELECTIVE_ACCESS_SUPPORTED = "SelectiveAccessSupported";
     public static final String SUPPLIER = "Supplier";
     public static final String TECHNICAL_INSTALLATION_DATE = "TechnicalInstallationDate";
