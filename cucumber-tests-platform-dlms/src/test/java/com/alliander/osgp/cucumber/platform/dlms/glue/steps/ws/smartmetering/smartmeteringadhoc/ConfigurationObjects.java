@@ -44,9 +44,10 @@ public class ConfigurationObjects extends SmartMeteringStepsBase {
     public void allTheConfigurationItemsShouldBeReturned(final Map<String, String> settings) throws Throwable {
         PROPERTIES_MAP.put(Keys.KEY_DEVICE_IDENTIFICATION,
                 getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-        PROPERTIES_MAP
-                .put(Keys.KEY_CORRELATION_UID, ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
-        PROPERTIES_MAP.put(MAX_TIME, "1800000");
+        PROPERTIES_MAP.put(Keys.KEY_CORRELATION_UID,
+                ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID).toString());
+        PROPERTIES_MAP.put(MAX_TIME, "300000"); // 5 min = 5 x 60 x 1000 mil.
+                                                // sec.
 
         this.requestRunner(TestStepStatus.OK, PROPERTIES_MAP, TEST_CASE_NAME_RESPONSE_REQUEST, TEST_CASE_XML,
                 TEST_SUITE_XML);
