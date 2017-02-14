@@ -1,5 +1,5 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -31,8 +31,8 @@ public class Lls0Connector extends DlmsConnector {
     public Lls0Connector(final int responseTimeout, final int logicalDeviceAddress) {
         this(responseTimeout, logicalDeviceAddress, DlmsConnector.DLMS_PUBLIC_CLIENT_ID);
     }
-    
-    public Lls0Connector(int responseTimeout, int logicalDeviceAddress, final int clientAccessPoint) {
+
+    public Lls0Connector(final int responseTimeout, final int logicalDeviceAddress, final int clientAccessPoint) {
         this.responseTimeout = responseTimeout;
         this.logicalDeviceAddress = logicalDeviceAddress;
         this.clientAccessPoint = clientAccessPoint;
