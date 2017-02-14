@@ -29,7 +29,7 @@ public class SecurityKeyBuilder implements CucumberBuilder<SecurityKey> {
     private Date validFrom = new DateTime(UtcDateHelper.getUtcDate()).minusDays(1).toDate();
     private Date validTo = Defaults.VALID_TO;
     private Long version = Defaults.VERSION;
-    private String key = Defaults.SECURITY_KEY_A;
+    private String key = Defaults.SECURITY_KEY_A_DB;
 
     private DlmsDevice dlmsDevice;
 

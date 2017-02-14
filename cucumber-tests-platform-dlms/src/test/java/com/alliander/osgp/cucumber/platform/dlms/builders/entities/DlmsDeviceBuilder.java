@@ -38,11 +38,11 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     private boolean inDebugMode = Defaults.IN_DEBUG_MODE;
 
     private final SecurityKeyBuilder authenticationSecurityKeyBuilder = new SecurityKeyBuilder().setSecurityKeyType(
-            SecurityKeyType.E_METER_AUTHENTICATION).setKey(Defaults.SECURITY_KEY_A);
+            SecurityKeyType.E_METER_AUTHENTICATION).setKey(Defaults.SECURITY_KEY_A_DB);
     private final SecurityKeyBuilder encryptionSecurityKeyBuilder = new SecurityKeyBuilder().setSecurityKeyType(
-            SecurityKeyType.E_METER_ENCRYPTION).setKey(Defaults.SECURITY_KEY_E);
+            SecurityKeyType.E_METER_ENCRYPTION).setKey(Defaults.SECURITY_KEY_E_DB);
     private final SecurityKeyBuilder masterSecurityKeyBuilder = new SecurityKeyBuilder().setSecurityKeyType(
-            SecurityKeyType.E_METER_MASTER).setKey(Defaults.SECURITY_KEY_M);
+            SecurityKeyType.E_METER_MASTER).setKey(Defaults.SECURITY_KEY_M_DB);
     private final SecurityKeyBuilder mbusEncryptionSecurityKeyBuilder = new SecurityKeyBuilder().setSecurityKeyType(
             SecurityKeyType.G_METER_ENCRYPTION).setKey(Defaults.SECURITY_KEY_G_ENCRYPTION);
     private final SecurityKeyBuilder mbusMasterSecurityKeyBuilder = new SecurityKeyBuilder().setSecurityKeyType(
