@@ -235,15 +235,15 @@ Feature: BasicOsgpFunctions Authorizing Device Functions
       | SET_TRANSITION           | MONITORING          | false   |
       | SET_TRANSITION           | METADATA_MANAGEMENT | false   |
       | DEACTIVATE_DEVICE        | OWNER               | true    |
-      | DEACTIVATE_DEVICE        | INSTALLATION        | false   |
+      | DEACTIVATE_DEVICE        | INSTALLATION        | true    |
       | DEACTIVATE_DEVICE        | AD_HOC              | true    |
-      | DEACTIVATE_DEVICE        | MANAGEMENT          | false   |
-      | DEACTIVATE_DEVICE        | FIRMWARE            | false   |
-      | DEACTIVATE_DEVICE        | SCHEDULING          | false   |
-      | DEACTIVATE_DEVICE        | TARIFF_SCHEDULING   | false   |
-      | DEACTIVATE_DEVICE        | CONFIGURATION       | false   |
-      | DEACTIVATE_DEVICE        | MONITORING          | false   |
-      | DEACTIVATE_DEVICE        | METADATA_MANAGEMENT | false   |
+      | DEACTIVATE_DEVICE        | MANAGEMENT          | true    |
+      | DEACTIVATE_DEVICE        | FIRMWARE            | true    |
+      | DEACTIVATE_DEVICE        | SCHEDULING          | true    |
+      | DEACTIVATE_DEVICE        | TARIFF_SCHEDULING   | true    |
+      | DEACTIVATE_DEVICE        | CONFIGURATION       | true    |
+      | DEACTIVATE_DEVICE        | MONITORING          | true    |
+      | DEACTIVATE_DEVICE        | METADATA_MANAGEMENT | true    |
 
   Scenario Outline: Change device authorization
     Given a device
@@ -253,6 +253,7 @@ Feature: BasicOsgpFunctions Authorizing Device Functions
       | DeviceIdentification  | TEST1024000000001        |
       | DeviceFunction        | SET_DEVICE_AUTHORIZATION |
       | DelegateFunctionGroup | <DelegateFunctionGroup>  |
+      | DeviceFunctionGroup   | <DeviceFunctionGroup>    |
     Then the device function response is "<Allowed>"
 
     Examples: 
