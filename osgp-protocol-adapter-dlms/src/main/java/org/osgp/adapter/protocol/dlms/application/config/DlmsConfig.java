@@ -27,8 +27,10 @@ import org.jboss.netty.logging.Slf4JLoggerFactory;
 import org.osgp.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.osgp.adapter.protocol.dlms.application.threads.RecoverKeyProcess;
 import org.osgp.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
-import org.osgp.adapter.protocol.dlms.domain.factories.Hls5Connector;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnector;
+import org.osgp.adapter.protocol.dlms.domain.factories.Hls5Connector;
+import org.osgp.adapter.protocol.dlms.domain.factories.Lls0Connector;
+import org.osgp.adapter.protocol.dlms.domain.factories.Lls1Connector;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.networking.DlmsChannelHandlerServer;
@@ -53,8 +55,8 @@ import com.alliander.osgp.shared.application.config.AbstractConfig;
 @Configuration
 @EnableTransactionManagement()
 @PropertySources({ @PropertySource("classpath:osgp-adapter-protocol-dlms.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-    @PropertySource(value = "file:${osgp/AdapterProtocolDlms/config}", ignoreResourceNotFound = true), })
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/AdapterProtocolDlms/config}", ignoreResourceNotFound = true), })
 public class DlmsConfig extends AbstractConfig {
     private static final String PROPERTY_NAME_DLMS_PORT_SERVER = "dlms.port.server";
 
@@ -80,8 +82,8 @@ public class DlmsConfig extends AbstractConfig {
         bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
             @Override
             public ChannelPipeline getPipeline() throws ProtocolAdapterException {
-                final ChannelPipeline pipeline = DlmsConfig.this.createChannelPipeline(DlmsConfig.this
-                        .dlmsChannelHandlerServer());
+                final ChannelPipeline pipeline = DlmsConfig.this
+                        .createChannelPipeline(DlmsConfig.this.dlmsChannelHandlerServer());
 
                 LOGGER.info("Created new DLMS handler pipeline for server");
 
@@ -138,9 +140,19 @@ public class DlmsConfig extends AbstractConfig {
 
     @Bean
     @Autowired
-    public DlmsConnector publicConnector(@Value("${jdlms.response_timeout}") final int responseTimeout,
+    public Lls1Connector lls1Connector(@Value("${jdlms.lls1.response.timeout}") final int responseTimeout,
+            @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress,
+            @Value("${jdlms.lls1.client.access.point}") final int clientAccessPoint) {
+        LOGGER.info("responseTimeout: {}, logicalDeviceAddress: {}, clientAccessPoint: {}", responseTimeout,
+                logicalDeviceAddress, clientAccessPoint);
+        return new Lls1Connector(responseTimeout, logicalDeviceAddress, clientAccessPoint);
+    }
+
+    @Bean
+    @Autowired
+    public DlmsConnector lls0Connector(@Value("${jdlms.response_timeout}") final int responseTimeout,
             @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress) {
-        return new DlmsConnector(responseTimeout, logicalDeviceAddress);
+        return new Lls0Connector(responseTimeout, logicalDeviceAddress);
     }
 
     @Bean
@@ -164,7 +176,8 @@ public class DlmsConfig extends AbstractConfig {
     }
 
     @Bean
-    public ScheduledExecutorService scheduledExecutorService(@Value("${executor.scheduled.poolsize}") final int poolsize) {
+    public ScheduledExecutorService scheduledExecutorService(
+            @Value("${executor.scheduled.poolsize}") final int poolsize) {
         return Executors.newScheduledThreadPool(poolsize);
     }
 }

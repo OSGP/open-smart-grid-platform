@@ -95,6 +95,9 @@ public class ConfigurationService {
     @Autowired
     private UpdateFirmwareCommandExecutor updateFirmwareCommandExecutor;
 
+    @Autowired
+    private ReEncryptionService reEncryptionService;
+
     public void setSpecialDays(final DlmsConnectionHolder conn, final DlmsDevice device,
             final SpecialDaysRequestDto specialDaysRequest) throws ProtocolAdapterException {
 
@@ -257,11 +260,21 @@ public class ConfigurationService {
              * SetKeysRequestDto containing authentication and encryption key,
              * while execute deals with a single key only.
              */
-            this.replaceKeyCommandExecutor.executeBundleAction(conn, device, keySet);
+            this.replaceKeyCommandExecutor.executeBundleAction(conn, device, this.reEncryptKeys(keySet));
         } catch (final ProtocolAdapterException e) {
             LOGGER.error("Unexpected exception during replaceKeys.", e);
             throw e;
         }
+    }
+
+    private SetKeysRequestDto reEncryptKeys(final SetKeysRequestDto keySet) throws ProtocolAdapterException {
+
+        final byte[] reEncryptedAuthenticationKey = this.reEncryptionService.reEncryptKey(keySet.getAuthenticationKey(),
+                SecurityKeyType.E_METER_AUTHENTICATION);
+        final byte[] reEncryptedEncryptionKey = this.reEncryptionService.reEncryptKey(keySet.getEncryptionKey(),
+                SecurityKeyType.E_METER_ENCRYPTION);
+
+        return new SetKeysRequestDto(reEncryptedAuthenticationKey, reEncryptedEncryptionKey);
     }
 
     public List<FirmwareVersionDto> updateFirmware(final DlmsConnectionHolder conn, final DlmsDevice device,
