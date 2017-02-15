@@ -16,6 +16,7 @@ import org.openmuc.jdlms.MethodParameter;
 import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.SecurityUtils;
 import org.openmuc.jdlms.SecurityUtils.KeyId;
+import org.osgp.adapter.protocol.dlms.application.services.ReEncryptionService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
@@ -61,6 +62,9 @@ AbstractCommandExecutor<ReplaceKeyCommandExecutor.KeyWrapper, DlmsDevice> {
     private EncryptionService encryptionService;
 
     @Autowired
+    private ReEncryptionService reEncryptionService;
+
+    @Autowired
     private DlmsDeviceRepository dlmsDeviceRepository;
 
     static class KeyWrapper {
@@ -100,7 +104,7 @@ AbstractCommandExecutor<ReplaceKeyCommandExecutor.KeyWrapper, DlmsDevice> {
             final ActionRequestDto actionRequestDto) throws ProtocolAdapterException {
 
         this.checkActionRequestType(actionRequestDto);
-        final SetKeysRequestDto setKeysRequestDto = (SetKeysRequestDto) actionRequestDto;
+        final SetKeysRequestDto setKeysRequestDto = this.reEncryptKeys((SetKeysRequestDto) actionRequestDto);
 
         LOGGER.info("Keys to set on the device {}: {}", device.getDeviceIdentification(), setKeysRequestDto);
 
@@ -113,6 +117,16 @@ AbstractCommandExecutor<ReplaceKeyCommandExecutor.KeyWrapper, DlmsDevice> {
                 SecurityKeyType.E_METER_ENCRYPTION));
 
         return new ActionResponseDto(REPLACE_KEYS + device.getDeviceIdentification() + WAS_SUCCESFULL);
+    }
+
+    private SetKeysRequestDto reEncryptKeys(final SetKeysRequestDto setKeysRequestDto) throws ProtocolAdapterException {
+
+        final byte[] reEncryptedAuthenticationKey = this.reEncryptionService
+                .reEncryptKey(setKeysRequestDto.getAuthenticationKey(), SecurityKeyType.E_METER_AUTHENTICATION);
+        final byte[] reEncryptedEncryptionKey = this.reEncryptionService
+                .reEncryptKey(setKeysRequestDto.getEncryptionKey(), SecurityKeyType.E_METER_ENCRYPTION);
+
+        return new SetKeysRequestDto(reEncryptedAuthenticationKey, reEncryptedEncryptionKey);
     }
 
     @Override
