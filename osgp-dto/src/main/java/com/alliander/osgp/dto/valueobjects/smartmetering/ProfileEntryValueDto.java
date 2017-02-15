@@ -11,7 +11,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class ProfileEntryDto implements Serializable {
+public class ProfileEntryValueDto implements Serializable {
 
     private static final long serialVersionUID = 2123390296585369209L;
 
@@ -20,23 +20,23 @@ public class ProfileEntryDto implements Serializable {
     private final BigDecimal floatValue;
     private final Long longValue;
 
-    public ProfileEntryDto(String stringValue) {
+    public ProfileEntryValueDto(String stringValue) {
         this(stringValue, null, null, null);
     }
 
-    public ProfileEntryDto(Date dateValue) {
+    public ProfileEntryValueDto(Date dateValue) {
         this(null, dateValue, null, null);
     }
 
-    public ProfileEntryDto(BigDecimal floatValue) {
+    public ProfileEntryValueDto(BigDecimal floatValue) {
         this(null, null, floatValue, null);
     }
 
-    public ProfileEntryDto(Long longValue) {
+    public ProfileEntryValueDto(Long longValue) {
         this(null, null, null, longValue);
     }
 
-    public ProfileEntryDto(String stringValue, Date dateValue, BigDecimal floatValue, Long longValue) {
+    public ProfileEntryValueDto(String stringValue, Date dateValue, BigDecimal floatValue, Long longValue) {
         super();
         this.stringValue = stringValue;
         this.dateValue = dateValue;

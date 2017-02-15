@@ -10,18 +10,18 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 import java.io.Serializable;
 import java.util.List;
 
-public class ProfileEntryItemDto implements Serializable {
+public class ProfileEntriesDto implements Serializable {
 
     private static final long serialVersionUID = 2123390296585369209L;
 
-    private List<ProfileEntryDto> profileEntry;
+    private List<ProfileEntryValueDto> profileEntryValues;
 
-    public ProfileEntryItemDto(List<ProfileEntryDto> profileEntry) {
+    public ProfileEntriesDto(List<ProfileEntryValueDto> profileEntryValues) {
         super();
-        this.profileEntry = profileEntry;
+        this.profileEntryValues = profileEntryValues;
     }
 
-    public List<ProfileEntryDto> getProfileEntry() {
-        return this.profileEntry;
+    public List<ProfileEntryValueDto> getProfileEntryValues() {
+        return this.profileEntryValues;
     }
 }

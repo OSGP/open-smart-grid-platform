@@ -499,25 +499,10 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="LogicalName" type="common:ObisCodeValues" />
-        <xsd:element name="CaptureObjects" type="common:CaptureObjectItem" minOccurs="0" maxOccurs="unbounded" />
-        <xsd:element name="ProfileEntries" type="common:ProfileEntryItem" minOccurs="0" maxOccurs="unbounded" />
+        <xsd:element name="CaptureObjects" type="common:CaptureObject" minOccurs="0" maxOccurs="unbounded" />
+        <xsd:element name="ProfileEntries" type="common:ProfileEntries" minOccurs="0" maxOccurs="unbounded" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
 
-
-  <!-- this one is used in bundle yet !? 
-  <xsd:complexType name="ProfileGenericDataResponseData">
-    <xsd:complexContent>
-      <xsd:extension base="common:Response">
-        <xsd:sequence>
-          <xsd:element name="PeriodType" type="tns:PeriodType" />
-          <xsd:element name="PeriodicMeterReads" type="tns:PeriodicMeterReads"
-            minOccurs="0" maxOccurs="unbounded" />
-        </xsd:sequence>
-      </xsd:extension>
-    </xsd:complexContent>
-  </xsd:complexType>
- -->
- 
 </xsd:schema>
