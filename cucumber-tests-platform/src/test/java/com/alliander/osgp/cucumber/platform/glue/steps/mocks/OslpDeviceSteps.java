@@ -644,7 +644,7 @@ public class OslpDeviceSteps {
                     Defaults.DEFAULT_EVENTNOTIFICATIONTYPES).trim().split(Keys.SEPARATOR_COMMA)) {
                 if (!eventNotificationType.isEmpty()) {
                     eventNotificationTypes = eventNotificationTypes
-                            + Enum.valueOf(EventNotificationType.class, eventNotificationType.trim()).value();
+                            + Enum.valueOf(EventNotificationType.class, eventNotificationType.trim()).getValue();
                 }
             }
         }
