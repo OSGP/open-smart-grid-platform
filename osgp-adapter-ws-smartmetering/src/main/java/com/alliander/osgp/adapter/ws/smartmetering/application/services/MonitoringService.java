@@ -179,7 +179,7 @@ public class MonitoringService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
-        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.PROFILE_GENERIC_DATA);
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_PROFILE_GENERIC_DATA);
 
         LOGGER.debug("enqueueProfileGenericDataRequestData called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -189,7 +189,7 @@ public class MonitoringService {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.PROFILE_GENERIC_DATA.toString(), messagePriority, scheduleTime);
+                SmartMeteringRequestMessageType.GET_PROFILE_GENERIC_DATA.toString(), messagePriority, scheduleTime);
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()

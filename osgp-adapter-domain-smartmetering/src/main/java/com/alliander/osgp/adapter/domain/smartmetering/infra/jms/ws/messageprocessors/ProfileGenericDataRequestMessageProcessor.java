@@ -29,7 +29,7 @@ public class ProfileGenericDataRequestMessageProcessor extends WebServiceRequest
      * @param deviceFunction
      */
     protected ProfileGenericDataRequestMessageProcessor() {
-        super(DeviceFunction.PROFILE_GENERIC_DATA);
+        super(DeviceFunction.GET_PROFILE_GENERIC_DATA);
     }
 
     @Override

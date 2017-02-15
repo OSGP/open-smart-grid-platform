@@ -30,7 +30,7 @@ public class ProfileGenericDataResponseMessageProcessor extends OsgpCoreResponse
     private MonitoringService monitoringService;
 
     protected ProfileGenericDataResponseMessageProcessor() {
-        super(DeviceFunction.PROFILE_GENERIC_DATA);
+        super(DeviceFunction.GET_PROFILE_GENERIC_DATA);
     }
 
     @Override

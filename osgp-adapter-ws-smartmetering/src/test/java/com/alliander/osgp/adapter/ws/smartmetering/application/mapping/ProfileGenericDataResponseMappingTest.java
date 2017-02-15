@@ -14,12 +14,12 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpUnitType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataResponse;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.CaptureObjectItemVo;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CaptureObjectVo;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ObisCodeValues;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryItemVo;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryVo;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntriesVo;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryValueVo;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponseVo;
 
 public class ProfileGenericDataResponseMappingTest {
@@ -28,15 +28,15 @@ public class ProfileGenericDataResponseMappingTest {
 
     @Test
     public void test() {
-        ProfileGenericDataResponseVo voResponse = this.makeValueObject();
+        ProfileGenericDataResponseVo voResponse = this.makeresponseVo();
         ProfileGenericDataResponse wsResponse = this.monitoringMapper.map(voResponse, ProfileGenericDataResponse.class);
         Assert.assertTrue(wsResponse != null && wsResponse instanceof ProfileGenericDataResponse);
     }
 
-    private ProfileGenericDataResponseVo makeValueObject() {
-        List<CaptureObjectItemVo> captureObjects = new ArrayList<CaptureObjectItemVo>();
+    private ProfileGenericDataResponseVo makeresponseVo() {
+        List<CaptureObjectVo> captureObjects = new ArrayList<CaptureObjectVo>();
         captureObjects.add(this.makeCaptureObjectVo());
-        List<ProfileEntryItemVo> profileEntries = new ArrayList<ProfileEntryItemVo>();
+        List<ProfileEntriesVo> profileEntries = new ArrayList<ProfileEntriesVo>();
         profileEntries.add(this.makeProfileEntryVo());
         profileEntries.add(this.makeProfileEntryVo());
         ProfileGenericDataResponseVo result = new ProfileGenericDataResponseVo(this.makeObisCode(), captureObjects,
@@ -48,14 +48,14 @@ public class ProfileGenericDataResponseMappingTest {
         return new ObisCodeValues((byte) 1, (byte) 1, (byte) 1, (byte) 1, (byte) 1, (byte) 1);
     }
 
-    private CaptureObjectItemVo makeCaptureObjectVo() {
-        return new CaptureObjectItemVo(new CaptureObjectVo(10L, "0.0.1.0.0.255", 10, 1, "kwu"));
+    private CaptureObjectVo makeCaptureObjectVo() {
+        return new CaptureObjectVo(10L, "0.0.1.0.0.255", 10, 1, OsgpUnitType.UNDEFINED.name());
     }
 
-    private ProfileEntryItemVo makeProfileEntryVo() {
-        List<ProfileEntryVo> entriesVo = new ArrayList<ProfileEntryVo>();
-        entriesVo.add(new ProfileEntryVo("test", null, null, null));
-        return new ProfileEntryItemVo(entriesVo);
+    private ProfileEntriesVo makeProfileEntryVo() {
+        List<ProfileEntryValueVo> entriesVo = new ArrayList<ProfileEntryValueVo>();
+        entriesVo.add(new ProfileEntryValueVo("test", null, null, null));
+        return new ProfileEntriesVo(entriesVo);
     }
 
 }

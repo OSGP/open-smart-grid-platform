@@ -16,14 +16,14 @@ public class CaptureObjectVo implements Serializable {
     private final long classId;
     private final String logicalName;
     private final int attribute;
-    private final int version;
+    private final int dataIndex;
     private final String unit;
 
-    public CaptureObjectVo(long classId, String logicalName, int attribute, int version, String unit) {
+    public CaptureObjectVo(long classId, String logicalName, int attribute, int dataIndex, String unit) {
         this.classId = classId;
         this.logicalName = logicalName;
         this.attribute = attribute;
-        this.version = version;
+        this.dataIndex = dataIndex;
         this.unit = unit;
     }
 
@@ -39,8 +39,8 @@ public class CaptureObjectVo implements Serializable {
         return this.attribute;
     }
 
-    public int getVersion() {
-        return this.version;
+    public int getDataIndex() {
+        return this.dataIndex;
     }
 
     public String getUnit() {

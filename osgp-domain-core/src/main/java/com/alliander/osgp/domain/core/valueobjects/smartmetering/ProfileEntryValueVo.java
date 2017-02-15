@@ -11,7 +11,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class ProfileEntryVo implements Serializable {
+public class ProfileEntryValueVo implements Serializable {
 
     private static final long serialVersionUID = 991045734132231709L;
 
@@ -20,7 +20,7 @@ public class ProfileEntryVo implements Serializable {
     private final BigDecimal floatValue;
     private final Long longValue;
 
-    public ProfileEntryVo(String stringValue, Date dateValue, BigDecimal floatValue, Long longValue) {
+    public ProfileEntryValueVo(String stringValue, Date dateValue, BigDecimal floatValue, Long longValue) {
         super();
         this.stringValue = stringValue;
         this.dateValue = dateValue;

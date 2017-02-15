@@ -49,7 +49,7 @@ public class ProfileGenericDataRequestDataVo implements Serializable, ActionRequ
 
     @Override
     public DeviceFunction getDeviceFunction() {
-        return DeviceFunction.PROFILE_GENERIC_DATA;
+        return DeviceFunction.GET_PROFILE_GENERIC_DATA;
     }
 
     @Override

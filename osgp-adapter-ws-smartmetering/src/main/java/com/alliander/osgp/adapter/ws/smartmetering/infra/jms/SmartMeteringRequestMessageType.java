@@ -40,5 +40,5 @@ public enum SmartMeteringRequestMessageType {
     UPDATE_FIRMWARE,
     ENABLE_DEBUGGING,
     DISABLE_DEBUGGING,
-    PROFILE_GENERIC_DATA;
+    GET_PROFILE_GENERIC_DATA;
 }

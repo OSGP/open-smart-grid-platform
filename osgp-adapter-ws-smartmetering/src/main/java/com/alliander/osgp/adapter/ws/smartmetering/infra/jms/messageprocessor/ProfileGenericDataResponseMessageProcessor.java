@@ -15,7 +15,7 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 public class ProfileGenericDataResponseMessageProcessor extends DomainResponseMessageProcessor {
 
     protected ProfileGenericDataResponseMessageProcessor() {
-        super(DeviceFunction.PROFILE_GENERIC_DATA);
+        super(DeviceFunction.GET_PROFILE_GENERIC_DATA);
     }
 
 }

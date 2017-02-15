@@ -8,7 +8,6 @@
 
 package com.alliander.osgp.adapter.domain.smartmetering.application.services;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -22,16 +21,15 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.CaptureObjectItemVo;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CaptureObjectVo;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryItemVo;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryVo;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpUnit;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntriesVo;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryValueVo;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponseVo;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CaptureObjectDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.CaptureObjectItemDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ObisCodeValuesDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileEntryDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileEntryItemDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileEntriesDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileEntryValueDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataResponseDto;
 
 public class ProfileGenericDataResponseMappingTest {
@@ -53,71 +51,49 @@ public class ProfileGenericDataResponseMappingTest {
 
     @Test
     public void test3() {
-        final ProfileEntryVo result = this.mapper.map(this.profileEntryDtoDate(), ProfileEntryVo.class);
-        Assert.assertTrue(result != null && result instanceof ProfileEntryVo);
+        final ProfileEntryValueVo result = this.mapper.map(this.profileEntryDtoDate(), ProfileEntryValueVo.class);
+        Assert.assertTrue(result != null && result instanceof ProfileEntryValueVo);
     }
 
     @Test
     public void test4() {
-        final CaptureObjectItemVo result = this.mapper.map(this.captureObjectItemDto(), CaptureObjectItemVo.class);
-        Assert.assertTrue(result != null && result instanceof CaptureObjectItemVo);
-    }
-
-    @Test
-    public void test5() {
-        final ProfileEntryItemVo result = this.mapper.map(this.profileEntryItemDto(), ProfileEntryItemVo.class);
-        Assert.assertTrue(result != null && result instanceof ProfileEntryItemVo);
+        final ProfileEntriesVo result = this.mapper.map(this.profileEntriesDto(), ProfileEntriesVo.class);
+        Assert.assertTrue(result != null && result instanceof ProfileEntriesVo);
     }
 
     private ProfileGenericDataResponseDto makeDto() {
-        final List<CaptureObjectItemDto> captureObjects = new ArrayList<CaptureObjectItemDto>();
-        captureObjects.add(new CaptureObjectItemDto(this.captureObjectDto()));
-        final List<ProfileEntryItemDto> profileEntries = this.makeProfileEntryItemDtos();
+        final List<CaptureObjectDto> captureObjects = new ArrayList<CaptureObjectDto>();
+        captureObjects.add(this.captureObjectDto());
+        final List<ProfileEntriesDto> profileEntries = this.makeProfileEntryItemDtos();
 
         ProfileGenericDataResponseDto dto = new ProfileGenericDataResponseDto(this.obisCodeDto(), captureObjects,
                 profileEntries);
         return dto;
     }
 
-    private List<ProfileEntryItemDto> makeProfileEntryItemDtos() {
-        List<ProfileEntryItemDto> result = new ArrayList<ProfileEntryItemDto>();
-        result.add(this.profileEntryItemDto());
+    private List<ProfileEntriesDto> makeProfileEntryItemDtos() {
+        List<ProfileEntriesDto> result = new ArrayList<ProfileEntriesDto>();
+        result.add(this.profileEntriesDto());
         return result;
     }
 
-    private ProfileEntryDto makeProfileEntryDto() {
-        ProfileEntryDto result = new ProfileEntryDto("test");
+    private ProfileEntryValueDto makeProfileEntryDto() {
+        ProfileEntryValueDto result = new ProfileEntryValueDto("test");
         return result;
-    }
-
-    private CaptureObjectItemDto captureObjectItemDto() {
-        return new CaptureObjectItemDto(new CaptureObjectDto(10L, "0.0.1.0.0.255", 2, 0, "kwu"));
     }
 
     private CaptureObjectDto captureObjectDto() {
-        return new CaptureObjectDto(10L, "0.0.1.0.0.255", 2, 0, "kwu");
+        return new CaptureObjectDto(10L, "0.0.1.0.0.255", 2, 0, OsgpUnit.KWH.name());
     }
 
-    private ProfileEntryItemDto profileEntryItemDto() {
-        List<ProfileEntryDto> entriesDto = new ArrayList<ProfileEntryDto>();
+    private ProfileEntriesDto profileEntriesDto() {
+        List<ProfileEntryValueDto> entriesDto = new ArrayList<ProfileEntryValueDto>();
         entriesDto.add(this.makeProfileEntryDto());
-        return new ProfileEntryItemDto(entriesDto);
+        return new ProfileEntriesDto(entriesDto);
     }
 
-    private ProfileEntryDto profileEntryDtoDouble() {
-        return new ProfileEntryDto(new BigDecimal(10.5));
-    }
-
-    private ProfileEntryDto profileEntryDtoLong() {
-        return new ProfileEntryDto(10L);
-    }
-
-    private ProfileEntryDto profileEntryDtoDate() {
-        return new ProfileEntryDto(new Date());
-    }
-
-    private ProfileEntryDto profileEntryDtoString() {
-        return new ProfileEntryDto("test");
+    private ProfileEntryValueDto profileEntryDtoDate() {
+        return new ProfileEntryValueDto(new Date());
     }
 
     private ObisCodeValuesDto obisCodeDto() {

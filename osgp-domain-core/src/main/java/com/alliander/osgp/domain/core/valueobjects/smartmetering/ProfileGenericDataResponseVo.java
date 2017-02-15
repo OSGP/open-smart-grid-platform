@@ -15,11 +15,11 @@ public class ProfileGenericDataResponseVo extends ActionResponse implements Seri
     private static final long serialVersionUID = -156966569210717657L;
 
     private final ObisCodeValues logicalName;
-    private final List<CaptureObjectItemVo> captureObjects;
-    private final List<ProfileEntryItemVo> profileEntries;
+    private final List<CaptureObjectVo> captureObjects;
+    private final List<ProfileEntriesVo> profileEntries;
 
-    public ProfileGenericDataResponseVo(ObisCodeValues logicalName, List<CaptureObjectItemVo> captureObjects,
-            List<ProfileEntryItemVo> profileEntries) {
+    public ProfileGenericDataResponseVo(ObisCodeValues logicalName, List<CaptureObjectVo> captureObjects,
+            List<ProfileEntriesVo> profileEntries) {
         super();
         this.logicalName = logicalName;
         this.captureObjects = captureObjects;
@@ -30,11 +30,11 @@ public class ProfileGenericDataResponseVo extends ActionResponse implements Seri
         return this.logicalName;
     }
 
-    public List<CaptureObjectItemVo> getCaptureObjects() {
+    public List<CaptureObjectVo> getCaptureObjects() {
         return this.captureObjects;
     }
 
-    public List<ProfileEntryItemVo> getProfileEntries() {
+    public List<ProfileEntriesVo> getProfileEntries() {
         return this.profileEntries;
     }
 
