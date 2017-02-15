@@ -30,6 +30,8 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericD
 public class ProfileGenericDataResponseConverter extends
 CustomConverter<ProfileGenericDataResponseVo, ProfileGenericDataResponse> {
 
+    private static final String UNIT_KWH = "30";
+
     @Override
     public ProfileGenericDataResponse convert(ProfileGenericDataResponseVo source,
             Type<? extends ProfileGenericDataResponse> destinationType) {
@@ -68,7 +70,13 @@ CustomConverter<ProfileGenericDataResponseVo, ProfileGenericDataResponse> {
 
     // TODO add more types OsgpUnitType, that correspond with sourceType
     private OsgpUnitType mapUnitType(String sourceType) {
-        return OsgpUnitType.KWH;
+        if (sourceType == null || sourceType.isEmpty()) {
+            return OsgpUnitType.UNDEFINED;
+        } else if (UNIT_KWH.equals(sourceType)) {
+            return OsgpUnitType.KWH;
+        } else {
+            return OsgpUnitType.UNDEFINED;
+        }
     }
 
     private ProfileEntryItem map(final ProfileEntryItemVo source) {
