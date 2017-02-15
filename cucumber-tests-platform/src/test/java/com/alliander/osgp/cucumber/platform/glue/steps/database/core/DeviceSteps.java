@@ -11,11 +11,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.cucumber.platform.Keys;
 import com.alliander.osgp.cucumber.platform.config.CoreDeviceConfiguration;
+import com.alliander.osgp.cucumber.platform.core.wait.Wait;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
@@ -61,27 +61,16 @@ public class DeviceSteps extends BaseDeviceSteps {
      */
     @And("^the device exists")
     public void theDeviceExists(final Map<String, String> settings) throws Throwable {
-        Device device = null;
-
-        boolean success = false;
-        int count = 0;
-        while (!success) {
-            if (count > this.configuration.getTimeout()) {
-                Assert.fail("Failed");
+        final Device device = Wait.ForResult(() -> {
+            final Device entity = this.deviceRepository
+                    .findByDeviceIdentification(settings.get(Keys.KEY_DEVICE_IDENTIFICATION));
+            if (entity == null) {
+                throw new Exception(
+                        "Device with identification [" + settings.get(Keys.KEY_DEVICE_IDENTIFICATION) + "]");
             }
 
-            count++;
-            Thread.sleep(1000);
-            LoggerFactory.getLogger(DeviceSteps.class).info("Sleeping ls " + count);
-
-            // Wait for next try to retrieve a response
-            device = this.deviceRepository.findByDeviceIdentification(settings.get(Keys.KEY_DEVICE_IDENTIFICATION));
-            if (device == null) {
-                continue;
-            }
-
-            success = true;
-        }
+            return entity;
+        });
 
         if (settings.containsKey("Alias")) {
             Assert.assertEquals(settings.get("Alias"), device.getAlias());
@@ -140,7 +129,15 @@ public class DeviceSteps extends BaseDeviceSteps {
      */
     @Then("^the device with id \"([^\"]*)\" does not exists$")
     public void theDeviceShouldBeRemoved(final String deviceIdentification) throws Throwable {
-        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+        final Device device = Wait.ForResult(() -> {
+            final Device entity = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+            if (entity == null) {
+                throw new Exception("Device with identification [" + deviceIdentification + "]");
+            }
+
+            return entity;
+        });
+
         final List<DeviceAuthorization> devAuths = this.deviceAuthorizationRepository.findByDevice(device);
 
         Assert.assertNotNull(device);
@@ -150,27 +147,16 @@ public class DeviceSteps extends BaseDeviceSteps {
     @Then("^the device with device identification \"([^\"]*)\" should be active$")
     public void theDeviceWithDeviceIdentificationShouldBeActive(final String deviceIdentification) throws Throwable {
 
-        boolean success = false;
-        int count = 0;
-        while (!success) {
-            if (count > this.configuration.getTimeout()) {
-                Assert.fail("Failed");
+        final Device device = Wait.ForResult(() -> {
+            final Device entity = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+            if (entity == null) {
+                throw new Exception("Device with identification [" + deviceIdentification + "]");
             }
 
-            // Wait for next try to retrieve a response
-            count++;
-            Thread.sleep(1000);
+            return entity;
+        });
 
-            final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-
-            if (device == null) {
-                continue;
-            }
-
-            Assert.assertTrue(device.isActive());
-
-            success = true;
-        }
+        Assert.assertTrue(device.isActive());
     }
 
     /**
@@ -180,26 +166,16 @@ public class DeviceSteps extends BaseDeviceSteps {
      */
     @Then("^the device with device identification \"([^\"]*)\" should be inactive$")
     public void theDeviceWithDeviceIdentificationShouldBeInActive(final String deviceIdentification) throws Throwable {
-        boolean success = false;
-        int count = 0;
-        while (!success) {
-            if (count > this.configuration.getTimeout()) {
-                Assert.fail("Failed");
+        final Device device = Wait.ForResult(() -> {
+            final Device entity = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+            if (entity == null) {
+                throw new Exception("Device with identification [" + deviceIdentification + "]");
             }
 
-            // Wait for next try to retrieve a response
-            count++;
-            Thread.sleep(1000);
+            return entity;
+        });
 
-            final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-            if (device == null) {
-                continue;
-            }
-
-            Assert.assertFalse(device.isActive());
-
-            success = true;
-        }
+        Assert.assertFalse(device.isActive());
     }
 
     /**
@@ -210,7 +186,14 @@ public class DeviceSteps extends BaseDeviceSteps {
      */
     @Then("^the device with id \"([^\"]*)\" exists$")
     public void theDeviceWithIdExists(final String deviceIdentification) throws Throwable {
-        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+        final Device device = Wait.ForResult(() -> {
+            final Device entity = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+            if (entity == null) {
+                throw new Exception("Device with identification [" + deviceIdentification + "]");
+            }
+
+            return entity;
+        });
         final List<DeviceAuthorization> devAuths = this.deviceAuthorizationRepository.findByDevice(device);
 
         Assert.assertNotNull(device);
