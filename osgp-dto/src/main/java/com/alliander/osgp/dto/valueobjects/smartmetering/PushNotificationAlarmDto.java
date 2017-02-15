@@ -18,13 +18,13 @@ public class PushNotificationAlarmDto implements Serializable {
 
     private final String deviceIdentification;
     private final EnumSet<AlarmTypeDto> alarms;
-    private final byte[] bytes;
+    private final byte[] alarmBytes;
 
     public PushNotificationAlarmDto(final String deviceIdentification, final Set<AlarmTypeDto> alarms,
-            final byte[] bytes) {
+            final byte[] alarmBytes) {
         this.deviceIdentification = deviceIdentification;
 
-        this.bytes = Arrays.copyOf(bytes, bytes.length);
+        this.alarmBytes = Arrays.copyOf(alarmBytes, alarmBytes.length);
 
         if (alarms == null || alarms.isEmpty()) {
             this.alarms = EnumSet.noneOf(AlarmTypeDto.class);
@@ -42,8 +42,8 @@ public class PushNotificationAlarmDto implements Serializable {
         return this.deviceIdentification;
     }
 
-    public byte[] getBytes() {
-        return this.bytes;
+    public byte[] getAlarmBytes() {
+        return this.alarmBytes;
     }
 
     public Set<AlarmTypeDto> getAlarms() {

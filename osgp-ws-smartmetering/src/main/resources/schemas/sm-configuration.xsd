@@ -120,40 +120,14 @@
         <xsd:element name="Result" type="common:OsgpResultType"
           minOccurs="1" />
         <xsd:element name="decodedMessage" type="xsd:string" />
-        <xsd:element name="encodedMessage" type="xsd:string" />
+        <xsd:element name="encodedMessage" type="xsd:hexBinary" />
         <xsd:sequence>
-          <xsd:element name="alarm" type="tns:AlarmType"
+          <xsd:element name="alarm" type="common:AlarmType"
             minOccurs="1" maxOccurs="unbounded" />
         </xsd:sequence>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
-
-  <xsd:simpleType name="AlarmType">
-    <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="CLOCK_INVALID" />
-      <xsd:enumeration value="REPLACE_BATTERY" />
-      <xsd:enumeration value="POWER_UP" />
-      <xsd:enumeration value="PROGRAM_MEMORY_ERROR" />
-      <xsd:enumeration value="RAM_ERROR" />
-      <xsd:enumeration value="NV_MEMORY_ERROR" />
-      <xsd:enumeration value="MEASUREMENT_SYSTEM_ERROR" />
-      <xsd:enumeration value="WATCHDOG_ERROR" />
-      <xsd:enumeration value="FRAUD_ATTEMPT" />
-      <xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_1" />
-      <xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_2" />
-      <xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_3" />
-      <xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_4" />
-      <xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_1" />
-      <xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_2" />
-      <xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_3" />
-      <xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_4" />
-      <xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_1" />
-      <xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_2" />
-      <xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_3" />
-      <xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_4" />
-    </xsd:restriction>
-  </xsd:simpleType>
 
   <xsd:complexType name="UpdateFirmwareRequestData">
     <xsd:complexContent>
