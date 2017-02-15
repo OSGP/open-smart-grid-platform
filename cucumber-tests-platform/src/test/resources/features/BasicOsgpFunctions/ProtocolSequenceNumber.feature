@@ -20,6 +20,7 @@ Feature: BasicOsgpFunctions Protocol Sequence Number
     # Note: In the file 'DeviceRegistrationService' is a check which doesn't accept numbers below and equal to '0'. When this happens the result is always false.
     Examples: 
       | AddNumberToSequenceNumber |
+      |                         0 |
       |                         1 |
       |                         2 |
       |                         3 |
@@ -43,9 +44,7 @@ Feature: BasicOsgpFunctions Protocol Sequence Number
     # Note: In the file 'DeviceRegistrationService' is a check which doesn't accept numbers below and equal to '0'. When this happens the result is always false.
     Examples: 
       | AddNumberToSequenceNumber |
+      |                        -8 |
       |                        -7 |
-      |                        -4 |
-      |                        -1 |
-      |                         0 |
       |                         7 |
-      |                        10 |
+      |                         8 |

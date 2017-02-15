@@ -25,12 +25,12 @@ import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
-import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.EventNotificationType;
 import com.alliander.osgp.cucumber.platform.Defaults;
 import com.alliander.osgp.cucumber.platform.Keys;
 import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
 import com.alliander.osgp.cucumber.platform.mocks.oslpdevice.DeviceSimulatorException;
 import com.alliander.osgp.cucumber.platform.mocks.oslpdevice.MockOslpServer;
+import com.alliander.osgp.domain.core.valueobjects.EventNotificationType;
 import com.alliander.osgp.dto.valueobjects.EventNotificationTypeDto;
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.Oslp.ActionTime;
@@ -644,7 +644,7 @@ public class OslpDeviceSteps {
                     Defaults.DEFAULT_EVENTNOTIFICATIONTYPES).trim().split(Keys.SEPARATOR_COMMA)) {
                 if (!eventNotificationType.isEmpty()) {
                     eventNotificationTypes = eventNotificationTypes
-                            + Enum.valueOf(EventNotificationType.class, eventNotificationType.trim()).ordinal();
+                            + Enum.valueOf(EventNotificationType.class, eventNotificationType.trim()).value();
                 }
             }
         }
