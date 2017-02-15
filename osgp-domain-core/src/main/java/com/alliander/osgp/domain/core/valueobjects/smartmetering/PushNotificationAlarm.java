@@ -18,11 +18,12 @@ public class PushNotificationAlarm implements Serializable {
 
     private final String deviceIdentification;
     private final EnumSet<AlarmType> alarms;
-    private final byte[] bytes;
+    private final byte[] alarmBytes;
 
-    public PushNotificationAlarm(final String deviceIdentification, final Set<AlarmType> alarms, final byte[] bytes) {
+    public PushNotificationAlarm(final String deviceIdentification, final Set<AlarmType> alarms,
+            final byte[] alarmBytes) {
         this.deviceIdentification = deviceIdentification;
-        this.bytes = Arrays.copyOf(bytes, bytes.length);
+        this.alarmBytes = Arrays.copyOf(alarmBytes, alarmBytes.length);
         if (alarms == null || alarms.isEmpty()) {
             this.alarms = EnumSet.noneOf(AlarmType.class);
         } else {
@@ -39,8 +40,8 @@ public class PushNotificationAlarm implements Serializable {
         return this.deviceIdentification;
     }
 
-    public byte[] getBytes() {
-        return this.bytes;
+    public byte[] getAlarmBytes() {
+        return this.alarmBytes;
     }
 
     public Set<AlarmType> getAlarms() {

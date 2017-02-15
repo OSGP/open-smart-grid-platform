@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessage;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
@@ -23,15 +22,8 @@ import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsQuery;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainer;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushNotificationAlarm;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest;
-import com.alliander.osgp.shared.exceptionhandling.CorrelationUidException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
@@ -50,9 +42,6 @@ public class MonitoringService {
     @Autowired
     private SmartMeteringRequestMessageSender smartMeteringRequestMessageSender;
 
-    @Autowired
-    private MeterResponseDataService meterResponseDataService;
-
     public String enqueuePeriodicMeterReadsRequestData(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final PeriodicMeterReadsQuery requestData,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
@@ -70,7 +59,7 @@ public class MonitoringService {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.REQUEST_PERIODIC_METER_DATA.toString(), messagePriority,scheduleTime);
+                SmartMeteringRequestMessageType.REQUEST_PERIODIC_METER_DATA.toString(), messagePriority, scheduleTime);
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
@@ -80,16 +69,6 @@ public class MonitoringService {
         this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
-    }
-
-    public MeterResponseData dequeuePeriodicMeterReadsResponse(final String correlationUid)
-            throws CorrelationUidException {
-        return this.meterResponseDataService.dequeue(correlationUid, PeriodicMeterReadsContainer.class);
-    }
-
-    public MeterResponseData dequeuePeriodicMeterReadsGasResponse(final String correlationUid)
-            throws CorrelationUidException {
-        return this.meterResponseDataService.dequeue(correlationUid, PeriodicMeterReadsContainerGas.class);
     }
 
     public String enqueueActualMeterReadsRequestData(@Identification final String organisationIdentification,
@@ -109,7 +88,7 @@ public class MonitoringService {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.REQUEST_ACTUAL_METER_DATA.toString(), messagePriority,scheduleTime);
+                SmartMeteringRequestMessageType.REQUEST_ACTUAL_METER_DATA.toString(), messagePriority, scheduleTime);
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
@@ -119,16 +98,6 @@ public class MonitoringService {
         this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
-    }
-
-    public MeterResponseData dequeueActualMeterReadsResponse(final String correlationUid)
-            throws CorrelationUidException {
-        return this.meterResponseDataService.dequeue(correlationUid, MeterReads.class);
-    }
-
-    public MeterResponseData dequeueActualMeterReadsGasResponse(final String correlationUid)
-            throws CorrelationUidException {
-        return this.meterResponseDataService.dequeue(correlationUid, MeterReadsGas.class);
     }
 
     public String enqueueReadAlarmRegisterRequestData(@Identification final String organisationIdentification,
@@ -148,7 +117,7 @@ public class MonitoringService {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.READ_ALARM_REGISTER.toString(), messagePriority,scheduleTime);
+                SmartMeteringRequestMessageType.READ_ALARM_REGISTER.toString(), messagePriority, scheduleTime);
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
@@ -160,13 +129,4 @@ public class MonitoringService {
         return correlationUid;
     }
 
-    public MeterResponseData dequeueReadAlarmRegisterResponse(final String correlationUid)
-            throws CorrelationUidException {
-        return this.meterResponseDataService.dequeue(correlationUid, AlarmRegister.class);
-    }
-
-    public MeterResponseData dequeueRetrievePushNotificationAlarmResponse(final String correlationUid)
-            throws CorrelationUidException {
-        return this.meterResponseDataService.dequeue(correlationUid, PushNotificationAlarm.class);
-    }
 }

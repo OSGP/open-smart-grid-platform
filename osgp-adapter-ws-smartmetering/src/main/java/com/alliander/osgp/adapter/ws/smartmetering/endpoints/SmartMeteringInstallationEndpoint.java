@@ -112,8 +112,8 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
         AddDeviceResponse response = null;
         try {
             response = new AddDeviceResponse();
-            final MeterResponseData meterResponseData = this.installationService.dequeueResponse(request
-                    .getCorrelationUid());
+            final MeterResponseData meterResponseData = this.meterResponseDataService
+                    .dequeue(request.getCorrelationUid());
 
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
             if (meterResponseData.getMessageData() instanceof String) {
@@ -169,7 +169,8 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
 
             LOGGER.error("Exception: {} while coupling devices: {} and {} on channel {} for organisation {}.",
                     new Object[] { e.getMessage(), deviceIdentification, mbusDeviceIdentification, channel,
-                            organisationIdentification }, e);
+                            organisationIdentification },
+                    e);
 
             this.handleException(e);
         }
@@ -191,8 +192,8 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
         CoupleMbusDeviceResponse response = null;
         try {
             response = new CoupleMbusDeviceResponse();
-            final MeterResponseData meterResponseData = this.installationService.dequeueResponse(request
-                    .getCorrelationUid());
+            final MeterResponseData meterResponseData = this.meterResponseDataService
+                    .dequeue(request.getCorrelationUid());
 
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
             if (meterResponseData.getMessageData() instanceof String) {
@@ -245,9 +246,8 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
             this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
 
-            LOGGER.error("Exception: {} while decoupling devices: {} and {} for organisation {}.",
-                    new Object[] { e.getMessage(), deviceIdentification, mbusDeviceIdentification,
-                    organisationIdentification }, e);
+            LOGGER.error("Exception: {} while decoupling devices: {} and {} for organisation {}.", new Object[] {
+                    e.getMessage(), deviceIdentification, mbusDeviceIdentification, organisationIdentification }, e);
 
             this.handleException(e);
         }
@@ -269,8 +269,8 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
         DeCoupleMbusDeviceResponse response = null;
         try {
             response = new DeCoupleMbusDeviceResponse();
-            final MeterResponseData meterResponseData = this.installationService.dequeueResponse(request
-                    .getCorrelationUid());
+            final MeterResponseData meterResponseData = this.meterResponseDataService
+                    .dequeue(request.getCorrelationUid());
 
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
             if (meterResponseData.getMessageData() instanceof String) {

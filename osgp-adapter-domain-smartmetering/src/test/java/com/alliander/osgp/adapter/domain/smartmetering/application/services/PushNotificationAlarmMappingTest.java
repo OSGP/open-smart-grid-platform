@@ -30,7 +30,7 @@ public class PushNotificationAlarmMappingTest {
 
     private final MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
 
-    private final byte[] bytes = "some bytes".getBytes();
+    private final byte[] alarmBytes = "some bytes".getBytes();
 
     // Test if mapping a PushNotificationAlarm object succeeds with null
     // variables
@@ -40,7 +40,7 @@ public class PushNotificationAlarmMappingTest {
         final String deviceId = null;
         final EnumSet<AlarmTypeDto> alarms = null;
         final PushNotificationAlarmDto pushNotificationAlarmDto = new PushNotificationAlarmDto(deviceId, alarms,
-                this.bytes);
+                this.alarmBytes);
         // actual mapping
         final PushNotificationAlarm pushNotificationAlarm = this.mapperFactory.getMapperFacade()
                 .map(pushNotificationAlarmDto, PushNotificationAlarm.class);
@@ -50,7 +50,8 @@ public class PushNotificationAlarmMappingTest {
         // the constructor creates an empty EnumSet when passed a null value.
         assertTrue(pushNotificationAlarmDto.getAlarms().isEmpty());
         assertTrue(pushNotificationAlarm.getAlarms().isEmpty());
-        assertTrue(Arrays.equals(pushNotificationAlarm.getBytes(), this.bytes));
+        assertTrue("The alarm byes should be the same after the mapping",
+                Arrays.equals(pushNotificationAlarm.getAlarmBytes(), this.alarmBytes));
     }
 
     // Test if mapping a PushNotificationAlarm object succeeds when the EnumSet
@@ -61,7 +62,7 @@ public class PushNotificationAlarmMappingTest {
         final String deviceId = "device1";
         final EnumSet<AlarmTypeDto> alarms = EnumSet.noneOf(AlarmTypeDto.class);
         final PushNotificationAlarmDto pushNotificationAlarmDto = new PushNotificationAlarmDto(deviceId, alarms,
-                this.bytes);
+                this.alarmBytes);
         // actual mapping
         final PushNotificationAlarm pushNotificationAlarm = this.mapperFactory.getMapperFacade()
                 .map(pushNotificationAlarmDto, PushNotificationAlarm.class);
@@ -69,7 +70,7 @@ public class PushNotificationAlarmMappingTest {
         assertNotNull(pushNotificationAlarm);
         assertEquals(deviceId, pushNotificationAlarm.getDeviceIdentification());
         assertTrue(pushNotificationAlarm.getAlarms().isEmpty());
-        assertTrue(Arrays.equals(pushNotificationAlarm.getBytes(), this.bytes));
+        assertTrue(Arrays.equals(pushNotificationAlarm.getAlarmBytes(), this.alarmBytes));
     }
 
     // Test if mapping a PushNotificationAlarm object succeeds when the EnumSet
@@ -80,7 +81,7 @@ public class PushNotificationAlarmMappingTest {
         final String deviceId = "device1";
         final EnumSet<AlarmTypeDto> alarms = EnumSet.of(AlarmTypeDto.CLOCK_INVALID);
         final PushNotificationAlarmDto pushNotificationAlarmDto = new PushNotificationAlarmDto(deviceId, alarms,
-                this.bytes);
+                this.alarmBytes);
         // actual mapping
         final PushNotificationAlarm pushNotificationAlarm = this.mapperFactory.getMapperFacade()
                 .map(pushNotificationAlarmDto, PushNotificationAlarm.class);
@@ -89,6 +90,6 @@ public class PushNotificationAlarmMappingTest {
         assertEquals(deviceId, pushNotificationAlarm.getDeviceIdentification());
         assertEquals(alarms.size(), pushNotificationAlarm.getAlarms().size());
         assertTrue(pushNotificationAlarm.getAlarms().contains(AlarmType.CLOCK_INVALID));
-        assertTrue(Arrays.equals(pushNotificationAlarm.getBytes(), this.bytes));
+        assertTrue(Arrays.equals(pushNotificationAlarm.getAlarmBytes(), this.alarmBytes));
     }
 }

@@ -27,7 +27,7 @@ public class PushNotificationAlarmMappingTest {
     private static final String DEVICE_ID = "id1";
     private static final AlarmType ALARMTYPE = AlarmType.CLOCK_INVALID;
 
-    private final byte[] bytes = "some bytes".getBytes();
+    private final byte[] alarmBytes = "some bytes".getBytes();
 
     /**
      * Tests if a PushNotificationAlarm object is mapped correctly with a filled
@@ -40,7 +40,7 @@ public class PushNotificationAlarmMappingTest {
         final Set<AlarmType> alarms = new TreeSet<>();
         alarms.add(ALARMTYPE);
 
-        final PushNotificationAlarm original = new PushNotificationAlarm(DEVICE_ID, alarms, this.bytes);
+        final PushNotificationAlarm original = new PushNotificationAlarm(DEVICE_ID, alarms, this.alarmBytes);
 
         // actual mapping
         final RetrievePushNotificationAlarmResponse mapped = this.monitoringMapper.map(original,
@@ -55,8 +55,6 @@ public class PushNotificationAlarmMappingTest {
 
         assertEquals(DEVICE_ID, mapped.getDeviceIdentification());
         assertEquals(ALARMTYPE.name(), mapped.getAlarmRegister().getAlarmTypes().get(0).name());
-        // TODO
-        // assertEquals(bytes, mapped.getAlarmRegister())
     }
 
     /**
@@ -67,7 +65,7 @@ public class PushNotificationAlarmMappingTest {
 
         // build test data
         final Set<AlarmType> alarms = new TreeSet<>();
-        final PushNotificationAlarm original = new PushNotificationAlarm(DEVICE_ID, alarms, this.bytes);
+        final PushNotificationAlarm original = new PushNotificationAlarm(DEVICE_ID, alarms, this.alarmBytes);
 
         // actual mapping
         final RetrievePushNotificationAlarmResponse mapped = this.monitoringMapper.map(original,
@@ -91,7 +89,7 @@ public class PushNotificationAlarmMappingTest {
 
         // build test data
         final Set<AlarmType> alarms = null;
-        final PushNotificationAlarm original = new PushNotificationAlarm(DEVICE_ID, alarms, this.bytes);
+        final PushNotificationAlarm original = new PushNotificationAlarm(DEVICE_ID, alarms, this.alarmBytes);
 
         // actual mapping
         final RetrievePushNotificationAlarmResponse mapped = this.monitoringMapper.map(original,

@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessage;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
@@ -31,8 +30,6 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfiguratio
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetKeysRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.exceptionhandling.UnknownCorrelationUidException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
 @Service(value = "wsSmartMeteringConfigurationService")
@@ -49,9 +46,6 @@ public class ConfigurationService {
 
     @Autowired
     private SmartMeteringRequestMessageSender smartMeteringRequestMessageSender;
-
-    @Autowired
-    private MeterResponseDataService meterResponseDataService;
 
     /**
      * @param organisationIdentification
@@ -88,17 +82,12 @@ public class ConfigurationService {
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
+                .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
-    }
-
-    public MeterResponseData dequeueSetAdministrativeStatusResponse(final String correlationUid)
-            throws FunctionalException {
-        return this.meterResponseDataService.dequeue(correlationUid);
     }
 
     /**
@@ -142,28 +131,13 @@ public class ConfigurationService {
                 SmartMeteringRequestMessageType.GET_FIRMWARE_VERSION.toString(), messagePriority, scheduleTime);
 
         // @formatter:off
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
-                deviceMessageMetadata).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
-    }
-
-    /**
-     * Retrieves the {@link MeterResponseData} for the given correlationId from
-     * the database
-     *
-     * @param correlationUid
-     * @return the {@link MeterResponseData} when it is found for the
-     *         correlationId else <code> null </code>
-     * @throws OsgpException
-     *             is thrown when the correlationId cannot be found in the
-     *             database.
-     */
-    public MeterResponseData dequeueResponse(final String correlationUid) throws OsgpException {
-        return this.meterResponseDataService.dequeue(correlationUid);
     }
 
     public String enqueueUpdateFirmwareRequest(@Identification final String organisationIdentification,
@@ -186,7 +160,7 @@ public class ConfigurationService {
                 messagePriority, scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata).request(firmwareIdentification).build();
+                .deviceMessageMetadata(deviceMessageMetadata).request(firmwareIdentification).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -194,20 +168,16 @@ public class ConfigurationService {
 
     }
 
-    public MeterResponseData dequeueUpdateFirmwareResponse(final String correlationUid) throws OsgpException {
-        return this.meterResponseDataService.dequeue(correlationUid);
-    }
-
     public String requestGetAdministrativeStatus(final String organisationIdentification,
             final String deviceIdentification, final int messagePriority, final Long scheduleTime)
-                    throws FunctionalException {
+            throws FunctionalException {
         return this.enqueueGetAdministrativeStatus(organisationIdentification, deviceIdentification, messagePriority,
                 scheduleTime);
     }
 
     private String enqueueGetAdministrativeStatus(final String organisationIdentification,
             final String deviceIdentification, final int messagePriority, final Long scheduleTime)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -226,17 +196,12 @@ public class ConfigurationService {
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata).request(AdministrativeStatusType.UNDEFINED).build();
+                .deviceMessageMetadata(deviceMessageMetadata).request(AdministrativeStatusType.UNDEFINED).build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
-    }
-
-    public MeterResponseData dequeueGetAdministrativeStatusResponse(final String correlationUid)
-            throws FunctionalException {
-        return this.meterResponseDataService.dequeue(correlationUid);
     }
 
     public String enqueueSetSpecialDaysRequest(@Identification final String organisationIdentification,
@@ -255,22 +220,17 @@ public class ConfigurationService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.SET_SPECIAL_DAYS.toString(), messagePriority, scheduleTime);
+                organisationIdentification, correlationUid, SmartMeteringRequestMessageType.SET_SPECIAL_DAYS.toString(),
+                messagePriority, scheduleTime);
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
+                .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
-    }
-
-    public MeterResponseData dequeueSetSpecialDaysResponse(final String correlationUid)
-            throws UnknownCorrelationUidException {
-        return this.meterResponseDataService.dequeue(correlationUid);
     }
 
     public String enqueueSetConfigurationObjectRequest(@Identification final String organisationIdentification,
@@ -294,17 +254,12 @@ public class ConfigurationService {
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
+                .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
-    }
-
-    public MeterResponseData dequeueSetConfigurationObjectResponse(final String correlationUid)
-            throws UnknownCorrelationUidException {
-        return this.meterResponseDataService.dequeue(correlationUid);
     }
 
     public String enqueueSetPushSetupAlarmRequest(@Identification final String organisationIdentification,
@@ -328,17 +283,12 @@ public class ConfigurationService {
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata).request(pushSetupAlarm).build();
+                .deviceMessageMetadata(deviceMessageMetadata).request(pushSetupAlarm).build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
-    }
-
-    public MeterResponseData dequeueSetPushSetupAlarmResponse(final String correlationUid)
-            throws UnknownCorrelationUidException {
-        return this.meterResponseDataService.dequeue(correlationUid);
     }
 
     public String enqueueSetPushSetupSmsRequest(@Identification final String organisationIdentification,
@@ -362,17 +312,12 @@ public class ConfigurationService {
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata).request(pushSetupSms).build();
+                .deviceMessageMetadata(deviceMessageMetadata).request(pushSetupSms).build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
-    }
-
-    public MeterResponseData dequeueSetPushSetupSmsResponse(final String correlationUid)
-            throws UnknownCorrelationUidException {
-        return this.meterResponseDataService.dequeue(correlationUid);
     }
 
     public String enqueueSetAlarmNotificationsRequest(@Identification final String organisationIdentification,
@@ -396,7 +341,7 @@ public class ConfigurationService {
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata).request(alarmSwitches).build();
+                .deviceMessageMetadata(deviceMessageMetadata).request(alarmSwitches).build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
@@ -425,8 +370,8 @@ public class ConfigurationService {
                 scheduleTime);
 
         // @formatter:off
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
-                deviceMessageMetadata).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
@@ -455,17 +400,12 @@ public class ConfigurationService {
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata).request(activityCalendar).build();
+                .deviceMessageMetadata(deviceMessageMetadata).request(activityCalendar).build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
-    }
-
-    public MeterResponseData dequeueSetActivityCalendarResponse(final String correlationUid)
-            throws UnknownCorrelationUidException {
-        return this.meterResponseDataService.dequeue(correlationUid);
     }
 
     public String enqueueReplaceKeysRequest(@Identification final String organisationIdentification,
@@ -489,17 +429,12 @@ public class ConfigurationService {
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata).request(keySet).build();
+                .deviceMessageMetadata(deviceMessageMetadata).request(keySet).build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
-    }
-
-    public MeterResponseData dequeueReplaceKeysResponse(final String correlationUid)
-            throws UnknownCorrelationUidException {
-        return this.meterResponseDataService.dequeue(correlationUid);
     }
 
 }
