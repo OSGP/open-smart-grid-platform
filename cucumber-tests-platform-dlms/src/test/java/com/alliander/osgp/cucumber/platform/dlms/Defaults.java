@@ -41,6 +41,10 @@ public class Defaults extends com.alliander.osgp.cucumber.platform.Defaults {
     public static final boolean HLS4ACTIVE = false;
     public static final boolean HLS5ACTIVE = true;
     public static final String ICC_ID = "iccid";
+    public static final boolean LLS1_ACTIVE = false;
+    public static final boolean USE_HDLC = false;
+    public static final boolean USE_SN = false;
+    public static final String PASSWORD = "e7233dec0dfbf031960e21c149c3293e";
 
     public static final boolean IN_DEBUG_MODE = false;
     public static final boolean IN_MAINTENANCE = false;

@@ -14,6 +14,7 @@ Feature: SmartMetering AdHoc
     Then the objectlist should be returned
       | DeviceIdentification | TEST1024000000001 |
 
+  @Skip
   Scenario: Retrieve all configuration objects from a device
     When receiving a retrieve configuration request
       | DeviceIdentification | TEST1024000000001 |

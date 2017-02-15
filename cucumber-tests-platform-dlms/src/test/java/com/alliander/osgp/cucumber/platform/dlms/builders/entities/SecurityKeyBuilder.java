@@ -23,7 +23,7 @@ import com.alliander.osgp.cucumber.platform.inputparsers.DateInputParser;
 
 public class SecurityKeyBuilder implements CucumberBuilder<SecurityKey> {
 
-    private boolean builderEnabled = true;
+    private boolean builderEnabled = false;
 
     private SecurityKeyType securityKeyType = null;
     private Date validFrom = new DateTime(UtcDateHelper.getUtcDate()).minusDays(1).toDate();
@@ -92,8 +92,8 @@ public class SecurityKeyBuilder implements CucumberBuilder<SecurityKey> {
 
     @Override
     public SecurityKey build() {
-        final SecurityKey securityKey = new SecurityKey(this.dlmsDevice, this.securityKeyType, this.key,
-                this.validFrom, this.validTo);
+        final SecurityKey securityKey = new SecurityKey(this.dlmsDevice, this.securityKeyType, this.key, this.validFrom,
+                this.validTo);
 
         securityKey.setVersion(this.version);
         securityKey.setValidFrom(this.validFrom);
