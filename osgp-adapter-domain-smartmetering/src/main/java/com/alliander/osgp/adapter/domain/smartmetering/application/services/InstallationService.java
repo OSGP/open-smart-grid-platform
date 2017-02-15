@@ -9,8 +9,6 @@ package com.alliander.osgp.adapter.domain.smartmetering.application.services;
 
 import java.util.List;
 
-import ma.glasnost.orika.MapperFactory;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +40,8 @@ import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
+
+import ma.glasnost.orika.MapperFactory;
 
 @Service(value = "domainSmartMeteringInstallationService")
 @Transactional(value = "transactionManager")
@@ -122,6 +122,27 @@ public class InstallationService {
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 smartMeteringDeviceDto), deviceMessageMetadata.getMessageType(), deviceMessageMetadata
                 .getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+    }
+
+    /**
+     * In case of errors that prevented adding the meter to the protocol
+     * database, the meter should be removed from the core database as well.
+     *
+     * @param deviceMessageMetadata
+     */
+    @Transactional
+    public void removeMeter(final DeviceMessageMetadata deviceMessageMetadata) {
+
+        final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
+        final SmartMeter device = this.smartMeteringDeviceRepository.findByDeviceIdentification(deviceIdentification);
+
+        LOGGER.warn(
+                "Removing meter {} for organization {}, because adding it to the protocol database failed with correlation UID {}",
+                deviceIdentification, deviceMessageMetadata.getOrganisationIdentification(),
+                deviceMessageMetadata.getCorrelationUid());
+
+        this.deviceAuthorizationRepository.delete(device.getAuthorizations());
+        this.smartMeteringDeviceRepository.delete(device);
     }
 
     public void handleAddMeterResponse(final DeviceMessageMetadata deviceMessageMetadata,
