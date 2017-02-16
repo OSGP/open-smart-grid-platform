@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.dlms.cucumber.steps.ws.smartmetering.smartmeteringmonitoring;
+package com.alliander.osgp.cucumber.platform.dlms.glue.steps.ws.smartmetering.smartmeteringmonitoring;
 
 import static com.alliander.osgp.cucumber.platform.core.Helpers.getDate;
 import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
@@ -53,7 +53,7 @@ public class ProfileGenericData extends SmartMeteringStepsBase {
     public void theProfileGenericDataResultShouldBeReturned(final Map<String, String> settings) throws Throwable {
         ProfileGenericDataAsyncRequest request = (ProfileGenericDataAsyncRequest) new ProfileGenericDataAsyncRequestBuilder()
         .fromContext().build();
-        this.sleep(3000L);
+        this.sleep(5000L);
         ProfileGenericDataResponse response = this.client.getProfileGenericDataResponse(request);
         assertTrue(response != null && !response.getCaptureObjects().isEmpty()
                 && !response.getProfileEntries().isEmpty());
