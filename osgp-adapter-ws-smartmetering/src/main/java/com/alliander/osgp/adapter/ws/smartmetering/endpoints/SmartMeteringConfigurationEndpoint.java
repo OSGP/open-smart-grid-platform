@@ -35,7 +35,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmw
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetPushNotificationAlarmRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetPushNotificationAlarmAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetPushNotificationAlarmResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysAsyncResponse;
@@ -794,7 +794,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     @ResponsePayload
     public GetPushNotificationAlarmResponse getPushNotificationAlarm(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetPushNotificationAlarmRequest request) throws OsgpException {
+            @RequestPayload final GetPushNotificationAlarmAsyncRequest request) throws OsgpException {
 
         LOGGER.info("GetPushNotificationAlarmRequest Request received from organisation {} for device: {}.",
                 organisationIdentification, request.getDeviceIdentification());
