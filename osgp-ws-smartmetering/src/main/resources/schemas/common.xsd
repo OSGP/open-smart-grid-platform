@@ -358,9 +358,9 @@
   </xsd:complexType>
 
 
- <xsd:complexType name="ProfileEntries">
+ <xsd:complexType name="ProfileEntry">
    <xsd:sequence>
-      <xsd:element type="tns:ProfileEntryValue" name="ProfileEntryValues"  minOccurs="0" maxOccurs="unbounded"   />
+      <xsd:element type="tns:ProfileEntryValue" name="ProfileEntryValue"  minOccurs="0" maxOccurs="unbounded"   />
     </xsd:sequence>
   </xsd:complexType>
 

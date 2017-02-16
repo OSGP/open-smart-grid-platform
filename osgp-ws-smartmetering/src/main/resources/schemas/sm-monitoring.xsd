@@ -499,8 +499,8 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="LogicalName" type="common:ObisCodeValues" />
-        <xsd:element name="CaptureObjects" type="common:CaptureObject" minOccurs="1" maxOccurs="unbounded" />
-        <xsd:element name="ProfileEntries" type="common:ProfileEntries" minOccurs="0" maxOccurs="unbounded" />
+        <xsd:element name="CaptureObjects" type="common:CaptureObject" minOccurs="0" maxOccurs="unbounded" />
+        <xsd:element name="ProfileEntries" type="common:ProfileEntry" minOccurs="0" maxOccurs="unbounded" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>

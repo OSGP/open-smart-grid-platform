@@ -15,10 +15,10 @@ public class ProfileGenericDataResponseDto extends ActionResponseDto {
 
     private final ObisCodeValuesDto logicalName;
     private final List<CaptureObjectDto> captureObjects;
-    private final List<ProfileEntriesDto> profileEntries;
+    private final List<ProfileEntryDto> profileEntries;
 
     public ProfileGenericDataResponseDto(ObisCodeValuesDto logicalName, List<CaptureObjectDto> captureObjects,
-            List<ProfileEntriesDto> profileEntries) {
+            List<ProfileEntryDto> profileEntries) {
         super();
         this.logicalName = logicalName;
         this.captureObjects = captureObjects;
@@ -33,7 +33,7 @@ public class ProfileGenericDataResponseDto extends ActionResponseDto {
         return this.captureObjects;
     }
 
-    public List<ProfileEntriesDto> getProfileEntries() {
+    public List<ProfileEntryDto> getProfileEntries() {
         return this.profileEntries;
     }
 
