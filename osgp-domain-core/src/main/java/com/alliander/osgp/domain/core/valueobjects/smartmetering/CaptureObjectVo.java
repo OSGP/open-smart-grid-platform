@@ -15,14 +15,14 @@ public class CaptureObjectVo implements Serializable {
 
     private final long classId;
     private final String logicalName;
-    private final int attribute;
-    private final int dataIndex;
+    private final int attributeIndex;
+    private final long dataIndex;
     private final String unit;
 
-    public CaptureObjectVo(long classId, String logicalName, int attribute, int dataIndex, String unit) {
+    public CaptureObjectVo(long classId, String logicalName, int attributeIndex, long dataIndex, String unit) {
         this.classId = classId;
         this.logicalName = logicalName;
-        this.attribute = attribute;
+        this.attributeIndex = attributeIndex;
         this.dataIndex = dataIndex;
         this.unit = unit;
     }
@@ -35,11 +35,11 @@ public class CaptureObjectVo implements Serializable {
         return this.logicalName;
     }
 
-    public int getAttribute() {
-        return this.attribute;
+    public int getAttributeIndex() {
+        return this.attributeIndex;
     }
 
-    public int getDataIndex() {
+    public long getDataIndex() {
         return this.dataIndex;
     }
 
