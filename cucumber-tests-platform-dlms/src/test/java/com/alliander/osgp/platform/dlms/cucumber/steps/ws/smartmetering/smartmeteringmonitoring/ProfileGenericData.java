@@ -40,9 +40,9 @@ public class ProfileGenericData extends SmartMeteringStepsBase {
     @When("^the get profile generic data request is received$")
     public void theGetProfileGenericDataRequestIsReceived(final Map<String, String> settings) throws Throwable {
         ProfileGenericDataRequest request = new ProfileGenericDataRequestBuilder()
-                .withDeviceidentification(getString(settings, "DeviceIdentification", "TEST1024000000001"))
-                .withObisCode(this.fillObisCode(settings)).withBeginDate(this.fillDate(settings, "beginDate"))
-                .withEndDate(this.fillDate(settings, "endDate")).build();
+        .withDeviceidentification(getString(settings, "DeviceIdentification", "TEST1024000000001"))
+        .withObisCode(this.fillObisCode(settings)).withBeginDate(this.fillDate(settings, "beginDate"))
+        .withEndDate(this.fillDate(settings, "endDate")).build();
 
         ProfileGenericDataAsyncResponse asyncResponse = this.client.requestProfileGenericData(request);
         assertTrue(asyncResponse != null);
@@ -52,7 +52,7 @@ public class ProfileGenericData extends SmartMeteringStepsBase {
     @Then("^the profile generic data result should be returned$")
     public void theProfileGenericDataResultShouldBeReturned(final Map<String, String> settings) throws Throwable {
         ProfileGenericDataAsyncRequest request = (ProfileGenericDataAsyncRequest) new ProfileGenericDataAsyncRequestBuilder()
-                .fromContext().build();
+        .fromContext().build();
         this.sleep(3000L);
         ProfileGenericDataResponse response = this.client.getProfileGenericDataResponse(request);
         assertTrue(response != null && !response.getCaptureObjects().isEmpty()
