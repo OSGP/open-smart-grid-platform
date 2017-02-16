@@ -15,45 +15,26 @@ public class ProfileEntryValueVo implements Serializable {
 
     private static final long serialVersionUID = 991045734132231709L;
 
-    private final String stringValue;
-    private final Date dateValue;
-    private final BigDecimal floatValue;
-    private final Long longValue;
+    private final Serializable value;
 
-    public ProfileEntryValueVo(String stringValue, Date dateValue, BigDecimal floatValue, Long longValue) {
-        super();
-        this.stringValue = stringValue;
-        this.dateValue = dateValue;
-        this.floatValue = floatValue;
-        this.longValue = longValue;
+    public ProfileEntryValueVo(String value) {
+        this.value = value;
     }
 
-    public String getStringValue() {
-        return this.stringValue;
+    public ProfileEntryValueVo(Date value) {
+        this.value = value;
     }
 
-    public Date getDateValue() {
-        return this.dateValue;
+    public ProfileEntryValueVo(Long value) {
+        this.value = value;
     }
 
-    public BigDecimal getFloatValue() {
-        return this.floatValue;
+    public ProfileEntryValueVo(BigDecimal value) {
+        this.value = value;
     }
 
-    public Long getLongValue() {
-        return this.longValue;
-    }
-
-    public Object getValue() {
-        if (this.stringValue != null) {
-            return this.stringValue;
-        } else if (this.dateValue != null) {
-            return this.dateValue;
-        } else if (this.longValue != null) {
-            return this.longValue;
-        } else {
-            return this.floatValue;
-        }
+    public Serializable getValue() {
+        return this.value;
     }
 
 }

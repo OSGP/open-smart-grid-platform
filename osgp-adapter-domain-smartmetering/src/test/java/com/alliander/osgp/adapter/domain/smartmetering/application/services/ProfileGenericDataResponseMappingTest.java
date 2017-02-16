@@ -27,7 +27,9 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryVal
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryVo;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponseVo;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CaptureObjectDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CaptureObjectsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ObisCodeValuesDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileEntriesDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileEntryDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileEntryValueDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataResponseDto;
@@ -62,13 +64,21 @@ public class ProfileGenericDataResponseMappingTest {
     }
 
     private ProfileGenericDataResponseDto makeProfileGenericDataResponseDto() {
+        ProfileGenericDataResponseDto dto = new ProfileGenericDataResponseDto(this.obisCodeDto(),
+                this.makeCaptureObjectsDto(), this.makeProfileEntriesDto());
+        return dto;
+    }
+
+    private CaptureObjectsDto makeCaptureObjectsDto() {
         final List<CaptureObjectDto> captureObjects = new ArrayList<CaptureObjectDto>();
         captureObjects.add(this.captureObjectDto());
-        final List<ProfileEntryDto> profileEntries = this.makeProfileEntryDtoList();
+        CaptureObjectsDto result = new CaptureObjectsDto(captureObjects);
+        return result;
+    }
 
-        ProfileGenericDataResponseDto dto = new ProfileGenericDataResponseDto(this.obisCodeDto(), captureObjects,
-                profileEntries);
-        return dto;
+    private ProfileEntriesDto makeProfileEntriesDto() {
+        ProfileEntriesDto result = new ProfileEntriesDto(this.makeProfileEntryDtoList());
+        return result;
     }
 
     private List<ProfileEntryDto> makeProfileEntryDtoList() {

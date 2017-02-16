@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -8,18 +8,17 @@
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
-import java.util.List;
 
 public class ProfileGenericDataResponseVo extends ActionResponse implements Serializable {
 
     private static final long serialVersionUID = -156966569210717657L;
 
     private final ObisCodeValues logicalName;
-    private final List<CaptureObjectVo> captureObjects;
-    private final List<ProfileEntryVo> profileEntries;
+    private final CaptureObjectsVo captureObjects;
+    private final ProfileEntriesVo profileEntries;
 
-    public ProfileGenericDataResponseVo(ObisCodeValues logicalName, List<CaptureObjectVo> captureObjects,
-            List<ProfileEntryVo> profileEntries) {
+    public ProfileGenericDataResponseVo(ObisCodeValues logicalName, CaptureObjectsVo captureObjects,
+            ProfileEntriesVo profileEntries) {
         super();
         this.logicalName = logicalName;
         this.captureObjects = captureObjects;
@@ -30,12 +29,11 @@ public class ProfileGenericDataResponseVo extends ActionResponse implements Seri
         return this.logicalName;
     }
 
-    public List<CaptureObjectVo> getCaptureObjects() {
+    public CaptureObjectsVo getCaptureObjects() {
         return this.captureObjects;
     }
 
-    public List<ProfileEntryVo> getProfileEntries() {
+    public ProfileEntriesVo getProfileEntries() {
         return this.profileEntries;
     }
-
 }
