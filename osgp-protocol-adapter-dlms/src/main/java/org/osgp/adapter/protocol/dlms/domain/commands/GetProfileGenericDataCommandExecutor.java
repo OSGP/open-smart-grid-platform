@@ -28,8 +28,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.CaptureObjectDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CaptureObjectsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValueDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ObisCodeValuesDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileEntriesDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileEntryDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileEntryValueDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataRequestDto;
@@ -104,12 +106,12 @@ AbstractCommandExecutor<ProfileGenericDataRequestDto, ProfileGenericDataResponse
             final List<GetResult> captureObjects, final List<GetResult> bufferList,
             List<ScalerUnitInfo> scalarUnitInfoList) throws ProtocolAdapterException {
 
-        List<CaptureObjectDto> captureObjectDtoList = this.makeCaptureObjectDtoList(captureObjects, scalarUnitInfoList);
-        List<ProfileEntryDto> profileEntryDtoList = this.makeProfileEntryDtoList(bufferList, scalarUnitInfoList);
+        CaptureObjectsDto captureObjectDtoList = this.makeCaptureObjects(captureObjects, scalarUnitInfoList);
+        ProfileEntriesDto profileEntryDtoList = this.makeProfileEntries(bufferList, scalarUnitInfoList);
         return new ProfileGenericDataResponseDto(obisCode, captureObjectDtoList, profileEntryDtoList);
     }
 
-    private List<ProfileEntryDto> makeProfileEntryDtoList(final List<GetResult> bufferList,
+    private ProfileEntriesDto makeProfileEntries(final List<GetResult> bufferList,
             final List<ScalerUnitInfo> scalarUnitInfoList) throws ProtocolAdapterException {
 
         List<ProfileEntryDto> profileEntriesDtoList = new ArrayList<>();
@@ -121,10 +123,10 @@ AbstractCommandExecutor<ProfileGenericDataRequestDto, ProfileGenericDataResponse
                         scalarUnitInfoList)));
             }
         }
-        return profileEntriesDtoList;
+        return new ProfileEntriesDto(profileEntriesDtoList);
     }
 
-    private List<CaptureObjectDto> makeCaptureObjectDtoList(final List<GetResult> captureObjects,
+    private CaptureObjectsDto makeCaptureObjects(final List<GetResult> captureObjects,
             List<ScalerUnitInfo> scalarUnitInfoList) throws ProtocolAdapterException {
 
         List<CaptureObjectDto> captureObjectItemDtoList = new ArrayList<>();
@@ -136,7 +138,7 @@ AbstractCommandExecutor<ProfileGenericDataRequestDto, ProfileGenericDataResponse
                         scalarUnitInfoList.get(i)));
             }
         }
-        return captureObjectItemDtoList;
+        return new CaptureObjectsDto(captureObjectItemDtoList);
     }
 
     private SelectiveAccessDescription getSelectiveAccessDescription(final DateTime beginDateTime,
