@@ -86,6 +86,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponse
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushNotificationAlarm;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.UpdateFirmwareResponse;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
@@ -790,7 +791,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         return response;
     }
 
-    @PayloadRoot(localPart = "GetPushNotificationAlarmRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @PayloadRoot(localPart = "GetPushNotificationAlarmAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
     @ResponsePayload
     public GetPushNotificationAlarmResponse getPushNotificationAlarm(
             @OrganisationIdentification final String organisationIdentification,
@@ -807,20 +808,13 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
             if (meterResponseData != null) {
 
-                // final PushNotificationAlarm p = (PushNotificationAlarm)
-                // meterResponseData.getMessageData();
-                //
-                // response.setDecodedMessage(p.toString());
-                // response.setEncodedMessage(Arrays.toString(p.getAlarmBytes()));
-                //
-                // final Set<AlarmType> alarmSet = p.getAlarms();
-                // for (final AlarmType alarmType : alarmSet) {
-                // response.getAlarm().add(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmType
-                // .fromValue(alarmType.toString()));
-                // }
+                final PushNotificationAlarm p = (PushNotificationAlarm) meterResponseData.getMessageData();
 
-                return this.configurationMapper.map(meterResponseData.getMessageData(),
-                        GetPushNotificationAlarmResponse.class);
+                response.setDecodedMessage(p.toString());
+                response.setEncodedMessage(p.getAlarmBytes());
+
+                response.getAlarm().addAll(this.configurationMapper.mapAsList(p.getAlarms(),
+                        com.alliander.osgp.adapter.ws.schema.smartmetering.common.AlarmType.class));
 
             }
         } catch (final Exception e) {
