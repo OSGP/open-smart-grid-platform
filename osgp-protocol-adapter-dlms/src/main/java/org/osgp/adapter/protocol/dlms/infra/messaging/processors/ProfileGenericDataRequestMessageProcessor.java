@@ -32,7 +32,7 @@ public class ProfileGenericDataRequestMessageProcessor extends DeviceRequestMess
     private MonitoringService monitoringService;
 
     public ProfileGenericDataRequestMessageProcessor() {
-        super(DeviceRequestMessageType.PROFILE_GENERIC_DATA);
+        super(DeviceRequestMessageType.GET_PROFILE_GENERIC_DATA);
     }
 
     @Override

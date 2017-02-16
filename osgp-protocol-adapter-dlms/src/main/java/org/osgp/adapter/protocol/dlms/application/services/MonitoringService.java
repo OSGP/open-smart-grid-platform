@@ -84,13 +84,9 @@ public class MonitoringService {
     }
 
     public Serializable requestProfileGenericData(final DlmsConnectionHolder conn, final DlmsDevice device,
-            final ProfileGenericDataRequestDto periodicMeterReadsQuery) throws ProtocolAdapterException {
+            final ProfileGenericDataRequestDto profileGenericDataRequest) throws ProtocolAdapterException {
 
-        Serializable response = this.getProfileGenericDataCommandExecutor
-                .execute(conn, device, periodicMeterReadsQuery);
-
-        return response;
-
+        return this.getProfileGenericDataCommandExecutor.execute(conn, device, profileGenericDataRequest);
     }
 
 }
