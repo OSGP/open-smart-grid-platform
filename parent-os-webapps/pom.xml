@@ -8,7 +8,7 @@
 
   <artifactId>parent-os-webapps</artifactId>
   <groupId>org.osgpfoundation.osgp</groupId>
-  <version>4.0.0-SNAPSHOT</version>
+  <version>4.7.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>os-webapps</name>
   <!-- Description, Organization, Licenses, URL and Distribution Management 
