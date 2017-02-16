@@ -107,7 +107,7 @@
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:element name="GetPushNotificationAlarmRequest">
+  <xsd:element name="GetPushNotificationAlarmAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension base="common:AsyncRequest"></xsd:extension>
