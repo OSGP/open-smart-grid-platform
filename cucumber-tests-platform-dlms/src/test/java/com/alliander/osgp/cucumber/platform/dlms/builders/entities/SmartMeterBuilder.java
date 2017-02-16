@@ -9,6 +9,7 @@ package com.alliander.osgp.cucumber.platform.dlms.builders.entities;
 
 import java.util.Map;
 
+import com.alliander.osgp.cucumber.platform.core.builders.CucumberBuilder;
 import com.alliander.osgp.cucumber.platform.dlms.Keys;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 

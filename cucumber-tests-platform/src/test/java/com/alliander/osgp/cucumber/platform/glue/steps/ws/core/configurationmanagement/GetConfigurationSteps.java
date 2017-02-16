@@ -14,7 +14,6 @@ import static com.alliander.osgp.cucumber.platform.core.Helpers.saveCorrelationU
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeoutException;
 
 import org.junit.Assert;
 import org.slf4j.Logger;
@@ -40,8 +39,8 @@ import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.RelayMa
 import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.RelayType;
 import com.alliander.osgp.cucumber.platform.Defaults;
 import com.alliander.osgp.cucumber.platform.Keys;
-import com.alliander.osgp.cucumber.platform.config.CoreDeviceConfiguration;
 import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
+import com.alliander.osgp.cucumber.platform.core.wait.Wait;
 import com.alliander.osgp.cucumber.platform.glue.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.cucumber.platform.support.ws.core.CoreConfigurationManagementClient;
 
@@ -52,8 +51,6 @@ import cucumber.api.java.en.When;
  * Class with all the get configuration requests steps
  */
 public class GetConfigurationSteps {
-    @Autowired
-    private CoreDeviceConfiguration configuration;
 
     @Autowired
     private CoreConfigurationManagementClient client;
@@ -130,33 +127,15 @@ public class GetConfigurationSteps {
         asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
         request.setAsyncRequest(asyncRequest);
 
-        GetConfigurationResponse response = null;
-
-        boolean success = false;
-        int count = 0;
-        while (!success) {
-            if (count > this.configuration.getTimeout()) {
-                throw new TimeoutException();
-            }
-
-            count++;
-            Thread.sleep(1000);
-
-            response = this.client.getGetConfiguration(request);
-
-            if (!expectedResponseData.containsKey(Keys.KEY_RESULT)
-                    || getEnum(expectedResponseData, Keys.KEY_RESULT, OsgpResultType.class) != response.getResult()) {
-                continue;
-            }
-
-            success = true;
-        }
+        final GetConfigurationResponse response = Wait.until(() -> {
+            final GetConfigurationResponse retval = this.client.getGetConfiguration(request);
+            Assert.assertEquals(getEnum(expectedResponseData, Keys.KEY_RESULT, OsgpResultType.class),
+                    retval.getResult());
+            return retval;
+        });
 
         final Configuration configuration = response.getConfiguration();
-
-        if (configuration == null) {
-            Assert.assertNotNull(configuration);
-        }
+        Assert.assertNotNull(configuration);
 
         if (expectedResponseData.containsKey(Keys.KEY_LIGHTTYPE)
                 && !expectedResponseData.get(Keys.KEY_LIGHTTYPE).isEmpty() && configuration.getLightType() != null) {
@@ -265,8 +244,15 @@ public class GetConfigurationSteps {
     public void thePlatformBufferesAGetConfigurationResponseMessageForDeviceContainsSoapFault(
             final String deviceIdentification, final Map<String, String> expectedResponseData) throws Throwable {
         try {
-            this.thePlatformBufferesAGetConfigurationResponseMessageForDevice(deviceIdentification,
-                    expectedResponseData);
+            final GetConfigurationAsyncRequest request = new GetConfigurationAsyncRequest();
+            final AsyncRequest asyncRequest = new AsyncRequest();
+            asyncRequest.setDeviceId(deviceIdentification);
+            asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
+            request.setAsyncRequest(asyncRequest);
+
+            Wait.until(() -> {
+                return this.client.getGetConfiguration(request);
+            });
         } catch (final SoapFaultClientException ex) {
             Assert.assertEquals(getString(expectedResponseData, Keys.KEY_MESSAGE), ex.getMessage());
         }

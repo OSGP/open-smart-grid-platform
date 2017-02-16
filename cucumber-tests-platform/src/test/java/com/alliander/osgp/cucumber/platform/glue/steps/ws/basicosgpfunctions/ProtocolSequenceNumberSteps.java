@@ -8,8 +8,6 @@
 package com.alliander.osgp.cucumber.platform.glue.steps.ws.basicosgpfunctions;
 
 import static com.alliander.osgp.cucumber.platform.core.Helpers.getBoolean;
-import static com.alliander.osgp.cucumber.platform.core.Helpers.getInteger;
-import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -21,12 +19,9 @@ import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.alliander.osgp.adapter.ws.schema.core.common.AsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StartDeviceTestAsyncRequest;
-import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StartDeviceTestRequest;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StartDeviceTestResponse;
-import com.alliander.osgp.cucumber.platform.Defaults;
 import com.alliander.osgp.cucumber.platform.Keys;
 import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
-import com.alliander.osgp.cucumber.platform.glue.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.cucumber.platform.support.ws.core.CoreDeviceInstallationClient;
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 
@@ -41,35 +36,10 @@ public class ProtocolSequenceNumberSteps {
     @Autowired
     private CoreDeviceInstallationClient client;
 
-    @When("^receiving a confirm request$")
-    public void receivingAConfirmRequest(final Map<String, String> requestParameters) throws Throwable {
+    @When("^the device adds \"([^\"]*)\" to the sequencenumber in the OSLP response$")
+    public void receivingAConfirmRequest(final Integer number) throws Throwable {
 
-        ScenarioContext.Current().put("NumberToAddAsNextSequenceNumber",
-                getInteger(requestParameters, "AddNumberToSequenceNumber"));
-    }
-
-    @When("^receiving a confirm request for unknown device$")
-    public void receivingAConfirmRequestForUnknownDevice(final Map<String, String> requestParameters) throws Throwable {
-        this.receivingAConfirmRequestWithEmptyDeviceIdentification(requestParameters);
-    }
-
-    @When("^receiving a confirm request with empty device identification$")
-    public void receivingAConfirmRequestWithEmptyDeviceIdentification(final Map<String, String> requestParameters)
-            throws Throwable {
-        final StartDeviceTestRequest request = new StartDeviceTestRequest();
-        request.setDeviceIdentification(
-                getString(requestParameters, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-
-        try {
-            ScenarioContext.Current().put(Keys.RESPONSE, this.client.startDeviceTest(request));
-        } catch (final SoapFaultClientException ex) {
-            ScenarioContext.Current().put(Keys.RESPONSE, ex);
-        }
-    }
-
-    @Then("^the confirm response contains soap fault$")
-    public void theConfirmResponseContainsSoapFault(final Map<String, String> expectedResponse) {
-        GenericResponseSteps.verifySoapFault(expectedResponse);
+        ScenarioContext.Current().put(Keys.NUMBER_TO_ADD_TO_SEQUENCE_NUMBER, number);
     }
 
     /**

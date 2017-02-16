@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Transient;
 
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
+import com.alliander.osgp.cucumber.platform.Keys;
 import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.Oslp.Message;
@@ -357,6 +358,8 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         // Create response message
         Oslp.Message response = null;
 
+        LOGGER.info("Received a new request: [" + request + "], sequencenumber [" + this.sequenceNumber + "]");
+
         // Calculate expected sequence number
         this.sequenceNumber = this.doGetNextSequence();
 
@@ -431,7 +434,6 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         }
 
         // Write log entry for response
-        LOGGER.info("Mock Request: " + request);
         LOGGER.info("Mock Response: " + response);
 
         return response;
@@ -451,16 +453,16 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
     }
 
     private int doGetNextSequence() {
-        int sequenceNumberValue = 1;
+        int numberToAddToSequenceNumberValue = 1;
 
-        if (ScenarioContext.Current().get("NumberToAddAsNextSequenceNumber") != null) {
+        if (ScenarioContext.Current().get(Keys.NUMBER_TO_ADD_TO_SEQUENCE_NUMBER) != null) {
             final String numberToAddAsNextSequenceNumber = ScenarioContext.Current()
-                    .get("NumberToAddAsNextSequenceNumber").toString();
+                    .get(Keys.NUMBER_TO_ADD_TO_SEQUENCE_NUMBER).toString();
             if (!numberToAddAsNextSequenceNumber.isEmpty()) {
-                sequenceNumberValue = Integer.parseInt(numberToAddAsNextSequenceNumber);
+                numberToAddToSequenceNumberValue = Integer.parseInt(numberToAddAsNextSequenceNumber);
             }
         }
-        int next = this.sequenceNumber + sequenceNumberValue;
+        int next = this.sequenceNumber + numberToAddToSequenceNumberValue;
         if (next > SEQUENCE_NUMBER_MAXIMUM) {
             final int sequenceNumberMaximumCross = next - SEQUENCE_NUMBER_MAXIMUM;
             if (sequenceNumberMaximumCross >= 1) {
