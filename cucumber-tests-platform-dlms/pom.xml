@@ -115,12 +115,11 @@
       <classifier>classes</classifier>
     </dependency>
 
-    <!-- Cucumber platform -->
+    <!-- Automatic tests platform -->
     <dependency>
       <groupId>com.alliander</groupId>
       <artifactId>cucumber-tests-platform</artifactId>
       <type>test-jar</type>
-      <scope>test</scope>
     </dependency>
 
   </dependencies>

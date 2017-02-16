@@ -5,7 +5,8 @@ Feature: CoreDeviceManagement Find Devices
 
   Scenario: Find devices parameterized
     Given a device
-      | DeviceIdentification | TEST1024000000001 |
+      | DeviceIdentification       | TEST1024000000001 |
+      | OrganizationIdentification | test-org          |
     When receiving a find devices request
       | PageSize | 25 |
       | Page     |  0 |
