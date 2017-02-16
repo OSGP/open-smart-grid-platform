@@ -350,8 +350,8 @@
  <xsd:complexType name="CaptureObject">
       <xsd:sequence>
 	      <xsd:element type="xsd:long" name="ClassId" />
-	      <xsd:element type="xsd:integer" name="DataIndex" />
-	      <xsd:element type="xsd:integer" name="Attribute" />
+	      <xsd:element type="xsd:long" name="DataIndex" />
+	      <xsd:element type="xsd:integer" name="AttributeIndex" />
 	      <xsd:element type="xsd:string" name="LogicalName" />
 	      <xsd:element type="tns:OsgpUnitType" name="unit" />
       </xsd:sequence>
