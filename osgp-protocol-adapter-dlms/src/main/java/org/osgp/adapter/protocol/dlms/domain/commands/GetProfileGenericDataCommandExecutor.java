@@ -30,14 +30,14 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CaptureObjectDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValueDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ObisCodeValuesDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileEntriesDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileEntryDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileEntryValueDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataResponseDto;
 
 @Component()
 public class GetProfileGenericDataCommandExecutor extends
-        AbstractCommandExecutor<ProfileGenericDataRequestDto, ProfileGenericDataResponseDto> {
+AbstractCommandExecutor<ProfileGenericDataRequestDto, ProfileGenericDataResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetProfileGenericDataCommandExecutor.class);
 
@@ -51,7 +51,7 @@ public class GetProfileGenericDataCommandExecutor extends
     private static final String UNIT_M3 = "M_3";
 
     private static final int[] HAS_SCALER_UNITS = new int[] { CosemInterfaceClass.REGISTER.id(),
-        CosemInterfaceClass.EXTENDED_REGISTER.id(), CosemInterfaceClass.DEMAND_REGISTER.id() };
+            CosemInterfaceClass.EXTENDED_REGISTER.id(), CosemInterfaceClass.DEMAND_REGISTER.id() };
 
     @Autowired
     private DlmsHelperService dlmsHelperService;
@@ -88,7 +88,7 @@ public class GetProfileGenericDataCommandExecutor extends
 
     private List<GetResult> retrieveBuffer(final DlmsConnectionHolder conn, final DlmsDevice device,
             final DateTime beginDateTime, final DateTime endDateTime, final ObisCode obisCode)
-                    throws ProtocolAdapterException {
+            throws ProtocolAdapterException {
         final SelectiveAccessDescription access = this.getSelectiveAccessDescription(beginDateTime, endDateTime);
         AttributeAddress bufferAttributeAddress = new AttributeAddress(CLASS_ID_PROFILE_GENERIC, obisCode,
                 ProfileGenericAttribute.BUFFER.attributeId(), access);
@@ -105,19 +105,19 @@ public class GetProfileGenericDataCommandExecutor extends
             List<ScalerUnitInfo> scalarUnitInfoList) throws ProtocolAdapterException {
 
         List<CaptureObjectDto> captureObjectDtoList = this.makeCaptureObjectDtoList(captureObjects, scalarUnitInfoList);
-        List<ProfileEntriesDto> profileEntryDtoList = this.makeProfileEntryDtoList(bufferList, scalarUnitInfoList);
+        List<ProfileEntryDto> profileEntryDtoList = this.makeProfileEntryDtoList(bufferList, scalarUnitInfoList);
         return new ProfileGenericDataResponseDto(obisCode, captureObjectDtoList, profileEntryDtoList);
     }
 
-    private List<ProfileEntriesDto> makeProfileEntryDtoList(final List<GetResult> bufferList,
+    private List<ProfileEntryDto> makeProfileEntryDtoList(final List<GetResult> bufferList,
             final List<ScalerUnitInfo> scalarUnitInfoList) throws ProtocolAdapterException {
 
-        List<ProfileEntriesDto> profileEntriesDtoList = new ArrayList<>();
+        List<ProfileEntryDto> profileEntriesDtoList = new ArrayList<>();
         for (GetResult buffer : bufferList) {
             DataObject dataObject = buffer.getResultData();
             final List<DataObject> dataObjectList1 = dataObject.getValue();
             for (DataObject profEntryDataObject : dataObjectList1) {
-                profileEntriesDtoList.add(new ProfileEntriesDto(this.makeProfileEntryDto(profEntryDataObject,
+                profileEntriesDtoList.add(new ProfileEntryDto(this.makeProfileEntryDto(profEntryDataObject,
                         scalarUnitInfoList)));
             }
         }
@@ -263,8 +263,7 @@ public class GetProfileGenericDataCommandExecutor extends
                 final String logicalName = this.dlmsHelperService.readString(
                         dataObjectList.get(CaptureObjectDefinition.LOGICAL_NAME.index()), "obis-code");
                 if (this.hasScalerUnit(classId)) {
-                    AttributeAddress addr = new AttributeAddress(CosemInterfaceClass.REGISTER.id(), logicalName,
-                            ATTRIBUTE_ID_SCALER_UNIT);
+                    AttributeAddress addr = new AttributeAddress(classId, logicalName, ATTRIBUTE_ID_SCALER_UNIT);
                     final List<GetResult> scalarUnitResult = this.dlmsHelperService.getAndCheck(conn, device,
                             "retrieve scaler unit for capture object", addr);
                     DataObject scalarUnitDataObject = scalarUnitResult.get(0).getResultData();
