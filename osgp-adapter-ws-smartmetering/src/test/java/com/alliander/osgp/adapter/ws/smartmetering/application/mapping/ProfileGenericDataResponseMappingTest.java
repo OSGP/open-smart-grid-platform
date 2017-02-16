@@ -22,7 +22,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ProfileEntryVal
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CaptureObjectVo;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ObisCodeValues;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntriesVo;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryVo;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryValueVo;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponseVo;
 
@@ -66,7 +66,7 @@ public class ProfileGenericDataResponseMappingTest {
     private ProfileGenericDataResponseVo makeresponseVo() {
         List<CaptureObjectVo> captureObjects = new ArrayList<CaptureObjectVo>();
         captureObjects.add(this.makeCaptureObjectVo());
-        List<ProfileEntriesVo> profileEntries = new ArrayList<ProfileEntriesVo>();
+        List<ProfileEntryVo> profileEntries = new ArrayList<ProfileEntryVo>();
         profileEntries.add(this.makeProfileEntryVo());
         profileEntries.add(this.makeProfileEntryVo());
         ProfileGenericDataResponseVo result = new ProfileGenericDataResponseVo(this.makeObisCode(), captureObjects,
@@ -82,10 +82,10 @@ public class ProfileGenericDataResponseMappingTest {
         return new CaptureObjectVo(10L, "0.0.1.0.0.255", 10, 1, OsgpUnitType.UNDEFINED.name());
     }
 
-    private ProfileEntriesVo makeProfileEntryVo() {
+    private ProfileEntryVo makeProfileEntryVo() {
         List<ProfileEntryValueVo> entriesVo = new ArrayList<ProfileEntryValueVo>();
         entriesVo.add(new ProfileEntryValueVo("test", null, null, null));
-        return new ProfileEntriesVo(entriesVo);
+        return new ProfileEntryVo(entriesVo);
     }
 
 }

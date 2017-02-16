@@ -16,10 +16,10 @@ public class ProfileGenericDataResponseVo extends ActionResponse implements Seri
 
     private final ObisCodeValues logicalName;
     private final List<CaptureObjectVo> captureObjects;
-    private final List<ProfileEntriesVo> profileEntries;
+    private final List<ProfileEntryVo> profileEntries;
 
     public ProfileGenericDataResponseVo(ObisCodeValues logicalName, List<CaptureObjectVo> captureObjects,
-            List<ProfileEntriesVo> profileEntries) {
+            List<ProfileEntryVo> profileEntries) {
         super();
         this.logicalName = logicalName;
         this.captureObjects = captureObjects;
@@ -34,7 +34,7 @@ public class ProfileGenericDataResponseVo extends ActionResponse implements Seri
         return this.captureObjects;
     }
 
-    public List<ProfileEntriesVo> getProfileEntries() {
+    public List<ProfileEntryVo> getProfileEntries() {
         return this.profileEntries;
     }
 

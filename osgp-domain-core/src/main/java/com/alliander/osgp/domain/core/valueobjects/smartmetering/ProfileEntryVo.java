@@ -10,18 +10,18 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 import java.io.Serializable;
 import java.util.List;
 
-public class ProfileEntriesVo implements Serializable {
+public class ProfileEntryVo implements Serializable {
 
     private static final long serialVersionUID = 991045734132231709L;
 
-    private List<ProfileEntryValueVo> profileEntryValues;
+    private List<ProfileEntryValueVo> profileEntryValue;
 
-    public ProfileEntriesVo(List<ProfileEntryValueVo> profileEntryValues) {
+    public ProfileEntryVo(List<ProfileEntryValueVo> profileEntryValue) {
         super();
-        this.profileEntryValues = profileEntryValues;
+        this.profileEntryValue = profileEntryValue;
     }
 
-    public List<ProfileEntryValueVo> getProfileEntryValues() {
-        return this.profileEntryValues;
+    public List<ProfileEntryValueVo> getProfileEntryValue() {
+        return this.profileEntryValue;
     }
 }
