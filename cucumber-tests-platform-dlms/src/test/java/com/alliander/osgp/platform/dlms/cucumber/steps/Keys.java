@@ -42,6 +42,14 @@ public class Keys {
     public static final String SECURITY_KEY_A = "SecurityKeyAuthentication";
     public static final String SECURITY_KEY_E = "SecurityKeyEncryption";
 
+    // Default keys for shipment_file
+    public static final String SHIPMENT_FILE_NAME = "ShipmentFileName";
+    public static final String SHIPMENT_FILE_STATE = "ShipmentFileState";
+
+    // Default keys for shipment_file device
+    public static final String SHIPMENT_FILE_DEVICE_STATE = "ShipmentFileDeviceState";
+    public static final String SHIPMENT_FILE_DEVICE_SERIALNUMBER = "ShipmentFileDeviceSerialNumber";
+
     // other
     public static final String DEVICE_TYPE = "DeviceType";
     public static final String IS_ACTIVATED = "Activated";
@@ -64,4 +72,5 @@ public class Keys {
     public static final Object PROTOCOL = "Protocol";
     public static final Object PROTOCOL_VERSION = "ProtocolVersion";
     public static final String CORRELATION_UID = "CorrelationUid";
+
 }
