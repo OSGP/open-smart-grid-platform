@@ -147,16 +147,16 @@ public class DeviceSteps extends BaseDeviceSteps {
     @Then("^the device with device identification \"([^\"]*)\" should be active$")
     public void theDeviceWithDeviceIdentificationShouldBeActive(final String deviceIdentification) throws Throwable {
 
-        final Device device = Wait.ForResult(() -> {
+        Wait.ForResult(() -> {
             final Device entity = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
             if (entity == null) {
                 throw new Exception("Device with identification [" + deviceIdentification + "]");
             }
 
+            Assert.assertTrue(entity.isActive());
+
             return entity;
         });
-
-        Assert.assertTrue(device.isActive());
     }
 
     /**

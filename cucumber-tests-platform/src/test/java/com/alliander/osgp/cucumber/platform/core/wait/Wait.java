@@ -58,7 +58,7 @@ public class Wait {
         int count = 0;
         while (!success) {
             if (count / 1000 > configuration.getTimeout()) {
-                Assert.fail("Timeout");
+                Assert.fail("Timeout after [" + (count / 1000) + "] seconds");
             }
             logger.info("... polling in Wait.ForResult ...");
 
