@@ -17,10 +17,8 @@ Feature: BasicOsgpFunctions Protocol Sequence Number
     And the platform buffers a start device response message for device "TEST1024000000001"
       | Result | OK |
 
-    # Note: In the file 'DeviceRegistrationService' is a check which doesn't accept numbers below and equal to '0'. When this happens the result is always false.
-    Examples: 
+    # Note: Values -6 to 0
       | AddNumberToSequenceNumber |
-      |                         0 |
       |                         1 |
       |                         2 |
       |                         3 |
@@ -41,7 +39,6 @@ Feature: BasicOsgpFunctions Protocol Sequence Number
     And a start device OSLP message is sent to device "TEST1024000000001"
     And the platform buffers no start device test response message for device "TEST1024000000001"
 
-    # Note: In the file 'DeviceRegistrationService' is a check which doesn't accept numbers below and equal to '0'. When this happens the result is always false.
     Examples: 
       | AddNumberToSequenceNumber |
       |                        -8 |

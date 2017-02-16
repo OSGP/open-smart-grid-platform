@@ -49,6 +49,7 @@ import com.alliander.osgp.oslp.Oslp.MeterType;
 import com.alliander.osgp.oslp.Oslp.RelayType;
 import com.alliander.osgp.oslp.Oslp.ResumeScheduleRequest;
 import com.alliander.osgp.oslp.Oslp.Schedule;
+import com.alliander.osgp.oslp.Oslp.SetRebootRequest;
 import com.alliander.osgp.oslp.Oslp.SetScheduleRequest;
 import com.alliander.osgp.oslp.Oslp.SetTransitionRequest;
 import com.alliander.osgp.oslp.Oslp.Status;
@@ -292,6 +293,9 @@ public class OslpDeviceSteps {
         final Message message = this.oslpMockServer.waitForRequest(DeviceRequestMessageType.SET_REBOOT);
         Assert.assertNotNull(message);
         Assert.assertTrue(message.hasSetRebootRequest());
+
+        @SuppressWarnings("unused")
+        final SetRebootRequest request = message.getSetRebootRequest();
     }
 
     /**
@@ -644,7 +648,7 @@ public class OslpDeviceSteps {
                     Defaults.DEFAULT_EVENTNOTIFICATIONTYPES).trim().split(Keys.SEPARATOR_COMMA)) {
                 if (!eventNotificationType.isEmpty()) {
                     eventNotificationTypes = eventNotificationTypes
-                            + Enum.valueOf(EventNotificationType.class, eventNotificationType.trim()).value();
+                            + Enum.valueOf(EventNotificationType.class, eventNotificationType.trim()).getValue();
                 }
             }
         }

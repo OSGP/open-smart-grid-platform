@@ -30,6 +30,7 @@ import com.alliander.osgp.cucumber.platform.GlueBase;
 import com.alliander.osgp.cucumber.platform.Keys;
 import com.alliander.osgp.cucumber.platform.config.CoreDeviceConfiguration;
 import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
+import com.alliander.osgp.cucumber.platform.core.wait.Wait;
 import com.alliander.osgp.cucumber.platform.glue.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.cucumber.platform.support.ws.core.CoreDeviceInstallationClient;
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
@@ -81,28 +82,13 @@ public class StartDeviceSteps extends GlueBase {
         asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
         request.setAsyncRequest(asyncRequest);
 
-        boolean success = false;
-        int count = 0;
-        while (!success) {
-            if (count > this.configuration.getTimeout()) {
-                Assert.fail("Timeout");
-            }
+        Wait.until(() -> {
+            final StartDeviceTestResponse response = this.client.getStartDeviceTestResponse(request);
 
-            count++;
-            Thread.sleep(1000);
+            Assert.assertEquals(getEnum(expectedResult, Keys.KEY_RESULT, OsgpResultType.class), response.getResult());
 
-            try {
-                final StartDeviceTestResponse response = this.client.getStartDeviceTestResponse(request);
-
-                if (getEnum(expectedResult, Keys.KEY_RESULT, OsgpResultType.class) != response.getResult()) {
-                    continue;
-                }
-
-                success = true;
-            } catch (final Exception ex) {
-                // Do nothing
-            }
-        }
+            return response;
+        });
     }
 
     @Then("^the platform buffers no start device test response message for device \"([^\"]*)\"$")

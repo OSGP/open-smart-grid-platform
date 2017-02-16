@@ -121,12 +121,18 @@ public class GetConfigurationSteps {
     @Then("^the platform buffers a get configuration response message for device \"([^\"]*)\"$")
     public void thePlatformBufferesAGetConfigurationResponseMessageForDevice(final String deviceIdentification,
             final Map<String, String> expectedResponseData) throws Throwable {
-        final GetConfigurationResponse response = this.retrieveBufferedResponseFromPlatform(deviceIdentification);
+        final GetConfigurationAsyncRequest request = new GetConfigurationAsyncRequest();
+        final AsyncRequest asyncRequest = new AsyncRequest();
+        asyncRequest.setDeviceId(deviceIdentification);
+        asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
+        request.setAsyncRequest(asyncRequest);
 
-        if (expectedResponseData.containsKey(Keys.KEY_RESULT)) {
+        final GetConfigurationResponse response = Wait.until(() -> {
+            final GetConfigurationResponse retval = this.client.getGetConfiguration(request);
             Assert.assertEquals(getEnum(expectedResponseData, Keys.KEY_RESULT, OsgpResultType.class),
-                    response.getResult());
-        }
+                    retval.getResult());
+            return retval;
+        });
 
         final Configuration configuration = response.getConfiguration();
         Assert.assertNotNull(configuration);
@@ -234,35 +240,19 @@ public class GetConfigurationSteps {
         }
     }
 
-    /**
-     * Retrieves (and waits until the platform has it) the buffered response
-     * from the platform.
-     *
-     * @param deviceIdentification
-     *            The deviceIdentification of the device to get the response
-     *            from.
-     * @remark The correlationUid is taken from the current scenario context.
-     * @return The GetConfigurationResponse
-     * @throws InterruptedException
-     */
-    private GetConfigurationResponse retrieveBufferedResponseFromPlatform(final String deviceIdentification)
-            throws InterruptedException {
-        final GetConfigurationAsyncRequest request = new GetConfigurationAsyncRequest();
-        final AsyncRequest asyncRequest = new AsyncRequest();
-        asyncRequest.setDeviceId(deviceIdentification);
-        asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
-        request.setAsyncRequest(asyncRequest);
-
-        return Wait.ForResult(() -> {
-            return this.client.getGetConfiguration(request);
-        });
-    }
-
     @Then("^the platform buffers a get configuration response message for device \"([^\"]*)\" contains soap fault$")
     public void thePlatformBufferesAGetConfigurationResponseMessageForDeviceContainsSoapFault(
             final String deviceIdentification, final Map<String, String> expectedResponseData) throws Throwable {
         try {
-            this.retrieveBufferedResponseFromPlatform(deviceIdentification);
+            final GetConfigurationAsyncRequest request = new GetConfigurationAsyncRequest();
+            final AsyncRequest asyncRequest = new AsyncRequest();
+            asyncRequest.setDeviceId(deviceIdentification);
+            asyncRequest.setCorrelationUid((String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID));
+            request.setAsyncRequest(asyncRequest);
+
+            Wait.until(() -> {
+                return this.client.getGetConfiguration(request);
+            });
         } catch (final SoapFaultClientException ex) {
             Assert.assertEquals(getString(expectedResponseData, Keys.KEY_MESSAGE), ex.getMessage());
         }
