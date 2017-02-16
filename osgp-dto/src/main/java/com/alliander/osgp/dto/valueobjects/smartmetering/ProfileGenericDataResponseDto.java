@@ -7,18 +7,16 @@
  */
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
-import java.util.List;
-
 public class ProfileGenericDataResponseDto extends ActionResponseDto {
 
     private static final long serialVersionUID = -156966569210717654L;
 
     private final ObisCodeValuesDto logicalName;
-    private final List<CaptureObjectDto> captureObjects;
-    private final List<ProfileEntryDto> profileEntries;
+    private final CaptureObjectsDto captureObjects;
+    private final ProfileEntriesDto profileEntries;
 
-    public ProfileGenericDataResponseDto(ObisCodeValuesDto logicalName, List<CaptureObjectDto> captureObjects,
-            List<ProfileEntryDto> profileEntries) {
+    public ProfileGenericDataResponseDto(ObisCodeValuesDto logicalName, CaptureObjectsDto captureObjects,
+            ProfileEntriesDto profileEntries) {
         super();
         this.logicalName = logicalName;
         this.captureObjects = captureObjects;
@@ -29,12 +27,11 @@ public class ProfileGenericDataResponseDto extends ActionResponseDto {
         return this.logicalName;
     }
 
-    public List<CaptureObjectDto> getCaptureObjects() {
+    public CaptureObjectsDto getCaptureObjects() {
         return this.captureObjects;
     }
 
-    public List<ProfileEntryDto> getProfileEntries() {
+    public ProfileEntriesDto getProfileEntries() {
         return this.profileEntries;
     }
-
 }

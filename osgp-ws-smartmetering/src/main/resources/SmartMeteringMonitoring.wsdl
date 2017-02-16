@@ -17,6 +17,7 @@
         namespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-monitoring/2014/10"
         schemaLocation="schemas/sm-monitoring.xsd" />
 
+
     </xsd:schema>
   </wsdl:types>
 

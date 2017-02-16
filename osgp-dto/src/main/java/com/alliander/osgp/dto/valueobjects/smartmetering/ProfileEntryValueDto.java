@@ -15,49 +15,26 @@ public class ProfileEntryValueDto implements Serializable {
 
     private static final long serialVersionUID = 2123390296585369209L;
 
-    private final String stringValue;
-    private final Date dateValue;
-    private final BigDecimal floatValue;
-    private final Long longValue;
+    private final Serializable value;
 
-    public ProfileEntryValueDto(String stringValue) {
-        this(stringValue, null, null, null);
+    public ProfileEntryValueDto(String value) {
+        this.value = value;
     }
 
-    public ProfileEntryValueDto(Date dateValue) {
-        this(null, dateValue, null, null);
+    public ProfileEntryValueDto(Date value) {
+        this.value = value;
     }
 
-    public ProfileEntryValueDto(BigDecimal floatValue) {
-        this(null, null, floatValue, null);
+    public ProfileEntryValueDto(Long value) {
+        this.value = value;
     }
 
-    public ProfileEntryValueDto(Long longValue) {
-        this(null, null, null, longValue);
+    public ProfileEntryValueDto(BigDecimal value) {
+        this.value = value;
     }
 
-    public ProfileEntryValueDto(String stringValue, Date dateValue, BigDecimal floatValue, Long longValue) {
-        super();
-        this.stringValue = stringValue;
-        this.dateValue = dateValue;
-        this.floatValue = floatValue;
-        this.longValue = longValue;
-    }
-
-    public String getStringValue() {
-        return this.stringValue;
-    }
-
-    public Date getDateValue() {
-        return this.dateValue;
-    }
-
-    public BigDecimal getFloatValue() {
-        return this.floatValue;
-    }
-
-    public Long getLongValue() {
-        return this.longValue;
+    public Serializable getValue() {
+        return this.value;
     }
 
 }
