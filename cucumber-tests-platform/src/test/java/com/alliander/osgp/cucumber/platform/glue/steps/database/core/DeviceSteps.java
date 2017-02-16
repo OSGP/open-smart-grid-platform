@@ -61,7 +61,7 @@ public class DeviceSteps extends BaseDeviceSteps {
      */
     @And("^the device exists")
     public void theDeviceExists(final Map<String, String> settings) throws Throwable {
-        final Device device = Wait.ForResult(() -> {
+        final Device device = Wait.until(() -> {
             final Device entity = this.deviceRepository
                     .findByDeviceIdentification(settings.get(Keys.KEY_DEVICE_IDENTIFICATION));
             if (entity == null) {
@@ -129,25 +129,25 @@ public class DeviceSteps extends BaseDeviceSteps {
      */
     @Then("^the device with id \"([^\"]*)\" does not exists$")
     public void theDeviceShouldBeRemoved(final String deviceIdentification) throws Throwable {
-        final Device device = Wait.ForResult(() -> {
+        Wait.until(() -> {
             final Device entity = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
             if (entity == null) {
                 throw new Exception("Device with identification [" + deviceIdentification + "]");
             }
 
+            final List<DeviceAuthorization> devAuths = this.deviceAuthorizationRepository.findByDevice(entity);
+
+            Assert.assertNotNull(entity);
+            Assert.assertTrue(devAuths.size() == 0);
+
             return entity;
         });
-
-        final List<DeviceAuthorization> devAuths = this.deviceAuthorizationRepository.findByDevice(device);
-
-        Assert.assertNotNull(device);
-        Assert.assertTrue(devAuths.size() == 0);
     }
 
     @Then("^the device with device identification \"([^\"]*)\" should be active$")
     public void theDeviceWithDeviceIdentificationShouldBeActive(final String deviceIdentification) throws Throwable {
 
-        Wait.ForResult(() -> {
+        Wait.until(() -> {
             final Device entity = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
             if (entity == null) {
                 throw new Exception("Device with identification [" + deviceIdentification + "]");
@@ -166,16 +166,16 @@ public class DeviceSteps extends BaseDeviceSteps {
      */
     @Then("^the device with device identification \"([^\"]*)\" should be inactive$")
     public void theDeviceWithDeviceIdentificationShouldBeInActive(final String deviceIdentification) throws Throwable {
-        final Device device = Wait.ForResult(() -> {
+        Wait.until(() -> {
             final Device entity = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
             if (entity == null) {
                 throw new Exception("Device with identification [" + deviceIdentification + "]");
             }
 
+            Assert.assertFalse(entity.isActive());
+
             return entity;
         });
-
-        Assert.assertFalse(device.isActive());
     }
 
     /**
@@ -186,18 +186,19 @@ public class DeviceSteps extends BaseDeviceSteps {
      */
     @Then("^the device with id \"([^\"]*)\" exists$")
     public void theDeviceWithIdExists(final String deviceIdentification) throws Throwable {
-        final Device device = Wait.ForResult(() -> {
+        Wait.until(() -> {
             final Device entity = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
             if (entity == null) {
                 throw new Exception("Device with identification [" + deviceIdentification + "]");
             }
 
+            final List<DeviceAuthorization> devAuths = this.deviceAuthorizationRepository.findByDevice(entity);
+
+            Assert.assertNotNull(entity);
+            Assert.assertTrue(devAuths.size() > 0);
+
             return entity;
         });
-        final List<DeviceAuthorization> devAuths = this.deviceAuthorizationRepository.findByDevice(device);
-
-        Assert.assertNotNull(device);
-        Assert.assertTrue(devAuths.size() > 0);
     }
 
     @Then("^the G-meter \"([^\"]*)\" is DeCoupled from device \"([^\"]*)\"$")

@@ -50,7 +50,7 @@ public class Wait {
      * @return object of a specific type T
      * @throws InterruptedException
      */
-    public static <T> T ForResult(final Callable<T> task) throws InterruptedException {
+    public static <T> T until(final Callable<T> task) throws InterruptedException {
         final Logger logger = LoggerFactory.getLogger(Wait.class);
 
         T response = null;
@@ -72,6 +72,8 @@ public class Wait {
                 // We have a response, so exit
                 // the while loop immediately
                 break;
+            } catch (final AssertionError error) {
+                handleAssertionError(logger, error);
             } catch (final Exception ex) {
                 handleException(logger, ex);
             }
@@ -79,6 +81,10 @@ public class Wait {
             TimeUnit.MILLISECONDS.sleep(configuration.getSleepTime());
         }
         return response;
+    }
+
+    private static void handleAssertionError(final Logger logger, final AssertionError error) {
+        logger.error("Assertion error: " + error.getMessage());
     }
 
     /**

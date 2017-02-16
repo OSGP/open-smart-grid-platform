@@ -17,8 +17,7 @@ Feature: BasicOsgpFunctions Protocol Sequence Number
     And the platform buffers a start device response message for device "TEST1024000000001"
       | Result | OK |
 
-    # Note: Values -6 to 0 should also work.
-    Examples: 
+    # Note: Values -6 to 0
       | AddNumberToSequenceNumber |
       |                         1 |
       |                         2 |
