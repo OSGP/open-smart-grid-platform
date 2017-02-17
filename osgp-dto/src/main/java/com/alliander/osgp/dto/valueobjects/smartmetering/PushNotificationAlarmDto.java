@@ -8,6 +8,7 @@
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -17,9 +18,14 @@ public class PushNotificationAlarmDto implements Serializable {
 
     private final String deviceIdentification;
     private final EnumSet<AlarmTypeDto> alarms;
+    private final byte[] alarmBytes;
 
-    public PushNotificationAlarmDto(final String deviceIdentification, final Set<AlarmTypeDto> alarms) {
+    public PushNotificationAlarmDto(final String deviceIdentification, final Set<AlarmTypeDto> alarms,
+            final byte[] alarmBytes) {
         this.deviceIdentification = deviceIdentification;
+
+        this.alarmBytes = Arrays.copyOf(alarmBytes, alarmBytes.length);
+
         if (alarms == null || alarms.isEmpty()) {
             this.alarms = EnumSet.noneOf(AlarmTypeDto.class);
         } else {
@@ -34,6 +40,10 @@ public class PushNotificationAlarmDto implements Serializable {
 
     public String getDeviceIdentification() {
         return this.deviceIdentification;
+    }
+
+    public byte[] getAlarmBytes() {
+        return this.alarmBytes;
     }
 
     public Set<AlarmTypeDto> getAlarms() {
