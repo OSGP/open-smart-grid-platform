@@ -1,4 +1,4 @@
-# Integration Tests for OSGP Components and Protocol Adapters.
+# Integration Tests for OSGP Components and Protocol Adapters. 
 
 ### Build Status
 
