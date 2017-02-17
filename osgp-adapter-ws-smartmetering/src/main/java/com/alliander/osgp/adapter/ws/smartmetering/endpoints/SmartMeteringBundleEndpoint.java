@@ -32,6 +32,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.application.services.ActionMa
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.BundleService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionRequest;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleMessagesResponse;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
@@ -98,8 +99,8 @@ public class SmartMeteringBundleEndpoint extends SmartMeteringEndpoint {
         LOGGER.info("Get bundle response for organisation: {} and device: {}.", organisationIdentification,
                 request.getDeviceIdentification());
 
-        final MeterResponseData meterResponseData = this.bundleService.dequeueBundleResponse(request
-                .getCorrelationUid());
+        final MeterResponseData meterResponseData = this.meterResponseDataService.dequeue(request.getCorrelationUid(),
+                BundleMessagesResponse.class);
 
         // Create response.
         return this.actionMapperResponseService.mapAllActions(meterResponseData.getMessageData());

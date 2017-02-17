@@ -89,7 +89,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
             @ResponseUrl final String responseUrl, @RequestPayload final FindEventsRequest request)
-                    throws OsgpException {
+            throws OsgpException {
 
         LOGGER.info("Find events request for organisation: {} and device: {}.", organisationIdentification,
                 request.getDeviceIdentification());
@@ -104,10 +104,11 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             final List<FindEventsRequestData> findEventsQuery = request.getFindEventsRequestData();
 
             final String correlationUid = this.managementService.enqueueFindEventsRequest(organisationIdentification,
-                    deviceIdentification, this.managementMapper.mapAsList(findEventsQuery,
+                    deviceIdentification,
+                    this.managementMapper.mapAsList(findEventsQuery,
                             com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsRequestData.class),
-                            MessagePriorityEnum.getMessagePriority(messagePriority), this.managementMapper.map(scheduleTime,
-                                    Long.class));
+                    MessagePriorityEnum.getMessagePriority(messagePriority),
+                    this.managementMapper.map(scheduleTime, Long.class));
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
@@ -120,8 +121,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
 
     @PayloadRoot(localPart = "FindEventsAsyncRequest", namespace = NAMESPACE)
     @ResponsePayload
-    public FindEventsResponse getFindEventsResponse(
-            @OrganisationIdentification final String organisationIdentification,
+    public FindEventsResponse getFindEventsResponse(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final FindEventsAsyncRequest request) throws OsgpException {
 
         LOGGER.info("Get find events response for organisation: {} and device: {}.", organisationIdentification,
@@ -144,9 +144,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
                         event.getTimestamp(), event.getEventCounter());
             }
             LOGGER.info("mapping events to schema type...");
-            response.getEvents().addAll(
-                    this.managementMapper.mapAsList(events,
-                            com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event.class));
+            response.getEvents().addAll(this.managementMapper.mapAsList(events,
+                    com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event.class));
             LOGGER.info("mapping done, sending response...");
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("FindEventsRequest Exception", e.getMessage(), e.getStackTrace(), e);
@@ -173,9 +172,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
 
             final DevicePage devicePage = new DevicePage();
             devicePage.setTotalPages(page.getTotalPages());
-            devicePage.getDevices().addAll(
-                    this.managementMapper.mapAsList(page.getContent(),
-                            com.alliander.osgp.adapter.ws.schema.smartmetering.management.Device.class));
+            devicePage.getDevices().addAll(this.managementMapper.mapAsList(page.getContent(),
+                    com.alliander.osgp.adapter.ws.schema.smartmetering.management.Device.class));
             response.setDevicePage(devicePage);
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
@@ -193,7 +191,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
             @ResponseUrl final String responseUrl, @RequestPayload final EnableDebuggingRequest request)
-                    throws OsgpException {
+            throws OsgpException {
 
         LOGGER.info("Enable debugging request for organisation: {} and device: {}.", organisationIdentification,
                 request.getDeviceIdentification());
@@ -232,8 +230,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
         try {
             response = new EnableDebuggingResponse();
 
-            final MeterResponseData meterResponseData = this.managementService.dequeueEnableDebuggingResponse(request
-                    .getCorrelationUid());
+            final MeterResponseData meterResponseData = this.meterResponseDataService
+                    .dequeue(request.getCorrelationUid());
 
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
             if (meterResponseData.getMessageData() instanceof String) {
@@ -255,7 +253,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
             @ResponseUrl final String responseUrl, @RequestPayload final DisableDebuggingRequest request)
-                    throws OsgpException {
+            throws OsgpException {
 
         LOGGER.info("Disable debugging request for organisation: {} and device: {}.", organisationIdentification,
                 request.getDeviceIdentification());
@@ -294,8 +292,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
         try {
             response = new DisableDebuggingResponse();
 
-            final MeterResponseData meterResponseData = this.managementService.dequeueDisableDebuggingResponse(request
-                    .getCorrelationUid());
+            final MeterResponseData meterResponseData = this.meterResponseDataService
+                    .dequeue(request.getCorrelationUid());
 
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
             if (meterResponseData.getMessageData() instanceof String) {
@@ -387,8 +385,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             response = new FindMessageLogsResponse();
 
             @SuppressWarnings("unchecked")
-            final Page<DeviceLogItem> page = (Page<DeviceLogItem>) this.managementService
-                    .dequeueFindMessageLogsResponse(request.getCorrelationUid()).getMessageData();
+            final Page<DeviceLogItem> page = (Page<DeviceLogItem>) this.meterResponseDataService
+                    .dequeue(request.getCorrelationUid(), Page.class).getMessageData();
 
             // Map to output
             final MessageLogPage logPage = new MessageLogPage();

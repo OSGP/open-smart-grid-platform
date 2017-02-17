@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alliander.osgp.adapter.ws.endpoint.WebserviceEndpoint;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.shared.services.ResponseUrlService;
+import com.alliander.osgp.adapter.ws.smartmetering.application.services.MeterResponseDataService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -28,6 +29,9 @@ abstract class SmartMeteringEndpoint implements WebserviceEndpoint {
 
     @Autowired
     protected ResponseUrlService responseUrlService;
+
+    @Autowired
+    protected MeterResponseDataService meterResponseDataService;
 
     /**
      * Rethrow exception if it already is a functional or technical exception,
@@ -59,8 +63,8 @@ abstract class SmartMeteringEndpoint implements WebserviceEndpoint {
                 throw new TechnicalException(ComponentType.WS_SMART_METERING,
                         (String) meterResponseData.getMessageData(), null);
             } else {
-                throw new TechnicalException(ComponentType.WS_SMART_METERING, String.format(
-                        "An exception occurred %s.", exceptionContext), null);
+                throw new TechnicalException(ComponentType.WS_SMART_METERING,
+                        String.format("An exception occurred %s.", exceptionContext), null);
             }
         }
     }

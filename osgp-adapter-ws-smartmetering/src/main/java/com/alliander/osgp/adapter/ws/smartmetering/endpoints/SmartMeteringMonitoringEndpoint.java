@@ -47,6 +47,11 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RetrievePus
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.MonitoringService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainer;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushNotificationAlarm;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -132,8 +137,8 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
         PeriodicMeterReadsResponse response = null;
         try {
-            final MeterResponseData meterResponseData = this.monitoringService
-                    .dequeuePeriodicMeterReadsResponse(request.getCorrelationUid());
+            final MeterResponseData meterResponseData = this.meterResponseDataService
+                    .dequeue(request.getCorrelationUid(), PeriodicMeterReadsContainer.class);
 
             this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the periodic meter reads");
 
@@ -155,8 +160,8 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
         PeriodicMeterReadsGasResponse response = null;
         try {
-            final MeterResponseData meterResponseData = this.monitoringService
-                    .dequeuePeriodicMeterReadsGasResponse(request.getCorrelationUid());
+            final MeterResponseData meterResponseData = this.meterResponseDataService
+                    .dequeue(request.getCorrelationUid(), PeriodicMeterReadsContainerGas.class);
 
             this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the periodic meter reads for gas");
 
@@ -223,8 +228,9 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
                     organisationIdentification, deviceIdentification, requestValueObject, messagePriority,
                     this.monitoringMapper.map(scheduleTime, Long.class));
 
-            asyncResponse = gas ? new com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFactory()
-                    .createActualMeterReadsGasAsyncResponse()
+            asyncResponse = gas
+                    ? new com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFactory()
+                            .createActualMeterReadsGasAsyncResponse()
                     : new com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFactory()
                             .createActualMeterReadsAsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
@@ -249,8 +255,8 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
         ActualMeterReadsResponse response = null;
         try {
-            final MeterResponseData meterResponseData = this.monitoringService.dequeueActualMeterReadsResponse(request
-                    .getCorrelationUid());
+            final MeterResponseData meterResponseData = this.meterResponseDataService
+                    .dequeue(request.getCorrelationUid(), MeterReads.class);
 
             this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the actual meter reads");
 
@@ -271,8 +277,8 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
         ActualMeterReadsGasResponse response = null;
         try {
-            final MeterResponseData meterResponseData = this.monitoringService
-                    .dequeueActualMeterReadsGasResponse(request.getCorrelationUid());
+            final MeterResponseData meterResponseData = this.meterResponseDataService
+                    .dequeue(request.getCorrelationUid(), MeterReadsGas.class);
 
             this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the actual meter reads for gas");
 
@@ -328,8 +334,8 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
         ReadAlarmRegisterResponse response = null;
         try {
-            final MeterResponseData meterResponseData = this.monitoringService.dequeueReadAlarmRegisterResponse(request
-                    .getCorrelationUid());
+            final MeterResponseData meterResponseData = this.meterResponseDataService
+                    .dequeue(request.getCorrelationUid(), AlarmRegister.class);
 
             this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the alarm register");
 
@@ -358,8 +364,8 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
         RetrievePushNotificationAlarmResponse response = null;
         try {
-            final MeterResponseData meterResponseData = this.monitoringService
-                    .dequeueRetrievePushNotificationAlarmResponse(request.getCorrelationUid());
+            final MeterResponseData meterResponseData = this.meterResponseDataService
+                    .dequeue(request.getCorrelationUid(), PushNotificationAlarm.class);
 
             this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the push notification alarm");
 
