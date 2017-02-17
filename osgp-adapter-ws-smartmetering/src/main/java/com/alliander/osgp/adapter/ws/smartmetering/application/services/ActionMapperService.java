@@ -60,7 +60,6 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetConfiguratio
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetFirmwareVersionRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGasRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequestDataVo;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetAlarmNotificationsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequestData;
@@ -273,7 +272,6 @@ public class ActionMapperService {
         CLASS_MAP.put(SetKeysRequest.class, SetKeysRequestData.class);
         CLASS_MAP.put(GetAssociationLnObjectsRequest.class, GetAssociationLnObjectsRequestData.class);
         CLASS_MAP.put(GetSpecificAttributeValueRequest.class, SpecificAttributeValueRequestData.class);
-        CLASS_MAP.put(ProfileGenericDataRequest.class, ProfileGenericDataRequestDataVo.class);
     }
 
     public List<ActionRequest> mapAllActions(final List<? extends Action> actionList) throws FunctionalException {

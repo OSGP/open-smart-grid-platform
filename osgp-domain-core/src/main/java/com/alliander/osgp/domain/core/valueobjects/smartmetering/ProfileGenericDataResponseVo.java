@@ -8,17 +8,18 @@
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class ProfileGenericDataResponseVo extends ActionResponse implements Serializable {
 
     private static final long serialVersionUID = -156966569210717657L;
 
     private final ObisCodeValues logicalName;
-    private final CaptureObjectsVo captureObjects;
-    private final ProfileEntriesVo profileEntries;
+    private List<CaptureObjectVo> captureObjects;
+    private List<ProfileEntryVo> profileEntries;
 
-    public ProfileGenericDataResponseVo(ObisCodeValues logicalName, CaptureObjectsVo captureObjects,
-            ProfileEntriesVo profileEntries) {
+    public ProfileGenericDataResponseVo(ObisCodeValues logicalName, List<CaptureObjectVo> captureObjects,
+            List<ProfileEntryVo> profileEntries) {
         super();
         this.logicalName = logicalName;
         this.captureObjects = captureObjects;
@@ -29,11 +30,11 @@ public class ProfileGenericDataResponseVo extends ActionResponse implements Seri
         return this.logicalName;
     }
 
-    public CaptureObjectsVo getCaptureObjects() {
+    public List<CaptureObjectVo> getCaptureObjects() {
         return this.captureObjects;
     }
 
-    public ProfileEntriesVo getProfileEntries() {
+    public List<ProfileEntryVo> getProfileEntries() {
         return this.profileEntries;
     }
 }

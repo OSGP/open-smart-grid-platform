@@ -7,8 +7,6 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.application.services;
 
-import ma.glasnost.orika.MapperFactory;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,9 +70,6 @@ public class MonitoringService {
 
     @Autowired
     private WebServiceResponseMessageSender webServiceResponseMessageSender;
-
-    @Autowired
-    private MapperFactory mapperFactory;
 
     public MonitoringService() {
         // Parameterless constructor required for transactions...
@@ -202,8 +197,7 @@ public class MonitoringService {
                  * For now throw a FunctionalException, based on the same
                  * reasoning as with the channel a couple of lines up. As soon
                  * as we have scenario's with direct communication with gas
-                 * meters this will have to be changed. @Autowired private
-                 * MapperFactory mapperFactory;
+                 * meters this will have to be changed.
                  */
                 throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
                         ComponentType.DOMAIN_SMART_METERING, new AssertionError(
@@ -308,8 +302,7 @@ public class MonitoringService {
         final SmartMeter smartMeter = this.domainHelperService.findSmartMeter(deviceMessageMetadata
                 .getDeviceIdentification());
 
-        final ObisCodeValuesDto obisCodeDto = this.mapperFactory.getMapperFacade().map(request.getObisCode(),
-                ObisCodeValuesDto.class);
+        final ObisCodeValuesDto obisCodeDto = this.monitoringMapper.map(request.getObisCode(), ObisCodeValuesDto.class);
 
         final ProfileGenericDataRequestDto requestDto = new ProfileGenericDataRequestDto(
                 request.getDeviceIdentification(), obisCodeDto, request.getBeginDate(), request.getEndDate());

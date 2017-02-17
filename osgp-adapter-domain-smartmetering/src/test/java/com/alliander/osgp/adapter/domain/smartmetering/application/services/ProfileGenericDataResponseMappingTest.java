@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2017 Smart Society Services B.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -27,9 +27,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryVal
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryVo;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponseVo;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CaptureObjectDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.CaptureObjectsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ObisCodeValuesDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileEntriesDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileEntryDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileEntryValueDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataResponseDto;
@@ -39,46 +37,40 @@ public class ProfileGenericDataResponseMappingTest {
     private MonitoringMapper mapper = new MonitoringMapper();
 
     @Test
-    public void test() {
+    public void testConvertProfileGenericDataResponseDto() {
         final ProfileGenericDataResponseDto dto = this.makeProfileGenericDataResponseDto();
         final ProfileGenericDataResponseVo result = this.mapper.map(dto, ProfileGenericDataResponseVo.class);
         Assert.assertTrue(result != null && result instanceof ProfileGenericDataResponseVo);
     }
 
     @Test
-    public void test2() {
+    public void testConvertcaptureObjectDto() {
         final CaptureObjectVo result = this.mapper.map(this.captureObjectDto(), CaptureObjectVo.class);
         Assert.assertTrue(result != null && result instanceof CaptureObjectVo);
     }
 
     @Test
-    public void test3() {
+    public void testConvertProfileEntryValueDto() {
         final ProfileEntryValueVo result = this.mapper.map(this.profileEntryDtoDate(), ProfileEntryValueVo.class);
         Assert.assertTrue(result != null && result instanceof ProfileEntryValueVo);
     }
 
     @Test
-    public void test4() {
+    public void testConvertProfileEntryDto() {
         final ProfileEntryVo result = this.mapper.map(this.profileEntryDto(), ProfileEntryVo.class);
         Assert.assertTrue(result != null && result instanceof ProfileEntryVo);
     }
 
     private ProfileGenericDataResponseDto makeProfileGenericDataResponseDto() {
         ProfileGenericDataResponseDto dto = new ProfileGenericDataResponseDto(this.obisCodeDto(),
-                this.makeCaptureObjectsDto(), this.makeProfileEntriesDto());
+                this.makeCaptureObjectsDto(), this.makeProfileEntryDtoList());
         return dto;
     }
 
-    private CaptureObjectsDto makeCaptureObjectsDto() {
+    private List<CaptureObjectDto> makeCaptureObjectsDto() {
         final List<CaptureObjectDto> captureObjects = new ArrayList<CaptureObjectDto>();
         captureObjects.add(this.captureObjectDto());
-        CaptureObjectsDto result = new CaptureObjectsDto(captureObjects);
-        return result;
-    }
-
-    private ProfileEntriesDto makeProfileEntriesDto() {
-        ProfileEntriesDto result = new ProfileEntriesDto(this.makeProfileEntryDtoList());
-        return result;
+        return captureObjects;
     }
 
     private List<ProfileEntryDto> makeProfileEntryDtoList() {

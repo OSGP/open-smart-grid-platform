@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2016 Smart Society Services B.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -21,7 +21,6 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpUnitType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ProfileEntryValue;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CaptureObjectVo;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.CaptureObjectsVo;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ObisCodeValues;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntriesVo;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryValueVo;
@@ -75,18 +74,18 @@ public class ProfileGenericDataResponseMappingTest {
         return new ObisCodeValues((byte) 1, (byte) 1, (byte) 1, (byte) 1, (byte) 1, (byte) 1);
     }
 
-    private ProfileEntriesVo makeProfileEntriesVo() {
+    private List<ProfileEntryVo> makeProfileEntriesVo() {
         List<ProfileEntryVo> profileEntries = new ArrayList<ProfileEntryVo>();
         profileEntries.add(this.makeProfileEntryVo());
         profileEntries.add(this.makeProfileEntryVo());
         final ProfileEntriesVo profileEntriesVo = new ProfileEntriesVo(profileEntries);
-        return profileEntriesVo;
+        return profileEntries;
     }
 
-    private CaptureObjectsVo makeCaptureObjectsVo() {
+    private List<CaptureObjectVo> makeCaptureObjectsVo() {
         final List<CaptureObjectVo> captureObjectVos = new ArrayList<CaptureObjectVo>();
         captureObjectVos.add(this.makeCaptureObjectVo());
-        return new CaptureObjectsVo(captureObjectVos);
+        return captureObjectVos;
     }
 
     private CaptureObjectVo makeCaptureObjectVo() {

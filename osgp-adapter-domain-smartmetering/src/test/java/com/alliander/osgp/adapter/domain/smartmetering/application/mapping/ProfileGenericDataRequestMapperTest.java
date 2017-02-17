@@ -1,5 +1,5 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -22,7 +22,7 @@ public class ProfileGenericDataRequestMapperTest {
     private MonitoringMapper mapper = new MonitoringMapper();
 
     @Test
-    public void test() {
+    public void testConvertProfileGenericDataRequestDto() {
         ProfileGenericDataRequestVo reqData1 = this.makeRequest();
         Object obj = this.mapper.map(reqData1, ProfileGenericDataRequestDto.class);
         assertTrue(obj != null && obj instanceof ProfileGenericDataRequestDto);
