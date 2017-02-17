@@ -50,6 +50,12 @@ public class MonitoringMapper extends ConfigurableMapper {
         mapperFactory.getConverterFactory().registerConverter(new ProfileEntryValueVoConverter());
 
         mapperFactory.getConverterFactory().registerConverter(new ProfileGenericDataResponseVoConverter());
+
+        // mapperFactory.classMap(ProfileGenericDataResponseVo.class,
+        // ProfileGenericDataResponse.class)
+        // .field("captureObjects", "captureObjects").field("profileEntries",
+        // "profileEntry").byDefault()
+        // .register();
     }
 
 }

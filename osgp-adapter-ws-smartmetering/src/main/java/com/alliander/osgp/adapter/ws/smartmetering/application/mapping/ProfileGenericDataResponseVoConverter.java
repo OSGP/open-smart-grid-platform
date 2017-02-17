@@ -16,8 +16,6 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ObisCodeValues;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ProfileEntries;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ProfileEntry;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataResponse;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.CaptureObjectVo;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryVo;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponseVo;
 
 public class ProfileGenericDataResponseVoConverter extends
@@ -31,15 +29,14 @@ public class ProfileGenericDataResponseVoConverter extends
         result.setLogicalName(this.mapperFacade.map(source.getLogicalName(), ObisCodeValues.class));
 
         final CaptureObjects captureObjects = new CaptureObjects();
-        for (CaptureObjectVo captureVo : source.getCaptureObjects()) {
-            captureObjects.getCaptureObject().add(this.mapperFacade.map(captureVo, CaptureObject.class));
-        }
+        captureObjects.getCaptureObject().addAll(
+                this.mapperFacade.mapAsList(source.getCaptureObjects(), CaptureObject.class));
         result.setCaptureObjects(captureObjects);
 
         final ProfileEntries profileEntries = new ProfileEntries();
-        for (ProfileEntryVo profileEntry : source.getProfileEntries()) {
-            profileEntries.getProfileEntry().add(this.mapperFacade.map(profileEntry, ProfileEntry.class));
-        }
+        profileEntries.getProfileEntry().addAll(
+                this.mapperFacade.mapAsList(source.getProfileEntries(), ProfileEntry.class));
+
         result.setProfileEntries(profileEntries);
 
         return result;
