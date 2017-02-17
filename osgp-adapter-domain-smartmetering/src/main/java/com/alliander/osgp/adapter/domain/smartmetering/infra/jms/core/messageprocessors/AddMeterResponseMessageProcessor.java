@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.messageprocessors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +24,8 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessage;
  */
 @Component
 public class AddMeterResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AddMeterResponseMessageProcessor.class);
 
     @Autowired
     private InstallationService installationService;
@@ -42,5 +46,19 @@ public class AddMeterResponseMessageProcessor extends OsgpCoreResponseMessagePro
 
         this.installationService.handleAddMeterResponse(deviceMessageMetadata, responseMessage.getResult(),
                 osgpException);
+    }
+
+    @Override
+    protected void handleError(final Exception e, final DeviceMessageMetadata deviceMessageMetadata) {
+        try {
+            this.installationService.removeMeter(deviceMessageMetadata);
+        } catch (final Exception ex) {
+            LOGGER.error("Error removing meter {} for organization {} from core database with correlation UID {}",
+                    deviceMessageMetadata.getDeviceIdentification(),
+                    deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getCorrelationUid(),
+                    ex);
+        }
+
+        super.handleError(e, deviceMessageMetadata);
     }
 }
