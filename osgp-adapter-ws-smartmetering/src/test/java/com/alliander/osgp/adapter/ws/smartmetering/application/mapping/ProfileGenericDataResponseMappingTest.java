@@ -22,7 +22,6 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ProfileEntryVal
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CaptureObjectVo;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ObisCodeValues;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntriesVo;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryValueVo;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryVo;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponseVo;
@@ -78,7 +77,6 @@ public class ProfileGenericDataResponseMappingTest {
         List<ProfileEntryVo> profileEntries = new ArrayList<ProfileEntryVo>();
         profileEntries.add(this.makeProfileEntryVo());
         profileEntries.add(this.makeProfileEntryVo());
-        final ProfileEntriesVo profileEntriesVo = new ProfileEntriesVo(profileEntries);
         return profileEntries;
     }
 
