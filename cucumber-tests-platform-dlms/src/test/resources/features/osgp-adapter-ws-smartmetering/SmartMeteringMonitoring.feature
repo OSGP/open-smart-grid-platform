@@ -60,7 +60,7 @@ Feature: SmartMetering Monitoring
       | DeviceIdentification | E9998000014123414 |
     Then the response "Device E9998000014123414 is not active in the platform" will be returned
 
-  @TEST
+  @Skip
   Scenario: Get the profile generic data from a device
     When the get profile generic data request is received
       | DeviceIdentification | TEST1024000000001 |
