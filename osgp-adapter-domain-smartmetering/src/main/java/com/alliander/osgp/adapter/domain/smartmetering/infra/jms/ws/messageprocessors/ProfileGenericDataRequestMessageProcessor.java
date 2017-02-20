@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.MonitoringService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequestVo;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
@@ -36,7 +36,7 @@ public class ProfileGenericDataRequestMessageProcessor extends WebServiceRequest
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
             throws FunctionalException {
 
-        final ProfileGenericDataRequestVo periodicMeterReadsRequest = (ProfileGenericDataRequestVo) dataObject;
+        final ProfileGenericDataRequest periodicMeterReadsRequest = (ProfileGenericDataRequest) dataObject;
 
         this.monitoringService.requestProfileGenericData(deviceMessageMetadata, periodicMeterReadsRequest);
     }

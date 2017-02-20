@@ -16,13 +16,14 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ObisCodeValues;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ProfileEntries;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ProfileEntry;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataResponse;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponseVo;
 
-public class ProfileGenericDataResponseVoConverter extends
-CustomConverter<ProfileGenericDataResponseVo, ProfileGenericDataResponse> {
+public class ProfileGenericDataResponseConverter
+        extends
+        CustomConverter<com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse, ProfileGenericDataResponse> {
 
     @Override
-    public ProfileGenericDataResponse convert(ProfileGenericDataResponseVo source,
+    public ProfileGenericDataResponse convert(
+            com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse source,
             Type<? extends ProfileGenericDataResponse> destinationType) {
 
         ProfileGenericDataResponse result = new ProfileGenericDataResponse();

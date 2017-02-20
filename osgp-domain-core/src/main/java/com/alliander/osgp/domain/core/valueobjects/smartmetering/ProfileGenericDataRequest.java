@@ -15,7 +15,7 @@ import java.util.Date;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
-public class ProfileGenericDataRequestVo implements Serializable, ActionRequest {
+public class ProfileGenericDataRequest implements Serializable, ActionRequest {
 
     private static final long serialVersionUID = -6134172239685084920L;
 
@@ -24,7 +24,7 @@ public class ProfileGenericDataRequestVo implements Serializable, ActionRequest 
     private final Date beginDate;
     private final Date endDate;
 
-    public ProfileGenericDataRequestVo(ObisCodeValues obisCode, Date beginDate, Date endDate,
+    public ProfileGenericDataRequest(ObisCodeValues obisCode, Date beginDate, Date endDate,
             final String deviceIdentification) {
         this.deviceIdentification = deviceIdentification;
         this.obisCode = obisCode;
@@ -80,7 +80,7 @@ public class ProfileGenericDataRequestVo implements Serializable, ActionRequest 
         if (this.getClass() != obj.getClass()) {
             return false;
         }
-        ProfileGenericDataRequestVo other = (ProfileGenericDataRequestVo) obj;
+        ProfileGenericDataRequest other = (ProfileGenericDataRequest) obj;
         if (this.beginDate == null) {
             if (other.beginDate != null) {
                 return false;

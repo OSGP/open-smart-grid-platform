@@ -47,9 +47,9 @@ public class MonitoringMapper extends ConfigurableMapper {
 
         mapperFactory.getConverterFactory().registerConverter(new ObisCodeValuesConverter());
 
-        mapperFactory.getConverterFactory().registerConverter(new ProfileEntryValueVoConverter());
+        mapperFactory.getConverterFactory().registerConverter(new ProfileEntryValueConverter());
 
-        mapperFactory.getConverterFactory().registerConverter(new ProfileGenericDataResponseVoConverter());
+        mapperFactory.getConverterFactory().registerConverter(new ProfileGenericDataResponseConverter());
     }
 
 }

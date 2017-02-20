@@ -24,8 +24,8 @@ import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsQuery;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequestVo;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponseVo;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequest;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest;
 import com.alliander.osgp.shared.exceptionhandling.CorrelationUidException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -137,7 +137,7 @@ public class MonitoringService {
     }
 
     public String enqueueProfileGenericDataRequestData(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final ProfileGenericDataRequestVo requestData,
+            @Identification final String deviceIdentification, final ProfileGenericDataRequest requestData,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
@@ -167,6 +167,6 @@ public class MonitoringService {
 
     public MeterResponseData dequeueProfileGenericDataResponse(final String correlationUid)
             throws CorrelationUidException {
-        return this.meterResponseDataService.dequeue(correlationUid, ProfileGenericDataResponseVo.class);
+        return this.meterResponseDataService.dequeue(correlationUid, ProfileGenericDataResponse.class);
     }
 }

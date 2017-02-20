@@ -9,7 +9,7 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
-public class CaptureObjectVo implements Serializable {
+public class CaptureObject implements Serializable {
 
     private static final long serialVersionUID = 991045734132231909L;
 
@@ -19,7 +19,7 @@ public class CaptureObjectVo implements Serializable {
     private final long dataIndex;
     private final String unit;
 
-    public CaptureObjectVo(long classId, String logicalName, int attributeIndex, long dataIndex, String unit) {
+    public CaptureObject(long classId, String logicalName, int attributeIndex, long dataIndex, String unit) {
         this.classId = classId;
         this.logicalName = logicalName;
         this.attributeIndex = attributeIndex;

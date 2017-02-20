@@ -14,7 +14,7 @@ import java.util.Date;
 import org.junit.Test;
 
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ObisCodeValues;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequestVo;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataRequestDto;
 
 public class ProfileGenericDataRequestMapperTest {
@@ -23,14 +23,14 @@ public class ProfileGenericDataRequestMapperTest {
 
     @Test
     public void testConvertProfileGenericDataRequestDto() {
-        ProfileGenericDataRequestVo reqData1 = this.makeRequest();
+        ProfileGenericDataRequest reqData1 = this.makeRequest();
         Object obj = this.mapper.map(reqData1, ProfileGenericDataRequestDto.class);
         assertTrue(obj != null && obj instanceof ProfileGenericDataRequestDto);
     }
 
-    private ProfileGenericDataRequestVo makeRequest() {
+    private ProfileGenericDataRequest makeRequest() {
         final ObisCodeValues obiscode = new ObisCodeValues((byte) 2, (byte) 3, (byte) 4, (byte) 5, (byte) 6, (byte) 7);
-        return new ProfileGenericDataRequestVo(obiscode, new Date(), new Date(), "TEST10240000001");
+        return new ProfileGenericDataRequest(obiscode, new Date(), new Date(), "TEST10240000001");
     }
 
 }

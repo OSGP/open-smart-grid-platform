@@ -23,9 +23,9 @@ public class ProfileGenericDataRequestMappingTest {
     public void convertProfileGenericDataRequest() {
         final ProfileGenericDataRequest req1 = this.makeRequest();
         final Object obj1 = this.mapper.map(req1,
-                com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequestVo.class);
+                com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequest.class);
         assertTrue((obj1 != null)
-                && (obj1 instanceof com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequestVo));
+                && (obj1 instanceof com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequest));
 
         final Object obj2 = this.mapper.map(obj1, ProfileGenericDataRequest.class);
         assertTrue((obj2 != null) && (obj2 instanceof ProfileGenericDataRequest));

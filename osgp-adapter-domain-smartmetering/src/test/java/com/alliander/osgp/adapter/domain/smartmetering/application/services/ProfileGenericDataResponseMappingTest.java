@@ -21,11 +21,11 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.CaptureObjectVo;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.CaptureObject;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpUnit;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryValueVo;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryVo;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponseVo;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryValue;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntry;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CaptureObjectDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ObisCodeValuesDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileEntryDto;
@@ -39,26 +39,26 @@ public class ProfileGenericDataResponseMappingTest {
     @Test
     public void testConvertProfileGenericDataResponseDto() {
         final ProfileGenericDataResponseDto dto = this.makeProfileGenericDataResponseDto();
-        final ProfileGenericDataResponseVo result = this.mapper.map(dto, ProfileGenericDataResponseVo.class);
-        Assert.assertTrue(result != null && result instanceof ProfileGenericDataResponseVo);
+        final ProfileGenericDataResponse result = this.mapper.map(dto, ProfileGenericDataResponse.class);
+        Assert.assertTrue(result != null && result instanceof ProfileGenericDataResponse);
     }
 
     @Test
     public void testConvertcaptureObjectDto() {
-        final CaptureObjectVo result = this.mapper.map(this.captureObjectDto(), CaptureObjectVo.class);
-        Assert.assertTrue(result != null && result instanceof CaptureObjectVo);
+        final CaptureObject result = this.mapper.map(this.captureObjectDto(), CaptureObject.class);
+        Assert.assertTrue(result != null && result instanceof CaptureObject);
     }
 
     @Test
     public void testConvertProfileEntryValueDto() {
-        final ProfileEntryValueVo result = this.mapper.map(this.profileEntryDtoDate(), ProfileEntryValueVo.class);
-        Assert.assertTrue(result != null && result instanceof ProfileEntryValueVo);
+        final ProfileEntryValue result = this.mapper.map(this.profileEntryDtoDate(), ProfileEntryValue.class);
+        Assert.assertTrue(result != null && result instanceof ProfileEntryValue);
     }
 
     @Test
     public void testConvertProfileEntryDto() {
-        final ProfileEntryVo result = this.mapper.map(this.profileEntryDto(), ProfileEntryVo.class);
-        Assert.assertTrue(result != null && result instanceof ProfileEntryVo);
+        final ProfileEntry result = this.mapper.map(this.profileEntryDto(), ProfileEntry.class);
+        Assert.assertTrue(result != null && result instanceof ProfileEntry);
     }
 
     private ProfileGenericDataResponseDto makeProfileGenericDataResponseDto() {

@@ -402,9 +402,9 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
         ProfileGenericDataAsyncResponse response = null;
 
         try {
-            final com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequestVo dataRequest = this.monitoringMapper
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequest dataRequest = this.monitoringMapper
                     .map(request,
-                            com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequestVo.class);
+                            com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequest.class);
 
             int msgPrio = MessagePriorityEnum.getMessagePriority(messagePriority);
             final String correlationUid = this.monitoringService.enqueueProfileGenericDataRequestData(

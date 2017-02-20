@@ -25,8 +25,8 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequestVo;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponseVo;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequest;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQueryDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterResponseDto;
@@ -294,7 +294,7 @@ public class MonitoringService {
     }
 
     public void requestProfileGenericData(final DeviceMessageMetadata deviceMessageMetadata,
-            final ProfileGenericDataRequestVo request) throws FunctionalException {
+            final ProfileGenericDataRequest request) throws FunctionalException {
 
         LOGGER.info("requestProfileGenericData for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
@@ -327,8 +327,8 @@ public class MonitoringService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        ProfileGenericDataResponseVo responseVo = this.monitoringMapper.map(profileGenericDataResponseDto,
-                ProfileGenericDataResponseVo.class);
+        ProfileGenericDataResponse responseVo = this.monitoringMapper.map(profileGenericDataResponseDto,
+                ProfileGenericDataResponse.class);
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
