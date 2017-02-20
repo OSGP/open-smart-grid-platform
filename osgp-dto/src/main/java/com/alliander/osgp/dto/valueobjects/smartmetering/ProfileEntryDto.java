@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -14,14 +14,14 @@ public class ProfileEntryDto implements Serializable {
 
     private static final long serialVersionUID = 2123390296585369209L;
 
-    private List<ProfileEntryValueDto> profileEntryValue;
+    private List<ProfileEntryValueDto> profileEntryValues;
 
-    public ProfileEntryDto(List<ProfileEntryValueDto> profileEntryValue) {
+    public ProfileEntryDto(List<ProfileEntryValueDto> profileEntryValues) {
         super();
-        this.profileEntryValue = profileEntryValue;
+        this.profileEntryValues = profileEntryValues;
     }
 
-    public List<ProfileEntryValueDto> getProfileEntryValue() {
-        return this.profileEntryValue;
+    public List<ProfileEntryValueDto> getProfileEntryValues() {
+        return this.profileEntryValues;
     }
 }
