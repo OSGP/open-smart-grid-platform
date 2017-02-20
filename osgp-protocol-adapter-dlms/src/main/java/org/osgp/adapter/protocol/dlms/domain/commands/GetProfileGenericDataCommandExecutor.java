@@ -19,6 +19,7 @@ import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.CosemDateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.interfaceclass.attribute.ProfileGenericAttribute;
+import org.osgp.adapter.protocol.dlms.application.valueobjects.DlmsUnitType;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -45,11 +46,6 @@ public class GetProfileGenericDataCommandExecutor extends
     private static final int CLASS_ID_PROFILE_GENERIC = 7;
     private static final byte ATTRIBUTE_ID_SCALER_UNIT = 3;
 
-    // see OsgpUnitType
-    private static final String UNIT_UNDEFINED = "UNDEFINED";
-    private static final String UNIT_KWH = "KWH";
-    private static final String UNIT_M3 = "M_3";
-
     private static final int[] HAS_SCALER_UNITS = new int[] { CosemInterfaceClass.REGISTER.id(),
         CosemInterfaceClass.EXTENDED_REGISTER.id(), CosemInterfaceClass.DEMAND_REGISTER.id() };
 
@@ -73,8 +69,8 @@ public class GetProfileGenericDataCommandExecutor extends
 
         List<GetResult> captureObjects = this.retrieveCaptureObjects(conn, device, obisCode);
         List<GetResult> bufferList = this.retrieveBuffer(conn, device, beginDateTime, endDateTime, obisCode);
-        List<ScalerUnitInfo> scalarUnitInfoList = this.retrieveScalerUnits(conn, device, captureObjects);
-        return this.processData(inputObisCodes, captureObjects, bufferList, scalarUnitInfoList);
+        List<ScalerUnitInfo> scalerUnitInfos = this.retrieveScalerUnits(conn, device, captureObjects);
+        return this.processData(inputObisCodes, captureObjects, bufferList, scalerUnitInfos);
     }
 
     private List<GetResult> retrieveCaptureObjects(DlmsConnectionHolder conn, DlmsDevice device, final ObisCode obisCode)
@@ -101,42 +97,41 @@ public class GetProfileGenericDataCommandExecutor extends
      * the buffer using the scaler
      */
     private ProfileGenericDataResponseDto processData(final ObisCodeValuesDto obisCode,
-            final List<GetResult> captureObjects, final List<GetResult> bufferList,
-            List<ScalerUnitInfo> scalarUnitInfoList) throws ProtocolAdapterException {
+            final List<GetResult> captureObjects, final List<GetResult> bufferList, List<ScalerUnitInfo> scalerUnitInfos)
+                    throws ProtocolAdapterException {
 
-        List<CaptureObjectDto> captureObjectDtoList = this.makeCaptureObjects(captureObjects, scalarUnitInfoList);
-        List<ProfileEntryDto> profileEntryDtoList = this.makeProfileEntries(bufferList, scalarUnitInfoList);
-        return new ProfileGenericDataResponseDto(obisCode, captureObjectDtoList, profileEntryDtoList);
+        List<CaptureObjectDto> captureObjectDtos = this.makeCaptureObjects(captureObjects, scalerUnitInfos);
+        List<ProfileEntryDto> profileEntryDtos = this.makeProfileEntries(bufferList, scalerUnitInfos);
+        return new ProfileGenericDataResponseDto(obisCode, captureObjectDtos, profileEntryDtos);
     }
 
     private List<ProfileEntryDto> makeProfileEntries(final List<GetResult> bufferList,
-            final List<ScalerUnitInfo> scalarUnitInfoList) throws ProtocolAdapterException {
+            final List<ScalerUnitInfo> scalerUnitInfos) throws ProtocolAdapterException {
 
-        List<ProfileEntryDto> profileEntriesDtoList = new ArrayList<>();
+        List<ProfileEntryDto> profileEntryDtos = new ArrayList<>();
         for (GetResult buffer : bufferList) {
             DataObject dataObject = buffer.getResultData();
             final List<DataObject> dataObjectList1 = dataObject.getValue();
             for (DataObject profEntryDataObject : dataObjectList1) {
-                profileEntriesDtoList.add(new ProfileEntryDto(this.makeProfileEntryDto(profEntryDataObject,
-                        scalarUnitInfoList)));
+                profileEntryDtos.add(new ProfileEntryDto(this.makeProfileEntryValueDto(profEntryDataObject,
+                        scalerUnitInfos)));
             }
         }
-        return profileEntriesDtoList;
+        return profileEntryDtos;
     }
 
     private List<CaptureObjectDto> makeCaptureObjects(final List<GetResult> captureObjects,
-            List<ScalerUnitInfo> scalarUnitInfoList) throws ProtocolAdapterException {
+            List<ScalerUnitInfo> scalerUnitInfos) throws ProtocolAdapterException {
 
-        List<CaptureObjectDto> captureObjectItemDtoList = new ArrayList<>();
+        List<CaptureObjectDto> captureObjectDtos = new ArrayList<>();
         for (GetResult captureObjectResult : captureObjects) {
             DataObject dataObject = captureObjectResult.getResultData();
             final List<DataObject> dataObjectList1 = dataObject.getValue();
             for (int i = 0; i < dataObjectList1.size(); i++) {
-                captureObjectItemDtoList.add(this.makeCaptureObjectDto(dataObjectList1.get(i),
-                        scalarUnitInfoList.get(i)));
+                captureObjectDtos.add(this.makeCaptureObjectDto(dataObjectList1.get(i), scalerUnitInfos.get(i)));
             }
         }
-        return captureObjectItemDtoList;
+        return captureObjectDtos;
     }
 
     private SelectiveAccessDescription getSelectiveAccessDescription(final DateTime beginDateTime,
@@ -175,64 +170,62 @@ public class GetProfileGenericDataCommandExecutor extends
     }
 
     private CaptureObjectDto makeCaptureObjectDto(final DataObject captureObjectDataObject,
-            final ScalerUnitInfo scalarUnitInfo) throws ProtocolAdapterException {
-        final List<DataObject> dataObjectList = captureObjectDataObject.getValue();
+            final ScalerUnitInfo scalerUnitInfo) throws ProtocolAdapterException {
+        final List<DataObject> dataObjects = captureObjectDataObject.getValue();
 
-        final int classId = this.getInt(dataObjectList.get(CaptureObjectDefinition.CLASS_ID.index()));
+        final int classId = this.getInt(dataObjects.get(CaptureObjectDefinition.CLASS_ID.index()));
         final String logicalName = this.dlmsHelperService.readString(
-                dataObjectList.get(CaptureObjectDefinition.LOGICAL_NAME.index()), "obis-code");
-        final int attribute = this.getInt(dataObjectList.get(CaptureObjectDefinition.ATTRIBUTE_INDEX.index()));
-        final int version = this.getInt(dataObjectList.get(CaptureObjectDefinition.DATA_INDEX.index()));
-        return new CaptureObjectDto(classId, logicalName, attribute, version, this.getUnit(scalarUnitInfo));
+                dataObjects.get(CaptureObjectDefinition.LOGICAL_NAME.index()), "obis-code");
+        final int attribute = this.getInt(dataObjects.get(CaptureObjectDefinition.ATTRIBUTE_INDEX.index()));
+        final int version = this.getInt(dataObjects.get(CaptureObjectDefinition.DATA_INDEX.index()));
+        return new CaptureObjectDto(classId, logicalName, attribute, version, this.getUnit(scalerUnitInfo));
     }
 
-    private String getUnit(final ScalerUnitInfo scalarUnitInfo) {
-        if (scalarUnitInfo.getScalerUnit() != null) {
-            final List<DataObject> dataObjects = scalarUnitInfo.getScalerUnit().getValue();
+    private String getUnit(final ScalerUnitInfo scalerUnitInfo) {
+        if (scalerUnitInfo.getScalerUnit() != null) {
+            final List<DataObject> dataObjects = scalerUnitInfo.getScalerUnit().getValue();
             final int unit = Integer.parseInt(dataObjects.get(1).getValue().toString());
-            if (unit >= 13 && unit <= 18) {
-                return UNIT_M3;
-            } else if (unit == 30) {
-                return UNIT_KWH;
-            }
+            return DlmsUnitType.getUnit(unit);
+        } else {
+            return DlmsUnitType.UNDEFINED.getUnit();
         }
-        return UNIT_UNDEFINED;
     }
 
-    private List<ProfileEntryValueDto> makeProfileEntryDto(final DataObject profEntryDataObjects,
-            List<ScalerUnitInfo> scalarUnitInfoList) throws ProtocolAdapterException {
+    private List<ProfileEntryValueDto> makeProfileEntryValueDto(final DataObject profEntryDataObjects,
+            List<ScalerUnitInfo> scalerUnitInfos) throws ProtocolAdapterException {
 
         final List<ProfileEntryValueDto> result = new ArrayList<>();
-        final List<DataObject> dataObjectList = profEntryDataObjects.getValue();
-        for (int i = 0; i < dataObjectList.size(); i++) {
-            result.add(this.makeProfileEntryDto(dataObjectList.get(i), scalarUnitInfoList.get(i)));
+        final List<DataObject> dataObjects = profEntryDataObjects.getValue();
+        for (int i = 0; i < dataObjects.size(); i++) {
+            result.add(this.makeProfileEntryValueDto(dataObjects.get(i), scalerUnitInfos.get(i)));
         }
         return result;
     }
 
-    private ProfileEntryValueDto makeProfileEntryDto(final DataObject dataObject, final ScalerUnitInfo dataObjectInfo) {
-        if (CosemInterfaceClass.CLOCK.id() == dataObjectInfo.getClassId()) {
-            return this.makeDateProfileEntryDto(dataObject);
+    private ProfileEntryValueDto makeProfileEntryValueDto(final DataObject dataObject,
+            final ScalerUnitInfo scalerUnitInfo) {
+        if (CosemInterfaceClass.CLOCK.id() == scalerUnitInfo.getClassId()) {
+            return this.makeDateProfileEntryValueDto(dataObject);
         } else if (dataObject.isNumber()) {
-            return this.makeNumericProfileEntryDto(dataObject, dataObjectInfo);
+            return this.makeNumericProfileEntryValueDto(dataObject, scalerUnitInfo);
         } else {
             final String dbgInfo = this.dlmsHelperService.getDebugInfo(dataObject);
-            LOGGER.debug("creating ProfileEntryDto from " + dbgInfo + " " + dataObjectInfo);
+            LOGGER.debug("creating ProfileEntryDto from " + dbgInfo + " " + scalerUnitInfo);
             return new ProfileEntryValueDto(dbgInfo);
         }
     }
 
-    private ProfileEntryValueDto makeDateProfileEntryDto(final DataObject dataObject) {
+    private ProfileEntryValueDto makeDateProfileEntryValueDto(final DataObject dataObject) {
         CosemDateTime cosemDateTime = CosemDateTime.decode((byte[]) dataObject.getValue());
         return new ProfileEntryValueDto(cosemDateTime.toCalendar().getTime());
     }
 
-    private ProfileEntryValueDto makeNumericProfileEntryDto(final DataObject dataObject,
-            final ScalerUnitInfo dataObjectInfo) {
+    private ProfileEntryValueDto makeNumericProfileEntryValueDto(final DataObject dataObject,
+            final ScalerUnitInfo scalerUnitInfo) {
         try {
-            if (dataObjectInfo.getScalerUnit() != null) {
+            if (scalerUnitInfo.getScalerUnit() != null) {
                 DlmsMeterValueDto meterValue = this.dlmsHelperService.getScaledMeterValue(dataObject,
-                        dataObjectInfo.getScalerUnit(), "getScaledMeterValue");
+                        scalerUnitInfo.getScalerUnit(), "getScaledMeterValue");
                 return new ProfileEntryValueDto(meterValue.getValue());
             } else {
                 long value = this.dlmsHelperService.readLong(dataObject, "read long");
@@ -258,16 +251,16 @@ public class GetProfileGenericDataCommandExecutor extends
             DataObject dataObject = captureObjectResult.getResultData();
             final List<DataObject> dataObjectList1 = dataObject.getValue();
             for (DataObject captureObjectDataObject : dataObjectList1) {
-                final List<DataObject> dataObjectList = captureObjectDataObject.getValue();
-                final int classId = this.getInt(dataObjectList.get(CaptureObjectDefinition.CLASS_ID.index()));
+                final List<DataObject> dataObjects = captureObjectDataObject.getValue();
+                final int classId = this.getInt(dataObjects.get(CaptureObjectDefinition.CLASS_ID.index()));
                 final String logicalName = this.dlmsHelperService.readString(
-                        dataObjectList.get(CaptureObjectDefinition.LOGICAL_NAME.index()), "obis-code");
+                        dataObjects.get(CaptureObjectDefinition.LOGICAL_NAME.index()), "obis-code");
                 if (this.hasScalerUnit(classId)) {
                     AttributeAddress addr = new AttributeAddress(classId, logicalName, ATTRIBUTE_ID_SCALER_UNIT);
-                    final List<GetResult> scalarUnitResult = this.dlmsHelperService.getAndCheck(conn, device,
+                    final List<GetResult> scalerUnitResult = this.dlmsHelperService.getAndCheck(conn, device,
                             "retrieve scaler unit for capture object", addr);
-                    DataObject scalarUnitDataObject = scalarUnitResult.get(0).getResultData();
-                    result.add(new ScalerUnitInfo(logicalName, classId, scalarUnitDataObject));
+                    DataObject scalerUnitDataObject = scalerUnitResult.get(0).getResultData();
+                    result.add(new ScalerUnitInfo(logicalName, classId, scalerUnitDataObject));
                 } else {
                     result.add(new ScalerUnitInfo(logicalName, classId, null));
                 }
