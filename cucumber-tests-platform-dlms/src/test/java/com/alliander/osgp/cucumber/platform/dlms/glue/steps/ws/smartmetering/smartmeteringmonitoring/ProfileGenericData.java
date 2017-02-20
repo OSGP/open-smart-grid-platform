@@ -1,5 +1,5 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -40,9 +40,9 @@ public class ProfileGenericData extends SmartMeteringStepsBase {
     @When("^the get profile generic data request is received$")
     public void theGetProfileGenericDataRequestIsReceived(final Map<String, String> settings) throws Throwable {
         ProfileGenericDataRequest request = new ProfileGenericDataRequestBuilder()
-        .withDeviceidentification(getString(settings, "DeviceIdentification", "TEST1024000000001"))
-        .withObisCode(this.fillObisCode(settings)).withBeginDate(this.fillDate(settings, "beginDate"))
-        .withEndDate(this.fillDate(settings, "endDate")).build();
+                .withDeviceidentification(getString(settings, "DeviceIdentification", "TEST1024000000001"))
+                .withObisCode(this.fillObisCode(settings)).withBeginDate(this.fillDate(settings, "beginDate"))
+                .withEndDate(this.fillDate(settings, "endDate")).build();
 
         ProfileGenericDataAsyncResponse asyncResponse = this.client.requestProfileGenericData(request);
         assertTrue(asyncResponse != null);
@@ -52,11 +52,12 @@ public class ProfileGenericData extends SmartMeteringStepsBase {
     @Then("^the profile generic data result should be returned$")
     public void theProfileGenericDataResultShouldBeReturned(final Map<String, String> settings) throws Throwable {
         ProfileGenericDataAsyncRequest request = (ProfileGenericDataAsyncRequest) new ProfileGenericDataAsyncRequestBuilder()
-        .fromContext().build();
+                .fromContext().build();
         this.sleep(5000L);
         ProfileGenericDataResponse response = this.client.getProfileGenericDataResponse(request);
-        assertTrue(response != null && !response.getCaptureObjects().isEmpty()
-                && !response.getProfileEntries().isEmpty());
+        assertTrue(response != null && response.getCaptureObjects() != null
+                && !response.getCaptureObjects().getCaptureObject().isEmpty() && response.getProfileEntries() != null
+                && !response.getProfileEntries().getProfileEntry().isEmpty());
     }
 
     private ObisCodeValues fillObisCode(final Map<String, String> settings) {

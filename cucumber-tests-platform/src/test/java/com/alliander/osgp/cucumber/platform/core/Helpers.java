@@ -423,14 +423,13 @@ public class Helpers {
     }
 
     /**
-     * Check the correlationUid in the response and save it in the current
-     * scenarioContext.
+     * Store the correlationUid and deviceIdentification in the ScenarioContext,
+     * given the AsyncResponse
      *
-     * @param response
-     *            The response to find the correlationUid in.
-     * @param organizationIdentification
-     *            The organizationIdentifier used. Default test-org will be
-     *            used.
+     * @param asyncResponse
+     *            , The AsyncResponse used to retrieve the values (mentioned
+     *            above) to store in the ScenarioContext
+     *
      * @throws Throwable
      */
     public static void saveAsyncResponse(final AsyncResponse asyncResponse) throws Throwable {
