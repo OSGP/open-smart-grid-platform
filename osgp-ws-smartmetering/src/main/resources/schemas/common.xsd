@@ -213,22 +213,340 @@
 
   <xsd:simpleType name="OsgpUnitType">
     <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="UNDEFINED">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="YEAR">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="MONTH">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="WEEK">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="DAY">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="HOUR">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="MIN">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="SECOND">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="DEGREE">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="DEGREE_CELCIUS">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="CURRENCY">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="METER">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="METER_PER_SECOND">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
       <xsd:enumeration value="M3">
-        <xsd:annotation>
-          <xsd:documentation>cubic meter</xsd:documentation>
-        </xsd:annotation>
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="M3">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="CUBIC_METRE_FLUX">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="CUBIC_METRE_FLUX_CORRECTED">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="VOLUME_FLUX">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="CORRECTED_VOLUME_FLUX">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="LITRE">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="KILOGRAM">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="NEWTON">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="NEWTON_METER">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="PASCAL">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="BAR">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="JOULE">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="JOULE_PER_HOUR">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="WATT">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="VOLT_AMPERE">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="VAR">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
       </xsd:enumeration>
       <xsd:enumeration value="KWH">
-        <xsd:annotation>
-          <xsd:documentation>kilo watt hour
-          </xsd:documentation>
-        </xsd:annotation>
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="VOLT_AMP_HOUR">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="VAR_HOUR">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="AMPERE">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="COULOMB">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="VOLT">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="VOLT_PER_METER">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="FARAD">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="OHM">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="RESTISTIVITY">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="WEBER">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="TESLA">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="AMP_PER_METER">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="HENRY">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="HERTZ">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="ACTIVE_ENERGY">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="REACTIVE_ENERGY">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="APPARENT_ENERGY">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="VOLT_SQUARED_HOURS">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="AMP_SQUARED_HOURS">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="KG_PER_SECOND">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="SIEMENS">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="KELVIN">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="VOLT_PULSE_VALUE">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="AMP_PULSE_VALUE">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="VOLUME">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="PERCENTAGE">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="AMP_HOUR">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="ENGERY">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="WOBBE">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="MOLE_PERCENT">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="MASS_DENSITY">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
       </xsd:enumeration>
       <xsd:enumeration value="UNDEFINED">
-        <xsd:annotation>
-          <xsd:documentation>undefined unit
-          </xsd:documentation>
-        </xsd:annotation>
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="JOULE_KG">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="DB_MILLIWAT">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="DB_MICROVOLT">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="DB">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
       </xsd:enumeration>
     </xsd:restriction>
   </xsd:simpleType>
