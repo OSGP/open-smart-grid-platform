@@ -7,8 +7,6 @@
  */
 package com.alliander.osgp.cucumber.platform;
 
-import java.util.Date;
-
 import org.joda.time.DateTime;
 
 import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.LongTermIntervalType;
@@ -182,11 +180,11 @@ public class Defaults {
     public static final String DEFAULT_COMMUNICATION_ID = "E9998000014122714";
     public static final String DEFAULT_HARDWARE_VERSION = "050321";
     public static final String DEFAULT_DSMR_VERSION = "4.2.2";
-    public static final Date DEFAULT_KEYS_VALID_FROM = DateTime.now().toDate();
+    public static final DateTime DEFAULT_KEYS_VALID_FROM = DateTime.now();
     public static final String DEFAULT_MODULE_ACTIVE_FIRMWARE_VERSION = "05020035";
     public static final Boolean DEFAULT_AUTO_INVOKE = true;
     public static final String DEFAULT_COMPANY = "ALLIANDER";
-    public static final Date DEFAULT_CREATED_AT = DateTime.now().toDate();
+    public static final DateTime DEFAULT_CREATED_AT = DateTime.now();
     public static final String DEFAULT_SHIPMENT_FILE_STATE = "NEW";
 
 }
