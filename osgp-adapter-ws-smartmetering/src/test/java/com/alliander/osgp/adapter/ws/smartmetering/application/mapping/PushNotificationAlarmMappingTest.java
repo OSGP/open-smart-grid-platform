@@ -23,9 +23,11 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushNotificatio
 
 public class PushNotificationAlarmMappingTest {
 
-    private MonitoringMapper monitoringMapper = new MonitoringMapper();
+    private final MonitoringMapper monitoringMapper = new MonitoringMapper();
     private static final String DEVICE_ID = "id1";
     private static final AlarmType ALARMTYPE = AlarmType.CLOCK_INVALID;
+
+    private final byte[] alarmBytes = "some bytes".getBytes();
 
     /**
      * Tests if a PushNotificationAlarm object is mapped correctly with a filled
@@ -37,7 +39,8 @@ public class PushNotificationAlarmMappingTest {
         // build test data
         final Set<AlarmType> alarms = new TreeSet<>();
         alarms.add(ALARMTYPE);
-        final PushNotificationAlarm original = new PushNotificationAlarm(DEVICE_ID, alarms);
+
+        final PushNotificationAlarm original = new PushNotificationAlarm(DEVICE_ID, alarms, this.alarmBytes);
 
         // actual mapping
         final RetrievePushNotificationAlarmResponse mapped = this.monitoringMapper.map(original,
@@ -62,7 +65,7 @@ public class PushNotificationAlarmMappingTest {
 
         // build test data
         final Set<AlarmType> alarms = new TreeSet<>();
-        final PushNotificationAlarm original = new PushNotificationAlarm(DEVICE_ID, alarms);
+        final PushNotificationAlarm original = new PushNotificationAlarm(DEVICE_ID, alarms, this.alarmBytes);
 
         // actual mapping
         final RetrievePushNotificationAlarmResponse mapped = this.monitoringMapper.map(original,
@@ -86,7 +89,7 @@ public class PushNotificationAlarmMappingTest {
 
         // build test data
         final Set<AlarmType> alarms = null;
-        final PushNotificationAlarm original = new PushNotificationAlarm(DEVICE_ID, alarms);
+        final PushNotificationAlarm original = new PushNotificationAlarm(DEVICE_ID, alarms, this.alarmBytes);
 
         // actual mapping
         final RetrievePushNotificationAlarmResponse mapped = this.monitoringMapper.map(original,

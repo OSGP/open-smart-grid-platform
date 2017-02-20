@@ -38,12 +38,10 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessagesRe
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsRequestDataList;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
-import com.alliander.osgp.shared.exceptionhandling.CorrelationUidException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
-import com.alliander.osgp.shared.exceptionhandling.UnknownCorrelationUidException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
 @Service(value = "wsSmartMeteringManagementService")
@@ -60,9 +58,6 @@ public class ManagementService {
 
     @Autowired
     private DeviceRepository deviceRepository;
-
-    @Autowired
-    private MeterResponseDataService meterResponseDataService;
 
     @Autowired
     private MeterResponseDataRepository meterResponseDataRepository;
@@ -93,9 +88,8 @@ public class ManagementService {
 
         for (final FindEventsRequestData findEventsQuery : findEventsQueryList) {
             if (!findEventsQuery.getFrom().isBefore(findEventsQuery.getUntil())) {
-                throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
-                        ComponentType.WS_SMART_METERING, new Exception(
-                                "The 'from' timestamp designates a time after 'until' timestamp."));
+                throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
+                        new Exception("The 'from' timestamp designates a time after 'until' timestamp."));
             }
         }
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
@@ -173,7 +167,7 @@ public class ManagementService {
 
     public String enqueueEnableDebuggingRequest(final String organisationIdentification,
             final String deviceIdentification, final int messagePriority, final Long scheduleTime)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -186,11 +180,11 @@ public class ManagementService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.ENABLE_DEBUGGING.toString(), messagePriority, scheduleTime);
+                organisationIdentification, correlationUid, SmartMeteringRequestMessageType.ENABLE_DEBUGGING.toString(),
+                messagePriority, scheduleTime);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
-                deviceMessageMetadata).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -199,7 +193,7 @@ public class ManagementService {
 
     public String enqueueDisableDebuggingRequest(final String organisationIdentification,
             final String deviceIdentification, final int messagePriority, final Long scheduleTime)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -215,29 +209,19 @@ public class ManagementService {
                 organisationIdentification, correlationUid,
                 SmartMeteringRequestMessageType.DISABLE_DEBUGGING.toString(), messagePriority, scheduleTime);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
-                deviceMessageMetadata).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
     }
 
-    public MeterResponseData dequeueEnableDebuggingResponse(final String correlationUid)
-            throws UnknownCorrelationUidException {
-        return this.meterResponseDataService.dequeue(correlationUid);
-    }
-
-    public MeterResponseData dequeueDisableDebuggingResponse(final String correlationUid)
-            throws UnknownCorrelationUidException {
-        return this.meterResponseDataService.dequeue(correlationUid);
-    }
-
     public String findMessageLogsRequest(final String organisationIdentification, final String deviceIdentification,
             final int pageNumber) throws FunctionalException {
 
-        LOGGER.debug("findMessageLogs called with organisation {}, device {} and pagenumber {}", new Object[] {
-                organisationIdentification, deviceIdentification, pageNumber });
+        LOGGER.debug("findMessageLogs called with organisation {}, device {} and pagenumber {}",
+                new Object[] { organisationIdentification, deviceIdentification, pageNumber });
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -253,7 +237,4 @@ public class ManagementService {
         return correlationUid;
     }
 
-    public MeterResponseData dequeueFindMessageLogsResponse(final String correlationUid) throws CorrelationUidException {
-        return this.meterResponseDataService.dequeue(correlationUid, Page.class);
-    }
 }

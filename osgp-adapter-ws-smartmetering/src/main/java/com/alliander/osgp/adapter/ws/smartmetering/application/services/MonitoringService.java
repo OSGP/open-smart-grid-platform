@@ -23,15 +23,9 @@ import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsQuery;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainer;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequestVo;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponseVo;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushNotificationAlarm;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest;
 import com.alliander.osgp.shared.exceptionhandling.CorrelationUidException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -76,22 +70,12 @@ public class MonitoringService {
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
+                .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
-    }
-
-    public MeterResponseData dequeuePeriodicMeterReadsResponse(final String correlationUid)
-            throws CorrelationUidException {
-        return this.meterResponseDataService.dequeue(correlationUid, PeriodicMeterReadsContainer.class);
-    }
-
-    public MeterResponseData dequeuePeriodicMeterReadsGasResponse(final String correlationUid)
-            throws CorrelationUidException {
-        return this.meterResponseDataService.dequeue(correlationUid, PeriodicMeterReadsContainerGas.class);
     }
 
     public String enqueueActualMeterReadsRequestData(@Identification final String organisationIdentification,
@@ -115,22 +99,12 @@ public class MonitoringService {
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
+                .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
-    }
-
-    public MeterResponseData dequeueActualMeterReadsResponse(final String correlationUid)
-            throws CorrelationUidException {
-        return this.meterResponseDataService.dequeue(correlationUid, MeterReads.class);
-    }
-
-    public MeterResponseData dequeueActualMeterReadsGasResponse(final String correlationUid)
-            throws CorrelationUidException {
-        return this.meterResponseDataService.dequeue(correlationUid, MeterReadsGas.class);
     }
 
     public String enqueueReadAlarmRegisterRequestData(@Identification final String organisationIdentification,
@@ -154,22 +128,12 @@ public class MonitoringService {
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
+                .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
-    }
-
-    public MeterResponseData dequeueReadAlarmRegisterResponse(final String correlationUid)
-            throws CorrelationUidException {
-        return this.meterResponseDataService.dequeue(correlationUid, AlarmRegister.class);
-    }
-
-    public MeterResponseData dequeueRetrievePushNotificationAlarmResponse(final String correlationUid)
-            throws CorrelationUidException {
-        return this.meterResponseDataService.dequeue(correlationUid, PushNotificationAlarm.class);
     }
 
     public String enqueueProfileGenericDataRequestData(@Identification final String organisationIdentification,
@@ -205,5 +169,4 @@ public class MonitoringService {
             throws CorrelationUidException {
         return this.meterResponseDataService.dequeue(correlationUid, ProfileGenericDataResponseVo.class);
     }
-
 }

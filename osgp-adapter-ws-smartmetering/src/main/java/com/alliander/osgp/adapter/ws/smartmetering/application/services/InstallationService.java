@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessage;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
@@ -26,7 +25,6 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.CoupleMbusDevic
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-import com.alliander.osgp.shared.exceptionhandling.UnknownCorrelationUidException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
 @Service(value = "wsSmartMeteringInstallationService")
@@ -44,9 +42,6 @@ public class InstallationService {
 
     @Autowired
     private SmartMeteringRequestMessageSender smartMeteringRequestMessageSender;
-
-    @Autowired
-    private MeterResponseDataService meterResponseDataService;
 
     public String enqueueAddSmartMeterRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final SmartMeteringDevice device,
@@ -70,18 +65,6 @@ public class InstallationService {
         this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
-    }
-
-    /**
-     * @param correlationUid
-     *            the correlationUid to dequeue
-     * @return the MeterResponseData belonging to the request with the same
-     *         correlationUid
-     * @throws UnknownCorrelationUidException
-     *             correlationUid is unkown in the queue
-     */
-    public MeterResponseData dequeueResponse(final String correlationUid) throws UnknownCorrelationUidException {
-        return this.meterResponseDataService.dequeue(correlationUid);
     }
 
     /**

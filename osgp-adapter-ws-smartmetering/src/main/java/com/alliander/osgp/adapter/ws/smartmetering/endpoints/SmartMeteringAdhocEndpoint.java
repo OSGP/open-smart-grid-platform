@@ -68,10 +68,10 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
                 .map(request.getSynchronizeTimeRequestData(),
                         com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequestData.class);
 
-        final String correlationUid = this.adhocService
-                .enqueueSynchronizeTimeRequest(organisationIdentification, request.getDeviceIdentification(),
-                        synchronizeTimeRequestData, MessagePriorityEnum.getMessagePriority(messagePriority),
-                        this.adhocMapper.map(scheduleTime, Long.class));
+        final String correlationUid = this.adhocService.enqueueSynchronizeTimeRequest(organisationIdentification,
+                request.getDeviceIdentification(), synchronizeTimeRequestData,
+                MessagePriorityEnum.getMessagePriority(messagePriority),
+                this.adhocMapper.map(scheduleTime, Long.class));
 
         response.setCorrelationUid(correlationUid);
         response.setDeviceIdentification(request.getDeviceIdentification());
@@ -89,8 +89,8 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
         SynchronizeTimeResponse response = null;
         try {
             response = new SynchronizeTimeResponse();
-            final MeterResponseData meterResponseData = this.adhocService.dequeueSynchronizeTimeResponse(request
-                    .getCorrelationUid());
+            final MeterResponseData meterResponseData = this.meterResponseDataService
+                    .dequeue(request.getCorrelationUid());
 
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
             if (meterResponseData.getMessageData() instanceof String) {
@@ -137,7 +137,8 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
         SpecificAttributeValueResponse response = null;
         try {
             response = new SpecificAttributeValueResponse();
-            final MeterResponseData meterResponseData = this.adhocService.dequeueResponse(request.getCorrelationUid());
+            final MeterResponseData meterResponseData = this.meterResponseDataService
+                    .dequeue(request.getCorrelationUid());
 
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
             if (meterResponseData.getMessageData() instanceof String) {
@@ -169,10 +170,10 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
                 .map(request,
                         com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecificAttributeValueRequest.class);
 
-        final String correlationUid = this.adhocService
-                .enqueueSpecificAttributeValueRequest(organisationIdentification, request.getDeviceIdentification(),
-                        getSpecificAttributeValueRequest, MessagePriorityEnum.getMessagePriority(messagePriority),
-                        this.adhocMapper.map(scheduleTime, Long.class));
+        final String correlationUid = this.adhocService.enqueueSpecificAttributeValueRequest(organisationIdentification,
+                request.getDeviceIdentification(), getSpecificAttributeValueRequest,
+                MessagePriorityEnum.getMessagePriority(messagePriority),
+                this.adhocMapper.map(scheduleTime, Long.class));
 
         response.setCorrelationUid(correlationUid);
         response.setDeviceIdentification(request.getDeviceIdentification());
@@ -190,7 +191,8 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
         RetrieveAllAttributeValuesResponse response = null;
         try {
             response = new RetrieveAllAttributeValuesResponse();
-            final MeterResponseData meterResponseData = this.adhocService.dequeueResponse(request.getCorrelationUid());
+            final MeterResponseData meterResponseData = this.meterResponseDataService
+                    .dequeue(request.getCorrelationUid());
 
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
             if (meterResponseData.getMessageData() instanceof String) {
@@ -207,9 +209,8 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
     @ResponsePayload
     public GetAssociationLnObjectsAsyncResponse getAssociationLnObjects(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetAssociationLnObjectsRequest request,
-            @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
-            @ResponseUrl final String responseUrl) throws OsgpException {
+            @RequestPayload final GetAssociationLnObjectsRequest request, @MessagePriority final String messagePriority,
+            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
 
         final GetAssociationLnObjectsAsyncResponse response = new GetAssociationLnObjectsAsyncResponse();
 
@@ -237,7 +238,8 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
         GetAssociationLnObjectsResponse response = null;
         try {
             response = new GetAssociationLnObjectsResponse();
-            final MeterResponseData meterResponseData = this.adhocService.dequeueResponse(request.getCorrelationUid());
+            final MeterResponseData meterResponseData = this.meterResponseDataService
+                    .dequeue(request.getCorrelationUid());
 
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
             if (meterResponseData.getMessageData() instanceof AssociationLnListType) {
