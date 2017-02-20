@@ -107,6 +107,28 @@
     </xsd:complexType>
   </xsd:element>
 
+  <xsd:element name="GetPushNotificationAlarmAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetPushNotificationAlarmResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Result" type="common:OsgpResultType"
+          minOccurs="1" />
+        <xsd:element name="decodedMessage" type="xsd:string" />
+        <xsd:element name="encodedMessage" type="xsd:hexBinary" />
+        <xsd:sequence>
+          <xsd:element name="alarm" type="common:AlarmType"
+            minOccurs="1" maxOccurs="unbounded" />
+        </xsd:sequence>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
   <xsd:complexType name="UpdateFirmwareRequestData">
     <xsd:complexContent>
       <xsd:extension base="common:Command">

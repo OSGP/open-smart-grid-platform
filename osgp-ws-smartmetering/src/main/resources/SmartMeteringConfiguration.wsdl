@@ -48,6 +48,17 @@
     </wsdl:part>
   </wsdl:message>
 
+  <wsdl:message name="GetPushNotificationAlarmAsyncRequest">
+    <wsdl:part element="smconf:GetPushNotificationAlarmAsyncRequest"
+      name="GetPushNotificationAlarmAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetPushNotificationAlarmResponse">
+    <wsdl:part element="smconf:GetPushNotificationAlarmResponse"
+      name="GetPushNotificationAlarmResponse">
+    </wsdl:part>
+  </wsdl:message>
+
   <wsdl:message name="UpdateFirmwareRequest">
     <wsdl:part element="smconf:UpdateFirmwareRequest" name="UpdateFirmwareRequest">
     </wsdl:part>
@@ -283,6 +294,13 @@
       </wsdl:input>
       <wsdl:output message="tns:GetFirmwareVersionAsyncResponse"
         name="GetFirmwareVersionAsyncResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetPushNotificationAlarm">
+      <wsdl:input message="tns:GetPushNotificationAlarmAsyncRequest" name="GetPushNotificationAlarmAsyncRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:GetPushNotificationAlarmResponse" name="GetPushNotificationAlarmResponse">
       </wsdl:output>
     </wsdl:operation>
 
@@ -523,6 +541,22 @@
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="UpdateFirmwareAsyncResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetPushNotificationAlarm">
+      <soap:operation soapAction="" />
+      <wsdl:input name="GetPushNotificationAlarmAsyncRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GetPushNotificationAlarmResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
