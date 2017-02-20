@@ -61,8 +61,11 @@ public class ProfileGenericDataRequestVo implements Serializable, ActionRequest 
     @Override
     public int hashCode() {
         final int prime = 31;
-        int result = super.hashCode();
+        int result = 1;
+        result = prime * result + ((this.beginDate == null) ? 0 : this.beginDate.hashCode());
         result = prime * result + ((this.deviceIdentification == null) ? 0 : this.deviceIdentification.hashCode());
+        result = prime * result + ((this.endDate == null) ? 0 : this.endDate.hashCode());
+        result = prime * result + ((this.obisCode == null) ? 0 : this.obisCode.hashCode());
         return result;
     }
 
@@ -71,13 +74,20 @@ public class ProfileGenericDataRequestVo implements Serializable, ActionRequest 
         if (this == obj) {
             return true;
         }
-        if (!super.equals(obj)) {
+        if (obj == null) {
             return false;
         }
         if (this.getClass() != obj.getClass()) {
             return false;
         }
         ProfileGenericDataRequestVo other = (ProfileGenericDataRequestVo) obj;
+        if (this.beginDate == null) {
+            if (other.beginDate != null) {
+                return false;
+            }
+        } else if (!this.beginDate.equals(other.beginDate)) {
+            return false;
+        }
         if (this.deviceIdentification == null) {
             if (other.deviceIdentification != null) {
                 return false;
@@ -85,7 +95,20 @@ public class ProfileGenericDataRequestVo implements Serializable, ActionRequest 
         } else if (!this.deviceIdentification.equals(other.deviceIdentification)) {
             return false;
         }
+        if (this.endDate == null) {
+            if (other.endDate != null) {
+                return false;
+            }
+        } else if (!this.endDate.equals(other.endDate)) {
+            return false;
+        }
+        if (this.obisCode == null) {
+            if (other.obisCode != null) {
+                return false;
+            }
+        } else if (!this.obisCode.equals(other.obisCode)) {
+            return false;
+        }
         return true;
     }
-
 }
