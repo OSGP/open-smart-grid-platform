@@ -173,18 +173,4 @@ public class Defaults {
     public static final int FIRMWARE_ID = 0;
     public static final String FIRMWARE_DESCRIPTION = "Test Firmware";
 
-    public static final String DEFAULT_SHIPMENT_FILE_NAME = "NewShipmentFileName";
-    public static final String DEFAULT_SHIPMENT_FILE_DEVICE_STATE = "NEW";
-    public static final String DEFAULT_SHIPMENT_FILE_DEVICE_SERIALNUMBER = "0000141227";
-    public static final String DEFAULT_COMMUNICATION_METHOD = "CDMA";
-    public static final String DEFAULT_COMMUNICATION_ID = "E9998000014122714";
-    public static final String DEFAULT_HARDWARE_VERSION = "050321";
-    public static final String DEFAULT_DSMR_VERSION = "4.2.2";
-    public static final DateTime DEFAULT_KEYS_VALID_FROM = DateTime.now();
-    public static final String DEFAULT_MODULE_ACTIVE_FIRMWARE_VERSION = "05020035";
-    public static final Boolean DEFAULT_AUTO_INVOKE = true;
-    public static final String DEFAULT_COMPANY = "ALLIANDER";
-    public static final DateTime DEFAULT_CREATED_AT = DateTime.now();
-    public static final String DEFAULT_SHIPMENT_FILE_STATE = "NEW";
-
 }
