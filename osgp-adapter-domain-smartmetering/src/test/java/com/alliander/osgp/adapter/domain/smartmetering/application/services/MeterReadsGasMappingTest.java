@@ -22,7 +22,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.Monit
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpUnit;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValueDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnitDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnitTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGasResponseDto;
 
 public class MeterReadsGasMappingTest {
@@ -33,8 +33,9 @@ public class MeterReadsGasMappingTest {
     @Test
     public void testMeterReadsGasMappingTest() {
         // build test data
-        final DlmsMeterValueDto consumption = new DlmsMeterValueDto(new BigDecimal(1.0), DlmsUnitDto.M3);
-        final MeterReadsGasResponseDto meterReadsGasDto = new MeterReadsGasResponseDto(new Date(), consumption, new Date());
+        final DlmsMeterValueDto consumption = new DlmsMeterValueDto(new BigDecimal(1.0), DlmsUnitTypeDto.M3);
+        final MeterReadsGasResponseDto meterReadsGasDto = new MeterReadsGasResponseDto(new Date(), consumption,
+                new Date());
         // actual mapping
         final MeterReadsGas meterReadsGas = this.monitoringMapper.map(meterReadsGasDto, MeterReadsGas.class);
         // test mapping
@@ -54,7 +55,8 @@ public class MeterReadsGasMappingTest {
     public void testWithNullDlmsMeterValueDto() {
         // build test data
         final DlmsMeterValueDto consumption = null;
-        final MeterReadsGasResponseDto meterReadsGasDto = new MeterReadsGasResponseDto(new Date(), consumption, new Date());
+        final MeterReadsGasResponseDto meterReadsGasDto = new MeterReadsGasResponseDto(new Date(), consumption,
+                new Date());
         // actual mapping
         final MeterReadsGas meterReadsGas = this.monitoringMapper.map(meterReadsGasDto, MeterReadsGas.class);
         // test mapping
@@ -69,7 +71,7 @@ public class MeterReadsGasMappingTest {
     @Test(expected = NullPointerException.class)
     public void testWithNullDates() {
 
-        final DlmsMeterValueDto consumption = new DlmsMeterValueDto(new BigDecimal(1.0), DlmsUnitDto.M3);
+        final DlmsMeterValueDto consumption = new DlmsMeterValueDto(new BigDecimal(1.0), DlmsUnitTypeDto.M3);
         new MeterReadsGasResponseDto(null, consumption, null);
 
     }

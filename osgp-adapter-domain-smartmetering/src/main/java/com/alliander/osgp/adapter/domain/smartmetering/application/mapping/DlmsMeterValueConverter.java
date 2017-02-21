@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpMeterValue;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpUnit;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValueDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnitDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnitTypeDto;
 
 /**
  * Calculate a osgp meter value:
@@ -54,13 +54,13 @@ public class DlmsMeterValueConverter extends CustomConverter<DlmsMeterValueDto, 
      * @param dlmsUnit
      * @return
      */
-    private BigDecimal getMultiplierToOsgpUnit(final DlmsUnitDto dlmsUnit, final OsgpUnit osgpUnit) {
+    private BigDecimal getMultiplierToOsgpUnit(final DlmsUnitTypeDto dlmsUnit, final OsgpUnit osgpUnit) {
 
         switch (dlmsUnit) {
-        case WH:
+        case KWH:
             return BigDecimal.valueOf(0.001d);
         case M3: // intentional fallthrough.
-        case M3COR: // intentional fallthrough.
+        case M3_CORR: // intentional fallthrough.
         case UNDEFINED:
             return BigDecimal.valueOf(1d);
         default:
@@ -77,18 +77,19 @@ public class DlmsMeterValueConverter extends CustomConverter<DlmsMeterValueDto, 
      * @throws IllegalArgumentException
      *             when no osgp unit is found
      */
-    private OsgpUnit toStandardUnit(final DlmsUnitDto dlmsUnit) {
-        switch (dlmsUnit) {
-        case WH:
-            return OsgpUnit.KWH;
-        case M3: // intentional fallthrough.
-        case M3COR:
+    private OsgpUnit toStandardUnit(final DlmsUnitTypeDto dlmsUnit) {
+        // this is needed because the xsd generates M_3 from the M3 tag!
+        if ("M_3".equals(dlmsUnit.getUnit())) {
             return OsgpUnit.M3;
-        case UNDEFINED:
-            return OsgpUnit.UNDEFINED;
-        default:
-            throw new IllegalArgumentException(String.format("dlms unit %s not supported yet", dlmsUnit.name()));
+        } else {
+            for (OsgpUnit osgpUnit : OsgpUnit.values()) {
+                if (osgpUnit.name().equals(dlmsUnit.getUnit())) {
+                    return osgpUnit;
+                }
+            }
         }
+
+        return OsgpUnit.UNDEFINED;
     }
 
 }

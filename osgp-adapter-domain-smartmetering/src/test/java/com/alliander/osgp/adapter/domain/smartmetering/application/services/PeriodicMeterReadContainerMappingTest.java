@@ -28,7 +28,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterRe
 import com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCodeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlagDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValueDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnitDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnitTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseItemDto;
@@ -72,15 +72,17 @@ public class PeriodicMeterReadContainerMappingTest {
     @Test
     public void testWithNonEmptyList() {
         // build test data
-        final DlmsMeterValueDto activeEnergyImport = new DlmsMeterValueDto(new BigDecimal(1.0), DlmsUnitDto.M3);
-        final DlmsMeterValueDto activeEnergyExport = new DlmsMeterValueDto(new BigDecimal(1.0), DlmsUnitDto.M3);
+        final DlmsMeterValueDto activeEnergyImport = new DlmsMeterValueDto(new BigDecimal(1.0),
+                DlmsUnitTypeDto.M3);
+        final DlmsMeterValueDto activeEnergyExport = new DlmsMeterValueDto(new BigDecimal(1.0),
+                DlmsUnitTypeDto.M3);
 
         final Set<AmrProfileStatusCodeFlagDto> amrProfileStatusCodeFlagSet = new TreeSet<>();
         amrProfileStatusCodeFlagSet.add(AmrProfileStatusCodeFlagDto.CRITICAL_ERROR);
         final AmrProfileStatusCodeDto amrProfileStatusCodeDto = new AmrProfileStatusCodeDto(amrProfileStatusCodeFlagSet);
 
-        final PeriodicMeterReadsResponseItemDto periodicMeterReadsDto = new PeriodicMeterReadsResponseItemDto(new Date(), activeEnergyImport,
-                activeEnergyExport, amrProfileStatusCodeDto);
+        final PeriodicMeterReadsResponseItemDto periodicMeterReadsDto = new PeriodicMeterReadsResponseItemDto(
+                new Date(), activeEnergyImport, activeEnergyExport, amrProfileStatusCodeDto);
         final List<PeriodicMeterReadsResponseItemDto> meterReads = new ArrayList<PeriodicMeterReadsResponseItemDto>();
         meterReads.add(periodicMeterReadsDto);
 
