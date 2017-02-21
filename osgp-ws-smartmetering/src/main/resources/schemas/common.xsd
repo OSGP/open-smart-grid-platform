@@ -283,17 +283,17 @@
         <xsd:documentation>todo</xsd:documentation>
       </xsd:annotation>
       </xsd:enumeration>
-      <xsd:enumeration value="M3">
+      <xsd:enumeration value="M3_CORR">
       <xsd:annotation>
         <xsd:documentation>todo</xsd:documentation>
       </xsd:annotation>
       </xsd:enumeration>
-      <xsd:enumeration value="CUBIC_METRE_FLUX">
+      <xsd:enumeration value="M3_FLUX">
       <xsd:annotation>
         <xsd:documentation>todo</xsd:documentation>
       </xsd:annotation>
       </xsd:enumeration>
-      <xsd:enumeration value="CUBIC_METRE_FLUX_CORRECTED">
+      <xsd:enumeration value="M3_FLUX_CORR">
       <xsd:annotation>
         <xsd:documentation>todo</xsd:documentation>
       </xsd:annotation>
@@ -303,7 +303,7 @@
         <xsd:documentation>todo</xsd:documentation>
       </xsd:annotation>
       </xsd:enumeration>
-      <xsd:enumeration value="CORRECTED_VOLUME_FLUX">
+      <xsd:enumeration value="VOLUME_FLUX_CORR">
       <xsd:annotation>
         <xsd:documentation>todo</xsd:documentation>
       </xsd:annotation>
@@ -523,7 +523,7 @@
         <xsd:documentation>todo</xsd:documentation>
       </xsd:annotation>
       </xsd:enumeration>
-      <xsd:enumeration value="UNDEFINED">
+      <xsd:enumeration value="PASCAL_SECOND">
       <xsd:annotation>
         <xsd:documentation>todo</xsd:documentation>
       </xsd:annotation>
@@ -548,8 +548,14 @@
         <xsd:documentation>todo</xsd:documentation>
       </xsd:annotation>
       </xsd:enumeration>
+      <xsd:enumeration value="COUNT">
+      <xsd:annotation>
+        <xsd:documentation>todo</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
     </xsd:restriction>
   </xsd:simpleType>
+
 
   <xsd:simpleType name="AmrProfileStatusCodeFlag">
     <xsd:restriction base="xsd:string">

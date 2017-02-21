@@ -8,6 +8,7 @@
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 public class CosemObisCodeDto implements Serializable {
@@ -45,15 +46,23 @@ public class CosemObisCodeDto implements Serializable {
     }
 
     public CosemObisCodeDto(final byte[] code) {
-        if (code.length != 6) {
-            throw new IllegalArgumentException("ObisCode must have 6 values: " + code.length);
+        if (code.length == 6) {
+            this.a = code[0] & 0xFF;
+            this.b = code[1] & 0xFF;
+            this.c = code[2] & 0xFF;
+            this.d = code[3] & 0xFF;
+            this.e = code[4] & 0xFF;
+            this.f = code[5] & 0xFF;
+        } else {
+            final int[] values = parseCode(new String(code, StandardCharsets.UTF_8));
+            this.a = values[0];
+            this.b = values[1];
+            this.c = values[2];
+            this.d = values[3];
+            this.e = values[4];
+            this.f = values[5];
+
         }
-        this.a = code[0] & 0xFF;
-        this.b = code[1] & 0xFF;
-        this.c = code[2] & 0xFF;
-        this.d = code[3] & 0xFF;
-        this.e = code[4] & 0xFF;
-        this.f = code[5] & 0xFF;
     }
 
     public CosemObisCodeDto(final String code) {
