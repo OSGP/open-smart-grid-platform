@@ -46,11 +46,9 @@ import com.alliander.osgp.shared.application.config.AbstractConfig;
  */
 @Configuration
 @EnableTransactionManagement()
-@PropertySources({
-	@PropertySource("classpath:osgp-adapter-protocol-oslp-elster.properties"),
-	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-    @PropertySource(value = "file:{osgp/AdapterProtocolOslpElster/config}", ignoreResourceNotFound = true),
-})
+@PropertySources({ @PropertySource("classpath:osgp-adapter-protocol-oslp-elster.properties"),
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+    @PropertySource(value = "file:{osgp/AdapterProtocolOslpElster/config}", ignoreResourceNotFound = true), })
 public class OslpConfig extends AbstractConfig {
     private static final String PROPERTY_NAME_OSLP_TIMEOUT_CONNECT = "oslp.timeout.connect";
     private static final String PROPERTY_NAME_OSLP_PORT_CLIENT = "oslp.port.client";
@@ -67,10 +65,6 @@ public class OslpConfig extends AbstractConfig {
     private static final String PROPERTY_NAME_OSLP_EXECUTE_RESUME_SCHEDULE_AFTER_SET_LIGHT = "oslp.execute.resume.schedule.after.set.light";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OslpConfig.class);
-
-    public OslpConfig() {
-        InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
-    }
 
     @Bean(destroyMethod = "releaseExternalResources")
     public ClientBootstrap clientBootstrap() {
@@ -213,7 +207,8 @@ public class OslpConfig extends AbstractConfig {
 
     @Bean
     public boolean executeResumeScheduleAfterSetLight() {
-        return Boolean.parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_OSLP_EXECUTE_RESUME_SCHEDULE_AFTER_SET_LIGHT));
+        return Boolean.parseBoolean(this.environment
+                .getRequiredProperty(PROPERTY_NAME_OSLP_EXECUTE_RESUME_SCHEDULE_AFTER_SET_LIGHT));
     }
 
     @Bean
