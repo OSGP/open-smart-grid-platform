@@ -49,7 +49,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.CosemObisCodeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemObjectDefinitionDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemTimeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValueDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnitDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnitTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MessageTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SendDestinationAndMethodDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.TransportServiceTypeDto;
@@ -105,7 +105,7 @@ public class DlmsHelperService {
             throw new ConnectionException(e);
         } catch (final Exception e) {
             throw new ProtocolAdapterException("Error retrieving attribute value for {" + attributeAddress.getClassId()
-            + "," + attributeAddress.getInstanceId().toObisCode() + "," + attributeAddress.getId() + "}.", e);
+                    + "," + attributeAddress.getInstanceId().toObisCode() + "," + attributeAddress.getId() + "}.", e);
         }
     }
 
@@ -211,7 +211,7 @@ public class DlmsHelperService {
                     + this.getDebugInfo(scalerUnitObject));
         }
         final int scaler = this.readLongNotNull(dataObjects.get(0), description).intValue();
-        final DlmsUnitDto unit = DlmsUnitDto.fromDlmsEnum(this.readLongNotNull(dataObjects.get(1), description)
+        final DlmsUnitTypeDto unit = DlmsUnitTypeDto.getUnitType(this.readLongNotNull(dataObjects.get(1), description)
                 .intValue());
 
         // determine value
@@ -615,7 +615,7 @@ public class DlmsHelperService {
         final String rawValueClass = this.getRawValueClassForDebugInfo(dataObject);
 
         return "DataObject: Choice=" + choiceText + ", ResultData is" + dataType + ", value=[" + rawValueClass + "]: "
-                + objectText;
+        + objectText;
     }
 
     private String getObjectTextForDebugInfo(final DataObject dataObject) {
@@ -732,8 +732,8 @@ public class DlmsHelperService {
         final StringBuilder sb = new StringBuilder();
 
         sb.append("logical name: ").append(logicalNameValue[0] & 0xFF).append('-').append(logicalNameValue[1] & 0xFF)
-        .append(':').append(logicalNameValue[2] & 0xFF).append('.').append(logicalNameValue[3] & 0xFF)
-        .append('.').append(logicalNameValue[4] & 0xFF).append('.').append(logicalNameValue[5] & 0xFF);
+                .append(':').append(logicalNameValue[2] & 0xFF).append('.').append(logicalNameValue[3] & 0xFF)
+                .append('.').append(logicalNameValue[4] & 0xFF).append('.').append(logicalNameValue[5] & 0xFF);
 
         return sb.toString();
     }
@@ -759,10 +759,10 @@ public class DlmsHelperService {
         final int clockStatus = bb.get();
 
         sb.append("year=").append(year).append(", month=").append(monthOfYear).append(", day=").append(dayOfMonth)
-        .append(", weekday=").append(dayOfWeek).append(", hour=").append(hourOfDay).append(", minute=")
-        .append(minuteOfHour).append(", second=").append(secondOfMinute).append(", hundredths=")
-        .append(hundredthsOfSecond).append(", deviation=").append(deviation).append(", clockstatus=")
-        .append(clockStatus);
+                .append(", weekday=").append(dayOfWeek).append(", hour=").append(hourOfDay).append(", minute=")
+                .append(minuteOfHour).append(", second=").append(secondOfMinute).append(", hundredths=")
+                .append(hundredthsOfSecond).append(", deviation=").append(deviation).append(", clockstatus=")
+                .append(clockStatus);
 
         return sb.toString();
     }
@@ -773,7 +773,7 @@ public class DlmsHelperService {
 
         final StringBuilder sb = new StringBuilder();
         sb.append("number of bytes=").append(bitStringValue.length).append(", value=").append(bigValue)
-                .append(", bits=").append(stringValue);
+        .append(", bits=").append(stringValue);
 
         return sb.toString();
     }

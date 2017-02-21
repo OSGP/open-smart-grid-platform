@@ -8,33 +8,33 @@
 package org.osgp.adapter.protocol.dlms.domain.valueobjects;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.osgp.adapter.protocol.dlms.application.valueobjects.DlmsUnitType;
+
+import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnitTypeDto;
 
 public class TestDlmsUnitType {
 
     @Test
     public void testGetUnit() {
-        final String result = DlmsUnitType.getUnit(1);
+        final String result = DlmsUnitTypeDto.getUnit(1);
         Assert.assertTrue("YEAR".equals(result));
     }
 
     @Test
     public void testGetKwh() {
-        final String result = DlmsUnitType.getUnit(30);
+        final String result = DlmsUnitTypeDto.getUnit(30);
         Assert.assertTrue("KWH".equals(result));
     }
 
     @Test
     public void testGetUndefined() {
-        final String result = DlmsUnitType.getUnit(0);
+        final String result = DlmsUnitTypeDto.getUnit(0);
         Assert.assertTrue("UNDEFINED".equals(result));
     }
 
     @Test
     public void testUnknown() {
-        final String result = DlmsUnitType.getUnit(100);
+        final String result = DlmsUnitTypeDto.getUnit(100);
         Assert.assertTrue("UNDEFINED".equals(result));
     }
 
@@ -42,17 +42,17 @@ public class TestDlmsUnitType {
      * Use this method to (re)generate the corresponding xsd. Note enable the
      * System.out!
      */
-    @Ignore
+    @Test
     public void generateXsd() {
         StringBuffer sb = new StringBuffer();
         sb.append("  <xsd:simpleType name=\"OsgpUnitType\">\n");
         sb.append("    <xsd:restriction base=\"xsd:string\">\n");
-        for (DlmsUnitType unitType : DlmsUnitType.values()) {
+        for (DlmsUnitTypeDto unitType : DlmsUnitTypeDto.values()) {
             sb.append(this.xsdFragment(unitType));
         }
         sb.append("    </xsd:restriction>\n");
         sb.append("  </xsd:simpleType>\n");
-        // System.out.println(sb.toString());
+        System.out.println(sb.toString());
     }
 
     /*
@@ -60,9 +60,9 @@ public class TestDlmsUnitType {
      * <xsd:annotation> <xsd:documentation>cubic meter</xsd:documentation>
      * </xsd:annotation> </xsd:enumeration>
      */
-    private String xsdFragment(final DlmsUnitType unitType) {
+    private String xsdFragment(final DlmsUnitTypeDto unitType) {
         StringBuffer sb = new StringBuffer();
-        sb.append(String.format("      <xsd:enumeration value=\"%s\">\n", unitType.getUnit()));
+        sb.append(String.format("      <xsd:enumeration value=\"%s\">\n", unitType.name()));
         sb.append("      <xsd:annotation>\n");
         sb.append("        <xsd:documentation>todo</xsd:documentation>\n");
         sb.append("      </xsd:annotation>\n");
