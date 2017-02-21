@@ -50,7 +50,7 @@
     <osgp.version>4.8.0-SNAPSHOT</osgp.version>
     <osgp.dlms.version>4.8.0-SNAPSHOT</osgp.dlms.version>
     <osgp.shared.version>4.8.0-SNAPSHOT</osgp.shared.version>
-    <osgp.jasper-interface.version>3.5.0-SNAPSHOT</osgp.jasper-interface.version>
+    <osgp.jasper-interface.version>4.8.0-SNAPSHOT</osgp.jasper-interface.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <spring.version>4.3.5.RELEASE</spring.version>
