@@ -86,7 +86,7 @@ public enum DlmsUnitTypeDto {
     DB_MILLIWAT(70, "DB_MILLIWAT"),
     DB_MICROVOLT(71, "DB_MICROVOLT"),
     DB(72, "DB"),
-    COUNT(255, "UNDEFINED");
+    COUNT(255, "COUNT");
 
     private static final Map<Integer, DlmsUnitTypeDto> UNIT_TYPES_MAP = new HashMap<>();
 

@@ -543,6 +543,11 @@
         <xsd:documentation>DB</xsd:documentation>
       </xsd:annotation>
       </xsd:enumeration>
+      <xsd:enumeration value="COUNT">
+      <xsd:annotation>
+        <xsd:documentation>no unit, unitless, count</xsd:documentation>
+      </xsd:annotation>
+      </xsd:enumeration>
     </xsd:restriction>
   </xsd:simpleType>
 
