@@ -20,6 +20,7 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.CosemDateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.openmuc.jdlms.interfaceclass.InterfaceClass;
 import org.openmuc.jdlms.interfaceclass.attribute.ProfileGenericAttribute;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
@@ -49,9 +50,9 @@ AbstractCommandExecutor<ProfileGenericDataRequestDto, ProfileGenericDataResponse
 
     private static final Map<Integer, Integer> SCALER_UNITS_MAP = new HashMap<>();
     static {
-        SCALER_UNITS_MAP.put(CosemInterfaceClass.REGISTER.id(), 3);
-        SCALER_UNITS_MAP.put(CosemInterfaceClass.EXTENDED_REGISTER.id(), 3);
-        SCALER_UNITS_MAP.put(CosemInterfaceClass.DEMAND_REGISTER.id(), 4);
+        SCALER_UNITS_MAP.put(InterfaceClass.REGISTER.id(), 3);
+        SCALER_UNITS_MAP.put(InterfaceClass.EXTENDED_REGISTER.id(), 3);
+        SCALER_UNITS_MAP.put(InterfaceClass.DEMAND_REGISTER.id(), 4);
     }
     @Autowired
     private DlmsHelperService dlmsHelperService;
@@ -79,9 +80,8 @@ AbstractCommandExecutor<ProfileGenericDataRequestDto, ProfileGenericDataResponse
 
     private List<GetResult> retrieveCaptureObjects(DlmsConnectionHolder conn, DlmsDevice device, final ObisCode obisCode)
             throws ProtocolAdapterException {
-        AttributeAddress captureObjectsAttributeAddress = new AttributeAddress(
-                CosemInterfaceClass.PROFILE_GENERIC.id(), obisCode,
-                ProfileGenericAttribute.CAPTURE_OBJECTS.attributeId());
+        AttributeAddress captureObjectsAttributeAddress = new AttributeAddress(InterfaceClass.PROFILE_GENERIC.id(),
+                obisCode, ProfileGenericAttribute.CAPTURE_OBJECTS.attributeId());
 
         return this.dlmsHelperService.getAndCheck(conn, device, "retrieve profile generic capture objects",
                 captureObjectsAttributeAddress);
@@ -91,8 +91,8 @@ AbstractCommandExecutor<ProfileGenericDataRequestDto, ProfileGenericDataResponse
             final DateTime beginDateTime, final DateTime endDateTime, final ObisCode obisCode)
             throws ProtocolAdapterException {
         final SelectiveAccessDescription access = this.getSelectiveAccessDescription(beginDateTime, endDateTime);
-        AttributeAddress bufferAttributeAddress = new AttributeAddress(CosemInterfaceClass.PROFILE_GENERIC.id(),
-                obisCode, ProfileGenericAttribute.BUFFER.attributeId(), access);
+        AttributeAddress bufferAttributeAddress = new AttributeAddress(InterfaceClass.PROFILE_GENERIC.id(), obisCode,
+                ProfileGenericAttribute.BUFFER.attributeId(), access);
         return this.dlmsHelperService.getAndCheck(conn, device, "retrieve profile generic buffer",
                 bufferAttributeAddress);
     }
@@ -208,7 +208,7 @@ AbstractCommandExecutor<ProfileGenericDataRequestDto, ProfileGenericDataResponse
 
     private ProfileEntryValueDto makeProfileEntryValueDto(final DataObject dataObject,
             final ScalerUnitInfo scalerUnitInfo) {
-        if (CosemInterfaceClass.CLOCK.id() == scalerUnitInfo.getClassId()) {
+        if (InterfaceClass.CLOCK.id() == scalerUnitInfo.getClassId()) {
             return this.makeDateProfileEntryValueDto(dataObject);
         } else if (dataObject.isNumber()) {
             return this.makeNumericProfileEntryValueDto(dataObject, scalerUnitInfo);
