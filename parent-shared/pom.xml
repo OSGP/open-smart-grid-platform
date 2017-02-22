@@ -88,6 +88,7 @@
     <apache.commons.schema>2.0.3</apache.commons.schema>
     <maven.compiler.plugin.version>3.6.0</maven.compiler.plugin.version>
     <license.maven.plugin>2.11</license.maven.plugin>
+    <quartz.version>2.2.3</quartz.version>
   </properties>
 
   <repositories>
@@ -386,6 +387,14 @@
         <artifactId>license-maven-plugin</artifactId>
         <version>${license.maven.plugin}</version>
       </dependency>
+
+      <!-- Quartz framework -->
+      <dependency>
+        <groupId>org.quartz-scheduler</groupId>
+        <artifactId>quartz</artifactId>
+        <version>${quartz.version}</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
