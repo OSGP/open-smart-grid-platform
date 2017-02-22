@@ -42,7 +42,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataRespo
 
 @Component()
 public class GetProfileGenericDataCommandExecutor extends
-AbstractCommandExecutor<ProfileGenericDataRequestDto, ProfileGenericDataResponseDto> {
+        AbstractCommandExecutor<ProfileGenericDataRequestDto, ProfileGenericDataResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetProfileGenericDataCommandExecutor.class);
 
@@ -89,7 +89,7 @@ AbstractCommandExecutor<ProfileGenericDataRequestDto, ProfileGenericDataResponse
 
     private List<GetResult> retrieveBuffer(final DlmsConnectionHolder conn, final DlmsDevice device,
             final DateTime beginDateTime, final DateTime endDateTime, final ObisCode obisCode)
-            throws ProtocolAdapterException {
+                    throws ProtocolAdapterException {
         final SelectiveAccessDescription access = this.getSelectiveAccessDescription(beginDateTime, endDateTime);
         AttributeAddress bufferAttributeAddress = new AttributeAddress(InterfaceClass.PROFILE_GENERIC.id(), obisCode,
                 ProfileGenericAttribute.BUFFER.attributeId(), access);
@@ -103,7 +103,7 @@ AbstractCommandExecutor<ProfileGenericDataRequestDto, ProfileGenericDataResponse
      */
     private ProfileGenericDataResponseDto processData(final ObisCodeValuesDto obisCode,
             final List<GetResult> captureObjects, final List<GetResult> bufferList, List<ScalerUnitInfo> scalerUnitInfos)
-            throws ProtocolAdapterException {
+                    throws ProtocolAdapterException {
 
         List<CaptureObjectDto> captureObjectDtos = this.makeCaptureObjects(captureObjects, scalerUnitInfos);
         List<ProfileEntryDto> profileEntryDtos = this.makeProfileEntries(bufferList, scalerUnitInfos);
@@ -185,14 +185,20 @@ AbstractCommandExecutor<ProfileGenericDataRequestDto, ProfileGenericDataResponse
                 this.getUnit(scalerUnitInfo));
     }
 
-    private String getUnit(final ScalerUnitInfo scalerUnitInfo) {
+    private DlmsUnitTypeDto getUnitType(final ScalerUnitInfo scalerUnitInfo) {
         if (scalerUnitInfo.getScalerUnit() != null) {
             final List<DataObject> dataObjects = scalerUnitInfo.getScalerUnit().getValue();
-            final int unit = Integer.parseInt(dataObjects.get(1).getValue().toString());
-            return DlmsUnitTypeDto.getUnit(unit);
-        } else {
-            return DlmsUnitTypeDto.UNDEFINED.getUnit();
+            final int index = Integer.parseInt(dataObjects.get(1).getValue().toString());
+            DlmsUnitTypeDto unitType = DlmsUnitTypeDto.getUnitType(index);
+            if (unitType != null) {
+                return unitType;
+            }
         }
+        return DlmsUnitTypeDto.UNDEFINED;
+    }
+
+    private String getUnit(final ScalerUnitInfo scalerUnitInfo) {
+        return this.getUnitType(scalerUnitInfo).getUnit();
     }
 
     private List<ProfileEntryValueDto> makeProfileEntryValueDto(final DataObject profEntryDataObjects,
@@ -230,7 +236,11 @@ AbstractCommandExecutor<ProfileGenericDataRequestDto, ProfileGenericDataResponse
             if (scalerUnitInfo.getScalerUnit() != null) {
                 DlmsMeterValueDto meterValue = this.dlmsHelperService.getScaledMeterValue(dataObject,
                         scalerUnitInfo.getScalerUnit(), "getScaledMeterValue");
-                return new ProfileEntryValueDto(meterValue.getValue());
+                if (DlmsUnitTypeDto.COUNT.equals(this.getUnitType(scalerUnitInfo))) {
+                    return new ProfileEntryValueDto(meterValue.getValue().longValue());
+                } else {
+                    return new ProfileEntryValueDto(meterValue.getValue());
+                }
             } else {
                 long value = this.dlmsHelperService.readLong(dataObject, "read long");
                 return new ProfileEntryValueDto(value);
