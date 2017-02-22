@@ -49,13 +49,11 @@ import com.alliander.osgp.shared.application.config.AbstractConfig;
  */
 @Configuration
 @EnableTransactionManagement()
-@PropertySources({
-	@PropertySource("classpath:osgp-adapter-protocol-oslp.properties"),
+@PropertySources({ @PropertySource("classpath:osgp-adapter-protocol-oslp.properties"),
     @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "file:${osgp/AdapterProtocolOslp/config}", ignoreResourceNotFound = true),
-})
+    @PropertySource(value = "file:${osgp/AdapterProtocolOslp/config}", ignoreResourceNotFound = true), })
 public class OslpConfig extends AbstractConfig {
-    
+
     private static final String PROPERTY_NAME_OSLP_TIMEOUT_CONNECT = "oslp.timeout.connect";
     private static final String PROPERTY_NAME_OSLP_PORT_CLIENT = "oslp.port.client";
     private static final String PROPERTY_NAME_OSLP_PORT_CLIENTLOCAL = "oslp.port.clientlocal";
@@ -67,10 +65,6 @@ public class OslpConfig extends AbstractConfig {
     private static final String PROPERTY_NAME_OSLP_SEQUENCE_NUMBER_MAXIMUM = "oslp.sequence.number.maximum";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OslpConfig.class);
-
-    public OslpConfig() {
-        InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
-    }
 
     /**
      * @return
