@@ -14,9 +14,9 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-public class DateHelper {
+public class DateConverter {
 
-    private DateHelper() {
+    private DateConverter() {
     }
 
     public static XMLGregorianCalendar createXMLGregorianCalendar(final Date date) {

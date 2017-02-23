@@ -427,7 +427,7 @@ public class Helpers {
      * given the AsyncResponse
      *
      * @param asyncResponse
-     *            , The AsyncResponse used to retrieve the values (mentioned
+     *            The AsyncResponse used to retrieve the values (mentioned
      *            above) to store in the ScenarioContext
      *
      * @throws Throwable

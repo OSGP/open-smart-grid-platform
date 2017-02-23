@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.dlms.cucumber.builders;
+package com.alliander.osgp.cucumber.platform.dlms.builders;
 
 import static com.alliander.osgp.cucumber.platform.core.Helpers.getShort;
 

@@ -5,14 +5,14 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.dlms.cucumber.builders;
+package com.alliander.osgp.cucumber.platform.dlms.builders;
 
 import org.joda.time.DateTime;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ObisCodeValues;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataRequest;
-import com.alliander.osgp.platform.cucumber.helpers.DateHelper;
+import com.alliander.osgp.platform.cucumber.helpers.DateConverter;
 
 public class ProfileGenericDataRequestBuilder {
 
@@ -51,8 +51,8 @@ public class ProfileGenericDataRequestBuilder {
         final ProfileGenericDataRequest result = new ProfileGenericDataRequest();
         result.setDeviceIdentification(this.deviceIdentification);
         result.setObisCode(this.obisCode);
-        result.setBeginDate(DateHelper.createXMLGregorianCalendar(this.beginDate.toDate()));
-        result.setEndDate(DateHelper.createXMLGregorianCalendar(this.endDate.toDate()));
+        result.setBeginDate(DateConverter.createXMLGregorianCalendar(this.beginDate.toDate()));
+        result.setEndDate(DateConverter.createXMLGregorianCalendar(this.endDate.toDate()));
         return result;
     }
 
