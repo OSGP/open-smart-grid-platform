@@ -366,10 +366,10 @@ public class OslpDeviceService implements DeviceService {
         final DeviceResponse deviceResponse = new DeviceResponse(deviceRequest.getOrganisationIdentification(),
                 deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid());
 
-        if (t instanceof org.jboss.netty.channel.ConnectTimeoutException) {
+        if (t instanceof IOException) {
             // Replace t by an OSGP Exception
             final ConnectionFailureException ex = new ConnectionFailureException(ComponentType.PROTOCOL_OSLP,
-                    "Connection timed out");
+                    "Connection failure");
             deviceResponseHandler.handleException(ex, deviceResponse);
         } else {
             deviceResponseHandler.handleException(t, deviceResponse);
