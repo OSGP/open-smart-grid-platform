@@ -7,7 +7,8 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -29,18 +30,19 @@ public class ProfileGenericDataResponseMapperTest {
     private MonitoringMapper mapper = new MonitoringMapper();
 
     private final static Class<?>[] EXPECTED_CLASS = new Class<?>[] { String.class, Date.class, BigDecimal.class,
-        Long.class };
+            Long.class };
 
     @Test
     public void testConvertProfileGenericDataResponseVo() {
         ProfileGenericDataResponseDto responseDto = this.makeResponseDto();
         ProfileGenericDataResponse responseVo = this.mapper.map(responseDto, ProfileGenericDataResponse.class);
-        assertTrue(responseVo != null);
-        assertTrue(responseVo.getProfileEntries().get(0).getProfileEntryValues().size() == EXPECTED_CLASS.length);
+        assertNotNull("response object should not be null", responseVo);
+        assertEquals("response object should return same number of profilentries", responseVo.getProfileEntries()
+                .get(0).getProfileEntryValues().size(), EXPECTED_CLASS.length);
         int i = 0;
         for (ProfileEntryValue profileEntryValueVo : responseVo.getProfileEntries().get(0).getProfileEntryValues()) {
             Class<?> clazz = profileEntryValueVo.getValue().getClass();
-            assertTrue(EXPECTED_CLASS[i++].equals(clazz));
+            assertEquals("the return class should be of the same type", EXPECTED_CLASS[i++], clazz);
         }
     }
 

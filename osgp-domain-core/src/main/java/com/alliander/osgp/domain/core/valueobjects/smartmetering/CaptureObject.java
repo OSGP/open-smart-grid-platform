@@ -19,7 +19,8 @@ public class CaptureObject implements Serializable {
     private final long dataIndex;
     private final String unit;
 
-    public CaptureObject(long classId, String logicalName, int attributeIndex, long dataIndex, String unit) {
+    public CaptureObject(final long classId, final String logicalName, final int attributeIndex, final long dataIndex,
+            final String unit) {
         this.classId = classId;
         this.logicalName = logicalName;
         this.attributeIndex = attributeIndex;

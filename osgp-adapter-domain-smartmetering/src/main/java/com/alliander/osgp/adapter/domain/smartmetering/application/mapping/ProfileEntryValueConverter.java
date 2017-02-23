@@ -19,7 +19,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileEntryValueDto;
 public class ProfileEntryValueConverter extends CustomConverter<ProfileEntryValueDto, ProfileEntryValue> {
 
     @Override
-    public ProfileEntryValue convert(ProfileEntryValueDto source, Type<? extends ProfileEntryValue> destinationType) {
+    public ProfileEntryValue convert(final ProfileEntryValueDto source,
+            final Type<? extends ProfileEntryValue> destinationType) {
         final Object value = source.getValue();
         if (value != null) {
             if (value instanceof Long) {

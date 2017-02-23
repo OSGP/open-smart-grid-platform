@@ -14,9 +14,9 @@ public class ProfileEntry implements Serializable {
 
     private static final long serialVersionUID = 991045734132231709L;
 
-    private List<ProfileEntryValue> profileEntryValues;
+    private final List<ProfileEntryValue> profileEntryValues;
 
-    public ProfileEntry(List<ProfileEntryValue> profileEntryValues) {
+    public ProfileEntry(final List<ProfileEntryValue> profileEntryValues) {
         super();
         this.profileEntryValues = profileEntryValues;
     }

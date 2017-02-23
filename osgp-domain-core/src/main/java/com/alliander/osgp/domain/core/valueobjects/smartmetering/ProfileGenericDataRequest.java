@@ -24,7 +24,7 @@ public class ProfileGenericDataRequest implements Serializable, ActionRequest {
     private final Date beginDate;
     private final Date endDate;
 
-    public ProfileGenericDataRequest(ObisCodeValues obisCode, Date beginDate, Date endDate,
+    public ProfileGenericDataRequest(final ObisCodeValues obisCode, final Date beginDate, final Date endDate,
             final String deviceIdentification) {
         this.deviceIdentification = deviceIdentification;
         this.obisCode = obisCode;

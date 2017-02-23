@@ -8,12 +8,17 @@
 
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.CaptureObject;
@@ -28,27 +33,29 @@ public class ProfileGenericDataResponseMappingTest {
     private MonitoringMapper monitoringMapper = new MonitoringMapper();
 
     private final static Class<?>[] EXPECTED_CLASS = new Class<?>[] { String.class, Date.class, BigDecimal.class,
-            Long.class };
+        Long.class };
 
     @Test
     public void testProfileGenericDataResponse() {
-        com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse voResponse = this
+        com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse source = this
                 .makeresponseVo();
-        ProfileGenericDataResponse wsResponse = this.monitoringMapper.map(voResponse, ProfileGenericDataResponse.class);
-        Assert.assertTrue(wsResponse != null && wsResponse instanceof ProfileGenericDataResponse);
-        Assert.assertTrue(wsResponse.getCaptureObjects().getCaptureObject().size() > 0);
-        Assert.assertTrue(wsResponse.getProfileEntries().getProfileEntry().size() > 0);
-        Assert.assertTrue(wsResponse.getProfileEntries().getProfileEntry().get(0).getProfileEntryValue() != null);
-        Assert.assertTrue(!wsResponse.getProfileEntries().getProfileEntry().get(0).getProfileEntryValue().isEmpty());
-        Assert.assertTrue(wsResponse.getProfileEntries().getProfileEntry().get(0).getProfileEntryValue().size() == 4);
+        ProfileGenericDataResponse target = this.monitoringMapper.map(source, ProfileGenericDataResponse.class);
+
+        assertNotNull("mapping ProfileGenericDataResponse should not return null", target);
+        assertEquals(target.getCaptureObjects().getCaptureObject().size(), 1);
+        assertEquals(target.getProfileEntries().getProfileEntry().size(), 2);
+        assertNotNull(target.getProfileEntries().getProfileEntry().get(0).getProfileEntryValue());
+        assertEquals(target.getProfileEntries().getProfileEntry().get(0).getProfileEntryValue().size(), 4);
 
         int i = 0;
-        for (ProfileEntryValue profileEntryValue : wsResponse.getProfileEntries().getProfileEntry().get(0)
+        for (ProfileEntryValue profileEntryValue : target.getProfileEntries().getProfileEntry().get(0)
                 .getProfileEntryValue()) {
-            Assert.assertTrue(profileEntryValue.getStringValueOrDateValueOrFloatValue() != null
+            assertNotNull(profileEntryValue.getStringValueOrDateValueOrFloatValue());
+            assertEquals(profileEntryValue.getStringValueOrDateValueOrFloatValue().size(), 1);
+            assertEquals(profileEntryValue.getStringValueOrDateValueOrFloatValue().get(0).getClass(),
+                    EXPECTED_CLASS[i++]);
+            assertTrue(profileEntryValue.getStringValueOrDateValueOrFloatValue() != null
                     && !profileEntryValue.getStringValueOrDateValueOrFloatValue().isEmpty());
-            Assert.assertTrue(EXPECTED_CLASS[i++].equals(profileEntryValue.getStringValueOrDateValueOrFloatValue()
-                    .get(0).getClass()));
         }
     }
 
@@ -57,7 +64,7 @@ public class ProfileGenericDataResponseMappingTest {
         com.alliander.osgp.domain.core.valueobjects.smartmetering.CaptureObject captureObjectVo = this
                 .makeCaptureObjectVo();
         CaptureObject captureObject = this.monitoringMapper.map(captureObjectVo, CaptureObject.class);
-        Assert.assertTrue(captureObject != null);
+        assertNotNull("mapping ProfileGenericDataResponse should not return null", captureObject);
     }
 
     @Test
@@ -65,21 +72,21 @@ public class ProfileGenericDataResponseMappingTest {
         com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryValue profileEntryValueVo = new com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryValue(
                 "test");
         ProfileEntryValue profileEntryValue = this.monitoringMapper.map(profileEntryValueVo, ProfileEntryValue.class);
-        Assert.assertTrue(profileEntryValue.getStringValueOrDateValueOrFloatValue().get(0).equals("test"));
+        assertEquals(profileEntryValue.getStringValueOrDateValueOrFloatValue().get(0), "test");
 
         profileEntryValueVo = new com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryValue(
                 new Date());
         profileEntryValue = this.monitoringMapper.map(profileEntryValueVo, ProfileEntryValue.class);
-        Assert.assertTrue(profileEntryValue.getStringValueOrDateValueOrFloatValue().get(0) instanceof Date);
+        assertThat(profileEntryValue.getStringValueOrDateValueOrFloatValue().get(0), instanceOf(Date.class));
 
         profileEntryValueVo = new com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryValue(
                 new BigDecimal(100.0d));
         profileEntryValue = this.monitoringMapper.map(profileEntryValueVo, ProfileEntryValue.class);
-        Assert.assertTrue(((BigDecimal) profileEntryValue.getStringValueOrDateValueOrFloatValue().get(0)).doubleValue() == 100.d);
+        assertTrue(((BigDecimal) profileEntryValue.getStringValueOrDateValueOrFloatValue().get(0)).doubleValue() == 100.d);
 
         profileEntryValueVo = new com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryValue(12345L);
         profileEntryValue = this.monitoringMapper.map(profileEntryValueVo, ProfileEntryValue.class);
-        Assert.assertTrue(((Long) profileEntryValue.getStringValueOrDateValueOrFloatValue().get(0)).doubleValue() == 12345L);
+        assertTrue(((Long) profileEntryValue.getStringValueOrDateValueOrFloatValue().get(0)).doubleValue() == 12345L);
     }
 
     private com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse makeresponseVo() {

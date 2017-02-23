@@ -13,12 +13,12 @@ import ma.glasnost.orika.metadata.Type;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ProfileEntryValue;
 
 public class ProfileEntryValueConverter extends
-        CustomConverter<com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryValue, ProfileEntryValue> {
+CustomConverter<com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryValue, ProfileEntryValue> {
 
     @Override
     public ProfileEntryValue convert(
-            com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryValue source,
-            Type<? extends ProfileEntryValue> destinationType) {
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryValue source,
+            final Type<? extends ProfileEntryValue> destinationType) {
         final ProfileEntryValue result = new ProfileEntryValue();
         result.getStringValueOrDateValueOrFloatValue().add(source.getValue());
         return result;

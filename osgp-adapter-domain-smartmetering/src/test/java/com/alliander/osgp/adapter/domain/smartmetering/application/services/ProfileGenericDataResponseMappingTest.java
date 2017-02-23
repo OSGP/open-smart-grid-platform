@@ -8,6 +8,10 @@
 
 package com.alliander.osgp.adapter.domain.smartmetering.application.services;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -17,14 +21,13 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CaptureObject;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpUnit;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryValue;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntry;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryValue;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CaptureObjectDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ObisCodeValuesDto;
@@ -40,25 +43,31 @@ public class ProfileGenericDataResponseMappingTest {
     public void testConvertProfileGenericDataResponseDto() {
         final ProfileGenericDataResponseDto dto = this.makeProfileGenericDataResponseDto();
         final ProfileGenericDataResponse result = this.mapper.map(dto, ProfileGenericDataResponse.class);
-        Assert.assertTrue(result != null && result instanceof ProfileGenericDataResponse);
+        assertNotNull("mapping ProfileGenericDataResponse should not return null", result);
+        assertThat("mapping ProfileGenericDataResponse should return correct type", result,
+                instanceOf(ProfileGenericDataResponse.class));
     }
 
     @Test
     public void testConvertcaptureObjectDto() {
         final CaptureObject result = this.mapper.map(this.captureObjectDto(), CaptureObject.class);
-        Assert.assertTrue(result != null && result instanceof CaptureObject);
+        assertNotNull("mapping CaptureObjectDto should not return null", result);
+        assertThat("mapping CaptureObjectDto should return correct type", result, instanceOf(CaptureObject.class));
     }
 
     @Test
     public void testConvertProfileEntryValueDto() {
         final ProfileEntryValue result = this.mapper.map(this.profileEntryDtoDate(), ProfileEntryValue.class);
-        Assert.assertTrue(result != null && result instanceof ProfileEntryValue);
+        assertNotNull("mapping ProfileEntryValueDto should not return null", result);
+        assertThat("mapping ProfileEntryValueDto should return correct type", result,
+                instanceOf(ProfileEntryValue.class));
     }
 
     @Test
     public void testConvertProfileEntryDto() {
         final ProfileEntry result = this.mapper.map(this.profileEntryDto(), ProfileEntry.class);
-        Assert.assertTrue(result != null && result instanceof ProfileEntry);
+        assertNotNull("mapping ProfileEntryDto should not return null", result);
+        assertThat("mapping ProfileEntryDto should return correct type", result, instanceOf(ProfileEntry.class));
     }
 
     private ProfileGenericDataResponseDto makeProfileGenericDataResponseDto() {
@@ -74,7 +83,7 @@ public class ProfileGenericDataResponseMappingTest {
     }
 
     private List<ProfileEntryDto> makeProfileEntryDtoList() {
-        List<ProfileEntryDto> result = new ArrayList<ProfileEntryDto>();
+        final List<ProfileEntryDto> result = new ArrayList<ProfileEntryDto>();
         result.add(this.profileEntryDto());
         return result;
     }

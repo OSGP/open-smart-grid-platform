@@ -22,13 +22,13 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ProfileEntryVal
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataResponse;
 
 public class ProfileGenericDataResponseConverter
-extends
-CustomConverter<com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse, ProfileGenericDataResponse> {
+        extends
+        CustomConverter<com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse, ProfileGenericDataResponse> {
 
     @Override
     public ProfileGenericDataResponse convert(
-            com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse source,
-            Type<? extends ProfileGenericDataResponse> destinationType) {
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse source,
+            final Type<? extends ProfileGenericDataResponse> destinationType) {
 
         ProfileGenericDataResponse result = new ProfileGenericDataResponse();
         result.setLogicalName(this.mapperFacade.map(source.getLogicalName(), ObisCodeValues.class));
