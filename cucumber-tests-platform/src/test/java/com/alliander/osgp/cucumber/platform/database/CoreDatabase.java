@@ -32,6 +32,7 @@ import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.PlatformDomain;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
 import com.alliander.osgp.domain.microgrids.repositories.RtuDeviceRepository;
+import com.alliander.osgp.domain.microgrids.repositories.TaskRepository;
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 
 @Component
@@ -85,6 +86,9 @@ public class CoreDatabase {
     @Autowired
     private SsldRepository ssldRepository;
 
+    @Autowired
+    private TaskRepository taskRepository;
+
     /**
      * This method is used to create default data not directly related to the
      * specific tests. For example: The test-org organization which is used to
@@ -128,6 +132,7 @@ public class CoreDatabase {
         this.rtuResponseDataRepository.deleteAllInBatch();
 
         // Then remove stuff from osgp_core
+        this.taskRepository.deleteAll();
         this.deviceAuthorizationRepository.deleteAllInBatch();
         this.deviceLogItemRepository.deleteAllInBatch();
         this.scheduledTaskRepository.deleteAllInBatch();

@@ -4,7 +4,7 @@ Feature: AdminDeviceManagement Update Key
   In order to ...
 
   Scenario: Update Key For Device
-    Given a device
+    Given an ssld device
       | DeviceIdentification | TEST1024000000001 |
     When receiving an update key request
       | DeviceIdentification | TEST1024000000001 |
@@ -20,7 +20,7 @@ Feature: AdminDeviceManagement Update Key
       | DeviceIdentification | TEST1024000000002 |
 
   Scenario Outline: Update Key For Device With Invalid Public Key
-    Given a device
+    Given an ssld device
       | DeviceIdentification | TEST1024000000001 |
     When receiving an update key request
       | DeviceIdentification | TEST1024000000001 |
