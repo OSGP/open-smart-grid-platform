@@ -14,8 +14,7 @@ import java.util.Map;
  * This class maps all possible Dlms units with the corrresponding string that
  * are available as an enum in @see OsgpUnitType. The index property corresponds
  * with the 'unit' in the Blue book. The 'unit' string property corresponds with
- * the enum in OsgpUnitType. The additional 'quantity' and 'unitName' properties
- * also correspond with the values from the Blue book.
+ * the enum in OsgpUnitType.
  */
 public enum DlmsUnitTypeDto {
 
@@ -99,7 +98,7 @@ public enum DlmsUnitTypeDto {
     private final int index;
     private final String unit;
 
-    private DlmsUnitTypeDto(int index, String unit) {
+    private DlmsUnitTypeDto(final int index, final String unit) {
         this.index = index;
         this.unit = unit;
     }

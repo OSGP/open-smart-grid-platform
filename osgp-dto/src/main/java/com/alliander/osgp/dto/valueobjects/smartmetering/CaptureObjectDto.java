@@ -19,7 +19,8 @@ public class CaptureObjectDto implements Serializable {
     private final int dataIndex;
     private final String unit;
 
-    public CaptureObjectDto(long classId, String logicalName, long attributeIndex, int dataIndex, String unit) {
+    public CaptureObjectDto(final long classId, final String logicalName, final long attributeIndex,
+            final int dataIndex, final String unit) {
         super();
         this.classId = classId;
         this.logicalName = logicalName;

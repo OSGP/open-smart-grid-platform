@@ -14,11 +14,11 @@ public class ProfileGenericDataResponseDto extends ActionResponseDto {
     private static final long serialVersionUID = -156966569210717654L;
 
     private final ObisCodeValuesDto logicalName;
-    private List<CaptureObjectDto> captureObjects;
-    private List<ProfileEntryDto> profileEntries;
+    private final List<CaptureObjectDto> captureObjects;
+    private final List<ProfileEntryDto> profileEntries;
 
-    public ProfileGenericDataResponseDto(ObisCodeValuesDto logicalName, List<CaptureObjectDto> captureObjects,
-            List<ProfileEntryDto> profileEntries) {
+    public ProfileGenericDataResponseDto(final ObisCodeValuesDto logicalName,
+            final List<CaptureObjectDto> captureObjects, final List<ProfileEntryDto> profileEntries) {
         super();
         this.logicalName = logicalName;
         this.captureObjects = captureObjects;

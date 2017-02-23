@@ -467,7 +467,7 @@
     </xsd:complexType>
   </xsd:element>
  
- <xsd:complexType name="ProfileGenericDataRequestData">
+  <xsd:complexType name="ProfileGenericDataRequestData">
       <xsd:complexContent>
       <xsd:extension base="common:Query">
         <xsd:sequence>

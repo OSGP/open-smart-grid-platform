@@ -14,9 +14,9 @@ public class ProfileEntryDto implements Serializable {
 
     private static final long serialVersionUID = 2123390296585369209L;
 
-    private List<ProfileEntryValueDto> profileEntryValues;
+    private final List<ProfileEntryValueDto> profileEntryValues;
 
-    public ProfileEntryDto(List<ProfileEntryValueDto> profileEntryValues) {
+    public ProfileEntryDto(final List<ProfileEntryValueDto> profileEntryValues) {
         super();
         this.profileEntryValues = profileEntryValues;
     }

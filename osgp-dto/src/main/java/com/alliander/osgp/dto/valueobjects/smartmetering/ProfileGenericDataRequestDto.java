@@ -10,9 +10,7 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 import java.util.Date;
 
 /**
- * request periodic reads for E or GAS meter
- *
- * @author dev
+ * request for ProfileGenericData
  */
 public class ProfileGenericDataRequestDto implements ActionRequestDto {
 
@@ -23,8 +21,8 @@ public class ProfileGenericDataRequestDto implements ActionRequestDto {
 
     private static final long serialVersionUID = -2483665562035897062L;
 
-    public ProfileGenericDataRequestDto(String deviceIdentification, ObisCodeValuesDto obisCode, Date beginDate,
-            Date endDate) {
+    public ProfileGenericDataRequestDto(final String deviceIdentification, final ObisCodeValuesDto obisCode,
+            final Date beginDate, final Date endDate) {
         super();
         this.deviceIdentification = deviceIdentification;
         this.obisCode = obisCode;
