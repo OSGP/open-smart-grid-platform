@@ -24,6 +24,8 @@ import java.util.concurrent.TimeoutException;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -36,6 +38,7 @@ import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.osgp.adapter.protocol.dlms.exceptions.BufferedDateTimeValidationException;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -615,7 +618,7 @@ public class DlmsHelperService {
         final String rawValueClass = this.getRawValueClassForDebugInfo(dataObject);
 
         return "DataObject: Choice=" + choiceText + ", ResultData is" + dataType + ", value=[" + rawValueClass + "]: "
-                + objectText;
+        + objectText;
     }
 
     private String getObjectTextForDebugInfo(final DataObject dataObject) {
@@ -732,8 +735,8 @@ public class DlmsHelperService {
         final StringBuilder sb = new StringBuilder();
 
         sb.append("logical name: ").append(logicalNameValue[0] & 0xFF).append('-').append(logicalNameValue[1] & 0xFF)
-        .append(':').append(logicalNameValue[2] & 0xFF).append('.').append(logicalNameValue[3] & 0xFF)
-        .append('.').append(logicalNameValue[4] & 0xFF).append('.').append(logicalNameValue[5] & 0xFF);
+                .append(':').append(logicalNameValue[2] & 0xFF).append('.').append(logicalNameValue[3] & 0xFF)
+                .append('.').append(logicalNameValue[4] & 0xFF).append('.').append(logicalNameValue[5] & 0xFF);
 
         return sb.toString();
     }
@@ -759,10 +762,10 @@ public class DlmsHelperService {
         final int clockStatus = bb.get();
 
         sb.append("year=").append(year).append(", month=").append(monthOfYear).append(", day=").append(dayOfMonth)
-        .append(", weekday=").append(dayOfWeek).append(", hour=").append(hourOfDay).append(", minute=")
-        .append(minuteOfHour).append(", second=").append(secondOfMinute).append(", hundredths=")
-        .append(hundredthsOfSecond).append(", deviation=").append(deviation).append(", clockstatus=")
-        .append(clockStatus);
+                .append(", weekday=").append(dayOfWeek).append(", hour=").append(hourOfDay).append(", minute=")
+                .append(minuteOfHour).append(", second=").append(secondOfMinute).append(", hundredths=")
+                .append(hundredthsOfSecond).append(", deviation=").append(deviation).append(", clockstatus=")
+                .append(clockStatus);
 
         return sb.toString();
     }
@@ -773,7 +776,7 @@ public class DlmsHelperService {
 
         final StringBuilder sb = new StringBuilder();
         sb.append("number of bytes=").append(bitStringValue.length).append(", value=").append(bigValue)
-                .append(", bits=").append(stringValue);
+        .append(", bits=").append(stringValue);
 
         return sb.toString();
     }
@@ -858,5 +861,23 @@ public class DlmsHelperService {
                 .getName();
         throw new ProtocolAdapterException("Expected ResultData of " + expectedType + ", got: " + resultData.getType()
                 + ", value type: " + resultDataType);
+    }
+
+    public void validateBufferedDateTime(final DateTime bufferedDateTime, final CosemDateTimeDto cosemDateTime,
+            final DateTime beginDateTime, final DateTime endDateTime) throws BufferedDateTimeValidationException {
+
+        if (bufferedDateTime == null) {
+            final DateTimeFormatter dtf = ISODateTimeFormat.dateTime();
+            throw new BufferedDateTimeValidationException("Not using an object from capture buffer (clock="
+                    + cosemDateTime
+                    + "), because the date does not match the given period, since it is not fully specified: ["
+                    + dtf.print(beginDateTime) + " .. " + dtf.print(endDateTime) + "].");
+        }
+        if (bufferedDateTime.isBefore(beginDateTime) || bufferedDateTime.isAfter(endDateTime)) {
+            final DateTimeFormatter dtf = ISODateTimeFormat.dateTime();
+            throw new BufferedDateTimeValidationException("Not using an object from capture buffer (clock="
+                    + dtf.print(bufferedDateTime) + "), because the date does not match the given period: ["
+                    + dtf.print(beginDateTime) + " .. " + dtf.print(endDateTime) + "].");
+        }
     }
 }

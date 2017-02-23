@@ -15,7 +15,7 @@ public class ScalerUnitInfo {
     private final int classId;
     private final DataObject scalerUnit;
 
-    public ScalerUnitInfo(String logicalName, int classId, DataObject scalarUnit) {
+    public ScalerUnitInfo(final String logicalName, final int classId, final DataObject scalarUnit) {
         super();
         this.logicalName = logicalName;
         this.classId = classId;

@@ -7,7 +7,8 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.valueobjects;
 
-import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnitTypeDto;
@@ -17,21 +18,20 @@ public class TestDlmsUnitType {
     @Test
     public void testGetUnit() {
         final String result = DlmsUnitTypeDto.getUnit(1);
-        Assert.assertTrue("Y".equals(result));
+        assertEquals("Y", result);
     }
 
     @Test
     public void testGetKwh() {
         final String result = DlmsUnitTypeDto.getUnit(30);
-        Assert.assertTrue("KWH".equals(result));
+        assertEquals("KWH", result);
     }
 
     @Test
     public void testGetUndefined() {
         String result = DlmsUnitTypeDto.getUnit(0);
-        Assert.assertTrue("UNDEFINED".equals(result));
+        assertEquals("UNDEFINED", result);
 
         result = DlmsUnitTypeDto.getUnit(100);
-        Assert.assertTrue("UNDEFINED".equals(result));
     }
 }

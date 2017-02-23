@@ -14,9 +14,9 @@ public enum CaptureObjectDefinition {
     ATTRIBUTE_INDEX(2),
     DATA_INDEX(3);
 
-    private int index;
+    private final int index;
 
-    private CaptureObjectDefinition(int index) {
+    private CaptureObjectDefinition(final int index) {
         this.index = index;
     }
 
