@@ -16,8 +16,10 @@ Feature: MicroGrids Get Gas Furnace Data
       | GAS_FURNACE1 | LLN0.Health.q         | VALIDITY_GOOD |
       | GAS_FURNACE1 | TTMP1.TmpSv.instMag.f |             4 |
       | GAS_FURNACE1 | TTMP1.TmpSv.q         | VALIDITY_GOOD |
+      | GAS_FURNACE1 | TTMP1.TmpSv.t         | 2017-02-01T12:01:00 |
       | GAS_FURNACE1 | TTMP2.TmpSv.instMag.f |             5 |
       | GAS_FURNACE1 | TTMP2.TmpSv.q         | VALIDITY_GOOD |
+      | GAS_FURNACE1 | TTMP1.TmpSv.t         | 2017-02-01T12:02:00 |
       | GAS_FURNACE1 | MFLW1.FlwRte.mag.f    |             6 |
       | GAS_FURNACE1 | MFLW1.FlwRte.q        | VALIDITY_GOOD |
       | GAS_FURNACE1 | MFLW2.FlwRte.mag.f    |             7 |
@@ -91,10 +93,12 @@ Feature: MicroGrids Get Gas Furnace Data
       | MeasurementId_1_4         |           1 |
       | MeasurementNode_1_4       | TmpSv       |
       | MeasurementQualifier_1_4  |           0 |
+      | MeasurementTime_1_4      | 2017-02-01T12:01:00.000Z |
       | MeasurementValue_1_4      |         4.0 |
       | MeasurementId_1_5         |           2 |
       | MeasurementNode_1_5       | TmpSv       |
       | MeasurementQualifier_1_5  |           0 |
+      | MeasurementTime_1_5      | 2017-02-01T12:02:00.000Z |
       | MeasurementValue_1_5      |         5.0 |
       | MeasurementId_1_6         |           1 |
       | MeasurementNode_1_6       | FlwRte      |

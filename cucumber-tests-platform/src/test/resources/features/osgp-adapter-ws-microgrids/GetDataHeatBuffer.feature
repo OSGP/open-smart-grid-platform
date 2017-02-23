@@ -9,8 +9,11 @@ Feature: MicroGrids Get Heat Buffer Data
       | DeviceIdentification | RTU10001 |
     And an rtu simulator returning
       | HEAT_BUFFER1 | TTMP1.TmpSv.instMag.f |   20 |
+      | HEAT_BUFFER1 | TTMP1.TmpSv.t         | 2017-02-01T12:01:00 |
       | HEAT_BUFFER1 | TTMP2.TmpSv.instMag.f |   25 |
+      | HEAT_BUFFER1 | TTMP1.TmpSv.t         | 2017-02-01T12:02:00 |
       | HEAT_BUFFER1 | TTMP3.TmpSv.instMag.f |   30 |
+      | HEAT_BUFFER1 | TTMP1.TmpSv.t         | 2017-02-01T12:03:00 |
       | HEAT_BUFFER1 | KTNK1.VlmCap.setMag.f | 1313 |
     When a get data request is received
       | DeviceIdentification      | RTU10001    |
@@ -37,15 +40,19 @@ Feature: MicroGrids Get Heat Buffer Data
       | MeasurementNode_1_1      | TmpSv       |
       | MeasurementValue_1_1     |          20 |
       | MeasurementQualifier_1_1 |           0 |
+      | MeasurementTime_1_1      | 2017-02-01T12:01:00.000Z |
       | MeasurementId_1_2        |           2 |
       | MeasurementNode_1_2      | TmpSv       |
       | MeasurementValue_1_2     |          25 |
       | MeasurementQualifier_1_2 |           0 |
+      | MeasurementTime_1_2      | 2017-02-01T12:02:00.000Z |
       | MeasurementId_1_3        |           3 |
       | MeasurementNode_1_3      | TmpSv       |
       | MeasurementValue_1_3     |          30 |
       | MeasurementQualifier_1_3 |           0 |
+      | MeasurementTime_1_3      | 2017-02-01T12:03:00.000Z |
       | MeasurementId_1_4        |           1 |
       | MeasurementNode_1_4      | VlmCap      |
       | MeasurementValue_1_4     |        1313 |
       | MeasurementQualifier_1_4 |           0 |
+      
