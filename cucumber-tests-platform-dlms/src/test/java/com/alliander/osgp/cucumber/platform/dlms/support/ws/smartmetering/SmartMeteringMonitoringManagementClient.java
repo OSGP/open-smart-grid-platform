@@ -18,12 +18,11 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGene
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataResponse;
-import com.alliander.osgp.cucumber.platform.support.ws.BaseClient;
 import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Component
-public class SmartMeteringMonitoringManagementClient extends BaseClient {
+public class SmartMeteringMonitoringManagementClient extends SmartMeteringBaseClient {
 
     @Autowired
     private DefaultWebServiceTemplateFactory smartMeteringMonitoringManagementWstf;
@@ -35,6 +34,10 @@ public class SmartMeteringMonitoringManagementClient extends BaseClient {
 
     public ProfileGenericDataResponse getProfileGenericDataResponse(final ProfileGenericDataAsyncRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
+
+        final String correlationUid = request.getCorrelationUid();
+        this.waitForDlmsResponseData(correlationUid);
+
         return (ProfileGenericDataResponse) this.getTemplate().marshalSendAndReceive(request);
     }
 
