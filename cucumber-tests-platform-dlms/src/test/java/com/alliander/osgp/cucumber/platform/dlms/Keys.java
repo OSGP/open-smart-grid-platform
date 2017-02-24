@@ -1,5 +1,5 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2016-2017 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -25,6 +25,7 @@ public class Keys extends com.alliander.osgp.cucumber.platform.Keys {
     public static final String CONTAINER_POSTAL_CODE = "ContainerPostalCode";
     public static final String CONTAINER_STREET = "ContainerStreet";
     public static final String CORRELATION_UID = "CorrelationUid";
+    public static final String SMART_METER_E = "SmartMeterE";
     // Default keys for dlms_device
     public static final String DEVICE_IDENTIFICATION = "DeviceIdentification";
     public static final String DEVICE_MODEL = "DeviceModel";
@@ -75,4 +76,6 @@ public class Keys extends com.alliander.osgp.cucumber.platform.Keys {
     public static final String VALID_TO = "ValidTo";
     public static final String VERSION = "Version";
     public static final String WITH_LIST_SUPPORTED = "WithListSupported";
+    public static final String MODULE_ACTIVE_FIRMWARE_VERSION = "ModuleActiveFirmwareVersion";
+
 }

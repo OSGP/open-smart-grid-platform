@@ -172,4 +172,5 @@ public class Defaults {
     public static final String DC_LIGHTS = "";
     public static final int FIRMWARE_ID = 0;
     public static final String FIRMWARE_DESCRIPTION = "Test Firmware";
+
 }
