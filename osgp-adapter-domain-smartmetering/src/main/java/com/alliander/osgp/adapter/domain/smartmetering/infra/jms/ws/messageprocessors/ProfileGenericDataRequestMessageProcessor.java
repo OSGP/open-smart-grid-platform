@@ -25,9 +25,6 @@ public class ProfileGenericDataRequestMessageProcessor extends WebServiceRequest
     @Qualifier("domainSmartMeteringMonitoringService")
     private MonitoringService monitoringService;
 
-    /**
-     * @param deviceFunction
-     */
     protected ProfileGenericDataRequestMessageProcessor() {
         super(DeviceFunction.GET_PROFILE_GENERIC_DATA);
     }
