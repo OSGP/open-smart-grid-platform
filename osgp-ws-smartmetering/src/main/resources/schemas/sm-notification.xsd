@@ -69,6 +69,7 @@
       <xsd:enumeration value="ENABLE_DEBUGGING" />
       <xsd:enumeration value="DISABLE_DEBUGGING" />
       <xsd:enumeration value="GET_MESSAGES" />
+      <xsd:enumeration value="GET_PROFILE_GENERIC_DATA" />
     </xsd:restriction>
   </xsd:simpleType>
 

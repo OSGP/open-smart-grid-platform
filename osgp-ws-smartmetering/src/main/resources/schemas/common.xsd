@@ -213,21 +213,339 @@
 
   <xsd:simpleType name="OsgpUnitType">
     <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="UNDEFINED">
+        <xsd:annotation>
+          <xsd:documentation>UNDEFINED</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="Y">
+        <xsd:annotation>
+          <xsd:documentation>YEAR</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="MO">
+        <xsd:annotation>
+          <xsd:documentation>MONTH</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="WK">
+        <xsd:annotation>
+          <xsd:documentation>WEEK</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="D">
+        <xsd:annotation>
+          <xsd:documentation>DAY</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="H">
+        <xsd:annotation>
+          <xsd:documentation>HOUR</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="MIN">
+        <xsd:annotation>
+          <xsd:documentation>MIN</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="SD">
+        <xsd:annotation>
+          <xsd:documentation>SECOND</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="DEGREE">
+        <xsd:annotation>
+          <xsd:documentation>DEGREE</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="DEGREE_CELCIUS">
+        <xsd:annotation>
+          <xsd:documentation>DEGREE_CELCIUS</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="CURRENCY">
+        <xsd:annotation>
+          <xsd:documentation>CURRENCY</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="M">
+        <xsd:annotation>
+          <xsd:documentation>METER</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="METER_PER_SECOND">
+        <xsd:annotation>
+          <xsd:documentation>METER_PER_SECOND</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
       <xsd:enumeration value="M3">
         <xsd:annotation>
-          <xsd:documentation>cubic meter</xsd:documentation>
+          <xsd:documentation>M3</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="M3_FLUX">
+        <xsd:annotation>
+          <xsd:documentation>M3_FLUX</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="M3_FLUX_CORR">
+        <xsd:annotation>
+          <xsd:documentation>M3_FLUX_CORR</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="VOLUME_FLUX">
+        <xsd:annotation>
+          <xsd:documentation>VOLUME_FLUX</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="VOLUME_FLUX_CORR">
+        <xsd:annotation>
+          <xsd:documentation>VOLUME_FLUX_CORR</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="L">
+        <xsd:annotation>
+          <xsd:documentation>LITRE</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="KILOGRAM">
+        <xsd:annotation>
+          <xsd:documentation>KILOGRAM</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="NEWTON">
+        <xsd:annotation>
+          <xsd:documentation>NEWTON</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="NEWTON_METER">
+        <xsd:annotation>
+          <xsd:documentation>NEWTON_METER</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="PASCAL">
+        <xsd:annotation>
+          <xsd:documentation>PASCAL</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="BAR">
+        <xsd:annotation>
+          <xsd:documentation>BAR</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="J">
+        <xsd:annotation>
+          <xsd:documentation>JOULE</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="JOULE_PER_HOUR">
+        <xsd:annotation>
+          <xsd:documentation>JOULE_PER_HOUR</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="W">
+        <xsd:annotation>
+          <xsd:documentation>WATT</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="VOLT_AMPERE">
+        <xsd:annotation>
+          <xsd:documentation>VOLT_AMPERE</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="VAR">
+        <xsd:annotation>
+          <xsd:documentation>VAR</xsd:documentation>
         </xsd:annotation>
       </xsd:enumeration>
       <xsd:enumeration value="KWH">
         <xsd:annotation>
-          <xsd:documentation>kilo watt hour
-          </xsd:documentation>
+          <xsd:documentation>KWH</xsd:documentation>
         </xsd:annotation>
       </xsd:enumeration>
-      <xsd:enumeration value="UNDEFINED">
+      <xsd:enumeration value="VOLT_AMP_HOUR">
         <xsd:annotation>
-          <xsd:documentation>undefined unit
-          </xsd:documentation>
+          <xsd:documentation>VOLT_AMP_HOUR</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="VAR_HOUR">
+        <xsd:annotation>
+          <xsd:documentation>VAR_HOUR</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="AMP">
+        <xsd:annotation>
+          <xsd:documentation>AMPERE</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="COULOMB">
+        <xsd:annotation>
+          <xsd:documentation>COULOMB</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="V">
+        <xsd:annotation>
+          <xsd:documentation>VOLT</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="VOLT_PER_METER">
+        <xsd:annotation>
+          <xsd:documentation>VOLT_PER_METER</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="FARAD">
+        <xsd:annotation>
+          <xsd:documentation>FARAD</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="O">
+        <xsd:annotation>
+          <xsd:documentation>OHM</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="RESTISTIVITY">
+        <xsd:annotation>
+          <xsd:documentation>RESTISTIVITY</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="WEBER">
+        <xsd:annotation>
+          <xsd:documentation>WEBER</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="TESLA">
+        <xsd:annotation>
+          <xsd:documentation>TESLA</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="AMP_PER_METER">
+        <xsd:annotation>
+          <xsd:documentation>AMP_PER_METER</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="HENRY">
+        <xsd:annotation>
+          <xsd:documentation>HENRY</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="HERTZ">
+        <xsd:annotation>
+          <xsd:documentation>HERTZ</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="ACTIVE_ENERGY">
+        <xsd:annotation>
+          <xsd:documentation>ACTIVE_ENERGY</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="REACTIVE_ENERGY">
+        <xsd:annotation>
+          <xsd:documentation>REACTIVE_ENERGY</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="APPARENT_ENERGY">
+        <xsd:annotation>
+          <xsd:documentation>APPARENT_ENERGY</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="VOLT_SQUARED_HOURS">
+        <xsd:annotation>
+          <xsd:documentation>VOLT_SQUARED_HOURS</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="AMP_SQUARED_HOURS">
+        <xsd:annotation>
+          <xsd:documentation>AMP_SQUARED_HOURS</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="KG_PER_SECOND">
+        <xsd:annotation>
+          <xsd:documentation>KG_PER_SECOND</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="SIEMENS">
+        <xsd:annotation>
+          <xsd:documentation>SIEMENS</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="KELVIN">
+        <xsd:annotation>
+          <xsd:documentation>KELVIN</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="VOLT_PULSE_VALUE">
+        <xsd:annotation>
+          <xsd:documentation>VOLT_PULSE_VALUE</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="AMP_PULSE_VALUE">
+        <xsd:annotation>
+          <xsd:documentation>AMP_PULSE_VALUE</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="VOLUME">
+        <xsd:annotation>
+          <xsd:documentation>VOLUME</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="PERCENTAGE">
+        <xsd:annotation>
+          <xsd:documentation>PERCENTAGE</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="AMP_HOUR">
+        <xsd:annotation>
+          <xsd:documentation>AMP_HOUR</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="ENGERY">
+        <xsd:annotation>
+          <xsd:documentation>ENGERY</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="WOBBE">
+        <xsd:annotation>
+          <xsd:documentation>WOBBE</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="MOLE_PERCENT">
+        <xsd:annotation>
+          <xsd:documentation>MOLE_PERCENT</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="MASS_DENSITY">
+        <xsd:annotation>
+          <xsd:documentation>MASS_DENSITY</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="PASCAL_SECOND">
+        <xsd:annotation>
+          <xsd:documentation>PASCAL_SECOND</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="JOULE_KG">
+        <xsd:annotation>
+          <xsd:documentation>JOULE_KG</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="DB_MILLIWAT">
+        <xsd:annotation>
+          <xsd:documentation>DB_MILLIWAT</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="DB_MICROVOLT">
+        <xsd:annotation>
+          <xsd:documentation>DB_MICROVOLT</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="DB">
+        <xsd:annotation>
+          <xsd:documentation>DB</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="COUNT">
+        <xsd:annotation>
+          <xsd:documentation>no unit, unitless, count</xsd:documentation>
         </xsd:annotation>
       </xsd:enumeration>
     </xsd:restriction>
@@ -335,6 +653,7 @@
       <xsd:length value="6" />
     </xsd:restriction>
   </xsd:simpleType>
+
   <xsd:complexType name="ObisCodeValues">
     <xsd:sequence>
       <xsd:element name="a" type="xsd:unsignedByte" />
@@ -345,4 +664,46 @@
       <xsd:element name="f" type="xsd:unsignedByte" />
     </xsd:sequence>
   </xsd:complexType>
+
+  <xsd:complexType name="CaptureObjects">
+    <xsd:sequence>
+      <xsd:element type="tns:CaptureObject" name="CaptureObject"
+        minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="CaptureObject">
+    <xsd:sequence>
+      <xsd:element type="xsd:long" name="ClassId" />
+      <xsd:element type="xsd:long" name="DataIndex" />
+      <xsd:element type="xsd:integer" name="AttributeIndex" />
+      <xsd:element type="xsd:string" name="LogicalName" />
+      <xsd:element type="tns:OsgpUnitType" name="unit" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+
+  <xsd:complexType name="ProfileEntries">
+    <xsd:sequence>
+      <xsd:element type="tns:ProfileEntry" name="ProfileEntry"
+        minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="ProfileEntry">
+    <xsd:sequence>
+      <xsd:element type="tns:ProfileEntryValue" name="ProfileEntryValue"
+        minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="ProfileEntryValue">
+    <xsd:choice maxOccurs="unbounded">
+      <xsd:element name="StringValue" type="xsd:string" />
+      <xsd:element name="DateValue" type="xsd:dateTime" />
+      <xsd:element name="FloatValue" type="xsd:decimal" />
+      <xsd:element name="LongValue" type="xsd:long" />
+    </xsd:choice>
+  </xsd:complexType>
+
 </xsd:schema>
