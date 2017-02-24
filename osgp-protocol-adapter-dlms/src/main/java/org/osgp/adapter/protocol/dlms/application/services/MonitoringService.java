@@ -13,6 +13,7 @@ import org.osgp.adapter.protocol.dlms.domain.commands.GetActualMeterReadsCommand
 import org.osgp.adapter.protocol.dlms.domain.commands.GetActualMeterReadsGasCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsGasCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.GetProfileGenericDataCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.ReadAlarmRegisterCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQueryDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequestDto;
 
 @Service(value = "dlmsDeviceMonitoringService")
@@ -42,6 +44,9 @@ public class MonitoringService {
 
     @Autowired
     private ReadAlarmRegisterCommandExecutor readAlarmRegisterCommandExecutor;
+
+    @Autowired
+    private GetProfileGenericDataCommandExecutor getProfileGenericDataCommandExecutor;
 
     // === REQUEST PERIODIC METER DATA ===
 
@@ -77,4 +82,11 @@ public class MonitoringService {
 
         return this.readAlarmRegisterCommandExecutor.execute(conn, device, readAlarmRegisterRequest);
     }
+
+    public Serializable requestProfileGenericData(final DlmsConnectionHolder conn, final DlmsDevice device,
+            final ProfileGenericDataRequestDto profileGenericDataRequest) throws ProtocolAdapterException {
+
+        return this.getProfileGenericDataCommandExecutor.execute(conn, device, profileGenericDataRequest);
+    }
+
 }

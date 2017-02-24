@@ -24,6 +24,8 @@ import java.util.concurrent.TimeoutException;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -36,6 +38,7 @@ import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionHolder;
+import org.osgp.adapter.protocol.dlms.exceptions.BufferedDateTimeValidationException;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -49,7 +52,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.CosemObisCodeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemObjectDefinitionDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemTimeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValueDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnitDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnitTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MessageTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SendDestinationAndMethodDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.TransportServiceTypeDto;
@@ -105,7 +108,7 @@ public class DlmsHelperService {
             throw new ConnectionException(e);
         } catch (final Exception e) {
             throw new ProtocolAdapterException("Error retrieving attribute value for {" + attributeAddress.getClassId()
-            + "," + attributeAddress.getInstanceId().toObisCode() + "," + attributeAddress.getId() + "}.", e);
+                    + "," + attributeAddress.getInstanceId().toObisCode() + "," + attributeAddress.getId() + "}.", e);
         }
     }
 
@@ -211,7 +214,7 @@ public class DlmsHelperService {
                     + this.getDebugInfo(scalerUnitObject));
         }
         final int scaler = this.readLongNotNull(dataObjects.get(0), description).intValue();
-        final DlmsUnitDto unit = DlmsUnitDto.fromDlmsEnum(this.readLongNotNull(dataObjects.get(1), description)
+        final DlmsUnitTypeDto unit = DlmsUnitTypeDto.getUnitType(this.readLongNotNull(dataObjects.get(1), description)
                 .intValue());
 
         // determine value
@@ -478,7 +481,7 @@ public class DlmsHelperService {
                 + description);
         final Long attributeIndex = this.readLongNotNull(objectDefinitionElements.get(2), "Attribute Index from "
                 + description);
-        final Long dataIndex = this.readLongNotNull(objectDefinitionElements.get(0), "Data Index from " + description);
+        final Long dataIndex = this.readLongNotNull(objectDefinitionElements.get(3), "Data Index from " + description);
 
         return new CosemObjectDefinitionDto(classId.intValue(), logicalName, attributeIndex.intValue(),
                 dataIndex.intValue());
@@ -615,7 +618,7 @@ public class DlmsHelperService {
         final String rawValueClass = this.getRawValueClassForDebugInfo(dataObject);
 
         return "DataObject: Choice=" + choiceText + ", ResultData is" + dataType + ", value=[" + rawValueClass + "]: "
-                + objectText;
+        + objectText;
     }
 
     private String getObjectTextForDebugInfo(final DataObject dataObject) {
@@ -732,8 +735,8 @@ public class DlmsHelperService {
         final StringBuilder sb = new StringBuilder();
 
         sb.append("logical name: ").append(logicalNameValue[0] & 0xFF).append('-').append(logicalNameValue[1] & 0xFF)
-        .append(':').append(logicalNameValue[2] & 0xFF).append('.').append(logicalNameValue[3] & 0xFF)
-        .append('.').append(logicalNameValue[4] & 0xFF).append('.').append(logicalNameValue[5] & 0xFF);
+                .append(':').append(logicalNameValue[2] & 0xFF).append('.').append(logicalNameValue[3] & 0xFF)
+                .append('.').append(logicalNameValue[4] & 0xFF).append('.').append(logicalNameValue[5] & 0xFF);
 
         return sb.toString();
     }
@@ -759,10 +762,10 @@ public class DlmsHelperService {
         final int clockStatus = bb.get();
 
         sb.append("year=").append(year).append(", month=").append(monthOfYear).append(", day=").append(dayOfMonth)
-        .append(", weekday=").append(dayOfWeek).append(", hour=").append(hourOfDay).append(", minute=")
-        .append(minuteOfHour).append(", second=").append(secondOfMinute).append(", hundredths=")
-        .append(hundredthsOfSecond).append(", deviation=").append(deviation).append(", clockstatus=")
-        .append(clockStatus);
+                .append(", weekday=").append(dayOfWeek).append(", hour=").append(hourOfDay).append(", minute=")
+                .append(minuteOfHour).append(", second=").append(secondOfMinute).append(", hundredths=")
+                .append(hundredthsOfSecond).append(", deviation=").append(deviation).append(", clockstatus=")
+                .append(clockStatus);
 
         return sb.toString();
     }
@@ -773,7 +776,7 @@ public class DlmsHelperService {
 
         final StringBuilder sb = new StringBuilder();
         sb.append("number of bytes=").append(bitStringValue.length).append(", value=").append(bigValue)
-                .append(", bits=").append(stringValue);
+        .append(", bits=").append(stringValue);
 
         return sb.toString();
     }
@@ -858,5 +861,23 @@ public class DlmsHelperService {
                 .getName();
         throw new ProtocolAdapterException("Expected ResultData of " + expectedType + ", got: " + resultData.getType()
                 + ", value type: " + resultDataType);
+    }
+
+    public void validateBufferedDateTime(final DateTime bufferedDateTime, final CosemDateTimeDto cosemDateTime,
+            final DateTime beginDateTime, final DateTime endDateTime) throws BufferedDateTimeValidationException {
+
+        if (bufferedDateTime == null) {
+            final DateTimeFormatter dtf = ISODateTimeFormat.dateTime();
+            throw new BufferedDateTimeValidationException("Not using an object from capture buffer (clock="
+                    + cosemDateTime
+                    + "), because the date does not match the given period, since it is not fully specified: ["
+                    + dtf.print(beginDateTime) + " .. " + dtf.print(endDateTime) + "].");
+        }
+        if (bufferedDateTime.isBefore(beginDateTime) || bufferedDateTime.isAfter(endDateTime)) {
+            final DateTimeFormatter dtf = ISODateTimeFormat.dateTime();
+            throw new BufferedDateTimeValidationException("Not using an object from capture buffer (clock="
+                    + dtf.print(bufferedDateTime) + "), because the date does not match the given period: ["
+                    + dtf.print(beginDateTime) + " .. " + dtf.print(endDateTime) + "].");
+        }
     }
 }

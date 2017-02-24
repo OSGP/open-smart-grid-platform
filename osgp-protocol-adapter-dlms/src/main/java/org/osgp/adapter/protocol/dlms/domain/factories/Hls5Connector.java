@@ -67,7 +67,10 @@ public class Hls5Connector extends SecureDlmsConnector {
                 // Queue key recovery process.
                 this.recoverKeyProcessInitiator.initiate(device.getDeviceIdentification(), device.getIpAddress());
             }
-            throw new ConnectionException(e);
+            final String msg = "Error creating conection for " + device.getDeviceIdentification() + " "
+                    + device.getIpAddress() + ":" + device.getPort() + ", " + device.isUseHdlc() + ", "
+                    + device.isUseSn() + ": " + e.getMessage();
+            throw new ConnectionException(msg, e);
         } catch (final EncrypterException e) {
             LOGGER.error("decryption on security keys went wrong for device: {}", device.getDeviceIdentification(), e);
             throw new TechnicalException(ComponentType.PROTOCOL_DLMS,
