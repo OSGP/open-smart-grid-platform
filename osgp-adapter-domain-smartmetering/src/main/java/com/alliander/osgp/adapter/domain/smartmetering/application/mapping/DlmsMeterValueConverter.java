@@ -9,6 +9,9 @@ package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
 
 import java.math.BigDecimal;
 
+import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.metadata.Type;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,9 +19,6 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpMeterValue;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpUnit;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValueDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnitTypeDto;
-
-import ma.glasnost.orika.CustomConverter;
-import ma.glasnost.orika.metadata.Type;
 
 /**
  * Calculate a osgp meter value:
@@ -35,8 +35,7 @@ public class DlmsMeterValueConverter extends CustomConverter<DlmsMeterValueDto, 
     private static final Logger LOGGER = LoggerFactory.getLogger(DlmsMeterValueConverter.class);
 
     @Override
-    public OsgpMeterValue convert(final DlmsMeterValueDto source,
-            final Type<? extends OsgpMeterValue> destinationType) {
+    public OsgpMeterValue convert(final DlmsMeterValueDto source, final Type<? extends OsgpMeterValue> destinationType) {
         if (source == null) {
             return null;
         }
@@ -68,8 +67,8 @@ public class DlmsMeterValueConverter extends CustomConverter<DlmsMeterValueDto, 
             break;
         }
 
-        throw new IllegalArgumentException(
-                String.format("calculating %s from %s not supported yet", osgpUnit.name(), dlmsUnit.name()));
+        throw new IllegalArgumentException(String.format("calculating %s from %s not supported yet", osgpUnit.name(),
+                dlmsUnit.name()));
     }
 
     /**
@@ -83,14 +82,14 @@ public class DlmsMeterValueConverter extends CustomConverter<DlmsMeterValueDto, 
         if ("M_3".equals(dlmsUnit.getUnit())) {
             return OsgpUnit.M3;
         } else {
-            try {
-                return OsgpUnit.valueOf(dlmsUnit.getUnit());
-            } catch (IllegalArgumentException e) {
-                // If OsgpUnit does not exist, return undefined.
-                return OsgpUnit.UNDEFINED;
+            for (OsgpUnit osgpUnit : OsgpUnit.values()) {
+                if (osgpUnit.name().equals(dlmsUnit.getUnit())) {
+                    return osgpUnit;
+                }
             }
         }
 
+        return OsgpUnit.UNDEFINED;
     }
 
 }
