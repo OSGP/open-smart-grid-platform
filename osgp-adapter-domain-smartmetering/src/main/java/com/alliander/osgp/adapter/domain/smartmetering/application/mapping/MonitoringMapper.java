@@ -23,7 +23,7 @@ public class MonitoringMapper extends ConfigurableMapper {
         // never be attempted without using this converter!
         mapperFactory.getConverterFactory().registerConverter(new DlmsMeterValueConverter());
         mapperFactory.getConverterFactory().registerConverter(new ReadAlarmRegisterDataConverter());
-
+        mapperFactory.getConverterFactory().registerConverter(new ProfileEntryValueConverter());
     }
 
 }

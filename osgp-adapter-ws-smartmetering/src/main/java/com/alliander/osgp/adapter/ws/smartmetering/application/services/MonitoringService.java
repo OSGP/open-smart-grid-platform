@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessage;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
@@ -23,7 +24,10 @@ import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsQuery;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequest;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest;
+import com.alliander.osgp.shared.exceptionhandling.CorrelationUidException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
@@ -41,6 +45,9 @@ public class MonitoringService {
 
     @Autowired
     private SmartMeteringRequestMessageSender smartMeteringRequestMessageSender;
+
+    @Autowired
+    private MeterResponseDataService meterResponseDataService;
 
     public String enqueuePeriodicMeterReadsRequestData(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final PeriodicMeterReadsQuery requestData,
@@ -63,7 +70,7 @@ public class MonitoringService {
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
+        .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
@@ -92,7 +99,7 @@ public class MonitoringService {
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
+        .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
@@ -121,7 +128,7 @@ public class MonitoringService {
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
+        .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
@@ -129,4 +136,35 @@ public class MonitoringService {
         return correlationUid;
     }
 
+    public String enqueueProfileGenericDataRequestData(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, final ProfileGenericDataRequest requestData,
+            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_PROFILE_GENERIC_DATA);
+
+        LOGGER.debug("enqueueProfileGenericDataRequestData called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                SmartMeteringRequestMessageType.GET_PROFILE_GENERIC_DATA.toString(), messagePriority, scheduleTime);
+
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
+
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
+    public MeterResponseData dequeueProfileGenericDataResponse(final String correlationUid)
+            throws CorrelationUidException {
+        return this.meterResponseDataService.dequeue(correlationUid, ProfileGenericDataResponse.class);
+    }
 }

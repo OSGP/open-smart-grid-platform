@@ -28,7 +28,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterRe
 import com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCodeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlagDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValueDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnitDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnitTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadGasResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGasResponseItemDto;
@@ -72,7 +72,7 @@ public class PeriodicMeterReadsContainerGasMappingTest {
     @Test
     public void testWithNonEmptyList() {
         // build test data
-        final DlmsMeterValueDto consumption = new DlmsMeterValueDto(new BigDecimal(1.0), DlmsUnitDto.M3);
+        final DlmsMeterValueDto consumption = new DlmsMeterValueDto(new BigDecimal(1.0), DlmsUnitTypeDto.M3);
 
         final Set<AmrProfileStatusCodeFlagDto> amrProfileStatusCodeFlagSet = new TreeSet<>();
         amrProfileStatusCodeFlagSet.add(AmrProfileStatusCodeFlagDto.CRITICAL_ERROR);
@@ -98,7 +98,7 @@ public class PeriodicMeterReadsContainerGasMappingTest {
 
         assertEquals("The number of periodic meter reads before and after the mapping must be equal.",
                 periodicMeterReadsContainerDto.getPeriodicMeterReadsGas().size(), periodicMeterReadsContainerGas
-                        .getPeriodicMeterReadsGas().size());
+                .getPeriodicMeterReadsGas().size());
         assertEquals("After the mapping the log time of the first entry must be the same.",
                 periodicMeterReadsContainerDto.getPeriodicMeterReadsGas().get(0).getLogTime(),
                 periodicMeterReadsContainerGas.getPeriodicMeterReadsGas().get(0).getLogTime());
@@ -113,12 +113,12 @@ public class PeriodicMeterReadsContainerGasMappingTest {
 
         assertEquals("After the mapping the size of the arm profile status code flags must be the same.",
                 periodicMeterReadsContainerDto.getPeriodicMeterReadsGas().get(0).getAmrProfileStatusCode()
-                        .getAmrProfileStatusCodeFlags().size(), periodicMeterReadsContainerGas
-                        .getPeriodicMeterReadsGas().get(0).getAmrProfileStatusCode().getAmrProfileStatusCodeFlags()
-                        .size());
+                .getAmrProfileStatusCodeFlags().size(), periodicMeterReadsContainerGas
+                .getPeriodicMeterReadsGas().get(0).getAmrProfileStatusCode().getAmrProfileStatusCodeFlags()
+                .size());
 
         assertTrue("After the mapping the amr profile status code flags must contain the CRITICAL_ERROR flag.",
                 periodicMeterReadsContainerGas.getPeriodicMeterReadsGas().get(0).getAmrProfileStatusCode()
-                        .getAmrProfileStatusCodeFlags().contains(AmrProfileStatusCodeFlag.CRITICAL_ERROR));
+                .getAmrProfileStatusCodeFlags().contains(AmrProfileStatusCodeFlag.CRITICAL_ERROR));
     }
 }

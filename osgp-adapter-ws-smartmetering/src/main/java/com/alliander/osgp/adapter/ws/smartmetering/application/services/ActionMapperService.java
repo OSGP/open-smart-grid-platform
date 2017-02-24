@@ -43,6 +43,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetSpecialDaysR
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SynchronizeTimeRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.UpdateFirmwareRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Action;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataRequest;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.AdhocMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.ConfigurationMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.ManagementMapper;
@@ -183,6 +184,7 @@ public class ActionMapperService {
                 com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SpecificAttributeValueRequestData.class,
                 this.adhocMapper);
         CLASS_TO_MAPPER_MAP.put(GetSpecificAttributeValueRequest.class, this.adhocMapper);
+        CLASS_TO_MAPPER_MAP.put(ProfileGenericDataRequest.class, this.monitoringMapper);
     }
 
     /**

@@ -25,16 +25,21 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequest;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQueryDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGasResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ObisCodeValuesDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodTypeDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadGasResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ProfileGenericDataResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -287,4 +292,49 @@ public class MonitoringService {
                 result, exception, alarmRegisterValueDomain, deviceMessageMetadata.getMessagePriority()),
                 deviceMessageMetadata.getMessageType());
     }
+
+    public void requestProfileGenericData(final DeviceMessageMetadata deviceMessageMetadata,
+            final ProfileGenericDataRequest request) throws FunctionalException {
+
+        LOGGER.info("requestProfileGenericData for organisationIdentification: {} for deviceIdentification: {}",
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
+
+        final SmartMeter smartMeter = this.domainHelperService.findSmartMeter(deviceMessageMetadata
+                .getDeviceIdentification());
+
+        final ObisCodeValuesDto obisCodeDto = this.monitoringMapper.map(request.getObisCode(), ObisCodeValuesDto.class);
+
+        final ProfileGenericDataRequestDto requestDto = new ProfileGenericDataRequestDto(
+                request.getDeviceIdentification(), obisCodeDto, request.getBeginDate(), request.getEndDate());
+
+        final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                smartMeter.getIpAddress(), requestDto);
+
+        this.osgpCoreRequestMessageSender.send(requestMessage, deviceMessageMetadata.getMessageType(),
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+    }
+
+    public void handleProfileGenericDataResponse(final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessageResultType deviceResult, final OsgpException exception,
+            final ProfileGenericDataResponseDto profileGenericDataResponseDto) {
+
+        LOGGER.info("handleProfileGenericDataResponse for MessageType: {}", deviceMessageMetadata.getMessageType());
+
+        ResponseMessageResultType result = deviceResult;
+        if (exception != null) {
+            LOGGER.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
+            result = ResponseMessageResultType.NOT_OK;
+        }
+
+        ProfileGenericDataResponse responseVo = this.monitoringMapper.map(profileGenericDataResponseDto,
+                ProfileGenericDataResponse.class);
+
+        this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                result, exception, responseVo, deviceMessageMetadata.getMessagePriority()), deviceMessageMetadata
+                .getMessageType());
+
+    }
+
 }
