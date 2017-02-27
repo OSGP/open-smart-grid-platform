@@ -3,7 +3,8 @@ Feature: MicroGrids Get Heat Buffer Data
   I want to get Heat Buffer data from an RTU
   So this data can be used by other processes
 
-  @Iec61850MockServer
+	# skip temporarirly until column server_name is added to iecdevice
+  @Iec61850MockServer @Skip
   Scenario: Request Heat Buffer
     Given an rtu iec61850 device
       | DeviceIdentification | RTU10001 |
