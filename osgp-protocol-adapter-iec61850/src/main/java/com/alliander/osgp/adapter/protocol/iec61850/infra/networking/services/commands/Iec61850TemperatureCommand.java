@@ -45,8 +45,9 @@ public class Iec61850TemperatureCommand implements RtuReadCommand<MeasurementDto
     @Override
     public MeasurementDto translate(final NodeContainer containingNode) {
         return new MeasurementDto(this.index, DataAttribute.TEMPERATURE.getDescription(),
-                QualityConverter.toShort(containingNode.getQuality(SubDataAttribute.QUALITY).getValue()), new DateTime(
-                        DateTimeZone.UTC), containingNode.getChild(SubDataAttribute.MAGNITUDE_INSTANTANEOUS)
-                .getFloat(SubDataAttribute.FLOAT).getFloat());
+                QualityConverter.toShort(containingNode.getQuality(SubDataAttribute.QUALITY).getValue()),
+                new DateTime(containingNode.getDate(SubDataAttribute.TIME), DateTimeZone.UTC),
+                containingNode.getChild(SubDataAttribute.MAGNITUDE_INSTANTANEOUS).getFloat(SubDataAttribute.FLOAT)
+                        .getFloat());
     }
 }

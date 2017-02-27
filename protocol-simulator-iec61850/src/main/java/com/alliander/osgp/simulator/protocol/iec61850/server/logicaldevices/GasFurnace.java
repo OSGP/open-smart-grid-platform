@@ -39,9 +39,11 @@ public class GasFurnace extends LogicalDevice {
 
     private static final String TTMP1_TMPSV_INSTMAG_F = "TTMP1.TmpSv.instMag.f";
     private static final String TTMP1_TMPSV_Q = "TTMP1.TmpSv.q";
+    private static final String TTMP1_TMPSV_T = "TTMP1.TmpSv.t";
 
     private static final String TTMP2_TMPSV_INSTMAG_F = "TTMP2.TmpSv.instMag.f";
     private static final String TTMP2_TMPSV_Q = "TTMP2.TmpSv.q";
+    private static final String TTMP2_TMPSV_T = "TTMP2.TmpSv.t";
 
     private static final String MFLW1_FLWRTE_MAG_F = "MFLW1.FlwRte.mag.f";
     private static final String MFLW1_FLWRTE_Q = "MFLW1.FlwRte.q";
@@ -94,20 +96,25 @@ public class GasFurnace extends LogicalDevice {
     private static final Set<String> BOOLEAN_NODES = Collections
             .unmodifiableSet(new TreeSet<>(Arrays.asList(GGIO1_ALM1_STVAL, GGIO1_ALM2_STVAL, GGIO1_ALM3_STVAL,
                     GGIO1_ALM4_STVAL, GGIO1_WRN1_STVAL, GGIO1_WRN2_STVAL, GGIO1_WRN3_STVAL, GGIO1_WRN4_STVAL)));
+
     private static final Set<String> FLOAT32_NODES = Collections.unmodifiableSet(new TreeSet<>(
             Arrays.asList(TTMP1_TMPSV_INSTMAG_F, TTMP2_TMPSV_INSTMAG_F, MFLW1_FLWRTE_MAG_F, MFLW2_FLWRTE_MAG_F)));
+
     private static final Set<String> INT8_NODES = Collections
             .unmodifiableSet(new TreeSet<>(Arrays.asList(LLN0_HEALTH_STVAL, LLN0_BEH_STVAL, LLN0_MOD_STVAL)));
+
     private static final Set<String> INT32_NODES = Collections
             .unmodifiableSet(new TreeSet<>(Arrays.asList(GGIO1_INTIN1_STVAL, GGIO1_INTIN2_STVAL)));
+
     private static final Set<String> QUALITY_NODES = Collections.unmodifiableSet(
             new TreeSet<>(Arrays.asList(LLN0_HEALTH_Q, LLN0_BEH_Q, LLN0_MOD_Q, TTMP1_TMPSV_Q, TTMP2_TMPSV_Q,
                     MFLW1_FLWRTE_Q, MFLW2_FLWRTE_Q, GGIO1_ALM1_Q, GGIO1_ALM2_Q, GGIO1_ALM3_Q, GGIO1_ALM4_Q,
                     GGIO1_INTIN1_Q, GGIO1_INTIN2_Q, GGIO1_WRN1_Q, GGIO1_WRN2_Q, GGIO1_WRN3_Q, GGIO1_WRN4_Q)));
-    private static final Set<String> TIMESTAMP_NODES = Collections
-            .unmodifiableSet(new TreeSet<>(Arrays.asList(LLN0_HEALTH_T, LLN0_BEH_T, LLN0_MOD_T, MFLW1_FLWRTE_T,
-                    MFLW2_FLWRTE_T, GGIO1_ALM1_T, GGIO1_ALM2_T, GGIO1_ALM3_T, GGIO1_ALM4_T, GGIO1_INTIN1_T,
-                    GGIO1_INTIN2_T, GGIO1_WRN1_T, GGIO1_WRN2_T, GGIO1_WRN3_T, GGIO1_WRN4_T)));
+
+    private static final Set<String> TIMESTAMP_NODES = Collections.unmodifiableSet(
+            new TreeSet<>(Arrays.asList(LLN0_HEALTH_T, LLN0_BEH_T, LLN0_MOD_T, TTMP1_TMPSV_T, TTMP2_TMPSV_T,
+                    MFLW1_FLWRTE_T, MFLW2_FLWRTE_T, GGIO1_ALM1_T, GGIO1_ALM2_T, GGIO1_ALM3_T, GGIO1_ALM4_T,
+                    GGIO1_INTIN1_T, GGIO1_INTIN2_T, GGIO1_WRN1_T, GGIO1_WRN2_T, GGIO1_WRN3_T, GGIO1_WRN4_T)));
 
     private static final Map<String, Fc> FC_BY_NODE;
     static {
@@ -127,9 +134,11 @@ public class GasFurnace extends LogicalDevice {
 
         fcByNode.put(TTMP1_TMPSV_INSTMAG_F, Fc.MX);
         fcByNode.put(TTMP1_TMPSV_Q, Fc.MX);
+        fcByNode.put(TTMP1_TMPSV_T, Fc.MX);
 
         fcByNode.put(TTMP2_TMPSV_INSTMAG_F, Fc.MX);
         fcByNode.put(TTMP2_TMPSV_Q, Fc.MX);
+        fcByNode.put(TTMP2_TMPSV_T, Fc.MX);
 
         fcByNode.put(MFLW1_FLWRTE_MAG_F, Fc.MX);
         fcByNode.put(MFLW1_FLWRTE_Q, Fc.MX);
@@ -205,9 +214,11 @@ public class GasFurnace extends LogicalDevice {
 
         values.add(this.setFixedFloat(TTMP1_TMPSV_INSTMAG_F, Fc.MX, 314));
         values.add(this.setQuality(TTMP1_TMPSV_Q, Fc.MX, QualityType.INACCURATE.getValue()));
+        values.add(this.setTime(TTMP1_TMPSV_T, Fc.MX, timestamp));
 
         values.add(this.setFixedFloat(TTMP2_TMPSV_INSTMAG_F, Fc.MX, 324));
         values.add(this.setQuality(TTMP2_TMPSV_Q, Fc.MX, QualityType.VALIDITY_INVALID.getValue()));
+        values.add(this.setTime(TTMP2_TMPSV_T, Fc.MX, timestamp));
 
         values.add(this.setFixedFloat(MFLW1_FLWRTE_MAG_F, Fc.MX, 314));
         values.add(this.setQuality(MFLW1_FLWRTE_Q, Fc.MX, QualityType.INACCURATE.getValue()));

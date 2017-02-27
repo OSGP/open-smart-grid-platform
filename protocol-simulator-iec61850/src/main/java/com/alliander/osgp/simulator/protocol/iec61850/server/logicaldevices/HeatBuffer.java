@@ -26,20 +26,38 @@ import com.alliander.osgp.simulator.protocol.iec61850.server.QualityType;
 public class HeatBuffer extends LogicalDevice {
 
     private static final String TTMP1_TMPSV_INSTMAG_F = "TTMP1.TmpSv.instMag.f";
+    private static final String TTMP1_TMPSV_Q = "TTMP1.TmpSv.q";
+    private static final String TTMP1_TMPSV_T = "TTMP1.TmpSv.t";
     private static final String TTMP2_TMPSV_INSTMAG_F = "TTMP2.TmpSv.instMag.f";
+    private static final String TTMP2_TMPSV_Q = "TTMP2.TmpSv.q";
+    private static final String TTMP2_TMPSV_T = "TTMP2.TmpSv.t";
     private static final String TTMP3_TMPSV_INSTMAG_F = "TTMP3.TmpSv.instMag.f";
+    private static final String TTMP3_TMPSV_Q = "TTMP3.TmpSv.q";
+    private static final String TTMP3_TMPSV_T = "TTMP3.TmpSv.t";
     private static final String KTNK1_VLMCAP_SETMAG_F = "KTNK1.VlmCap.setMag.f";
 
-    private static final Set<String> FIXED_FLOAT_NODES = Collections.unmodifiableSet(new TreeSet<>(Arrays.asList(
-            TTMP1_TMPSV_INSTMAG_F, TTMP2_TMPSV_INSTMAG_F, TTMP3_TMPSV_INSTMAG_F, KTNK1_VLMCAP_SETMAG_F)));
+    private static final Set<String> FIXED_FLOAT_NODES = Collections.unmodifiableSet(new TreeSet<>(
+            Arrays.asList(TTMP1_TMPSV_INSTMAG_F, TTMP2_TMPSV_INSTMAG_F, TTMP3_TMPSV_INSTMAG_F, KTNK1_VLMCAP_SETMAG_F)));
+
+    private static final Set<String> QUALITY_NODES = Collections
+            .unmodifiableSet(new TreeSet<>(Arrays.asList(TTMP1_TMPSV_Q, TTMP2_TMPSV_Q, TTMP3_TMPSV_Q)));
+
+    private static final Set<String> TIMESTAMP_NODES = Collections
+            .unmodifiableSet(new TreeSet<>(Arrays.asList(TTMP1_TMPSV_T, TTMP2_TMPSV_T, TTMP3_TMPSV_T)));
 
     private static final Map<String, Fc> FC_BY_NODE;
     static {
         final Map<String, Fc> fcByNode = new TreeMap<>();
 
         fcByNode.put(TTMP1_TMPSV_INSTMAG_F, Fc.MX);
+        fcByNode.put(TTMP1_TMPSV_Q, Fc.MX);
+        fcByNode.put(TTMP1_TMPSV_T, Fc.MX);
         fcByNode.put(TTMP2_TMPSV_INSTMAG_F, Fc.MX);
+        fcByNode.put(TTMP2_TMPSV_Q, Fc.MX);
+        fcByNode.put(TTMP2_TMPSV_T, Fc.MX);
         fcByNode.put(TTMP3_TMPSV_INSTMAG_F, Fc.MX);
+        fcByNode.put(TTMP3_TMPSV_Q, Fc.MX);
+        fcByNode.put(TTMP3_TMPSV_T, Fc.MX);
 
         fcByNode.put(KTNK1_VLMCAP_SETMAG_F, Fc.SP);
 
@@ -56,13 +74,16 @@ public class HeatBuffer extends LogicalDevice {
         final List<BasicDataAttribute> values = new ArrayList<>();
 
         values.add(this.setFixedFloat(TTMP1_TMPSV_INSTMAG_F, Fc.MX, 314));
-        values.add(this.setQuality("TTMP1.TmpSv.q", Fc.MX, QualityType.INACCURATE.getValue()));
+        values.add(this.setQuality(TTMP1_TMPSV_Q, Fc.MX, QualityType.INACCURATE.getValue()));
+        values.add(this.setTime(TTMP1_TMPSV_T, Fc.MX, timestamp));
 
         values.add(this.setFixedFloat(TTMP2_TMPSV_INSTMAG_F, Fc.MX, 324));
-        values.add(this.setQuality("TTMP2.TmpSv.q", Fc.MX, QualityType.VALIDITY_INVALID.getValue()));
+        values.add(this.setQuality(TTMP2_TMPSV_Q, Fc.MX, QualityType.VALIDITY_INVALID.getValue()));
+        values.add(this.setTime(TTMP2_TMPSV_T, Fc.MX, timestamp));
 
         values.add(this.setFixedFloat(TTMP3_TMPSV_INSTMAG_F, Fc.MX, 334));
-        values.add(this.setQuality("TTMP3.TmpSv.q", Fc.MX, QualityType.VALIDITY_QUESTIONABLE.getValue()));
+        values.add(this.setQuality(TTMP3_TMPSV_Q, Fc.MX, QualityType.VALIDITY_QUESTIONABLE.getValue()));
+        values.add(this.setTime(TTMP3_TMPSV_T, Fc.MX, timestamp));
 
         values.add(this.setFixedFloat(KTNK1_VLMCAP_SETMAG_F, Fc.SP, 1313));
 
@@ -130,6 +151,14 @@ public class HeatBuffer extends LogicalDevice {
 
         if (FIXED_FLOAT_NODES.contains(node)) {
             return this.setFixedFloat(node, fc, Integer.parseInt(value));
+        }
+
+        if (QUALITY_NODES.contains(node)) {
+            return this.setQuality(node, fc, QualityType.valueOf(value).getValue());
+        }
+
+        if (TIMESTAMP_NODES.contains(node)) {
+            return this.setTime(node, fc, this.parseDate(value));
         }
         throw this.nodeTypeNotConfiguredException(node);
     }
