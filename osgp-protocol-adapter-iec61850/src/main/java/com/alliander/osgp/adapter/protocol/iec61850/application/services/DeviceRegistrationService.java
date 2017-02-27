@@ -63,11 +63,12 @@ public class DeviceRegistrationService {
      *             In case the connection to the device can not be established
      *             or the connection breaks during communication.
      */
-    public void disableRegistration(final String deviceIdentification, final InetAddress ipAddress, final IED ied)
-            throws ProtocolAdapterException {
+    public void disableRegistration(final String deviceIdentification, final InetAddress ipAddress, final IED ied,
+            final String serverName) throws ProtocolAdapterException {
 
         final DeviceConnection deviceConnection = this.iec61850DeviceConnectionService.connectWithoutConnectionCaching(
-                ipAddress.getHostAddress(), deviceIdentification, ied, LogicalDevice.LIGHTING.getDescription());
+                ipAddress.getHostAddress(), deviceIdentification, ied, serverName,
+                LogicalDevice.LIGHTING.getDescription());
 
         final Function<Void> function = new Function<Void>() {
 

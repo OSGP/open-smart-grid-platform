@@ -39,22 +39,9 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
      */
     private static final long IEC61850_ENTRY_TIME_OFFSET = 441763200000L;
 
-    private static final Pattern RTU_REPORT_PATTERN = Pattern
-            .compile("\\AWAGO61850ServerRTU([1-9]\\d*+)/LLN0\\$Status\\Z");
-    private static final Pattern PV_REPORT_PATTERN = Pattern
-            .compile("\\AWAGO61850ServerPV([1-9]\\d*+)/LLN0\\$(Status|Measurements)\\Z");
-    private static final Pattern BATTERY_REPORT_PATTERN = Pattern
-            .compile("\\AWAGO61850ServerBATTERY([1-9]\\d*+)/LLN0\\$(Status|Measurements)\\Z");
-    private static final Pattern ENGINE_REPORT_PATTERN = Pattern
-            .compile("\\AWAGO61850ServerENGINE([1-9]\\d*+)/LLN0\\$(Status|Measurements)\\Z");
-    private static final Pattern LOAD_REPORT_PATTERN = Pattern
-            .compile("\\AWAGO61850ServerLOAD([1-9]\\d*+)/LLN0\\$(Status|Measurements)\\Z");
-    private static final Pattern CHP_REPORT_PATTERN = Pattern
-            .compile("\\AWAGO61850ServerCHP([1-9]\\d*+)/LLN0\\$(Status|Measurements)\\Z");
-    private static final Pattern HEAT_BUFFER_REPORT_PATTERN = Pattern
-            .compile("\\AWAGO61850ServerHEAT_BUFFER([1-9]\\d*+)/LLN0\\$(Status|Measurements)\\Z");
-    private static final Pattern GAS_FURNACE_REPORT_PATTERN = Pattern
-            .compile("\\AWAGO61850ServerGAS_FURNACE([1-9]\\d*+)/LLN0\\$(Status|Measurements)\\Z");
+    private static final String NODE_NAMES = "(RTU|PV|BATTERY|LOAD|CHP|HEAT_BUFFER|GAS_FURNACE)";
+    private static final Pattern REPORT_PATTERN = Pattern.compile("\\A(.*)" + NODE_NAMES
+            + "([1-9]\\d*+)/LLN0\\$Status\\Z");
 
     public Iec61850ClientRTUEventListener(final String deviceIdentification,
             final DeviceManagementService deviceManagementService) throws ProtocolAdapterException {
@@ -63,44 +50,9 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
 
     private Iec61850ReportHandler getReportHandler(final String dataSetRef) {
 
-        Matcher reportMatcher = RTU_REPORT_PATTERN.matcher(dataSetRef);
+        Matcher reportMatcher = REPORT_PATTERN.matcher(dataSetRef);
         if (reportMatcher.matches()) {
-            return new Iec61850RtuReportHandler(Integer.parseInt(reportMatcher.group(1)));
-        }
-
-        reportMatcher = PV_REPORT_PATTERN.matcher(dataSetRef);
-        if (reportMatcher.matches()) {
-            return new Iec61850PvReportHandler(Integer.parseInt(reportMatcher.group(1)));
-        }
-
-        reportMatcher = BATTERY_REPORT_PATTERN.matcher(dataSetRef);
-        if (reportMatcher.matches()) {
-            return new Iec61850BatteryReportHandler(Integer.parseInt(reportMatcher.group(1)));
-        }
-
-        reportMatcher = ENGINE_REPORT_PATTERN.matcher(dataSetRef);
-        if (reportMatcher.matches()) {
-            return new Iec61850EngineReportHandler(Integer.parseInt(reportMatcher.group(1)));
-        }
-
-        reportMatcher = LOAD_REPORT_PATTERN.matcher(dataSetRef);
-        if (reportMatcher.matches()) {
-            return new Iec61850LoadReportHandler(Integer.parseInt(reportMatcher.group(1)));
-        }
-
-        reportMatcher = CHP_REPORT_PATTERN.matcher(dataSetRef);
-        if (reportMatcher.matches()) {
-            return new Iec61850ChpReportHandler(Integer.parseInt(reportMatcher.group(1)));
-        }
-
-        reportMatcher = HEAT_BUFFER_REPORT_PATTERN.matcher(dataSetRef);
-        if (reportMatcher.matches()) {
-            return new Iec61850HeatBufferReportHandler(Integer.parseInt(reportMatcher.group(1)));
-        }
-
-        reportMatcher = GAS_FURNACE_REPORT_PATTERN.matcher(dataSetRef);
-        if (reportMatcher.matches()) {
-            return new Iec61850GasFurnaceReportHandler(Integer.parseInt(reportMatcher.group(1)));
+            return new Iec61850RtuReportHandler(Integer.parseInt(reportMatcher.group(3)));
         }
 
         return null;
@@ -108,8 +60,8 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
 
     @Override
     public void newReport(final Report report) {
-        final DateTime timeOfEntry = report.getTimeOfEntry() == null ? null
-                : new DateTime(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET);
+        final DateTime timeOfEntry = report.getTimeOfEntry() == null ? null : new DateTime(report.getTimeOfEntry()
+                .getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET);
 
         final String reportDescription = this.getReportDescription(report, timeOfEntry);
 
@@ -141,8 +93,8 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
     private String getReportDescription(final Report report, final DateTime timeOfEntry) {
         return String.format("device: %s, reportId: %s, timeOfEntry: %s, sqNum: %s%s%s", this.deviceIdentification,
                 report.getRptId(), timeOfEntry == null ? "-" : timeOfEntry, report.getSqNum(),
-                report.getSubSqNum() == null ? "" : " subSqNum: " + report.getSubSqNum(),
-                report.isMoreSegmentsFollow() ? " (more segments follow for this sqNum)" : "");
+                        report.getSubSqNum() == null ? "" : " subSqNum: " + report.getSubSqNum(),
+                                report.isMoreSegmentsFollow() ? " (more segments follow for this sqNum)" : "");
     }
 
     private boolean skipRecordBecauseOfOldSqNum(final Report report) {
@@ -171,8 +123,8 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
 
             this.logger.info("Handle member {} for {}", member.getReference(), reportDescription);
             try {
-                final MeasurementDto dto = reportHandler
-                        .handleMember(new ReadOnlyNodeContainer(this.deviceIdentification, member));
+                final MeasurementDto dto = reportHandler.handleMember(new ReadOnlyNodeContainer(
+                        this.deviceIdentification, member));
                 if (dto != null) {
                     measurements.add(dto);
                 } else {
@@ -199,30 +151,30 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
         sb.append("\t           BufOvfl:\t").append(report.isBufOvfl()).append(System.lineSeparator());
         sb.append("\t           EntryId:\t").append(report.getEntryId()).append(System.lineSeparator());
         sb.append("\tInclusionBitString:\t").append(Arrays.toString(report.getInclusionBitString()))
-                .append(System.lineSeparator());
+        .append(System.lineSeparator());
         sb.append("\tMoreSegmentsFollow:\t").append(report.isMoreSegmentsFollow()).append(System.lineSeparator());
         sb.append("\t             SqNum:\t").append(report.getSqNum()).append(System.lineSeparator());
         sb.append("\t          SubSqNum:\t").append(report.getSubSqNum()).append(System.lineSeparator());
         sb.append("\t       TimeOfEntry:\t").append(report.getTimeOfEntry()).append(System.lineSeparator());
         if (report.getTimeOfEntry() != null) {
             sb.append("\t                   \t(")
-                    .append(new DateTime(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET))
-                    .append(')').append(System.lineSeparator());
+            .append(new DateTime(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET))
+            .append(')').append(System.lineSeparator());
         }
         final List<BdaReasonForInclusion> reasonCodes = report.getReasonCodes();
         if ((reasonCodes != null) && !reasonCodes.isEmpty()) {
             sb.append("\t       ReasonCodes:").append(System.lineSeparator());
             for (final BdaReasonForInclusion reasonCode : reasonCodes) {
                 sb.append("\t                   \t")
-                        .append(reasonCode.getReference() == null ? HexConverter.toHexString(reasonCode.getValue())
-                                : reasonCode)
-                        .append("\t(").append(new Iec61850BdaReasonForInclusionHelper(reasonCode).getInfo()).append(')')
+                .append(reasonCode.getReference() == null ? HexConverter.toHexString(reasonCode.getValue())
+                        : reasonCode).append("\t(")
+                        .append(new Iec61850BdaReasonForInclusionHelper(reasonCode).getInfo()).append(')')
                         .append(System.lineSeparator());
             }
         }
         sb.append("\t           optFlds:").append(report.getOptFlds()).append("\t(")
-                .append(new Iec61850BdaOptFldsHelper(report.getOptFlds()).getInfo()).append(')')
-                .append(System.lineSeparator());
+        .append(new Iec61850BdaOptFldsHelper(report.getOptFlds()).getInfo()).append(')')
+        .append(System.lineSeparator());
         final DataSet dataSet = report.getDataSet();
         if (dataSet == null) {
             sb.append("\t           DataSet:\tnull").append(System.lineSeparator());

@@ -19,17 +19,18 @@ public class DeviceConnection {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceConnection.class);
 
-    private final IED iedPrefix;
+    private final String serverName;
     private final Iec61850Connection connection;
     private final String deviceIdentification;
 
     public static final String LOGICAL_NODE_SEPARATOR = "/";
     public static final String DATA_ATTRIBUTE_SEPARATOR = ".";
 
-    public DeviceConnection(final Iec61850Connection connection, final String deviceIdentification, final IED ied) {
+    public DeviceConnection(final Iec61850Connection connection, final String deviceIdentification,
+            final String serverName) {
         this.connection = connection;
         this.deviceIdentification = deviceIdentification;
-        this.iedPrefix = ied;
+        this.serverName = serverName;
     }
 
     /**
@@ -69,7 +70,7 @@ public class DeviceConnection {
      */
     private ObjectReference createObjectReference(final LogicalDevice logicalDevice, final LogicalNode logicalNode,
             final DataAttribute dataAttribute) {
-        final String logicalDevicePrefix = this.iedPrefix.getDescription() + logicalDevice.getDescription();
+        final String logicalDevicePrefix = this.serverName + logicalDevice.getDescription();
 
         final String objectReference = logicalDevicePrefix.concat(LOGICAL_NODE_SEPARATOR)
                 .concat(logicalNode.getDescription()).concat(DATA_ATTRIBUTE_SEPARATOR)
@@ -85,8 +86,7 @@ public class DeviceConnection {
      */
     private ObjectReference createObjectReference(final LogicalDevice logicalDevice, final int logicalDeviceIndex,
             final LogicalNode logicalNode, final DataAttribute dataAttribute) {
-        final String logicalDevicePrefix = this.iedPrefix.getDescription() + logicalDevice.getDescription()
-        + logicalDeviceIndex;
+        final String logicalDevicePrefix = this.serverName + logicalDevice.getDescription() + logicalDeviceIndex;
 
         final String objectReference = logicalDevicePrefix.concat(LOGICAL_NODE_SEPARATOR)
                 .concat(logicalNode.getDescription()).concat(DATA_ATTRIBUTE_SEPARATOR)

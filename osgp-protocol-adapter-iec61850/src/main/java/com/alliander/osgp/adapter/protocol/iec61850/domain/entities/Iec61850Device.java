@@ -33,6 +33,9 @@ public class Iec61850Device extends AbstractEntity {
     @Column
     private Integer port;
 
+    @Column
+    private String serverName;
+
     public Iec61850Device() {
         // Default constructor
     }
@@ -84,5 +87,13 @@ public class Iec61850Device extends AbstractEntity {
 
     public void setPort(final Integer port) {
         this.port = port;
+    }
+
+    public String getServerName() {
+        return this.serverName;
+    }
+
+    public void setServerName(String serverName) {
+        this.serverName = serverName;
     }
 }
