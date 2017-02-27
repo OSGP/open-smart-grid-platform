@@ -5,7 +5,7 @@
 [submodule "Protocol-Adapter-OSLP"]
 	path = Protocol-Adapter-OSLP
 	url = https://github.com/OSGP/Protocol-Adapter-OSLP.git
-        branch = development
+	branch = development
 [submodule "Platform"]
 	path = Platform
 	url = https://github.com/OSGP/Platform.git
@@ -18,5 +18,4 @@
 	path = Protocol-Adapter-IEC61850
 	url = https://github.com/OSGP/Protocol-Adapter-IEC61850.git
 	branch = ZS-156-Support_different_RTU_servernames
-
 

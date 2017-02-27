@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.util.Assert;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
 import com.alliander.osgp.cucumber.platform.Defaults;
 import com.alliander.osgp.cucumber.platform.Keys;
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
@@ -420,4 +421,20 @@ public class Helpers {
         Assert.isTrue(correlationUid.startsWith(organizationIdentification));
         ScenarioContext.Current().put(Keys.KEY_CORRELATION_UID, correlationUid);
     }
+
+    /**
+     * Store the correlationUid and deviceIdentification in the ScenarioContext,
+     * given the AsyncResponse
+     *
+     * @param asyncResponse
+     *            The AsyncResponse used to retrieve the values (mentioned
+     *            above) to store in the ScenarioContext
+     *
+     * @throws Throwable
+     */
+    public static void saveAsyncResponse(final AsyncResponse asyncResponse) throws Throwable {
+        ScenarioContext.Current().put(Keys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
+        ScenarioContext.Current().put(Keys.KEY_DEVICE_IDENTIFICATION, asyncResponse.getDeviceIdentification());
+    }
+
 }

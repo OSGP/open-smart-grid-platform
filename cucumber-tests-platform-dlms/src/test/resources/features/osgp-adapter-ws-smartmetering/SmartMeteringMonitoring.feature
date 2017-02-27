@@ -11,7 +11,7 @@ Feature: SmartMetering Monitoring
       | DeviceIdentification        | TESTG102400000001 |
       | DeviceType                  | SMART_METER_G     |
       | GatewayDeviceIdentification | TEST1024000000001 |
-      | Channel                     | 1                 |
+      | Channel                     |                 1 |
 
   Scenario: Get the actual meter reads from a device
     When the get actual meter reads request is received
@@ -34,9 +34,9 @@ Feature: SmartMetering Monitoring
   Scenario Outline: Get the meter reads from a a gas device
     When the get "<PeriodType>" meter reads gas request is received
       | DeviceIdentification | TESTG102400000001 |
-      | PeriodType | <PeriodType> |
-      | BeginDate  | <BeginDate>  |
-      | EndDate    | <EndDate>    |
+      | PeriodType           | <PeriodType>      |
+      | BeginDate            | <BeginDate>       |
+      | EndDate              | <EndDate>         |
     Then the "<PeriodType>" meter reads gas result should be returned
       | DeviceIdentification | TESTG102400000001 |
 
@@ -59,3 +59,17 @@ Feature: SmartMetering Monitoring
     When the get actual meter reads request on an inactive device is received
       | DeviceIdentification | E9998000014123414 |
     Then the response "Device E9998000014123414 is not active in the platform" will be returned
+
+  Scenario: Get the profile generic data from a device
+    When the get profile generic data request is received
+      | DeviceIdentification | TEST1024000000001 |
+      | ObisCodeA            |                 1 |
+      | ObisCodeB            |                 0 |
+      | ObisCodeC            |                99 |
+      | ObisCodeD            |                 1 |
+      | ObisCodeE            |                 0 |
+      | ObisCodeF            |               255 |
+      | beginDate            | 2015-01-01        |
+      | endDate              | 2017-01-10        |
+    Then the profile generic data result should be returned
+      | DeviceIdentification | TEST1024000000001 |
