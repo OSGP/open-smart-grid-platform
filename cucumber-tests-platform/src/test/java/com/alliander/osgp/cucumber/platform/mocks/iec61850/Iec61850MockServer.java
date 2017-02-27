@@ -7,8 +7,11 @@
  */
 package com.alliander.osgp.cucumber.platform.mocks.iec61850;
 
+import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 import org.openmuc.openiec61850.SclParseException;
 import org.slf4j.Logger;
@@ -16,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.cucumber.platform.Keys;
 import com.alliander.osgp.simulator.protocol.iec61850.server.RtuSimulator;
 
 @Component
@@ -28,6 +32,9 @@ public class Iec61850MockServer {
 
     @Value("${iec61850.mock.port}")
     private int port;
+
+    @Value("${iec61850.mock.serverName}")
+    private String serverName;
 
     private RtuSimulator rtuSimulator;
 
@@ -47,7 +54,7 @@ public class Iec61850MockServer {
 
     private RtuSimulator initialiseSimulator() {
         try {
-            return new RtuSimulator(this.port, this.getIcdFile());
+            return new RtuSimulator(this.port, this.getIcdFile(), this.serverName);
         } catch (final SclParseException e) {
             throw new AssertionError("Expected IEC61850 Mock configuration allowing simulator startup.", e);
         }
@@ -97,4 +104,39 @@ public class Iec61850MockServer {
         }
         this.rtuSimulator.assertValue(logicalDeviceName, node, value);
     }
+
+    /**
+     * This method can be used to stop the running simulator, that was started
+     * (in @Before) with all default parameters, and start it again with the
+     * supplied parameters in the feature file. Only the provided feature
+     * parameters will override the default parameter from the property file.
+     * Currently the properties can be overwritten: ServerName, Port and/or
+     * IcdFilename.
+     *
+     * @param settings
+     *            the feature file parameters.
+     *
+     */
+    public void restart(final Map<String, String> settings) {
+        this.stop();
+        this.overwritePropertiesFromSettings(settings);
+        this.start();
+    }
+
+    private void overwritePropertiesFromSettings(final Map<String, String> settings) {
+        final String givenIcdFilename = getString(settings, Keys.KEY_IEC61850_ICD_FILENAME);
+        final String givenServerName = getString(settings, Keys.KEY_IEC61850_SERVERNAME);
+        final String givenPort = getString(settings, Keys.KEY_IEC61850_PORT);
+
+        if (givenIcdFilename != null) {
+            this.icdFilename = givenIcdFilename;
+        }
+        if (givenServerName != null) {
+            this.serverName = givenServerName;
+        }
+        if (givenPort != null) {
+            this.port = Integer.valueOf(givenPort);
+        }
+    }
+
 }

@@ -13,6 +13,7 @@ Feature: SmartMetering Configuration
       | GatewayDeviceIdentification | TEST1024000000001 |
       | Channel                     |                 1 |
 
+@TEST
   Scenario: Set special days on a device
     When the set special days request is received
       | DeviceIdentification | TEST1024000000001 |

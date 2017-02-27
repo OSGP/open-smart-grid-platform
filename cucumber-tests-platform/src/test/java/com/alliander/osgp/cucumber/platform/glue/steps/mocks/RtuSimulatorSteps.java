@@ -8,6 +8,7 @@
 package com.alliander.osgp.cucumber.platform.glue.steps.mocks;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -29,7 +30,6 @@ public class RtuSimulatorSteps extends GlueBase {
 
     @Given("^an rtu simulator returning$")
     public void anRtuSimulatorReturning(final List<List<String>> mockValues) throws Throwable {
-
         for (final List<String> mockValue : mockValues) {
             if (NUMBER_OF_INPUTS_FOR_MOCK_VALUE != mockValue.size()) {
                 throw new AssertionError("Mock value input rows from the Step DataTable must have "
@@ -40,6 +40,11 @@ public class RtuSimulatorSteps extends GlueBase {
             final String value = mockValue.get(INDEX_NODE_VALUE);
             this.mockServer.mockValue(logicalDeviceName, node, value);
         }
+    }
+
+    @Given("^an rtu simulator started with$")
+    public void anRtuSimulatorStartedWithReturning(final Map<String, String> settings) throws Throwable {
+        this.mockServer.restart(settings);
     }
 
     @Then("^the rtu simulator should contain$")

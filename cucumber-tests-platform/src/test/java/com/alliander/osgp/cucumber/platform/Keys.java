@@ -244,4 +244,9 @@ public class Keys {
     public static final String SEQUENCE_WINDOW = "SequenceWindow";
     public static final String NEW_SEQUENCE_NUMBER = "NewSequenceNumber";
     public static final String NUMBER_TO_ADD_TO_SEQUENCE_NUMBER = "NumberToAddToSequenceNumber";
+
+    public static final String KEY_IEC61850_SERVERNAME = "ServerName";
+    public static final String KEY_IEC61850_PORT = "Port";
+    public static final String KEY_IEC61850_ICD_FILENAME = "IcdFilename";
+
 }

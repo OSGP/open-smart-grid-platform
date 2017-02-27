@@ -9,6 +9,7 @@
  */
 package com.alliander.osgp.cucumber.platform.glue.steps.ws.microgrids.adhocmanagement;
 
+import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -20,7 +21,11 @@ import java.util.Map;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.junit.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataAsyncResponse;
@@ -41,6 +46,8 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 public class GetDataSteps extends GlueBase {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetDataSteps.class);
 
     /**
      * Delta value for which two measurement values are considered equal if
@@ -106,8 +113,8 @@ public class GetDataSteps extends GlueBase {
         }
 
         if (responseParameters.containsKey(Keys.KEY_NUMBER_OF_MEASUREMENTS.concat(indexPostfix))) {
-            this.assertMeasurements(responseParameters, systemIdentifier.getMeasurement(), numberOfSystems, systemIndex,
-                    systemDescription, indexPostfix);
+            this.assertMeasurements(responseParameters, systemIdentifier.getMeasurement(), numberOfSystems,
+                    systemIndex, systemDescription, indexPostfix);
         }
 
         if (responseParameters.containsKey(Keys.KEY_NUMBER_OF_PROFILES.concat(indexPostfix))) {
@@ -117,11 +124,10 @@ public class GetDataSteps extends GlueBase {
     }
 
     private void assertMeasurements(final Map<String, String> responseParameters, final List<Measurement> measurements,
-            final int numberOfSystems, final int systemIndex, final String systemDescription,
-            final String indexPostfix) {
+            final int numberOfSystems, final int systemIndex, final String systemDescription, final String indexPostfix) {
 
-        final int expectedNumberOfMeasurements = Integer
-                .parseInt(responseParameters.get(Keys.KEY_NUMBER_OF_MEASUREMENTS.concat(indexPostfix)));
+        final int expectedNumberOfMeasurements = Integer.parseInt(responseParameters
+                .get(Keys.KEY_NUMBER_OF_MEASUREMENTS.concat(indexPostfix)));
         assertEquals(systemDescription + " number of Measurements", expectedNumberOfMeasurements, measurements.size());
         for (int i = 0; i < expectedNumberOfMeasurements; i++) {
             this.assertMeasurementResponse(responseParameters, numberOfSystems, systemIndex, systemDescription,
@@ -147,35 +153,32 @@ public class GetDataSteps extends GlueBase {
         final String expectedNode = responseParameters.get(Keys.KEY_MEASUREMENT_NODE.concat(indexPostfix));
         assertEquals(measurementDescription + " node", expectedNode, measurement.getNode());
 
-        final int expectedQualifier = Integer
-                .parseInt(responseParameters.get(Keys.KEY_MEASUREMENT_QUALIFIER.concat(indexPostfix)));
+        final int expectedQualifier = Integer.parseInt(responseParameters.get(Keys.KEY_MEASUREMENT_QUALIFIER
+                .concat(indexPostfix)));
         assertEquals(measurementDescription + " Qualifier", expectedQualifier, measurement.getQualifier());
 
         assertNotNull(measurementDescription + " Time", measurement.getTime());
         assertTimeFormat(measurement.getTime());
 
-        final double expectedValue = Double
-                .parseDouble(responseParameters.get(Keys.KEY_MEASUREMENT_VALUE.concat(indexPostfix)));
+        final double expectedValue = Double.parseDouble(responseParameters.get(Keys.KEY_MEASUREMENT_VALUE
+                .concat(indexPostfix)));
         assertEquals(measurementDescription + " Value", expectedValue, measurement.getValue(),
                 DELTA_FOR_MEASUREMENT_VALUE);
     }
 
     private void assertProfiles(final Map<String, String> responseParameters, final List<Profile> profiles,
-            final int numberOfSystems, final int systemIndex, final String systemDescription,
-            final String indexPostfix) {
+            final int numberOfSystems, final int systemIndex, final String systemDescription, final String indexPostfix) {
 
-        final int expectedNumberOfProfiles = Integer
-                .parseInt(responseParameters.get(Keys.KEY_NUMBER_OF_PROFILES.concat(indexPostfix)));
+        final int expectedNumberOfProfiles = Integer.parseInt(responseParameters.get(Keys.KEY_NUMBER_OF_PROFILES
+                .concat(indexPostfix)));
         assertEquals(systemDescription + " number of Profiles", expectedNumberOfProfiles, profiles.size());
         for (int i = 0; i < expectedNumberOfProfiles; i++) {
-            this.assertProfileResponse(responseParameters, numberOfSystems, systemIndex, systemDescription, profiles,
-                    i);
+            this.assertProfileResponse(responseParameters, numberOfSystems, systemIndex, systemDescription, profiles, i);
         }
     }
 
     private void assertProfileResponse(final Map<String, String> responseParameters, final int numberOfSystems,
-            final int systemIndex, final String systemDescription, final List<Profile> profiles,
-            final int profileIndex) {
+            final int systemIndex, final String systemDescription, final List<Profile> profiles, final int profileIndex) {
         throw new PendingException();
     }
 
@@ -189,4 +192,24 @@ public class GetDataSteps extends GlueBase {
             throw new AssertionError("Incorrect date/time format: " + value);
         }
     }
+
+    @Then("^the get data response should not be returned$")
+    public void theGetDataResponseShouldNotBeReturned(final Map<String, String> settings) throws Throwable {
+        final String correlationUid = (String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID);
+        final Map<String, String> extendedParameters = SettingsHelper.addDefault(settings, Keys.KEY_CORRELATION_UID,
+                correlationUid);
+
+        final GetDataAsyncRequest getDataAsyncRequest = GetDataRequestBuilder.fromParameterMapAsync(extendedParameters);
+        try {
+            this.client.getData(getDataAsyncRequest);
+            Assert.fail("When the ServerName is unknown, the response should not be delivered");
+        } catch (SoapFaultClientException ex) {
+            String faultString = getString(settings, Keys.KEY_FAULTSTRING);
+            assertEquals(ex.getMessage(), faultString);
+        } catch (Exception ex) {
+            Assert.fail("A SoapFaultClientException was expected ");
+        }
+
+    }
+
 }
