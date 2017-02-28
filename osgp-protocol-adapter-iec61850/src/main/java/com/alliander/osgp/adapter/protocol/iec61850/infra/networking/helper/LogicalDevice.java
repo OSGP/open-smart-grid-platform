@@ -46,7 +46,15 @@ public enum LogicalDevice {
     /**
      * Logical Device Gas Furnace
      */
-    GAS_FURNACE("GAS_FURNACE");
+    GAS_FURNACE("GAS_FURNACE"),
+    /**
+     * Logical Device Heat Pump
+     */
+    HEAT_PUMP("HEAT_PUMP"),
+    /**
+     * Logical Device Boiler
+     */
+    BOILER("BOILER");
 
     private String description;
 
