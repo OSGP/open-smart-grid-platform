@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+
 import org.junit.Test;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.CaptureObject;
@@ -32,8 +34,8 @@ public class ProfileGenericDataResponseMappingTest {
 
     private MonitoringMapper monitoringMapper = new MonitoringMapper();
 
-    private final static Class<?>[] EXPECTED_CLASS = new Class<?>[] { String.class, Date.class, BigDecimal.class,
-        Long.class };
+    private final static String[] EXPECTED_CLASS = new String[] { String.class.getSimpleName(),
+            "XMLGregorianCalendarImpl", BigDecimal.class.getSimpleName(), Long.class.getSimpleName() };
 
     @Test
     public void testProfileGenericDataResponse() {
@@ -51,9 +53,10 @@ public class ProfileGenericDataResponseMappingTest {
         for (ProfileEntryValue profileEntryValue : target.getProfileEntries().getProfileEntry().get(0)
                 .getProfileEntryValue()) {
             assertNotNull(profileEntryValue.getStringValueOrDateValueOrFloatValue());
-            assertEquals(profileEntryValue.getStringValueOrDateValueOrFloatValue().size(), 1);
-            assertEquals(profileEntryValue.getStringValueOrDateValueOrFloatValue().get(0).getClass(),
-                    EXPECTED_CLASS[i++]);
+            assertEquals(1, profileEntryValue.getStringValueOrDateValueOrFloatValue().size());
+            Class<?> clazz = profileEntryValue.getStringValueOrDateValueOrFloatValue().get(0).getClass();
+            System.out.println(clazz.getSimpleName());
+            assertEquals(EXPECTED_CLASS[i++], clazz.getSimpleName());
             assertTrue(profileEntryValue.getStringValueOrDateValueOrFloatValue() != null
                     && !profileEntryValue.getStringValueOrDateValueOrFloatValue().isEmpty());
         }
@@ -77,7 +80,8 @@ public class ProfileGenericDataResponseMappingTest {
         profileEntryValueVo = new com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryValue(
                 new Date());
         profileEntryValue = this.monitoringMapper.map(profileEntryValueVo, ProfileEntryValue.class);
-        assertThat(profileEntryValue.getStringValueOrDateValueOrFloatValue().get(0), instanceOf(Date.class));
+        assertThat(profileEntryValue.getStringValueOrDateValueOrFloatValue().get(0),
+                instanceOf(XMLGregorianCalendar.class));
 
         profileEntryValueVo = new com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileEntryValue(
                 new BigDecimal(100.0d));
