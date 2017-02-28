@@ -14,7 +14,12 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class DateConverter {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DateConverter.class);
 
     private DateConverter() {
     }
@@ -25,7 +30,9 @@ public class DateConverter {
             gregorianCalendar.setTime(date);
             return DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
         } catch (final DatatypeConfigurationException e) {
-            throw new RuntimeException(e);
+            final String msg = "Error converting Date to XMLGregorianCalendar";
+            LOGGER.error(msg, e);
+            throw new XmlGregorianCalendarConvertException(msg, e);
         }
     }
 }
