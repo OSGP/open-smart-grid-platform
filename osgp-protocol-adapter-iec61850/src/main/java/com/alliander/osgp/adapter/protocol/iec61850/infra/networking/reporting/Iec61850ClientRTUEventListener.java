@@ -55,6 +55,10 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
             .compile("\\AWAGO61850ServerHEAT_BUFFER([1-9]\\d*+)/LLN0\\$(Status|Measurements)\\Z");
     private static final Pattern GAS_FURNACE_REPORT_PATTERN = Pattern
             .compile("\\AWAGO61850ServerGAS_FURNACE([1-9]\\d*+)/LLN0\\$(Status|Measurements)\\Z");
+    private static final Pattern HEAT_PUMP_REPORT_PATTERN = Pattern
+            .compile("\\AWAGO61850ServerHEAT_PUMP([1-9]\\d*+)/LLN0\\$(Status|Measurements)\\Z");
+    private static final Pattern BOILER_REPORT_PATTERN = Pattern
+            .compile("\\AWAGO61850ServerBOILER([1-9]\\d*+)/LLN0\\$(Status|Measurements)\\Z");
 
     public Iec61850ClientRTUEventListener(final String deviceIdentification,
             final DeviceManagementService deviceManagementService) throws ProtocolAdapterException {
@@ -101,6 +105,16 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
         reportMatcher = GAS_FURNACE_REPORT_PATTERN.matcher(dataSetRef);
         if (reportMatcher.matches()) {
             return new Iec61850GasFurnaceReportHandler(Integer.parseInt(reportMatcher.group(1)));
+        }
+
+        reportMatcher = HEAT_PUMP_REPORT_PATTERN.matcher(dataSetRef);
+        if (reportMatcher.matches()) {
+            return new Iec61850HeatPumpReportHandler(Integer.parseInt(reportMatcher.group(1)));
+        }
+
+        reportMatcher = BOILER_REPORT_PATTERN.matcher(dataSetRef);
+        if (reportMatcher.matches()) {
+            return new Iec61850BoilerReportHandler(Integer.parseInt(reportMatcher.group(1)));
         }
 
         return null;
