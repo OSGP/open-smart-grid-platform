@@ -118,7 +118,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
                     this.monitoringMapper.map(scheduleTime, Long.class));
 
             response = request instanceof PeriodicMeterReadsRequest ? new PeriodicMeterReadsAsyncResponse()
-            : new PeriodicMeterReadsGasAsyncResponse();
+                    : new PeriodicMeterReadsGasAsyncResponse();
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
             this.responseUrlService.saveResponseUrlIfNeeded(correlationUid, responseUrl);
@@ -141,8 +141,8 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
         PeriodicMeterReadsResponse response = null;
         try {
-            final MeterResponseData meterResponseData = this.meterResponseDataService.dequeue(
-                    request.getCorrelationUid(), PeriodicMeterReadsContainer.class);
+            final MeterResponseData meterResponseData = this.meterResponseDataService
+                    .dequeue(request.getCorrelationUid(), PeriodicMeterReadsContainer.class);
 
             this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the periodic meter reads");
 
@@ -164,8 +164,8 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
         PeriodicMeterReadsGasResponse response = null;
         try {
-            final MeterResponseData meterResponseData = this.meterResponseDataService.dequeue(
-                    request.getCorrelationUid(), PeriodicMeterReadsContainerGas.class);
+            final MeterResponseData meterResponseData = this.meterResponseDataService
+                    .dequeue(request.getCorrelationUid(), PeriodicMeterReadsContainerGas.class);
 
             this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the periodic meter reads for gas");
 
@@ -232,10 +232,11 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
                     organisationIdentification, deviceIdentification, requestValueObject, messagePriority,
                     this.monitoringMapper.map(scheduleTime, Long.class));
 
-            asyncResponse = gas ? new com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFactory()
-                    .createActualMeterReadsGasAsyncResponse()
-            : new com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFactory()
-            .createActualMeterReadsAsyncResponse();
+            asyncResponse = gas
+                    ? new com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFactory()
+                            .createActualMeterReadsGasAsyncResponse()
+                    : new com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFactory()
+                            .createActualMeterReadsAsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
             asyncResponse.setDeviceIdentification(deviceIdentification);
             this.responseUrlService.saveResponseUrlIfNeeded(correlationUid, responseUrl);
@@ -258,8 +259,8 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
         ActualMeterReadsResponse response = null;
         try {
-            final MeterResponseData meterResponseData = this.meterResponseDataService.dequeue(
-                    request.getCorrelationUid(), MeterReads.class);
+            final MeterResponseData meterResponseData = this.meterResponseDataService
+                    .dequeue(request.getCorrelationUid(), MeterReads.class);
 
             this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the actual meter reads");
 
@@ -280,8 +281,8 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
         ActualMeterReadsGasResponse response = null;
         try {
-            final MeterResponseData meterResponseData = this.meterResponseDataService.dequeue(
-                    request.getCorrelationUid(), MeterReadsGas.class);
+            final MeterResponseData meterResponseData = this.meterResponseDataService
+                    .dequeue(request.getCorrelationUid(), MeterReadsGas.class);
 
             this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the actual meter reads for gas");
 
@@ -337,8 +338,8 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
         ReadAlarmRegisterResponse response = null;
         try {
-            final MeterResponseData meterResponseData = this.meterResponseDataService.dequeue(
-                    request.getCorrelationUid(), AlarmRegister.class);
+            final MeterResponseData meterResponseData = this.meterResponseDataService
+                    .dequeue(request.getCorrelationUid(), AlarmRegister.class);
 
             this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the alarm register");
 
@@ -367,8 +368,8 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
         RetrievePushNotificationAlarmResponse response = null;
         try {
-            final MeterResponseData meterResponseData = this.meterResponseDataService.dequeue(
-                    request.getCorrelationUid(), PushNotificationAlarm.class);
+            final MeterResponseData meterResponseData = this.meterResponseDataService
+                    .dequeue(request.getCorrelationUid(), PushNotificationAlarm.class);
 
             this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the push notification alarm");
 
@@ -440,7 +441,11 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             response = this.monitoringMapper.map(meterResponseData.getMessageData(), ProfileGenericDataResponse.class);
 
         } catch (final Exception e) {
-            this.handleRetrieveException(e, request, organisationIdentification);
+            LOGGER.error(
+                    "Exception: {} while sending GetProfileGenericDataAsyncRequest for correlation UID: {} for organisation {}.",
+                    new Object[] { e.getMessage(), request.getCorrelationUid(), organisationIdentification });
+
+            this.handleException(e);
         }
         return response;
     }
