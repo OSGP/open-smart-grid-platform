@@ -244,13 +244,12 @@ public class Keys {
     public static final String SEQUENCE_WINDOW = "SequenceWindow";
     public static final String NEW_SEQUENCE_NUMBER = "NewSequenceNumber";
     public static final String NUMBER_TO_ADD_TO_SEQUENCE_NUMBER = "NumberToAddToSequenceNumber";
-<<<<<<< HEAD
+
     public static final String HOSTNAME = "Hostname";
     public static final String PORT = "Port";
     public static final String IP_ADDRESS = "IpAddress";
     public static final String RANDOM_DEVICE = "RandomDevice";
-=======
+
     public static final String FIRMWARE_INSTALLED_BY = "InstalledBy";
     public static final String FIRMWARE_INSTALLATION_DATE = "InstallationDate";
->>>>>>> 5c95cb3dbee054d051af968734711b1d60f6731c
 }
