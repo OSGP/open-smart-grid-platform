@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.reporting;
 
+import javax.validation.constraints.NotNull;
+
 import org.openmuc.openiec61850.Fc;
 import org.openmuc.openiec61850.ModelNode;
 import org.openmuc.openiec61850.ServerModel;
@@ -27,8 +29,11 @@ public class Iec61850RtuDeviceReportingService {
 
     private final String serverName;
 
-    public Iec61850RtuDeviceReportingService(String serverName) {
+    public Iec61850RtuDeviceReportingService(@NotNull final String serverName) {
         super();
+        if (serverName == null) {
+            throw new NullPointerException("serverName may not be null");
+        }
         this.serverName = serverName;
     }
 
