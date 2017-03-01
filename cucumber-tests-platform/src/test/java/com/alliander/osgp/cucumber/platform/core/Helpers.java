@@ -143,7 +143,14 @@ public class Helpers {
 
     /**
      * This is a generic method which will translate the given string to a
-     * datetime. Supported: now + 3 months tomorrow - 1 year yesterday + 2 weeks
+     * datetime. Supported: 
+     * 
+     * now + 3 months 
+     * tomorrow - 1 year 
+     * yesterday + 2 weeks
+     * today at midday
+     * yesterday at midnight
+     * now at midday + 1 week
      *
      * @param dateString
      * @return
@@ -157,7 +164,7 @@ public class Helpers {
             return null;
         }
 
-        final String pattern = "([a-z]*)[ ]*([+-]?)[ ]*([0-9]*)[ ]*([a-z]*)";
+        final String pattern = "([a-z ]*)[ ]*([+-]?)[ ]*([0-9]*)[ ]*([a-z]*)";
         final Pattern r = Pattern.compile(pattern);
         final Matcher m = r.matcher(dateString);
 
@@ -177,7 +184,10 @@ public class Helpers {
             numberToAddOrSubstract = Integer.parseInt(offset);
         }
 
-        switch (when) {
+        final String whenPattern = "([a-z]*)[ ]*([a-z]*)[ ]*([a-z]*)?";
+        final Matcher whenMatcher = Pattern.compile(whenPattern).matcher(when);
+        whenMatcher.find();
+        switch (whenMatcher.group(1)) {
         case "tomorrow":
             retval = DateTime.now().plusDays(1);
             break;
@@ -189,7 +199,23 @@ public class Helpers {
             retval = DateTime.now();
             break;
         default:
-            throw new Exception("Incorrect dateString [" + dateString + "]");
+            throw new Exception("Incorrect dateString [" + dateString + "], expected the string to begin with tomorrow, yesterday or now or today");
+        }
+        
+        if (whenMatcher.groupCount() > 1 && whenMatcher.group(2).equals("at")) {
+            
+            switch (whenMatcher.group(3)) {
+            case "midday": 
+                retval = retval.withHourOfDay(12);
+                break;
+            case "midnight":
+                retval = retval.withHourOfDay(0);
+                break;
+            default:
+                throw new Exception("Incorrect dateString [" + dateString + "], expected \"midday\" or \"midnight\"");
+            }
+            retval = retval.withMinuteOfHour(0);
+            retval = retval.withSecondOfMinute(0);
         }
 
         if (op.equals("+")) {

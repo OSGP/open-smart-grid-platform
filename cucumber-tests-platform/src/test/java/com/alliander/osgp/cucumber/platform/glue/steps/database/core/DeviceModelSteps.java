@@ -43,7 +43,7 @@ public class DeviceModelSteps extends GlueBase {
      * @throws Throwable
      */
     @Given("^a device model")
-    public DeviceModel aDeviceModel(final Map<String, String> settings) throws Throwable {
+    public DeviceModel aDeviceModel(final Map<String, String> settings) {
         return this.insertDeviceModel(settings);
     }
 

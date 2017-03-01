@@ -9,6 +9,7 @@ package com.alliander.osgp.cucumber.platform.dlms.glue.steps.ws.smartmetering.sm
 
 import static com.alliander.osgp.cucumber.platform.core.Helpers.getDate;
 import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -17,7 +18,9 @@ import java.util.Map;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.CaptureObject;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ObisCodeValues;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpUnitType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataRequest;
@@ -56,10 +59,32 @@ public class ProfileGenericData extends SmartMeteringStepsBase {
 
         ProfileGenericDataResponse response = this.client.getProfileGenericDataResponse(request);
         assertNotNull("ProfileGenericDataResponse should not be null", response);
-        assertTrue("ProfileGenericDataResponse should contain capture objects",
-                response.getCaptureObjects().getCaptureObject().size() > 0);
-        assertTrue("ProfileGenericDataResponse should contain profile entries",
-                response.getProfileEntries().getProfileEntry().size() > 0);
+        assertEquals("There should be 4 capture objects", response.getCaptureObjects().getCaptureObject().size(), 4);
+        assertTrue("ProfileGenericDataResponse should contain many profile entries", response.getProfileEntries()
+                .getProfileEntry().size() > 900);
+        assertEquals("ProfileEntry should contain 4 values", response.getProfileEntries().getProfileEntry().get(0)
+                .getProfileEntryValue().size(), 4);
+
+        final CaptureObject captureObject0 = response.getCaptureObjects().getCaptureObject().get(0);
+        this.validateCaptureObject(captureObject0, 8, 0, "0.0.1.0.0.255", OsgpUnitType.UNDEFINED);
+        final CaptureObject captureObject3 = response.getCaptureObjects().getCaptureObject().get(3);
+        this.validateCaptureObject(captureObject3, 3, 0, "1.0.2.8.0.255", OsgpUnitType.KWH);
+
+        final String[] expectedTypes = new String[] { "XMLGregorianCalendarImpl", "Long", "BigDecimal", "BigDecimal" };
+        for (int i = 0; i < expectedTypes.length; i++) {
+            final String profileEntryValueType = response.getProfileEntries().getProfileEntry().get(0)
+                    .getProfileEntryValue().get(i).getStringValueOrDateValueOrFloatValue().get(0).getClass()
+                    .getSimpleName();
+            assertEquals("ProfileEntry should have the correct type ", profileEntryValueType, expectedTypes[i]);
+        }
+    }
+
+    private void validateCaptureObject(final CaptureObject captureObject0, final int classId, final int dataIndex,
+            final String logicalName, final OsgpUnitType osgpUnitType) {
+        assertEquals("Wrong CaptureObject classId ", captureObject0.getClassId(), classId);
+        assertEquals("Wrong CaptureObject dataIndex ", captureObject0.getDataIndex(), dataIndex);
+        assertEquals("Wrong CaptureObject logicalName ", captureObject0.getLogicalName(), logicalName);
+        assertEquals("Wrong CaptureObject unit ", captureObject0.getUnit(), osgpUnitType);
     }
 
     private ObisCodeValues fillObisCode(final Map<String, String> settings) {
