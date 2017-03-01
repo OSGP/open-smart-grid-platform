@@ -9,7 +9,6 @@
  */
 package com.alliander.osgp.cucumber.platform.glue.steps.ws.microgrids.adhocmanagement;
 
-import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -22,10 +21,7 @@ import java.util.Map;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.junit.Assert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataAsyncResponse;
@@ -37,6 +33,7 @@ import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.Profile;
 import com.alliander.osgp.cucumber.platform.GlueBase;
 import com.alliander.osgp.cucumber.platform.Keys;
 import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
+import com.alliander.osgp.cucumber.platform.glue.steps.mocks.RtuSimulatorSteps;
 import com.alliander.osgp.cucumber.platform.helpers.SettingsHelper;
 import com.alliander.osgp.cucumber.platform.support.ws.microgrids.adhocmanagement.AdHocManagementClient;
 import com.alliander.osgp.cucumber.platform.support.ws.microgrids.adhocmanagement.GetDataRequestBuilder;
@@ -46,8 +43,6 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 public class GetDataSteps extends GlueBase {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetDataSteps.class);
 
     /**
      * Delta value for which two measurement values are considered equal if
@@ -59,6 +54,9 @@ public class GetDataSteps extends GlueBase {
 
     @Autowired
     private AdHocManagementClient client;
+
+    @Autowired
+    private RtuSimulatorSteps rtuSimulatorSteps;
 
     @When("^a get data request is received$")
     public void aGetDataRequestIsReceived(final Map<String, String> requestParameters) throws Throwable {
@@ -194,22 +192,14 @@ public class GetDataSteps extends GlueBase {
     }
 
     @Then("^the get data response should not be returned$")
-    public void theGetDataResponseShouldNotBeReturned(final Map<String, String> settings) throws Throwable {
-        final String correlationUid = (String) ScenarioContext.Current().get(Keys.KEY_CORRELATION_UID);
-        final Map<String, String> extendedParameters = SettingsHelper.addDefault(settings, Keys.KEY_CORRELATION_UID,
-                correlationUid);
-
-        final GetDataAsyncRequest getDataAsyncRequest = GetDataRequestBuilder.fromParameterMapAsync(extendedParameters);
+    public void theGetDataResponseShouldNotBeReturned(final List<List<String>> mockValues) throws Throwable {
+        final String msg = "An IllegalArgumentException was expected";
         try {
-            this.client.getData(getDataAsyncRequest);
-            Assert.fail("When the ServerName is unknown, the response should not be delivered");
-        } catch (SoapFaultClientException ex) {
-            String faultString = getString(settings, Keys.KEY_FAULTSTRING);
-            assertEquals(ex.getMessage(), faultString);
+            this.rtuSimulatorSteps.anRtuSimulatorReturning(mockValues);
+            Assert.fail(msg);
         } catch (Exception ex) {
-            Assert.fail("A SoapFaultClientException was expected ");
+            Assert.assertEquals(msg, IllegalArgumentException.class, ex.getClass());
         }
-
     }
 
 }

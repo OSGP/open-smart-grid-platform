@@ -7,8 +7,6 @@
  */
 package com.alliander.osgp.cucumber.platform.mocks.iec61850;
 
-import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
@@ -19,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.cucumber.platform.Keys;
 import com.alliander.osgp.simulator.protocol.iec61850.server.RtuSimulator;
 
 @Component
@@ -42,6 +39,17 @@ public class Iec61850MockServer {
 
     private boolean isInitialised() {
         return this.rtuSimulator != null;
+    }
+
+    public Iec61850MockServer() {
+        super();
+    }
+
+    public Iec61850MockServer(String serverName, String icdFilename, int port) {
+        super();
+        this.serverName = serverName;
+        this.icdFilename = icdFilename;
+        this.port = port;
     }
 
     private InputStream getIcdFile() {
@@ -119,24 +127,8 @@ public class Iec61850MockServer {
      */
     public void restart(final Map<String, String> settings) {
         this.stop();
-        this.overwritePropertiesFromSettings(settings);
+        this.rtuSimulator = null;
         this.start();
-    }
-
-    private void overwritePropertiesFromSettings(final Map<String, String> settings) {
-        final String givenIcdFilename = getString(settings, Keys.KEY_IEC61850_ICD_FILENAME);
-        final String givenServerName = getString(settings, Keys.KEY_IEC61850_SERVERNAME);
-        final String givenPort = getString(settings, Keys.KEY_IEC61850_PORT);
-
-        if (givenIcdFilename != null) {
-            this.icdFilename = givenIcdFilename;
-        }
-        if (givenServerName != null) {
-            this.serverName = givenServerName;
-        }
-        if (givenPort != null) {
-            this.port = Integer.valueOf(givenPort);
-        }
     }
 
 }
