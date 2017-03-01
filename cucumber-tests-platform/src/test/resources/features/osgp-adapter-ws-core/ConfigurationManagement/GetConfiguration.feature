@@ -7,6 +7,7 @@ Feature: CoreConfigurationManagement GetConfiguration
   Scenario Outline: Get configuration of a device
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
+      | Protocol             | <Protocol>        |
     And the device returns a get configuration status over OSLP
       | Status            | OK                  |
       | LightType         | <LightType>         |
@@ -39,21 +40,35 @@ Feature: CoreConfigurationManagement GetConfiguration
       | IntervalType      | <IntervalType>      |
 
     Examples: 
-      | LightType               | DcLights | DcMap   | RcType | RcMap | PreferredLinkType | MeterType | ShortInterval | LongInterval | IntervalType |
-      | RELAY                   |          |         |        |       |                   | AUX       |               |              |              |
-      | RELAY                   |          |         | TARIFF |   1,1 |                   |           |               |              |              |
-      | ONE_TO_TEN_VOLT         |          |         |        |       |                   |           |               |              |              |
-      | ONE_TO_TEN_VOLT_REVERSE |          |         |        |       |                   |           |               |              |              |
-      | DALI                    |        2 | 1,2;2,1 |        |       |                   |           |               |              |              |
-      |                         |          |         |        |       |                   |           |            30 |              |              |
-      |                         |          |         |        |       | GPRS              |           |               |              |              |
-      | DALI                    |          |         |        |       |                   |           |               |              |              |
-      |                         |          |         |        |       |                   |           |               |              |              |
-      |                         |          |         |        |       |                   | P1        |               |              |              |
-      |                         |          |         |        |       |                   |           |               |           10 | DAYS         |
-      |                         |          |         |        |       |                   |           |               |           10 | MONTHS       |
-      | RELAY                   |          |         | LIGHT  |       | CDMA              | PULSE     |            15 |           30 | DAYS         |
-      | RELAY                   |          |         | LIGHT  |   1,1 | ETHERNET          | P1        |            15 |            1 | DAYS         |
+      | Protocol    | LightType               | DcLights | DcMap   | RcType | RcMap | PreferredLinkType | MeterType | ShortInterval | LongInterval | IntervalType |
+      | OSLP        | RELAY                   |          |         |        |       |                   | AUX       |               |              |              |
+      | OSLP        | RELAY                   |          |         | TARIFF |   1,1 |                   |           |               |              |              |
+      | OSLP        | ONE_TO_TEN_VOLT         |          |         |        |       |                   |           |               |              |              |
+      | OSLP        | ONE_TO_TEN_VOLT_REVERSE |          |         |        |       |                   |           |               |              |              |
+      | OSLP        | DALI                    |        2 | 1,2;2,1 |        |       |                   |           |               |              |              |
+      | OSLP        |                         |          |         |        |       |                   |           |            30 |              |              |
+      | OSLP        |                         |          |         |        |       | GPRS              |           |               |              |              |
+      | OSLP        | DALI                    |          |         |        |       |                   |           |               |              |              |
+      | OSLP        |                         |          |         |        |       |                   |           |               |              |              |
+      | OSLP        |                         |          |         |        |       |                   | P1        |               |              |              |
+      | OSLP        |                         |          |         |        |       |                   |           |               |           10 | DAYS         |
+      | OSLP        |                         |          |         |        |       |                   |           |               |           10 | MONTHS       |
+      | OSLP        | RELAY                   |          |         | LIGHT  |       | CDMA              | PULSE     |            15 |           30 | DAYS         |
+      | OSLP        | RELAY                   |          |         | LIGHT  |   1,1 | ETHERNET          | P1        |            15 |            1 | DAYS         |
+      | OSLP ELSTER | RELAY                   |          |         |        |       |                   | AUX       |               |              |              |
+      | OSLP ELSTER | RELAY                   |          |         | TARIFF |   1,1 |                   |           |               |              |              |
+      | OSLP ELSTER | ONE_TO_TEN_VOLT         |          |         |        |       |                   |           |               |              |              |
+      | OSLP ELSTER | ONE_TO_TEN_VOLT_REVERSE |          |         |        |       |                   |           |               |              |              |
+      | OSLP ELSTER | DALI                    |        2 | 1,2;2,1 |        |       |                   |           |               |              |              |
+      | OSLP ELSTER |                         |          |         |        |       |                   |           |            30 |              |              |
+      | OSLP ELSTER |                         |          |         |        |       | GPRS              |           |               |              |              |
+      | OSLP ELSTER | DALI                    |          |         |        |       |                   |           |               |              |              |
+      | OSLP ELSTER |                         |          |         |        |       |                   |           |               |              |              |
+      | OSLP ELSTER |                         |          |         |        |       |                   | P1        |               |              |              |
+      | OSLP ELSTER |                         |          |         |        |       |                   |           |               |           10 | DAYS         |
+      | OSLP ELSTER |                         |          |         |        |       |                   |           |               |           10 | MONTHS       |
+      | OSLP ELSTER | RELAY                   |          |         | LIGHT  |       | CDMA              | PULSE     |            15 |           30 | DAYS         |
+      | OSLP ELSTER | RELAY                   |          |         | LIGHT  |   1,1 | ETHERNET          | P1        |            15 |            1 | DAYS         |
 
   Scenario: Get configuration data with unknown device
     When receiving a get configuration request
@@ -62,9 +77,10 @@ Feature: CoreConfigurationManagement GetConfiguration
       | Message | UNKNOWN_DEVICE |
 
   @OslpMockServer
-  Scenario: Failed get configuration of a device
+  Scenario Outline: Failed get configuration of a device
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
+      | Protocol             | <Protocol>        |
     And the device returns a get configuration status over OSLP
       | Status            | FAILURE  |
       | LightType         | RELAY    |
@@ -85,10 +101,16 @@ Feature: CoreConfigurationManagement GetConfiguration
     And the platform buffers a get configuration response message for device "TEST1024000000001" contains soap fault
       | Message | Device reports failure |
 
+    Examples: 
+      | Protocol    |
+      | OSLP        |
+      | OSLP ELSTER |
+
   @OslpMockServer
-  Scenario: Rejected get configuration of a device
+  Scenario Outline: Rejected get configuration of a device
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
+      | Protocol             | <Protocol>        |
     And the device returns a get configuration status over OSLP
       | Status            | REJECTED |
       | LightType         | RELAY    |
@@ -108,3 +130,8 @@ Feature: CoreConfigurationManagement GetConfiguration
     And a get configuration OSLP message is sent to device "TEST1024000000001"
     And the platform buffers a get configuration response message for device "TEST1024000000001" contains soap fault
       | Message | Device reports rejected |
+
+    Examples: 
+      | Protocol    |
+      | OSLP        |
+      | OSLP ELSTER |
