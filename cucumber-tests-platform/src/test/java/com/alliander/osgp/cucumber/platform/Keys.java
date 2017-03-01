@@ -244,4 +244,6 @@ public class Keys {
     public static final String SEQUENCE_WINDOW = "SequenceWindow";
     public static final String NEW_SEQUENCE_NUMBER = "NewSequenceNumber";
     public static final String NUMBER_TO_ADD_TO_SEQUENCE_NUMBER = "NumberToAddToSequenceNumber";
+    public static final String FIRMWARE_INSTALLED_BY = "InstalledBy";
+    public static final String FIRMWARE_INSTALLATION_DATE = "InstallationDate";
 }

@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.platform.cucumber.helpers;
+package com.alliander.osgp.cucumber.platform.helpers;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
