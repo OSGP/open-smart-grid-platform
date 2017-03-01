@@ -167,6 +167,11 @@ public class MockOslpServer {
         return this.receivedRequests.get(requestType);
     }
 
+    public OslpEnvelope send(final InetSocketAddress address, final OslpEnvelope request,
+            final String deviceIdentification) throws IOException, DeviceSimulatorException {
+        return this.channelHandler.send(address, request, deviceIdentification);
+    }
+
     public Message sendRequest(final Message message) throws DeviceSimulatorException, IOException, ParseException {
 
         final OslpEnvelope envelope = new OslpEnvelope();
@@ -238,9 +243,16 @@ public class MockOslpServer {
         return CertificateHelper.createPublicKey(this.verifyKeyPath, this.keytype, this.oslpSignatureProvider);
     }
 
-    private PrivateKey privateKey()
-            throws IOException, InvalidKeySpecException, NoSuchAlgorithmException, NoSuchProviderException {
-        return CertificateHelper.createPrivateKey(this.signKeyPath, this.keytype, this.oslpSignatureProvider);
+    public PrivateKey privateKey() {
+        PrivateKey privateKey = null;
+
+        try {
+            privateKey = CertificateHelper.createPrivateKey(this.signKeyPath, this.keytype, this.oslpSignatureProvider);
+        } catch (final Exception ex) {
+            //
+        }
+
+        return privateKey;
     }
 
     public void mockGetConfigurationResponse(final Oslp.Status oslpStatus, final LightType lightType,
@@ -518,5 +530,13 @@ public class MockOslpServer {
 
         this.mockResponses.put(DeviceRequestMessageType.GET_POWER_USAGE_HISTORY,
                 Oslp.Message.newBuilder().setGetPowerUsageHistoryResponse(response).build());
+    }
+
+    public String getOslpSignature() {
+        return this.oslpSignature;
+    }
+
+    public String getOslpSignatureProvider() {
+        return this.oslpSignatureProvider;
     }
 }

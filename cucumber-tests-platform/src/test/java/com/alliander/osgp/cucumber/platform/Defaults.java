@@ -172,5 +172,8 @@ public class Defaults {
     public static final String DC_LIGHTS = "";
     public static final int FIRMWARE_ID = 0;
     public static final String FIRMWARE_DESCRIPTION = "Test Firmware";
+    public static final String LOCALHOST = "localhost";
+    public static final Integer OSLP_SERVER_PORT = 12121;
+    public static final Integer RANDOM_DEVICE = 0;
 
 }
