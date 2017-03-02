@@ -7,17 +7,11 @@
  */
 package com.alliander.osgp.shared.utils.datehelpers;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class DateHelper {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(DateHelper.class);
 
     private DateHelper() {
         // avoid creation of class
@@ -25,15 +19,9 @@ public class DateHelper {
     }
 
     public static Date getGmtDate() {
-        final SimpleDateFormat dateFormatGmt = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
-        dateFormatGmt.setTimeZone(TimeZone.getTimeZone("GMT"));
-        final SimpleDateFormat dateFormatLocal = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
-        try {
-            return dateFormatLocal.parse(dateFormatGmt.format(new Date()));
-        } catch (final ParseException e) {
-            LOGGER.error("error getting Gmt date " + e);
-            throw new RuntimeException(e.getMessage());
-        }
+        TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
+        final Calendar cal = Calendar.getInstance(TimeZone.getDefault());
+        return cal.getTime();
     }
 
 }
