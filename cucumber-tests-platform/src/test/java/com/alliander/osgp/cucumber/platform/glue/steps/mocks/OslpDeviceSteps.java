@@ -594,7 +594,6 @@ public class OslpDeviceSteps {
      *            The get status to respond.
      */
     @Given("^the device returns a get status response over OSLP$")
-
     public void theDeviceReturnsAGetStatusResponseOverOSLP(final Map<String, String> result) {
         int eventNotificationTypes = 0;
         final String eventNotificationTypesString = getString(result, Keys.KEY_EVENTNOTIFICATIONTYPES,
