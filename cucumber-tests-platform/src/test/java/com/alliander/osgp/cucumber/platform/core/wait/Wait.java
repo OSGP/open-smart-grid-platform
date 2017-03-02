@@ -50,7 +50,7 @@ public class Wait {
      * @return object of a specific type T
      * @throws InterruptedException
      */
-    public static <T> T until(final Callable<T> task) throws InterruptedException {
+    public static <T> T until(final Callable<T> task) {
         final Logger logger = LoggerFactory.getLogger(Wait.class);
 
         T response = null;
@@ -78,9 +78,48 @@ public class Wait {
                 handleException(logger, ex);
             }
             count += configuration.getSleepTime();
-            TimeUnit.MILLISECONDS.sleep(configuration.getSleepTime());
+            try{
+            	TimeUnit.MILLISECONDS.sleep(configuration.getSleepTime());
+            } catch(Exception ex) {
+                handleException(logger, ex);
+            }
         }
         return response;
+    }
+
+    public static <T> void until(final Runnable task) {
+        final Logger logger = LoggerFactory.getLogger(Wait.class);
+
+        boolean success = false;
+        int count = 0;
+        while (!success) {
+            if (count / 1000 > configuration.getTimeout()) {
+                Assert.fail("Timeout after [" + (count / 1000) + "] seconds");
+            }
+            logger.info("... polling in Wait.ForResult ...");
+
+            try {
+                // Call the code to run
+                task.run();
+
+                // If we get here set success to true, so make sure that we
+                // stop.
+                success = true;
+                // We have a response, so exit
+                // the while loop immediately
+                break;
+            } catch (final AssertionError error) {
+                handleAssertionError(logger, error);
+            } catch (final Exception ex) {
+                handleException(logger, ex);
+            }
+            count += configuration.getSleepTime();
+            try{
+            	TimeUnit.MILLISECONDS.sleep(configuration.getSleepTime());
+            } catch(Exception ex) {
+                handleException(logger, ex);
+            }
+        }
     }
 
     private static void handleAssertionError(final Logger logger, final AssertionError error) {

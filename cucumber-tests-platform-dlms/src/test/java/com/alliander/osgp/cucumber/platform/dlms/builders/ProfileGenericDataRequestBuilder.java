@@ -12,7 +12,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.ObisCodeValues;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ProfileGenericDataRequest;
-import com.alliander.osgp.platform.cucumber.helpers.DateConverter;
+import com.alliander.osgp.cucumber.platform.helpers.DateConverter;
 
 public class ProfileGenericDataRequestBuilder {
 

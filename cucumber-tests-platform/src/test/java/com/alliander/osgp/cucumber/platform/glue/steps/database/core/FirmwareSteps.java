@@ -17,14 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.cucumber.platform.Defaults;
 import com.alliander.osgp.cucumber.platform.Keys;
-import com.alliander.osgp.domain.core.entities.Device;
-import com.alliander.osgp.domain.core.entities.DeviceFirmware;
+import com.alliander.osgp.cucumber.platform.core.wait.Wait;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Firmware;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
-import com.alliander.osgp.domain.core.repositories.DeviceFirmwareRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
-import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.FirmwareRepository;
 import com.alliander.osgp.domain.core.valueobjects.FirmwareModuleData;
 
@@ -36,71 +33,61 @@ import cucumber.api.java.en.Then;
  */
 public class FirmwareSteps {
 
-    public static String DEFAULT_NAME = "TestFirmware";
+	@Autowired
+	private DeviceModelRepository deviceModelRepo;
 
-    @Autowired
-    private DeviceFirmwareRepository deviceFirmwareRepo;
+	@Autowired
+	private FirmwareRepository firmwareRepo;
 
-    @Autowired
-    private DeviceModelRepository deviceModelRepo;
-    @Autowired
-    private DeviceRepository deviceRepo;
-    @Autowired
-    private FirmwareRepository firmwareRepo;
+	@Autowired
+	private DeviceModelSteps deviceModelSteps;
 
-    @Autowired
-    private DeviceModelSteps deviceModelSteps;
+	/**
+	 * Generic method which adds a firmware using the settings.
+	 *
+	 * @param settings
+	 *            The settings for the firmware to be used.
+	 * @throws Throwable
+	 */
+	@Given("^a firmware")
+	public void aFirmware(final Map<String, String> settings) {
 
-    /**
-     * Generic method which adds a firmware using the settings.
-     *
-     * @param settings
-     *            The settings for the firmware to be used.
-     * @throws Throwable
-     */
-    @Given("^a firmware")
-    public void aFirmware(final Map<String, String> settings) throws Throwable {
+		DeviceModel deviceModel = this.deviceModelRepo.findByModelCode(getString(settings, Keys.DEVICEMODEL_MODELCODE));
+		if (deviceModel == null) {
+			deviceModel = this.deviceModelSteps.aDeviceModel(settings);
+		}
 
-        DeviceModel deviceModel = this.deviceModelRepo.findByModelCode(getString(settings, Keys.DEVICEMODEL_MODELCODE));
-        if (deviceModel == null) {
-            deviceModel = this.deviceModelSteps.aDeviceModel(settings);
-        }
+		final FirmwareModuleData firmwareModuleData = new FirmwareModuleData(
+				getString(settings, Keys.FIRMWARE_MODULE_VERSION_COMM, Defaults.FIRMWARE_MODULE_VERSION_COMM),
+				getString(settings, Keys.FIRMWARE_MODULE_VERSION_FUNC, Defaults.FIRMWARE_MODULE_VERSION_FUNC),
+				getString(settings, Keys.FIRMWARE_MODULE_VERSION_MA, Defaults.FIRMWARE_MODULE_VERSION_MA),
+				getString(settings, Keys.FIRMWARE_MODULE_VERSION_MBUS, Defaults.FIRMWARE_MODULE_VERSION_MBUS),
+				getString(settings, Keys.FIRMWARE_MODULE_VERSION_SEC, Defaults.FIRMWARE_MODULE_VERSION_SEC));
 
-        final FirmwareModuleData firmwareModuleData = new FirmwareModuleData(null, null, null, null, null);
+		final Firmware entity = new Firmware(deviceModel, getString(settings, Keys.FIRMWARE_FILENAME, ""),
+				getString(settings, Keys.FIRMWARE_DESCRIPTION, Defaults.FIRMWARE_DESCRIPTION),
+				getBoolean(settings, Keys.FIRMWARE_PUSH_TO_NEW_DEVICES, Defaults.FIRMWARE_PUSH_TO_NEW_DEVICE),
+				firmwareModuleData);
 
-        final Firmware entity = new Firmware(deviceModel, getString(settings, Keys.FIRMWARE_FILENAME, ""),
-                getString(settings, Keys.FIRMWARE_DESCRIPTION, ""),
-                getBoolean(settings, Keys.FIRMWARE_PUSH_TO_NEW_DEVICES, Defaults.FIRMWARE_PUSH_TO_NEW_DEVICE),
-                firmwareModuleData);
+		this.firmwareRepo.save(entity);
+	}
 
-        this.firmwareRepo.save(entity);
-
-        final DeviceFirmware deviceFirmware = new DeviceFirmware();
-
-        final Device device = this.deviceRepo.findByDeviceIdentification(
-                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-
-        deviceFirmware.setDevice(device);
-        deviceFirmware.setFirmware(entity);
-
-        this.deviceFirmwareRepo.save(deviceFirmware);
-    }
-
-    /**
-     * Verify whether the entity is created as expected.
-     *
-     * @param expectedEntity
-     * @throws Throwable
-     */
-    @Then("^the entity firmware exists$")
-    public void theEntityFirmwareExists(final Map<String, String> expectedEntity) throws Throwable {
-        // TODO: Wait until the stuff is created.
-        final Firmware entity = this.firmwareRepo.findByFilename(getString(expectedEntity, Keys.FIRMWARE_FILENAME));
-
-        final Manufacturer manufacturer = entity.getDeviceModel().getManufacturerId();
-        Assert.assertEquals(getString(expectedEntity, "ManufacturerId", Defaults.DEFAULT_MANUFACTURER_ID),
-                manufacturer);
-        Assert.assertEquals(getBoolean(expectedEntity, "UsesPrefix", Defaults.DEFAULT_MANUFACTURER_USE_PREFIX),
-                manufacturer.isUsePrefix());
-    }
+	/**
+	 * Verify whether the entity is created as expected.
+	 *
+	 * @param expectedEntity
+	 * @throws Throwable
+	 */
+	@Then("^the entity firmware exists$")
+	public void theEntityFirmwareExists(final Map<String, String> expectedEntity) {
+		Wait.until(() -> {
+			final Firmware entity = this.firmwareRepo.findByFilename(getString(expectedEntity, Keys.FIRMWARE_FILENAME));
+			final Manufacturer manufacturer = entity.getDeviceModel().getManufacturerId();
+			
+			Assert.assertEquals(getString(expectedEntity, Keys.MANUFACTURER_ID, Defaults.DEFAULT_MANUFACTURER_ID),
+					manufacturer);
+			Assert.assertEquals(getBoolean(expectedEntity, Keys.USE_PREFIX, Defaults.DEFAULT_MANUFACTURER_USE_PREFIX),
+					manufacturer.isUsePrefix());
+		});
+	}
 }
