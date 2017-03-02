@@ -168,7 +168,7 @@ public class Helpers {
         final Pattern r = Pattern.compile(pattern);
         final Matcher m = r.matcher(dateString);
 
-        if (m.groupCount() != 4) {
+        if (m.groupCount() > 4) {
             throw new Exception("Incorrect dateString [" + dateString + "]");
         }
 
