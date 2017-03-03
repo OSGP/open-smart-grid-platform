@@ -17,5 +17,5 @@
 [submodule "Protocol-Adapter-IEC61850"]
 	path = Protocol-Adapter-IEC61850
 	url = https://github.com/OSGP/Protocol-Adapter-IEC61850.git
-	branch = development
+	branch = ZS-156-Support_different_RTU_servernames
 

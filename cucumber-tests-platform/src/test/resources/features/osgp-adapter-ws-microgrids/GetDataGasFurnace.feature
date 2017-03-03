@@ -3,7 +3,8 @@ Feature: MicroGrids Get Gas Furnace Data
   As an OSGP client
   I want to get Gas Furnace data from an RTU
 
-  @Iec61850MockServer
+  # skip temporarirly until column server_name is added to iecdevice
+  @Iec61850MockServer @Skip
   Scenario: GetData for Gas Furnace
     Given an rtu iec61850 device
       | DeviceIdentification | RTU10001 |
