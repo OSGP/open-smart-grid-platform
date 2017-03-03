@@ -78,23 +78,30 @@ public class Iec61850DeviceConnectionService {
     private boolean isIcdFileUsed;
 
     public DeviceConnection connectWithoutConnectionCaching(final String ipAddress, final String deviceIdentification,
-            final IED ied, final String logicalDevice) throws ConnectionFailureException {
-        return this.connect(ipAddress, deviceIdentification, ied, logicalDevice, false);
+            final IED ied, final String serverName, final String logicalDevice) throws ConnectionFailureException {
+        return this.connect(ipAddress, deviceIdentification, ied, serverName, logicalDevice, false);
     }
 
     public DeviceConnection connect(final String ipAddress, final String deviceIdentification, final IED ied,
-            final String logicalDevice) throws ConnectionFailureException {
-        return this.connect(ipAddress, deviceIdentification, ied, logicalDevice, true);
+            final String serverName, final String logicalDevice) throws ConnectionFailureException {
+        return this.connect(ipAddress, deviceIdentification, ied, serverName, logicalDevice, true);
     }
 
     public synchronized DeviceConnection connect(final String ipAddress, final String deviceIdentification,
-            final IED ied, final String logicalDevice, final boolean cacheConnection)
-                    throws ConnectionFailureException {
+            final IED ied, final String serverName, final String logicalDevice, final boolean cacheConnection)
+            throws ConnectionFailureException {
         // When connection-caching is used, check if a connection is available
         // an usable for the given deviceIdentification.
-        if (cacheConnection && this.testIfConnectionIsCachedAndAlive(deviceIdentification, ied, logicalDevice)) {
-            return new DeviceConnection(this.fetchIec61850Connection(deviceIdentification), deviceIdentification, ied);
+        try {
+            if (cacheConnection
+                    && this.testIfConnectionIsCachedAndAlive(deviceIdentification, ied, serverName, logicalDevice)) {
+                return new DeviceConnection(this.fetchIec61850Connection(deviceIdentification), deviceIdentification,
+                        serverName);
+            }
+        } catch (final ProtocolAdapterException e) {
+            this.logProtocolAdapetrException(deviceIdentification, e);
         }
+
         final InetAddress inetAddress = this.convertIpAddress(ipAddress);
 
         // Connect to obtain ClientAssociation and ServerModel.
@@ -108,9 +115,7 @@ public class Iec61850DeviceConnectionService {
             eventListener = Iec61850ClientEventListenerFactory.getInstance().getEventListener(ied,
                     deviceIdentification, this.deviceManagementService);
         } catch (final ProtocolAdapterException e) {
-            LOGGER.error(
-                    "ProtocolAdapterException: no Iec61850ClientBaseEventListener instance could be contructed, continue without event listener for deviceIdentification: "
-                            + deviceIdentification, e);
+            this.logProtocolAdapetrException(deviceIdentification, e);
         }
 
         final Iec61850Device iec61850Device = this.iec61850DeviceRepository
@@ -146,7 +151,13 @@ public class Iec61850DeviceConnectionService {
                 "Connected to device: {}, fetched server model. Start time: {}, end time: {}, total time in milliseconds: {}",
                 deviceIdentification, startTime, endTime, endTime.minus(startTime.getMillis()).getMillis());
 
-        return new DeviceConnection(iec61850Connection, deviceIdentification, ied);
+        return new DeviceConnection(iec61850Connection, deviceIdentification, serverName);
+    }
+
+    private void logProtocolAdapetrException(final String deviceIdentification, final ProtocolAdapterException e) {
+        LOGGER.error(
+                "ProtocolAdapterException: no Iec61850ClientBaseEventListener instance could be contructed, continue without event listener for deviceIdentification: "
+                        + deviceIdentification, e);
     }
 
     private int determinePortForIec61850Device(final IED ied, final Iec61850Device iec61850Device) {
@@ -169,7 +180,7 @@ public class Iec61850DeviceConnectionService {
     }
 
     private boolean testIfConnectionIsCachedAndAlive(final String deviceIdentification, final IED ied,
-            final String logicalDevice) {
+            final String serverName, final String logicalDevice) throws ProtocolAdapterException {
         try {
             LOGGER.info("Trying to find connection in cache for deviceIdentification: {}", deviceIdentification);
             final Iec61850Connection iec61850Connection = this.fetchIec61850Connection(deviceIdentification);
@@ -179,16 +190,13 @@ public class Iec61850DeviceConnectionService {
                 // Read physical name node (only), which is much faster, but
                 // requires manual reads of remote data.
                 if (ied != null && logicalDevice != null) {
+                    final String description = this.getActualServerName(ied, serverName);
                     LOGGER.info("Testing if connection is alive using {}{}/{}.{} for deviceIdentification: {}",
-                            ied.getDescription(), logicalDevice,
-                            LogicalNode.LOGICAL_NODE_ZERO.getDescription(), DataAttribute.NAME_PLATE.getDescription(),
-                            deviceIdentification);
-                    this.iec61850Client.readNodeDataValues(
-                            iec61850Connection.getClientAssociation(),
-                            (FcModelNode) iec61850Connection.getServerModel().findModelNode(
-                                    ied.getDescription() + logicalDevice + "/"
-                                            + LogicalNode.LOGICAL_NODE_ZERO.getDescription() + "."
-                                            + DataAttribute.NAME_PLATE.getDescription(), Fc.DC));
+                            description, logicalDevice, LogicalNode.LOGICAL_NODE_ZERO.getDescription(),
+                            DataAttribute.NAME_PLATE.getDescription(), deviceIdentification);
+
+                    FcModelNode modelNode = this.getModelNode(logicalDevice, iec61850Connection, description);
+                    this.iec61850Client.readNodeDataValues(iec61850Connection.getClientAssociation(), modelNode);
                 } else {
                     // Read all data values, which is much slower, but requires
                     // no manual reads of remote data.
@@ -206,6 +214,32 @@ public class Iec61850DeviceConnectionService {
             this.removeIec61850Connection(deviceIdentification);
         }
         return false;
+    }
+
+    private FcModelNode getModelNode(final String logicalDevice, final Iec61850Connection iec61850Connection,
+            final String description) throws ProtocolAdapterException {
+        final ServerModel serverModel = iec61850Connection.getServerModel();
+        if (serverModel == null) {
+            final String msg = String.format("ServerModel is null for logicalDevice {%s}", logicalDevice);
+            throw new ProtocolAdapterException(msg);
+        }
+        String objRef = description + logicalDevice + "/" + LogicalNode.LOGICAL_NODE_ZERO.getDescription() + "."
+                + DataAttribute.NAME_PLATE.getDescription();
+        FcModelNode modelNode = (FcModelNode) serverModel.findModelNode(objRef, Fc.DC);
+        if (modelNode == null) {
+            final String msg = String.format("ModelNode is null for {%s}", objRef);
+            throw new ProtocolAdapterException(msg);
+        }
+        return modelNode;
+    }
+
+    private String getActualServerName(final IED ied, final String serverName) {
+        if (serverName != null && !serverName.isEmpty()) {
+            return serverName;
+        } else {
+            // this methode is only called after null-check on ied
+            return ied.getDescription();
+        }
     }
 
     private ServerModel readServerModel(final ClientAssociation clientAssociation, final String deviceIdentification,
@@ -304,7 +338,7 @@ public class Iec61850DeviceConnectionService {
         final DateTime startTime = deviceConnection.getConnection().getConnectionStartTime();
         LOGGER.info("Device: {}, messageType: {}, Start time: {}, end time: {}, total time in milliseconds: {}",
                 deviceConnection.getDeviceIdentification(), deviceRequest.getMessageType(), startTime, endTime, endTime
-                .minus(startTime.getMillis()).getMillis());
+                        .minus(startTime.getMillis()).getMillis());
     }
 
     public Iec61850ClientAssociation getIec61850ClientAssociation(final String deviceIdentification) {
@@ -382,4 +416,5 @@ public class Iec61850DeviceConnectionService {
             throw new ConnectionFailureException(e.getMessage(), e);
         }
     }
+
 }
