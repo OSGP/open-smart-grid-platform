@@ -24,13 +24,13 @@ public class Iec61850MockServer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850MockServer.class);
 
-    @Value("${iec61850.mock.icd.filename}")
+    @Value("${iec61850.mock.icd.filename:Pampus_v0.4.5.icd}")
     private String icdFilename;
 
-    @Value("${iec61850.mock.port}")
+    @Value("${iec61850.mock.port:61202}")
     private int port;
 
-    @Value("${iec61850.mock.serverName}")
+    @Value("${iec61850.mock.serverName:WAGO61850Server}")
     private String serverName;
 
     private RtuSimulator rtuSimulator;
@@ -42,10 +42,9 @@ public class Iec61850MockServer {
     }
 
     public Iec61850MockServer() {
-        super();
     }
 
-    public Iec61850MockServer(String serverName, String icdFilename, int port) {
+    public Iec61850MockServer(final String serverName, final String icdFilename, final int port) {
         super();
         this.serverName = serverName;
         this.icdFilename = icdFilename;
