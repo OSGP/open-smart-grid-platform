@@ -88,6 +88,13 @@ public class Keys {
     public static final String KEY_DEVICE_ICCID = "ICC_id";
 
     public static final String KEY_DEVICE_IDENTIFICATION = "DeviceIdentification";
+    public static final String ALIAS = "Alias";
+    public static final String CONTAINER_STREET = "ContainerStreet";
+    public static final String CONTAINER_NUMBER = "ContainerNumber";
+    public static final String CONTAINER_POSTALCODE = "ContainerPostalCode";
+    public static final String CONTAINER_CITY = "ContainerCity";
+    public static final String CONTAINER_MUNICIPALITY = "ContainerMunicipality";
+    public static final String DEVICE_IN_MAINTENANCE = "InMaintenance";
 
     public static final String KEY_DEVICE_IDENTIFICATION_E_LABEL = "DeviceIdentificationE";
     public static final String KEY_DEVICE_IDENTIFICATION_G_LABEL = "DeviceIdentificationG";
@@ -246,10 +253,17 @@ public class Keys {
     public static final String SEQUENCE_WINDOW = "SequenceWindow";
     public static final String NEW_SEQUENCE_NUMBER = "NewSequenceNumber";
     public static final String NUMBER_TO_ADD_TO_SEQUENCE_NUMBER = "NumberToAddToSequenceNumber";
+
     public static final String KEY_SCHEDULE_DESCRIPTION = "Description";
     public static final String KEY_SCHEDULE_COLOR = "Color";
     public static final String KEY_SCHEDULE_DEFAULT = "DefaultSchedule";
     public static final String KEY_SCHEDULE_SUCCESS = "Success";
     public static final String KEY_SCHEDULE_TEMPLATE = "Template";
-    
+
+    public static final String KEY_IEC61850_SERVERNAME = "ServerName";
+    public static final String KEY_IEC61850_PORT = "Port";
+    public static final String KEY_IEC61850_ICD_FILENAME = "IcdFilename";
+
+    public static final String FIRMWARE_INSTALLED_BY = "InstalledBy";
+    public static final String FIRMWARE_INSTALLATION_DATE = "InstallationDate";
 }

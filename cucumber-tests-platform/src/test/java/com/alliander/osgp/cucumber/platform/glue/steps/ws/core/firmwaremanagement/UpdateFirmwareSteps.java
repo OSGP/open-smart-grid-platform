@@ -25,10 +25,8 @@ import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FirmwareModu
 import com.alliander.osgp.cucumber.platform.Defaults;
 import com.alliander.osgp.cucumber.platform.Keys;
 import com.alliander.osgp.cucumber.platform.core.ScenarioContext;
-import com.alliander.osgp.cucumber.platform.glue.steps.database.core.DeviceModelSteps;
 import com.alliander.osgp.cucumber.platform.glue.steps.ws.GenericResponseSteps;
 import com.alliander.osgp.cucumber.platform.support.ws.core.CoreFirmwareManagementClient;
-import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.FirmwareRepository;
 
 import cucumber.api.java.en.Then;
@@ -41,12 +39,6 @@ public class UpdateFirmwareSteps {
 
     @Autowired
     private CoreFirmwareManagementClient client;
-
-    @Autowired
-    private DeviceModelRepository deviceModelRepository;
-
-    @Autowired
-    private DeviceModelSteps deviceModelSteps;
 
     @Autowired
     private FirmwareRepository firmwareRepo;

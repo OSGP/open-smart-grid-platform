@@ -9,6 +9,7 @@ package com.alliander.osgp.cucumber.platform.mocks.iec61850;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 import org.openmuc.openiec61850.SclParseException;
 import org.slf4j.Logger;
@@ -23,11 +24,14 @@ public class Iec61850MockServer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850MockServer.class);
 
-    @Value("${iec61850.mock.icd.filename}")
+    @Value("${iec61850.mock.icd.filename:Pampus_v0.4.5.icd}")
     private String icdFilename;
 
-    @Value("${iec61850.mock.port}")
+    @Value("${iec61850.mock.port:61202}")
     private int port;
+
+    @Value("${iec61850.mock.serverName:WAGO61850Server}")
+    private String serverName;
 
     private RtuSimulator rtuSimulator;
 
@@ -35,6 +39,16 @@ public class Iec61850MockServer {
 
     private boolean isInitialised() {
         return this.rtuSimulator != null;
+    }
+
+    public Iec61850MockServer() {
+    }
+
+    public Iec61850MockServer(final String serverName, final String icdFilename, final int port) {
+        super();
+        this.serverName = serverName;
+        this.icdFilename = icdFilename;
+        this.port = port;
     }
 
     private InputStream getIcdFile() {
@@ -47,7 +61,7 @@ public class Iec61850MockServer {
 
     private RtuSimulator initialiseSimulator() {
         try {
-            return new RtuSimulator(this.port, this.getIcdFile());
+            return new RtuSimulator(this.port, this.getIcdFile(), this.serverName);
         } catch (final SclParseException e) {
             throw new AssertionError("Expected IEC61850 Mock configuration allowing simulator startup.", e);
         }
@@ -97,4 +111,23 @@ public class Iec61850MockServer {
         }
         this.rtuSimulator.assertValue(logicalDeviceName, node, value);
     }
+
+    /**
+     * This method can be used to stop the running simulator, that was started
+     * (in @Before) with all default parameters, and start it again with the
+     * supplied parameters in the feature file. Only the provided feature
+     * parameters will override the default parameter from the property file.
+     * Currently the properties can be overwritten: ServerName, Port and/or
+     * IcdFilename.
+     *
+     * @param settings
+     *            the feature file parameters.
+     *
+     */
+    public void restart(final Map<String, String> settings) {
+        this.stop();
+        this.rtuSimulator = null;
+        this.start();
+    }
+
 }
