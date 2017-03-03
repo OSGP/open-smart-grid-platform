@@ -3,7 +3,8 @@ Feature: MicroGrids Get PhotoVoltaic System Data
   In order to be able to know data of a photovoltaic system with a remote terminal unit
   As an OSGP client
   I want to get PV data from an RTU
-
+  
+  @Skip
   Scenario: Request PV1 Health
     Given an rtu iec61850 device
       | DeviceIdentification | RTU10001 |
@@ -29,6 +30,7 @@ Feature: MicroGrids Get PhotoVoltaic System Data
       | MeasurementQualifier_1_1 |     1024 |
       | MeasurementValue_1_1     |      3.0 |
 
+  @Skip
   Scenario: Request PV1 Health for a non-existing logical device
     Given an rtu iec61850 device
       | DeviceIdentification | RTU10001 |
@@ -44,6 +46,7 @@ Feature: MicroGrids Get PhotoVoltaic System Data
       | Component            | PROTOCOL_IEC61850            |
       | Message              | fcmodelNode must not be null |
 
+  @Skip
   Scenario: Request PV1 Health not default servername
     Given an rtu iec61850 device
       | DeviceIdentification | RTU10001    |
