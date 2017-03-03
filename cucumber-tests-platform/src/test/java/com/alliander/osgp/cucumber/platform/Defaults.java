@@ -50,11 +50,11 @@ public class Defaults {
     public static final com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.MeterType DEFAULT_CONFIGURATION_METER_TYPE = com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.MeterType.AUX;
 
     public static final com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.LinkType DEFAULT_CONFIGURATION_PREFERRED_LINKTYPE = com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.LinkType.ETHERNET;
-    public static final String DEFAULT_CONTAINER_CITY = "";
-    public static final String DEFAULT_CONTAINER_MUNICIPALITY = "";
-    public static final String DEFAULT_CONTAINER_NUMBER = "";
-    public static final String DEFAULT_CONTAINER_POSTALCODE = "";
-    public static final String DEFAULT_CONTAINER_STREET = "";
+    public static final String DEFAULT_CONTAINER_CITY = "StandardCity";
+    public static final String DEFAULT_CONTAINER_MUNICIPALITY = "GreaterStandardArea";
+    public static final String DEFAULT_CONTAINER_NUMBER = "123";
+    public static final String DEFAULT_CONTAINER_POSTALCODE = "6546KM";
+    public static final String DEFAULT_CONTAINER_STREET = "StandardStreet";
     public static final String DEFAULT_DC_LIGHTS = "0";
     public static final Long DEFAULT_DEVICE_ID = new java.util.Random().nextLong();
     public static final String DEFAULT_DEVICE_IDENTIFICATION = "TD01";
@@ -66,6 +66,8 @@ public class Defaults {
     public static final String DEFAULT_DEVICE_OUTPUT_SETTING_ALIAS = "Continues burner";
     public static final Integer DEFAULT_DEVICE_OUTPUT_SETTING_EXTERNALID = 1;
     public static final Integer DEFAULT_DEVICE_OUTPUT_SETTING_INTERNALID = 1;
+    public static final String DEFAULT_SCHEDULE_CODE = "ScheduleCode";
+    public static final String CODE = "Code";
 
     public static final RelayType DEFAULT_DEVICE_OUTPUT_SETTING_RELAY_TYPE = RelayType.LIGHT;
 
@@ -172,5 +174,11 @@ public class Defaults {
     public static final String DC_LIGHTS = "";
     public static final int FIRMWARE_ID = 0;
     public static final String FIRMWARE_DESCRIPTION = "Test Firmware";
+    public static final String DEFAULT_SCHEDULE_NAME = "Schedule1";
+    public static final String DEFAULT_SCHEDULE_DESCRIPTION = "This is the description for Schedule 1";
+    public static final String DEFAULT_SCHEDULE_COLOR = "Green";
+    public static final Boolean DEFAULT_SCHEDULE_DEFAULT = true;
+    public static final Boolean DEFAULT_SCHEDULE_SUCCESS = true;
+    public static final Boolean DEFAULT_SCHEDULE_TEMPLATE = true;
 
 }
