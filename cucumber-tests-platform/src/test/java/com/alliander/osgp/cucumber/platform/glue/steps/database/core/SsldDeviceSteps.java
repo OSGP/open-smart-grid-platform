@@ -85,6 +85,8 @@ public class SsldDeviceSteps extends BaseDeviceSteps {
             }
         }
 
+        ssld.updateInMaintenance(getBoolean(settings, Keys.DEVICE_IN_MAINTENANCE, Defaults.DEVICE_IN_MAINTENANCE));
+
         ssld = this.ssldRepository.save(ssld);
 
         // now update the common stuff of the SSLD device.

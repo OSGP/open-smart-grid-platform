@@ -9,6 +9,7 @@ package com.alliander.osgp.cucumber.platform;
 
 import org.joda.time.DateTime;
 
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.DeviceFunctionGroup;
 import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.LongTermIntervalType;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.TransitionType;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.OsgpResultType;
@@ -57,6 +58,7 @@ public class Defaults {
     public static final String DEFAULT_CONTAINER_STREET = "";
     public static final String DEFAULT_DC_LIGHTS = "0";
     public static final Long DEFAULT_DEVICE_ID = new java.util.Random().nextLong();
+
     public static final String DEFAULT_DEVICE_IDENTIFICATION = "TD01";
     public static final String DEFAULT_DEVICE_MODEL_DESCRIPTION = "Test Model";
     public static final String DEFAULT_DEVICE_MODEL_MANUFACTURER = "Kaif";
@@ -180,6 +182,8 @@ public class Defaults {
     public static final String FIRMWARE_INSTALLED_BY = "Test User";
     public static final String FIRMWARE_INSTALLATION_DATE = "now";
     public static final boolean DEVICE_FIRMWARE_ACTIVE = true;
+    public static final DeviceFunctionGroup DEVICE_FUNCTION_GROUP = DeviceFunctionGroup.OWNER;
+    public static final Boolean DEVICE_IN_MAINTENANCE = false;
 
     public static final String LOCALHOST = "localhost";
     public static final Integer OSLP_SERVER_PORT = 12121;

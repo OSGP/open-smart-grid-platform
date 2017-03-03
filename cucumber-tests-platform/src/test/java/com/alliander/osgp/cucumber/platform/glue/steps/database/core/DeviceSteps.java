@@ -14,7 +14,6 @@ import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.cucumber.platform.Keys;
-import com.alliander.osgp.cucumber.platform.config.CoreDeviceConfiguration;
 import com.alliander.osgp.cucumber.platform.core.wait.Wait;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
@@ -29,9 +28,6 @@ import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 
 public class DeviceSteps extends BaseDeviceSteps {
-
-    @Autowired
-    private CoreDeviceConfiguration configuration;
 
     @Autowired
     private DeviceAuthorizationRepository deviceAuthorizationRepository;
