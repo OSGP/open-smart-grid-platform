@@ -1,0 +1,2455 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SCL xmlns="http://www.iec.ch/61850/2003/SCL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2007" revision="B">
+  <Header id="WAGO123" nameStructure="IEDName" />
+  <!--Create on WAGO Kontakttechnik GmbH Co KG with Configurator Version 3.1.0 at 1-12-2016 10:57:02-->
+  <Communication>
+    <SubNetwork name="node">
+      <ConnectedAP iedName="WAGO123" apName="W1">
+        <Address>
+          <P type="IP">192.168.1.17</P>
+          <P type="IP-SUBNET">255.255.255.0</P>
+          <P type="IP-GATEWAY">192.168.1.1</P>
+          <P type="MMS-Port">102</P>
+          <P type="OSI-AP-Title">1,1,1,999,1</P>
+          <P type="OSI-AE-Qualifier">12</P>
+          <P type="OSI-PSEL">00000001</P>
+          <P type="OSI-SSEL">0001</P>
+          <P type="OSI-TSEL">0001</P>
+        </Address>
+      </ConnectedAP>
+    </SubNetwork>
+  </Communication>
+  <IED name="WAGO123" type="Telecontrol application" manufacturer="WAGO Kontakttechnik GmbH Co KG" configVersion="3.1.0" engRight="full" owner="">
+    <Services nameLength="64">
+      <ClientServices bufReport="true" unbufReport="true" sv="true" />
+      <DynAssociation />
+      <SettingGroups />
+      <GetDirectory />
+      <GetDataObjectDefinition />
+      <GetDataSetValue />
+      <SetDataSetValue />
+      <DataSetDirectory />
+      <ConfDataSet max="25" />
+      <ReadWrite />
+      <TimerActivatedControl />
+      <ConfReportControl max="35" />
+      <GetCBValues />
+      <ReportSettings cbName="Fix" datSet="Fix" rptID="Dyn" optFields="Dyn" bufTime="Dyn" trgOps="Dyn" intgPd="Dyn" />
+      <ConfLNs fixPrefix="true" fixLnInst="true" />
+      <GOOSE max="0" />
+    </Services>
+    <AccessPoint name="W1" desc="">
+      <Server desc="">
+        <Authentication none="true" />
+        <LDevice inst="RTU1" desc="WAGO Controller">
+          <LN0 lnType="LLN0_0" lnClass="LLN0" inst="" desc="Logical Node zero">
+            <DataSet name="Status">
+              <FCDA ldInst="RTU1" prefix="" lnClass="LLN0" doName="Beh" fc="ST" />
+              <FCDA ldInst="RTU1" prefix="" lnClass="LLN0" doName="Health" fc="ST" />
+              <FCDA ldInst="RTU1" prefix="" lnClass="DSCH" lnInst="1" doName="SchdId" fc="SP" />
+              <FCDA ldInst="RTU1" prefix="" lnClass="DSCH" lnInst="2" doName="SchdId" fc="SP" />
+              <FCDA ldInst="RTU1" prefix="" lnClass="DSCH" lnInst="3" doName="SchdId" fc="SP" />
+              <FCDA ldInst="RTU1" prefix="" lnClass="DSCH" lnInst="4" doName="SchdId" fc="SP" />
+              <FCDA ldInst="RTU1" prefix="" lnClass="GGIO" lnInst="1" doName="IntIn1" fc="ST" />
+              <FCDA ldInst="RTU1" prefix="" lnClass="GGIO" lnInst="1" doName="IntIn2" fc="ST" />
+              <FCDA ldInst="RTU1" prefix="" lnClass="GGIO" lnInst="1" doName="Alm1" fc="ST" />
+              <FCDA ldInst="RTU1" prefix="" lnClass="GGIO" lnInst="1" doName="Alm2" fc="ST" />
+              <FCDA ldInst="RTU1" prefix="" lnClass="GGIO" lnInst="1" doName="Alm3" fc="ST" />
+              <FCDA ldInst="RTU1" prefix="" lnClass="GGIO" lnInst="1" doName="Alm4" fc="ST" />
+              <FCDA ldInst="RTU1" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn1" fc="ST" />
+              <FCDA ldInst="RTU1" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn2" fc="ST" />
+              <FCDA ldInst="RTU1" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn3" fc="ST" />
+              <FCDA ldInst="RTU1" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn4" fc="ST" />
+            </DataSet>
+            <ReportControl name="ReportStatus01" rptID="RTU_Status" datSet="Status" intgPd="60000" confRev="1" buffered="true" bufTime="0" indexed="true">
+              <TrgOps dchg="true" period="true" gi="true" />
+              <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
+              <RptEnabled max="1" />
+            </ReportControl>
+            <DOI name="NamPlt">
+              <DAI name="ldNs">
+                <Val>IEC 61850-7-4:2007A</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Health">
+              <DAI name="stVal">
+                <Val>Ok</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Mod">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+          </LN0>
+          <LN lnType="LPHD_0" lnClass="LPHD" inst="1" prefix="" desc="Physical device information">
+            <DOI name="PhyHealth">
+              <DAI name="stVal">
+                <Val>Ok</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Proxy">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="DSCH_0" lnClass="DSCH" inst="1" prefix="" desc="DER energy and ancillary services schedule">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="SchdAbsTm">
+              <DAI name="numPts">
+                <Val>50</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="DSCH_0" lnClass="DSCH" inst="2" prefix="" desc="DER energy and ancillary services schedule">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="SchdAbsTm">
+              <DAI name="numPts">
+                <Val>50</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="DSCH_0" lnClass="DSCH" inst="3" prefix="" desc="DER energy and ancillary services schedule">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="SchdAbsTm">
+              <DAI name="numPts">
+                <Val>50</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="DSCH_0" lnClass="DSCH" inst="4" prefix="" desc="DER energy and ancillary services schedule">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="SchdAbsTm">
+              <DAI name="numPts">
+                <Val>50</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="GGIO_0" lnClass="GGIO" inst="1" prefix="" desc="Generic process IO">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="IntIn1" desc="Alarm status bits" />
+            <DOI name="IntIn2" desc="Warning status bits" />
+            <DOI name="Alm1">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm2">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm3">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm4">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn1">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn2">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn3">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn4">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+          </LN>
+        </LDevice>
+        <LDevice inst="PV1">
+          <LN0 lnType="LLN0_1" lnClass="LLN0" inst="" desc="Logical Node zero">
+            <DataSet name="Measurements">
+              <FCDA ldInst="PV1" prefix="" lnClass="MMXU" lnInst="1" doName="TotW" fc="MX" />
+              <FCDA ldInst="PV1" prefix="" lnClass="DGEN" lnInst="1" doName="TotWh" fc="MX" />
+              <FCDA ldInst="PV1" prefix="" lnClass="MMXU" lnInst="1" doName="MaxWPhs" fc="MX" />
+              <FCDA ldInst="PV1" prefix="" lnClass="MMXU" lnInst="1" doName="MinWPhs" fc="MX" />
+            </DataSet>
+            <DataSet name="Status">
+              <FCDA ldInst="PV1" prefix="" lnClass="LLN0" doName="Beh" fc="ST" />
+              <FCDA ldInst="PV1" prefix="" lnClass="LLN0" doName="Health" fc="ST" />
+              <FCDA ldInst="PV1" prefix="" lnClass="DRCC" lnInst="1" doName="OutWSet" fc="SV" />
+              <FCDA ldInst="PV1" prefix="" lnClass="DGEN" lnInst="1" doName="GnOpSt" fc="ST" />
+              <FCDA ldInst="PV1" prefix="" lnClass="DGEN" lnInst="1" doName="OpTmsRs" fc="ST" />
+              <FCDA ldInst="PV1" prefix="" lnClass="GGIO" lnInst="1" doName="IntIn1" fc="ST" />
+              <FCDA ldInst="PV1" prefix="" lnClass="GGIO" lnInst="1" doName="IntIn2" fc="ST" />
+              <FCDA ldInst="PV1" prefix="" lnClass="GGIO" lnInst="1" doName="Alm1" fc="ST" />
+              <FCDA ldInst="PV1" prefix="" lnClass="GGIO" lnInst="1" doName="Alm2" fc="ST" />
+              <FCDA ldInst="PV1" prefix="" lnClass="GGIO" lnInst="1" doName="Alm3" fc="ST" />
+              <FCDA ldInst="PV1" prefix="" lnClass="GGIO" lnInst="1" doName="Alm4" fc="ST" />
+              <FCDA ldInst="PV1" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn1" fc="ST" />
+              <FCDA ldInst="PV1" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn2" fc="ST" />
+              <FCDA ldInst="PV1" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn3" fc="ST" />
+              <FCDA ldInst="PV1" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn4" fc="ST" />
+            </DataSet>
+            <ReportControl name="ReportMeasurements01" rptID="PV1_Measurements" datSet="Measurements" intgPd="0" confRev="1" buffered="false" bufTime="0" indexed="true">
+              <TrgOps gi="true" />
+              <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
+              <RptEnabled max="1" />
+            </ReportControl>
+            <ReportControl name="ReportStatus01" rptID="PV1_Status" datSet="Status" intgPd="0" confRev="1" buffered="true" bufTime="0" indexed="true">
+              <TrgOps dchg="true" gi="true" />
+              <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
+              <RptEnabled max="1" />
+            </ReportControl>
+            <DOI name="NamPlt">
+              <DAI name="ldNs">
+                <Val>IEC 61850-7-4:2007A</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Health">
+              <DAI name="stVal">
+                <Val>Ok</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Mod">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+          </LN0>
+          <LN lnType="DRCC_0" lnClass="DRCC" inst="1" prefix="" desc="DER supervisory control">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="OutWSet">
+              <DAI name="subEna">
+                <Val>0</Val>
+              </DAI>
+              <SDI name="subVal">
+                <DAI name="f">
+                  <Val>-1</Val>
+                </DAI>
+              </SDI>
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+            <DOI name="DERStr">
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+            <DOI name="DERStop">
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+            <DOI name="AutoManCtl">
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+            <DOI name="LocRemCtl">
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="DGEN_0" lnClass="DGEN" inst="1" prefix="" desc="DER unit generator">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="GnOpSt">
+              <DAI name="stVal">
+                <Val>Not applicable / Unknown</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="MMXU_0" lnClass="MMXU" inst="1" prefix="" desc="Measurement">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="GGIO_0" lnClass="GGIO" inst="1" prefix="" desc="Generic process IO">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="IntIn1" desc="Alarm status bits" />
+            <DOI name="IntIn2" desc="Warning status bits" />
+            <DOI name="Alm1">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm2">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm3">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm4">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn1">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn2">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn3">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn4">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+          </LN>
+        </LDevice>
+        <LDevice inst="PV2">
+          <LN0 lnType="LLN0_1" lnClass="LLN0" inst="" desc="Logical Node zero">
+            <DataSet name="Measurements">
+              <FCDA ldInst="PV2" prefix="" lnClass="MMXU" lnInst="1" doName="TotW" fc="MX" />
+              <FCDA ldInst="PV2" prefix="" lnClass="DGEN" lnInst="1" doName="TotWh" fc="MX" />
+              <FCDA ldInst="PV2" prefix="" lnClass="MMXU" lnInst="1" doName="MaxWPhs" fc="MX" />
+              <FCDA ldInst="PV2" prefix="" lnClass="MMXU" lnInst="1" doName="MinWPhs" fc="MX" />
+            </DataSet>
+            <DataSet name="Status">
+              <FCDA ldInst="PV2" prefix="" lnClass="LLN0" doName="Beh" fc="ST" />
+              <FCDA ldInst="PV2" prefix="" lnClass="LLN0" doName="Health" fc="ST" />
+              <FCDA ldInst="PV2" prefix="" lnClass="DRCC" lnInst="1" doName="OutWSet" fc="SV" />
+              <FCDA ldInst="PV2" prefix="" lnClass="DGEN" lnInst="1" doName="GnOpSt" fc="ST" />
+              <FCDA ldInst="PV2" prefix="" lnClass="DGEN" lnInst="1" doName="OpTmsRs" fc="ST" />
+              <FCDA ldInst="PV2" prefix="" lnClass="GGIO" lnInst="1" doName="IntIn1" fc="ST" />
+              <FCDA ldInst="PV2" prefix="" lnClass="GGIO" lnInst="1" doName="IntIn2" fc="ST" />
+              <FCDA ldInst="PV2" prefix="" lnClass="GGIO" lnInst="1" doName="Alm1" fc="ST" />
+              <FCDA ldInst="PV2" prefix="" lnClass="GGIO" lnInst="1" doName="Alm2" fc="ST" />
+              <FCDA ldInst="PV2" prefix="" lnClass="GGIO" lnInst="1" doName="Alm3" fc="ST" />
+              <FCDA ldInst="PV2" prefix="" lnClass="GGIO" lnInst="1" doName="Alm4" fc="ST" />
+              <FCDA ldInst="PV2" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn1" fc="ST" />
+              <FCDA ldInst="PV2" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn2" fc="ST" />
+              <FCDA ldInst="PV2" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn3" fc="ST" />
+              <FCDA ldInst="PV2" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn4" fc="ST" />
+            </DataSet>
+            <ReportControl name="ReportMeasurements01" rptID="PV2_Measurements" datSet="Measurements" intgPd="0" confRev="1" buffered="false" bufTime="0" indexed="true">
+              <TrgOps gi="true" />
+              <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
+              <RptEnabled max="1" />
+            </ReportControl>
+            <ReportControl name="ReportStatus01" rptID="PV2_Status" datSet="Status" intgPd="0" confRev="1" buffered="true" bufTime="0" indexed="true">
+              <TrgOps dchg="true" gi="true" />
+              <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
+              <RptEnabled max="1" />
+            </ReportControl>
+            <DOI name="NamPlt">
+              <DAI name="ldNs">
+                <Val>IEC 61850-7-4:2007A</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Health">
+              <DAI name="stVal">
+                <Val>Ok</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Mod">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+          </LN0>
+          <LN lnType="DRCC_0" lnClass="DRCC" inst="1" prefix="" desc="DER supervisory control">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="OutWSet">
+              <DAI name="subEna">
+                <Val>0</Val>
+              </DAI>
+              <SDI name="subVal">
+                <DAI name="f">
+                  <Val>-1</Val>
+                </DAI>
+              </SDI>
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+            <DOI name="DERStr">
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+            <DOI name="DERStop">
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+            <DOI name="AutoManCtl">
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+            <DOI name="LocRemCtl">
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="DGEN_0" lnClass="DGEN" inst="1" prefix="" desc="DER unit generator">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="GnOpSt">
+              <DAI name="stVal">
+                <Val>Not applicable / Unknown</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="MMXU_0" lnClass="MMXU" inst="1" prefix="" desc="Measurement">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="GGIO_0" lnClass="GGIO" inst="1" prefix="" desc="Generic process IO">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="IntIn1" desc="Alarm status bits" />
+            <DOI name="IntIn2" desc="Warning status bits" />
+            <DOI name="Alm1">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm2">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm3">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm4">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn1">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn2">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn3">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn4">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+          </LN>
+        </LDevice>
+        <LDevice inst="PV3">
+          <LN0 lnType="LLN0_1" lnClass="LLN0" inst="" desc="Logical Node zero">
+            <DataSet name="Measurements">
+              <FCDA ldInst="PV3" prefix="" lnClass="MMXU" lnInst="1" doName="TotW" fc="MX" />
+              <FCDA ldInst="PV3" prefix="" lnClass="DGEN" lnInst="1" doName="TotWh" fc="MX" />
+              <FCDA ldInst="PV3" prefix="" lnClass="MMXU" lnInst="1" doName="MaxWPhs" fc="MX" />
+              <FCDA ldInst="PV3" prefix="" lnClass="MMXU" lnInst="1" doName="MinWPhs" fc="MX" />
+            </DataSet>
+            <DataSet name="Status">
+              <FCDA ldInst="PV3" prefix="" lnClass="LLN0" doName="Beh" fc="ST" />
+              <FCDA ldInst="PV3" prefix="" lnClass="LLN0" doName="Health" fc="ST" />
+              <FCDA ldInst="PV3" prefix="" lnClass="DRCC" lnInst="1" doName="OutWSet" fc="SV" />
+              <FCDA ldInst="PV3" prefix="" lnClass="DGEN" lnInst="1" doName="GnOpSt" fc="ST" />
+              <FCDA ldInst="PV3" prefix="" lnClass="DGEN" lnInst="1" doName="OpTmsRs" fc="ST" />
+              <FCDA ldInst="PV3" prefix="" lnClass="GGIO" lnInst="1" doName="IntIn1" fc="ST" />
+              <FCDA ldInst="PV3" prefix="" lnClass="GGIO" lnInst="1" doName="IntIn2" fc="ST" />
+              <FCDA ldInst="PV3" prefix="" lnClass="GGIO" lnInst="1" doName="Alm1" fc="ST" />
+              <FCDA ldInst="PV3" prefix="" lnClass="GGIO" lnInst="1" doName="Alm2" fc="ST" />
+              <FCDA ldInst="PV3" prefix="" lnClass="GGIO" lnInst="1" doName="Alm3" fc="ST" />
+              <FCDA ldInst="PV3" prefix="" lnClass="GGIO" lnInst="1" doName="Alm4" fc="ST" />
+              <FCDA ldInst="PV3" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn1" fc="ST" />
+              <FCDA ldInst="PV3" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn2" fc="ST" />
+              <FCDA ldInst="PV3" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn3" fc="ST" />
+              <FCDA ldInst="PV3" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn4" fc="ST" />
+            </DataSet>
+            <ReportControl name="ReportMeasurements01" rptID="PV3_Measurements" datSet="Measurements" intgPd="0" confRev="1" buffered="false" bufTime="0" indexed="true">
+              <TrgOps gi="true" />
+              <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
+              <RptEnabled max="1" />
+            </ReportControl>
+            <ReportControl name="ReportStatus01" rptID="PV3_Status" datSet="Status" intgPd="0" confRev="1" buffered="true" bufTime="0" indexed="true">
+              <TrgOps dchg="true" gi="true" />
+              <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
+              <RptEnabled max="1" />
+            </ReportControl>
+            <DOI name="NamPlt">
+              <DAI name="ldNs">
+                <Val>IEC 61850-7-4:2007A</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Health">
+              <DAI name="stVal">
+                <Val>Ok</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Mod">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+          </LN0>
+          <LN lnType="DRCC_0" lnClass="DRCC" inst="1" prefix="" desc="DER supervisory control">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="OutWSet">
+              <DAI name="subEna">
+                <Val>0</Val>
+              </DAI>
+              <SDI name="subVal">
+                <DAI name="f">
+                  <Val>-1</Val>
+                </DAI>
+              </SDI>
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+            <DOI name="DERStr">
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+            <DOI name="DERStop">
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+            <DOI name="AutoManCtl">
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+            <DOI name="LocRemCtl">
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="DGEN_0" lnClass="DGEN" inst="1" prefix="" desc="DER unit generator">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="GnOpSt">
+              <DAI name="stVal">
+                <Val>Not applicable / Unknown</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="MMXU_0" lnClass="MMXU" inst="1" prefix="" desc="Measurement">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="GGIO_0" lnClass="GGIO" inst="1" prefix="" desc="Generic process IO">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="IntIn1" desc="Alarm status bits" />
+            <DOI name="IntIn2" desc="Warning status bits" />
+            <DOI name="Alm1">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm2">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm3">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm4">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn1">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn2">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn3">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn4">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+          </LN>
+        </LDevice>
+        <LDevice inst="BATTERY1">
+          <LN0 lnType="LLN0_2" lnClass="LLN0" inst="" desc="Logical Node zero">
+            <DataSet name="Measurements">
+              <FCDA ldInst="BATTERY1" prefix="" lnClass="MMXU" lnInst="1" doName="TotW" fc="MX" />
+              <FCDA ldInst="BATTERY1" prefix="" lnClass="MMXU" lnInst="1" doName="TotPF" fc="MX" />
+              <FCDA ldInst="BATTERY1" prefix="" lnClass="DGEN" lnInst="1" doName="TotWh" fc="MX" />
+              <FCDA ldInst="BATTERY1" prefix="" lnClass="MMXU" lnInst="1" doName="MaxWPhs" fc="MX" />
+              <FCDA ldInst="BATTERY1" prefix="" lnClass="MMXU" lnInst="1" doName="MinWPhs" fc="MX" />
+            </DataSet>
+            <DataSet name="Status">
+              <FCDA ldInst="BATTERY1" prefix="" lnClass="LLN0" doName="Beh" fc="ST" />
+              <FCDA ldInst="BATTERY1" prefix="" lnClass="LLN0" doName="Health" fc="ST" />
+              <FCDA ldInst="BATTERY1" prefix="" lnClass="DRCC" lnInst="1" doName="OutWSet" fc="SV" />
+              <FCDA ldInst="BATTERY1" prefix="" lnClass="DGEN" lnInst="1" doName="GnOpSt" fc="ST" />
+              <FCDA ldInst="BATTERY1" prefix="" lnClass="DGEN" lnInst="1" doName="OpTmsRs" fc="ST" />
+              <FCDA ldInst="BATTERY1" prefix="" lnClass="GGIO" lnInst="1" doName="IntIn1" fc="ST" />
+              <FCDA ldInst="BATTERY1" prefix="" lnClass="GGIO" lnInst="1" doName="IntIn2" fc="ST" />
+              <FCDA ldInst="BATTERY1" prefix="" lnClass="GGIO" lnInst="1" doName="Alm1" fc="ST" />
+              <FCDA ldInst="BATTERY1" prefix="" lnClass="GGIO" lnInst="1" doName="Alm2" fc="ST" />
+              <FCDA ldInst="BATTERY1" prefix="" lnClass="GGIO" lnInst="1" doName="Alm3" fc="ST" />
+              <FCDA ldInst="BATTERY1" prefix="" lnClass="GGIO" lnInst="1" doName="Alm4" fc="ST" />
+              <FCDA ldInst="BATTERY1" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn1" fc="ST" />
+              <FCDA ldInst="BATTERY1" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn2" fc="ST" />
+              <FCDA ldInst="BATTERY1" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn3" fc="ST" />
+              <FCDA ldInst="BATTERY1" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn4" fc="ST" />
+            </DataSet>
+            <ReportControl name="ReportMeasurements01" rptID="BATT1_Measurements" datSet="Measurements" intgPd="0" confRev="1" buffered="false" bufTime="0" indexed="true">
+              <TrgOps gi="true" />
+              <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
+              <RptEnabled max="1" />
+            </ReportControl>
+            <ReportControl name="ReportStatus01" rptID="BATT1_Status" datSet="Status" intgPd="0" confRev="1" buffered="true" bufTime="0" indexed="true">
+              <TrgOps dchg="true" gi="true" />
+              <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
+              <RptEnabled max="1" />
+            </ReportControl>
+            <DOI name="NamPlt">
+              <DAI name="ldNs">
+                <Val>IEC 61850-7-4:2007A</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Health">
+              <DAI name="stVal">
+                <Val>Ok</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Mod">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+          </LN0>
+          <LN lnType="DRCC_0" lnClass="DRCC" inst="1" prefix="" desc="DER supervisory control">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="OutWSet">
+              <DAI name="subEna">
+                <Val>0</Val>
+              </DAI>
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+            <DOI name="DERStr">
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+            <DOI name="DERStop">
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+            <DOI name="AutoManCtl">
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+            <DOI name="LocRemCtl">
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="DGEN_0" lnClass="DGEN" inst="1" prefix="" desc="DER unit generator">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="GnOpSt">
+              <DAI name="stVal">
+                <Val>Not applicable / Unknown</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="MMXU_1" lnClass="MMXU" inst="1" prefix="" desc="Measurement">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="GGIO_0" lnClass="GGIO" inst="1" prefix="" desc="Generic process IO">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="IntIn1" desc="Alarm status bits" />
+            <DOI name="IntIn2" desc="Warning status bits" />
+            <DOI name="Alm1">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm2">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm3">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm4">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn1">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn2">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn3">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn4">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+          </LN>
+        </LDevice>
+        <LDevice inst="BATTERY2">
+          <LN0 lnType="LLN0_2" lnClass="LLN0" inst="" desc="Logical Node zero">
+            <DataSet name="Measurements">
+              <FCDA ldInst="BATTERY2" prefix="" lnClass="MMXU" lnInst="1" doName="TotW" fc="MX" />
+              <FCDA ldInst="BATTERY2" prefix="" lnClass="MMXU" lnInst="1" doName="TotPF" fc="MX" />
+              <FCDA ldInst="BATTERY2" prefix="" lnClass="DGEN" lnInst="1" doName="TotWh" fc="MX" />
+              <FCDA ldInst="BATTERY2" prefix="" lnClass="MMXU" lnInst="1" doName="MaxWPhs" fc="MX" />
+              <FCDA ldInst="BATTERY2" prefix="" lnClass="MMXU" lnInst="1" doName="MinWPhs" fc="MX" />
+            </DataSet>
+            <DataSet name="Status">
+              <FCDA ldInst="BATTERY2" prefix="" lnClass="LLN0" doName="Beh" fc="ST" />
+              <FCDA ldInst="BATTERY2" prefix="" lnClass="LLN0" doName="Health" fc="ST" />
+              <FCDA ldInst="BATTERY2" prefix="" lnClass="DRCC" lnInst="1" doName="OutWSet" fc="SV" />
+              <FCDA ldInst="BATTERY2" prefix="" lnClass="DGEN" lnInst="1" doName="GnOpSt" fc="ST" />
+              <FCDA ldInst="BATTERY2" prefix="" lnClass="DGEN" lnInst="1" doName="OpTmsRs" fc="ST" />
+              <FCDA ldInst="BATTERY2" prefix="" lnClass="GGIO" lnInst="1" doName="IntIn1" fc="ST" />
+              <FCDA ldInst="BATTERY2" prefix="" lnClass="GGIO" lnInst="1" doName="IntIn2" fc="ST" />
+              <FCDA ldInst="BATTERY2" prefix="" lnClass="GGIO" lnInst="1" doName="Alm1" fc="ST" />
+              <FCDA ldInst="BATTERY2" prefix="" lnClass="GGIO" lnInst="1" doName="Alm2" fc="ST" />
+              <FCDA ldInst="BATTERY2" prefix="" lnClass="GGIO" lnInst="1" doName="Alm3" fc="ST" />
+              <FCDA ldInst="BATTERY2" prefix="" lnClass="GGIO" lnInst="1" doName="Alm4" fc="ST" />
+              <FCDA ldInst="BATTERY2" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn1" fc="ST" />
+              <FCDA ldInst="BATTERY2" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn2" fc="ST" />
+              <FCDA ldInst="BATTERY2" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn3" fc="ST" />
+              <FCDA ldInst="BATTERY2" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn4" fc="ST" />
+            </DataSet>
+            <ReportControl name="ReportMeasurements01" rptID="BATT2_Measurements" datSet="Measurements" intgPd="0" confRev="1" buffered="false" bufTime="0" indexed="true">
+              <TrgOps gi="true" />
+              <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
+              <RptEnabled max="1" />
+            </ReportControl>
+            <ReportControl name="ReportStatus01" rptID="BATT2_Status" datSet="Status" intgPd="0" confRev="1" buffered="true" bufTime="0" indexed="true">
+              <TrgOps dchg="true" gi="true" />
+              <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
+              <RptEnabled max="1" />
+            </ReportControl>
+            <DOI name="NamPlt">
+              <DAI name="ldNs">
+                <Val>IEC 61850-7-4:2007A</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Health">
+              <DAI name="stVal">
+                <Val>Ok</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Mod">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+          </LN0>
+          <LN lnType="DRCC_0" lnClass="DRCC" inst="1" prefix="" desc="DER supervisory control">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="OutWSet">
+              <DAI name="subEna">
+                <Val>0</Val>
+              </DAI>
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+            <DOI name="DERStr">
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+            <DOI name="DERStop">
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+            <DOI name="AutoManCtl">
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+            <DOI name="LocRemCtl">
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="DGEN_0" lnClass="DGEN" inst="1" prefix="" desc="DER unit generator">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="GnOpSt">
+              <DAI name="stVal">
+                <Val>Not applicable / Unknown</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="MMXU_1" lnClass="MMXU" inst="1" prefix="" desc="Measurement">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="GGIO_0" lnClass="GGIO" inst="1" prefix="" desc="Generic process IO">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm1">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm2">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm3">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm4">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn1">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn2">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn3">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn4">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+          </LN>
+        </LDevice>
+        <LDevice inst="ENGINE1">
+          <LN0 lnType="LLN0_1" lnClass="LLN0" inst="" desc="Logical Node zero">
+            <DataSet name="Measurements">
+              <FCDA ldInst="ENGINE1" prefix="" lnClass="MMXU" lnInst="1" doName="TotW" fc="MX" />
+              <FCDA ldInst="ENGINE1" prefix="" lnClass="DGEN" lnInst="1" doName="TotWh" fc="MX" />
+              <FCDA ldInst="ENGINE1" prefix="" lnClass="MMXU" lnInst="1" doName="MaxWPhs" fc="MX" />
+              <FCDA ldInst="ENGINE1" prefix="" lnClass="MMXU" lnInst="1" doName="MinWPhs" fc="MX" />
+            </DataSet>
+            <DataSet name="Status">
+              <FCDA ldInst="ENGINE1" prefix="" lnClass="LLN0" doName="Beh" fc="ST" />
+              <FCDA ldInst="ENGINE1" prefix="" lnClass="LLN0" doName="Health" fc="ST" />
+              <FCDA ldInst="ENGINE1" prefix="" lnClass="DRCC" lnInst="1" doName="OutWSet" fc="SV" />
+              <FCDA ldInst="ENGINE1" prefix="" lnClass="DGEN" lnInst="1" doName="GnOpSt" fc="ST" />
+              <FCDA ldInst="ENGINE1" prefix="" lnClass="DGEN" lnInst="1" doName="OpTmsRs" fc="ST" />
+              <FCDA ldInst="ENGINE1" prefix="" lnClass="GGIO" lnInst="1" doName="IntIn1" fc="ST" />
+              <FCDA ldInst="ENGINE1" prefix="" lnClass="GGIO" lnInst="1" doName="IntIn2" fc="ST" />
+              <FCDA ldInst="ENGINE1" prefix="" lnClass="GGIO" lnInst="1" doName="Alm1" fc="ST" />
+              <FCDA ldInst="ENGINE1" prefix="" lnClass="GGIO" lnInst="1" doName="Alm2" fc="ST" />
+              <FCDA ldInst="ENGINE1" prefix="" lnClass="GGIO" lnInst="1" doName="Alm3" fc="ST" />
+              <FCDA ldInst="ENGINE1" prefix="" lnClass="GGIO" lnInst="1" doName="Alm4" fc="ST" />
+              <FCDA ldInst="ENGINE1" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn1" fc="ST" />
+              <FCDA ldInst="ENGINE1" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn2" fc="ST" />
+              <FCDA ldInst="ENGINE1" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn3" fc="ST" />
+              <FCDA ldInst="ENGINE1" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn4" fc="ST" />
+            </DataSet>
+            <ReportControl name="ReportMeasurements01" rptID="ENG1_Measurements" datSet="Measurements" intgPd="0" confRev="1" buffered="false" bufTime="0" indexed="true">
+              <TrgOps gi="true" />
+              <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
+              <RptEnabled max="1" />
+            </ReportControl>
+            <ReportControl name="ReportStatus01" rptID="ENG1_Status" datSet="Status" intgPd="0" confRev="1" buffered="true" bufTime="0" indexed="true">
+              <TrgOps dchg="true" gi="true" />
+              <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
+              <RptEnabled max="1" />
+            </ReportControl>
+            <DOI name="NamPlt">
+              <DAI name="ldNs">
+                <Val>IEC 61850-7-4:2007A</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Health">
+              <DAI name="stVal">
+                <Val>Ok</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Mod">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+          </LN0>
+          <LN lnType="DRCC_0" lnClass="DRCC" inst="1" prefix="" desc="DER supervisory control">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="OutWSet">
+              <DAI name="subEna">
+                <Val>0</Val>
+              </DAI>
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+            <DOI name="DERStr">
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+            <DOI name="DERStop">
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+            <DOI name="AutoManCtl">
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+            <DOI name="LocRemCtl">
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="DGEN_0" lnClass="DGEN" inst="1" prefix="" desc="DER unit generator">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="GnOpSt">
+              <DAI name="stVal">
+                <Val>Not applicable / Unknown</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="MMXU_0" lnClass="MMXU" inst="1" prefix="" desc="Measurement">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="GGIO_0" lnClass="GGIO" inst="1" prefix="" desc="Generic process IO">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="IntIn1" desc="Alarm status bits" />
+            <DOI name="IntIn2" desc="Warning status bits" />
+            <DOI name="Alm1">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm2">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm3">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm4">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn1">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn2">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn3">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn4">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+          </LN>
+        </LDevice>
+        <LDevice inst="ENGINE2">
+          <LN0 lnType="LLN0_1" lnClass="LLN0" inst="" desc="Logical Node zero">
+            <DataSet name="Measurements">
+              <FCDA ldInst="ENGINE2" prefix="" lnClass="MMXU" lnInst="1" doName="TotW" fc="MX" />
+              <FCDA ldInst="ENGINE2" prefix="" lnClass="DGEN" lnInst="1" doName="TotWh" fc="MX" />
+              <FCDA ldInst="ENGINE2" prefix="" lnClass="MMXU" lnInst="1" doName="MaxWPhs" fc="MX" />
+              <FCDA ldInst="ENGINE2" prefix="" lnClass="MMXU" lnInst="1" doName="MinWPhs" fc="MX" />
+            </DataSet>
+            <DataSet name="Status">
+              <FCDA ldInst="ENGINE2" prefix="" lnClass="LLN0" doName="Beh" fc="ST" />
+              <FCDA ldInst="ENGINE2" prefix="" lnClass="LLN0" doName="Health" fc="ST" />
+              <FCDA ldInst="ENGINE2" prefix="" lnClass="DRCC" lnInst="1" doName="OutWSet" fc="SV" />
+              <FCDA ldInst="ENGINE2" prefix="" lnClass="DGEN" lnInst="1" doName="GnOpSt" fc="ST" />
+              <FCDA ldInst="ENGINE2" prefix="" lnClass="DGEN" lnInst="1" doName="OpTmsRs" fc="ST" />
+              <FCDA ldInst="ENGINE2" prefix="" lnClass="GGIO" lnInst="1" doName="IntIn1" fc="ST" />
+              <FCDA ldInst="ENGINE2" prefix="" lnClass="GGIO" lnInst="1" doName="IntIn2" fc="ST" />
+              <FCDA ldInst="ENGINE2" prefix="" lnClass="GGIO" lnInst="1" doName="Alm1" fc="ST" />
+              <FCDA ldInst="ENGINE2" prefix="" lnClass="GGIO" lnInst="1" doName="Alm2" fc="ST" />
+              <FCDA ldInst="ENGINE2" prefix="" lnClass="GGIO" lnInst="1" doName="Alm3" fc="ST" />
+              <FCDA ldInst="ENGINE2" prefix="" lnClass="GGIO" lnInst="1" doName="Alm4" fc="ST" />
+              <FCDA ldInst="ENGINE2" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn1" fc="ST" />
+              <FCDA ldInst="ENGINE2" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn2" fc="ST" />
+              <FCDA ldInst="ENGINE2" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn3" fc="ST" />
+              <FCDA ldInst="ENGINE2" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn4" fc="ST" />
+            </DataSet>
+            <ReportControl name="ReportMeasurements01" rptID="ENG2_Measurements" datSet="Measurements" intgPd="0" confRev="1" buffered="false" bufTime="0" indexed="true">
+              <TrgOps gi="true" />
+              <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
+              <RptEnabled max="1" />
+            </ReportControl>
+            <ReportControl name="ReportStatus01" rptID="ENG2_Status" datSet="Status" intgPd="0" confRev="1" buffered="true" bufTime="0" indexed="true">
+              <TrgOps dchg="true" gi="true" />
+              <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
+              <RptEnabled max="1" />
+            </ReportControl>
+            <DOI name="NamPlt">
+              <DAI name="ldNs">
+                <Val>IEC 61850-7-4:2007A</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Health">
+              <DAI name="stVal">
+                <Val>Ok</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Mod">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+          </LN0>
+          <LN lnType="DRCC_0" lnClass="DRCC" inst="1" prefix="" desc="DER supervisory control">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="OutWSet">
+              <DAI name="subEna">
+                <Val>0</Val>
+              </DAI>
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+            <DOI name="DERStr">
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+            <DOI name="DERStop">
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+            <DOI name="AutoManCtl">
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+            <DOI name="LocRemCtl">
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="DGEN_0" lnClass="DGEN" inst="1" prefix="" desc="DER unit generator">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="GnOpSt">
+              <DAI name="stVal">
+                <Val>Not applicable / Unknown</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="MMXU_0" lnClass="MMXU" inst="1" prefix="" desc="Measurement">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="GGIO_0" lnClass="GGIO" inst="1" prefix="" desc="Generic process IO">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm1">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm2">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm3">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm4">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn1">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn2">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn3">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn4">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+          </LN>
+        </LDevice>
+        <LDevice inst="ENGINE3">
+          <LN0 lnType="LLN0_1" lnClass="LLN0" inst="" desc="Logical Node zero">
+            <DataSet name="Measurements">
+              <FCDA ldInst="ENGINE3" prefix="" lnClass="MMXU" lnInst="1" doName="TotW" fc="MX" />
+              <FCDA ldInst="ENGINE3" prefix="" lnClass="DGEN" lnInst="1" doName="TotWh" fc="MX" />
+              <FCDA ldInst="ENGINE3" prefix="" lnClass="MMXU" lnInst="1" doName="MaxWPhs" fc="MX" />
+              <FCDA ldInst="ENGINE3" prefix="" lnClass="MMXU" lnInst="1" doName="MinWPhs" fc="MX" />
+            </DataSet>
+            <DataSet name="Status">
+              <FCDA ldInst="ENGINE3" prefix="" lnClass="LLN0" doName="Beh" fc="ST" />
+              <FCDA ldInst="ENGINE3" prefix="" lnClass="LLN0" doName="Health" fc="ST" />
+              <FCDA ldInst="ENGINE3" prefix="" lnClass="DRCC" lnInst="1" doName="OutWSet" fc="SV" />
+              <FCDA ldInst="ENGINE3" prefix="" lnClass="DGEN" lnInst="1" doName="GnOpSt" fc="ST" />
+              <FCDA ldInst="ENGINE3" prefix="" lnClass="DGEN" lnInst="1" doName="OpTmsRs" fc="ST" />
+              <FCDA ldInst="ENGINE3" prefix="" lnClass="GGIO" lnInst="1" doName="IntIn1" fc="ST" />
+              <FCDA ldInst="ENGINE3" prefix="" lnClass="GGIO" lnInst="1" doName="IntIn2" fc="ST" />
+              <FCDA ldInst="ENGINE3" prefix="" lnClass="GGIO" lnInst="1" doName="Alm1" fc="ST" />
+              <FCDA ldInst="ENGINE3" prefix="" lnClass="GGIO" lnInst="1" doName="Alm2" fc="ST" />
+              <FCDA ldInst="ENGINE3" prefix="" lnClass="GGIO" lnInst="1" doName="Alm3" fc="ST" />
+              <FCDA ldInst="ENGINE3" prefix="" lnClass="GGIO" lnInst="1" doName="Alm4" fc="ST" />
+              <FCDA ldInst="ENGINE3" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn1" fc="ST" />
+              <FCDA ldInst="ENGINE3" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn2" fc="ST" />
+              <FCDA ldInst="ENGINE3" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn3" fc="ST" />
+              <FCDA ldInst="ENGINE3" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn4" fc="ST" />
+            </DataSet>
+            <ReportControl name="ReportMeasurements01" rptID="ENG3_Measurements" datSet="Measurements" intgPd="0" confRev="1" buffered="false" bufTime="0" indexed="true">
+              <TrgOps gi="true" />
+              <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
+              <RptEnabled max="1" />
+            </ReportControl>
+            <ReportControl name="ReportStatus01" rptID="ENG3_Status" datSet="Status" intgPd="0" confRev="1" buffered="true" bufTime="0" indexed="true">
+              <TrgOps dchg="true" gi="true" />
+              <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
+              <RptEnabled max="1" />
+            </ReportControl>
+            <DOI name="NamPlt">
+              <DAI name="ldNs">
+                <Val>IEC 61850-7-4:2007A</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Health">
+              <DAI name="stVal">
+                <Val>Ok</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Mod">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+          </LN0>
+          <LN lnType="DRCC_0" lnClass="DRCC" inst="1" prefix="" desc="DER supervisory control">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="OutWSet">
+              <DAI name="subEna">
+                <Val>0</Val>
+              </DAI>
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+            <DOI name="DERStr">
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+            <DOI name="DERStop">
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+            <DOI name="AutoManCtl">
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+            <DOI name="LocRemCtl">
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="DGEN_0" lnClass="DGEN" inst="1" prefix="" desc="DER unit generator">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="GnOpSt">
+              <DAI name="stVal">
+                <Val>Not applicable / Unknown</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="MMXU_0" lnClass="MMXU" inst="1" prefix="" desc="Measurement">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="GGIO_0" lnClass="GGIO" inst="1" prefix="" desc="Generic process IO">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm1">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm2">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm3">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm4">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn1">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn2">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn3">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn4">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+          </LN>
+        </LDevice>
+        <LDevice inst="LOAD1">
+          <LN0 lnType="LLN0_3" lnClass="LLN0" inst="" desc="Logical Node zero">
+            <DataSet name="Measurements">
+              <FCDA ldInst="LOAD1" prefix="" lnClass="MMXU" lnInst="1" doName="TotW" fc="MX" />
+              <FCDA ldInst="LOAD1" prefix="" lnClass="MMTR" lnInst="1" doName="TotWh" fc="ST" />
+              <FCDA ldInst="LOAD1" prefix="" lnClass="MMXU" lnInst="2" doName="TotW" fc="MX" />
+              <FCDA ldInst="LOAD1" prefix="" lnClass="MMTR" lnInst="2" doName="TotWh" fc="ST" />
+              <FCDA ldInst="LOAD1" prefix="" lnClass="MMXU" lnInst="3" doName="TotW" fc="MX" />
+              <FCDA ldInst="LOAD1" prefix="" lnClass="MMTR" lnInst="3" doName="TotWh" fc="ST" />
+              <FCDA ldInst="LOAD1" prefix="" lnClass="MMXU" lnInst="4" doName="TotW" fc="MX" />
+              <FCDA ldInst="LOAD1" prefix="" lnClass="MMTR" lnInst="4" doName="TotWh" fc="ST" />
+              <FCDA ldInst="LOAD1" prefix="" lnClass="MMXU" lnInst="5" doName="TotW" fc="MX" />
+              <FCDA ldInst="LOAD1" prefix="" lnClass="MMTR" lnInst="5" doName="TotWh" fc="ST" />
+              <FCDA ldInst="LOAD1" prefix="" lnClass="MMXU" lnInst="1" doName="MaxWPhs" fc="MX" />
+              <FCDA ldInst="LOAD1" prefix="" lnClass="MMXU" lnInst="1" doName="MinWPhs" fc="MX" />
+              <FCDA ldInst="LOAD1" prefix="" lnClass="MMXU" lnInst="2" doName="MaxWPhs" fc="MX" />
+              <FCDA ldInst="LOAD1" prefix="" lnClass="MMXU" lnInst="2" doName="MinWPhs" fc="MX" />
+              <FCDA ldInst="LOAD1" prefix="" lnClass="MMXU" lnInst="3" doName="MaxWPhs" fc="MX" />
+              <FCDA ldInst="LOAD1" prefix="" lnClass="MMXU" lnInst="3" doName="MinWPhs" fc="MX" />
+              <FCDA ldInst="LOAD1" prefix="" lnClass="MMXU" lnInst="4" doName="MaxWPhs" fc="MX" />
+              <FCDA ldInst="LOAD1" prefix="" lnClass="MMXU" lnInst="4" doName="MinWPhs" fc="MX" />
+              <FCDA ldInst="LOAD1" prefix="" lnClass="MMXU" lnInst="5" doName="MaxWPhs" fc="MX" />
+              <FCDA ldInst="LOAD1" prefix="" lnClass="MMXU" lnInst="5" doName="MinWPhs" fc="MX" />
+            </DataSet>
+            <DataSet name="Status">
+              <FCDA ldInst="LOAD1" prefix="" lnClass="LLN0" doName="Beh" fc="ST" />
+              <FCDA ldInst="LOAD1" prefix="" lnClass="LLN0" doName="Health" fc="ST" />
+              <FCDA ldInst="LOAD1" prefix="" lnClass="GGIO" lnInst="1" doName="IntIn1" fc="ST" />
+              <FCDA ldInst="LOAD1" prefix="" lnClass="GGIO" lnInst="1" doName="IntIn2" fc="ST" />
+              <FCDA ldInst="LOAD1" prefix="" lnClass="GGIO" lnInst="1" doName="Alm1" fc="ST" />
+              <FCDA ldInst="LOAD1" prefix="" lnClass="GGIO" lnInst="1" doName="Alm2" fc="ST" />
+              <FCDA ldInst="LOAD1" prefix="" lnClass="GGIO" lnInst="1" doName="Alm3" fc="ST" />
+              <FCDA ldInst="LOAD1" prefix="" lnClass="GGIO" lnInst="1" doName="Alm4" fc="ST" />
+              <FCDA ldInst="LOAD1" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn1" fc="ST" />
+              <FCDA ldInst="LOAD1" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn2" fc="ST" />
+              <FCDA ldInst="LOAD1" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn3" fc="ST" />
+              <FCDA ldInst="LOAD1" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn4" fc="ST" />
+            </DataSet>
+            <ReportControl name="ReportMeasurements01" rptID="LOAD1_Measurements" datSet="Measurements" intgPd="0" confRev="1" buffered="false" bufTime="0" indexed="true">
+              <TrgOps gi="true" />
+              <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
+              <RptEnabled max="1" />
+            </ReportControl>
+            <ReportControl name="ReportStatus01" rptID="LOAD1_Status" datSet="Status" intgPd="0" confRev="1" buffered="true" bufTime="0" indexed="true">
+              <TrgOps dchg="true" gi="true" />
+              <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
+              <RptEnabled max="1" />
+            </ReportControl>
+            <DOI name="NamPlt">
+              <DAI name="ldNs">
+                <Val>IEC 61850-7-4:2007A</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Health">
+              <DAI name="stVal">
+                <Val>Ok</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Mod">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+          </LN0>
+          <LN lnType="MMXU_0" lnClass="MMXU" inst="1" prefix="" desc="Measurement">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="MMXU_0" lnClass="MMXU" inst="2" prefix="" desc="Measurement">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="MMXU_0" lnClass="MMXU" inst="3" prefix="" desc="Measurement">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="MMXU_0" lnClass="MMXU" inst="4" prefix="" desc="Measurement">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="MMXU_0" lnClass="MMXU" inst="5" prefix="" desc="Measurement">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="MMTR_0" lnClass="MMTR" inst="1" prefix="" desc="Metering">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="MMTR_0" lnClass="MMTR" inst="2" prefix="" desc="Metering">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="MMTR_0" lnClass="MMTR" inst="3" prefix="" desc="Metering">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="MMTR_0" lnClass="MMTR" inst="4" prefix="" desc="Metering">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="MMTR_0" lnClass="MMTR" inst="5" prefix="" desc="Metering">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="GGIO_0" lnClass="GGIO" inst="1" prefix="" desc="Generic process IO">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm1">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm2">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm3">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm4">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn1">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn2">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn3">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn4">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+          </LN>
+        </LDevice>
+        <LDevice inst="HEAT_BUFFER1">
+          <LN0 lnType="LLN0_4" lnClass="LLN0" inst="" desc="Logical Node zero">
+            <DataSet name="Measurements">
+              <FCDA ldInst="HEAT_BUFFER1" prefix="" lnClass="TTMP" lnInst="1" doName="TmpSv" fc="MX" />
+              <FCDA ldInst="HEAT_BUFFER1" prefix="" lnClass="TTMP" lnInst="2" doName="TmpSv" fc="MX" />
+              <FCDA ldInst="HEAT_BUFFER1" prefix="" lnClass="TTMP" lnInst="3" doName="TmpSv" fc="MX" />
+            </DataSet>
+            <DataSet name="Status">
+              <FCDA ldInst="HEAT_BUFFER1" prefix="" lnClass="LLN0" doName="Beh" fc="ST" />
+              <FCDA ldInst="HEAT_BUFFER1" prefix="" lnClass="LLN0" doName="Health" fc="ST" />
+              <FCDA ldInst="HEAT_BUFFER1" prefix="" lnClass="GGIO" lnInst="1" doName="IntIn1" fc="ST" />
+              <FCDA ldInst="HEAT_BUFFER1" prefix="" lnClass="GGIO" lnInst="1" doName="IntIn2" fc="ST" />
+              <FCDA ldInst="HEAT_BUFFER1" prefix="" lnClass="GGIO" lnInst="1" doName="Alm1" fc="ST" />
+              <FCDA ldInst="HEAT_BUFFER1" prefix="" lnClass="GGIO" lnInst="1" doName="Alm2" fc="ST" />
+              <FCDA ldInst="HEAT_BUFFER1" prefix="" lnClass="GGIO" lnInst="1" doName="Alm3" fc="ST" />
+              <FCDA ldInst="HEAT_BUFFER1" prefix="" lnClass="GGIO" lnInst="1" doName="Alm4" fc="ST" />
+              <FCDA ldInst="HEAT_BUFFER1" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn1" fc="ST" />
+              <FCDA ldInst="HEAT_BUFFER1" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn2" fc="ST" />
+              <FCDA ldInst="HEAT_BUFFER1" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn3" fc="ST" />
+              <FCDA ldInst="HEAT_BUFFER1" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn4" fc="ST" />
+            </DataSet>
+            <ReportControl name="ReportMeasurements01" rptID="H_BUFFER1_Measurements" datSet="Measurements" intgPd="0" confRev="1" buffered="false" bufTime="0" indexed="true">
+              <TrgOps gi="true" />
+              <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
+              <RptEnabled max="1" />
+            </ReportControl>
+            <ReportControl name="ReportStatus01" rptID="H_BUFFER1_Status" datSet="Status" intgPd="0" confRev="1" buffered="true" bufTime="0" indexed="true">
+              <TrgOps dchg="true" gi="true" />
+              <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
+              <RptEnabled max="1" />
+            </ReportControl>
+            <DOI name="NamPlt">
+              <DAI name="ldNs">
+                <Val>IEC 61850-7-4:2007B</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Health">
+              <DAI name="stVal">
+                <Val>Ok</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Mod">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+          </LN0>
+          <LN lnType="TTMP_0" lnClass="TTMP" inst="1" prefix="" desc="Temperature sensor" />
+          <LN lnType="TTMP_0" lnClass="TTMP" inst="2" prefix="" desc="Temperature sensor" />
+          <LN lnType="TTMP_0" lnClass="TTMP" inst="3" prefix="" desc="Temperature sensor" />
+          <LN lnType="KTNK_0" lnClass="KTNK" inst="1" prefix="" desc="Tank">
+            <DOI name="TnkTyp">
+              <DAI name="setVal">
+                <Val>2</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="GGIO_0" lnClass="GGIO" inst="1" prefix="" desc="Generic process IO">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="IntIn1" desc="Alarm status bits" />
+            <DOI name="IntIn2" desc="Warning status bits" />
+            <DOI name="Alm1">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm2">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm3">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm4">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn1">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn2">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn3">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn4">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+          </LN>
+        </LDevice>
+        <LDevice inst="GAS_FURNACE1">
+          <LN0 lnType="LLN0_5" lnClass="LLN0" inst="" desc="Logical Node zero">
+            <DataSet name="Measurements">
+              <FCDA ldInst="GAS_FURNACE1" prefix="" lnClass="TTMP" lnInst="1" doName="TmpSv" fc="MX" />
+              <FCDA ldInst="GAS_FURNACE1" prefix="" lnClass="TTMP" lnInst="2" doName="TmpSv" fc="MX" />
+              <FCDA ldInst="GAS_FURNACE1" prefix="" lnClass="MFLW" lnInst="1" doName="FlwRte" fc="MX" />
+              <FCDA ldInst="GAS_FURNACE1" prefix="" lnClass="MFLW" lnInst="2" doName="FlwRte" fc="MX" />
+            </DataSet>
+            <DataSet name="Status">
+              <FCDA ldInst="GAS_FURNACE1" prefix="" lnClass="LLN0" doName="Beh" fc="ST" />
+              <FCDA ldInst="GAS_FURNACE1" prefix="" lnClass="LLN0" doName="Health" fc="ST" />
+              <FCDA ldInst="GAS_FURNACE1" prefix="" lnClass="MFLW" lnInst="1" doName="Beh" fc="ST" />
+              <FCDA ldInst="GAS_FURNACE1" prefix="" lnClass="MFLW" lnInst="2" doName="Beh" fc="ST" />
+              <FCDA ldInst="GAS_FURNACE1" prefix="" lnClass="GGIO" lnInst="1" doName="IntIn1" fc="ST" />
+              <FCDA ldInst="GAS_FURNACE1" prefix="" lnClass="GGIO" lnInst="1" doName="IntIn2" fc="ST" />
+              <FCDA ldInst="GAS_FURNACE1" prefix="" lnClass="GGIO" lnInst="1" doName="Alm1" fc="ST" />
+              <FCDA ldInst="GAS_FURNACE1" prefix="" lnClass="GGIO" lnInst="1" doName="Alm2" fc="ST" />
+              <FCDA ldInst="GAS_FURNACE1" prefix="" lnClass="GGIO" lnInst="1" doName="Alm3" fc="ST" />
+              <FCDA ldInst="GAS_FURNACE1" prefix="" lnClass="GGIO" lnInst="1" doName="Alm4" fc="ST" />
+              <FCDA ldInst="GAS_FURNACE1" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn1" fc="ST" />
+              <FCDA ldInst="GAS_FURNACE1" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn2" fc="ST" />
+              <FCDA ldInst="GAS_FURNACE1" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn3" fc="ST" />
+              <FCDA ldInst="GAS_FURNACE1" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn4" fc="ST" />
+            </DataSet>
+            <ReportControl name="ReportMeasurements01" rptID="G_FURNACE1_Measurements" datSet="Measurements" intgPd="0" confRev="1" buffered="false" bufTime="0" indexed="true">
+              <TrgOps gi="true" />
+              <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
+              <RptEnabled max="1" />
+            </ReportControl>
+            <ReportControl name="ReportStatus01" rptID="G_FURNACE1_Status" datSet="Status" intgPd="0" confRev="1" buffered="true" bufTime="0" indexed="true">
+              <TrgOps dchg="true" gi="true" />
+              <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
+              <RptEnabled max="1" />
+            </ReportControl>
+            <DOI name="NamPlt">
+              <DAI name="ldNs">
+                <Val>IEC 61850-7-4:2007B</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Health">
+              <DAI name="stVal">
+                <Val>Ok</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Mod">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+          </LN0>
+          <LN lnType="TTMP_0" lnClass="TTMP" inst="1" prefix="" desc="Temperature sensor" />
+          <LN lnType="TTMP_0" lnClass="TTMP" inst="2" prefix="" desc="Temperature sensor" />
+          <LN lnType="MFLW_0" lnClass="MFLW" inst="1" prefix="" desc="Flow measurements">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="MatTyp">
+              <DAI name="setVal">
+                <Val>Water</Val>
+              </DAI>
+            </DOI>
+            <DOI name="MatStat">
+              <DAI name="setVal">
+                <Val>Liquid</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="MFLW_0" lnClass="MFLW" inst="2" prefix="" desc="Flow measurements">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="MatTyp">
+              <DAI name="setVal">
+                <Val>Natural gas</Val>
+              </DAI>
+            </DOI>
+            <DOI name="MatStat">
+              <DAI name="setVal">
+                <Val>Gaseous</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="GGIO_0" lnClass="GGIO" inst="1" prefix="" desc="Generic process IO">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="IntIn1" desc="Alarm status bits" />
+            <DOI name="IntIn2" desc="Warning status bits" />
+            <DOI name="Alm1">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm2">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm3">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm4">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn1">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn2">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn3">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn4">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+          </LN>
+        </LDevice>
+        <LDevice inst="CHP1">
+          <LN0 lnType="LLN0_6" lnClass="LLN0" inst="" desc="Logical Node zero">
+            <DataSet name="Measurements">
+              <FCDA ldInst="CHP1" prefix="" lnClass="MMXU" lnInst="1" doName="TotW" fc="MX" />
+              <FCDA ldInst="CHP1" prefix="" lnClass="MMXU" lnInst="1" doName="MaxWPhs" fc="MX" />
+              <FCDA ldInst="CHP1" prefix="" lnClass="MMXU" lnInst="1" doName="MinWPhs" fc="MX" />
+              <FCDA ldInst="CHP1" prefix="" lnClass="DGEN" lnInst="1" doName="TotWh" fc="MX" />
+              <FCDA ldInst="CHP1" prefix="" lnClass="TTMP" lnInst="1" doName="TmpSv" fc="MX" />
+              <FCDA ldInst="CHP1" prefix="" lnClass="TTMP" lnInst="2" doName="TmpSv" fc="MX" />
+              <FCDA ldInst="CHP1" prefix="" lnClass="MFLW" lnInst="1" doName="FlwRte" fc="MX" />
+              <FCDA ldInst="CHP1" prefix="" lnClass="MFLW" lnInst="2" doName="FlwRte" fc="MX" />
+            </DataSet>
+            <DataSet name="Status">
+              <FCDA ldInst="CHP1" prefix="" lnClass="LLN0" doName="Beh" fc="ST" />
+              <FCDA ldInst="CHP1" prefix="" lnClass="LLN0" doName="Health" fc="ST" />
+              <FCDA ldInst="CHP1" prefix="" lnClass="DRCC" lnInst="1" doName="OutWSet" fc="CF" />
+              <FCDA ldInst="CHP1" prefix="" lnClass="DGEN" lnInst="1" doName="GnOpSt" fc="ST" />
+              <FCDA ldInst="CHP1" prefix="" lnClass="DGEN" lnInst="1" doName="OpTmsRs" fc="ST" />
+              <FCDA ldInst="CHP1" prefix="" lnClass="MFLW" lnInst="1" doName="Beh" fc="ST" />
+              <FCDA ldInst="CHP1" prefix="" lnClass="MFLW" lnInst="2" doName="Beh" fc="ST" />
+              <FCDA ldInst="CHP1" prefix="" lnClass="GGIO" lnInst="1" doName="IntIn1" fc="ST" />
+              <FCDA ldInst="CHP1" prefix="" lnClass="GGIO" lnInst="1" doName="IntIn2" fc="ST" />
+              <FCDA ldInst="CHP1" prefix="" lnClass="GGIO" lnInst="1" doName="Alm1" fc="ST" />
+              <FCDA ldInst="CHP1" prefix="" lnClass="GGIO" lnInst="1" doName="Alm2" fc="ST" />
+              <FCDA ldInst="CHP1" prefix="" lnClass="GGIO" lnInst="1" doName="Alm3" fc="ST" />
+              <FCDA ldInst="CHP1" prefix="" lnClass="GGIO" lnInst="1" doName="Alm4" fc="ST" />
+              <FCDA ldInst="CHP1" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn1" fc="ST" />
+              <FCDA ldInst="CHP1" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn2" fc="ST" />
+              <FCDA ldInst="CHP1" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn3" fc="ST" />
+              <FCDA ldInst="CHP1" prefix="" lnClass="GGIO" lnInst="1" doName="Wrn4" fc="ST" />
+            </DataSet>
+            <ReportControl name="ReportMeasurements01" rptID="CHP1_Measurements" datSet="Measurements" intgPd="0" confRev="1" buffered="false" bufTime="0" indexed="true">
+              <TrgOps gi="true" />
+              <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
+              <RptEnabled max="1" />
+            </ReportControl>
+            <ReportControl name="ReportStatus01" rptID="CHP1_Status" datSet="Status" intgPd="0" confRev="1" buffered="true" bufTime="0" indexed="true">
+              <TrgOps dchg="true" gi="true" />
+              <OptFields seqNum="true" timeStamp="true" reasonCode="true" dataSet="true" dataRef="true" entryID="true" configRef="true" />
+              <RptEnabled max="1" />
+            </ReportControl>
+            <DOI name="NamPlt">
+              <DAI name="ldNs">
+                <Val>IEC 61850-7-4:2007B</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Health">
+              <DAI name="stVal">
+                <Val>Ok</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Mod">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+          </LN0>
+          <LN lnType="DRCC_0" lnClass="DRCC" inst="1" prefix="" desc="DER supervisory control">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="OutWSet">
+              <DAI name="subEna">
+                <Val>0</Val>
+              </DAI>
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+            <DOI name="DERStr">
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+            <DOI name="DERStop">
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+            <DOI name="AutoManCtl">
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+            <DOI name="LocRemCtl">
+              <DAI name="ctlModel">
+                <Val>direct-with-normal-security</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="DGEN_0" lnClass="DGEN" inst="1" prefix="" desc="DER unit generator">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="GnOpSt">
+              <DAI name="stVal">
+                <Val>Not applicable / Unknown</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="MMXU_0" lnClass="MMXU" inst="1" prefix="" desc="Measurement">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="GGIO_0" lnClass="GGIO" inst="1" prefix="" desc="Generic process IO">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="IntIn1" desc="Alarm status bits" />
+            <DOI name="IntIn2" desc="Warning status bits" />
+            <DOI name="Alm1">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm2">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm3">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Alm4">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn1">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn2">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn3">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+            <DOI name="Wrn4">
+              <DAI name="stVal">
+                <Val>0</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="TTMP_0" lnClass="TTMP" inst="1" prefix="" desc="Temperature sensor" />
+          <LN lnType="TTMP_0" lnClass="TTMP" inst="2" prefix="" desc="Temperature sensor" />
+          <LN lnType="MFLW_0" lnClass="MFLW" inst="1" prefix="" desc="Flow measurements">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="MatTyp">
+              <DAI name="setVal">
+                <Val>Not applicable / Unknown</Val>
+              </DAI>
+            </DOI>
+            <DOI name="MatStat">
+              <DAI name="setVal">
+                <Val>Not applicable / Unknown</Val>
+              </DAI>
+            </DOI>
+          </LN>
+          <LN lnType="MFLW_0" lnClass="MFLW" inst="2" prefix="" desc="Flow measurements">
+            <DOI name="Beh">
+              <DAI name="stVal">
+                <Val>on</Val>
+              </DAI>
+            </DOI>
+            <DOI name="MatTyp">
+              <DAI name="setVal">
+                <Val>Not applicable / Unknown</Val>
+              </DAI>
+            </DOI>
+            <DOI name="MatStat">
+              <DAI name="setVal">
+                <Val>Not applicable / Unknown</Val>
+              </DAI>
+            </DOI>
+          </LN>
+        </LDevice>
+      </Server>
+    </AccessPoint>
+  </IED>
+  <DataTypeTemplates>
+    <LNodeType id="LLN0_0" lnClass="LLN0">
+      <DO name="NamPlt" type="LPL_0" />
+      <DO name="Beh" type="ENS_0" />
+      <DO name="Health" type="ENS_1" />
+      <DO name="Mod" type="ENC_0" />
+      <DO name="OpTmh" type="INS_0" />
+      <DO name="GrRef" type="ORG_0" />
+    </LNodeType>
+    <LNodeType id="LPHD_0" lnClass="LPHD">
+      <DO name="PhyNam" type="DPL_0" />
+      <DO name="PhyHealth" type="ENS_2" />
+      <DO name="Proxy" type="SPS_0" />
+    </LNodeType>
+    <LNodeType id="DSCH_0" lnClass="DSCH">
+      <DO name="Beh" type="ENS_0" />
+      <DO name="SchdSt" type="INS_0" />
+      <DO name="SchdId" type="ING_0" />
+      <DO name="SchCat" type="ING_0" />
+      <DO name="SchdTyp" type="ING_0" />
+      <DO name="SchdAbsTm" type="SCA_0" />
+    </LNodeType>
+    <LNodeType id="GGIO_0" lnClass="GGIO">
+      <DO name="Beh" type="ENS_0" />
+      <DO name="IntIn1" type="INS_0" />
+      <DO name="IntIn2" type="INS_0" />
+      <DO name="Alm1" type="SPS_0" />
+      <DO name="Alm2" type="SPS_0" />
+      <DO name="Alm3" type="SPS_0" />
+      <DO name="Alm4" type="SPS_0" />
+      <DO name="Wrn1" type="SPS_0" />
+      <DO name="Wrn2" type="SPS_0" />
+      <DO name="Wrn3" type="SPS_0" />
+      <DO name="Wrn4" type="SPS_0" />
+    </LNodeType>
+    <LNodeType id="LLN0_1" lnClass="LLN0">
+      <DO name="NamPlt" type="LPL_0" />
+      <DO name="Beh" type="ENS_0" />
+      <DO name="Health" type="ENS_1" />
+      <DO name="Mod" type="ENC_0" />
+      <DO name="GrRef" type="ORG_0" />
+    </LNodeType>
+    <LNodeType id="DRCC_0" lnClass="DRCC">
+      <DO name="Beh" type="ENS_0" />
+      <DO name="OutWSet" type="APC_0" />
+      <DO name="DERStr" type="SPC_0" />
+      <DO name="DERStop" type="SPC_0" />
+      <DO name="AutoManCtl" type="SPC_0" />
+      <DO name="LocRemCtl" type="SPC_0" />
+    </LNodeType>
+    <LNodeType id="DGEN_0" lnClass="DGEN">
+      <DO name="Beh" type="ENS_0" />
+      <DO name="OpTmh" type="INS_0" />
+      <DO name="GnOpSt" type="ENS_3" />
+      <DO name="OpTmsRs" type="INS_0" />
+      <DO name="TotWh" type="MV_0" />
+    </LNodeType>
+    <LNodeType id="MMXU_0" lnClass="MMXU">
+      <DO name="Beh" type="ENS_0" />
+      <DO name="TotW" type="MV_0" />
+      <DO name="MaxWPhs" type="MV_0" />
+      <DO name="MinWPhs" type="MV_0" />
+    </LNodeType>
+    <LNodeType id="LLN0_2" lnClass="LLN0">
+      <DO name="NamPlt" type="LPL_0" />
+      <DO name="Beh" type="ENS_0" />
+      <DO name="Health" type="ENS_1" />
+      <DO name="Mod" type="ENC_0" />
+      <DO name="GrRef" type="ORG_0" />
+    </LNodeType>
+    <LNodeType id="MMXU_1" lnClass="MMXU">
+      <DO name="Beh" type="ENS_0" />
+      <DO name="TotW" type="MV_0" />
+      <DO name="TotPF" type="MV_0" />
+      <DO name="MaxWPhs" type="MV_0" />
+      <DO name="MinWPhs" type="MV_0" />
+    </LNodeType>
+    <LNodeType id="LLN0_3" lnClass="LLN0">
+      <DO name="NamPlt" type="LPL_0" />
+      <DO name="Beh" type="ENS_0" />
+      <DO name="Health" type="ENS_1" />
+      <DO name="Mod" type="ENC_0" />
+      <DO name="GrRef" type="ORG_0" />
+    </LNodeType>
+    <LNodeType id="MMTR_0" lnClass="MMTR">
+      <DO name="Beh" type="ENS_0" />
+      <DO name="TotWh" type="BCR_0" />
+    </LNodeType>
+    <LNodeType id="LLN0_4" lnClass="LLN0">
+      <DO name="NamPlt" type="LPL_0" />
+      <DO name="Beh" type="ENS_0" />
+      <DO name="Health" type="ENS_1" />
+      <DO name="Mod" type="ENC_0" />
+      <DO name="GrRef" type="ORG_0" />
+    </LNodeType>
+    <LNodeType id="TTMP_0" lnClass="TTMP">
+      <DO name="TmpSv" type="SAV_0" />
+    </LNodeType>
+    <LNodeType id="KTNK_0" lnClass="KTNK">
+      <DO name="TnkTyp" type="ENG_0" />
+      <DO name="VlmCap" type="ASG_0" />
+    </LNodeType>
+    <LNodeType id="LLN0_5" lnClass="LLN0">
+      <DO name="NamPlt" type="LPL_0" />
+      <DO name="Beh" type="ENS_0" />
+      <DO name="Health" type="ENS_1" />
+      <DO name="Mod" type="ENC_0" />
+      <DO name="GrRef" type="ORG_0" />
+    </LNodeType>
+    <LNodeType id="MFLW_0" lnClass="MFLW">
+      <DO name="Beh" type="ENS_0" />
+      <DO name="MatTyp" type="ENG_1" />
+      <DO name="MatStat" type="ENG_2" />
+      <DO name="FlwRte" type="MV_0" />
+    </LNodeType>
+    <LNodeType id="LLN0_6" lnClass="LLN0">
+      <DO name="NamPlt" type="LPL_0" />
+      <DO name="Beh" type="ENS_0" />
+      <DO name="Health" type="ENS_1" />
+      <DO name="Mod" type="ENC_0" />
+      <DO name="GrRef" type="ORG_0" />
+    </LNodeType>
+    <DOType id="APC_0" cdc="APC">
+      <DA name="subEna" fc="SV" bType="BOOLEAN" />
+      <DA name="subVal" fc="SV" bType="Struct" type="AnalogueValue_0" />
+      <DA name="subQ" fc="SV" bType="Quality" />
+      <DA name="ctlModel" fc="CF" bType="Enum" type="CtlModelsKind" />
+    </DOType>
+    <DOType id="ASG_0" cdc="ASG">
+      <DA name="setMag" fc="SP" bType="Struct" type="AnalogueValue_0" />
+    </DOType>
+    <DOType id="BCR_0" cdc="BCR">
+      <DA name="actVal" fc="ST" dchg="true" bType="INT64" />
+      <DA name="q" fc="ST" qchg="true" bType="Quality" />
+      <DA name="t" fc="ST" bType="Timestamp" />
+      <DA name="pulsQty" fc="CF" bType="FLOAT32" />
+    </DOType>
+    <DOType id="DPL_0" cdc="DPL">
+      <DA name="vendor" fc="DC" bType="VisString255" />
+    </DOType>
+    <DOType id="ENC_0" cdc="ENC">
+      <DA name="stVal" fc="ST" dchg="true" bType="Enum" type="ModKind" />
+      <DA name="q" fc="ST" qchg="true" bType="Quality" />
+      <DA name="t" fc="ST" bType="Timestamp" />
+      <DA name="ctlModel" fc="CF" dchg="true" bType="Enum" type="CtlModelsKind" />
+    </DOType>
+    <DOType id="ENG_0" cdc="ENG">
+      <DA name="setVal" fc="SP" dchg="true" bType="INT8" />
+    </DOType>
+    <DOType id="ENG_1" cdc="ENG">
+      <DA name="setVal" fc="SP" dchg="true" bType="Enum" type="MatTypKind" />
+    </DOType>
+    <DOType id="ENG_2" cdc="ENG">
+      <DA name="setVal" fc="SP" dchg="true" bType="Enum" type="MatStatKind" />
+    </DOType>
+    <DOType id="ENS_0" cdc="ENS">
+      <DA name="stVal" fc="ST" dchg="true" bType="Enum" type="BehKind" />
+      <DA name="q" fc="ST" qchg="true" bType="Quality" />
+      <DA name="t" fc="ST" bType="Timestamp" />
+    </DOType>
+    <DOType id="ENS_1" cdc="ENS">
+      <DA name="stVal" fc="ST" dchg="true" bType="Enum" type="HealthKind" />
+      <DA name="q" fc="ST" qchg="true" bType="Quality" />
+      <DA name="t" fc="ST" bType="Timestamp" />
+    </DOType>
+    <DOType id="ENS_2" cdc="ENS">
+      <DA name="stVal" fc="ST" dchg="true" bType="Enum" type="PhyHealthKind" />
+      <DA name="q" fc="ST" qchg="true" bType="Quality" />
+      <DA name="t" fc="ST" bType="Timestamp" />
+    </DOType>
+    <DOType id="ENS_3" cdc="ENS">
+      <DA name="stVal" fc="ST" dchg="true" bType="Enum" type="GnOpStKind" />
+      <DA name="q" fc="ST" qchg="true" bType="Quality" />
+      <DA name="t" fc="ST" bType="Timestamp" />
+    </DOType>
+    <DOType id="ING_0" cdc="ING">
+      <DA name="setVal" fc="SP" dchg="true" bType="INT32" />
+    </DOType>
+    <DOType id="INS_0" cdc="INS">
+      <DA name="stVal" fc="ST" bType="INT32" />
+      <DA name="q" fc="ST" qchg="true" bType="Quality" />
+      <DA name="t" fc="ST" bType="Timestamp" />
+    </DOType>
+    <DOType id="LPL_0" cdc="LPL">
+      <DA name="vendor" fc="DC" bType="VisString255" />
+      <DA name="swRev" fc="DC" bType="VisString255" />
+      <DA name="configRev" fc="DC" bType="VisString255" />
+      <DA name="ldNs" fc="EX" bType="VisString255" />
+    </DOType>
+    <DOType id="MV_0" cdc="MV">
+      <DA name="mag" fc="MX" bType="Struct" type="AnalogueValue_0" />
+      <DA name="q" fc="MX" qchg="true" bType="Quality" />
+      <DA name="t" fc="MX" bType="Timestamp" />
+    </DOType>
+    <DOType id="ORG_0" cdc="ORG">
+      <DA name="setSrcRef" fc="SP" dchg="true" bType="VisString129" />
+    </DOType>
+    <DOType id="SAV_0" cdc="SAV">
+      <DA name="instMag" fc="MX" bType="Struct" type="AnalogueValue_0" />
+      <DA name="q" fc="MX" qchg="true" bType="Quality" />
+      <DA name="t" fc="MX" bType="Timestamp" />
+    </DOType>
+    <DOType id="SCA_0" cdc="SCA">
+      <DA name="numPts" fc="SP" bType="INT16U" />
+      <DA name="val" fc="SP" dchg="true" count="50" bType="FLOAT32" />
+      <DA name="time" fc="SP" dchg="true" count="50" bType="Timestamp" />
+    </DOType>
+    <DOType id="SPC_0" cdc="SPC">
+      <DA name="ctlModel" fc="CF" dchg="true" bType="Enum" type="CtlModelsKind" />
+    </DOType>
+    <DOType id="SPS_0" cdc="SPS">
+      <DA name="stVal" fc="ST" dchg="true" bType="BOOLEAN" />
+      <DA name="q" fc="ST" qchg="true" bType="Quality" />
+      <DA name="t" fc="ST" bType="Timestamp" />
+    </DOType>
+    <DAType id="AnalogueValue_0">
+      <BDA name="f" bType="FLOAT32" />
+    </DAType>
+    <EnumType id="BehKind">
+      <EnumVal ord="1">on</EnumVal>
+      <EnumVal ord="2">blocked</EnumVal>
+      <EnumVal ord="3">test</EnumVal>
+      <EnumVal ord="4">test/blocked</EnumVal>
+      <EnumVal ord="5">off</EnumVal>
+    </EnumType>
+    <EnumType id="HealthKind">
+      <EnumVal ord="1">Ok</EnumVal>
+      <EnumVal ord="2">Warning</EnumVal>
+      <EnumVal ord="3">Alarm</EnumVal>
+    </EnumType>
+    <EnumType id="ModKind">
+      <EnumVal ord="1">on</EnumVal>
+      <EnumVal ord="2">blocked</EnumVal>
+      <EnumVal ord="3">test</EnumVal>
+      <EnumVal ord="4">test/blocked</EnumVal>
+      <EnumVal ord="5">off</EnumVal>
+    </EnumType>
+    <EnumType id="CtlModelsKind">
+      <EnumVal ord="0">status-only</EnumVal>
+      <EnumVal ord="1">direct-with-normal-security</EnumVal>
+      <EnumVal ord="2">sbo-with-normal-security</EnumVal>
+      <EnumVal ord="3">direct-with-enhanced-security</EnumVal>
+      <EnumVal ord="4">sbo-with-enhanced-security</EnumVal>
+    </EnumType>
+    <EnumType id="PhyHealthKind">
+      <EnumVal ord="1">Ok</EnumVal>
+      <EnumVal ord="2">Warning</EnumVal>
+      <EnumVal ord="3">Alarm</EnumVal>
+    </EnumType>
+    <EnumType id="GnOpStKind">
+      <EnumVal ord="0">Not applicable / Unknown</EnumVal>
+      <EnumVal ord="1">Not operating</EnumVal>
+      <EnumVal ord="2">Operating</EnumVal>
+      <EnumVal ord="3">Starting up</EnumVal>
+      <EnumVal ord="4">Shutting down</EnumVal>
+      <EnumVal ord="5">At disconnect level</EnumVal>
+      <EnumVal ord="6">Ramping (power)</EnumVal>
+      <EnumVal ord="7">Ramping (reactive power)</EnumVal>
+      <EnumVal ord="99">Other</EnumVal>
+    </EnumType>
+    <EnumType id="MatTypKind">
+      <EnumVal ord="0">Not applicable / Unknown</EnumVal>
+      <EnumVal ord="1">Air</EnumVal>
+      <EnumVal ord="2">Water</EnumVal>
+      <EnumVal ord="3">Steam</EnumVal>
+      <EnumVal ord="4">Oil</EnumVal>
+      <EnumVal ord="5">Hydrogen</EnumVal>
+      <EnumVal ord="6">Natural gas</EnumVal>
+      <EnumVal ord="7">Butane</EnumVal>
+      <EnumVal ord="8">Propane</EnumVal>
+      <EnumVal ord="99">Other</EnumVal>
+    </EnumType>
+    <EnumType id="MatStatKind">
+      <EnumVal ord="0">Not applicable / Unknown</EnumVal>
+      <EnumVal ord="1">Gaseous</EnumVal>
+      <EnumVal ord="2">Liquid</EnumVal>
+      <EnumVal ord="3">Solid</EnumVal>
+      <EnumVal ord="99">Other</EnumVal>
+    </EnumType>
+  </DataTypeTemplates>
+</SCL>
