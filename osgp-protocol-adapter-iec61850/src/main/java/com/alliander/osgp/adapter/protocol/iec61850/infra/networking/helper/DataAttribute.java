@@ -153,9 +153,9 @@ public enum DataAttribute {
      */
     TOTAL_ENERGY("TotWh"),
     /**
-     * State of Charge
+     * State of Charge for Battery, Coefficient of Performance for HeatPump
      */
-    STATE_OF_CHARGE("TotPF"),
+    AVERAGE_POWER_FACTOR("TotPF"),
     /**
      * Property of LLN0 Node, ReportStatus01, contains the reporting
      * information.

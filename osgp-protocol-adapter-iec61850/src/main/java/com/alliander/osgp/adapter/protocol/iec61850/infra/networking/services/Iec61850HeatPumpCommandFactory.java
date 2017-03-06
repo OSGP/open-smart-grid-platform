@@ -22,6 +22,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.co
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850ActualPowerLimitCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850AlarmCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850AlarmOtherCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850AveragePowerFactorCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850BehaviourCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850HealthCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850MaterialFlowCommand;
@@ -126,6 +127,8 @@ public class Iec61850HeatPumpCommandFactory implements RtuReadCommandFactory<Mea
         RTU_COMMAND_MAP.put(DataAttribute.MIN_ACTUAL_POWER.getDescription(), new Iec61850MinimumActualPowerCommand());
         RTU_COMMAND_MAP.put(DataAttribute.MAX_ACTUAL_POWER.getDescription(), new Iec61850MaximumActualPowerCommand());
         RTU_COMMAND_MAP.put(DataAttribute.ACTUAL_POWER_LIMIT.getDescription(), new Iec61850ActualPowerLimitCommand());
+        RTU_COMMAND_MAP.put(DataAttribute.AVERAGE_POWER_FACTOR.getDescription(),
+                new Iec61850AveragePowerFactorCommand());
         RTU_COMMAND_MAP.put(DataAttribute.TOTAL_ENERGY.getDescription(), new Iec61850TotalEnergyCommand());
         RTU_COMMAND_MAP.put(DataAttribute.STATE.getDescription(), new Iec61850StateCommand());
         RTU_COMMAND_MAP.put(DataAttribute.OPERATIONAL_HOURS.getDescription(), new Iec61850OperationalHoursCommand());
