@@ -64,7 +64,6 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
         REPORT_HANDLERS_MAP.put("GAS_FURNACE", Iec61850GasFurnaceReportHandler.class);
         REPORT_HANDLERS_MAP.put("HEAT_PUMP", Iec61850HeatPumpReportHandler.class);
         REPORT_HANDLERS_MAP.put("BOILER", Iec61850BoilerReportHandler.class);
-
     }
 
     public Iec61850ClientRTUEventListener(final String deviceIdentification,

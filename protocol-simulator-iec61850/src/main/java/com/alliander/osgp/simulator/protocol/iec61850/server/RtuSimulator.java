@@ -29,10 +29,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Battery;
+import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Boiler;
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Chp;
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Engine;
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.GasFurnace;
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.HeatBuffer;
+import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.HeatPump;
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Load;
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.LogicalDevice;
 import com.alliander.osgp.simulator.protocol.iec61850.server.logicaldevices.Pv;
@@ -77,6 +79,8 @@ public class RtuSimulator implements ServerEventListener {
         this.addHeatBufferDevices(serverModel);
         this.addChpDevices(serverModel);
         this.addGasFurnaceDevices(serverModel);
+        this.addHeatPumpDevices(serverModel);
+        this.addBoilerDevices(serverModel);
     }
 
     private void addRtuDevices(final ServerModel serverModel) {
@@ -179,6 +183,32 @@ public class RtuSimulator implements ServerEventListener {
             this.logicalDevices.add(new GasFurnace(this.getDeviceName(), logicalDeviceName, serverModel));
             i += 1;
             logicalDeviceName = gasFurnacePrefix + i;
+            gasFurnaceNode = serverModel.getChild(this.getDeviceName() + logicalDeviceName);
+        }
+    }
+
+    private void addHeatPumpDevices(final ServerModel serverModel) {
+        final String heatPumpPrefix = "HEAT_PUMP";
+        int i = 1;
+        String logicalDeviceName = heatPumpPrefix + i;
+        ModelNode gasFurnaceNode = serverModel.getChild(this.getDeviceName() + logicalDeviceName);
+        while (gasFurnaceNode != null) {
+            this.logicalDevices.add(new HeatPump(this.getDeviceName(), logicalDeviceName, serverModel));
+            i += 1;
+            logicalDeviceName = heatPumpPrefix + i;
+            gasFurnaceNode = serverModel.getChild(this.getDeviceName() + logicalDeviceName);
+        }
+    }
+
+    private void addBoilerDevices(final ServerModel serverModel) {
+        final String boilerPrefix = "BOILER";
+        int i = 1;
+        String logicalDeviceName = boilerPrefix + i;
+        ModelNode gasFurnaceNode = serverModel.getChild(this.getDeviceName() + logicalDeviceName);
+        while (gasFurnaceNode != null) {
+            this.logicalDevices.add(new Boiler(this.getDeviceName(), logicalDeviceName, serverModel));
+            i += 1;
+            logicalDeviceName = boilerPrefix + i;
             gasFurnaceNode = serverModel.getChild(this.getDeviceName() + logicalDeviceName);
         }
     }
@@ -298,7 +328,7 @@ public class RtuSimulator implements ServerEventListener {
     }
 
     private String getDeviceName() {
-        if (this.serverName != null && !this.serverName.isEmpty()) {
+        if ((this.serverName != null) && !this.serverName.isEmpty()) {
             return this.serverName;
         } else {
             return PHYSICAL_DEVICE;
