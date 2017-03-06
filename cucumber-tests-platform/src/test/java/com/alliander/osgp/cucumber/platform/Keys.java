@@ -257,6 +257,10 @@ public class Keys {
     public static final String IP_ADDRESS = "IpAddress";
     public static final String RANDOM_DEVICE = "RandomDevice";
 
+    public static final String KEY_IEC61850_SERVERNAME = "ServerName";
+    public static final String KEY_IEC61850_PORT = "Port";
+    public static final String KEY_IEC61850_ICD_FILENAME = "IcdFilename";
+
     public static final String FIRMWARE_INSTALLED_BY = "InstalledBy";
     public static final String FIRMWARE_INSTALLATION_DATE = "InstallationDate";
 }
