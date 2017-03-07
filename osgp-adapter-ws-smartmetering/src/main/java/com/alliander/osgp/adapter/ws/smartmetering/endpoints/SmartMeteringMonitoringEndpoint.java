@@ -124,7 +124,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             this.responseUrlService.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
             LOGGER.error("Exception: {} while requesting meter reads for device: {} for organisation {}.",
-                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
+                    e.getMessage(), request.getDeviceIdentification(), organisationIdentification, e);
 
             this.handleException(e);
         }
@@ -181,7 +181,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             throws OsgpException {
         if (!(e instanceof FunctionalException)) {
             LOGGER.error("Exception: {} while sending PeriodicMeterReads of device: {} for organisation {}.",
-                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification });
+                    e.getMessage(), request.getDeviceIdentification(), organisationIdentification);
         }
 
         this.handleException(e);
@@ -321,7 +321,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
             LOGGER.error("Exception: {} while requesting read alarm register for device: {} for organisation {}.",
-                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
+                    e.getMessage(), request.getDeviceIdentification(), organisationIdentification, e);
 
             this.handleException(e);
         }
@@ -350,7 +350,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
         } catch (final Exception e) {
             LOGGER.error(
                     "Exception: {} while sending RetrieveReadAlarmRegisterRequest of device: {} for organisation {}.",
-                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification });
+                    e.getMessage(), request.getDeviceIdentification(), organisationIdentification);
 
             this.handleException(e);
         }
@@ -381,7 +381,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
         } catch (final Exception e) {
             LOGGER.error(
                     "Exception: {} while sending RetrievePushNotificationAlarmRequest for correlation UID: {} for organisation {}.",
-                    new Object[] { e.getMessage(), request.getCorrelationUid(), organisationIdentification });
+                    e.getMessage(), request.getCorrelationUid(), organisationIdentification);
 
             this.handleException(e);
         }
@@ -404,7 +404,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
                     .map(request,
                             com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataRequest.class);
 
-            int msgPrio = MessagePriorityEnum.getMessagePriority(messagePriority);
+            final int msgPrio = MessagePriorityEnum.getMessagePriority(messagePriority);
             final String correlationUid = this.monitoringService.enqueueProfileGenericDataRequestData(
                     organisationIdentification, request.getDeviceIdentification(), dataRequest, msgPrio,
                     this.monitoringMapper.map(scheduleTime, Long.class));
@@ -415,7 +415,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             this.responseUrlService.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
             LOGGER.error("Exception: {} while requesting profile generic data for device: {} for organisation {}.",
-                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
+                    e.getMessage(), request.getDeviceIdentification(), organisationIdentification, e);
 
             this.handleException(e);
         }
@@ -443,7 +443,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
         } catch (final Exception e) {
             LOGGER.error(
                     "Exception: {} while sending GetProfileGenericDataAsyncRequest for correlation UID: {} for organisation {}.",
-                    new Object[] { e.getMessage(), request.getCorrelationUid(), organisationIdentification });
+                    e.getMessage(), request.getCorrelationUid(), organisationIdentification);
 
             this.handleException(e);
         }
