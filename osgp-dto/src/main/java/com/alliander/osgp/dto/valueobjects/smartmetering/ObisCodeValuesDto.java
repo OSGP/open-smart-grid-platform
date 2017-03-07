@@ -30,6 +30,11 @@ public class ObisCodeValuesDto implements Serializable {
         this.f = f;
     }
 
+    public ObisCodeValuesDto(final ObisCodeValuesDto obisCodeValuesDto) {
+        this(obisCodeValuesDto.a, obisCodeValuesDto.b, obisCodeValuesDto.c, obisCodeValuesDto.d, obisCodeValuesDto.e,
+                obisCodeValuesDto.f);
+    }
+
     public byte getA() {
         return this.a;
     }
