@@ -8,6 +8,7 @@
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class ObisCodeValuesDto implements Serializable {
 
@@ -21,7 +22,6 @@ public class ObisCodeValuesDto implements Serializable {
     private final byte f;
 
     public ObisCodeValuesDto(final byte a, final byte b, final byte c, final byte d, final byte e, final byte f) {
-        super();
         this.a = a;
         this.b = b;
         this.c = c;
@@ -56,39 +56,20 @@ public class ObisCodeValuesDto implements Serializable {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + this.a;
-        result = prime * result + this.b;
-        result = prime * result + this.c;
-        result = prime * result + this.d;
-        result = prime * result + this.e;
-        result = prime * result + this.f;
-        return result;
+        return Objects.hash(this.a, this.b, this.c, this.d, this.e, this.f);
     }
 
     @Override
     public boolean equals(final Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (!(obj instanceof ObisCodeValuesDto)) {
             return false;
-        if (this.getClass() != obj.getClass())
-            return false;
+        }
         final ObisCodeValuesDto other = (ObisCodeValuesDto) obj;
-        if (this.a != other.a)
-            return false;
-        if (this.b != other.b)
-            return false;
-        if (this.c != other.c)
-            return false;
-        if (this.d != other.d)
-            return false;
-        if (this.e != other.e)
-            return false;
-        if (this.f != other.f)
-            return false;
-        return true;
+        return this.a == other.a && this.b == other.b && this.c == other.c && this.d == other.d && this.e == other.e
+                && this.f == other.f;
     }
 
     @Override
