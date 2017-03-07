@@ -27,7 +27,7 @@ public class Iec61850MockServer {
     @Value("${iec61850.mock.icd.filename:Pampus_v0.4.5.icd}")
     private String icdFilename;
 
-    @Value("${iec61850.mock.port:61202}")
+    @Value("${iec61850.mock.port:60102}")
     private int port;
 
     @Value("${iec61850.mock.serverName:WAGO61850Server}")
