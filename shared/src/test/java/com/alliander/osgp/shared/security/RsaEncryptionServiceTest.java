@@ -31,6 +31,9 @@ public class RsaEncryptionServiceTest {
     private static final String PRIVATE_KEY_PATH = "src/test/resources/keys/dlms_device_keys_private";
     private static final String PUBLIC_KEY_PATH = "src/test/resources/keys/dlms_device_keys_public";
 
+    //    private static final String PRIVATE_KEY_PATH = "src/test/resources/keys/shipmentfile_dlms_device_keys_private";
+    //    private static final String PUBLIC_KEY_PATH = "src/test/resources/keys/shipmentfile_dlms_device_keys_public";
+
     /*
      * RSA encrypted authentication key in hex string format and decrypted
      * binary format.
