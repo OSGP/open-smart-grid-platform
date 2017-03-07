@@ -3,6 +3,8 @@
  */
 package com.alliander.osgp.shared.application.config;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Properties;
 
 import org.quartz.CronScheduleBuilder;
@@ -32,53 +34,59 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
 
     @Bean
     public SpringBeanJobFactory springBeanJobFactory() {
-        AutoWiringSpringBeanJobFactory jobFactory = new AutoWiringSpringBeanJobFactory();
-        jobFactory.setApplicationContext(applicationContext);
+        final AutoWiringSpringBeanJobFactory jobFactory = new AutoWiringSpringBeanJobFactory();
+        jobFactory.setApplicationContext(this.applicationContext);
         return jobFactory;
     }
 
     /**
      * Construct the scheduler taskpool with specified job and trigger
-     * @param jobClass references the Job class
-     * @param threadCountKey the configuration key in the environment for threadpool size
-     * @param cronExpressionKey the configuration key in the environment for cron expression
-     * @param jobStoreDbUrl the database url which contains the jobstore tables
-     * @param jobStoreDbUsername the associated database username
-     * @param jobStoreDbPassword the associated database password
-     * @param jobStoreDbDriver the associated database driver
+     * 
+     * @param jobClass
+     *            references the Job class
+     * @param threadCountKey
+     *            the configuration key in the environment for threadpool size
+     * @param cronExpressionKey
+     *            the configuration key in the environment for cron expression
+     * @param jobStoreDbUrl
+     *            the database url which contains the jobstore tables
+     * @param jobStoreDbUsername
+     *            the associated database username
+     * @param jobStoreDbPassword
+     *            the associated database password
+     * @param jobStoreDbDriver
+     *            the associated database driver
      * @return the Quartz scheduler instance
-     * @throws SchedulerException when issues occur in constructing schedules
+     * @throws SchedulerException
+     *             when issues occur in constructing schedules
      */
-    protected Scheduler constructScheduler(Class<? extends Job> jobClass, String threadCountKey,
-            String cronExpressionKey, String jobStoreDbUrl, String jobStoreDbUsername, String jobStoreDbPassword,
-            String jobStoreDbDriver) throws SchedulerException {
-        Properties properties = constructQuartzConfiguration(jobClass.getSimpleName(),
+    protected Scheduler constructScheduler(final Class<? extends Job> jobClass, final String threadCountKey,
+            final String cronExpressionKey, final String jobStoreDbUrl, final String jobStoreDbUsername,
+            final String jobStoreDbPassword, final String jobStoreDbDriver) throws SchedulerException {
+        final Properties properties = this.constructQuartzConfiguration(jobClass.getSimpleName(),
                 this.environment.getRequiredProperty(threadCountKey), jobStoreDbUrl, jobStoreDbUsername,
                 jobStoreDbPassword, jobStoreDbDriver);
 
-        StdSchedulerFactory factory = new StdSchedulerFactory();
+        final StdSchedulerFactory factory = new StdSchedulerFactory();
         factory.initialize(properties);
-        Scheduler scheduler = factory.getScheduler();
-        scheduler.setJobFactory(springBeanJobFactory());
+        final Scheduler scheduler = factory.getScheduler();
+        scheduler.setJobFactory(this.springBeanJobFactory());
 
-        JobDetail jobDetail = this.createJobDetail(jobClass);
-        if (!scheduler.checkExists(jobDetail.getKey())) {
-            scheduler.addJob(jobDetail, true);
-        }
+        final JobDetail jobDetail = this.createJobDetail(jobClass);
+        scheduler.addJob(jobDetail, true);
 
-        Trigger trigger = this.createJobTrigger(jobDetail, this.environment.getRequiredProperty(cronExpressionKey));
-        if (!scheduler.checkExists(trigger.getKey())) {
-            scheduler.scheduleJob(trigger);
-        }
+        final Trigger trigger = this.createJobTrigger(jobDetail,
+                this.environment.getRequiredProperty(cronExpressionKey));
+        scheduler.scheduleJob(jobDetail, new HashSet<Trigger>(Arrays.asList(trigger)), true);
 
         scheduler.start();
 
         return scheduler;
     }
-    
-    private Properties constructQuartzConfiguration(String instanceName, String threadCount, String dbUrl,
-            String dbUser, String dbPassword, String dbDriver) {
-        Properties properties = new Properties();
+
+    private Properties constructQuartzConfiguration(final String instanceName, final String threadCount,
+            final String dbUrl, final String dbUser, final String dbPassword, final String dbDriver) {
+        final Properties properties = new Properties();
 
         // Default Properties
         properties.put("org.quartz.scheduler.instanceName", instanceName);
@@ -119,11 +127,11 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
         return properties;
     }
 
-    private JobDetail createJobDetail(Class<? extends Job> jobClass) {
+    private JobDetail createJobDetail(final Class<? extends Job> jobClass) {
         return JobBuilder.newJob().ofType(jobClass).storeDurably().withIdentity(jobClass.getSimpleName()).build();
     }
 
-    private Trigger createJobTrigger(JobDetail jobDetail, String cronExpression) {
+    private Trigger createJobTrigger(final JobDetail jobDetail, final String cronExpression) {
         return TriggerBuilder.newTrigger().forJob(jobDetail).withIdentity(jobDetail.getKey().getName() + "-Trigger")
                 .forJob(jobDetail).withSchedule(CronScheduleBuilder.cronSchedule(cronExpression)).build();
     }
