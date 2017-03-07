@@ -3,7 +3,6 @@ Feature: MicroGrids Set Data Service
   As scrum team I want to have cucumber tests for Set Data Services
   so that I am able to guarantee the quality of Microgrid Platform.
 
-  @Skip
   Scenario: SetData Service
     Given an rtu iec61850 device
       | DeviceIdentification | RTU10001 |
