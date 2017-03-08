@@ -211,7 +211,7 @@ public class Iec61850RtuDeviceReportingService {
         }
     }
 
-    private void enalbeBoilerReportingOnDevice(final DeviceConnection connection, final String deviceIdentification) {
+    private void enableBoilerReportingOnDevice(final DeviceConnection connection, final String deviceIdentification) {
         final ServerModel serverModel = connection.getConnection().getServerModel();
         final String boilerPrefix = LogicalDevice.BOILER.getDescription();
         int i = 1;
