@@ -132,6 +132,10 @@ public enum LogicalNode {
      */
     TEMPERATURE_THREE("TTMP3"),
     /**
+     * TTMP4, Target temperature
+     */
+    TEMPERATURE_FOUR("TTMP4"),
+    /**
      * MFLW1, Type of material set to value 2 (Water) and MatStat 8State of
      * material) to value 1 (Gaseous)
      */

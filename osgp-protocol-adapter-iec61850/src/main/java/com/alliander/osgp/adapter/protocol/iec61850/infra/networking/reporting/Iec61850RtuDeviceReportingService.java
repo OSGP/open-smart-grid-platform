@@ -46,6 +46,8 @@ public class Iec61850RtuDeviceReportingService {
         this.enableChpReportingOnDevice(connection, deviceIdentification);
         this.enableHeatBufferReportingOnDevice(connection, deviceIdentification);
         this.enableGasFurnaceReportingOnDevice(connection, deviceIdentification);
+        this.enableHeatPumpReportingOnDevice(connection, deviceIdentification);
+        this.enableBoilerReportingOnDevice(connection, deviceIdentification);
     }
 
     private void enableRtuReportingOnDevice(final DeviceConnection connection, final String deviceIdentification) {
@@ -136,7 +138,8 @@ public class Iec61850RtuDeviceReportingService {
         }
     }
 
-    private void enableHeatBufferReportingOnDevice(final DeviceConnection connection, final String deviceIdentification) {
+    private void enableHeatBufferReportingOnDevice(final DeviceConnection connection,
+            final String deviceIdentification) {
 
         final ServerModel serverModel = connection.getConnection().getServerModel();
         final String heatBufferPrefix = LogicalDevice.HEAT_BUFFER.getDescription();
@@ -172,7 +175,8 @@ public class Iec61850RtuDeviceReportingService {
         }
     }
 
-    private void enableGasFurnaceReportingOnDevice(final DeviceConnection connection, final String deviceIdentification) {
+    private void enableGasFurnaceReportingOnDevice(final DeviceConnection connection,
+            final String deviceIdentification) {
 
         final ServerModel serverModel = connection.getConnection().getServerModel();
         final String gasFurnacePrefix = LogicalDevice.GAS_FURNACE.getDescription();
@@ -187,6 +191,40 @@ public class Iec61850RtuDeviceReportingService {
             i += 1;
             logicalDeviceName = gasFurnacePrefix + i;
             gasFurnaceNode = serverModel.getChild(this.serverName + logicalDeviceName);
+        }
+    }
+
+    private void enableHeatPumpReportingOnDevice(final DeviceConnection connection, final String deviceIdentification) {
+        final ServerModel serverModel = connection.getConnection().getServerModel();
+        final String heatPumpPrefix = LogicalDevice.HEAT_PUMP.getDescription();
+        int i = 1;
+        String logicalDeviceName = heatPumpPrefix + i;
+        ModelNode heatPumpNode = serverModel.getChild(this.serverName + logicalDeviceName);
+        while (heatPumpNode != null) {
+            this.enableStatusReportingOnDevice(connection, deviceIdentification, LogicalDevice.HEAT_PUMP, i,
+                    DataAttribute.REPORT_STATUS_ONE);
+            this.enableMeasurementReportingOnDevice(connection, deviceIdentification, LogicalDevice.HEAT_PUMP, i,
+                    DataAttribute.REPORT_MEASUREMENTS_ONE);
+            i += 1;
+            logicalDeviceName = heatPumpPrefix + i;
+            heatPumpNode = serverModel.getChild(this.serverName + logicalDeviceName);
+        }
+    }
+
+    private void enableBoilerReportingOnDevice(final DeviceConnection connection, final String deviceIdentification) {
+        final ServerModel serverModel = connection.getConnection().getServerModel();
+        final String boilerPrefix = LogicalDevice.BOILER.getDescription();
+        int i = 1;
+        String logicalDeviceName = boilerPrefix + i;
+        ModelNode boilerNode = serverModel.getChild(this.serverName + logicalDeviceName);
+        while (boilerNode != null) {
+            this.enableStatusReportingOnDevice(connection, deviceIdentification, LogicalDevice.BOILER, i,
+                    DataAttribute.REPORT_STATUS_ONE);
+            this.enableMeasurementReportingOnDevice(connection, deviceIdentification, LogicalDevice.BOILER, i,
+                    DataAttribute.REPORT_MEASUREMENTS_ONE);
+            i += 1;
+            logicalDeviceName = boilerPrefix + i;
+            boilerNode = serverModel.getChild(this.serverName + logicalDeviceName);
         }
     }
 

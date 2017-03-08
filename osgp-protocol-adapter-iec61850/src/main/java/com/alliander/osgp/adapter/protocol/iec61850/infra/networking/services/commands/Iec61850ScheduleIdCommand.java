@@ -8,6 +8,7 @@
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.openmuc.openiec61850.Fc;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
@@ -31,8 +32,8 @@ public class Iec61850ScheduleIdCommand implements RtuReadCommand<MeasurementDto>
     private static final SubDataAttribute SUB_DATA_ATTRIBUTE = SubDataAttribute.SETPOINT_VALUE;
     private static final Fc FC = Fc.SP;
 
-    private LogicalNode logicalNode;
-    private int index;
+    private final LogicalNode logicalNode;
+    private final int index;
 
     public Iec61850ScheduleIdCommand(final int index) {
         this.index = index;
@@ -51,14 +52,14 @@ public class Iec61850ScheduleIdCommand implements RtuReadCommand<MeasurementDto>
 
     @Override
     public MeasurementDto translate(final NodeContainer containingNode) {
-        return new MeasurementDto(this.index, DATA_ATTRIBUTE.getDescription(), 0, DateTime.now(),
+        return new MeasurementDto(this.index, DATA_ATTRIBUTE.getDescription(), 0, new DateTime(DateTimeZone.UTC),
                 containingNode.getInteger(SUB_DATA_ATTRIBUTE).getValue());
     }
 
     @Override
     public void executeWrite(final Iec61850Client client, final DeviceConnection connection,
             final LogicalDevice logicalDevice, final int logicalDeviceIndex, final SetPointDto setPoint)
-                    throws NodeWriteException {
+            throws NodeWriteException {
 
         final int value = this.checkValue(setPoint.getValue());
 

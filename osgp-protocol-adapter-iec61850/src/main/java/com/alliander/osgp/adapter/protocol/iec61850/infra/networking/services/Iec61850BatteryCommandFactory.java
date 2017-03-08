@@ -27,7 +27,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.co
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850ModeCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850OperationalHoursCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850StateCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850StateOfChargeCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850AveragePowerFactorCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850TotalEnergyCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850WarningCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850WarningOtherCommand;
@@ -82,7 +82,7 @@ public final class Iec61850BatteryCommandFactory
         RTU_COMMAND_MAP.put(DataAttribute.MIN_ACTUAL_POWER, new Iec61850MinimumActualPowerCommand());
         RTU_COMMAND_MAP.put(DataAttribute.ACTUAL_POWER_LIMIT, new Iec61850ActualPowerLimitCommand());
         RTU_COMMAND_MAP.put(DataAttribute.TOTAL_ENERGY, new Iec61850TotalEnergyCommand());
-        RTU_COMMAND_MAP.put(DataAttribute.STATE_OF_CHARGE, new Iec61850StateOfChargeCommand());
+        RTU_COMMAND_MAP.put(DataAttribute.AVERAGE_POWER_FACTOR, new Iec61850AveragePowerFactorCommand());
         RTU_COMMAND_MAP.put(DataAttribute.STATE, new Iec61850StateCommand());
         RTU_COMMAND_MAP.put(DataAttribute.ALARM_ONE, new Iec61850AlarmCommand(ONE));
         RTU_COMMAND_MAP.put(DataAttribute.ALARM_TWO, new Iec61850AlarmCommand(TWO));

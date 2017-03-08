@@ -8,6 +8,7 @@
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.openmuc.openiec61850.Fc;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
@@ -37,7 +38,7 @@ public class Iec61850ActualPowerLimitCommand implements RtuReadCommand<Measureme
     public MeasurementDto translate(final NodeContainer containingNode) {
         return new MeasurementDto(1, DataAttribute.ACTUAL_POWER_LIMIT.getDescription(),
                 QualityConverter.toShort(containingNode.getQuality(SubDataAttribute.SUBSTITUDE_QUALITY).getValue()),
-                new DateTime(),
+                new DateTime(DateTimeZone.UTC),
                 containingNode.getChild(SubDataAttribute.SUBSTITUDE_VALUE).getFloat(SubDataAttribute.FLOAT).getFloat());
     }
 }

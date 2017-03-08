@@ -47,9 +47,9 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
      */
     private static final long IEC61850_ENTRY_TIME_OFFSET = 441763200000L;
 
-    private static final String NODE_NAMES = "(RTU|PV|BATTERY|ENGINE|LOAD|CHP|HEAT_BUFFER|GAS_FURNACE)";
-    private static final Pattern REPORT_PATTERN = Pattern.compile("\\A(.*)" + NODE_NAMES
-            + "([1-9]\\d*+)/LLN0\\$(Status|Measurements)\\Z");
+    private static final String NODE_NAMES = "(RTU|PV|BATTERY|ENGINE|LOAD|CHP|HEAT_BUFFER|GAS_FURNACE|HEAT_PUMP|BOILER)";
+    private static final Pattern REPORT_PATTERN = Pattern
+            .compile("\\A(.*)" + NODE_NAMES + "([1-9]\\d*+)/LLN0\\$(Status|Measurements)\\Z");
 
     private static final Map<String, Class<? extends Iec61850ReportHandler>> REPORT_HANDLERS_MAP = new HashMap<>();
 
@@ -62,6 +62,8 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
         REPORT_HANDLERS_MAP.put("CHP", Iec61850ChpReportHandler.class);
         REPORT_HANDLERS_MAP.put("HEAT_BUFFER", Iec61850HeatBufferReportHandler.class);
         REPORT_HANDLERS_MAP.put("GAS_FURNACE", Iec61850GasFurnaceReportHandler.class);
+        REPORT_HANDLERS_MAP.put("HEAT_PUMP", Iec61850HeatPumpReportHandler.class);
+        REPORT_HANDLERS_MAP.put("BOILER", Iec61850BoilerReportHandler.class);
     }
 
     public Iec61850ClientRTUEventListener(final String deviceIdentification,
@@ -71,27 +73,26 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
 
     private Iec61850ReportHandler getReportHandler(final String dataSetRef) {
 
-        Matcher reportMatcher = REPORT_PATTERN.matcher(dataSetRef);
+        final Matcher reportMatcher = REPORT_PATTERN.matcher(dataSetRef);
         if (reportMatcher.matches()) {
             final String node = reportMatcher.group(2);
             final int systemId = Integer.parseInt(reportMatcher.group(3));
-            Class<?> clazz = REPORT_HANDLERS_MAP.get(node);
+            final Class<?> clazz = REPORT_HANDLERS_MAP.get(node);
             try {
-                Constructor<?> ctor = clazz.getConstructor(new Class<?>[] { int.class });
+                final Constructor<?> ctor = clazz.getConstructor(new Class<?>[] { int.class });
                 return (Iec61850ReportHandler) ctor.newInstance(systemId);
             } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
                     | InvocationTargetException | NoSuchMethodException ex) {
                 LOGGER.error("Unable to instantiate Iec61850ReportHandler ", ex);
             }
         }
-
         return null;
     }
 
     @Override
     public void newReport(final Report report) {
-        final DateTime timeOfEntry = report.getTimeOfEntry() == null ? null : new DateTime(report.getTimeOfEntry()
-                .getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET);
+        final DateTime timeOfEntry = report.getTimeOfEntry() == null ? null
+                : new DateTime(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET);
 
         final String reportDescription = this.getReportDescription(report, timeOfEntry);
 
@@ -153,8 +154,8 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
 
             this.logger.info("Handle member {} for {}", member.getReference(), reportDescription);
             try {
-                final MeasurementDto dto = reportHandler.handleMember(new ReadOnlyNodeContainer(
-                        this.deviceIdentification, member));
+                final MeasurementDto dto = reportHandler
+                        .handleMember(new ReadOnlyNodeContainer(this.deviceIdentification, member));
                 if (dto != null) {
                     measurements.add(dto);
                 } else {
@@ -197,8 +198,8 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
             for (final BdaReasonForInclusion reasonCode : reasonCodes) {
                 sb.append("\t                   \t")
                         .append(reasonCode.getReference() == null ? HexConverter.toHexString(reasonCode.getValue())
-                                : reasonCode).append("\t(")
-                        .append(new Iec61850BdaReasonForInclusionHelper(reasonCode).getInfo()).append(')')
+                                : reasonCode)
+                        .append("\t(").append(new Iec61850BdaReasonForInclusionHelper(reasonCode).getInfo()).append(')')
                         .append(System.lineSeparator());
             }
         }

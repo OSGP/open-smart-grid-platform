@@ -23,20 +23,20 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Qual
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
 
-public class Iec61850StateOfChargeCommand implements RtuReadCommand<MeasurementDto> {
+public class Iec61850AveragePowerFactorCommand implements RtuReadCommand<MeasurementDto> {
 
     @Override
     public MeasurementDto execute(final Iec61850Client client, final DeviceConnection connection,
             final LogicalDevice logicalDevice, final int logicalDeviceIndex) throws NodeReadException {
         final NodeContainer containingNode = connection.getFcModelNode(logicalDevice, logicalDeviceIndex,
-                LogicalNode.MEASUREMENT_ONE, DataAttribute.STATE_OF_CHARGE, Fc.MX);
+                LogicalNode.MEASUREMENT_ONE, DataAttribute.AVERAGE_POWER_FACTOR, Fc.MX);
         client.readNodeDataValues(connection.getConnection().getClientAssociation(), containingNode.getFcmodelNode());
         return this.translate(containingNode);
     }
 
     @Override
     public MeasurementDto translate(final NodeContainer containingNode) {
-        return new MeasurementDto(1, DataAttribute.STATE_OF_CHARGE.getDescription(),
+        return new MeasurementDto(1, DataAttribute.AVERAGE_POWER_FACTOR.getDescription(),
                 QualityConverter.toShort(containingNode.getQuality(SubDataAttribute.QUALITY).getValue()),
                 new DateTime(containingNode.getDate(SubDataAttribute.TIME), DateTimeZone.UTC),
                 containingNode.getChild(SubDataAttribute.MAGNITUDE).getFloat(SubDataAttribute.FLOAT).getFloat());
