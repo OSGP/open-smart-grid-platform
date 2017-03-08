@@ -89,6 +89,7 @@
     <maven.compiler.plugin.version>3.6.0</maven.compiler.plugin.version>
     <license.maven.plugin>2.11</license.maven.plugin>
     <quartz.version>2.2.3</quartz.version>
+    <hikaricp.version>2.6.0</hikaricp.version>
   </properties>
 
   <repositories>
@@ -219,6 +220,13 @@
         <groupId>joda-time</groupId>
         <artifactId>joda-time</artifactId>
         <version>${joda.version}</version>
+      </dependency>
+
+      <!-- Hikari connection pooling -->
+      <dependency>
+        <groupId>com.zaxxer</groupId>
+        <artifactId>HikariCP</artifactId>
+        <version>${hikaricp.version}</version>
       </dependency>
 
       <!-- Hibernate -->
