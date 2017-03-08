@@ -9,6 +9,7 @@ package com.alliander.osgp.adapter.protocol.iec61850.application.config;
 
 import java.util.Properties;
 
+import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 
 import org.hibernate.ejb.HibernatePersistence;
@@ -21,7 +22,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -29,13 +29,14 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceRepository;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.shared.application.config.AbstractConfig;
+import com.alliander.osgp.shared.infra.db.DefaultConnectionPoolFactory;
 import com.googlecode.flyway.core.Flyway;
+import com.zaxxer.hikari.HikariDataSource;
 
 /**
  * Persistence configuration for the osgp_adapter_protocol_iec61850 database.
  */
-@EnableJpaRepositories(entityManagerFactoryRef = "iec61850EntityManagerFactory", basePackageClasses = {
-        Iec61850DeviceRepository.class })
+@EnableJpaRepositories(entityManagerFactoryRef = "iec61850EntityManagerFactory", basePackageClasses = { Iec61850DeviceRepository.class })
 @Configuration
 @EnableTransactionManagement()
 public class Iec61850PersistenceConfig extends AbstractConfig {
@@ -47,14 +48,31 @@ public class Iec61850PersistenceConfig extends AbstractConfig {
     private static final String PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY = "hibernate.ejb.naming_strategy";
     private static final String PROPERTY_NAME_HIBERNATE_SHOW_SQL = "hibernate.show_sql";
 
+    @Value("${db.username.iec61850}")
+    private String databaseUsername;
+    @Value("${db.password.iec61850}")
+    private String databasePassword;
+
     @Value("${db.driver}")
     private String databaseDriver;
-    @Value("${db.password}")
-    private String databasePassword;
-    @Value("${db.url}")
-    private String databaseUrl;
-    @Value("${db.username}")
-    private String databaseUsername;
+    @Value("${db.protocol}")
+    private String databaseProtocol;
+
+    @Value("${db.host.iec61850}")
+    private String databaseHost;
+    @Value("${db.port.iec61850}")
+    private int databasePort;
+    @Value("${db.name.iec61850}")
+    private String databaseName;
+
+    @Value("${db.min_pool_size}")
+    private int databaseMinPoolSize;
+    @Value("${db.max_pool_size}")
+    private int databaseMaxPoolSize;
+    @Value("${db.auto_commit}")
+    private boolean databaseAutoCommit;
+    @Value("${db.idle_timeout}")
+    private int databaseIdleTimeout;
 
     @Value("${hibernate.dialect}")
     private String hibernateDialect;
@@ -75,6 +93,8 @@ public class Iec61850PersistenceConfig extends AbstractConfig {
     @Value("${entitymanager.packages.to.scan}")
     private String entityManagerPackagesToScan;
 
+    private HikariDataSource dataSource;
+
     public Iec61850PersistenceConfig() {
         InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
     }
@@ -85,17 +105,18 @@ public class Iec61850PersistenceConfig extends AbstractConfig {
      * @return DataSource
      */
     public DataSource iec61850DataSource() {
-        final SingleConnectionDataSource singleConnectionDataSource = new SingleConnectionDataSource();
-        singleConnectionDataSource.setAutoCommit(false);
-        final Properties properties = new Properties();
-        properties.setProperty("socketTimeout", "0");
-        properties.setProperty("tcpKeepAlive", "true");
-        singleConnectionDataSource.setDriverClassName(this.databaseDriver);
-        singleConnectionDataSource.setUrl(this.databaseUrl);
-        singleConnectionDataSource.setUsername(this.databaseUsername);
-        singleConnectionDataSource.setPassword(this.databasePassword);
-        singleConnectionDataSource.setSuppressClose(true);
-        return singleConnectionDataSource;
+        if (this.dataSource == null) {
+            final DefaultConnectionPoolFactory.Builder builder = new DefaultConnectionPoolFactory.Builder()
+            .withUsername(this.databaseUsername).withPassword(this.databasePassword)
+            .withDriverClassName(this.databaseDriver).withProtocol(this.databaseProtocol)
+            .withDatabaseHost(this.databaseHost).withDatabasePort(this.databasePort)
+            .withDatabaseName(this.databaseName).withMinPoolSize(this.databaseMinPoolSize)
+            .withMaxPoolSize(this.databaseMaxPoolSize).withAutoCommit(this.databaseAutoCommit)
+            .withIdleTimeout(this.databaseIdleTimeout);
+            final DefaultConnectionPoolFactory factory = builder.build();
+            this.dataSource = factory.getDefaultConnectionPool();
+        }
+        return this.dataSource;
     }
 
     /**
@@ -164,5 +185,12 @@ public class Iec61850PersistenceConfig extends AbstractConfig {
         entityManagerFactoryBean.setJpaProperties(jpaProperties);
 
         return entityManagerFactoryBean;
+    }
+
+    @PreDestroy
+    public void destroyDataSource() {
+        if (this.dataSource != null) {
+            this.dataSource.close();
+        }
     }
 }
