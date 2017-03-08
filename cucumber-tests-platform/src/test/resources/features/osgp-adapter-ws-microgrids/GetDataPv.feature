@@ -49,11 +49,11 @@ Feature: MicroGrids Get PhotoVoltaic System Data
       | DeviceIdentification | RTU10002    |
       | ServerName           | WAGO123     |
       | IcdFilename          | WAGO123.icd |
-      | Port                 |       61102 |
+      | Port                 |       62102 |
     And an rtu simulator started with
       | ServerName  | WAGO123     |
       | IcdFilename | WAGO123.icd |
-      | Port        |       61102 |
+      | Port        |       62102 |
     And an rtu simulator returning
       | PV1 | LLN0.Health.stVal |        3 |
       | PV1 | LLN0.Health.q     | OLD_DATA |
@@ -81,11 +81,11 @@ Feature: MicroGrids Get PhotoVoltaic System Data
       | DeviceIdentification | RTU10003  |
       | ServerName           | Wrong     |
       | IcdFilename          | Wrong.icd |
-      | Port                 |     62102 |
+      | Port                 |     63102 |
     And an rtu simulator started with
       | ServerName  | WAGO123     |
       | IcdFilename | WAGO123.icd |
-      | Port        |       62102 |
+      | Port        |       63102 |
     And an rtu simulator returning
       | PV1 | LLN0.Health.stVal |        3 |
       | PV1 | LLN0.Health.q     | OLD_DATA |
@@ -101,16 +101,17 @@ Feature: MicroGrids Get PhotoVoltaic System Data
       | Component            | PROTOCOL_IEC61850            |
       | Message              | fcmodelNode must not be null |
 
+	@TEST
   Scenario: Request PV1 Health wrong icd file
     Given an rtu iec61850 device
       | DeviceIdentification | RTU10004  |
       | ServerName           | WAGO123   |
       | IcdFilename          | Wrong.icd |
-      | Port                 |     63102 |
+      | Port                 |     64102 |
     And an rtu simulator started with
       | ServerName  | Wrong     |
       | IcdFilename | Wrong.icd |
-      | Port        |     63102 |
+      | Port        |     64102 |
     And an rtu simulator returning
       | PV1 | LLN0.Health.stVal |        3 |
       | PV1 | LLN0.Health.q     | OLD_DATA |
