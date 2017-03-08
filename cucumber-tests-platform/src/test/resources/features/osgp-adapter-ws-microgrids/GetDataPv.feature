@@ -101,7 +101,7 @@ Feature: MicroGrids Get PhotoVoltaic System Data
       | Component            | PROTOCOL_IEC61850            |
       | Message              | fcmodelNode must not be null |
 
-	@TEST
+	@Skip
   Scenario: Request PV1 Health wrong icd file
     Given an rtu iec61850 device
       | DeviceIdentification | RTU10004  |
