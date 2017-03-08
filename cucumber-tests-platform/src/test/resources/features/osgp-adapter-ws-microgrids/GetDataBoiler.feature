@@ -7,7 +7,7 @@ Feature: MicroGrids Get Boiler Data
   @TEST
   Scenario: Request Boiler
     Given an rtu iec61850 device
-      | DeviceIdentification | RTU10001                              |
+      | DeviceIdentification | RTU10003                              |
       | IcdFilename          | MarkerWadden_0_1_1_reporting_hack.icd |
       | Port                 |                                 63102 |
     And an rtu simulator started with
@@ -105,7 +105,7 @@ Feature: MicroGrids Get Boiler Data
       | BOILER1 | MFLW1.FlwRte.t         | 2017-02-01T12:02:00 |
       | BOILER1 | KTNK1.VlmCap.setMag.f  |                   6 |
     When a get data request is received
-      | DeviceIdentification       | RTU10001 |
+      | DeviceIdentification       | RTU10003 |
       | NumberOfSystems            |        1 |
       | SystemId_1                 |        1 |
       | SystemType_1               | BOILER   |
