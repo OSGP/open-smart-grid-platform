@@ -7,10 +7,14 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.repositories;
 
+import java.util.List;
+
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
+import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DlmsSecurityKeyRepository extends JpaRepository<SecurityKey, Long> {
+    List<SecurityKey> findBySecurityKeyType(SecurityKeyType securityKeyType);
 }
