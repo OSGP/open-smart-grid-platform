@@ -27,7 +27,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import com.alliander.osgp.core.db.api.exceptions.CoreDbApiException;
 import com.alliander.osgp.core.db.api.repositories.DeviceDataRepository;
 import com.alliander.osgp.shared.application.config.AbstractCustomConfig;
-import com.zaxxer.hikari.HikariConfig;
+import com.alliander.osgp.shared.infra.db.DefaultConnectionPoolFactory;
 import com.zaxxer.hikari.HikariDataSource;
 
 @EnableJpaRepositories(entityManagerFactoryRef = "osgpCoreDbApiEntityManagerFactory", basePackageClasses = { DeviceDataRepository.class })
@@ -35,13 +35,20 @@ import com.zaxxer.hikari.HikariDataSource;
 @EnableTransactionManagement()
 public class OsgpCoreDbApiPersistenceConfig extends AbstractCustomConfig {
 
-    private static final String PROPERTY_NAME_DATABASE_DRIVER = "db.api.driver";
-    private static final String PROPERTY_NAME_DATABASE_PW = "db.api.password";
-    private static final String PROPERTY_NAME_DATABASE_URL = "db.api.url";
-    private static final String PROPERTY_NAME_DATABASE_USERNAME = "db.api.username";
+    private static final String PROPERTY_NAME_DATABASE_USERNAME = "db.api.username.oslp";
+    private static final String PROPERTY_NAME_DATABASE_PW = "db.api.password.oslp";
 
+    private static final String PROPERTY_NAME_DATABASE_DRIVER = "db.driver";
+    private static final String PROPERTY_NAME_DATABASE_PROTOCOL = "db.protocol";
+
+    private static final String PROPERTY_NAME_DATABASE_HOST = "db.api.host.oslp";
+    private static final String PROPERTY_NAME_DATABASE_PORT = "db.api.port.oslp";
+    private static final String PROPERTY_NAME_DATABASE_NAME = "db.api.name.oslp";
+
+    private static final String PROPERTY_NAME_DATABASE_MIN_POOL_SIZE = "db.min_pool_size";
     private static final String PROPERTY_NAME_DATABASE_MAX_POOL_SIZE = "db.max_pool_size";
     private static final String PROPERTY_NAME_DATABASE_AUTO_COMMIT = "db.auto_commit";
+    private static final String PROPERTY_NAME_DATABASE_IDLE_TIMEOUT = "db.idle_timeout";
 
     private static final String HIBERNATE_DIALECT_KEY = "hibernate.dialect";
     private static final String HIBERNATE_FORMAT_SQL_KEY = "hibernate.format_sql";
@@ -61,15 +68,17 @@ public class OsgpCoreDbApiPersistenceConfig extends AbstractCustomConfig {
 
     /**
      * Wire property sources to local environment.
-     * @throws IOException when required property source is not found.
+     *
+     * @throws IOException
+     *             when required property source is not found.
      */
     @PostConstruct
     protected void init() throws IOException {
-        addPropertySource("file:${osgp/CoreDbApi/config}",  true);
-        addPropertySource("file:${osgp/Global/config}", true);
-        addPropertySource("classpath:osgp-core-db-api.properties", false);        
+        this.addPropertySource("file:${osgp/CoreDbApi/config}", true);
+        this.addPropertySource("file:${osgp/Global/config}", true);
+        this.addPropertySource("classpath:osgp-core-db-api.properties", false);
     }
-    
+
     /**
      * Method for creating the Data Source.
      *
@@ -77,19 +86,32 @@ public class OsgpCoreDbApiPersistenceConfig extends AbstractCustomConfig {
      */
     public DataSource getOsgpCoreDbApiDataSource() {
         if (this.dataSource == null) {
-            final HikariConfig hikariConfig = new HikariConfig();
+            final String username = ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_DATABASE_USERNAME);
+            final String password = ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_DATABASE_PW);
 
-            hikariConfig.setDriverClassName(ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER));
-            hikariConfig.setJdbcUrl(ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
-            hikariConfig.setUsername(ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_DATABASE_USERNAME));
-            hikariConfig.setPassword(ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_DATABASE_PW));
+            final String driverClassName = ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER);
+            final String databaseProtocol = ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_DATABASE_PROTOCOL);
 
-            hikariConfig.setMaximumPoolSize(Integer.parseInt(ENVIRONMENT
-                    .getRequiredProperty(PROPERTY_NAME_DATABASE_MAX_POOL_SIZE)));
-            hikariConfig.setAutoCommit(Boolean.parseBoolean(ENVIRONMENT
-                    .getRequiredProperty(PROPERTY_NAME_DATABASE_AUTO_COMMIT)));
+            final String databaseHost = ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_DATABASE_HOST);
+            final int databasePort = Integer.parseInt(ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_DATABASE_PORT));
+            final String databaseName = ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_DATABASE_NAME);
 
-            this.dataSource = new HikariDataSource(hikariConfig);
+            final int minPoolSize = Integer.parseInt(ENVIRONMENT
+                    .getRequiredProperty(PROPERTY_NAME_DATABASE_MIN_POOL_SIZE));
+            final int maxPoolSize = Integer.parseInt(ENVIRONMENT
+                    .getRequiredProperty(PROPERTY_NAME_DATABASE_MAX_POOL_SIZE));
+            final boolean isAutoCommit = Boolean.parseBoolean(ENVIRONMENT
+                    .getRequiredProperty(PROPERTY_NAME_DATABASE_AUTO_COMMIT));
+            final int idleTimeout = Integer.parseInt(ENVIRONMENT
+                    .getRequiredProperty(PROPERTY_NAME_DATABASE_IDLE_TIMEOUT));
+
+            final DefaultConnectionPoolFactory.Builder builder = new DefaultConnectionPoolFactory.Builder()
+                    .withUsername(username).withPassword(password).withDriverClassName(driverClassName)
+                    .withProtocol(databaseProtocol).withDatabaseHost(databaseHost).withDatabasePort(databasePort)
+                    .withDatabaseName(databaseName).withMinPoolSize(minPoolSize).withMaxPoolSize(maxPoolSize)
+                    .withAutoCommit(isAutoCommit).withIdleTimeout(idleTimeout);
+            final DefaultConnectionPoolFactory factory = builder.build();
+            this.dataSource = factory.getDefaultConnectionPool();
         }
         return this.dataSource;
     }
@@ -135,8 +157,8 @@ public class OsgpCoreDbApiPersistenceConfig extends AbstractCustomConfig {
         entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistence.class);
 
         final Properties jpaProperties = new Properties();
-        jpaProperties.put(HIBERNATE_DIALECT_KEY,
-                ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_HIBERNATE_DIALECT_VALUE));
+        jpaProperties
+                .put(HIBERNATE_DIALECT_KEY, ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_HIBERNATE_DIALECT_VALUE));
         jpaProperties.put(HIBERNATE_FORMAT_SQL_KEY,
                 ENVIRONMENT.getRequiredProperty(PROPERTY_NAME_HIBERNATE_FORMAT_SQL_VALUE));
         jpaProperties.put(HIBERNATE_NAMING_STRATEGY_KEY,
