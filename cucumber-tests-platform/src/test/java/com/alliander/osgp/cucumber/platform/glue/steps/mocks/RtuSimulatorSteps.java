@@ -49,7 +49,9 @@ public class RtuSimulatorSteps extends GlueBase {
     /**
      * If this method is user, then (in order to correctly start a different
      * RtuSimulator), these setting must be supplied in the feature file:
-     * ServerName, IcdFilename and Port In addition, the Port should be unique.
+     * ServerName, IcdFilename and Port In addition, the Port should be unique,
+     * and the RTU device should unique as well because the platform caches the
+     * server based on the RTU device name!
      *
      * @param settings
      * @throws Throwable

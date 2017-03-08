@@ -13,6 +13,8 @@ package com.alliander.osgp.cucumber.platform;
  */
 public class Keys {
 
+    public static final String CODE = "Code";
+    public static final String SCHEDULE_CODE = "LightSchedule";
     public static final String ACTUAL_CONSUMED_POWER = "ActualConsumedPower";
     public static final String ACTUAL_CURRENT1 = "ActualCurrent1";
     public static final String ACTUAL_CURRENT2 = "ActualCurrent2";
@@ -251,6 +253,12 @@ public class Keys {
     public static final String SEQUENCE_WINDOW = "SequenceWindow";
     public static final String NEW_SEQUENCE_NUMBER = "NewSequenceNumber";
     public static final String NUMBER_TO_ADD_TO_SEQUENCE_NUMBER = "NumberToAddToSequenceNumber";
+
+    public static final String KEY_SCHEDULE_DESCRIPTION = "Description";
+    public static final String KEY_SCHEDULE_COLOR = "Color";
+    public static final String KEY_SCHEDULE_DEFAULT = "DefaultSchedule";
+    public static final String KEY_SCHEDULE_SUCCESS = "Success";
+    public static final String KEY_SCHEDULE_TEMPLATE = "Template";
 
     public static final String KEY_IEC61850_SERVERNAME = "ServerName";
     public static final String KEY_IEC61850_PORT = "Port";
