@@ -22,18 +22,23 @@ import com.alliander.osgp.domain.core.exceptions.PlatformException;
         com.alliander.osgp.domain.microgrids.repositories.RtuDeviceRepository.class })
 @Configuration
 @PropertySources({ @PropertySource("classpath:osgp-adapter-ws-microgrids.properties"),
-        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true), })
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+    @PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true), })
 public class PersistenceConfigCore extends AbstractPersistenceConfigBase {
 
-    private static final String PROPERTY_NAME_DATABASE_PASSWORD = "db.password.core";
-    private static final String PROPERTY_NAME_DATABASE_URL = "db.url.core";
     private static final String PROPERTY_NAME_DATABASE_USERNAME = "db.username.core";
+    private static final String PROPERTY_NAME_DATABASE_PW = "db.password.core";
+
+    private static final String PROPERTY_NAME_DATABASE_HOST = "db.host.core";
+    private static final String PROPERTY_NAME_DATABASE_PORT = "db.port.core";
+    private static final String PROPERTY_NAME_DATABASE_NAME = "db.name.core";
+
     private static final String PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN = "entitymanager.packages.to.scan.core";
 
     public PersistenceConfigCore() {
-        super("OSGP_CORE_MICROGRIDS", PROPERTY_NAME_DATABASE_USERNAME, PROPERTY_NAME_DATABASE_PASSWORD,
-                PROPERTY_NAME_DATABASE_URL, PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN, PersistenceConfigCore.class);
+        super("OSGP_CORE_MICROGRIDS", PROPERTY_NAME_DATABASE_USERNAME, PROPERTY_NAME_DATABASE_PW,
+                PROPERTY_NAME_DATABASE_HOST, PROPERTY_NAME_DATABASE_PORT, PROPERTY_NAME_DATABASE_NAME,
+                PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN, PersistenceConfigCore.class);
     }
 
     @Bean(name = "coreTransactionManager")
