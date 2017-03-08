@@ -47,7 +47,7 @@ public class Iec61850RtuDeviceReportingService {
         this.enableHeatBufferReportingOnDevice(connection, deviceIdentification);
         this.enableGasFurnaceReportingOnDevice(connection, deviceIdentification);
         this.enableHeatPumpReportingOnDevice(connection, deviceIdentification);
-        this.enalbeBoilerReportingOnDevice(connection, deviceIdentification);
+        this.enableBoilerReportingOnDevice(connection, deviceIdentification);
     }
 
     private void enableRtuReportingOnDevice(final DeviceConnection connection, final String deviceIdentification) {
