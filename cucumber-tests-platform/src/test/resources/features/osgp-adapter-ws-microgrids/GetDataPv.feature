@@ -43,7 +43,7 @@ Feature: MicroGrids Get PhotoVoltaic System Data
       | DeviceIdentification | RTU10001                     |
       | Component            | PROTOCOL_IEC61850            |
       | Message              | fcmodelNode must not be null |
-
+@Skip
   Scenario: Request PV1 Health not default servername
     Given an rtu iec61850 device
       | DeviceIdentification | RTU10001    |
@@ -75,6 +75,7 @@ Feature: MicroGrids Get PhotoVoltaic System Data
       | MeasurementNode_1_1      | Health   |
       | MeasurementQualifier_1_1 |     1024 |
       | MeasurementValue_1_1     |      3.0 |
+@Skip
 
   Scenario: Request PV1 Health unknown servername
     Given an rtu iec61850 device
