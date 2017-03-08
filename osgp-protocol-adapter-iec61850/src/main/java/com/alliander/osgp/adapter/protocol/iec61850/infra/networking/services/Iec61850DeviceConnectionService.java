@@ -99,7 +99,7 @@ public class Iec61850DeviceConnectionService {
                         serverName);
             }
         } catch (final ProtocolAdapterException e) {
-            this.logProtocolAdapetrException(deviceIdentification, e);
+            this.logProtocolAdapterException(deviceIdentification, e);
         }
 
         final InetAddress inetAddress = this.convertIpAddress(ipAddress);
@@ -115,7 +115,7 @@ public class Iec61850DeviceConnectionService {
             eventListener = Iec61850ClientEventListenerFactory.getInstance().getEventListener(ied,
                     deviceIdentification, this.deviceManagementService);
         } catch (final ProtocolAdapterException e) {
-            this.logProtocolAdapetrException(deviceIdentification, e);
+            this.logProtocolAdapterException(deviceIdentification, e);
         }
 
         final Iec61850Device iec61850Device = this.iec61850DeviceRepository
@@ -154,7 +154,7 @@ public class Iec61850DeviceConnectionService {
         return new DeviceConnection(iec61850Connection, deviceIdentification, serverName);
     }
 
-    private void logProtocolAdapetrException(final String deviceIdentification, final ProtocolAdapterException e) {
+    private void logProtocolAdapterException(final String deviceIdentification, final ProtocolAdapterException e) {
         LOGGER.error(
                 "ProtocolAdapterException: no Iec61850ClientBaseEventListener instance could be contructed, continue without event listener for deviceIdentification: "
                         + deviceIdentification, e);
