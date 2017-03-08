@@ -4,8 +4,7 @@ Feature: MicroGrids Get Boiler Data
   I want to get Boiler data from an RTU
   So this data can be used by other processes
 
-  @TEST
-  Scenario: Request Boiler
+ Scenario: Request Boiler
     Given an rtu iec61850 device
       | DeviceIdentification | RTU10003                              |
       | IcdFilename          | MarkerWadden_0_1_1_reporting_hack.icd |
