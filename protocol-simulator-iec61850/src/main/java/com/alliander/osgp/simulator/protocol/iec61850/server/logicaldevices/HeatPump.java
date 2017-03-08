@@ -61,9 +61,17 @@ public class HeatPump extends LogicalDevice {
     private static final String GGIO1_INTIN2_T = "GGIO1.IntIn2.t";
 
     private static final String DSCH1_SCHDID_SETVAL = "DSCH1.SchdId.setVal";
+    private static final String DSCH1_SCHDTYP_SETVAL = "DSCH1.SchdTyp.setVal";
+    private static final String DSCH1_SCHDCAT_SETVAL = "DSCH1.SchCat.setVal";
     private static final String DSCH2_SCHDID_SETVAL = "DSCH2.SchdId.setVal";
+    private static final String DSCH2_SCHDTYP_SETVAL = "DSCH2.SchdTyp.setVal";
+    private static final String DSCH2_SCHDCAT_SETVAL = "DSCH2.SchCat.setVal";
     private static final String DSCH3_SCHDID_SETVAL = "DSCH3.SchdId.setVal";
+    private static final String DSCH3_SCHDTYP_SETVAL = "DSCH3.SchdTyp.setVal";
+    private static final String DSCH3_SCHDCAT_SETVAL = "DSCH3.SchCat.setVal";
     private static final String DSCH4_SCHDID_SETVAL = "DSCH4.SchdId.setVal";
+    private static final String DSCH4_SCHDTYP_SETVAL = "DSCH4.SchdTyp.setVal";
+    private static final String DSCH4_SCHDCAT_SETVAL = "DSCH4.SchCat.setVal";
 
     private static final String MMXU1_TOTW_MAG_F = "MMXU1.TotW.mag.f";
     private static final String MMXU1_TOTW_Q = "MMXU1.TotW.q";
@@ -93,12 +101,16 @@ public class HeatPump extends LogicalDevice {
 
     private static final String TTMP1_TMPSV_INSTMAG_F = "TTMP1.TmpSv.instMag.f";
     private static final String TTMP1_TMPSV_Q = "TTMP1.TmpSv.q";
+    private static final String TTMP1_TMPSV_T = "TTMP1.TmpSv.t";
     private static final String TTMP2_TMPSV_INSTMAG_F = "TTMP2.TmpSv.instMag.f";
     private static final String TTMP2_TMPSV_Q = "TTMP2.TmpSv.q";
+    private static final String TTMP2_TMPSV_T = "TTMP2.TmpSv.t";
     private static final String TTMP3_TMPSV_INSTMAG_F = "TTMP3.TmpSv.instMag.f";
     private static final String TTMP3_TMPSV_Q = "TTMP3.TmpSv.q";
+    private static final String TTMP3_TMPSV_T = "TTMP3.TmpSv.t";
     private static final String TTMP4_TMPSV_INSTMAG_F = "TTMP4.TmpSv.instMag.f";
     private static final String TTMP4_TMPSV_Q = "TTMP4.TmpSv.q";
+    private static final String TTMP4_TMPSV_T = "TTMP4.TmpSv.t";
 
     private static final String MFLW1_FLWRTE_MAG_F = "MFLW1.FlwRte.mag.f";
     private static final String MFLW1_FLWRTE_Q = "MFLW1.FlwRte.q";
@@ -115,18 +127,20 @@ public class HeatPump extends LogicalDevice {
             new TreeSet<>(Arrays.asList(LLN0_HEALTH_STVAL, LLN0_BEH_STVAL, LLN0_MOD_STVAL, DGEN1_GNOPST_STVAL)));
     private static final Set<String> INT32_NODES = Collections
             .unmodifiableSet(new TreeSet<>(Arrays.asList(GGIO1_INTIN1_STVAL, GGIO1_INTIN2_STVAL, DSCH1_SCHDID_SETVAL,
-                    DSCH2_SCHDID_SETVAL, DSCH3_SCHDID_SETVAL, DSCH4_SCHDID_SETVAL, DGEN1_OPTMSRS_STVAL)));
+                    DSCH1_SCHDTYP_SETVAL, DSCH1_SCHDCAT_SETVAL, DSCH2_SCHDID_SETVAL, DSCH2_SCHDTYP_SETVAL,
+                    DSCH2_SCHDCAT_SETVAL, DSCH3_SCHDID_SETVAL, DSCH3_SCHDTYP_SETVAL, DSCH3_SCHDCAT_SETVAL,
+                    DSCH4_SCHDID_SETVAL, DSCH4_SCHDTYP_SETVAL, DSCH4_SCHDCAT_SETVAL, DGEN1_OPTMSRS_STVAL)));
     private static final Set<String> QUALITY_NODES = Collections
             .unmodifiableSet(new TreeSet<>(Arrays.asList(LLN0_HEALTH_Q, LLN0_BEH_Q, LLN0_MOD_Q, GGIO1_ALM1_Q,
                     GGIO1_ALM2_Q, GGIO1_ALM3_Q, GGIO1_ALM4_Q, GGIO1_INTIN1_Q, GGIO1_INTIN2_Q, GGIO1_WRN1_Q,
                     GGIO1_WRN2_Q, GGIO1_WRN3_Q, GGIO1_WRN4_Q, MMXU1_TOTW_Q, MMXU1_MINWPHS_Q, MMXU1_MAXWPHS_Q,
                     MMXU1_TOTPF_Q, DRCC1_OUTWSET_SUBQ, DGEN1_TOTWH_Q, DGEN1_GNOPST_Q, DGEN1_OPTMSRS_Q, TTMP1_TMPSV_Q,
                     TTMP2_TMPSV_Q, TTMP3_TMPSV_Q, TTMP4_TMPSV_Q, MFLW1_FLWRTE_Q)));
-    private static final Set<String> TIMESTAMP_NODES = Collections
-            .unmodifiableSet(new TreeSet<>(Arrays.asList(LLN0_HEALTH_T, LLN0_BEH_T, LLN0_MOD_T, GGIO1_ALM1_T,
-                    GGIO1_ALM2_T, GGIO1_ALM3_T, GGIO1_ALM4_T, GGIO1_INTIN1_T, GGIO1_INTIN2_T, GGIO1_WRN1_T,
-                    GGIO1_WRN2_T, GGIO1_WRN3_T, GGIO1_WRN4_T, MMXU1_TOTW_T, MMXU1_MINWPHS_T, MMXU1_MAXWPHS_T,
-                    MMXU1_TOTPF_T, DGEN1_TOTWH_T, DGEN1_GNOPST_T, DGEN1_OPTMSRS_T, MFLW1_FLWRTE_T)));
+    private static final Set<String> TIMESTAMP_NODES = Collections.unmodifiableSet(new TreeSet<>(
+            Arrays.asList(LLN0_HEALTH_T, LLN0_BEH_T, LLN0_MOD_T, GGIO1_ALM1_T, GGIO1_ALM2_T, GGIO1_ALM3_T, GGIO1_ALM4_T,
+                    GGIO1_INTIN1_T, GGIO1_INTIN2_T, GGIO1_WRN1_T, GGIO1_WRN2_T, GGIO1_WRN3_T, GGIO1_WRN4_T,
+                    MMXU1_TOTW_T, MMXU1_MINWPHS_T, MMXU1_MAXWPHS_T, MMXU1_TOTPF_T, DGEN1_TOTWH_T, DGEN1_GNOPST_T,
+                    DGEN1_OPTMSRS_T, TTMP1_TMPSV_T, TTMP2_TMPSV_T, TTMP3_TMPSV_T, TTMP4_TMPSV_T, MFLW1_FLWRTE_T)));
 
     private static final Map<String, Fc> FC_BY_NODE;
     static {
@@ -175,9 +189,17 @@ public class HeatPump extends LogicalDevice {
         fcByNode.put(GGIO1_INTIN2_T, Fc.ST);
 
         fcByNode.put(DSCH1_SCHDID_SETVAL, Fc.SP);
+        fcByNode.put(DSCH1_SCHDTYP_SETVAL, Fc.SP);
+        fcByNode.put(DSCH1_SCHDCAT_SETVAL, Fc.SP);
         fcByNode.put(DSCH2_SCHDID_SETVAL, Fc.SP);
+        fcByNode.put(DSCH2_SCHDTYP_SETVAL, Fc.SP);
+        fcByNode.put(DSCH2_SCHDCAT_SETVAL, Fc.SP);
         fcByNode.put(DSCH3_SCHDID_SETVAL, Fc.SP);
+        fcByNode.put(DSCH3_SCHDTYP_SETVAL, Fc.SP);
+        fcByNode.put(DSCH3_SCHDCAT_SETVAL, Fc.SP);
         fcByNode.put(DSCH4_SCHDID_SETVAL, Fc.SP);
+        fcByNode.put(DSCH4_SCHDTYP_SETVAL, Fc.SP);
+        fcByNode.put(DSCH4_SCHDCAT_SETVAL, Fc.SP);
 
         fcByNode.put(MMXU1_TOTW_MAG_F, Fc.MX);
         fcByNode.put(MMXU1_TOTW_Q, Fc.MX);
@@ -207,12 +229,16 @@ public class HeatPump extends LogicalDevice {
 
         fcByNode.put(TTMP1_TMPSV_INSTMAG_F, Fc.MX);
         fcByNode.put(TTMP1_TMPSV_Q, Fc.MX);
+        fcByNode.put(TTMP1_TMPSV_T, Fc.MX);
         fcByNode.put(TTMP2_TMPSV_INSTMAG_F, Fc.MX);
         fcByNode.put(TTMP2_TMPSV_Q, Fc.MX);
+        fcByNode.put(TTMP2_TMPSV_T, Fc.MX);
         fcByNode.put(TTMP3_TMPSV_INSTMAG_F, Fc.MX);
         fcByNode.put(TTMP3_TMPSV_Q, Fc.MX);
+        fcByNode.put(TTMP3_TMPSV_T, Fc.MX);
         fcByNode.put(TTMP4_TMPSV_INSTMAG_F, Fc.MX);
         fcByNode.put(TTMP4_TMPSV_Q, Fc.MX);
+        fcByNode.put(TTMP4_TMPSV_T, Fc.MX);
 
         fcByNode.put(MFLW1_FLWRTE_MAG_F, Fc.MX);
         fcByNode.put(MFLW1_FLWRTE_Q, Fc.MX);
@@ -273,9 +299,17 @@ public class HeatPump extends LogicalDevice {
         values.add(this.setTime(GGIO1_INTIN2_T, Fc.ST, timestamp));
 
         values.add(this.setRandomInt(DSCH1_SCHDID_SETVAL, Fc.SP, 1, 100));
+        values.add(this.setRandomInt(DSCH1_SCHDTYP_SETVAL, Fc.SP, 1, 100));
+        values.add(this.setRandomInt(DSCH1_SCHDCAT_SETVAL, Fc.SP, 1, 100));
         values.add(this.setRandomInt(DSCH2_SCHDID_SETVAL, Fc.SP, 1, 100));
+        values.add(this.setRandomInt(DSCH2_SCHDTYP_SETVAL, Fc.SP, 1, 100));
+        values.add(this.setRandomInt(DSCH2_SCHDCAT_SETVAL, Fc.SP, 1, 100));
         values.add(this.setRandomInt(DSCH3_SCHDID_SETVAL, Fc.SP, 1, 100));
+        values.add(this.setRandomInt(DSCH3_SCHDTYP_SETVAL, Fc.SP, 1, 100));
+        values.add(this.setRandomInt(DSCH3_SCHDCAT_SETVAL, Fc.SP, 1, 100));
         values.add(this.setRandomInt(DSCH4_SCHDID_SETVAL, Fc.SP, 1, 100));
+        values.add(this.setRandomInt(DSCH4_SCHDTYP_SETVAL, Fc.SP, 1, 100));
+        values.add(this.setRandomInt(DSCH4_SCHDCAT_SETVAL, Fc.SP, 1, 100));
 
         values.add(this.setRandomFloat(MMXU1_TOTW_MAG_F, Fc.MX, 0, 1000));
         values.add(this.setQuality(MMXU1_TOTW_Q, Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
@@ -305,12 +339,16 @@ public class HeatPump extends LogicalDevice {
 
         values.add(this.setFixedFloat(TTMP1_TMPSV_INSTMAG_F, Fc.MX, 314));
         values.add(this.setQuality(TTMP1_TMPSV_Q, Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
+        values.add(this.setTime(TTMP1_TMPSV_T, Fc.MX, timestamp));
         values.add(this.setFixedFloat(TTMP2_TMPSV_INSTMAG_F, Fc.MX, 324));
         values.add(this.setQuality(TTMP2_TMPSV_Q, Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
+        values.add(this.setTime(TTMP2_TMPSV_T, Fc.MX, timestamp));
         values.add(this.setFixedFloat(TTMP3_TMPSV_INSTMAG_F, Fc.MX, 334));
         values.add(this.setQuality(TTMP3_TMPSV_Q, Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
+        values.add(this.setTime(TTMP3_TMPSV_T, Fc.MX, timestamp));
         values.add(this.setFixedFloat(TTMP4_TMPSV_INSTMAG_F, Fc.MX, 344));
         values.add(this.setQuality(TTMP4_TMPSV_Q, Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
+        values.add(this.setTime(TTMP4_TMPSV_T, Fc.MX, timestamp));
 
         values.add(this.setFixedFloat(MFLW1_FLWRTE_MAG_F, Fc.MX, 314));
         values.add(this.setQuality(MFLW1_FLWRTE_Q, Fc.MX, QualityType.VALIDITY_GOOD.getValue()));
