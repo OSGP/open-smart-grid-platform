@@ -1,10 +1,9 @@
 @Iec61850MockServer
-
 Feature: MicroGrids Get PhotoVoltaic System Data
   In order to be able to know data of a photovoltaic system with a remote terminal unit
   As an OSGP client
   I want to get PV data from an RTU
-  
+
   Scenario: Request PV1 Health
     Given an rtu iec61850 device
       | DeviceIdentification | RTU10001 |
@@ -50,7 +49,7 @@ Feature: MicroGrids Get PhotoVoltaic System Data
       | DeviceIdentification | RTU10002    |
       | ServerName           | WAGO123     |
       | IcdFilename          | WAGO123.icd |
-      | Port								 | 61102			 |
+      | Port                 |       61102 |
     And an rtu simulator started with
       | ServerName  | WAGO123     |
       | IcdFilename | WAGO123.icd |
@@ -77,12 +76,12 @@ Feature: MicroGrids Get PhotoVoltaic System Data
       | MeasurementQualifier_1_1 |     1024 |
       | MeasurementValue_1_1     |      3.0 |
 
-	Scenario: Request PV1 Health wrong servername
+  Scenario: Request PV1 Health wrong servername
     Given an rtu iec61850 device
-      | DeviceIdentification | RTU10003    |
-      | ServerName           | Wrong       |
-      | IcdFilename          | Wrong.icd 		|
-      | Port                 |       62102 |
+      | DeviceIdentification | RTU10003  |
+      | ServerName           | Wrong     |
+      | IcdFilename          | Wrong.icd |
+      | Port                 |     62102 |
     And an rtu simulator started with
       | ServerName  | WAGO123     |
       | IcdFilename | WAGO123.icd |
@@ -102,16 +101,16 @@ Feature: MicroGrids Get PhotoVoltaic System Data
       | Component            | PROTOCOL_IEC61850            |
       | Message              | fcmodelNode must not be null |
 
-	Scenario: Request PV1 Health wrong icd file
+  Scenario: Request PV1 Health wrong icd file
     Given an rtu iec61850 device
-      | DeviceIdentification | RTU10004  	  |
-      | ServerName           | WAGO123      |
-      | IcdFilename          | Wrong.icd 		|
-      | Port                 |       63102 |
+      | DeviceIdentification | RTU10004  |
+      | ServerName           | WAGO123   |
+      | IcdFilename          | Wrong.icd |
+      | Port                 |     63102 |
     And an rtu simulator started with
-      | ServerName  | Wrong		    |
-      | IcdFilename | Wrong.icd	  |
-      | Port        |       63102 |
+      | ServerName  | Wrong     |
+      | IcdFilename | Wrong.icd |
+      | Port        |     63102 |
     And an rtu simulator returning
       | PV1 | LLN0.Health.stVal |        3 |
       | PV1 | LLN0.Health.q     | OLD_DATA |
