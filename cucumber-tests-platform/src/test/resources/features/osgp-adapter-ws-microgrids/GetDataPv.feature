@@ -44,6 +44,10 @@ Feature: MicroGrids Get PhotoVoltaic System Data
       | Component            | PROTOCOL_IEC61850            |
       | Message              | fcmodelNode must not be null |
 
+  #This test cannot run on the build server together with the scenario's in 
+  #the GetDataHeatPump and GetDataBoiler features, due to an issue with ports.
+  #Therefore, this scenario is skipped for now. 
+  @Skip
   Scenario: Request PV1 Health not default servername
     Given an rtu iec61850 device
       | DeviceIdentification | RTU10002    |
@@ -76,6 +80,10 @@ Feature: MicroGrids Get PhotoVoltaic System Data
       | MeasurementQualifier_1_1 |     1024 |
       | MeasurementValue_1_1     |      3.0 |
 
+  #This test cannot run on the build server together with the scenario's in 
+  #the GetDataHeatPump and GetDataBoiler features, due to an issue with ports.
+  #Therefore, this scenario is skipped for now. 
+  @Skip
   Scenario: Request PV1 Health wrong servername
     Given an rtu iec61850 device
       | DeviceIdentification | RTU10003  |
@@ -101,7 +109,7 @@ Feature: MicroGrids Get PhotoVoltaic System Data
       | Component            | PROTOCOL_IEC61850            |
       | Message              | fcmodelNode must not be null |
 
-	@Skip
+  @Skip
   Scenario: Request PV1 Health wrong icd file
     Given an rtu iec61850 device
       | DeviceIdentification | RTU10004  |
