@@ -134,6 +134,12 @@
       <artifactId>activemq-spring</artifactId>
     </dependency>
 
+    <!-- Hikari connection pooling -->
+    <dependency>
+      <groupId>com.zaxxer</groupId>
+      <artifactId>HikariCP</artifactId>
+    </dependency>
+
     <!-- Quartz framework -->
     <dependency>
       <groupId>org.quartz-scheduler</groupId>
