@@ -26,25 +26,29 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import com.alliander.osgp.domain.core.exceptions.PlatformException;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.shared.application.config.AbstractConfig;
-import com.zaxxer.hikari.HikariConfig;
+import com.alliander.osgp.shared.infra.db.DefaultConnectionPoolFactory;
 import com.zaxxer.hikari.HikariDataSource;
 
 @EnableJpaRepositories(entityManagerFactoryRef = "coreEntityManagerFactory", basePackageClasses = { DeviceRepository.class })
 @Configuration
-@PropertySources({
-	@PropertySource("classpath:osgp-adapter-ws-smartmetering.properties"),
+@PropertySources({ @PropertySource("classpath:osgp-adapter-ws-smartmetering.properties"),
     @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "file:${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true),
-})
+    @PropertySource(value = "file:${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true), })
 public class CorePersistenceConfig extends AbstractConfig {
+    private static final String PROPERTY_NAME_DATABASE_USERNAME_CORE = "db.username.core";
+    private static final String PROPERTY_NAME_DATABASE_PW_CORE = "db.password.core";
 
-    private static final String PROPERTY_NAME_DATABASE_DRIVER_CORE = "db.driver";
-    private static final String PROPERTY_NAME_DATABASE_PASSWORD_CORE = "db.password.core";
-    private static final String PROPERTY_NAME_DATABASE_URL_CORE = "db.url.core";
-    private static final String PROPERTY_NAME_DATABASE_USERNAME = "db.username.core";
+    private static final String PROPERTY_NAME_DATABASE_DRIVER = "db.driver";
+    private static final String PROPERTY_NAME_DATABASE_PROTOCOL = "db.protocol";
 
+    private static final String PROPERTY_NAME_DATABASE_HOST_CORE = "db.host.core";
+    private static final String PROPERTY_NAME_DATABASE_PORT_CORE = "db.port.core";
+    private static final String PROPERTY_NAME_DATABASE_NAME_CORE = "db.name.core";
+
+    private static final String PROPERTY_NAME_DATABASE_MIN_POOL_SIZE = "db.min_pool_size";
     private static final String PROPERTY_NAME_DATABASE_MAX_POOL_SIZE = "db.max_pool_size";
     private static final String PROPERTY_NAME_DATABASE_AUTO_COMMIT = "db.auto_commit";
+    private static final String PROPERTY_NAME_DATABASE_IDLE_TIMEOUT = "db.idle_timeout";
 
     private static final String PROPERTY_NAME_HIBERNATE_DIALECT = "hibernate.dialect";
     private static final String PROPERTY_NAME_HIBERNATE_FORMAT_SQL = "hibernate.format_sql";
@@ -65,19 +69,33 @@ public class CorePersistenceConfig extends AbstractConfig {
     public DataSource getDataSource() {
 
         if (this.dataSource == null) {
-            final HikariConfig hikariConfig = new HikariConfig();
+            final String username = this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_USERNAME_CORE);
+            final String password = this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_PW_CORE);
 
-            hikariConfig.setDriverClassName(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER_CORE));
-            hikariConfig.setJdbcUrl(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_URL_CORE));
-            hikariConfig.setUsername(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_USERNAME));
-            hikariConfig.setPassword(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_PASSWORD_CORE));
+            final String driverClassName = this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER);
+            final String databaseProtocol = this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_PROTOCOL);
 
-            hikariConfig.setMaximumPoolSize(Integer.parseInt(this.environment
-                    .getRequiredProperty(PROPERTY_NAME_DATABASE_MAX_POOL_SIZE)));
-            hikariConfig.setAutoCommit(Boolean.parseBoolean(this.environment
-                    .getRequiredProperty(PROPERTY_NAME_DATABASE_AUTO_COMMIT)));
+            final String databaseHost = this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_HOST_CORE);
+            final int databasePort = Integer.parseInt(this.environment
+                    .getRequiredProperty(PROPERTY_NAME_DATABASE_PORT_CORE));
+            final String databaseName = this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_NAME_CORE);
 
-            this.dataSource = new HikariDataSource(hikariConfig);
+            final int minPoolSize = Integer.parseInt(this.environment
+                    .getRequiredProperty(PROPERTY_NAME_DATABASE_MIN_POOL_SIZE));
+            final int maxPoolSize = Integer.parseInt(this.environment
+                    .getRequiredProperty(PROPERTY_NAME_DATABASE_MAX_POOL_SIZE));
+            final boolean isAutoCommit = Boolean.parseBoolean(this.environment
+                    .getRequiredProperty(PROPERTY_NAME_DATABASE_AUTO_COMMIT));
+            final int idleTimeout = Integer.parseInt(this.environment
+                    .getRequiredProperty(PROPERTY_NAME_DATABASE_IDLE_TIMEOUT));
+
+            final DefaultConnectionPoolFactory.Builder builder = new DefaultConnectionPoolFactory.Builder()
+            .withUsername(username).withPassword(password).withDriverClassName(driverClassName)
+            .withProtocol(databaseProtocol).withDatabaseHost(databaseHost).withDatabasePort(databasePort)
+            .withDatabaseName(databaseName).withMinPoolSize(minPoolSize).withMaxPoolSize(maxPoolSize)
+            .withAutoCommit(isAutoCommit).withIdleTimeout(idleTimeout);
+            final DefaultConnectionPoolFactory factory = builder.build();
+            this.dataSource = factory.getDefaultConnectionPool();
         }
 
         return this.dataSource;

@@ -21,15 +21,18 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import com.alliander.osgp.domain.core.exceptions.PlatformException;
-import com.zaxxer.hikari.HikariConfig;
+import com.alliander.osgp.shared.infra.db.DefaultConnectionPoolFactory;
 import com.zaxxer.hikari.HikariDataSource;
 
 public abstract class AbstractPersistenceConfigBase {
 
     private static final String PROPERTY_NAME_DATABASE_DRIVER = "db.driver";
+    private static final String PROPERTY_NAME_DATABASE_PROTOCOL = "db.protocol";
 
+    private static final String PROPERTY_NAME_DATABASE_MIN_POOL_SIZE = "db.min_pool_size";
     private static final String PROPERTY_NAME_DATABASE_MAX_POOL_SIZE = "db.max_pool_size";
     private static final String PROPERTY_NAME_DATABASE_AUTO_COMMIT = "db.auto_commit";
+    private static final String PROPERTY_NAME_DATABASE_IDLE_TIMEOUT = "db.idle_timeout";
 
     private static final String PROPERTY_NAME_HIBERNATE_DIALECT = "hibernate.dialect";
     private static final String PROPERTY_NAME_HIBERNATE_FORMAT_SQL = "hibernate.format_sql";
@@ -42,19 +45,23 @@ public abstract class AbstractPersistenceConfigBase {
     protected final Logger logger;
     private final String usernameProperty;
     private final String passwordProperty;
-    private final String urlProperty;
+    private final String hostProperty;
+    private final String portProperty;
+    private final String nameProperty;
     private final String packagesToScanProperty;
     private final String persistenceUnit;
 
     private HikariDataSource dataSource;
 
     public AbstractPersistenceConfigBase(final String persistenceUnit, final String usernameProperty,
-            final String passwordProperty, final String urlProperty, final String packagesToScanProperty,
-            final Class<?> loggerClass) {
+            final String passwordProperty, final String hostProperty, final String portProperty,
+            final String nameProperty, final String packagesToScanProperty, final Class<?> loggerClass) {
         this.logger = LoggerFactory.getLogger(loggerClass);
         this.usernameProperty = usernameProperty;
         this.passwordProperty = passwordProperty;
-        this.urlProperty = urlProperty;
+        this.hostProperty = hostProperty;
+        this.portProperty = portProperty;
+        this.nameProperty = nameProperty;
         this.packagesToScanProperty = packagesToScanProperty;
         this.persistenceUnit = persistenceUnit;
     }
@@ -66,19 +73,32 @@ public abstract class AbstractPersistenceConfigBase {
      */
     public DataSource getDataSource() {
         if (this.dataSource == null) {
-            final HikariConfig hikariConfig = new HikariConfig();
+            final String username = this.environment.getRequiredProperty(this.usernameProperty);
+            final String password = this.environment.getRequiredProperty(this.passwordProperty);
 
-            hikariConfig.setDriverClassName(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER));
-            hikariConfig.setJdbcUrl(this.environment.getRequiredProperty(this.urlProperty));
-            hikariConfig.setUsername(this.environment.getRequiredProperty(this.usernameProperty));
-            hikariConfig.setPassword(this.environment.getRequiredProperty(this.passwordProperty));
+            final String driverClassName = this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER);
+            final String databaseProtocol = this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_PROTOCOL);
 
-            hikariConfig.setMaximumPoolSize(
-                    Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_MAX_POOL_SIZE)));
-            hikariConfig.setAutoCommit(
-                    Boolean.parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_AUTO_COMMIT)));
+            final String databaseHost = this.environment.getRequiredProperty(this.hostProperty);
+            final int databasePort = Integer.parseInt(this.environment.getRequiredProperty(this.portProperty));
+            final String databaseName = this.environment.getRequiredProperty(this.nameProperty);
 
-            this.dataSource = new HikariDataSource(hikariConfig);
+            final int minPoolSize = Integer.parseInt(this.environment
+                    .getRequiredProperty(PROPERTY_NAME_DATABASE_MIN_POOL_SIZE));
+            final int maxPoolSize = Integer.parseInt(this.environment
+                    .getRequiredProperty(PROPERTY_NAME_DATABASE_MAX_POOL_SIZE));
+            final boolean isAutoCommit = Boolean.parseBoolean(this.environment
+                    .getRequiredProperty(PROPERTY_NAME_DATABASE_AUTO_COMMIT));
+            final int idleTimeout = Integer.parseInt(this.environment
+                    .getRequiredProperty(PROPERTY_NAME_DATABASE_IDLE_TIMEOUT));
+
+            final DefaultConnectionPoolFactory.Builder builder = new DefaultConnectionPoolFactory.Builder()
+            .withUsername(username).withPassword(password).withDriverClassName(driverClassName)
+            .withProtocol(databaseProtocol).withDatabaseHost(databaseHost).withDatabasePort(databasePort)
+            .withDatabaseName(databaseName).withMinPoolSize(minPoolSize).withMaxPoolSize(maxPoolSize)
+            .withAutoCommit(isAutoCommit).withIdleTimeout(idleTimeout);
+            final DefaultConnectionPoolFactory factory = builder.build();
+            this.dataSource = factory.getDefaultConnectionPool();
         }
         return this.dataSource;
     }
@@ -118,8 +138,8 @@ public abstract class AbstractPersistenceConfigBase {
 
         entityManagerFactoryBean.setPersistenceUnitName(this.persistenceUnit);
         entityManagerFactoryBean.setDataSource(this.getDataSource());
-        entityManagerFactoryBean
-                .setPackagesToScan(this.environment.getRequiredProperty(this.packagesToScanProperty).split(","));
+        entityManagerFactoryBean.setPackagesToScan(this.environment.getRequiredProperty(this.packagesToScanProperty)
+                .split(","));
         entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistence.class);
 
         final Properties jpaProperties = new Properties();
