@@ -20,7 +20,6 @@ import java.util.Map;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataAsyncRequest;
@@ -190,16 +189,4 @@ public class GetDataSteps extends GlueBase {
             throw new AssertionError("Incorrect date/time format: " + value);
         }
     }
-
-    @Then("^the get data response should not be returned$")
-    public void theGetDataResponseShouldNotBeReturned(final List<List<String>> mockValues) throws Throwable {
-        final String msg = "An IllegalArgumentException was expected";
-        try {
-            this.rtuSimulatorSteps.anRtuSimulatorReturning(mockValues);
-            Assert.fail(msg);
-        } catch (Exception ex) {
-            Assert.assertEquals(msg, IllegalArgumentException.class, ex.getClass());
-        }
-    }
-
 }
