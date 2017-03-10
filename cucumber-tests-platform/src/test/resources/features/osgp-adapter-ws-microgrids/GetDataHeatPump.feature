@@ -6,7 +6,7 @@ Feature: MicroGrids Get Heat Pump Data
 
   Scenario: Request HEAT_PUMP
     Given an rtu iec61850 device
-      | DeviceIdentification | RTU10002                              |
+      | DeviceIdentification | RTU62102                              |
       | IcdFilename          | MarkerWadden_0_1_1_reporting_hack.icd |
       | Port                 |                                 62102 |
     And an rtu simulator started with
@@ -109,7 +109,7 @@ Feature: MicroGrids Get Heat Pump Data
       | HEAT_PUMP1 | MFLW1.FlwRte.q         | VALIDITY_GOOD       |
       | HEAT_PUMP1 | MFLW1.FlwRte.t         | 2017-02-01T12:02:00 |
     When a get data request is received
-      | DeviceIdentification       | RTU10002  |
+      | DeviceIdentification       | RTU62102  |
       | NumberOfSystems            |         1 |
       | SystemId_1                 |         1 |
       | SystemType_1               | HEAT_PUMP |
@@ -170,7 +170,7 @@ Feature: MicroGrids Get Heat Pump Data
       | MeasurementFilterNode_1_38 | FlwRte    |
       | MeasurementFilterId_1_38   |         1 |
     Then the get data response should be returned
-      | DeviceIdentification      | RTU10001                 |
+      | DeviceIdentification      | RTU62102                 |
       | Result                    | OK                       |
       | NumberOfSystems           |                        1 |
       | SystemId_1                |                        1 |
