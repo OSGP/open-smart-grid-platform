@@ -7,10 +7,18 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.repositories;
 
+import java.util.List;
+
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
+import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DlmsSecurityKeyRepository extends JpaRepository<SecurityKey, Long> {
+
+    @Query("SELECT s FROM SecurityKey s JOIN FETCH s.dlmsDevice WHERE s.securityKeyType = (:securityKeyType)")
+    public List<SecurityKey> findBySecurityKeyType(@Param("securityKeyType") SecurityKeyType securityKeyType);
 }
