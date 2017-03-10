@@ -9,6 +9,8 @@ package org.osgpfoundation.osgp.webdemoapp.web.controller;
 
 import org.osgpfoundation.osgp.webdemoapp.application.services.OsgpAdminClientSoapService;
 import org.osgpfoundation.osgp.webdemoapp.domain.Device;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -23,6 +25,8 @@ import org.springframework.ws.soap.client.SoapFaultClientException;
 @Controller
 public class AdminController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(AdminController.class);
+
     @Autowired
     OsgpAdminClientSoapService osgpAdminClientSoapService;
 
@@ -30,9 +34,9 @@ public class AdminController {
     PublicLightingController publicLightingController;
 
     /**
-     * Is called by the add-device page.
-     * This controller receives the device from the JSP page and calls the 'updateKeyRequest' in the
-     * Soap Client Service. This requests is sent to the Platform, and creates a device.
+     * Is called by the add-device page. This controller receives the device
+     * from the JSP page and calls the 'updateKeyRequest' in the Soap Client
+     * Service. This requests is sent to the Platform, and creates a device.
      *
      * @param device
      * @return
@@ -46,6 +50,7 @@ public class AdminController {
             try {
                 this.osgpAdminClientSoapService.updateKeyRequest(device);
             } catch (final SoapFaultClientException e) {
+                LOGGER.error("Soap fault during addDevice()", e);
                 return this.publicLightingController.error(e.getFaultStringOrReason());
             }
             modelView.addObject("deviceId", device.getDeviceIdentification());

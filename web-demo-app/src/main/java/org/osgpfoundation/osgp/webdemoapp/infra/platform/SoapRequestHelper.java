@@ -18,6 +18,8 @@ import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
@@ -29,119 +31,119 @@ import org.springframework.ws.transport.http.HttpComponentsMessageSender;
  *
  */
 public class SoapRequestHelper {
-	private Jaxb2Marshaller marshaller;
-	private KeyStoreHelper keyStoreHelper;
 
-	private SaajSoapMessageFactory messageFactory;
+    private static final Logger LOGGER = LoggerFactory.getLogger(SoapRequestHelper.class);
 
-	public SoapRequestHelper(final SaajSoapMessageFactory messageFactory, final KeyStoreHelper keyStoreHelper) {
-		this.messageFactory = messageFactory;
-		this.keyStoreHelper = keyStoreHelper;
-	}
+    private Jaxb2Marshaller marshaller;
+    private KeyStoreHelper keyStoreHelper;
 
-	/**
-	 * Helper function to create a web service template to handle soap requests
-	 * for the Admin domain
-	 *
-	 * @return WebServiceTemplate
-	 */
-	public WebServiceTemplate createAdminRequest() {
-		this.initMarshaller("com.alliander.osgp.platform.ws.schema.admin.devicemanagement");
+    private SaajSoapMessageFactory messageFactory;
 
-		final String uri = "https://localhost/osgp-adapter-ws-admin/admin/deviceManagementService/DeviceManagement";
+    public SoapRequestHelper(final SaajSoapMessageFactory messageFactory, final KeyStoreHelper keyStoreHelper) {
+        this.messageFactory = messageFactory;
+        this.keyStoreHelper = keyStoreHelper;
+    }
 
-		final WebServiceTemplate webServiceTemplate = new WebServiceTemplate(this.messageFactory);
+    /**
+     * Helper function to create a web service template to handle soap requests
+     * for the Admin domain
+     *
+     * @return WebServiceTemplate
+     */
+    public WebServiceTemplate createAdminRequest() {
+        this.initMarshaller("com.alliander.osgp.adapter.ws.schema.admin.devicemanagement");
 
-		webServiceTemplate.setDefaultUri(uri);
-		webServiceTemplate.setMarshaller(this.marshaller);
-		webServiceTemplate.setUnmarshaller(this.marshaller);
+        final String uri = "https://localhost/osgp-adapter-ws-admin/admin/deviceManagementService/DeviceManagement";
 
-		webServiceTemplate.setCheckConnectionForFault(true);
+        final WebServiceTemplate webServiceTemplate = new WebServiceTemplate(this.messageFactory);
 
-		webServiceTemplate.setInterceptors(new ClientInterceptor[] {
-				this.createClientInterceptor("http://www.alliander.com/schemas/osp/common") });
+        webServiceTemplate.setDefaultUri(uri);
+        webServiceTemplate.setMarshaller(this.marshaller);
+        webServiceTemplate.setUnmarshaller(this.marshaller);
 
-		webServiceTemplate.setMessageSender(this.createHttpMessageSender());
+        webServiceTemplate.setCheckConnectionForFault(true);
 
-		return webServiceTemplate;
-	}
+        webServiceTemplate.setInterceptors(new ClientInterceptor[] { this
+                .createClientInterceptor("http://www.alliander.com/schemas/osp/common") });
 
-	/**
-	 * Helper function to create a web service template to handle soap requests
-	 * for the Public Lighting domain
-	 *
-	 * @return WebServiceTemplate
-	 */
-	public WebServiceTemplate createPublicLightingRequest() {
-		this.initMarshaller("com.alliander.osgp.platform.ws.schema.publiclighting.adhocmanagement");
+        webServiceTemplate.setMessageSender(this.createHttpMessageSender());
 
-		final String uri = "https://localhost/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/AdHocManagement";
+        return webServiceTemplate;
+    }
 
-		final WebServiceTemplate webServiceTemplate = new WebServiceTemplate(this.messageFactory);
+    /**
+     * Helper function to create a web service template to handle soap requests
+     * for the Public Lighting domain
+     *
+     * @return WebServiceTemplate
+     */
+    public WebServiceTemplate createPublicLightingRequest() {
+        this.initMarshaller("com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement");
 
-		webServiceTemplate.setDefaultUri(uri);
-		webServiceTemplate.setMarshaller(this.marshaller);
-		webServiceTemplate.setUnmarshaller(this.marshaller);
+        final String uri = "https://localhost/osgp-adapter-ws-publiclighting/publiclighting/adHocManagementService/AdHocManagement";
 
-		webServiceTemplate.setCheckConnectionForFault(true);
+        final WebServiceTemplate webServiceTemplate = new WebServiceTemplate(this.messageFactory);
 
-		webServiceTemplate.setInterceptors(new ClientInterceptor[] {
-				this.createClientInterceptor("http://www.alliander.com/schemas/osgp/common") });
+        webServiceTemplate.setDefaultUri(uri);
+        webServiceTemplate.setMarshaller(this.marshaller);
+        webServiceTemplate.setUnmarshaller(this.marshaller);
 
-		webServiceTemplate.setMessageSender(this.createHttpMessageSender());
-		
+        webServiceTemplate.setCheckConnectionForFault(true);
 
+        webServiceTemplate.setInterceptors(new ClientInterceptor[] { this
+                .createClientInterceptor("http://www.alliander.com/schemas/osgp/common") });
 
-		return webServiceTemplate;
-	}
+        webServiceTemplate.setMessageSender(this.createHttpMessageSender());
 
-	/**
-	 * Initializes the JaxB Marshaller
-	 *
-	 * @param marshallerContext
-	 */
-	private void initMarshaller(final String marshallerContext) {
-		this.marshaller = new Jaxb2Marshaller();
+        return webServiceTemplate;
+    }
 
-		this.marshaller.setContextPath(marshallerContext);
-	}
+    /**
+     * Initializes the JaxB Marshaller
+     *
+     * @param marshallerContext
+     */
+    private void initMarshaller(final String marshallerContext) {
+        this.marshaller = new Jaxb2Marshaller();
 
-	/**
-	 * Creates a HttpComponentsMessageSender for communication with the
-	 * platform.
-	 *
-	 * @return HttpComponentsMessageSender
-	 */
-	private HttpComponentsMessageSender createHttpMessageSender() {
+        this.marshaller.setContextPath(marshallerContext);
+    }
 
-		final HttpComponentsMessageSender sender = new HttpComponentsMessageSender();
-	
-		final HttpClientBuilder builder = HttpClients.custom();
-		builder.addInterceptorFirst(new ContentLengthHeaderRemoveInterceptor());
-		try {
-			final SSLContext sslContext = new SSLContextBuilder()
-					.loadKeyMaterial(this.keyStoreHelper.getKeyStore(), this.keyStoreHelper.getKeyStorePwAsChar())
-					.loadTrustMaterial(this.keyStoreHelper.getTrustStore())
-					.build();
-			final SSLConnectionSocketFactory sslConnectionFactory = new SSLConnectionSocketFactory(sslContext);
-			builder.setSSLSocketFactory(sslConnectionFactory);
-		    sender.setHttpClient(builder.build());
-		} catch (KeyManagementException | UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {
-			e.printStackTrace();
-		}
+    /**
+     * Creates a HttpComponentsMessageSender for communication with the
+     * platform.
+     *
+     * @return HttpComponentsMessageSender
+     */
+    private HttpComponentsMessageSender createHttpMessageSender() {
 
-		return sender;
-	}
+        final HttpComponentsMessageSender sender = new HttpComponentsMessageSender();
 
-	/**
-	 * Create a ClientIntercepter, used for the WebServiceTemplate.
-	 *
-	 * @param namespace
-	 * @return ClientInterceptor
-	 */
-	private ClientInterceptor createClientInterceptor(final String namespace) {
-		return new IdentificationClientInterceptor("test-org", "demo-app-user", "demo-app", namespace,
-				"OrganisationIdentification", "UserName", "ApplicationName");
-	}
+        final HttpClientBuilder builder = HttpClients.custom();
+        builder.addInterceptorFirst(new ContentLengthHeaderRemoveInterceptor());
+        try {
+            final SSLContext sslContext = new SSLContextBuilder()
+                    .loadKeyMaterial(this.keyStoreHelper.getKeyStore(), this.keyStoreHelper.getKeyStorePwAsChar())
+                    .loadTrustMaterial(this.keyStoreHelper.getTrustStore()).build();
+            final SSLConnectionSocketFactory sslConnectionFactory = new SSLConnectionSocketFactory(sslContext);
+            builder.setSSLSocketFactory(sslConnectionFactory);
+            sender.setHttpClient(builder.build());
+        } catch (KeyManagementException | UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {
+            LOGGER.error("Unbale to cretae SSL context", e);
+        }
+
+        return sender;
+    }
+
+    /**
+     * Create a ClientIntercepter, used for the WebServiceTemplate.
+     *
+     * @param namespace
+     * @return ClientInterceptor
+     */
+    private ClientInterceptor createClientInterceptor(final String namespace) {
+        return new IdentificationClientInterceptor("test-org", "demo-app-user", "demo-app", namespace,
+                "OrganisationIdentification", "UserName", "ApplicationName");
+    }
 
 }

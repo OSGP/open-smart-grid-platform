@@ -10,10 +10,16 @@ package org.osgpfoundation.osgp.webdemoapp.application.config;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPException;
 
+import ma.glasnost.orika.MapperFacade;
+import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.impl.DefaultMapperFactory;
+
 import org.osgpfoundation.osgp.webdemoapp.application.services.OsgpAdminClientSoapService;
 import org.osgpfoundation.osgp.webdemoapp.application.services.OsgpPublicLightingClientSoapService;
 import org.osgpfoundation.osgp.webdemoapp.infra.platform.KeyStoreHelper;
 import org.osgpfoundation.osgp.webdemoapp.infra.platform.SoapRequestHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -23,10 +29,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
-
-import ma.glasnost.orika.MapperFacade;
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
 
 /**
  * An application context Java configuration class. The usage of Java
@@ -41,6 +43,8 @@ import ma.glasnost.orika.impl.DefaultMapperFactory;
 @EnableWebMvc
 @ImportResource("classpath:applicationContext.xml")
 public class ApplicationContext {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);
 
     private static final String VIEW_RESOLVER_PREFIX = "/WEB-INF/views/";
     private static final String VIEW_RESOLVER_SUFFIX = ".jsp";
@@ -113,7 +117,7 @@ public class ApplicationContext {
         try {
             messageFactory.setMessageFactory(MessageFactory.newInstance());
         } catch (final SOAPException e) {
-            e.printStackTrace();
+            LOGGER.error("Unable to set MessageFactory instance", e);
         }
         return messageFactory;
     }

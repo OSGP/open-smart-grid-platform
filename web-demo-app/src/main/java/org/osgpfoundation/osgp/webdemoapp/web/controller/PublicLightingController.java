@@ -12,6 +12,8 @@ import java.util.List;
 import org.osgpfoundation.osgp.webdemoapp.application.services.OsgpPublicLightingClientSoapService;
 import org.osgpfoundation.osgp.webdemoapp.domain.Device;
 import org.osgpfoundation.osgp.webdemoapp.domain.DeviceLightStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -28,6 +30,8 @@ import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.Devic
  */
 @Controller
 public class PublicLightingController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PublicLightingController.class);
 
     @Autowired
     private OsgpPublicLightingClientSoapService osgpPublicLightingClientSoapService;
@@ -77,8 +81,10 @@ public class PublicLightingController {
             correlationId = this.osgpPublicLightingClientSoapService.getDeviceStatus(deviceId);
             modelView.addObject("correlationId", correlationId);
         } catch (final SoapFaultClientException e) {
+            LOGGER.error("Soap fault during deviceDetails()", e);
             return this.error(e.getFaultStringOrReason());
         } catch (final NullPointerException e) {
+            LOGGER.error("Null pointer during deviceDetails()", e);
             return this.error("A response from the platform returned 'null'");
         }
         return modelView;
@@ -96,7 +102,7 @@ public class PublicLightingController {
      * @return ModelAndView
      */
     @RequestMapping(value = "/doSwitchDevice", method = RequestMethod.POST)
-    public ModelAndView addDevice(@ModelAttribute("SpringWeb") final DeviceLightStatus deviceStatus) {
+    public ModelAndView switchDevice(@ModelAttribute("SpringWeb") final DeviceLightStatus deviceStatus) {
         final ModelAndView modelView = new ModelAndView("switch-result");
         try {
             if (deviceStatus.isLightOn()
@@ -111,6 +117,7 @@ public class PublicLightingController {
             }
 
         } catch (final SoapFaultClientException e) {
+            LOGGER.error("Soap fault during switchDevice()", e);
             return this.error(e.getFaultStringOrReason());
         }
 
@@ -144,7 +151,7 @@ public class PublicLightingController {
 
     /**
      * Displays an error message.
-     * 
+     *
      * @param error
      * @return ModelAndView
      */

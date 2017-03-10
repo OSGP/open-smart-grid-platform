@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.ws.soap.security.support.KeyStoreFactoryBean;
 
@@ -19,6 +21,8 @@ import org.springframework.ws.soap.security.support.KeyStoreFactoryBean;
  *
  */
 public class KeyStoreHelper {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(KeyStoreHelper.class);
 
     private String keyStorePw;
 
@@ -44,7 +48,7 @@ public class KeyStoreHelper {
             this.keyStoreFactory.afterPropertiesSet();
             this.trustStoreFactory.afterPropertiesSet();
         } catch (GeneralSecurityException | IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Unable to create trust store or key store", e);
         }
     }
 
@@ -59,7 +63,7 @@ public class KeyStoreHelper {
     public String getKeyStorePw() {
         return this.keyStorePw;
     }
-    
+
     public char[] getKeyStorePwAsChar() {
         return this.keyStorePw.toCharArray();
     }
