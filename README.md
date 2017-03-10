@@ -2,7 +2,7 @@
 
 ### Build Status
 
-[![Build Status](http://ci.opensmartgridplatform.org/job/OSGP_Platform_development/badge/icon?style=plastic)](http://ci.opensmartgridplatform.org/job/OSGP_Platform_development)
+[![Build Status](http://ci.opensmartgridplatform.org/job/OSGP_PublicLightingDemoApp_development/badge/icon?style=plastic)](http://ci.opensmartgridplatform.org/job/OSGP_PublicLightingDemoApp_development)
 
 ### Component Description
 
