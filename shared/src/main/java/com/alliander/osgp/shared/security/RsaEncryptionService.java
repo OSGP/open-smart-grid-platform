@@ -121,7 +121,7 @@ public class RsaEncryptionService {
      *            the path to a PKCS#8 encoded private key file, decryption will
      *            be disabled if this is blank.
      */
-    protected RsaEncryptionService(final String rsaPublicKeyPath, final String rsaPrivateKeyPath) {
+    public RsaEncryptionService(final String rsaPublicKeyPath, final String rsaPrivateKeyPath) {
         this.keyPair = this.createKeyPair(rsaPublicKeyPath, rsaPrivateKeyPath);
     }
 
