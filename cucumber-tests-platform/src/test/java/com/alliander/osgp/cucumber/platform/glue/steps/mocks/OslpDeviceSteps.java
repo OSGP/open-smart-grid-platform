@@ -14,11 +14,14 @@ import static com.alliander.osgp.cucumber.platform.core.Helpers.getInteger;
 import static com.alliander.osgp.cucumber.platform.core.Helpers.getString;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;
@@ -34,6 +37,7 @@ import com.alliander.osgp.domain.core.valueobjects.EventNotificationType;
 import com.alliander.osgp.dto.valueobjects.EventNotificationTypeDto;
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.Oslp.ActionTime;
+import com.alliander.osgp.oslp.Oslp.DeviceType;
 import com.alliander.osgp.oslp.Oslp.Event;
 import com.alliander.osgp.oslp.Oslp.EventNotification;
 import com.alliander.osgp.oslp.Oslp.EventNotificationRequest;
@@ -56,6 +60,7 @@ import com.alliander.osgp.oslp.Oslp.Status;
 import com.alliander.osgp.oslp.Oslp.TransitionType;
 import com.alliander.osgp.oslp.Oslp.TriggerType;
 import com.alliander.osgp.oslp.Oslp.Weekday;
+import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.oslp.OslpUtils;
 import com.google.protobuf.ByteString;
 
@@ -818,5 +823,50 @@ public class OslpDeviceSteps {
         final EventNotificationResponse response = responseMessage.getEventNotificationResponse();
 
         Assert.assertEquals(getString(expectedResponse, Keys.KEY_STATUS), response.getStatus());
+    }
+
+    @Given("^the device sends a register device request to the platform$")
+    public void theDeviceSendsARegisterDeviceRequestToThePlatform(final Map<String, String> settings)
+            throws IOException, DeviceSimulatorException {
+
+        final OslpEnvelope request = this
+                .createEnvelopeBuilder(
+                        getString(settings, Keys.KEY_DEVICE_UID,
+                                com.alliander.osgp.cucumber.platform.glue.steps.database.adapterprotocoloslp.OslpDeviceSteps.DEFAULT_DEVICE_UID),
+                        this.oslpMockServer.getSequenceNumber())
+                .withPayloadMessage(Message.newBuilder().setRegisterDeviceRequest(Oslp.RegisterDeviceRequest
+                        .newBuilder()
+                        .setDeviceIdentification(getString(settings, Keys.KEY_DEVICE_IDENTIFICATION,
+                                Defaults.DEFAULT_DEVICE_IDENTIFICATION))
+                        .setIpAddress(ByteString.copyFrom(InetAddress
+                                .getByName(getString(settings, Keys.IP_ADDRESS, Defaults.LOCALHOST)).getAddress()))
+                        .setDeviceType(getEnum(settings, Keys.KEY_DEVICE_TYPE, DeviceType.class, DeviceType.PSLD))
+                        .setHasSchedule(getBoolean(settings, Keys.KEY_HAS_SCHEDULE, Defaults.DEFAULT_HASSCHEDULE))
+                        .setRandomDevice(getInteger(settings, Keys.RANDOM_DEVICE, Defaults.RANDOM_DEVICE))).build())
+                .build();
+
+        this.send(request, settings);
+    }
+
+    public OslpEnvelope.Builder createEnvelopeBuilder(final String deviceUid, final Integer sequenceNumber) {
+        final byte[] sequenceNumberBytes = new byte[2];
+        sequenceNumberBytes[0] = (byte) (sequenceNumber >>> 8);
+        sequenceNumberBytes[1] = (byte) (sequenceNumber >>> 0);
+
+        return new OslpEnvelope.Builder().withSignature(this.oslpMockServer.getOslpSignature())
+                .withProvider(this.oslpMockServer.getOslpSignatureProvider())
+                .withPrimaryKey(this.oslpMockServer.privateKey()).withDeviceId(Base64.decodeBase64(deviceUid))
+                .withSequenceNumber(sequenceNumberBytes);
+    }
+
+    private OslpEnvelope send(final OslpEnvelope request, final Map<String, String> settings)
+            throws IOException, DeviceSimulatorException {
+        final String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION);
+        final String hostname = getString(settings, Keys.HOSTNAME, Defaults.LOCALHOST);
+        final Integer port = getInteger(settings, Keys.PORT, Defaults.OSLP_SERVER_PORT);
+
+        final InetSocketAddress address = new InetSocketAddress(hostname, port);
+
+        return this.oslpMockServer.send(address, request, deviceIdentification);
     }
 }

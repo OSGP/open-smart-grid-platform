@@ -254,6 +254,11 @@ public class Keys {
     public static final String NEW_SEQUENCE_NUMBER = "NewSequenceNumber";
     public static final String NUMBER_TO_ADD_TO_SEQUENCE_NUMBER = "NumberToAddToSequenceNumber";
 
+    public static final String HOSTNAME = "Hostname";
+    public static final String PORT = "Port";
+    public static final String IP_ADDRESS = "IpAddress";
+    public static final String RANDOM_DEVICE = "RandomDevice";
+
     public static final String KEY_SCHEDULE_DESCRIPTION = "Description";
     public static final String KEY_SCHEDULE_COLOR = "Color";
     public static final String KEY_SCHEDULE_DEFAULT = "DefaultSchedule";

@@ -86,6 +86,9 @@ public class MockOslpServer {
     @Value("${oslp.port.server}")
     private int oslpPortServer;
 
+    @Value("${oslp.elster.port.server}")
+    private int oslpElsterPortServer;
+
     @Value("${oslp.security.signature}")
     private String oslpSignature;
 
@@ -116,13 +119,18 @@ public class MockOslpServer {
     @Value("${response.delay.random.range}")
     private Long reponseDelayRandomRange;
 
-    private ServerBootstrap server;
+    private ServerBootstrap serverOslp;
+    private ServerBootstrap serverOslpElster;
 
     // TODO split channel handler in client/server
     private MockOslpChannelHandler channelHandler;
 
     private final ConcurrentMap<DeviceRequestMessageType, Message> mockResponses = new ConcurrentHashMap<>();
     private final ConcurrentMap<DeviceRequestMessageType, Message> receivedRequests = new ConcurrentHashMap<>();
+
+    public Integer getSequenceNumber() {
+        return this.channelHandler.getSequenceNumber();
+    }
 
     public void start() throws Throwable {
         this.channelHandler = new MockOslpChannelHandler(this.oslpSignature, this.oslpSignatureProvider,
@@ -131,16 +139,22 @@ public class MockOslpServer {
                 this.receivedRequests);
 
         LOGGER.info("OSLP Mock server starting on port {}", this.oslpPortServer);
-        this.server = this.serverBootstrap();
-        this.server.bind(new InetSocketAddress(this.oslpPortServer));
-        LOGGER.info("OSLP Mock server started.");
+        this.serverOslp = this.serverBootstrap();
+        this.serverOslp.bind(new InetSocketAddress(this.oslpPortServer));
+        LOGGER.info("OSLP Elster Mock server starting on port {}", this.oslpElsterPortServer);
+        this.serverOslpElster = this.serverBootstrap();
+        this.serverOslpElster.bind(new InetSocketAddress(this.oslpElsterPortServer));
+        LOGGER.info("OSLP Mock servers started.");
     }
 
     public void stop() {
-        if (this.server != null) {
-            this.server.shutdown();
+        if (this.serverOslp != null) {
+            this.serverOslp.shutdown();
         }
-        LOGGER.info("OSLP Mock server shutdown.");
+        if (this.serverOslpElster != null) {
+            this.serverOslpElster.shutdown();
+        }
+        LOGGER.info("OSLP Mock servers shutdown.");
     }
 
     public void resetServer() {
@@ -165,6 +179,11 @@ public class MockOslpServer {
         }
 
         return this.receivedRequests.get(requestType);
+    }
+
+    public OslpEnvelope send(final InetSocketAddress address, final OslpEnvelope request,
+            final String deviceIdentification) throws IOException, DeviceSimulatorException {
+        return this.channelHandler.send(address, request, deviceIdentification);
     }
 
     public Message sendRequest(final Message message) throws DeviceSimulatorException, IOException, ParseException {
@@ -238,9 +257,16 @@ public class MockOslpServer {
         return CertificateHelper.createPublicKey(this.verifyKeyPath, this.keytype, this.oslpSignatureProvider);
     }
 
-    private PrivateKey privateKey()
-            throws IOException, InvalidKeySpecException, NoSuchAlgorithmException, NoSuchProviderException {
-        return CertificateHelper.createPrivateKey(this.signKeyPath, this.keytype, this.oslpSignatureProvider);
+    public PrivateKey privateKey() {
+        PrivateKey privateKey = null;
+
+        try {
+            privateKey = CertificateHelper.createPrivateKey(this.signKeyPath, this.keytype, this.oslpSignatureProvider);
+        } catch (final Exception ex) {
+            //
+        }
+
+        return privateKey;
     }
 
     public void mockGetConfigurationResponse(final Oslp.Status oslpStatus, final LightType lightType,
@@ -518,5 +544,13 @@ public class MockOslpServer {
 
         this.mockResponses.put(DeviceRequestMessageType.GET_POWER_USAGE_HISTORY,
                 Oslp.Message.newBuilder().setGetPowerUsageHistoryResponse(response).build());
+    }
+
+    public String getOslpSignature() {
+        return this.oslpSignature;
+    }
+
+    public String getOslpSignatureProvider() {
+        return this.oslpSignatureProvider;
     }
 }
