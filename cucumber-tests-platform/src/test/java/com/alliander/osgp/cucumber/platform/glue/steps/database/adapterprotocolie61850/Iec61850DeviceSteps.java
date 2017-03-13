@@ -58,7 +58,7 @@ public class Iec61850DeviceSteps extends GlueBase {
 
     /**
      * Creates an IEC61850 device.
-     * 
+     *
      * @param settings
      * @throws Throwable
      */
@@ -80,10 +80,21 @@ public class Iec61850DeviceSteps extends GlueBase {
          * Make sure an ICD filename and port corresponding to the mock server
          * settings will be used from the application to connect to the device.
          */
-        final Iec61850Device iec61850Device = new Iec61850Device(
-                getString(settings, Keys.KEY_DEVICE_IDENTIFICATION, Defaults.DEFAULT_DEVICE_IDENTIFICATION));
-        iec61850Device.setIcdFilename(this.iec61850MockServerConfig.iec61850MockIcdFilename());
-        iec61850Device.setPort(this.iec61850MockServerConfig.iec61850MockPort());
+        final Iec61850Device iec61850Device = new Iec61850Device(getString(settings, Keys.KEY_DEVICE_IDENTIFICATION,
+                Defaults.DEFAULT_DEVICE_IDENTIFICATION));
+
+        final String givenIcdFilename = getString(settings, Keys.KEY_IEC61850_ICD_FILENAME);
+        final String givenServerName = getString(settings, Keys.KEY_IEC61850_SERVERNAME);
+        final String givenPort = getString(settings, Keys.KEY_IEC61850_PORT);
+
+        final String icdFilename = (givenIcdFilename == null) ? this.iec61850MockServerConfig.iec61850MockIcdFilename()
+                : givenIcdFilename;
+        final int port = (givenPort == null) ? this.iec61850MockServerConfig.iec61850MockPort() : Integer
+                .parseInt(givenPort);
+
+        iec61850Device.setIcdFilename(icdFilename);
+        iec61850Device.setPort(port);
+        iec61850Device.setServerName(givenServerName); // this may be null
 
         this.iec61850DeviceRespository.save(iec61850Device);
     }
