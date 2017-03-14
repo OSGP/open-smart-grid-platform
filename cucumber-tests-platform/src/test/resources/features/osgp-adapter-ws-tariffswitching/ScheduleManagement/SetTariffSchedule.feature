@@ -8,6 +8,7 @@ Feature: TariffSwitchingScheduleManagement Set Tariff Schedule
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | RelayType            | TARIFF            |
+      | Protocol             | <Protocol>        |
     And the device returns a set tariff schedule response "OK" over OSLP
     When receiving a set tariff schedule request
       | DeviceIdentification | TEST1024000000001 |
@@ -28,19 +29,26 @@ Feature: TariffSwitchingScheduleManagement Set Tariff Schedule
       | Result | OK |
 
     Examples: 
-      | WeekDay     | StartDay   | EndDay     | Time         | TariffValues |
-      | MONDAY      |            |            | 08:00:00.000 | 1,true       |
-      | WEEKDAY     |            |            | 21:00:00.000 | 1,false      |
-      | MONDAY      |            |            | 18:00:00.000 | 1,true       |
-      | ABSOLUTEDAY | 2013-03-01 |            | 18:00:00.000 | 1,true       |
-      | MONDAY      |            |            |              | 1,true       |
-      | ABSOLUTEDAY | 2016-01-01 | 2016-12-31 | 18:00:00.000 | 0,true       |
+      | Protocol    | WeekDay     | StartDay   | EndDay     | Time         | TariffValues |
+      | OSLP        | MONDAY      |            |            | 08:00:00.000 | 1,true       |
+      | OSLP        | WEEKDAY     |            |            | 21:00:00.000 | 1,false      |
+      | OSLP        | MONDAY      |            |            | 18:00:00.000 | 1,true       |
+      | OSLP        | ABSOLUTEDAY | 2013-03-01 |            | 18:00:00.000 | 1,true       |
+      | OSLP        | MONDAY      |            |            |              | 1,true       |
+      | OSLP        | ABSOLUTEDAY | 2016-01-01 | 2016-12-31 | 18:00:00.000 | 0,true       |
+      | OSLP ELSTER | MONDAY      |            |            | 08:00:00.000 | 1,true       |
+      | OSLP ELSTER | WEEKDAY     |            |            | 21:00:00.000 | 1,false      |
+      | OSLP ELSTER | MONDAY      |            |            | 18:00:00.000 | 1,true       |
+      | OSLP ELSTER | ABSOLUTEDAY | 2013-03-01 |            | 18:00:00.000 | 1,true       |
+      | OSLP ELSTER | MONDAY      |            |            |              | 1,true       |
+      | OSLP ELSTER | ABSOLUTEDAY | 2016-01-01 | 2016-12-31 | 18:00:00.000 | 0,true       |
 
   @OslpMockServer
-  Scenario: Failed set tariff schedule
+  Scenario Outline: Failed set tariff schedule
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | RelayType            | TARIFF            |
+      | Protocol             | <Protocol>        |
     And the device returns a set tariff schedule response "FAILURE" over OSLP
     When receiving a set tariff schedule request
       | DeviceIdentification | TEST1024000000001 |
@@ -61,11 +69,17 @@ Feature: TariffSwitchingScheduleManagement Set Tariff Schedule
     And the platform buffers a set tariff schedule response message for device "TEST1024000000001" contains soap fault
       | Message | Device reports failure |
 
+    Examples: 
+      | Protocol    |
+      | OSLP        |
+      | OSLP ELSTER |
+
   @OslpMockServer
-  Scenario: Rejected set tariff schedule
+  Scenario Outline: Rejected set tariff schedule
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | RelayType            | TARIFF            |
+      | Protocol             | <Protocol>        |
     And the device returns a set tariff schedule response "REJECTED" over OSLP
     When receiving a set tariff schedule request
       | DeviceIdentification | TEST1024000000001 |
@@ -85,6 +99,11 @@ Feature: TariffSwitchingScheduleManagement Set Tariff Schedule
     # Note: The platform throws a TechnicalException when the status is 'REJECTED'.
     And the platform buffers a set tariff schedule response message for device "TEST1024000000001" contains soap fault
       | Message | Device reports rejected |
+
+    Examples: 
+      | Protocol    |
+      | OSLP        |
+      | OSLP ELSTER |
 
   Scenario: Set tariff schedule with invalid schedule
     Given an ssld device
@@ -109,6 +128,7 @@ Feature: TariffSwitchingScheduleManagement Set Tariff Schedule
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | RelayType            | TARIFF            |
+      | Protocol             | <Protocol>        |
     And the device returns a set tariff schedule response "OK" over OSLP
     When receiving a set tariff schedule request for 50 schedules
       | DeviceIdentification | TEST1024000000001 |
@@ -130,8 +150,9 @@ Feature: TariffSwitchingScheduleManagement Set Tariff Schedule
       | Result | NOT_FOUND |
 
     Examples: 
-      | WeekDay     | StartDay   | EndDay     | Time         | TariffValues | ScheduledTime |
-      | ABSOLUTEDAY | 2016-01-01 | 2016-12-31 | 18:00:00.000 | 0,true       | 2016-12-15    |
+      | Protocol    | WeekDay     | StartDay   | EndDay     | Time         | TariffValues | ScheduledTime |
+      | OSLP        | ABSOLUTEDAY | 2016-01-01 | 2016-12-31 | 18:00:00.000 | 0,true       | 2016-12-15    |
+      | OSLP ELSTER | ABSOLUTEDAY | 2016-01-01 | 2016-12-31 | 18:00:00.000 | 0,true       | 2016-12-15    |
 
   Scenario Outline: Set tariff schedule with 51 schedules # Fail
     Given an ssld device
