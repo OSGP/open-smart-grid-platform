@@ -279,7 +279,7 @@ public class SetConfigurationObjectCommandExecutor extends
             throw new ProtocolAdapterException("Value in DataObject is not a BitString: "
                     + resultData.getValue().getClass().getName());
         }
-        final byte[] flagByteArray = ((BitString) flagsData.getValue()).bitString();
+        final byte[] flagByteArray = ((BitString) flagsData.getValue()).getBitString();
 
         final List<ConfigurationFlagDto> listConfigurationFlag = this.configurationObjectHelperService
                 .toConfigurationFlags(flagByteArray);

@@ -639,7 +639,7 @@ public class DlmsHelperService {
         } else if (dataObject.isByteArray()) {
             objectText = this.getDebugInfoByteArray((byte[]) dataObject.getValue());
         } else if (dataObject.isBitString()) {
-            objectText = this.getDebugInfoBitStringBytes(((BitString) dataObject.getValue()).bitString());
+            objectText = this.getDebugInfoBitStringBytes(((BitString) dataObject.getValue()).getBitString());
         } else if (dataObject.isCosemDateFormat() && dataObject.getValue() instanceof CosemDateTime) {
             objectText = this.getDebugInfoDateTimeBytes(((CosemDateTime) dataObject.getValue()).encode());
         } else {
