@@ -199,4 +199,5 @@ public class Defaults {
     public static final String LOCALHOST = "localhost";
     public static final Integer OSLP_SERVER_PORT = 12121;
     public static final Integer RANDOM_DEVICE = 0;
+    public static final Integer OSLP_ELSTER_SERVER_PORT = 12122;
 }

@@ -15,6 +15,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -38,6 +39,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.cucumber.platform.Keys;
 import com.alliander.osgp.cucumber.platform.config.CoreDeviceConfiguration;
+import com.alliander.osgp.cucumber.platform.core.wait.Wait;
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.Oslp.DaliConfiguration;
 import com.alliander.osgp.oslp.Oslp.GetConfigurationResponse;
@@ -127,6 +129,7 @@ public class MockOslpServer {
 
     private final ConcurrentMap<DeviceRequestMessageType, Message> mockResponses = new ConcurrentHashMap<>();
     private final ConcurrentMap<DeviceRequestMessageType, Message> receivedRequests = new ConcurrentHashMap<>();
+    private final List<Message> receivedResponses = new ArrayList<>();
 
     public Integer getSequenceNumber() {
         return this.channelHandler.getSequenceNumber();
@@ -136,7 +139,7 @@ public class MockOslpServer {
         this.channelHandler = new MockOslpChannelHandler(this.oslpSignature, this.oslpSignatureProvider,
                 this.connectionTimeout, this.sequenceNumberWindow, this.sequenceNumberMaximum, this.responseDelayTime,
                 this.reponseDelayRandomRange, this.privateKey(), this.clientBootstrap(), this.mockResponses,
-                this.receivedRequests);
+                this.receivedRequests, this.receivedResponses);
 
         LOGGER.info("OSLP Mock server starting on port {}", this.oslpPortServer);
         this.serverOslp = this.serverBootstrap();
@@ -552,5 +555,19 @@ public class MockOslpServer {
 
     public String getOslpSignatureProvider() {
         return this.oslpSignatureProvider;
+    }
+
+    public Message waitForResponse() {
+        return Wait.until(() -> {
+            if (this.receivedResponses.isEmpty()) {
+                throw new Exception("no response yet");
+            }
+
+            return this.receivedResponses.get(0);
+        });
+    }
+
+    public void doNextSequenceNumber() {
+        this.channelHandler.doGetNextSequence();
     }
 }
