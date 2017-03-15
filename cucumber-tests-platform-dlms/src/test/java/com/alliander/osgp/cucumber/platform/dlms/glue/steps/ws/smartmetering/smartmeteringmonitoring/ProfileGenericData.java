@@ -30,7 +30,7 @@ import com.alliander.osgp.cucumber.platform.dlms.builders.ObisCodeValuesBuilder;
 import com.alliander.osgp.cucumber.platform.dlms.builders.ProfileGenericDataAsyncRequestBuilder;
 import com.alliander.osgp.cucumber.platform.dlms.builders.ProfileGenericDataRequestBuilder;
 import com.alliander.osgp.cucumber.platform.dlms.glue.steps.ws.smartmetering.SmartMeteringStepsBase;
-import com.alliander.osgp.cucumber.platform.dlms.support.ws.smartmetering.SmartMeteringMonitoringManagementClient;
+import com.alliander.osgp.cucumber.platform.dlms.support.ws.smartmetering.monitoring.SmartMeteringMonitoringClient;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -38,7 +38,7 @@ import cucumber.api.java.en.When;
 public class ProfileGenericData extends SmartMeteringStepsBase {
 
     @Autowired
-    private SmartMeteringMonitoringManagementClient client;
+    private SmartMeteringMonitoringClient client;
 
     @When("^the get profile generic data request is received$")
     public void theGetProfileGenericDataRequestIsReceived(final Map<String, String> settings) throws Throwable {

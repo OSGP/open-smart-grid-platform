@@ -34,7 +34,7 @@ import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
 
     @Autowired
-    private DefaultWebServiceTemplateFactory smartMeteringConfigurationManagementWstf;
+    private DefaultWebServiceTemplateFactory smartMeteringConfigurationWstf;
 
     public GetAdministrativeStatusAsyncResponse getAdministrativeStatus(final GetAdministrativeStatusRequest request)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
@@ -82,7 +82,7 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
     }
 
     private WebServiceTemplate getTemplate() throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        return this.smartMeteringConfigurationManagementWstf.getTemplate(this.getOrganizationIdentification(),
+        return this.smartMeteringConfigurationWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
     }
 }
