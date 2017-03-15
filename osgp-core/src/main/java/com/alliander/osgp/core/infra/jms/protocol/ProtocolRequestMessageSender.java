@@ -19,6 +19,8 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
 import com.alliander.osgp.core.domain.model.protocol.ProtocolRequestService;
+import com.alliander.osgp.core.infra.messaging.CoreLogItemRequestMessage;
+import com.alliander.osgp.core.infra.messaging.CoreLogItemRequestMessageSender;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
 import com.alliander.osgp.dto.valueobjects.DeviceFunctionDto;
 import com.alliander.osgp.shared.infra.jms.Constants;
@@ -31,6 +33,10 @@ import com.alliander.osgp.shared.infra.jms.ProtocolRequestMessage;
 public class ProtocolRequestMessageSender implements ProtocolRequestService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolRequestMessageSender.class);
+    private String CorrelationUid;
+
+    @Autowired
+    private CoreLogItemRequestMessageSender coreLogItemRequestMessageSender;
 
     @Autowired
     private ProtocolRequestMessageJmsTemplateFactory protocolRequestMessageJmsTemplateFactory;
@@ -84,10 +90,20 @@ public class ProtocolRequestMessageSender implements ProtocolRequestService {
                 objectMessage.setStringProperty(Constants.IP_ADDRESS, requestMessage.getIpAddress());
                 objectMessage.setBooleanProperty(Constants.IS_SCHEDULED, requestMessage.isScheduled());
                 objectMessage.setIntProperty(Constants.RETRY_COUNT, requestMessage.getRetryCount());
+
+                ProtocolRequestMessageSender.this.CorrelationUid = objectMessage.getJMSCorrelationID();
                 return objectMessage;
             }
 
         });
+        // send log retry count
+        final String decodedMessageWithDescription = String.format("retry count=%s , correlationuid=%s ",
+                this.CorrelationUid, Constants.RETRY_COUNT);
+
+        final CoreLogItemRequestMessage coreLogItemRequestMessage = new CoreLogItemRequestMessage(
+                Constants.DEVICE_IDENTIFICATION, Constants.ORGANISATION_IDENTIFICATION, decodedMessageWithDescription);
+
+        this.coreLogItemRequestMessageSender.send(coreLogItemRequestMessage);
 
         if (isCustomTimeToLiveSet) {
             jmsTemplate.setTimeToLive(originalTimeToLive);
