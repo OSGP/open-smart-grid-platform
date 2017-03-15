@@ -474,6 +474,8 @@
           <xsd:element name="ObisCode" type="common:ObisCodeValues" />
           <xsd:element name="BeginDate" type="xsd:dateTime" />
           <xsd:element name="EndDate" type="xsd:dateTime" />
+          <xsd:element name="SelectedValues"
+            type="common:CaptureObjectDefinitions" minOccurs="0" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
