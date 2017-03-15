@@ -200,4 +200,9 @@ public class Defaults {
     public static final Integer OSLP_SERVER_PORT = 12121;
     public static final Integer RANDOM_DEVICE = 0;
     public static final Integer OSLP_ELSTER_SERVER_PORT = 12122;
+
+    public static final long DEFAULT_SCHEDULE_VERSION = 1L;
+    public static final String SMSTYPE = "?";
+    public static final String LIGHTMEASUREMENT_LASTMESSAGE = "";
+    public static final Integer SMS_INDEX = 1;
 }
