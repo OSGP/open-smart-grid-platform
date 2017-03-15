@@ -74,6 +74,7 @@ public class ObisCodeValuesDto implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("%d.%d.%d.%d.%d.%d", this.a, this.b, this.c, this.d, this.e, this.f);
+        return String.format("%d.%d.%d.%d.%d.%d", this.a & 0xFF, this.b & 0xFF, this.c & 0xFF, this.d & 0xFF,
+                this.e & 0xFF, this.f & 0xFF);
     }
 }
