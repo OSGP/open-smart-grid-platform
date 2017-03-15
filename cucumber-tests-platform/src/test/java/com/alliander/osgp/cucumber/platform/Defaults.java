@@ -194,4 +194,8 @@ public class Defaults {
     public static final boolean DEVICE_FIRMWARE_ACTIVE = true;
     public static final DeviceFunctionGroup DEVICE_FUNCTION_GROUP = DeviceFunctionGroup.OWNER;
     public static final Boolean DEVICE_IN_MAINTENANCE = false;
+    public static final long DEFAULT_SCHEDULE_VERSION = 1L;
+    public static final String SMSTYPE = "?";
+    public static final String LIGHTMEASUREMENT_LASTMESSAGE = "";
+    public static final Integer SMS_INDEX = 1;
 }
