@@ -22,13 +22,13 @@ import com.alliander.osgp.shared.application.config.AbstractConfig;
         @PropertySource(value = "file:/etc/osp/test/global-cucumber.properties", ignoreResourceNotFound = true),
         @PropertySource(value = "file:/etc/osp/test/cucumber-platform-dlms.properties", ignoreResourceNotFound = true), })
 public class ApplicationConfiguration extends AbstractConfig {
-    
+
     @Value("${web.service.template.default.uri.smartmetering.adhocmanagement}")
     public String webserviceTemplateDefaultUriSmartMeteringAdHocManagement;
 
     @Value("${jaxb2.marshaller.context.path.smartmetering.adhocmanagement}")
     public String contextPathSmartMeteringAdHocManagement;
-    
+
     @Value("${web.service.template.default.uri.smartmetering.bundlemanagement}")
     public String webserviceTemplateDefaultUriSmartMeteringBundleManagement;
 

@@ -60,3 +60,14 @@ Feature: SmartMetering Bundle
     Then the retrieve configuration response contains
       | DeviceIdentification | TEST1024000000001        |
       | ResponsePart         | AssociationLnListElement |
+
+  Scenario: Set clock configuration
+    When a set clock configuration request received as part of a bundled request
+      | DeviceIdentification     | TEST1024000000001        |
+      | TimeZoneOffset           |                      -60 |
+      | DaylightSavingsBegin     | FFFF03FE0702000000003CFF |
+      | DaylightSavingsEnd       | FFFF0AFE07020000000078FF |
+      | DaylightSavingsDeviation |                      -60 |
+      | DaylightSavingsEnabled   | TRUE                     |
+    Then the set clock configuration response contains
+      | DeviceIdentification | TEST1024000000001 |

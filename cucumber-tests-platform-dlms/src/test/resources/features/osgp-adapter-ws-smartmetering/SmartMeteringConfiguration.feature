@@ -139,3 +139,19 @@ Feature: SmartMetering Configuration
     When the request for a firmware upgrade is received
     And the upgrade of firmware did not succeed
     Then the message "Upgrade of firmware did not succeed" should be given
+
+	@runnow
+  Scenario: set clock configuration
+    When the SetClockConfiguration request is received
+      | DeviceIdentification     | TEST1024000000001        |
+      | TimeZoneOffset           |                      -60 |
+      | DaylightSavingsBegin     | FFFF03FE0702000000003CFF |
+      | DaylightSavingsEnd       | FFFF0AFE07020000000078FF |
+      | DaylightSavingsDeviation |                      -60 |
+      | DaylightSavingsEnabled   | TRUE                     |
+    Then the set clock configuration response should be returned
+      | DeviceIdentification | TEST1024000000001 |
+      | Result               | OK                |
+    And a get synchronize time request synchronizes date and time on the device
+      | DeviceIdentification | TEST1024000000001 |
+      | Result               | OK                |
