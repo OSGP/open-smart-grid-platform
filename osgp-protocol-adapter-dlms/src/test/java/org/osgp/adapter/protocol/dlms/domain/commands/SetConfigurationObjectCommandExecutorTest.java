@@ -178,7 +178,7 @@ public class SetConfigurationObjectCommandExecutorTest {
         when(this.gprsOperationModeDataMock.getValue()).thenReturn(1);
         when(this.flagsDataMock.getValue()).thenReturn(this.flagStringMock);
         final byte[] flagByteArray = Hex.decodeHex(CURRENT_CONFIGURATION_OBJECT_BITSTRING_ALL_ENABLED.toCharArray());
-        when(this.flagStringMock.bitString()).thenReturn(flagByteArray);
+        when(this.flagStringMock.getBitString()).thenReturn(flagByteArray);
     }
 
     private DlmsDevice getDlmsDevice() {
