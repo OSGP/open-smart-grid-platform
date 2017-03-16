@@ -77,4 +77,8 @@ public class ObisCodeValuesDto implements Serializable {
         return String.format("%d.%d.%d.%d.%d.%d", this.a & 0xFF, this.b & 0xFF, this.c & 0xFF, this.d & 0xFF,
                 this.e & 0xFF, this.f & 0xFF);
     }
+
+    public byte[] toByteArray() {
+        return new byte[] { this.a, this.b, this.c, this.d, this.e, this.f };
+    }
 }
