@@ -16,15 +16,15 @@ public class SetClockConfigurationRequestData implements Serializable, ActionReq
 
     private static final long serialVersionUID = -5007970690190618239L;
 
-    protected short timeZoneOffset;
+    protected final short timeZoneOffset;
 
-    protected CosemDateTime daylightSavingsBegin;
+    protected final CosemDateTime daylightSavingsBegin;
 
-    protected CosemDateTime daylightSavingsEnd;
+    protected final CosemDateTime daylightSavingsEnd;
 
-    protected byte daylightSavingsDeviation;
+    protected final byte daylightSavingsDeviation;
 
-    protected boolean daylightSavingsEnabled;
+    protected final boolean daylightSavingsEnabled;
 
     public SetClockConfigurationRequestData(final short timeZoneOffset, final CosemDateTime daylightSavingsBegin,
             final CosemDateTime daylightSavingsEnd, final byte daylightSavingsDeviation,
