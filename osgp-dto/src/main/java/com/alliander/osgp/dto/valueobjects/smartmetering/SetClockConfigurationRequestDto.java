@@ -11,15 +11,15 @@ public class SetClockConfigurationRequestDto implements ActionRequestDto {
 
     private static final long serialVersionUID = -4876678355925159193L;
 
-    protected short timeZoneOffset;
+    protected final short timeZoneOffset;
 
-    protected CosemDateTimeDto daylightSavingsBegin;
+    protected final CosemDateTimeDto daylightSavingsBegin;
 
-    protected CosemDateTimeDto daylightSavingsEnd;
+    protected final CosemDateTimeDto daylightSavingsEnd;
 
-    protected byte daylightSavingsDeviation;
+    protected final byte daylightSavingsDeviation;
 
-    protected boolean daylightSavingsEnabled;
+    protected final boolean daylightSavingsEnabled;
 
     public SetClockConfigurationRequestDto(final short timeZoneOffset, final CosemDateTimeDto daylightSavingsBegin,
             final CosemDateTimeDto daylightSavingsEnd, final byte daylightSavingsDeviation,
