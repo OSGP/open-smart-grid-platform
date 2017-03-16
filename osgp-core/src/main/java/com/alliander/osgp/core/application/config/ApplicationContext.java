@@ -23,6 +23,8 @@ import com.alliander.osgp.core.infra.jms.domain.DomainResponseMessageSender;
 import com.alliander.osgp.core.infra.jms.domain.in.DomainRequestMessageSender;
 import com.alliander.osgp.core.infra.jms.protocol.ProtocolRequestMessageSender;
 import com.alliander.osgp.core.infra.jms.protocol.in.ProtocolResponseMessageSender;
+import com.alliander.osgp.core.infra.messaging.CoreLogItemRequestMessageSender;
+import com.alliander.osgp.shared.application.config.AbstractMessagingConfig;
 import com.alliander.osgp.shared.application.config.jms.JmsConfiguration;
 import com.alliander.osgp.shared.application.config.jms.JmsConfigurationFactory;
 
@@ -31,10 +33,9 @@ import com.alliander.osgp.shared.application.config.jms.JmsConfigurationFactory;
  * configuration requires Spring Framework 3.0
  */
 @Configuration
-@ComponentScan(basePackages = { "com.alliander.osgp.domain.core", "com.alliander.osgp.core",
-        "com.alliander.osgp.shared.application.config.jms" })
+@ComponentScan(basePackages = { "com.alliander.osgp.domain.core", "com.alliander.osgp.core", })
 @EnableTransactionManagement()
-public class ApplicationContext {
+public class ApplicationContext extends AbstractMessagingConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);
 
@@ -44,13 +45,13 @@ public class ApplicationContext {
 
     @Bean
     ProtocolRequestService protocolRequestMessageSender() {
-        LOGGER.debug("Creating bean: protocolRequestMessageSender");// 2
+        LOGGER.debug("Creating bean: protocolRequestMessageSender");
         return new ProtocolRequestMessageSender();
     }
 
     @Bean
     DomainResponseService domainResponseMessageSender() {
-        LOGGER.debug("Creating bean: domainResponseMessageSender");// 1
+        LOGGER.debug("Creating bean: domainResponseMessageSender");
         return new DomainResponseMessageSender();
     }
 
@@ -76,24 +77,8 @@ public class ApplicationContext {
         return coreLogItemRequestJmsConfiguration.getJmsTemplate();
     }
 
-    // @Bean
-    // public CoreLogItemRequestMessageSender coreLogItemRequestMessageSender()
-    // {
-    // return new CoreLogItemRequestMessageSender();//3
-    // }
-
-    // @Bean
-    // @Autowired
-    // CoreLogItemRequestMessageSender coreLogItemRequestMessageSender(final
-    // JmsTemplate coreLogItemRequestsJmsTemplate) {
-    // LOGGER.debug("Creating bean: coreLogItemRequestMessageSender");
-    // return new CoreLogItemRequestMessageSender();
-    // }
-    //
-    // @Bean
-    // JmsTemplate coreLogItemRequestsJmsTemplate() {
-    // LOGGER.debug("Creating bean: coreLogItemRequestsJmsTemplate");
-    // return new JmsTemplate();
-    // }
-
+    @Bean
+    public CoreLogItemRequestMessageSender coreLogItemRequestMessageSender() {
+        return new CoreLogItemRequestMessageSender();
+    }
 }

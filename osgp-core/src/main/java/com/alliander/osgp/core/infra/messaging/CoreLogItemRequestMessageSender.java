@@ -35,10 +35,6 @@ public class CoreLogItemRequestMessageSender {
             public Message createMessage(final Session session) throws JMSException {
                 final ObjectMessage objectMessage = session.createObjectMessage();
                 objectMessage.setJMSType(Constants.DLMS_LOG_ITEM_REQUEST);
-                // objectMessage.setStringProperty(Constants.IS_INCOMING,
-                // dlmsLogItemRequestMessage.isIncoming().toString());
-                // objectMessage.setStringProperty(Constants.ENCODED_MESSAGE,
-                // dlmsLogItemRequestMessage.getEncodedMessage());
                 objectMessage.setStringProperty(Constants.DECODED_MESSAGE,
                         coreLogItemRequestMessage.getDecodedMessage());
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
@@ -48,9 +44,8 @@ public class CoreLogItemRequestMessageSender {
                             coreLogItemRequestMessage.getOrganisationIdentification());
                 }
                 objectMessage.setStringProperty(Constants.IS_VALID, coreLogItemRequestMessage.isValid().toString());
-                // objectMessage.setIntProperty(Constants.PAYLOAD_MESSAGE_SERIALIZED_SIZE,
-                // dlmsLogItemRequestMessage.getPayloadMessageSerializedSize());
-                objectMessage.setStringProperty(Constants.RETRY_COUNT, coreLogItemRequestMessage.getRetryCount());
+                objectMessage.setIntProperty(Constants.PAYLOAD_MESSAGE_SERIALIZED_SIZE,
+                        coreLogItemRequestMessage.getPayloadMessageSerializedSize());
                 return objectMessage;
             }
         });

@@ -21,7 +21,7 @@ public class CoreLogItemRequestMessage {
 
     private final boolean valid;
 
-    private final String retryCount;
+    private int payloadMessageSerializedSize;
 
     public CoreLogItemRequestMessage(final String deviceIdentification, final String organisationIdentification,
             final String decodedMessage) {
@@ -29,7 +29,6 @@ public class CoreLogItemRequestMessage {
         this.organisationIdentification = organisationIdentification;
         this.valid = true;
         this.decodedMessage = StringUtils.substring(decodedMessage, 0, MAX_MESSAGE_LENGTH);
-        this.retryCount = null;
     }
 
     public String getDecodedMessage() {
@@ -52,7 +51,7 @@ public class CoreLogItemRequestMessage {
         return this.valid;
     }
 
-    public String getRetryCount() {
-        return this.retryCount;
+    public int getPayloadMessageSerializedSize() {
+        return this.payloadMessageSerializedSize;
     }
 }

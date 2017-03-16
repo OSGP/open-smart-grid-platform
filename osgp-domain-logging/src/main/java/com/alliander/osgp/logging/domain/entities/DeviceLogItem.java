@@ -40,8 +40,6 @@ public class DeviceLogItem extends AbstractEntity {
     @Column(name = "data_size")
     private int payloadMessageSerializedSize;
 
-    private String retryCount;
-
     @SuppressWarnings("unused")
     private DeviceLogItem() {
         // Empty constructor for Hibernate.
@@ -49,7 +47,7 @@ public class DeviceLogItem extends AbstractEntity {
 
     public DeviceLogItem(final String organisationIdentification, final String deviceUid,
             final String deviceIdentification, final boolean incoming, final boolean valid, final String encodedMessage,
-            final String decodedMessage, final int payloadMessageSerializedSize, final String retryCount) {
+            final String decodedMessage, final int payloadMessageSerializedSize) {
         this.organisationIdentification = organisationIdentification;
         this.deviceUid = deviceUid;
         this.deviceIdentification = deviceIdentification;
@@ -58,7 +56,6 @@ public class DeviceLogItem extends AbstractEntity {
         this.encodedMessage = encodedMessage;
         this.decodedMessage = decodedMessage;
         this.payloadMessageSerializedSize = payloadMessageSerializedSize;
-        this.retryCount = retryCount;
     }
 
     public boolean isIncoming() {
@@ -91,9 +88,5 @@ public class DeviceLogItem extends AbstractEntity {
 
     public int getPayloadMessageSerializedSize() {
         return this.payloadMessageSerializedSize;
-    }
-
-    public String getRetryCount() {
-        return this.retryCount;
     }
 }

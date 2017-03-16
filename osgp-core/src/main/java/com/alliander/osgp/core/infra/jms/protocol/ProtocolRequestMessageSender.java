@@ -90,20 +90,21 @@ public class ProtocolRequestMessageSender implements ProtocolRequestService {
                 objectMessage.setStringProperty(Constants.IP_ADDRESS, requestMessage.getIpAddress());
                 objectMessage.setBooleanProperty(Constants.IS_SCHEDULED, requestMessage.isScheduled());
                 objectMessage.setIntProperty(Constants.RETRY_COUNT, requestMessage.getRetryCount());
-
-                ProtocolRequestMessageSender.this.CorrelationUid = objectMessage.getJMSCorrelationID();
                 return objectMessage;
             }
 
         });
-        // send log retry count
-        final String decodedMessageWithDescription = String.format("retry count=%s , correlationuid=%s ",
-                this.CorrelationUid, Constants.RETRY_COUNT);
 
-        final CoreLogItemRequestMessage coreLogItemRequestMessage = new CoreLogItemRequestMessage(
-                Constants.DEVICE_IDENTIFICATION, Constants.ORGANISATION_IDENTIFICATION, decodedMessageWithDescription);
+        if (requestMessage.getRetryCount() != 0) {
+            final String decodedMessageWithDescription = String.format("retry count= %s, correlationuid= %s ",
+                    requestMessage.getRetryCount(), requestMessage.getCorrelationUid());
 
-        this.coreLogItemRequestMessageSender.send(coreLogItemRequestMessage);
+            final CoreLogItemRequestMessage coreLogItemRequestMessage = new CoreLogItemRequestMessage(
+                    requestMessage.getDeviceIdentification(), requestMessage.getOrganisationIdentification(),
+                    decodedMessageWithDescription);
+
+            this.coreLogItemRequestMessageSender.send(coreLogItemRequestMessage);
+        }
 
         if (isCustomTimeToLiveSet) {
             jmsTemplate.setTimeToLive(originalTimeToLive);

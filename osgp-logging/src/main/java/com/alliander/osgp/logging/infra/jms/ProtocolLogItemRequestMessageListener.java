@@ -55,8 +55,7 @@ public class ProtocolLogItemRequestMessageListener implements MessageListener {
                 Boolean.parseBoolean(objectMessage.getStringProperty(Constants.IS_VALID)),
                 objectMessage.getStringProperty(Constants.ENCODED_MESSAGE),
                 objectMessage.getStringProperty(Constants.DECODED_MESSAGE),
-                objectMessage.getIntProperty(Constants.PAYLOAD_MESSAGE_SERIALIZED_SIZE),
-                objectMessage.getStringProperty(Constants.RETRY_COUNT));
+                objectMessage.getIntProperty(Constants.PAYLOAD_MESSAGE_SERIALIZED_SIZE));
         this.deviceLogRepository.save(deviceLogItem);
     }
 }
