@@ -61,13 +61,17 @@ Feature: SmartMetering Bundle
       | DeviceIdentification | TEST1024000000001        |
       | ResponsePart         | AssociationLnListElement |
 
+  @runnow
   Scenario: Set clock configuration
-    When a set clock configuration request received as part of a bundled request
-      | DeviceIdentification     | TEST1024000000001        |
+    Given a bundle request
+      | DeviceIdentification | TEST1024000000001 |
+    And a set clock configuration action is part of a bundled request
       | TimeZoneOffset           |                      -60 |
       | DaylightSavingsBegin     | FFFF03FE0702000000003CFF |
       | DaylightSavingsEnd       | FFFF0AFE07020000000078FF |
       | DaylightSavingsDeviation |                      -60 |
       | DaylightSavingsEnabled   | TRUE                     |
-    Then the set clock configuration response contains
+    When the bundle request is received
+    Then the bundle response contains a set clock configuration response
       | DeviceIdentification | TEST1024000000001 |
+      | Result               | OK                |
