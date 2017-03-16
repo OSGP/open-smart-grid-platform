@@ -11,6 +11,7 @@ Feature: FirmwareManagement get firmware
       | Status               | Active            |
       | Organization         | TestOrganization  |
       | IsActivated          | true              |
+      | Protocol             | <Protocol>        |
     And the device returns firmware version "<Firmware Version>" over OSLP
     When receiving a get firmware version request
       | DeviceIdentification | TEST1024000000001 |
@@ -23,11 +24,15 @@ Feature: FirmwareManagement get firmware
       | FirmwareModuleType | FUNCTIONAL         |
 
     Examples: 
-      | Firmware Version |
-      | R01              |
-      | R02              |
-      |                  |
-      |             0123 |
+      | Protocol    | Firmware Version |
+      | OSLP        | R01              |
+      | OSLP        | R02              |
+      | OSLP        |                  |
+      | OSLP        |             0123 |
+      | OSLP ELSTER | R01              |
+      | OSLP ELSTER | R02              |
+      | OSLP ELSTER |                  |
+      | OSLP ELSTER |             0123 |
 
   Scenario: Get the firmware version for an unknown device
     When receiving a get firmware version request

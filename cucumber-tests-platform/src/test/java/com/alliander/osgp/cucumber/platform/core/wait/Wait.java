@@ -60,7 +60,7 @@ public class Wait {
             if (count / 1000 > configuration.getTimeout()) {
                 Assert.fail("Timeout after [" + (count / 1000) + "] seconds");
             }
-            logger.info("... polling in Wait.ForResult ...");
+            logger.info("... polling in Wait.until ...");
 
             try {
                 // Call the code to run
@@ -78,9 +78,9 @@ public class Wait {
                 handleException(logger, ex);
             }
             count += configuration.getSleepTime();
-            try{
-            	TimeUnit.MILLISECONDS.sleep(configuration.getSleepTime());
-            } catch(Exception ex) {
+            try {
+                TimeUnit.MILLISECONDS.sleep(configuration.getSleepTime());
+            } catch (final Exception ex) {
                 handleException(logger, ex);
             }
         }
@@ -96,7 +96,7 @@ public class Wait {
             if (count / 1000 > configuration.getTimeout()) {
                 Assert.fail("Timeout after [" + (count / 1000) + "] seconds");
             }
-            logger.info("... polling in Wait.ForResult ...");
+            logger.info("... polling in Wait.until ...");
 
             try {
                 // Call the code to run
@@ -114,9 +114,9 @@ public class Wait {
                 handleException(logger, ex);
             }
             count += configuration.getSleepTime();
-            try{
-            	TimeUnit.MILLISECONDS.sleep(configuration.getSleepTime());
-            } catch(Exception ex) {
+            try {
+                TimeUnit.MILLISECONDS.sleep(configuration.getSleepTime());
+            } catch (final Exception ex) {
                 handleException(logger, ex);
             }
         }
@@ -132,7 +132,7 @@ public class Wait {
      * @param logger
      * @param ex
      */
-    public static void handleException(final Logger logger, final Exception ex) {
+    private static void handleException(final Logger logger, final Exception ex) {
         logger.error("Caught an exception: [{}], stacktrace [{}]", ex.getMessage(), ex.getStackTrace());
     }
 }

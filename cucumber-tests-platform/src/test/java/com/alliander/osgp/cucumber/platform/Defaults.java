@@ -192,6 +192,17 @@ public class Defaults {
     public static final String FIRMWARE_INSTALLED_BY = "Test User";
     public static final String FIRMWARE_INSTALLATION_DATE = "now";
     public static final boolean DEVICE_FIRMWARE_ACTIVE = true;
+
     public static final DeviceFunctionGroup DEVICE_FUNCTION_GROUP = DeviceFunctionGroup.OWNER;
     public static final Boolean DEVICE_IN_MAINTENANCE = false;
+
+    public static final String LOCALHOST = "localhost";
+    public static final Integer OSLP_SERVER_PORT = 12121;
+    public static final Integer RANDOM_DEVICE = 0;
+    public static final Integer OSLP_ELSTER_SERVER_PORT = 12122;
+
+    public static final long DEFAULT_SCHEDULE_VERSION = 1L;
+    public static final String SMSTYPE = "?";
+    public static final String LIGHTMEASUREMENT_LASTMESSAGE = "";
+    public static final Integer SMS_INDEX = 1;
 }
