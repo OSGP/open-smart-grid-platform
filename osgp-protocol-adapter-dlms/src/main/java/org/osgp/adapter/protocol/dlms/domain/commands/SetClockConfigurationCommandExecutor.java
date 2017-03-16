@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetClockConfigurationRequestDto;
 
 @Component
@@ -18,6 +19,11 @@ public class SetClockConfigurationCommandExecutor
 
     public SetClockConfigurationCommandExecutor() {
         super(SetClockConfigurationRequestDto.class);
+    }
+
+    @Override
+    public ActionResponseDto asBundleResponse(final AccessResultCode executionResult) throws ProtocolAdapterException {
+        return new ActionResponseDto("Set clock configuration was successful");
     }
 
     @Override
