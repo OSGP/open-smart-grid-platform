@@ -33,7 +33,6 @@ import com.alliander.osgp.shared.infra.jms.ProtocolRequestMessage;
 public class ProtocolRequestMessageSender implements ProtocolRequestService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolRequestMessageSender.class);
-    private String CorrelationUid;
 
     @Autowired
     private CoreLogItemRequestMessageSender coreLogItemRequestMessageSender;
