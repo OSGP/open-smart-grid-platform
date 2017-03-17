@@ -12,6 +12,8 @@ import java.util.Properties;
 import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 
+import org.flywaydb.core.Flyway;
+import org.flywaydb.core.api.MigrationVersion;
 import org.hibernate.ejb.HibernatePersistence;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.jboss.netty.logging.Slf4JLoggerFactory;
@@ -30,7 +32,6 @@ import com.alliander.osgp.adapter.protocol.iec61850.domain.repositories.Iec61850
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.shared.application.config.AbstractConfig;
 import com.alliander.osgp.shared.infra.db.DefaultConnectionPoolFactory;
-import com.googlecode.flyway.core.Flyway;
 import com.zaxxer.hikari.HikariDataSource;
 
 /**
@@ -150,9 +151,9 @@ public class Iec61850PersistenceConfig extends AbstractConfig {
         final Flyway flyway = new Flyway();
 
         // Initialization for non-empty schema with no metadata table
-        flyway.setInitVersion(this.flywayInitialVersion);
-        flyway.setInitDescription(this.flywayInitialDescription);
-        flyway.setInitOnMigrate(this.flywayInitOnMigrate);
+        flyway.setBaselineVersion(MigrationVersion.fromVersion(this.flywayInitialVersion));
+        flyway.setBaselineDescription(this.flywayInitialDescription);
+        flyway.setBaselineOnMigrate(this.flywayInitOnMigrate);
 
         flyway.setDataSource(this.iec61850DataSource());
 
