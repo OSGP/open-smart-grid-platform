@@ -1,13 +1,19 @@
-@Iec61850MockServer
+@Iec61850MockServerMarkerWadden
 Feature: MicroGrids Set Data Service
   As scrum team I want to have cucumber tests for Set Data Services
   so that I am able to guarantee the quality of Microgrid Platform.
 
   Scenario Outline: SetData Service
     Given an rtu iec61850 device
-      | DeviceIdentification | RTU10001 |
+      | DeviceIdentification | RTU10003                              |
+#      | IcdFilename          | MarkerWadden_0_1_1_reporting_hack.icd |
+#      | Port                 |                                 63102 |
+#    And an rtu simulator started with
+#      | ServerName  | WAGO61850Server                       |
+#      | IcdFilename | MarkerWadden_0_1_1_reporting_hack.icd |
+#      | Port        |                                 63102 |
     When a set data request is received    
-      | DeviceIdentification       | RTU10001            |
+      | DeviceIdentification       | RTU10003            |
       | NumberOfSystems            |                   1 |
       | SystemId_1                 |                   1 |
       | SystemType_1               | <SystemType_1>      |
