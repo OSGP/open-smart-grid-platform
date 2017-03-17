@@ -56,7 +56,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
     static {
         REPORT_HANDLERS_MAP.put("RTU", Iec61850RtuReportHandler.class);
         REPORT_HANDLERS_MAP.put("PV", Iec61850PvReportHandler.class);
-        REPORT_HANDLERS_MAP.put("BATTERY", Iec61850PvReportHandler.class);
+        REPORT_HANDLERS_MAP.put("BATTERY", Iec61850BatteryReportHandler.class);
         REPORT_HANDLERS_MAP.put("ENGINE", Iec61850EngineReportHandler.class);
         REPORT_HANDLERS_MAP.put("LOAD", Iec61850LoadReportHandler.class);
         REPORT_HANDLERS_MAP.put("CHP", Iec61850ChpReportHandler.class);
