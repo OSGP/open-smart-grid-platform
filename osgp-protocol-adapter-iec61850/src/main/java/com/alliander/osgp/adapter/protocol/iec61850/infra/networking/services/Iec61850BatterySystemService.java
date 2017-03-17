@@ -37,7 +37,6 @@ public class Iec61850BatterySystemService implements SystemService {
     @Override
     public GetDataSystemIdentifierDto getData(final SystemFilterDto systemFilter, final Iec61850Client client,
             final DeviceConnection connection) throws NodeReadException {
-
         final int logicalDeviceIndex = systemFilter.getId();
 
         LOGGER.info("Get data called for logical device {}{}", DEVICE.getDescription(), logicalDeviceIndex);
@@ -62,7 +61,6 @@ public class Iec61850BatterySystemService implements SystemService {
     @Override
     public void setData(final SetDataSystemIdentifierDto systemIdentifier, final Iec61850Client client,
             final DeviceConnection connection) throws NodeWriteException {
-
         final int logicalDeviceIndex = systemIdentifier.getId();
 
         LOGGER.info("Set data called for logical device {}{}", DEVICE.getDescription(), logicalDeviceIndex);

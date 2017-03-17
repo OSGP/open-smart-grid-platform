@@ -31,8 +31,10 @@ public class Pv extends LogicalDevice {
 
     private static final Set<String> INT8_NODES = Collections
             .unmodifiableSet(new TreeSet<>(Arrays.asList(LLN0_HEALTH_STVAL)));
+
     private static final Set<String> QUALITY_NODES = Collections
             .unmodifiableSet(new TreeSet<>(Arrays.asList(LLN0_HEALTH_Q)));
+
     private static final Set<String> TIMESTAMP_NODES = Collections
             .unmodifiableSet(new TreeSet<>(Arrays.asList(LLN0_HEALTH_T)));
 

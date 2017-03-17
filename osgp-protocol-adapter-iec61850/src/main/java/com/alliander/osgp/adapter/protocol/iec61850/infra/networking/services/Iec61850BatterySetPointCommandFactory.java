@@ -59,7 +59,6 @@ public class Iec61850BatterySetPointCommandFactory implements RtuWriteCommandFac
 
     private static void initializeBatteryCommandMap() {
         for (int i = ID_START; i <= ID_END; i++) {
-
             RTU_COMMAND_MAP.put(createMapKey(DataAttribute.SCHEDULE_ID, i), new Iec61850ScheduleIdCommand(i));
             RTU_COMMAND_MAP.put(createMapKey(DataAttribute.SCHEDULE_TYPE, i), new Iec61850ScheduleTypeCommand(i));
             RTU_COMMAND_MAP.put(createMapKey(DataAttribute.SCHEDULE_CAT, i), new Iec61850ScheduleCatCommand(i));

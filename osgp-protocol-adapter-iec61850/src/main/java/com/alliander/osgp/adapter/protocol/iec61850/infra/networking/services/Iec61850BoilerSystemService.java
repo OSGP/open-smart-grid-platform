@@ -37,7 +37,6 @@ public class Iec61850BoilerSystemService implements SystemService {
     @Override
     public GetDataSystemIdentifierDto getData(final SystemFilterDto systemFilter, final Iec61850Client client,
             final DeviceConnection connection) throws NodeReadException {
-
         final int logicalDeviceIndex = systemFilter.getId();
 
         LOGGER.info("Get data called for logical device {}{}", DEVICE.getDescription(), logicalDeviceIndex);
@@ -53,7 +52,6 @@ public class Iec61850BoilerSystemService implements SystemService {
             } else {
                 measurements.add(command.execute(client, connection, DEVICE, logicalDeviceIndex));
             }
-
         }
 
         return new GetDataSystemIdentifierDto(systemFilter.getId(), systemFilter.getSystemType(), measurements);
