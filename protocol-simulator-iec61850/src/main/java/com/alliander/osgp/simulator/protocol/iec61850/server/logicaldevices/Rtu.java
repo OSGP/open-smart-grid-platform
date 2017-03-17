@@ -40,9 +40,11 @@ public class Rtu extends LogicalDevice {
     private static final Set<String> FLOAT32_NODES = Collections
             .unmodifiableSet(new TreeSet<>(Arrays.asList(DSCH1_SCHDABSTM_VAL_0, DSCH1_SCHDABSTM_VAL_1,
                     DSCH1_SCHDABSTM_VAL_2, DSCH1_SCHDABSTM_VAL_3)));
+
     private static final Set<String> INT32_NODES = Collections
             .unmodifiableSet(
                     new TreeSet<>(Arrays.asList(DSCH1_SCHDID_SETVAL, DSCH1_SCHDTYP_SETVAL, DSCH1_SCHCAT_SETVAL)));
+
     private static final Set<String> TIMESTAMP_NODES = Collections
             .unmodifiableSet(new TreeSet<>(Arrays.asList(DSCH1_SCHDABSTM_TIME_0, DSCH1_SCHDABSTM_TIME_1,
                     DSCH1_SCHDABSTM_TIME_2, DSCH1_SCHDABSTM_TIME_3)));

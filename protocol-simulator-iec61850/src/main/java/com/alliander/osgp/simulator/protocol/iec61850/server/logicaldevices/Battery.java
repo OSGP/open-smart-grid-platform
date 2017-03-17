@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2016 Smart Society Services B.V.
+ * Copyright 2014-2017 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -24,6 +24,18 @@ import org.openmuc.openiec61850.ServerModel;
 import com.alliander.osgp.simulator.protocol.iec61850.server.QualityType;
 
 public class Battery extends LogicalDevice {
+
+    private static final String DSCH1_SCHDID_SETVAL = "DSCH1.SchdId.setVal";
+    private static final String DSCH1_SCHDTYP_SETVAL = "DSCH1.SchdTyp.setVal";
+    private static final String DSCH1_SCHCAT_SETVAL = "DSCH1.SchCat.setVal";
+    private static final String DSCH1_SCHDABSTM_VAL_0 = "DSCH1.SchdAbsTm.val.0";
+    private static final String DSCH1_SCHDABSTM_TIME_0 = "DSCH1.SchdAbsTm.time.0";
+    private static final String DSCH1_SCHDABSTM_VAL_1 = "DSCH1.SchdAbsTm.val.1";
+    private static final String DSCH1_SCHDABSTM_TIME_1 = "DSCH1.SchdAbsTm.time.1";
+    private static final String DSCH1_SCHDABSTM_VAL_2 = "DSCH1.SchdAbsTm.val.2";
+    private static final String DSCH1_SCHDABSTM_TIME_2 = "DSCH1.SchdAbsTm.time.2";
+    private static final String DSCH1_SCHDABSTM_VAL_3 = "DSCH1.SchdAbsTm.val.3";
+    private static final String DSCH1_SCHDABSTM_TIME_3 = "DSCH1.SchdAbsTm.time.3";
 
     private static final String LLN0_HEALTH_STVAL = "LLN0.Health.stVal";
     private static final String LLN0_HEALTH_Q = "LLN0.Health.q";
@@ -110,29 +122,47 @@ public class Battery extends LogicalDevice {
 
     private static final Set<String> BOOLEAN_NODES = Collections.unmodifiableSet(
             new TreeSet<>(Arrays.asList(GGIO1_ALM1_STVAL, GGIO1_ALM2_STVAL, GGIO1_ALM3_STVAL, GGIO1_ALM4_STVAL)));
+
     private static final Set<String> FLOAT32_NODES = Collections
-            .unmodifiableSet(new TreeSet<>(Arrays.asList(MMXU1_MAXWPHS_MAG_F, MMXU1_MINWPHS_MAG_F, MMXU1_TOTW_MAG_F,
-                    DRCC1_OUTWSET_SUBVAL_F, DGEN1_TOTWH_MAG_F, MMXU1_TOTPF_MAG_F)));
+            .unmodifiableSet(new TreeSet<>(Arrays.asList(DSCH1_SCHDABSTM_VAL_0, MMXU1_MAXWPHS_MAG_F, MMXU1_MINWPHS_MAG_F, MMXU1_TOTW_MAG_F,
+                    DRCC1_OUTWSET_SUBVAL_F, DGEN1_TOTWH_MAG_F, MMXU1_TOTPF_MAG_F, DSCH1_SCHDABSTM_VAL_2, DSCH1_SCHDABSTM_VAL_3)));
+
     private static final Set<String> INT8_NODES = Collections
             .unmodifiableSet(new TreeSet<>(
                     Arrays.asList(LLN0_HEALTH_STVAL, LLN0_BEH_STVAL, LLN0_MOD_STVAL, DGEN1_GNOPST_STVAL)));
+
     private static final Set<String> INT32_NODES = Collections
             .unmodifiableSet(new TreeSet<>(Arrays.asList(DGEN1_OPTMSRS_STVAL, GGIO1_INTIN1_STVAL, GGIO1_INTIN2_STVAL,
-                    GGIO1_WRN1_STVAL, GGIO1_WRN2_STVAL, GGIO1_WRN3_STVAL, GGIO1_WRN4_STVAL)));
+                    GGIO1_WRN1_STVAL, GGIO1_WRN2_STVAL, GGIO1_WRN3_STVAL, GGIO1_WRN4_STVAL,
+                    DSCH1_SCHDID_SETVAL, DSCH1_SCHDTYP_SETVAL, DSCH1_SCHCAT_SETVAL)));
+
     private static final Set<String> QUALITY_NODES = Collections.unmodifiableSet(
             new TreeSet<>(Arrays.asList(LLN0_HEALTH_Q, LLN0_BEH_Q, LLN0_MOD_Q, MMXU1_MAXWPHS_Q, MMXU1_MINWPHS_Q,
                     MMXU1_TOTW_Q, DRCC1_OUTWSET_SUBQ, DGEN1_TOTWH_Q, DGEN1_GNOPST_Q, MMXU1_TOTPF_Q, DGEN1_OPTMSRS_Q,
                     GGIO1_ALM1_Q, GGIO1_ALM2_Q, GGIO1_ALM3_Q, GGIO1_ALM4_Q, GGIO1_INTIN1_Q, GGIO1_INTIN2_Q,
                     GGIO1_WRN1_Q, GGIO1_WRN2_Q, GGIO1_WRN3_Q, GGIO1_WRN4_Q)));
+
     private static final Set<String> TIMESTAMP_NODES = Collections
             .unmodifiableSet(new TreeSet<>(Arrays.asList(LLN0_HEALTH_T, LLN0_BEH_T, LLN0_MOD_T, MMXU1_MAXWPHS_T,
                     MMXU1_MINWPHS_T, MMXU1_TOTW_T, DRCC1_OUTWSET_SUBQ, DGEN1_TOTWH_T, DGEN1_GNOPST_T, MMXU1_TOTPF_T,
                     DGEN1_OPTMSRS_T, GGIO1_ALM1_T, GGIO1_ALM2_T, GGIO1_ALM3_T, GGIO1_ALM4_T, GGIO1_INTIN1_T,
-                    GGIO1_INTIN2_T, GGIO1_WRN1_T, GGIO1_WRN2_T, GGIO1_WRN3_T, GGIO1_WRN4_T)));
+                    GGIO1_INTIN2_T, GGIO1_WRN1_T, GGIO1_WRN2_T, GGIO1_WRN3_T, GGIO1_WRN4_T, DSCH1_SCHDABSTM_TIME_0, DSCH1_SCHDABSTM_VAL_1,
+                    DSCH1_SCHDABSTM_TIME_1, DSCH1_SCHDABSTM_TIME_2, DSCH1_SCHDABSTM_TIME_3)));
 
     private static final Map<String, Fc> FC_BY_NODE;
     static {
         final Map<String, Fc> fcByNode = new TreeMap<>();
+        fcByNode.put(DSCH1_SCHDID_SETVAL, Fc.SP);
+        fcByNode.put(DSCH1_SCHDTYP_SETVAL, Fc.SP);
+        fcByNode.put(DSCH1_SCHCAT_SETVAL, Fc.SP);
+        fcByNode.put(DSCH1_SCHDABSTM_VAL_0, Fc.SP);
+        fcByNode.put(DSCH1_SCHDABSTM_TIME_0, Fc.SP);
+        fcByNode.put(DSCH1_SCHDABSTM_VAL_1, Fc.SP);
+        fcByNode.put(DSCH1_SCHDABSTM_TIME_1, Fc.SP);
+        fcByNode.put(DSCH1_SCHDABSTM_VAL_2, Fc.SP);
+        fcByNode.put(DSCH1_SCHDABSTM_TIME_2, Fc.SP);
+        fcByNode.put(DSCH1_SCHDABSTM_VAL_3, Fc.SP);
+        fcByNode.put(DSCH1_SCHDABSTM_TIME_3, Fc.SP);
 
         fcByNode.put(LLN0_HEALTH_STVAL, Fc.ST);
         fcByNode.put(LLN0_HEALTH_Q, Fc.ST);
