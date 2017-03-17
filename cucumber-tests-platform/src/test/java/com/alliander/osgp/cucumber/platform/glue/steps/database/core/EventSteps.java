@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.cucumber.platform.GlueBase;
 import com.alliander.osgp.cucumber.platform.Keys;
+import com.alliander.osgp.cucumber.platform.core.wait.Wait;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.Event;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
@@ -37,19 +38,16 @@ public class EventSteps extends GlueBase {
     @Then("^the event is stored$")
     public void theEventIsStored(final Map<String, String> expectedEntity) throws Throwable {
 
-        final Device device = this.deviceRepository
-                .findByDeviceIdentification(getString(expectedEntity, Keys.KEY_DEVICE_IDENTIFICATION));
+        Wait.until(() -> {
+            final Device device = this.deviceRepository
+                    .findByDeviceIdentification(getString(expectedEntity, Keys.KEY_DEVICE_IDENTIFICATION));
 
-        final List<Event> events = this.eventRepository.findByDevice(device);
+            final List<Event> events = this.eventRepository.findByDevice(device);
 
-        boolean found = false;
-        for (final Event event : events) {
-            if (event.getDescription() == getString(expectedEntity, Keys.KEY_DESCRIPTION)
-                    && event.getEventType() == getEnum(expectedEntity, Keys.KEY_EVENT, EventType.class)) {
-                found = true;
-            }
-        }
+            final Event event = events.get(0);
 
-        Assert.assertTrue(found);
+            Assert.assertEquals(event.getDescription(), getString(expectedEntity, Keys.KEY_DESCRIPTION));
+            Assert.assertEquals(event.getEventType(), getEnum(expectedEntity, Keys.KEY_EVENT, EventType.class));
+        });
     }
 }

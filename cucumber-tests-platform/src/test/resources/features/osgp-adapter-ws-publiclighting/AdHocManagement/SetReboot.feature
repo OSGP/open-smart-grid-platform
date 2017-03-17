@@ -4,9 +4,10 @@ Feature: PublicLightingAdhocManagement Set Reboot
   In order to reboot devices As a platform
 
   @OslpMockServer
-  Scenario: Set reboot
+  Scenario Outline: Set reboot
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
+      | Protocol             | <Protocol>        |
     And the device returns a set reboot response "OK" over OSLP
     When receiving a set reboot request
       | DeviceIdentification | TEST1024000000001 |
@@ -15,6 +16,11 @@ Feature: PublicLightingAdhocManagement Set Reboot
     And a set reboot OSLP message is sent to device "TEST1024000000001"
     And the platform buffers a set reboot response message for device "TEST1024000000001"
       | Result | OK |
+
+    Examples: 
+      | Protocol    |
+      | OSLP        |
+      | OSLP ELSTER |
 
   Scenario: Set reboot as an unknown organization
     When receiving a set reboot request by an unknown organization

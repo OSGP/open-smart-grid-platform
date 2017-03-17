@@ -8,6 +8,7 @@ Feature: PublicLightingAdhocManagement Resume Schedule
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | HasSchedule          | true              |
+      | Protocol             | <Protocol>        |
     And the device returns a resume schedule response "OK" over OSLP
     When receiving a resume schedule request
       | DeviceIdentification | TEST1024000000001 |
@@ -22,17 +23,22 @@ Feature: PublicLightingAdhocManagement Resume Schedule
       | Result | OK |
 
     Examples: 
-      | Index | IsImmediate |
-      |     0 | true        |
-      |     0 | false       |
-      |     1 | true        |
-      |     6 | true        |
+      | Protocol    | Index | IsImmediate |
+      | OSLP        |     0 | true        |
+      | OSLP        |     0 | false       |
+      | OSLP        |     1 | true        |
+      | OSLP        |     6 | true        |
+      | OSLP ELSTER |     0 | true        |
+      | OSLP ELSTER |     0 | false       |
+      | OSLP ELSTER |     1 | true        |
+      | OSLP ELSTER |     6 | true        |
 
   @OslpMockServer
   Scenario Outline: Resume Schedule for a device with no has schedule
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | HasSchedule          | false             |
+      | Protocol             | <Protocol>        |
     When receiving a resume schedule request
       | DeviceIdentification | TEST1024000000001 |
       | Index                | <Index>           |
@@ -43,8 +49,9 @@ Feature: PublicLightingAdhocManagement Resume Schedule
       | FaultString | <FaultString> |
 
     Examples: 
-      | Index | IsImmediate | FaultString        |
-      |     1 | true        | UNSCHEDULED_DEVICE |
+      | Protocol    | Index | IsImmediate | FaultString        |
+      | OSLP        |     1 | true        | UNSCHEDULED_DEVICE |
+      | OSLP ELSTER |     1 | true        | UNSCHEDULED_DEVICE |
 
   Scenario: Resume Schedule as an unknown organization
     When receiving a set resume schedule by an unknown organization
