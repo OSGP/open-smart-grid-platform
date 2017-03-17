@@ -35,8 +35,8 @@ import com.zaxxer.hikari.HikariDataSource;
 @EnableJpaRepositories(basePackageClasses = { DeviceRepository.class })
 @Configuration
 @PropertySources({ @PropertySource("classpath:osgp-core.properties"),
-        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:${osgp/Core/config}", ignoreResourceNotFound = true), })
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+    @PropertySource(value = "file:${osgp/Core/config}", ignoreResourceNotFound = true), })
 public class PersistenceConfig extends AbstractConfig {
 
     private static final String PROPERTY_NAME_DATABASE_USERNAME = "db.username";
@@ -91,20 +91,20 @@ public class PersistenceConfig extends AbstractConfig {
                     .parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_PORT));
             final String databaseName = this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_NAME);
 
-            final int minPoolSize = Integer
-                    .parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_MIN_POOL_SIZE));
-            final int maxPoolSize = Integer
-                    .parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_MAX_POOL_SIZE));
-            final boolean isAutoCommit = Boolean
-                    .parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_AUTO_COMMIT));
-            final int idleTimeout = Integer
-                    .parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_IDLE_TIMEOUT));
+            final int minPoolSize = Integer.parseInt(this.environment
+                    .getRequiredProperty(PROPERTY_NAME_DATABASE_MIN_POOL_SIZE));
+            final int maxPoolSize = Integer.parseInt(this.environment
+                    .getRequiredProperty(PROPERTY_NAME_DATABASE_MAX_POOL_SIZE));
+            final boolean isAutoCommit = Boolean.parseBoolean(this.environment
+                    .getRequiredProperty(PROPERTY_NAME_DATABASE_AUTO_COMMIT));
+            final int idleTimeout = Integer.parseInt(this.environment
+                    .getRequiredProperty(PROPERTY_NAME_DATABASE_IDLE_TIMEOUT));
 
             final DefaultConnectionPoolFactory.Builder builder = new DefaultConnectionPoolFactory.Builder()
-                    .withUsername(username).withPassword(password).withDriverClassName(driverClassName)
-                    .withProtocol(databaseProtocol).withDatabaseHost(databaseHost).withDatabasePort(databasePort)
-                    .withDatabaseName(databaseName).withMinPoolSize(minPoolSize).withMaxPoolSize(maxPoolSize)
-                    .withAutoCommit(isAutoCommit).withIdleTimeout(idleTimeout);
+            .withUsername(username).withPassword(password).withDriverClassName(driverClassName)
+            .withProtocol(databaseProtocol).withDatabaseHost(databaseHost).withDatabasePort(databasePort)
+            .withDatabaseName(databaseName).withMinPoolSize(minPoolSize).withMaxPoolSize(maxPoolSize)
+            .withAutoCommit(isAutoCommit).withIdleTimeout(idleTimeout);
             final DefaultConnectionPoolFactory factory = builder.build();
             this.dataSource = factory.getDefaultConnectionPool();
         }
@@ -167,8 +167,8 @@ public class PersistenceConfig extends AbstractConfig {
 
         entityManagerFactoryBean.setPersistenceUnitName("OSGP_CORE");
         entityManagerFactoryBean.setDataSource(this.getDataSource());
-        entityManagerFactoryBean
-                .setPackagesToScan(this.environment.getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN));
+        entityManagerFactoryBean.setPackagesToScan(this.environment
+                .getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN));
         entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistence.class);
 
         final Properties jpaProperties = new Properties();
