@@ -21,6 +21,8 @@ import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 
+import org.flywaydb.core.Flyway;
+import org.flywaydb.core.api.MigrationVersion;
 import org.hibernate.ejb.HibernatePersistence;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.bootstrap.ServerBootstrap;
@@ -57,7 +59,6 @@ import com.alliander.osgp.webdevicesimulator.service.OslpChannelHandler;
 import com.alliander.osgp.webdevicesimulator.service.OslpSecurityHandler;
 import com.alliander.osgp.webdevicesimulator.service.RegisterDevice;
 import com.alliander.osgp.webdevicesimulator.service.SwitchingServices;
-import com.googlecode.flyway.core.Flyway;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -181,10 +182,11 @@ public class ApplicationContext {
         final Flyway flyway = new Flyway();
 
         // Initialization for non-empty schema with no metadata table
-        flyway.setInitVersion(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_VERSION));
-        flyway.setInitDescription(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_DESCRIPTION));
-        flyway.setInitOnMigrate(Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_FLYWAY_INIT_ON_MIGRATE)));
+        flyway.setBaselineVersion(MigrationVersion
+                .fromVersion(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_VERSION)));
+        flyway.setBaselineDescription(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_DESCRIPTION));
+        flyway.setBaselineOnMigrate(
+                Boolean.parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INIT_ON_MIGRATE)));
 
         flyway.setDataSource(this.getDataSource());
 
