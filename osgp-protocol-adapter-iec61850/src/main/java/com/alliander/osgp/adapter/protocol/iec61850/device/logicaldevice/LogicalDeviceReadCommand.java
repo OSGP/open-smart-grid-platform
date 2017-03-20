@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.adapter.protocol.iec61850.device.logicalDevice;
+package com.alliander.osgp.adapter.protocol.iec61850.device.logicaldevice;
 
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;

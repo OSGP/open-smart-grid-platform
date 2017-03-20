@@ -13,7 +13,7 @@ import org.openmuc.openiec61850.Fc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alliander.osgp.adapter.protocol.iec61850.device.logicalDevice.LogicalDeviceReadCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.device.logicaldevice.LogicalDeviceReadCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;

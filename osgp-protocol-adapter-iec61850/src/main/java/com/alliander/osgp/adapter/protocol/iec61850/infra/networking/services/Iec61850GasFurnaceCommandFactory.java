@@ -15,8 +15,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alliander.osgp.adapter.protocol.iec61850.device.logicalDevice.LogicalDeviceReadCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.device.logicalDevice.LogicalDeviceReadCommandFactory;
+import com.alliander.osgp.adapter.protocol.iec61850.device.logicaldevice.LogicalDeviceReadCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.device.logicaldevice.LogicalDeviceReadCommandFactory;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850AlarmCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850AlarmOtherCommand;

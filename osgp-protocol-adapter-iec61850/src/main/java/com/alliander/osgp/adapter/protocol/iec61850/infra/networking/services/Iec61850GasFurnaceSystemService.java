@@ -14,7 +14,7 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alliander.osgp.adapter.protocol.iec61850.device.logicalDevice.LogicalDeviceReadCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.device.logicaldevice.LogicalDeviceReadCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.SystemService;

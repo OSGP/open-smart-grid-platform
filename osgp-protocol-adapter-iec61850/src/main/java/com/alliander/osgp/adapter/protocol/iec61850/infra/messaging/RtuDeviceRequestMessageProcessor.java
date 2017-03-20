@@ -11,7 +11,7 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alliander.osgp.adapter.protocol.iec61850.device.logicalDevice.LogicalDeviceService;
+import com.alliander.osgp.adapter.protocol.iec61850.device.logicaldevice.LogicalDeviceService;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor

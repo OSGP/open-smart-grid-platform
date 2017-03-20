@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceMessageStatus;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
-import com.alliander.osgp.adapter.protocol.iec61850.device.logicalDevice.LogicalDeviceService;
+import com.alliander.osgp.adapter.protocol.iec61850.device.logicaldevice.LogicalDeviceService;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.requests.GetDataDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.requests.SetDataDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.EmptyDeviceResponse;
