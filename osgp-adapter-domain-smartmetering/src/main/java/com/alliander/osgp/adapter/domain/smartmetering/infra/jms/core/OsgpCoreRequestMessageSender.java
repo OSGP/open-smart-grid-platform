@@ -31,6 +31,11 @@ public class OsgpCoreRequestMessageSender {
 
     public void send(final RequestMessage requestMessage, final String messageType, final int messagePriority,
             final Long scheduleTime) {
+        this.send(requestMessage, messageType, messagePriority, scheduleTime, false);
+    }
+
+    public void send(final RequestMessage requestMessage, final String messageType, final int messagePriority,
+            final Long scheduleTime, final boolean bypassRetry) {
 
         this.osgpCoreRequestsJmsTemplate.setPriority(messagePriority);
         this.osgpCoreRequestsJmsTemplate.send(new MessageCreator() {
@@ -45,6 +50,7 @@ public class OsgpCoreRequestMessageSender {
                         requestMessage.getOrganisationIdentification());
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
                         requestMessage.getDeviceIdentification());
+                objectMessage.setBooleanProperty(Constants.BY_PASS_RETRY, bypassRetry);
                 if (scheduleTime != null) {
                     objectMessage.setLongProperty(Constants.SCHEDULE_TIME, scheduleTime);
                 }

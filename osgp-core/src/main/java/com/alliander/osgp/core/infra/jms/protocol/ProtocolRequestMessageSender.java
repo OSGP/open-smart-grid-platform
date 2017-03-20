@@ -84,6 +84,7 @@ public class ProtocolRequestMessageSender implements ProtocolRequestService {
                 objectMessage.setStringProperty(Constants.IP_ADDRESS, requestMessage.getIpAddress());
                 objectMessage.setBooleanProperty(Constants.IS_SCHEDULED, requestMessage.isScheduled());
                 objectMessage.setIntProperty(Constants.RETRY_COUNT, requestMessage.getRetryCount());
+                objectMessage.setBooleanProperty(Constants.BY_PASS_RETRY, requestMessage.bypassRetry());
                 return objectMessage;
             }
 

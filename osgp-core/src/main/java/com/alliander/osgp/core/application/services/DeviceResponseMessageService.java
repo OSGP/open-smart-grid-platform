@@ -61,7 +61,7 @@ public class DeviceResponseMessageService {
         LOGGER.info("Processing protocol response message with correlation uid [{}]", message.getCorrelationUid());
 
         try {
-            if (message.isScheduled()) {
+            if (message.isScheduled() && !message.bypassRetry()) {
                 LOGGER.info("Handling scheduled protocol response message.");
                 this.handleScheduledTask(message);
             } else {

@@ -18,6 +18,7 @@
         <ref bean="organisationIdentificationInterceptor"/>
         <ref bean="messagePriorityInterceptor"/>
         <ref bean="responseUrlInterceptor"/>
+        <ref bean="byPassRertryInterceptor"/>
         <ref bean="scheduleTimeInterceptor"/>
         <ref bean="organisationIdentificationInCertificateCnEndpointInterceptor"/>
         <ref bean="payloadValidatingInterceptor"/>

@@ -63,24 +63,24 @@ public class BundleService {
         LOGGER.info("handleBundle for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
-        final SmartMeter smartMeter = this.domainHelperService.findSmartMeter(deviceMessageMetadata
-                .getDeviceIdentification());
+        final SmartMeter smartMeter = this.domainHelperService
+                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
 
-        final BundleMessagesRequestDto bundleMessageDataContainerDto = this.actionMapperService.mapAllActions(
-                bundleMessageDataContainer, smartMeter);
+        final BundleMessagesRequestDto bundleMessageDataContainerDto = this.actionMapperService
+                .mapAllActions(bundleMessageDataContainer, smartMeter);
 
         LOGGER.info("Sending request message to core.");
         final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 smartMeter.getIpAddress(), bundleMessageDataContainerDto);
         this.osgpCoreRequestMessageSender.send(requestMessage, deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime(),
+                deviceMessageMetadata.bypassRetry());
     }
 
     public void handleBundleResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException,
-            final BundleMessagesRequestDto bundleResponseMessageDataContainerDto)
-            throws FunctionalException {
+            final BundleMessagesRequestDto bundleResponseMessageDataContainerDto) throws FunctionalException {
 
         // convert bundleResponseMessageDataContainerDto back to core object
         final BundleMessagesResponse bundleResponseMessageDataContainer = this.actionMapperResponseService
