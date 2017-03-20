@@ -54,7 +54,7 @@ public class Iec61850MockServerMarkerWadden {
     private InputStream getIcdFile() {
         final InputStream icdFile = ClassLoader.getSystemResourceAsStream(this.icdFilename);
         if (icdFile == null) {
-            throw new AssertionError("Expected IEC61850 Mock ICD file: " + this.icdFilename);
+            throw new AssertionError("Expected IEC61850 Marker Wadden Mock ICD file: " + this.icdFilename);
         }
         return icdFile;
     }
@@ -63,7 +63,7 @@ public class Iec61850MockServerMarkerWadden {
         try {
             return new RtuSimulator(this.port, this.getIcdFile(), this.serverName);
         } catch (final SclParseException e) {
-            throw new AssertionError("Expected IEC61850 Mock configuration allowing simulator startup.", e);
+            throw new AssertionError("Expected IEC61850 Marker Wadden Mock configuration allowing simulator startup.", e);
         }
     }
 
@@ -82,20 +82,20 @@ public class Iec61850MockServerMarkerWadden {
             this.simulatorIsListening = true;
             LOGGER.info("Started IEC61850 Mock server on port {}", this.port);
         } catch (final IOException e) {
-            throw new AssertionError("Expected IEC61850 Mock configuration allowing simulator startup.", e);
+            throw new AssertionError("Expected IEC61850 Marker Wadden Mock configuration allowing simulator startup.", e);
         }
     }
 
     public void stop() {
 
         if (this.rtuSimulator == null || !this.simulatorIsListening) {
-            LOGGER.warn("Not stopping IEC61850 Mock server, because it was not running.");
+            LOGGER.warn("Not stopping IEC61850 Marker Wadden Mock server, because it was not running.");
             return;
         }
 
         this.rtuSimulator.stop();
         this.simulatorIsListening = false;
-        LOGGER.info("Stopped IEC61850 Mock server");
+        LOGGER.info("Stopped IEC61850 Marker Wadden Mock server");
     }
 
     public void mockValue(final String logicalDeviceName, final String node, final String value) {

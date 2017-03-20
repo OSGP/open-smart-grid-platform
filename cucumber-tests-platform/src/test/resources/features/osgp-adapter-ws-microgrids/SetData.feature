@@ -7,12 +7,6 @@ Feature: MicroGrids Set Data Service
   Scenario Outline: SetData Service
     Given an rtu iec61850 device
       | DeviceIdentification | RTU10003                              |
-#      | IcdFilename          | MarkerWadden_0_1_1_reporting_hack.icd |
-#      | Port                 |                                 63102 |
-#    And an rtu simulator started with
-#      | ServerName  | WAGO61850Server                       |
-#      | IcdFilename | MarkerWadden_0_1_1_reporting_hack.icd |
-#      | Port        |                                 63102 |
     When a set data request is received    
       | DeviceIdentification       | RTU10003            |
       | NumberOfSystems            |                   1 |
