@@ -119,6 +119,7 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
     private final Random random = new Random();
 
     private final ConcurrentMap<DeviceRequestMessageType, Message> receivedRequests;
+    private final List<Message> receivedResponses;
 
     private final Long reponseDelayRandomRange;
 
@@ -132,7 +133,8 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
             final int connectionTimeout, final Integer sequenceNumberWindow, final Integer sequenceNumberMaximum,
             final Long responseDelayTime, final Long reponseDelayRandomRange, final PrivateKey privateKey,
             final ClientBootstrap clientBootstrap, final ConcurrentMap<DeviceRequestMessageType, Message> mockResponses,
-            final ConcurrentMap<DeviceRequestMessageType, Message> receivedRequests) {
+            final ConcurrentMap<DeviceRequestMessageType, Message> receivedRequests,
+            final List<Message> receivedResponses) {
         this.oslpSignature = oslpSignature;
         this.oslpSignatureProvider = oslpSignatureProvider;
         this.connectionTimeout = connectionTimeout;
@@ -143,6 +145,7 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         this.clientBootstrap = clientBootstrap;
         this.mockResponses = mockResponses;
         this.receivedRequests = receivedRequests;
+        this.receivedResponses = receivedResponses;
     }
 
     @Override
@@ -323,6 +326,8 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
              */
             channelFuture.getChannel().close();
 
+            this.receivedResponses.add(response.getPayloadMessage());
+
             return response;
         } catch (final IOException | DeviceSimulatorException e) {
             LOGGER.error("send exception", e);
@@ -452,7 +457,7 @@ public class MockOslpChannelHandler extends SimpleChannelHandler {
         return response;
     }
 
-    private int doGetNextSequence() {
+    public int doGetNextSequence() {
         int numberToAddToSequenceNumberValue = 1;
 
         if (ScenarioContext.Current().get(Keys.NUMBER_TO_ADD_TO_SEQUENCE_NUMBER) != null) {

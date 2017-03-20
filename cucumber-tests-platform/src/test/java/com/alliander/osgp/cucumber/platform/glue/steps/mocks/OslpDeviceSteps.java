@@ -848,6 +848,43 @@ public class OslpDeviceSteps {
         this.send(request, settings);
     }
 
+    @Given("^the device sends an event notification request to the platform$")
+    public void theDeviceSendsAnEventNotificationRequestToThePlatform(final Map<String, String> settings)
+            throws IOException, DeviceSimulatorException {
+
+        this.oslpMockServer.doNextSequenceNumber();
+
+        final OslpEnvelope request = this
+                .createEnvelopeBuilder(
+                        getString(settings, Keys.KEY_DEVICE_UID,
+                                com.alliander.osgp.cucumber.platform.glue.steps.database.adapterprotocoloslp.OslpDeviceSteps.DEFAULT_DEVICE_UID),
+                        this.oslpMockServer.getSequenceNumber())
+                .withPayloadMessage(Message.newBuilder().setEventNotificationRequest(Oslp.EventNotificationRequest
+                        .newBuilder()
+                        .addNotifications(Oslp.EventNotification.newBuilder()
+                                .setEvent(getEnum(settings, Keys.KEY_EVENT, Event.class))
+                                .setDescription(getString(settings, Keys.KEY_DESCRIPTION))
+                                .setIndex(ByteString.copyFrom(getString(settings, Keys.KEY_INDEX).getBytes())).build()))
+                        .build())
+                .build();
+
+        this.send(request, settings);
+    }
+
+    /**
+     * Verify that we have received a response over OSLP/OSLP ELSTER
+     * 
+     * @param expectedResponse
+     */
+    @Then("^the event notification response contains$")
+    public void theEventNotificationResponseContains(final Map<String, String> expectedResponse) {
+        final Message responseMessage = this.oslpMockServer.waitForResponse();
+
+        final EventNotificationResponse response = responseMessage.getEventNotificationResponse();
+
+        Assert.assertEquals(getString(expectedResponse, Keys.KEY_STATUS), response.getStatus().name());
+    }
+
     public OslpEnvelope.Builder createEnvelopeBuilder(final String deviceUid, final Integer sequenceNumber) {
         final byte[] sequenceNumberBytes = new byte[2];
         sequenceNumberBytes[0] = (byte) (sequenceNumber >>> 8);
@@ -863,9 +900,21 @@ public class OslpDeviceSteps {
             throws IOException, DeviceSimulatorException {
         final String deviceIdentification = getString(settings, Keys.KEY_DEVICE_IDENTIFICATION);
         final String hostname = getString(settings, Keys.HOSTNAME, Defaults.LOCALHOST);
-        final Integer port = getInteger(settings, Keys.PORT, Defaults.OSLP_SERVER_PORT);
+        final String protocol = getString(settings, Keys.KEY_PROTOCOL, Defaults.DEFAULT_PROTOCOL);
 
-        final InetSocketAddress address = new InetSocketAddress(hostname, port);
+        InetSocketAddress address = null;
+
+        switch (protocol) {
+        case "OSLP ELSTER":
+            address = new InetSocketAddress(hostname, Defaults.OSLP_ELSTER_SERVER_PORT);
+            break;
+        case "OSLP":
+            address = new InetSocketAddress(hostname, Defaults.OSLP_SERVER_PORT);
+            break;
+        default:
+            address = new InetSocketAddress(hostname, Defaults.OSLP_SERVER_PORT);
+            break;
+        }
 
         return this.oslpMockServer.send(address, request, deviceIdentification);
     }

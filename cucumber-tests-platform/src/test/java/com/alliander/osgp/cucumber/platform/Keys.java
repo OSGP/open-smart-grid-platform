@@ -196,6 +196,9 @@ public class Keys {
     public static final String KEY_SORTED_BY = "SortedBy";
     public static final String KEY_STATUS = "Status";
     public static final String KEY_STREET = "containerStreet";
+
+    public static final String KEY_SUBSTATION_ROOMNUMBER = "RoomNumber";
+
     public static final String KEY_SYSTEM_ID = "SystemId";
     public static final String KEY_SYSTEM_TYPE = "SystemType";
     public static final String KEY_TECHNICAL_INSTALLATION_DATE = "TechnicalInstallationDate";
@@ -271,4 +274,9 @@ public class Keys {
 
     public static final String FIRMWARE_INSTALLED_BY = "InstalledBy";
     public static final String FIRMWARE_INSTALLATION_DATE = "InstallationDate";
+    public static final String KEY_SCHEDULE_VERSION = "Version";
+    public static final String KEY_LIGHTMEASUREMENT_IDENTIFICATION = "Identification";
+    public static final String SMS_TYPE = "SmsType";
+    public static final String KEY_LIGHTMEASUREMENT_LASTMESSAGE = "LastMessage";
+    public static final String SMS_INDEX = "SmsIndex";
 }
