@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceMessageStatus;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
-import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuDeviceService;
+import com.alliander.osgp.adapter.protocol.iec61850.device.LogicalDevice.LogicalDeviceService;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.requests.GetDataDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.requests.SetDataDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.ssld.responses.EmptyDeviceResponse;
@@ -48,7 +48,7 @@ import com.alliander.osgp.dto.valueobjects.microgrids.SetDataSystemIdentifierDto
 import com.alliander.osgp.dto.valueobjects.microgrids.SystemFilterDto;
 
 @Component
-public class Iec61850RtuDeviceService implements RtuDeviceService {
+public class Iec61850RtuDeviceService implements LogicalDeviceService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850RtuDeviceService.class);
 

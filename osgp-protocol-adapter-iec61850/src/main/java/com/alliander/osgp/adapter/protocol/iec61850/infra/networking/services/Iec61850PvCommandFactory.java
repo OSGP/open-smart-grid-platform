@@ -13,8 +13,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommandFactory;
+import com.alliander.osgp.adapter.protocol.iec61850.device.LogicalDevice.LogicalDeviceReadCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.device.LogicalDevice.LogicalDeviceReadCommandFactory;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850ActualPowerCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850ActualPowerLimitCommand;
@@ -33,7 +33,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.co
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementFilterDto;
 
-public final class Iec61850PvCommandFactory implements RtuReadCommandFactory<MeasurementDto, MeasurementFilterDto> {
+public final class Iec61850PvCommandFactory implements LogicalDeviceReadCommandFactory<MeasurementDto, MeasurementFilterDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850PvCommandFactory.class);
 
@@ -44,7 +44,7 @@ public final class Iec61850PvCommandFactory implements RtuReadCommandFactory<Mea
     private static final int THREE = 3;
     private static final int FOUR = 4;
 
-    private static final Map<DataAttribute, RtuReadCommand<MeasurementDto>> RTU_COMMAND_MAP = new HashMap<>();
+    private static final Map<DataAttribute, LogicalDeviceReadCommand<MeasurementDto>> RTU_COMMAND_MAP = new HashMap<>();
 
     static {
         initializeRtuCommandMap();
@@ -61,12 +61,12 @@ public final class Iec61850PvCommandFactory implements RtuReadCommandFactory<Mea
     }
 
     @Override
-    public RtuReadCommand<MeasurementDto> getCommand(final MeasurementFilterDto filter) {
+    public LogicalDeviceReadCommand<MeasurementDto> getCommand(final MeasurementFilterDto filter) {
         return this.getCommand(DataAttribute.fromString(filter.getNode()));
     }
 
     @Override
-    public RtuReadCommand<MeasurementDto> getCommand(final String node) {
+    public LogicalDeviceReadCommand<MeasurementDto> getCommand(final String node) {
         return this.getCommand(DataAttribute.fromString(node));
     }
 
@@ -93,9 +93,9 @@ public final class Iec61850PvCommandFactory implements RtuReadCommandFactory<Mea
         RTU_COMMAND_MAP.put(DataAttribute.WARNING_OTHER, new Iec61850WarningOtherCommand());
     }
 
-    private RtuReadCommand<MeasurementDto> getCommand(final DataAttribute dataAttribute) {
+    private LogicalDeviceReadCommand<MeasurementDto> getCommand(final DataAttribute dataAttribute) {
 
-        final RtuReadCommand<MeasurementDto> command = RTU_COMMAND_MAP.get(dataAttribute);
+        final LogicalDeviceReadCommand<MeasurementDto> command = RTU_COMMAND_MAP.get(dataAttribute);
 
         if (command == null) {
             LOGGER.warn("No command found for data attribute {}", dataAttribute);

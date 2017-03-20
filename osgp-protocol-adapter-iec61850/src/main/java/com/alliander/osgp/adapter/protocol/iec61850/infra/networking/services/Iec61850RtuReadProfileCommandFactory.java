@@ -15,14 +15,14 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommandFactory;
+import com.alliander.osgp.adapter.protocol.iec61850.device.LogicalDevice.LogicalDeviceReadCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.device.LogicalDevice.LogicalDeviceReadCommandFactory;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850ScheduleAbsTimeCommand;
 import com.alliander.osgp.dto.valueobjects.microgrids.ProfileDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.ProfileFilterDto;
 
-public final class Iec61850RtuReadProfileCommandFactory implements RtuReadCommandFactory<ProfileDto, ProfileFilterDto> {
+public final class Iec61850RtuReadProfileCommandFactory implements LogicalDeviceReadCommandFactory<ProfileDto, ProfileFilterDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850RtuReadProfileCommandFactory.class);
     private static final int SCHEDULE_ID_START = 1;
@@ -31,7 +31,7 @@ public final class Iec61850RtuReadProfileCommandFactory implements RtuReadComman
     private static Iec61850RtuReadProfileCommandFactory instance;
 
     private static final List<DataAttribute> DATA_ATTRIBUTE_USING_FILTER_ID_LIST = new ArrayList<>();
-    private static final Map<String, RtuReadCommand<ProfileDto>> RTU_COMMAND_MAP = new HashMap<>();
+    private static final Map<String, LogicalDeviceReadCommand<ProfileDto>> RTU_COMMAND_MAP = new HashMap<>();
 
     static {
         initializeDataAttributeUsingFilterIdList();
@@ -49,7 +49,7 @@ public final class Iec61850RtuReadProfileCommandFactory implements RtuReadComman
     }
 
     @Override
-    public RtuReadCommand<ProfileDto> getCommand(final ProfileFilterDto filter) {
+    public LogicalDeviceReadCommand<ProfileDto> getCommand(final ProfileFilterDto filter) {
         final DataAttribute da = DataAttribute.fromString(filter.getNode());
         if (this.useFilterId(da)) {
             return this.getCommand(filter.getNode() + filter.getId());
@@ -59,8 +59,8 @@ public final class Iec61850RtuReadProfileCommandFactory implements RtuReadComman
     }
 
     @Override
-    public RtuReadCommand<ProfileDto> getCommand(final String node) {
-        final RtuReadCommand<ProfileDto> command = RTU_COMMAND_MAP.get(node);
+    public LogicalDeviceReadCommand<ProfileDto> getCommand(final String node) {
+        final LogicalDeviceReadCommand<ProfileDto> command = RTU_COMMAND_MAP.get(node);
 
         if (command == null) {
             LOGGER.warn("No command found for node {}", node);

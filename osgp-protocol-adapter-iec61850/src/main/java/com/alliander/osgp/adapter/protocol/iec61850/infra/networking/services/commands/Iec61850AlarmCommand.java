@@ -14,7 +14,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.openmuc.openiec61850.Fc;
 
-import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.device.LogicalDevice.LogicalDeviceReadCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
@@ -26,7 +26,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Qual
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
 
-public class Iec61850AlarmCommand implements RtuReadCommand<MeasurementDto> {
+public class Iec61850AlarmCommand implements LogicalDeviceReadCommand<MeasurementDto> {
 
     private static final Map<Integer, DataAttribute> map;
 

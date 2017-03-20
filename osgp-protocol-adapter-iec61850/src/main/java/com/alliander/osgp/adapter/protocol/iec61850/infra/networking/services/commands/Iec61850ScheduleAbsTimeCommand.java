@@ -15,8 +15,8 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.openmuc.openiec61850.Fc;
 
-import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuWriteCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.device.LogicalDevice.LogicalDeviceReadCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.device.LogicalDevice.LogicalDeviceWriteCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.ProfilePair;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeWriteException;
@@ -30,7 +30,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubD
 import com.alliander.osgp.dto.valueobjects.microgrids.ProfileDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.ProfileEntryDto;
 
-public class Iec61850ScheduleAbsTimeCommand implements RtuReadCommand<ProfileDto>, RtuWriteCommand<ProfileDto> {
+public class Iec61850ScheduleAbsTimeCommand implements LogicalDeviceReadCommand<ProfileDto>, LogicalDeviceWriteCommand<ProfileDto> {
 
     private static final String NODE_NAME = "DSCH";
     private static final DataAttribute DATA_ATTRIBUTE = DataAttribute.SCHEDULE_ABS_TIME;

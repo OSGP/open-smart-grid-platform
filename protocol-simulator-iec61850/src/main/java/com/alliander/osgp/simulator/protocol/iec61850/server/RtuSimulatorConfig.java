@@ -23,7 +23,7 @@ public class RtuSimulatorConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger(RtuSimulatorConfig.class);
 
     @Bean
-    public RtuSimulator rtuSimulator(@Value("${rtu.icd:MarkerWadden_0_1_1_reporting_hack.icd}") final String icdFilename,
+    public RtuSimulator rtuSimulator(@Value("${rtu.icd:Pampus_v0.4.5.icd}") final String icdFilename,
             @Value("${rtu.port:60102}") final Integer port,
             @Value("${rtu.serverName:WAGO61850Server}") final String serverName) throws IOException {
         final InputStream icdFile = ClassLoader.getSystemResourceAsStream(icdFilename);

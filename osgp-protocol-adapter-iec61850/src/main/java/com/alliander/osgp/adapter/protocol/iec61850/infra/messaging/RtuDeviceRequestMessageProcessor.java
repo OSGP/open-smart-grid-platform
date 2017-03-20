@@ -11,7 +11,7 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuDeviceService;
+import com.alliander.osgp.adapter.protocol.iec61850.device.LogicalDevice.LogicalDeviceService;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor
@@ -25,7 +25,7 @@ public abstract class RtuDeviceRequestMessageProcessor extends BaseMessageProces
     protected static final String UNEXPECTED_EXCEPTION = "Unexpected exception while retrieving response message";
 
     @Autowired
-    protected RtuDeviceService deviceService;
+    protected LogicalDeviceService deviceService;
 
     /**
      * Each MessageProcessor should register it's MessageType at construction.

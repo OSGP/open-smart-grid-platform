@@ -13,7 +13,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.device.LogicalDevice.LogicalDeviceReadCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.ReadOnlyNodeContainer;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850RtuCommandFactory;
@@ -49,7 +49,7 @@ public class Iec61850RtuReportHandler implements Iec61850ReportHandler {
     @Override
     public MeasurementDto handleMember(final ReadOnlyNodeContainer member) {
 
-        final RtuReadCommand<MeasurementDto> command = Iec61850RtuCommandFactory.getInstance()
+        final LogicalDeviceReadCommand<MeasurementDto> command = Iec61850RtuCommandFactory.getInstance()
                 .getCommand(this.getCommandName(member));
 
         if (command == null) {

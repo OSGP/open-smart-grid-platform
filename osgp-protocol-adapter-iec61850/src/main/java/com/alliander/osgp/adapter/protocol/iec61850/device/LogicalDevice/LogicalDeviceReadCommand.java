@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.adapter.protocol.iec61850.device.rtu;
+package com.alliander.osgp.adapter.protocol.iec61850.device.LogicalDevice;
 
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
@@ -13,7 +13,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Devi
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalDevice;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.NodeContainer;
 
-public interface RtuReadCommand<T> {
+public interface LogicalDeviceReadCommand<T> {
     T execute(Iec61850Client client, DeviceConnection connection, LogicalDevice logicalDevice, int logicalDeviceIndex)
             throws NodeReadException;
 

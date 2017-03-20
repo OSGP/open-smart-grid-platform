@@ -11,8 +11,8 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.openmuc.openiec61850.Fc;
 
-import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuReadCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.device.rtu.RtuWriteCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.device.LogicalDevice.LogicalDeviceReadCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.device.LogicalDevice.LogicalDeviceWriteCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeReadException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeWriteException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
@@ -25,7 +25,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.SubD
 import com.alliander.osgp.dto.valueobjects.microgrids.MeasurementDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.SetPointDto;
 
-public class Iec61850ScheduleCatCommand implements RtuReadCommand<MeasurementDto>, RtuWriteCommand<SetPointDto> {
+public class Iec61850ScheduleCatCommand implements LogicalDeviceReadCommand<MeasurementDto>, LogicalDeviceWriteCommand<SetPointDto> {
 
     private static final String NODE_NAME = "DSCH";
     private static final DataAttribute DATA_ATTRIBUTE = DataAttribute.SCHEDULE_CAT;
