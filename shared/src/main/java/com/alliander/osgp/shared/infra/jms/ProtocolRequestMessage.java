@@ -22,6 +22,7 @@ public class ProtocolRequestMessage extends RequestMessage {
     private final boolean scheduled;
     private final int retryCount;
     private int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
+    private boolean bypassRetry;
 
     /**
      * Constructor with no scheduled flag and no messagePriority
@@ -72,6 +73,7 @@ public class ProtocolRequestMessage extends RequestMessage {
 
         this.messageType = deviceMessageMetadata.getMessageType();
         this.messagePriority = deviceMessageMetadata.getMessagePriority();
+        this.bypassRetry = deviceMessageMetadata.bypassRetry();
     }
 
     public static class Builder {
@@ -151,6 +153,10 @@ public class ProtocolRequestMessage extends RequestMessage {
 
     public int getMessagePriority() {
         return this.messagePriority;
+    }
+
+    public boolean bypassRetry() {
+        return this.bypassRetry;
     }
 
 }

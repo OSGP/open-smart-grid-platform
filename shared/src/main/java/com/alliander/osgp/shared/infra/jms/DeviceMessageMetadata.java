@@ -19,7 +19,7 @@ public class DeviceMessageMetadata {
     private final String messageType;
     private final int messagePriority;
     private final Long scheduleTime;
-    private boolean byPassRetry;
+    private boolean bypassRetry;
 
     public DeviceMessageMetadata(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType, final int messagePriority, final Long scheduleTime,
@@ -30,7 +30,14 @@ public class DeviceMessageMetadata {
         this.messageType = messageType;
         this.messagePriority = messagePriority;
         this.scheduleTime = scheduleTime;
-        this.byPassRetry = byPassRetry;
+        this.bypassRetry = byPassRetry;
+    }
+
+    public DeviceMessageMetadata(final String deviceIdentification, final String organisationIdentification,
+            final String correlationUid, final String messageType, final int messagePriority,
+            final boolean byPassRetry) {
+        this(deviceIdentification, organisationIdentification, correlationUid, messageType, messagePriority, null,
+                byPassRetry);
     }
 
     public DeviceMessageMetadata(final String deviceIdentification, final String organisationIdentification,
@@ -88,12 +95,12 @@ public class DeviceMessageMetadata {
         return this.scheduleTime;
     }
 
-    public void setByPassRetry(final boolean byPassRetry) {
-        this.byPassRetry = byPassRetry;
+    public void setByPassRetry(final boolean bypassRetry) {
+        this.bypassRetry = bypassRetry;
     }
 
-    public boolean isByPassRetry() {
-        return this.byPassRetry;
+    public boolean bypassRetry() {
+        return this.bypassRetry;
     }
 
     @Override

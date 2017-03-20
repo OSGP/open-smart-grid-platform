@@ -19,6 +19,8 @@ public class ResponseMessage implements Serializable {
      */
     private static final long serialVersionUID = -214808702310700742L;
 
+    private static final boolean BY_PASS_RETRY = false;
+
     private final String correlationUid;
     private final String organisationIdentification;
     private final String deviceIdentification;
@@ -26,10 +28,12 @@ public class ResponseMessage implements Serializable {
     private final OsgpException osgpException;
     private final Serializable dataObject;
     private final int messagePriority;
+    private final boolean bypassRetry;
 
     public ResponseMessage(final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final ResponseMessageResultType result,
-            final OsgpException osgpException, final Serializable dataObject, final int messagePriority) {
+            final OsgpException osgpException, final Serializable dataObject, final int messagePriority,
+            final boolean bypassRetry) {
         this.correlationUid = correlationUid;
         this.organisationIdentification = organisationIdentification;
         this.deviceIdentification = deviceIdentification;
@@ -37,26 +41,37 @@ public class ResponseMessage implements Serializable {
         this.osgpException = osgpException;
         this.dataObject = dataObject;
         this.messagePriority = messagePriority;
+        this.bypassRetry = bypassRetry;
     }
 
+    public ResponseMessage(final String correlationUid, final String organisationIdentification,
+            final String deviceIdentification, final ResponseMessageResultType result,
+            final OsgpException osgpException, final Serializable dataObject, final int messagePriority) {
+        this(correlationUid, organisationIdentification, deviceIdentification, result, osgpException, dataObject,
+                messagePriority, BY_PASS_RETRY);
+    }
+
+    // + dataObject
     public ResponseMessage(final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final ResponseMessageResultType result,
             final OsgpException osgpException, final Serializable dataObject) {
         this(correlationUid, organisationIdentification, deviceIdentification, result, osgpException, dataObject,
-                MessagePriorityEnum.DEFAULT.getPriority());
-    }
-
-    public ResponseMessage(final String correlationUid, final String organisationIdentification,
-            final String deviceIdentification, final ResponseMessageResultType result, final OsgpException osgpException) {
-        this(correlationUid, organisationIdentification, deviceIdentification, result, osgpException, null,
-                MessagePriorityEnum.DEFAULT.getPriority());
+                MessagePriorityEnum.DEFAULT.getPriority(), BY_PASS_RETRY);
     }
 
     public ResponseMessage(final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final ResponseMessageResultType result,
+            final OsgpException osgpException) {
+        this(correlationUid, organisationIdentification, deviceIdentification, result, osgpException, null,
+                MessagePriorityEnum.DEFAULT.getPriority(), BY_PASS_RETRY);
+    }
+
+    // + message priority
+    public ResponseMessage(final String correlationUid, final String organisationIdentification,
+            final String deviceIdentification, final ResponseMessageResultType result,
             final OsgpException osgpException, final int messagePriority) {
         this(correlationUid, organisationIdentification, deviceIdentification, result, osgpException, null,
-                messagePriority);
+                messagePriority, BY_PASS_RETRY);
     }
 
     public String getCorrelationUid() {
@@ -86,4 +101,9 @@ public class ResponseMessage implements Serializable {
     public int getMessagePriority() {
         return this.messagePriority;
     }
+
+    public boolean bypassRetry() {
+        return this.bypassRetry;
+    }
+
 }

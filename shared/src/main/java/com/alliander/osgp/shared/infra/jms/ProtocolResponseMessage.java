@@ -18,6 +18,7 @@ public class ProtocolResponseMessage extends ResponseMessage {
      * Serial Version UID.
      */
     private static final long serialVersionUID = -7720502773704936266L;
+    private static final boolean DEFAULT_BYPASS_RETRY = false;
 
     private final String domain;
     private final String domainVersion;
@@ -26,6 +27,7 @@ public class ProtocolResponseMessage extends ResponseMessage {
 
     private final int retryCount;
     private final RetryHeader retryHeader;
+    private boolean bypassRetry;
 
     /**
      * @deprecated Use builder in stead
@@ -36,7 +38,8 @@ public class ProtocolResponseMessage extends ResponseMessage {
             final ResponseMessageResultType result, final OsgpException osgpException, final Serializable dataObject,
             final int retryCount) {
         this(domain, domainVersion, messageType, correlationUid, organisationIdentification, deviceIdentification,
-                result, osgpException, dataObject, false, retryCount, MessagePriorityEnum.DEFAULT.getPriority());
+                result, osgpException, dataObject, false, retryCount, MessagePriorityEnum.DEFAULT.getPriority(),
+                DEFAULT_BYPASS_RETRY);
 
     }
 
@@ -48,7 +51,8 @@ public class ProtocolResponseMessage extends ResponseMessage {
             final String correlationUid, final String organisationIdentification, final String deviceIdentification,
             final ResponseMessageResultType result, final OsgpException osgpException, final Serializable dataObject) {
         this(domain, domainVersion, messageType, correlationUid, organisationIdentification, deviceIdentification,
-                result, osgpException, dataObject, false, 0, MessagePriorityEnum.DEFAULT.getPriority());
+                result, osgpException, dataObject, false, 0, MessagePriorityEnum.DEFAULT.getPriority(),
+                DEFAULT_BYPASS_RETRY);
     }
 
     /**
@@ -60,7 +64,8 @@ public class ProtocolResponseMessage extends ResponseMessage {
             final ResponseMessageResultType result, final OsgpException osgpException, final Serializable dataObject,
             final boolean scheduled) {
         this(domain, domainVersion, messageType, correlationUid, organisationIdentification, deviceIdentification,
-                result, osgpException, dataObject, scheduled, 0, MessagePriorityEnum.DEFAULT.getPriority());
+                result, osgpException, dataObject, scheduled, 0, MessagePriorityEnum.DEFAULT.getPriority(),
+                DEFAULT_BYPASS_RETRY);
 
     }
 
@@ -73,7 +78,8 @@ public class ProtocolResponseMessage extends ResponseMessage {
             final ResponseMessageResultType result, final OsgpException osgpException, final Serializable dataObject,
             final boolean scheduled, final int retryCount) {
         this(domain, domainVersion, messageType, correlationUid, organisationIdentification, deviceIdentification,
-                result, osgpException, dataObject, scheduled, retryCount, MessagePriorityEnum.DEFAULT.getPriority());
+                result, osgpException, dataObject, scheduled, retryCount, MessagePriorityEnum.DEFAULT.getPriority(),
+                DEFAULT_BYPASS_RETRY);
     }
 
     /**
@@ -83,9 +89,9 @@ public class ProtocolResponseMessage extends ResponseMessage {
     private ProtocolResponseMessage(final String domain, final String domainVersion, final String messageType,
             final String correlationUid, final String organisationIdentification, final String deviceIdentification,
             final ResponseMessageResultType result, final OsgpException osgpException, final Serializable dataObject,
-            final boolean scheduled, final int retryCount, final int messagePriority) {
+            final boolean scheduled, final int retryCount, final int messagePriority, final boolean bypassRetry) {
         super(correlationUid, organisationIdentification, deviceIdentification, result, osgpException, dataObject,
-                messagePriority);
+                messagePriority, bypassRetry);
 
         this.domain = domain;
         this.domainVersion = domainVersion;
@@ -98,10 +104,11 @@ public class ProtocolResponseMessage extends ResponseMessage {
     // scheduled and retryCount and messagePriority
     private ProtocolResponseMessage(final DeviceMessageMetadata deviceMessageMetadata, final String domain,
             final String domainVersion, final ResponseMessageResultType result, final OsgpException osgpException,
-            final Serializable dataObject, final boolean scheduled, final int retryCount, final RetryHeader retryHeader) {
+            final Serializable dataObject, final boolean scheduled, final int retryCount,
+            final RetryHeader retryHeader) {
         super(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata.getOrganisationIdentification(),
                 deviceMessageMetadata.getDeviceIdentification(), result, osgpException, dataObject,
-                deviceMessageMetadata.getMessagePriority());
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.bypassRetry());
         this.domain = domain;
         this.domainVersion = domainVersion;
         this.messageType = deviceMessageMetadata.getMessageType();
@@ -169,8 +176,8 @@ public class ProtocolResponseMessage extends ResponseMessage {
         }
 
         public ProtocolResponseMessage build() {
-            return new ProtocolResponseMessage(this.deviceMessageMetadata, this.domain, this.domainVersion,
-                    this.result, this.osgpException, this.dataObject, this.scheduled, this.retryCount, this.retryHeader);
+            return new ProtocolResponseMessage(this.deviceMessageMetadata, this.domain, this.domainVersion, this.result,
+                    this.osgpException, this.dataObject, this.scheduled, this.retryCount, this.retryHeader);
         }
     }
 
@@ -196,5 +203,9 @@ public class ProtocolResponseMessage extends ResponseMessage {
 
     public RetryHeader getRetryHeader() {
         return this.retryHeader;
+    }
+
+    public boolean bypassRetry() {
+        return this.bypassRetry;
     }
 }
