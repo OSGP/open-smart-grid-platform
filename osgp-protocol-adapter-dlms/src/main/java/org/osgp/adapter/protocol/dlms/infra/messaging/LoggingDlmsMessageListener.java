@@ -7,10 +7,13 @@
  */
 package org.osgp.adapter.protocol.dlms.infra.messaging;
 
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openmuc.jdlms.RawMessageData;
+import org.openmuc.jdlms.RawMessageData.Apdu;
+import org.openmuc.jdlms.RawMessageData.CosemPdu;
 import org.openmuc.jdlms.RawMessageData.MessageSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +42,11 @@ public class LoggingDlmsMessageListener implements DlmsMessageListener {
         final int sequenceNumber = this.numberOfCapturedMessages.incrementAndGet();
 
         final boolean incoming = MessageSource.SERVER == rawMessageData.getMessageSource();
-        final byte[] encodedMessage = rawMessageData.getMessage();
+
+        byte[] encodedMessage = this.determineEncodedMessage(rawMessageData);
+        if (encodedMessage != null) {
+            encodedMessage = Arrays.copyOf(encodedMessage, encodedMessage.length);
+        }
 
         String decodedMessage = "";
         if (rawMessageData.getApdu() != null) {
@@ -47,6 +54,40 @@ public class LoggingDlmsMessageListener implements DlmsMessageListener {
         }
 
         this.logMessage(incoming, encodedMessage, decodedMessage, sequenceNumber);
+    }
+
+    private byte[] determineEncodedMessage(final RawMessageData rawMessageData) {
+        final byte[] message = rawMessageData.getMessage();
+        if (message != null) {
+            return message;
+        }
+        return this.determineEncodedMessage(rawMessageData.getApdu());
+    }
+
+    private byte[] determineEncodedMessage(final Apdu apdu) {
+        if (apdu == null) {
+            return null;
+        }
+
+        final byte[] acsePdu = apdu.getAcsePdu();
+        if (acsePdu != null) {
+            return acsePdu;
+        }
+
+        return this.determineEncodedMessage(apdu.getCosemPdu());
+    }
+
+    private byte[] determineEncodedMessage(final CosemPdu cosemPdu) {
+        if (cosemPdu == null) {
+            return null;
+        }
+
+        final byte[] cipheredCosemPdu = cosemPdu.getCipheredCosemPdu();
+        if (cipheredCosemPdu != null) {
+            return cipheredCosemPdu;
+        }
+
+        return cosemPdu.getPlainCosemPdu();
     }
 
     public void logMessage(final boolean incoming, final byte[] encodedMessage, final String decodedMessage,
