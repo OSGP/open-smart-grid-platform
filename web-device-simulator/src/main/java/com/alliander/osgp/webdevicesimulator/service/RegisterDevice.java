@@ -414,7 +414,7 @@ public class RegisterDevice {
             throw new DeviceSimulatorException("sequence number Integer is null");
         }
 
-        final Integer num = ((bytes[0] & 0xFF) << 8) | ((bytes[1] & 0xFF));
+        final Integer num = ((bytes[0] & 0xFF) << 8) | (bytes[1] & 0xFF);
 
         if (sequenceNumber - num != 0) {
             throw new DeviceSimulatorException(MessageFormat.format(
