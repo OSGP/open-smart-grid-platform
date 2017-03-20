@@ -29,14 +29,15 @@ public class DlmsDeviceMessageMetadata {
     private String ipAddress;
     private int retryCount;
     private int messagePriority;
+    private boolean bypassRetry;
 
     @Override
     public String toString() {
-        return String
-                .format("DlmsDeviceMessageMetadata[correlationUid=%s, domain=%s, domainVersion=%s, messageType=%s, organisation=%s, device=%s, ipAddress=%s, retryCount=%d, messagePriority=%d]",
-                        this.correlationUid, this.domain, this.domainVersion, this.messageType,
-                        this.organisationIdentification, this.deviceIdentification, this.ipAddress, this.retryCount,
-                        this.messagePriority);
+        return "DlmsDeviceMessageMetadata [correlationUid=" + this.correlationUid + ", domain=" + this.domain
+                + ", domainVersion=" + this.domainVersion + ", messageType=" + this.messageType
+                + ", organisationIdentification=" + this.organisationIdentification + ", deviceIdentification="
+                + this.deviceIdentification + ", ipAddress=" + this.ipAddress + ", retryCount=" + this.retryCount
+                + ", messagePriority=" + this.messagePriority + ", bypassRetry=" + this.bypassRetry + "]";
     }
 
     /**
@@ -55,6 +56,11 @@ public class DlmsDeviceMessageMetadata {
         this.ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
         this.retryCount = message.getIntProperty(Constants.RETRY_COUNT);
         this.messagePriority = message.getJMSPriority();
+        this.bypassRetry = message.getBooleanProperty(Constants.BY_PASS_RETRY);
+    }
+
+    public boolean bypassRetry() {
+        return this.bypassRetry;
     }
 
     public int getMessagePriority() {
@@ -127,7 +133,7 @@ public class DlmsDeviceMessageMetadata {
 
     public DeviceMessageMetadata asDeviceMessageMetadata() {
         return new DeviceMessageMetadata(this.getDeviceIdentification(), this.getOrganisationIdentification(),
-                this.getCorrelationUid(), this.getMessageType(), this.getMessagePriority());
+                this.getCorrelationUid(), this.getMessageType(), this.getMessagePriority(), this.bypassRetry());
 
     }
 }
