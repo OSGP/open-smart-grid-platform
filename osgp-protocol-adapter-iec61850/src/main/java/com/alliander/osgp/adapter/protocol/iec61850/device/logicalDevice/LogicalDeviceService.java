@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.adapter.protocol.iec61850.device.LogicalDevice;
+package com.alliander.osgp.adapter.protocol.iec61850.device.logicalDevice;
 
 import javax.jms.JMSException;
 

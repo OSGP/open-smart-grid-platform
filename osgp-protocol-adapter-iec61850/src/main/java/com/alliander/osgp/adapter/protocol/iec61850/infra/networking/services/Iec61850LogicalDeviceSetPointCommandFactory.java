@@ -13,8 +13,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alliander.osgp.adapter.protocol.iec61850.device.LogicalDevice.LogicalDeviceWriteCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.device.LogicalDevice.LogicalDeviceWriteCommandFactory;
+import com.alliander.osgp.adapter.protocol.iec61850.device.logicalDevice.LogicalDeviceWriteCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.device.logicalDevice.LogicalDeviceWriteCommandFactory;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850ScheduleCatCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850ScheduleIdCommand;

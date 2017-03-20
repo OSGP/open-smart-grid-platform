@@ -5,9 +5,11 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.adapter.protocol.iec61850.device.LogicalDevice;
+package com.alliander.osgp.adapter.protocol.iec61850.device.logicalDevice;
 
-public interface LogicalDeviceWriteCommandFactory<T> {
+public interface LogicalDeviceReadCommandFactory<T, U> {
 
-    LogicalDeviceWriteCommand<T> getCommand(final String node);
+    LogicalDeviceReadCommand<T> getCommand(final U filter);
+
+    LogicalDeviceReadCommand<T> getCommand(final String node);
 }

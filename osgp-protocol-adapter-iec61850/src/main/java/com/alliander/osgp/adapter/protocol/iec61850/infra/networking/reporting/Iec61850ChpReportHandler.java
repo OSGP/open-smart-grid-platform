@@ -13,7 +13,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alliander.osgp.adapter.protocol.iec61850.device.LogicalDevice.LogicalDeviceReadCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.device.logicalDevice.LogicalDeviceReadCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.ReadOnlyNodeContainer;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.services.Iec61850ChpCommandFactory;

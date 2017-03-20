@@ -13,8 +13,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alliander.osgp.adapter.protocol.iec61850.device.LogicalDevice.LogicalDeviceReadCommand;
-import com.alliander.osgp.adapter.protocol.iec61850.device.LogicalDevice.LogicalDeviceWriteCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.device.logicalDevice.LogicalDeviceReadCommand;
+import com.alliander.osgp.adapter.protocol.iec61850.device.logicalDevice.LogicalDeviceWriteCommand;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.NodeException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Client;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.SystemService;
