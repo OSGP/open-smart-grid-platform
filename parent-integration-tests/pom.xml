@@ -751,11 +751,6 @@
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>${maven.compiler.plugin.version}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-project-info-reports-plugin</artifactId>
           <version>${maven.project.info.reports.plugin.version}</version>
         </plugin>
@@ -910,13 +905,6 @@
                 <skipTests>${skipTests}</skipTests>
               </configuration>
             </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.jacoco</groupId>
-          <artifactId>jacoco-maven-plugin</artifactId>
-          <version>${jacoco.version}</version>
-          <executions>
             <!-- Reset the code coverage before the integration tests are 
               started. Ensures Tomcat startup code execution is ignored in report -->
             <execution>
