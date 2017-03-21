@@ -66,7 +66,7 @@ public class EventNotificationMessageService {
             if (eventType.equals(EventType.LIGHT_EVENTS_LIGHT_ON) || eventType.equals(EventType.LIGHT_EVENTS_LIGHT_OFF)
                     || eventType.equals(EventType.TARIFF_EVENTS_TARIFF_ON)
                     || eventType.equals(EventType.TARIFF_EVENTS_TARIFF_OFF)) {
-                this.handleSwitchingEvent(device, eventType, index);
+                this.handleSwitchingEvent(device, dateTime, eventType, index);
             }
 
         } else {
@@ -89,7 +89,6 @@ public class EventNotificationMessageService {
          * relay). Handling light switching events, only update the relay status
          * once for the last switching in the list.
          */
-
         final List<Event> lightSwitchingEvents = new ArrayList<>();
 
         for (final EventNotificationDto eventNotification : eventNotifications) {
@@ -146,7 +145,8 @@ public class EventNotificationMessageService {
         }
     }
 
-    private void handleSwitchingEvent(final Device device, final EventType eventType, final int index) {
+    private void handleSwitchingEvent(final Device device, final Date dateTime, final EventType eventType,
+            final int index) {
 
         // if the index == 0 handle all LIGHT relays, otherwise just handle the
         // index
@@ -154,17 +154,17 @@ public class EventNotificationMessageService {
             final Ssld ssld = this.ssldRepository.findOne(device.getId());
             for (final DeviceOutputSetting deviceOutputSetting : ssld.getOutputSettings()) {
                 if (deviceOutputSetting.getOutputType().equals(RelayType.LIGHT)) {
-                    this.updateRelayStatus(deviceOutputSetting.getExternalId(), device, eventType);
+                    this.updateRelayStatus(deviceOutputSetting.getExternalId(), device, dateTime, eventType);
                 }
             }
         } else {
-            this.updateRelayStatus(index, device, eventType);
+            this.updateRelayStatus(index, device, dateTime, eventType);
         }
 
         this.deviceRepository.save(device);
     }
 
-    private void updateRelayStatus(final int index, final Device device, final EventType eventType) {
+    private void updateRelayStatus(final int index, final Device device, final Date dateTime, final EventType eventType) {
 
         final boolean isRelayOn = EventType.LIGHT_EVENTS_LIGHT_ON.equals(eventType)
                 || EventType.TARIFF_EVENTS_TARIFF_ON.equals(eventType);
@@ -174,10 +174,11 @@ public class EventNotificationMessageService {
         final Ssld ssld = this.ssldRepository.findOne(device.getId());
         if ((ssld.getRelayStatusByIndex(index) == null)
                 || (ssld.getRelayStatusByIndex(index).isLastKnownState() != isRelayOn)) {
-            LOGGER.info("Handling new event {} for device {} to update the relay status for index {}.",
-                    eventType.name(), device.getDeviceIdentification(), index);
+            LOGGER.info("Handling new event {} for device {} to update the relay status for index {} with date {}.",
+                    eventType.name(), device.getDeviceIdentification(), index, dateTime);
 
-            ssld.updateRelayStatusByIndex(index, new RelayStatus(device, index, isRelayOn, DateTime.now().toDate()));
+            ssld.updateRelayStatusByIndex(index, new RelayStatus(device, index, isRelayOn, dateTime == null ? DateTime
+                    .now().toDate() : dateTime));
         }
     }
 }
