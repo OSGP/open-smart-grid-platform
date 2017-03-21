@@ -75,10 +75,16 @@ public class ScheduledTaskScheduler implements Runnable {
                 scheduledTask.getDeviceIdentification(), scheduledTask.getOrganisationIdentification(),
                 scheduledTask.getCorrelationId(), scheduledTask.getMessageType(), scheduledTask.getMessagePriority());
 
+        final String ipAddress;
+        if (device.getNetworkAddress() == null) {
+            ipAddress = null;
+        } else {
+            ipAddress = device.getNetworkAddress().getHostAddress();
+        }
+
         return new ProtocolRequestMessage.Builder().deviceMessageMetadata(deviceMessageMetadata)
-                .domain(scheduledTask.getDomain()).domainVersion(scheduledTask.getDomainVersion())
-                .ipAddress(device.getNetworkAddress().getHostAddress()).request(scheduledTask.getMessageData())
-                .retryCount(scheduledTask.getRetry()).scheduled(true).build();
+                .domain(scheduledTask.getDomain()).domainVersion(scheduledTask.getDomainVersion()).ipAddress(ipAddress)
+                .request(scheduledTask.getMessageData()).retryCount(scheduledTask.getRetry()).scheduled(true).build();
     }
 
 }

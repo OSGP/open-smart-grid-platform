@@ -33,7 +33,6 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterResponseDt
 import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGasResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ObisCodeValuesDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadGasResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
@@ -302,10 +301,8 @@ public class MonitoringService {
         final SmartMeter smartMeter = this.domainHelperService.findSmartMeter(deviceMessageMetadata
                 .getDeviceIdentification());
 
-        final ObisCodeValuesDto obisCodeDto = this.monitoringMapper.map(request.getObisCode(), ObisCodeValuesDto.class);
-
-        final ProfileGenericDataRequestDto requestDto = new ProfileGenericDataRequestDto(
-                request.getDeviceIdentification(), obisCodeDto, request.getBeginDate(), request.getEndDate());
+        final ProfileGenericDataRequestDto requestDto = this.monitoringMapper.map(request,
+                ProfileGenericDataRequestDto.class);
 
         final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
@@ -327,7 +324,7 @@ public class MonitoringService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        ProfileGenericDataResponse responseVo = this.monitoringMapper.map(profileGenericDataResponseDto,
+        final ProfileGenericDataResponse responseVo = this.monitoringMapper.map(profileGenericDataResponseDto,
                 ProfileGenericDataResponse.class);
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
