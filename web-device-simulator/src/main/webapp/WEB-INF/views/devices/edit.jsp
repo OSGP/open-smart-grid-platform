@@ -269,7 +269,7 @@ body {
 										<spring:message code="device.edit.page.commands.sendnotification.hastimestamp.label" />
 									</div>
 									<div class="controls">
-										<input type="checkbox" id="hasTimestamp" />
+										<input type="checkbox" id="hasTimestamp" checked />
 									</div>
 									<button id="sendNotification" class="btn">
 										<spring:message code="device.edit.page.commands.sendnotification.label" />
