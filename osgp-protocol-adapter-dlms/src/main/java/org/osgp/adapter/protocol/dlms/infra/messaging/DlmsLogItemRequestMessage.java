@@ -35,9 +35,18 @@ public class DlmsLogItemRequestMessage {
         this.organisationIdentification = organisationIdentification;
         this.incoming = incoming;
         this.valid = true;
-        this.payloadMessageSerializedSize = encodedMessage.length;
-        this.encodedMessage = StringUtils.substring(bytesToCArray(encodedMessage), 0, MAX_MESSAGE_LENGTH);
-        this.decodedMessage = StringUtils.substring(decodedMessage, 0, MAX_MESSAGE_LENGTH);
+        if (encodedMessage == null) {
+            this.payloadMessageSerializedSize = 0;
+            this.encodedMessage = null;
+        } else {
+            this.payloadMessageSerializedSize = encodedMessage.length;
+            this.encodedMessage = StringUtils.substring(bytesToCArray(encodedMessage), 0, MAX_MESSAGE_LENGTH);
+        }
+        if (decodedMessage == null) {
+            this.decodedMessage = null;
+        } else {
+            this.decodedMessage = StringUtils.substring(decodedMessage, 0, MAX_MESSAGE_LENGTH);
+        }
     }
 
     public DlmsLogItemRequestMessage(final String deviceIdentification, final boolean incoming, final boolean valid,
