@@ -26,18 +26,18 @@ import com.alliander.osgp.shared.application.config.jms.JmsConfigurationFactory;
 @EnableTransactionManagement()
 @PropertySources({ @PropertySource("classpath:osgp-core.properties"),
         @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:${osgp/AdapterProtocolDlms/config}", ignoreResourceNotFound = true), })
+        @PropertySource(value = "file:${osgp/Core/config}", ignoreResourceNotFound = true), })
 
 public class MessagingConfig extends AbstractMessagingConfig {
 
     // === JMS SETTINGS ===
     @Bean
-    public JmsConfiguration dlmsLogItemRequestJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
+    public JmsConfiguration coreLogItemRequestJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
         return jmsConfigurationFactory.initializeConfiguration("jms.dlms.log.item.requests");
     }
 
     @Bean
-    public JmsTemplate dlmsLogItemRequestsJmsTemplate(final JmsConfiguration dlmsLogItemRequestJmsConfiguration) {
-        return dlmsLogItemRequestJmsConfiguration.getJmsTemplate();
+    public JmsTemplate coreLogItemRequestsJmsTemplate(final JmsConfiguration coreLogItemRequestJmsConfiguration) {
+        return coreLogItemRequestJmsConfiguration.getJmsTemplate();
     }
 }
