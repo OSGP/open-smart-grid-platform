@@ -28,6 +28,7 @@ public class CosemDateTimeConverter
 
         final CosemTimeDto time = source.getTime();
         final CosemDateDto date = source.getDate();
+
         final Set<ClockStatus> clockStatus = ClockStatus.clockStatusFrom((byte) source.getClockStatus().getStatus());
 
         return new org.openmuc.jdlms.datatypes.CosemDateTime(date.getYear(), date.getMonth(), date.getDayOfMonth(),

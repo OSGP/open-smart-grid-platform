@@ -96,7 +96,16 @@ public class SetClockConfigurationCommandExecutor
         this.dlmsLogWrite(conn, ATTRIBUTE_DAYLIGHT_SAVINGS_ENABLED);
 
         try {
-            return conn.getConnection().set(parameters);
+            final List<AccessResultCode> results = conn.getConnection().set(parameters);
+
+            for (final AccessResultCode result : results) {
+                if (!result.equals(AccessResultCode.SUCCESS)) {
+                    throw new ProtocolAdapterException(
+                            "Not all attributes of the clock configuration could be set successfully.");
+                }
+            }
+
+            return results;
         } catch (final IOException e) {
             throw new ConnectionException(e);
         }
