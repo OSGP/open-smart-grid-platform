@@ -139,7 +139,7 @@ Feature: SmartMetering Configuration
     When the request for a firmware upgrade is received
     And the upgrade of firmware did not succeed
     Then the message "Upgrade of firmware did not succeed" should be given
-@test
+@Skip
   Scenario: Try to connect to an unknown ip address
     Given a dlms device
       | DeviceIdentification | TEST1024000000002 |
