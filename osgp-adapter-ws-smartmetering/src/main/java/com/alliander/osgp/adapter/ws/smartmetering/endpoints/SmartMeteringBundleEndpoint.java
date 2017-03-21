@@ -18,7 +18,7 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
-import com.alliander.osgp.adapter.ws.endpointinterceptors.ByPassRetry;
+import com.alliander.osgp.adapter.ws.endpointinterceptors.BypassRetry;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.ResponseUrl;
@@ -61,7 +61,7 @@ public class SmartMeteringBundleEndpoint extends SmartMeteringEndpoint {
     @ResponsePayload
     public BundleAsyncResponse bundleRequest(@OrganisationIdentification final String organisationIdentification,
             @MessagePriority final String messagePriority, @ResponseUrl final String responseUrl,
-            @ByPassRetry final String byPassRetry, @RequestPayload final BundleRequest request) throws OsgpException {
+            @BypassRetry final String byPassRetry, @RequestPayload final BundleRequest request) throws OsgpException {
 
         LOGGER.info("Bundle request for organisation: {} and device: {}. and responseUrl: {}",
                 organisationIdentification, request.getDeviceIdentification(), responseUrl);
