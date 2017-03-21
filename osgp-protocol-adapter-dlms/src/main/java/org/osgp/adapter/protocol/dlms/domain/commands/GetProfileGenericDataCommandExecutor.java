@@ -166,33 +166,53 @@ public class GetProfileGenericDataCommandExecutor extends
 
         final CosemObjectDefinitionDto cosemObjectDefinitionDto = this.dlmsHelperService
                 .readObjectDefinition(dataObject, "capture-object");
-        final int classId = cosemObjectDefinitionDto.getClassId();
-        final byte[] obisBytes = cosemObjectDefinitionDto.getLogicalName().toByteArray();
-        final byte attributeIndex = (byte) cosemObjectDefinitionDto.getAttributeIndex();
-        final int dataIndex = cosemObjectDefinitionDto.getDataIndex();
 
-        if (InterfaceClass.CLOCK.id() == classId && Arrays.equals(OBIS_BYTES_CLOCK, obisBytes)
-                && ClockAttribute.TIME.attributeId() == attributeIndex && 0 == dataIndex) {
+        if (this.isClockDefinition(cosemObjectDefinitionDto)) {
             // The captured clock is always included.
             return true;
         }
 
         for (final CaptureObjectDefinitionDto captureObjectDefinition : selectedValues) {
-            final int classIdSelectedValue = captureObjectDefinition.getClassId();
-            final byte[] obisBytesSelectedValue = captureObjectDefinition.getLogicalName().toByteArray();
-            final byte attributeIndexSelectedValue = captureObjectDefinition.getAttributeIndex();
-            final int dataIndexSelectedValue;
-            if (captureObjectDefinition.getDataIndex() == null) {
-                dataIndexSelectedValue = 0;
-            } else {
-                dataIndexSelectedValue = captureObjectDefinition.getDataIndex();
-            }
-            if (classIdSelectedValue == classId && Arrays.equals(obisBytesSelectedValue, obisBytes)
-                    && attributeIndexSelectedValue == attributeIndex && dataIndexSelectedValue == dataIndex) {
+            if (this.isDefinitionOfSameObject(cosemObjectDefinitionDto, captureObjectDefinition)) {
                 return true;
             }
         }
         return false;
+    }
+
+    private boolean isClockDefinition(final CosemObjectDefinitionDto cosemObjectDefinitionDto) {
+
+        final int classId = cosemObjectDefinitionDto.getClassId();
+        final byte[] obisBytes = cosemObjectDefinitionDto.getLogicalName().toByteArray();
+        final byte attributeIndex = (byte) cosemObjectDefinitionDto.getAttributeIndex();
+        final int dataIndex = cosemObjectDefinitionDto.getDataIndex();
+
+        return InterfaceClass.CLOCK.id() == classId && Arrays.equals(OBIS_BYTES_CLOCK, obisBytes)
+                && ClockAttribute.TIME.attributeId() == attributeIndex && 0 == dataIndex;
+    }
+
+    private boolean isDefinitionOfSameObject(final CosemObjectDefinitionDto cosemObjectDefinitionDto,
+            final CaptureObjectDefinitionDto captureObjectDefinition) {
+
+        final int classIdCosemObjectDefinition = cosemObjectDefinitionDto.getClassId();
+        final byte[] obisBytesCosemObjectDefinition = cosemObjectDefinitionDto.getLogicalName().toByteArray();
+        final byte attributeIndexCosemObjectDefinition = (byte) cosemObjectDefinitionDto.getAttributeIndex();
+        final int dataIndexCosemObjectDefinition = cosemObjectDefinitionDto.getDataIndex();
+
+        final int classIdCaptureObjectDefinition = captureObjectDefinition.getClassId();
+        final byte[] obisBytesCaptureObjectDefinition = captureObjectDefinition.getLogicalName().toByteArray();
+        final byte attributeIndexCaptureObjectDefinition = captureObjectDefinition.getAttributeIndex();
+        final int dataIndexCaptureObjectDefinition;
+        if (captureObjectDefinition.getDataIndex() == null) {
+            dataIndexCaptureObjectDefinition = 0;
+        } else {
+            dataIndexCaptureObjectDefinition = captureObjectDefinition.getDataIndex();
+        }
+
+        return classIdCaptureObjectDefinition == classIdCosemObjectDefinition
+                && Arrays.equals(obisBytesCaptureObjectDefinition, obisBytesCosemObjectDefinition)
+                && attributeIndexCaptureObjectDefinition == attributeIndexCosemObjectDefinition
+                && dataIndexCaptureObjectDefinition == dataIndexCosemObjectDefinition;
     }
 
     private SelectiveAccessDescription getSelectiveAccessDescription(final DateTime beginDateTime,
